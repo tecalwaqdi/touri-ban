@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_kg_chuy",
+  "__writtenAt": "2026-07-22T11:28:59.558Z",
+  "__target": "local-staging",
+  "naim": "إقليم تشوي",
+  "names_i18n": {
+    "ar": "إقليم تشوي",
+    "en": "Chuy Region",
+    "ru": "Чуйская область",
+    "ky": "Чүй облусу",
+    "uz": "Chuy viloyati"
+  },
+  "dolh": "countries/kyrgyzstan",
+  "acctev": true,
+  "iso_code": "KG-C",
+  "country_iso": "KG",
+  "geo_import_id": "region_kg_chuy",
+  "geo_import_source": "touri_geo_import"
+}

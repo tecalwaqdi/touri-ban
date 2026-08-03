@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_ru_nalchik",
+  "__writtenAt": "2026-07-22T11:29:01.879Z",
+  "__target": "local-staging",
+  "naim": "نالتشيك",
+  "names_i18n": {
+    "ar": "نالتشيك",
+    "en": "Nalchik",
+    "ru": "Нальчик",
+    "ky": "Нальчик",
+    "uz": "Nalchik"
+  },
+  "cities": "cities/region_ru_kabardino_balkaria",
+  "dolh": "countries/russia",
+  "lat_ling": {
+    "latitude": 43.4853,
+    "longitude": 43.6071
+  },
+  "acctev": true,
+  "country_iso": "RU",
+  "geo_import_id": "city_ru_nalchik",
+  "geo_import_source": "touri_geo_import"
+}

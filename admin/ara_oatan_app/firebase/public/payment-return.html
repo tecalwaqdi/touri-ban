@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Touri Taxi payment</title>
+    <style>
+      :root {
+        font-family: system-ui, sans-serif;
+        color: #123b3a;
+        background: #f7fbfa;
+      }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+      }
+      main {
+        width: min(34rem, calc(100% - 3rem));
+        text-align: center;
+      }
+      .mark {
+        width: 3.5rem;
+        height: 3.5rem;
+        margin: 0 auto 1rem;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: white;
+        background: #008f86;
+        font-size: 1.75rem;
+      }
+      h1 { font-size: 1.35rem; }
+      p { line-height: 1.6; color: #4b6664; }
+      @media (prefers-color-scheme: dark) {
+        :root { color: #e8f7f5; background: #101918; }
+        p { color: #b7cfcc; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="mark" aria-hidden="true">&#10003;</div>
+      <h1>Return to Touri Taxi</h1>
+      <p>The application is securely verifying the payment status.</p>
+      <p dir="rtl">ارجع إلى تطبيق توري تاكسي، وسيتم التحقق من حالة الدفع بأمان.</p>
+    </main>
+  </body>
+</html>

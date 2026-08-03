@@ -1,0 +1,1837 @@
+{
+  "country": "SA",
+  "linked": 51,
+  "skipped": 209,
+  "wouldWriteToFirebaseStorage": false,
+  "rows": [
+    {
+      "id": "lm_sa_riyadh_osm_way_978220391",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 3.0 pl",
+      "reason": null,
+      "commonsFile": "At-Turaif District in ad-Dir'iyah (12).jpg"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_way_1385940120",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Masmak castle.jpg"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_way_1451027859",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3ASix%20Flags%20Qiddiya%20Theme%20Park%2C%20Saudi%20Arabia%20(2025).jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_node_13415346082",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "مخطوطة عائلة آل سعود - The House of Al Saud.svg"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_node_13415346083",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_relation_6196003",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Hand written Quran in Saudi Arabia.jpg"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_way_915570666",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 2.0",
+      "reason": null,
+      "commonsFile": "KSP Landscape.jpg"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_relation_239102",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "قصر المربع-1980.jpg"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_node_1056080874",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "RSAF Museum Lockheed L-1011 Tristar.jpg"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_node_10998027804",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_way_391008132",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Al Kharj Water Tower.jpg"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_way_1218670088",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "The Boulevard Riyadh - 2021.jpg"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_node_1303598588",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_way_907532428",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_way_168522856",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q114818630&property=P18&format=json"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_node_4391421189",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_node_4878478425",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_node_11677231267",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_node_13319156291",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_riyadh_osm_node_13319156293",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_node_1236463804",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_440922995",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 2.0"
+    },
+    {
+      "id": "lm_sa_makkah_osm_node_1199442700",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 4.0",
+      "reason": null,
+      "commonsFile": "Rukn al-Yamani 01.jpg"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_473301379",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_1138468850",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_45204088",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_45204112",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_358396486",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "مسجد المدهون 8.jpg"
+    },
+    {
+      "id": "lm_sa_makkah_osm_node_11020502175",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_458349011",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_1234244197",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q46169&property=P18&format=json"
+    },
+    {
+      "id": "lm_sa_makkah_osm_node_2520141053",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY 2.0"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_40604100",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "قصر خزام جدة.jpg"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_112167172",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_node_10893610660",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_1172466826",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_433011691",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_583113516",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_way_1451954528",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_makkah_osm_node_4427606790",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_849621507",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Hegra, Al-Ula, Saudi Arabia.png"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_66510098",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "lm_sa_madinah_osm_relation_18051738",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_madinah_osm_node_8882633689",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_node_1236694187",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_457470976",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Abiar Ali.jpg"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_587267723",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Mount Uhud.JPG"
+    },
+    {
+      "id": "lm_sa_madinah_osm_node_11107371616",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q486124&property=P18&format=json"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_317325590",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_787880717",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Elephant rock Al Ula, Saudi Arabia 2011.jpg"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_609099126",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_670439749",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_node_3148018114",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_node_4417050108",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_node_7758612090",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_112566263",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_369085870",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_1458291967",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_way_357674811",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_madinah_osm_node_1111949118",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_way_94639308",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_eastern_osm_way_881726514",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Jubail Church.jpg"
+    },
+    {
+      "id": "lm_sa_eastern_osm_way_94639305",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Qasr sahood.jpg"
+    },
+    {
+      "id": "lm_sa_eastern_osm_way_1128086181",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_eastern_osm_way_94639307",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_2141583161",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Dammam No. 7 on March 4, 1938.jpg"
+    },
+    {
+      "id": "lm_sa_eastern_osm_way_1456561004",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_7352246842",
+      "linked": true,
+      "source": "existing",
+      "license": "CC0"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_11190611610",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_8753187763",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_eastern_osm_way_1346603744",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_4547853394",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_13469350401",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_4359345792",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_4383658498",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_4459918689",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_4506747590",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_4737079221",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_4741567278",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_eastern_osm_node_13390773104",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_way_315139966",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q20420547&property=P18&format=json"
+    },
+    {
+      "id": "lm_sa_qassim_osm_relation_13313504",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_way_666903100",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_11294810422",
+      "linked": true,
+      "source": "existing",
+      "license": "CC0"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_1236365322",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_1236368432",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_1236368437",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_1236375075",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_1237553424",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_1237556826",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_way_1540671394",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_relation_18973517",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_way_447833594",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_4235877691",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_8361532484",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_9776970225",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_11055662513",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_11055676341",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_11583845235",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_qassim_osm_node_12638992551",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_11628032261",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_hail_osm_way_1250557803",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_hail_osm_way_787883229",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_6910544753",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_8155978668",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_hail_osm_way_318797220",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_1236386581",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_1236758649",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_1236758766",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_6096379685",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_7137018173",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_4311488291",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_4314746234",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_4804160873",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_6986266098",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_7494577590",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_8155977691",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_13201149060",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_node_13201156119",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_hail_osm_way_1187612482",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_13273630643",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_way_848018913",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_way_116193835",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_1705632195",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_7758612186",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_7868698561",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "قلعة المويلح1.jpg"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_way_987177494",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_way_849625861",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_5836365098",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_way_852035275",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_way_849298708",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_9287506276",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_13315688944",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_12301057123",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_13452224447",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_4205766757",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_4205776975",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_9164346917",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_13013857692",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_tabuk_osm_node_9138592443",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_7047372977",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_1236745719",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_1237547003",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_1237552174",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_11870030430",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_11870047818",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_11870047838",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_11870048283",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_way_268635776",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_6339451088",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_10973571890",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_way_891842540",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_way_892310570",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_11870048386",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_11870048443",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_11870048488",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_11870048607",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_11870165754",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_11870241007",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_northern_borders_osm_node_11870243506",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jazan_osm_relation_5816942",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY 2.0"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_8587068411",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_5882700493",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_1717460811",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "قرية القصار.jpg"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_10698809523",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q16118672&property=P18&format=json"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_12148488256",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jazan_osm_way_854656191",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_4962584244",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_4991261180",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_12901481554",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jazan_osm_way_1430812726",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_8450169536",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "SaudiArabiaP17a-5Riyals-(1977)-donatedth b.jpg"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_8450169537",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "SaudiArabiaP17a-5Riyals-(1977)-donatedth b.jpg"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_8450169538",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "SaudiArabiaP17a-5Riyals-(1977)-donatedth b.jpg"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_8450169551",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "SaudiArabiaP17a-5Riyals-(1977)-donatedth b.jpg"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_8450169552",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "SaudiArabiaP17a-5Riyals-(1977)-donatedth b.jpg"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_8450169571",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "SaudiArabiaP17a-5Riyals-(1977)-donatedth b.jpg"
+    },
+    {
+      "id": "lm_sa_jazan_osm_relation_15557297",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q12250638&property=P18&format=json"
+    },
+    {
+      "id": "lm_sa_jazan_osm_way_388926318",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jazan_osm_node_11296312014",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_11871652101",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_12806166349",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_10687708957",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_11838400069",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_11839131169",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_11845436183",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_1237845317",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_6774267466",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_4937240925",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_11839128869",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_way_1507477569",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_13680726501",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_8204653001",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_6774251951",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_8579173028",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_way_963623721",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_6774270530",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_6774280437",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_6774280438",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_najran_osm_node_6774288956",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_way_358397836",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "ذوعين.jpg"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_10686400505",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_1236690506",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_1236690512",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_1236690545",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_1236690710",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_10716689001",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_11870047993",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_11871651846",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_way_1436676544",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_3737078438",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_13680962645",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_way_1436604056",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_4975490441",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_4954420351",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_4975923962",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_7993930465",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_11915129543",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_13061742526",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_baha_osm_node_6770617279",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_8049539470",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_5836478367",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "زعبل.jpg"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_8049634800",
+      "linked": true,
+      "source": "existing",
+      "license": "CC0"
+    },
+    {
+      "id": "lm_sa_jouf_osm_way_758050816",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Marid Castle 20170827.jpg"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_1236744627",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_6784549786",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_11870002806",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_11870002810",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_7018367585",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_9483714917",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_10159027227",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_10162300223",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_10258025270",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_10258080299",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_way_838377596",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_node_8987053993",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_way_341118402",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_way_350100438",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_way_755817050",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_jouf_osm_way_755872476",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_way_1379373631",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3A%D9%82%D9%84%D8%B9%D8%A9%20%D8%B4%D8%B9%D8%A7%D8%B11.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_sa_asir_osm_way_1484636385",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_way_720433325",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_1236470784",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_1236470812",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_1236470845",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_1236470886",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_11870738433",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_11870950696",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_3633191137",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_3633211801",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_13475742948",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_way_958316456",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_7160717585",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_11164437401",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_11769515876",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_node_11769515881",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_way_591404210",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_way_646897355",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_sa_asir_osm_way_1267184820",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    }
+  ]
+}

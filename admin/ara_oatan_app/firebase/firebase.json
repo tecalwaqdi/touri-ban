@@ -1,0 +1,80 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": [
+    {
+      "rules": "storage.rules",
+      "bucket": "tutorial-multi-language-70gx4j.firebasestorage.app"
+    }
+  ],
+  "functions": [
+    {
+      "source": "custom_cloud_functions",
+      "codebase": "custom_cloud_functions"
+    },
+    {
+      "source": "functions",
+      "codebase": "functions"
+    }
+  ],
+  "hosting": [
+    {
+      "site": "tutorial-multi-language-70gx4j",
+      "public": "public",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "/privacy",
+          "destination": "/privacy/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            { "key": "X-Content-Type-Options", "value": "nosniff" },
+            { "key": "Cache-Control", "value": "public,max-age=300" }
+          ]
+        }
+      ]
+    },
+    {
+      "site": "toury-taxi-privacy",
+      "public": "public",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "/privacy",
+          "destination": "/privacy/index.html"
+        },
+        {
+          "source": "/",
+          "destination": "/privacy/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            { "key": "X-Content-Type-Options", "value": "nosniff" },
+            { "key": "Cache-Control", "value": "public,max-age=300" }
+          ]
+        }
+      ]
+    }
+  ],
+  "emulators": {
+    "firestore": {
+      "port": 8080,
+      "host": "127.0.0.1"
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000,
+      "host": "127.0.0.1"
+    },
+    "singleProjectMode": true
+  }
+}

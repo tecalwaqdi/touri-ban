@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_ru_kabardino_balkaria",
+  "__writtenAt": "2026-07-22T11:29:01.873Z",
+  "__target": "local-staging",
+  "naim": "قبردينو بلقاريا",
+  "names_i18n": {
+    "ar": "قبردينو بلقاريا",
+    "en": "Kabardino-Balkaria",
+    "ru": "Кабардино-Балкария",
+    "ky": "Кабардино-Балкария",
+    "uz": "Kabardino-Balkariya"
+  },
+  "dolh": "countries/russia",
+  "acctev": true,
+  "iso_code": "RU-KB",
+  "country_iso": "RU",
+  "geo_import_id": "region_ru_kabardino_balkaria",
+  "geo_import_source": "touri_geo_import"
+}

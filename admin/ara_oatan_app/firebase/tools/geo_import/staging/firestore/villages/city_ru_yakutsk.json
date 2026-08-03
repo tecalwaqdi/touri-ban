@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_ru_yakutsk",
+  "__writtenAt": "2026-07-22T11:29:02.382Z",
+  "__target": "local-staging",
+  "naim": "ياكوتسك",
+  "names_i18n": {
+    "ar": "ياكوتسك",
+    "en": "Yakutsk",
+    "ru": "Якутск",
+    "ky": "Якутск",
+    "uz": "Yakutsk"
+  },
+  "cities": "cities/region_ru_sakha",
+  "dolh": "countries/russia",
+  "lat_ling": {
+    "latitude": 62.0355,
+    "longitude": 129.6755
+  },
+  "acctev": true,
+  "country_iso": "RU",
+  "geo_import_id": "city_ru_yakutsk",
+  "geo_import_source": "touri_geo_import"
+}

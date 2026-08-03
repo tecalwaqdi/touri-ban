@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_uz_navoiy",
+  "__writtenAt": "2026-07-22T11:29:01.032Z",
+  "__target": "local-staging",
+  "naim": "نواوي",
+  "names_i18n": {
+    "ar": "نواوي",
+    "en": "Navoiy",
+    "ru": "Навои",
+    "ky": "Навои",
+    "uz": "Navoiy"
+  },
+  "cities": "cities/region_uz_navoiy",
+  "dolh": "countries/uzbekistan",
+  "lat_ling": {
+    "latitude": 40.0844,
+    "longitude": 65.3792
+  },
+  "acctev": true,
+  "country_iso": "UZ",
+  "geo_import_id": "city_uz_navoiy",
+  "geo_import_source": "touri_geo_import"
+}

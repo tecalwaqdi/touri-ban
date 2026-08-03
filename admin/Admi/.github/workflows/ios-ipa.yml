@@ -1,0 +1,92 @@
+# Build signed iOS IPA on macOS (GitHub Actions).
+# Required repo secrets:
+#   BUILD_CERTIFICATE_BASE64  - distribution .p12 (base64)
+#   P12_PASSWORD              - certificate password
+#   BUILD_PROVISION_PROFILE_BASE64 - .mobileprovision (base64)
+#   KEYCHAIN_PASSWORD         - temp keychain password
+# Optional:
+#   APPLE_TEAM_ID             - Apple Developer Team ID
+#
+# Run: Actions -> iOS IPA Build -> Run workflow
+# Download IPA from workflow Artifacts.
+
+name: iOS IPA Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      export_method:
+        description: 'ad-hoc (direct install) or app-store (TestFlight)'
+        required: true
+        default: 'ad-hoc'
+        type: choice
+        options:
+          - ad-hoc
+          - app-store
+
+jobs:
+  build-ios:
+    runs-on: macos-14
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Install CocoaPods
+        run: |
+          cd ios
+          pod install --repo-update
+
+      - name: Import signing certificate
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+        run: |
+          if [ -z "$BUILD_CERTIFICATE_BASE64" ]; then
+            echo "::error::Add BUILD_CERTIFICATE_BASE64 and related secrets first."
+            exit 1
+          fi
+          CERT_PATH="$RUNNER_TEMP/build_certificate.p12"
+          PP_PATH="$RUNNER_TEMP/build_pp.mobileprovision"
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o "$CERT_PATH"
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o "$PP_PATH"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Select export plist
+        id: export
+        run: |
+          if [ "${{ github.event.inputs.export_method }}" = "app-store" ]; then
+            echo "plist=ios/ExportOptionsAppStore.plist" >> "$GITHUB_OUTPUT"
+          else
+            echo "plist=ios/ExportOptionsAdHoc.plist" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build IPA
+        run: |
+          flutter build ipa --release \
+            --export-options-plist=${{ steps.export.outputs.plist }}
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-arawatan-ios-${{ github.event.inputs.export_method }}
+          path: build/ios/ipa/*.ipa
+          if-no-files-found: error

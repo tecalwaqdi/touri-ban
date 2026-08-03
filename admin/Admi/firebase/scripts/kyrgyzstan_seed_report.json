@@ -1,0 +1,123 @@
+{
+  "regions": [
+    {
+      "id": "kg-chuy",
+      "name": "Chuy Region",
+      "landmarks": 20,
+      "curated": 20,
+      "osmFilled": 0,
+      "shortfall": 0,
+      "sample": [
+        "Ala Archa National Park",
+        "Burana Tower",
+        "Chunkurchak Gorge"
+      ]
+    },
+    {
+      "id": "kg-issyk-kul",
+      "name": "Issyk-Kul Region",
+      "landmarks": 20,
+      "curated": 20,
+      "osmFilled": 0,
+      "shortfall": 0,
+      "sample": [
+        "Issyk-Kul Lake",
+        "Cholpon-Ata Petroglyphs",
+        "Rukh Ordo"
+      ]
+    },
+    {
+      "id": "kg-naryn",
+      "name": "Naryn Region",
+      "landmarks": 20,
+      "curated": 20,
+      "osmFilled": 0,
+      "shortfall": 0,
+      "sample": [
+        "Song-Kol Lake",
+        "Tash Rabat",
+        "Kel-Suu Lake"
+      ]
+    },
+    {
+      "id": "kg-talas",
+      "name": "Talas Region",
+      "landmarks": 20,
+      "curated": 20,
+      "osmFilled": 0,
+      "shortfall": 0,
+      "sample": [
+        "Manas Ordo",
+        "Besh-Tash National Park",
+        "Kirov Reservoir"
+      ]
+    },
+    {
+      "id": "kg-jalal-abad",
+      "name": "Jalal-Abad Region",
+      "landmarks": 20,
+      "curated": 20,
+      "osmFilled": 0,
+      "shortfall": 0,
+      "sample": [
+        "Sary-Chelek Lake",
+        "Arslanbob Walnut Forest",
+        "Arslanbob Waterfall"
+      ]
+    },
+    {
+      "id": "kg-osh",
+      "name": "Osh Region",
+      "landmarks": 20,
+      "curated": 20,
+      "osmFilled": 0,
+      "shortfall": 0,
+      "sample": [
+        "Sulaiman-Too",
+        "Jayma Bazaar",
+        "Uzgen Minaret"
+      ]
+    },
+    {
+      "id": "kg-batken",
+      "name": "Batken Region",
+      "landmarks": 20,
+      "curated": 20,
+      "osmFilled": 0,
+      "shortfall": 0,
+      "sample": [
+        "Karavshin Valley",
+        "Aigul-Tash Reserve",
+        "Ai-Kol Lake"
+      ]
+    },
+    {
+      "id": "kg-bishkek",
+      "name": "Bishkek City",
+      "landmarks": 20,
+      "curated": 20,
+      "osmFilled": 0,
+      "shortfall": 0,
+      "sample": [
+        "Ala-Too Square",
+        "National History Museum",
+        "Osh Bazaar"
+      ]
+    },
+    {
+      "id": "kg-osh-city",
+      "name": "Osh City",
+      "landmarks": 20,
+      "curated": 20,
+      "osmFilled": 0,
+      "shortfall": 0,
+      "sample": [
+        "Sulaiman-Too Sacred Mountain",
+        "Jayma Bazaar",
+        "Sulaiman-Too Museum"
+      ]
+    }
+  ],
+  "country": "kyrgyzstan",
+  "target": 20
+}

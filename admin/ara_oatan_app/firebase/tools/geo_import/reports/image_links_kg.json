@@ -1,0 +1,85 @@
+{
+  "country": "KG",
+  "linked": 7,
+  "skipped": 3,
+  "wouldWriteToFirebaseStorage": false,
+  "rows": [
+    {
+      "id": "lm_kg_bishkek_ala-too",
+      "linked": true,
+      "source": "commons_search",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Changing of the guard Ala-Too Square, Bishkek, Kyrgyzstan.jpg"
+    },
+    {
+      "id": "lm_kg_bishkek_history-museum",
+      "linked": true,
+      "source": "commons_search",
+      "license": "CC BY 2.0",
+      "reason": null,
+      "commonsFile": "Sofia - National Museum of History.jpg"
+    },
+    {
+      "id": "lm_kg_bishkek_osh-bazaar",
+      "linked": true,
+      "source": "commons_search",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Jayma Bazaar, Osh.jpg"
+    },
+    {
+      "id": "lm_kg_bishkek_panfilov",
+      "linked": true,
+      "source": "commons_search",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Panfilov park.jpg"
+    },
+    {
+      "id": "lm_kg_bishkek_philharmonic",
+      "linked": true,
+      "source": "commons_search",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Kyrgyz National Philharmonic.jpg"
+    },
+    {
+      "id": "lm_kg_chuy_ala-archa",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "search: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&list=search&srnamespace=6&srlimit=5&srsearch=Ala%20Archa%20National%20Park&format=json"
+    },
+    {
+      "id": "lm_kg_chuy_burana",
+      "linked": true,
+      "source": "commons_search",
+      "license": "CC BY 2.5",
+      "reason": null,
+      "commonsFile": "Burana.JPG"
+    },
+    {
+      "id": "lm_kg_chuy_chunkurchak",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no commons candidate"
+    },
+    {
+      "id": "lm_kg_chuy_issyk-ata",
+      "linked": true,
+      "source": "commons_search",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Back Matter (IA jstor-1798272).pdf"
+    },
+    {
+      "id": "lm_kg_chuy_konorchek",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no commons candidate"
+    }
+  ]
+}

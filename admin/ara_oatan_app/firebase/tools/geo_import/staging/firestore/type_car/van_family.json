@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/van_family",
+  "__writtenAt": "2026-07-22T11:29:02.574Z",
+  "__target": "local-staging",
+  "naim": "فان عائلي",
+  "names_i18n": {
+    "ar": "فان عائلي",
+    "en": "Family Van",
+    "ru": "Семейный минивэн",
+    "ky": "Үй-бүлөлүк минивэн",
+    "uz": "Oilaviy miniven"
+  },
+  "codeCar": "van_family",
+  "sr": 360,
+  "agl_saat": 5,
+  "actev": true,
+  "ishafelh": false,
+  "not": "Family Van",
+  "geo_import_id": "vehcat_van_family",
+  "geo_import_source": "touri_geo_import"
+}

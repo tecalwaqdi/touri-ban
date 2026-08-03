@@ -1,0 +1,24 @@
+{
+  "__path": "countries/uzbekistan",
+  "__writtenAt": "2026-07-22T11:28:59.934Z",
+  "__target": "local-staging",
+  "naim": "أوزبكستان",
+  "naimEnglesh": "Uzbekistan",
+  "names_i18n": {
+    "ar": "أوزبكستان",
+    "en": "Uzbekistan",
+    "ru": "Узбекистан",
+    "ky": "Өзбекстан",
+    "uz": "Oʻzbekiston"
+  },
+  "iso_code": "UZ",
+  "iso3": "UZB",
+  "CurrencySymbol": "so'm",
+  "currency_code": "UZS",
+  "phone_code": "+998",
+  "timezone": "Asia/Tashkent",
+  "acctev": true,
+  "saudi": false,
+  "geo_import_id": "country_uz",
+  "geo_import_source": "touri_geo_import"
+}

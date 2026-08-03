@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/minivan",
+  "__writtenAt": "2026-07-22T11:29:02.574Z",
+  "__target": "local-staging",
+  "naim": "ميني فان",
+  "names_i18n": {
+    "ar": "ميني فان",
+    "en": "Minivan",
+    "ru": "Минивэн",
+    "ky": "Минивэн",
+    "uz": "Miniven"
+  },
+  "codeCar": "minivan",
+  "sr": 340,
+  "agl_saat": 5,
+  "actev": true,
+  "ishafelh": false,
+  "not": "Minivan",
+  "geo_import_id": "vehcat_minivan",
+  "geo_import_source": "touri_geo_import"
+}

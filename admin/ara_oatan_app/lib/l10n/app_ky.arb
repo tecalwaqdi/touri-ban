@@ -1,0 +1,3409 @@
+{
+  "@@locale": "ky",
+  "n1": "1",
+  "@n1": {
+    "description": "UI string (source key: 1)"
+  },
+  "n2": "2",
+  "@n2": {
+    "description": "UI string (source key: 2)"
+  },
+  "n4": "4",
+  "@n4": {
+    "description": "UI string (source key: 4)"
+  },
+  "n5": "5",
+  "@n5": {
+    "description": "UI string (source key: 5)"
+  },
+  "n6": "6",
+  "@n6": {
+    "description": "UI string (source key: 6)"
+  },
+  "n7": "7",
+  "@n7": {
+    "description": "UI string (source key: 7)"
+  },
+  "n8": "8",
+  "@n8": {
+    "description": "UI string (source key: 8)"
+  },
+  "n9": "9",
+  "@n9": {
+    "description": "UI string (source key: 9)"
+  },
+  "n10": "10",
+  "@n10": {
+    "description": "UI string (source key: 10)"
+  },
+  "n11": "11",
+  "@n11": {
+    "description": "UI string (source key: 11)"
+  },
+  "n15": "15",
+  "@n15": {
+    "description": "UI string (source key: 15)"
+  },
+  "n24": "24",
+  "@n24": {
+    "description": "UI string (source key: 24)"
+  },
+  "n25": "25",
+  "@n25": {
+    "description": "UI string (source key: 25)"
+  },
+  "n26": "26",
+  "@n26": {
+    "description": "UI string (source key: 26)"
+  },
+  "n27": "27",
+  "@n27": {
+    "description": "UI string (source key: 27)"
+  },
+  "n28": "28",
+  "@n28": {
+    "description": "UI string (source key: 28)"
+  },
+  "n29": "29",
+  "@n29": {
+    "description": "UI string (source key: 29)"
+  },
+  "n30": "30",
+  "@n30": {
+    "description": "UI string (source key: 30)"
+  },
+  "n31": "31",
+  "@n31": {
+    "description": "UI string (source key: 31)"
+  },
+  "n32": "32",
+  "@n32": {
+    "description": "UI string (source key: 32)"
+  },
+  "n33": "33",
+  "@n33": {
+    "description": "UI string (source key: 33)"
+  },
+  "n34": "34",
+  "@n34": {
+    "description": "UI string (source key: 34)"
+  },
+  "n45": "45",
+  "@n45": {
+    "description": "UI string (source key: 45)"
+  },
+  "n123": "123",
+  "@n123": {
+    "description": "UI string (source key: 123)"
+  },
+  "n561790844": "561790844",
+  "@n561790844": {
+    "description": "UI string (source key: 561790844)"
+  },
+  "login": "Кирүү",
+  "@login": {
+    "description": "UI string (source key: Login)"
+  },
+  "email_Address": "Электрондук почта дареги",
+  "@email_Address": {
+    "description": "UI string (source key: Email Address)"
+  },
+  "create_Account": "Аккаунт түзүү",
+  "@create_Account": {
+    "description": "UI string (source key: Create Account )"
+  },
+  "enter_your_email": "Электрондук почтаңызды киргизиңиз...",
+  "@enter_your_email": {
+    "description": "UI string (source key: Enter your email...)"
+  },
+  "password": "Сырсөз",
+  "@password": {
+    "description": "UI string (source key: Password)"
+  },
+  "enter_your_password": "Сырсөзүңүздү киргизиңиз...",
+  "@enter_your_password": {
+    "description": "UI string (source key: Enter your password...)"
+  },
+  "select_the_app_language": "Колдонмо тилин тандаңыз",
+  "@select_the_app_language": {
+    "description": "UI string (source key: Select the app language)"
+  },
+  "login_with_Google": "Google аркылуу кирүү",
+  "@login_with_Google": {
+    "description": "UI string (source key: Login with Google)"
+  },
+  "auth_google_pick_title": "Google аккаунтун тандаңыз",
+  "@auth_google_pick_title": {
+    "description": "UI string (source key: auth_google_pick_title)"
+  },
+  "auth_google_pick_sub": "Бул түзмөккө байланышкан аккаунттар",
+  "@auth_google_pick_sub": {
+    "description": "UI string (source key: auth_google_pick_sub)"
+  },
+  "auth_google_recent_account": "Акыркы колдонулган аккаунт",
+  "@auth_google_recent_account": {
+    "description": "UI string (source key: auth_google_recent_account)"
+  },
+  "auth_google_show_accounts": "Түзмөктөгү Google аккаунттарын көрсөтүү",
+  "@auth_google_show_accounts": {
+    "description": "UI string (source key: auth_google_show_accounts)"
+  },
+  "auth_google_other_account": "Башка аккаунт тандоо",
+  "@auth_google_other_account": {
+    "description": "UI string (source key: auth_google_other_account)"
+  },
+  "auth_google_failed": "Google аркылуу кирүү ишке ашкан жок. Кайра аракет кылыңыз.",
+  "@auth_google_failed": {
+    "description": "UI string (source key: auth_google_failed)"
+  },
+  "auth_google_developer_error": "Google туура эмес орнотулган. Firebase Console'го Android SHA-1 кошуңуз.",
+  "@auth_google_developer_error": {
+    "description": "UI string (source key: auth_google_developer_error)"
+  },
+  "auth_google_not_enabled": "Firebase'де Google кирүү иштетилген эмес.",
+  "@auth_google_not_enabled": {
+    "description": "UI string (source key: auth_google_not_enabled)"
+  },
+  "auth_google_account_conflict": "Бул почта башка кирүү ыкмасына байланышкан. Почта жана сырсөз колдонуңуз.",
+  "@auth_google_account_conflict": {
+    "description": "UI string (source key: auth_google_account_conflict)"
+  },
+  "auth_google_or": "же",
+  "@auth_google_or": {
+    "description": "UI string (source key: auth_google_or)"
+  },
+  "forgot_Password": "Сырсөзүңүздү унуттуңузбу?",
+  "@forgot_Password": {
+    "description": "UI string (source key: Forgot Password ?)"
+  },
+  "register": "Катталуу",
+  "@register": {
+    "description": "UI string (source key: Register)"
+  },
+  "create_an_account_with_Google": "Google аркылуу каттоо",
+  "@create_an_account_with_Google": {
+    "description": "UI string (source key: Create an account with Google)"
+  },
+  "please_fill_in_all_fields_to_register": "Катталуу үчүн бардык талааларды толтуруңуз",
+  "@please_fill_in_all_fields_to_register": {
+    "description": "UI string (source key: Please fill in all fields to register)"
+  },
+  "full_Name": "Толук аты-жөнү",
+  "@full_Name": {
+    "description": "UI string (source key: Full Name)"
+  },
+  "confirm_Password": "Сырсөздү ырастоо",
+  "@confirm_Password": {
+    "description": "UI string (source key: Confirm Password)"
+  },
+  "read_the_Terms_of_Service_and_Privacy_Policy": "Кызмат көрсөтүү шарттары жана Купуялык саясатын окуңуз",
+  "@read_the_Terms_of_Service_and_Privacy_Policy": {
+    "description": "UI string (source key: Read the Terms of Service and Privacy Policy)"
+  },
+  "i_agree_to_the_Terms_Conditions": "Мен шарттар менен эрежелерге макулмун",
+  "@i_agree_to_the_Terms_Conditions": {
+    "description": "UI string (source key: I agree to the Terms & Conditions)"
+  },
+  "full_Name_is_required": "Толук аты-жөнү талап кылынат",
+  "@full_Name_is_required": {
+    "description": "UI string (source key: Full Name is required)"
+  },
+  "please_choose_an_option_from_the_dropdown": "Төмөнкү тизмеден вариантты тандаңыз",
+  "@please_choose_an_option_from_the_dropdown": {
+    "description": "UI string (source key: Please choose an option from the dropdown)"
+  },
+  "email_Address_is_required": "Электрондук почта дареги талап кылынат",
+  "@email_Address_is_required": {
+    "description": "UI string (source key: Email Address is required)"
+  },
+  "mobile_Number_is_required": "Мобилдик номер талап кылынат",
+  "@mobile_Number_is_required": {
+    "description": "UI string (source key: Mobile Number is required)"
+  },
+  "password_is_required": "Сырсөз талап кылынат",
+  "@password_is_required": {
+    "description": "UI string (source key: Password is required)"
+  },
+  "confirm_Password_is_required": "Сырсөздү ырастоо талап кылынат",
+  "@confirm_Password_is_required": {
+    "description": "UI string (source key: Confirm Password is required)"
+  },
+  "already_have_an_account": "Каттоонуз барбы?",
+  "@already_have_an_account": {
+    "description": "UI string (source key: Already have an account?)"
+  },
+  "sign_In": "Кирүү",
+  "@sign_In": {
+    "description": "UI string (source key: Sign In)"
+  },
+  "success_Partner_Registration": "Ийгилик Партнер Каттоосу",
+  "@success_Partner_Registration": {
+    "description": "UI string (source key: Success Partner Registration)"
+  },
+  "welcome_to_Become_a_Success_Partner": "Ийгилик Партнеру болууга кош келиңиз",
+  "@welcome_to_Become_a_Success_Partner": {
+    "description": "UI string (source key: Welcome to Become a Success Partner)"
+  },
+  "join_us_as_a_Success_Partner_to_enhance_our_service_quality_and_accelerate_outre": "Сиз мамлекеттик мекеме, компания же жеке жак болсоңуз да, кызматтын сапатын жакшыртуу жана жеткиликтүүлүктү тездетүү үчүн Ийгилик Партнеру катары бизге кошулуңуз.",
+  "@join_us_as_a_Success_Partner_to_enhance_our_service_quality_and_accelerate_outre": {
+    "description": "UI string (source key: Join us as a Success Partner to enhance our service quality and accelerate outreach, whether you are a government entity, a company, or an individual.)"
+  },
+  "register_Now": "Азыр катталыңыз",
+  "@register_Now": {
+    "description": "UI string (source key: Register Now)"
+  },
+  "home": "Башкы барак",
+  "@home": {
+    "description": "UI string (source key: Home)"
+  },
+  "the_Qibla_for_Islam_and_Muslims": "Ислам жана мусулмандар үчүн Кыйбла",
+  "@the_Qibla_for_Islam_and_Muslims": {
+    "description": "UI string (source key: The Qibla for Islam and Muslims)"
+  },
+  "list_of_regions": "Аймактардын тизмеси",
+  "@list_of_regions": {
+    "description": "UI string (source key: List of regions)"
+  },
+  "number_of_destinations": "Бара турган жерлердин саны: ",
+  "@number_of_destinations": {
+    "description": "UI string (source key: Number of destinations: )"
+  },
+  "specify_the_region": "Аймакты көрсөтүңүз",
+  "@specify_the_region": {
+    "description": "UI string (source key: Specify the region)"
+  },
+  "saudi": "Сауд Арабиясы",
+  "@saudi": {
+    "description": "UI string (source key: saudi)"
+  },
+  "select_region_city": "Аймак / шаарды тандаңыз",
+  "@select_region_city": {
+    "description": "UI string (source key: Select region / city)"
+  },
+  "cities_provinces": "Шаарлар/аймактар",
+  "@cities_provinces": {
+    "description": "UI string (source key: Cities/provinces)"
+  },
+  "browse_cities_counties_in": "Шаарларды/райондорду карап чыгуу",
+  "@browse_cities_counties_in": {
+    "description": "UI string (source key: Browse cities/counties in)"
+  },
+  "change": "Өзгөртүү",
+  "@change": {
+    "description": "UI string (source key: Change)"
+  },
+  "view_Now": "Азыр көрүү",
+  "@view_Now": {
+    "description": "UI string (source key: View Now)"
+  },
+  "devils_Cove": "Шайтан булуңу",
+  "@devils_Cove": {
+    "description": "UI string (source key: Devils Cove)"
+  },
+  "n4_7_Stars": "4.7 Жылдыз",
+  "@n4_7_Stars": {
+    "description": "UI string (source key: 4.7 Stars)"
+  },
+  "juniper_Beach": "Арча пляжы",
+  "@juniper_Beach": {
+    "description": "UI string (source key: Juniper Beach)"
+  },
+  "n4_5_Stars": "4.5 Жылдыз",
+  "@n4_5_Stars": {
+    "description": "UI string (source key: 4.5 Stars)"
+  },
+  "yOU_ARE_BROWSING_NOW": "Азыр карап жатасыз",
+  "@yOU_ARE_BROWSING_NOW": {
+    "description": "UI string (source key: YOU ARE BROWSING NOW)"
+  },
+  "change_country": "Өлкөнү өзгөртүү",
+  "@change_country": {
+    "description": "UI string (source key: Change country)"
+  },
+  "change_region": "Аймакты өзгөртүү",
+  "@change_region": {
+    "description": "UI string (source key: Change region)"
+  },
+  "added_destinations": "Кошулган жерлер",
+  "@added_destinations": {
+    "description": "UI string (source key: Added destinations)"
+  },
+  "suggest_a_Place": "Жер сунуштоо",
+  "@suggest_a_Place": {
+    "description": "UI string (source key: Suggest a Place)"
+  },
+  "add_a_Special_Place": "Атайын жер кошуу",
+  "@add_a_Special_Place": {
+    "description": "UI string (source key: Add a Special Place)"
+  },
+  "settings": "Орнотуулар",
+  "@settings": {
+    "description": "UI string (source key: Settings)"
+  },
+  "help": "Жардам",
+  "@help": {
+    "description": "UI string (source key: Help)"
+  },
+  "log_Out": "Чыгуу",
+  "@log_Out": {
+    "description": "UI string (source key: Log Out)"
+  },
+  "browse": "Карап чыгуу",
+  "@browse": {
+    "description": "UI string (source key: Browse)"
+  },
+  "prayer_room": "Намаз бөлмөсү",
+  "@prayer_room": {
+    "description": "UI string (source key: Prayer room)"
+  },
+  "restroom": "Даараткана",
+  "@restroom": {
+    "description": "UI string (source key: Restroom)"
+  },
+  "restaurant": "Ресторан",
+  "@restaurant": {
+    "description": "UI string (source key: Restaurant)"
+  },
+  "add": "Кошуу",
+  "@add": {
+    "description": "UI string (source key: Add)"
+  },
+  "description": "Сүрөттөө",
+  "@description": {
+    "description": "UI string (source key: Description)"
+  },
+  "enable_notifications": "Эскертмелерди иштетүү",
+  "@enable_notifications": {
+    "description": "UI string (source key: Enable notifications)"
+  },
+  "edit_Profile": "Профилди түзөтүү",
+  "@edit_Profile": {
+    "description": "UI string (source key: Edit Profile)"
+  },
+  "add_your_phone_number": "Телефон номериңизди кошуңуз",
+  "@add_your_phone_number": {
+    "description": "UI string (source key: Add your phone number)"
+  },
+  "address_list": "Даректердин тизмеси",
+  "@address_list": {
+    "description": "UI string (source key: Address list)"
+  },
+  "support_Customer_Service": "Колдоо жана Кардарлар кызматы",
+  "@support_Customer_Service": {
+    "description": "UI string (source key: Support & Customer Service)"
+  },
+  "electronic_Payment_History": "Электрондук төлөмдөрдүн тарыхы",
+  "@electronic_Payment_History": {
+    "description": "UI string (source key: Electronic Payment History)"
+  },
+  "night_mode": "Түнкү режим",
+  "@night_mode": {
+    "description": "UI string (source key: Night mode)"
+  },
+  "dark_mode": "Караңгы режим",
+  "@dark_mode": {
+    "description": "UI string (source key: Dark  mode)"
+  },
+  "request_to_delete_the_account": "Каттоо эсебин жок кылуу өтүнүчү.",
+  "@request_to_delete_the_account": {
+    "description": "UI string (source key: Request to delete the account.)"
+  },
+  "my_account": "Менин эсебим",
+  "@my_account": {
+    "description": "UI string (source key: My account)"
+  },
+  "name": "Аты",
+  "@name": {
+    "description": "UI string (source key: Name)"
+  },
+  "enter_your_full_name": "Толук аты-жөнүңүздү киргизиңиз",
+  "@enter_your_full_name": {
+    "description": "UI string (source key: Enter your full name)"
+  },
+  "phone_Number": "Телефон номери",
+  "@phone_Number": {
+    "description": "UI string (source key: Phone Number)"
+  },
+  "enter_your_mobile_number": "Мобилдик номериңизди киргизиңиз",
+  "@enter_your_mobile_number": {
+    "description": "UI string (source key: Enter your mobile number)"
+  },
+  "email": "Электрондук почта",
+  "@email": {
+    "description": "UI string (source key: Email)"
+  },
+  "outside_your_city_prices_are_agreed_upon_with_the_captain": "Сиздин шаардын сыртында баалар капитан менен макулдашылган",
+  "@outside_your_city_prices_are_agreed_upon_with_the_captain": {
+    "description": "UI string (source key: Outside your city prices are agreed upon with the captain)"
+  },
+  "update_Profile": "Профилди жаңыртуу",
+  "@update_Profile": {
+    "description": "UI string (source key: Update Profile)"
+  },
+  "welcome_to_the_Arra_Watan_app": "Arra Watan колдонмосуна кош келиңиз",
+  "@welcome_to_the_Arra_Watan_app": {
+    "description": "UI string (source key: Welcome to the Arra Watan app)"
+  },
+  "first_global_saudi_tourist_taxi_app": "биринчи глобалдык сауд турист такси колдонмосу",
+  "@first_global_saudi_tourist_taxi_app": {
+    "description": "UI string (source key: first global saudi tourist taxi app)"
+  },
+  "select_the_country": "Өлкөнү тандаңыз",
+  "@select_the_country": {
+    "description": "UI string (source key: Select the country)"
+  },
+  "start": "Баштоо",
+  "@start": {
+    "description": "UI string (source key: Start)"
+  },
+  "credit_Card": "Кредиттик карта",
+  "@credit_Card": {
+    "description": "UI string (source key: Credit Card)"
+  },
+  "your_Name": "Сиздин атыңыз",
+  "@your_Name": {
+    "description": "UI string (source key: Your Name)"
+  },
+  "example_2026": "Мисал 2026",
+  "@example_2026": {
+    "description": "UI string (source key: Example 2026)"
+  },
+  "example_11": "Мисал 11",
+  "@example_11": {
+    "description": "UI string (source key: Example 11)"
+  },
+  "cCV": "CCV",
+  "@cCV": {
+    "description": "UI string (source key: CCV)"
+  },
+  "your_Name_is_required": "Сиздин атыңыз талап кылынат",
+  "@your_Name_is_required": {
+    "description": "UI string (source key: Your Name is required)"
+  },
+  "is_required": "Картанын номери талап кылынат",
+  "@is_required": {
+    "description": "UI string (source key: رقم البطاقة is required)"
+  },
+  "is_required2": "Бүтүү жылы талап кылынат",
+  "@is_required2": {
+    "description": "UI string (source key: سنة الإنتهاء is required)"
+  },
+  "is_required3": "Бүтүү айы талап кылынат",
+  "@is_required3": {
+    "description": "UI string (source key: شهر الإنتهاء is required)"
+  },
+  "cCV_is_required": "CCV талап кылынат",
+  "@cCV_is_required": {
+    "description": "UI string (source key: CCV is required)"
+  },
+  "sTC_pay": "STC pay",
+  "@sTC_pay": {
+    "description": "UI string (source key: STC pay)"
+  },
+  "apple_Pay": "Apple Pay",
+  "@apple_Pay": {
+    "description": "UI string (source key: Apple Pay)"
+  },
+  "cash": "Накта акча",
+  "@cash": {
+    "description": "UI string (source key: Cash)"
+  },
+  "subscription": "Жазылуу",
+  "@subscription": {
+    "description": "UI string (source key: Subscription)"
+  },
+  "view_my_trip_list_map": "Менин сапарымдын тизме картасын көрүү",
+  "@view_my_trip_list_map": {
+    "description": "UI string (source key: View my trip list map)"
+  },
+  "trip_scheduling": "Сапарды пландоо",
+  "@trip_scheduling": {
+    "description": "UI string (source key: Trip scheduling)"
+  },
+  "payment_method": "Төлөм ыкмасы.",
+  "@payment_method": {
+    "description": "UI string (source key: Payment method.)"
+  },
+  "wrong_payment_method": "төлөм ыкмасы туура эмес",
+  "@wrong_payment_method": {
+    "description": "UI string (source key: wrong payment method)"
+  },
+  "payment_details_are_incorrect_Please_check_with_your_bank": "Төлөмдүн деталдары туура эмес. Банкыңыз менен текшериңиз",
+  "@payment_details_are_incorrect_Please_check_with_your_bank": {
+    "description": "UI string (source key: Payment details are incorrect. Please check with your bank)"
+  },
+  "agreed": "Макулдашылды",
+  "@agreed": {
+    "description": "UI string (source key: Agreed)"
+  },
+  "general_tips_when_visiting_this_city_today": "бул шаарга бүгүн барганда жалпы кеңештер:",
+  "@general_tips_when_visiting_this_city_today": {
+    "description": "UI string (source key: general tips when visiting this city today:)"
+  },
+  "need_extra_hours": "Кошумча саат керекпи?",
+  "@need_extra_hours": {
+    "description": "UI string (source key: Need extra hours?)"
+  },
+  "planning_for_a_longer_trip_Add_more_hours_and_enjoy_the_ride": "Узак сапарды пландап жатасызбы? Көбүрөөк саат кошуп, сапарыңыздан ырахат алыңыз!",
+  "@planning_for_a_longer_trip_Add_more_hours_and_enjoy_the_ride": {
+    "description": "UI string (source key: Planning for a longer trip? Add more hours and enjoy the ride!)"
+  },
+  "current_Hours": "Учурдагы сааттар",
+  "@current_Hours": {
+    "description": "UI string (source key: Current Hours)"
+  },
+  "additional_Hours": "Кошумча сааттар?",
+  "@additional_Hours": {
+    "description": "UI string (source key: Additional Hours?)"
+  },
+  "list_of_added_locations": "Кошулган жерлердин тизмеси.",
+  "@list_of_added_locations": {
+    "description": "UI string (source key: List of added locations.)"
+  },
+  "no_tours_have_been_added": "Эч кандай тур кошулган эмес!",
+  "@no_tours_have_been_added": {
+    "description": "UI string (source key: No tours have been added!)"
+  },
+  "the_driver_has_been_assigned_and_he_will_be_your_tour_guide_based_on_his_knowled": "Айдоочу дайындалды,\n жана ал жерлер жөнүндөгү билимине таянып, сиздин тур жетекчиңиз болот.",
+  "@the_driver_has_been_assigned_and_he_will_be_your_tour_guide_based_on_his_knowled": {
+    "description": "UI string (source key: The driver has been assigned,\n and he will be your tour guide based on his knowledge of the places.)"
+  },
+  "select_the_car_type": "Машинанын түрүн тандаңыз",
+  "@select_the_car_type": {
+    "description": "UI string (source key: Select the car type)"
+  },
+  "textField": "Текст талаасы",
+  "@textField": {
+    "description": "UI string (source key: TextField)"
+  },
+  "price_Summary": " Баанын жыйынтыгы",
+  "@price_Summary": {
+    "description": "UI string (source key:  Price Summary)"
+  },
+  "total_Booking_Hours": "Жалпы брондоо сааттары:",
+  "@total_Booking_Hours": {
+    "description": "UI string (source key: Total Booking Hours:)"
+  },
+  "driver_Fee": "Айдоочу төлөмү:",
+  "@driver_Fee": {
+    "description": "UI string (source key: Driver Fee:)"
+  },
+  "app_Fee_15": "Колдонмо төлөмү (15%):",
+  "@app_Fee_15": {
+    "description": "UI string (source key: App Fee  (15%):)"
+  },
+  "total_Deductions": "Жалпы шекерүүлөр:",
+  "@total_Deductions": {
+    "description": "UI string (source key: Total Deductions:)"
+  },
+  "total_Amount": "Жалпы сумма:",
+  "@total_Amount": {
+    "description": "UI string (source key: Total Amount:)"
+  },
+  "pay_Now": "Азыр төлөө",
+  "@pay_Now": {
+    "description": "UI string (source key: Pay Now)"
+  },
+  "book_now": "Азыр брондоо",
+  "@book_now": {
+    "description": "UI string (source key: Book now)"
+  },
+  "you_are_currently_browsing": "Сиз азыр карап жатасыз.",
+  "@you_are_currently_browsing": {
+    "description": "UI string (source key: You are currently browsing.)"
+  },
+  "go_now": "Азыр баруу.",
+  "@go_now": {
+    "description": "UI string (source key: Go now.)"
+  },
+  "booking_list": "Брондоолордун тизмеси.",
+  "@booking_list": {
+    "description": "UI string (source key: Booking list.)"
+  },
+  "my_trip_list": "Менин сапарларымдын тизмеси",
+  "@my_trip_list": {
+    "description": "UI string (source key: My trip list)"
+  },
+  "show_the_interactive_map": "Интерактивдүү картаны көрсөтүү",
+  "@show_the_interactive_map": {
+    "description": "UI string (source key: Show the interactive map)"
+  },
+  "select_your_favorite_car": "Сүйүктүү машинаңызды тандаңыз.",
+  "@select_your_favorite_car": {
+    "description": "UI string (source key: Select your favorite car.)"
+  },
+  "total_amount": "Жалпы сумма:",
+  "@total_amount": {
+    "description": "UI string (source key: Total amount:)"
+  },
+  "k4b0ced258d": "САР ",
+  "@k4b0ced258d": {
+    "description": "UI string (source key: ر.س )"
+  },
+  "you_are_currently_browsing2": "Сиз азыр карап жатасыз:",
+  "@you_are_currently_browsing2": {
+    "description": "UI string (source key: You are currently browsing:)"
+  },
+  "browse_the_map": "Картаны карап чыгуу",
+  "@browse_the_map": {
+    "description": "UI string (source key: Browse the map)"
+  },
+  "view_list": "Тизмени көрүү",
+  "@view_list": {
+    "description": "UI string (source key: View list)"
+  },
+  "add_a_place_from_the_map": "Картадан жер кошуу.",
+  "@add_a_place_from_the_map": {
+    "description": "UI string (source key: Add a place from the map.)"
+  },
+  "general_information": "жалпы маалымат",
+  "@general_information": {
+    "description": "UI string (source key: general information)"
+  },
+  "feedback": "Байланыш",
+  "@feedback": {
+    "description": "UI string (source key: Feedback)"
+  },
+  "specify_the_location_on_the_map": "Картадагы жерди көрсөтүңүз.",
+  "@specify_the_location_on_the_map": {
+    "description": "UI string (source key: Specify the location on the map.)"
+  },
+  "select_Location": "Жерди тандаңыз",
+  "@select_Location": {
+    "description": "UI string (source key: Select Location)"
+  },
+  "add_the_specific_location": "Конкреттүү жерди кошуңуз.",
+  "@add_the_specific_location": {
+    "description": "UI string (source key: Add the specific location.)"
+  },
+  "try_to_zoom_the_map_to_the_last_point_to_get_an_accurate_location": "Так жерди алуу үчүн картаны акыркы чекитке чейин чоңойтууга аракет кылыңыз",
+  "@try_to_zoom_the_map_to_the_last_point_to_get_an_accurate_location": {
+    "description": "UI string (source key: Try to zoom the map to the last point to get an accurate location)"
+  },
+  "search": "Издөө",
+  "@search": {
+    "description": "UI string (source key: Search)"
+  },
+  "show_the_list_of_added_trips": "Кошулган сапарлардын тизмесин көрсөтүү.",
+  "@show_the_list_of_added_trips": {
+    "description": "UI string (source key: Show the list of added trips.)"
+  },
+  "manage_your_team_below": "Төмөндө командаңызды башкарыңыз.",
+  "@manage_your_team_below": {
+    "description": "UI string (source key: Manage your team below.)"
+  },
+  "random_Name": "Кокус ат",
+  "@random_Name": {
+    "description": "UI string (source key: Random Name)"
+  },
+  "user_randomname_com": "user@randomname.com",
+  "@user_randomname_com": {
+    "description": "UI string (source key: user@randomname.com)"
+  },
+  "current_city_of_residence": "Учурдагы жашоо шаары",
+  "@current_city_of_residence": {
+    "description": "UI string (source key: Current city of residence)"
+  },
+  "please_select_the_city_you_are_currently_in": "Сураныч, азыр жайгашкан шаарыңызды тандаңыз",
+  "@please_select_the_city_you_are_currently_in": {
+    "description": "UI string (source key: Please select the city you are currently in)"
+  },
+  "additional_hours": "Кошумча сааттар",
+  "@additional_hours": {
+    "description": "UI string (source key: Additional hours)"
+  },
+  "total_number_of_hours": "Сааттардын жалпы саны: ",
+  "@total_number_of_hours": {
+    "description": "UI string (source key: Total number of hours: )"
+  },
+  "hours": "  Саат  ",
+  "@hours": {
+    "description": "UI string (source key:   Hours  )"
+  },
+  "total_price": "Жалпы баасы:",
+  "@total_price": {
+    "description": "UI string (source key: Total price:)"
+  },
+  "r_S": "САР",
+  "@r_S": {
+    "description": "UI string (source key: R.S)"
+  },
+  "application_fee_10": "Колдонмо төлөмү 10%:",
+  "@application_fee_10": {
+    "description": "UI string (source key: Application fee 10%:)"
+  },
+  "vAT_15": "КНС 15%: ",
+  "@vAT_15": {
+    "description": "UI string (source key: VAT 15%: )"
+  },
+  "r_S2": " САР ",
+  "@r_S2": {
+    "description": "UI string (source key:  R.S )"
+  },
+  "total": "Жалпы:  ",
+  "@total": {
+    "description": "UI string (source key: Total:  )"
+  },
+  "address_Details": "Дарек деталдары",
+  "@address_Details": {
+    "description": "UI string (source key: Address Details)"
+  },
+  "note_This_is_the_address_where_the_driver_will_be_directed": "Эскертүү: Бул айдоочу багыттала турган дарек",
+  "@note_This_is_the_address_where_the_driver_will_be_directed": {
+    "description": "UI string (source key: Note: This is the address where the driver will be directed)"
+  },
+  "address_Name_e_g_Home_Work": "Дарек аты (мисалы, Үй, Жумуш)",
+  "@address_Name_e_g_Home_Work": {
+    "description": "UI string (source key: Address Name (e.g. Home, Work))"
+  },
+  "field_is_required": "Талаа талап кылынат",
+  "@field_is_required": {
+    "description": "UI string (source key: Field is required)"
+  },
+  "my_current_location": "Учурдагы жайгашуу",
+  "@my_current_location": {
+    "description": "UI string (source key: My current location)"
+  },
+  "save_Address": "Даректи сактоо",
+  "@save_Address": {
+    "description": "UI string (source key: Save Address)"
+  },
+  "add_Your_Address": "Дарегиңизди кошуңуз",
+  "@add_Your_Address": {
+    "description": "UI string (source key: Add Your Address)"
+  },
+  "schedule_the_Trip": "Сапарды пландоо",
+  "@schedule_the_Trip": {
+    "description": "UI string (source key: Schedule the Trip)"
+  },
+  "select_the_Time": "Убакытты тандаңыз",
+  "@select_the_Time": {
+    "description": "UI string (source key: Select the Time)"
+  },
+  "hour": "Саат",
+  "@hour": {
+    "description": "UI string (source key: Hour)"
+  },
+  "search2": "Издөө...",
+  "@search2": {
+    "description": "UI string (source key: Search...)"
+  },
+  "n00": "00",
+  "@n00": {
+    "description": "UI string (source key: 00)"
+  },
+  "minute": "Мүнөт",
+  "@minute": {
+    "description": "UI string (source key: Minute)"
+  },
+  "pM": "PM",
+  "@pM": {
+    "description": "UI string (source key: PM)"
+  },
+  "aM": "AM",
+  "@aM": {
+    "description": "UI string (source key: AM)"
+  },
+  "the_trip_time_is": "Сапардын убакыты",
+  "@the_trip_time_is": {
+    "description": "UI string (source key: The trip time is)"
+  },
+  "confirm": "Ырастоо",
+  "@confirm": {
+    "description": "UI string (source key: Confirm)"
+  },
+  "add_New_Address": "+ Жаңы дарек кошуу",
+  "@add_New_Address": {
+    "description": "UI string (source key: + Add New Address)"
+  },
+  "choose_your_delivery_address": "Жеткирүү дарегиңизди тандаңыз:",
+  "@choose_your_delivery_address": {
+    "description": "UI string (source key: Choose your delivery address:)"
+  },
+  "n456_Park_Avenue": "456 Парк проспекти",
+  "@n456_Park_Avenue": {
+    "description": "UI string (source key: 456 Park Avenue)"
+  },
+  "suite_789_New_York_NY_10022": "789 бөлмө, Нью-Йорк, NY 10022",
+  "@suite_789_New_York_NY_10022": {
+    "description": "UI string (source key: Suite 789, New York, NY 10022)"
+  },
+  "n789_Broadway": "789 Бродвей",
+  "@n789_Broadway": {
+    "description": "UI string (source key: 789 Broadway)"
+  },
+  "floor_12_New_York_NY_10003": "12 кабат, Нью-Йорк, NY 10003",
+  "@floor_12_New_York_NY_10003": {
+    "description": "UI string (source key: Floor 12, New York, NY 10003)"
+  },
+  "select_the_address": "Дарек тандаңыз",
+  "@select_the_address": {
+    "description": "UI string (source key: Select the address)"
+  },
+  "note_This_is_the_address_where_the_driver_will_be_directed2": "Эскертүү: Бул айдоочу багыттала турган дарек.",
+  "@note_This_is_the_address_where_the_driver_will_be_directed2": {
+    "description": "UI string (source key: Note: This is the address where the driver will be directed.)"
+  },
+  "update_Address": "Дарек жаңыртуу",
+  "@update_Address": {
+    "description": "UI string (source key: update Address)"
+  },
+  "selecting_the_address": "Дарек тандау",
+  "@selecting_the_address": {
+    "description": "UI string (source key: Selecting the address)"
+  },
+  "n456_Oak_Avenue": "456 Оак проспекти",
+  "@n456_Oak_Avenue": {
+    "description": "UI string (source key: 456 Oak Avenue)"
+  },
+  "los_Angeles_CA_90012": "Лос-Анджелес, CA 90012",
+  "@los_Angeles_CA_90012": {
+    "description": "UI string (source key: Los Angeles, CA 90012)"
+  },
+  "n789_Pine_Street": "789 Кайың көчөсү",
+  "@n789_Pine_Street": {
+    "description": "UI string (source key: 789 Pine Street)"
+  },
+  "chicago_IL_60601": "Чикаго, IL 60601",
+  "@chicago_IL_60601": {
+    "description": "UI string (source key: Chicago, IL 60601)"
+  },
+  "don_t_have_an_account": "Каттоо эсебиңиз жокбу?  ",
+  "@don_t_have_an_account": {
+    "description": "UI string (source key: Don't have an account?  )"
+  },
+  "sign_Up_here": "Бул жерде катталыңыз",
+  "@sign_Up_here": {
+    "description": "UI string (source key: Sign Up here)"
+  },
+  "option_1": "Вариант 1",
+  "@option_1": {
+    "description": "UI string (source key: Option 1)"
+  },
+  "page_Title": "Барактын аталышы",
+  "@page_Title": {
+    "description": "UI string (source key: Page Title)"
+  },
+  "your_request_has_been_successfully_submitted": "Суранычыңыз ийгиликтүү тапшырылды.",
+  "@your_request_has_been_successfully_submitted": {
+    "description": "UI string (source key: Your request has been successfully submitted.)"
+  },
+  "you_can_track_the_status_of_your_order_through_the_My_Orders_page": "Суранычыңыздын абалын \"Менин суранычтарым\" баракчасы аркылуу көзөмөлдөй аласыз.",
+  "@you_can_track_the_status_of_your_order_through_the_My_Orders_page": {
+    "description": "UI string (source key: You can track the status of your order through the \"My Orders\" page.)"
+  },
+  "view_Orders": "Суранычтарды көрүү",
+  "@view_Orders": {
+    "description": "UI string (source key: View Orders)"
+  },
+  "pending": "Күтүүдө",
+  "@pending": {
+    "description": "UI string (source key: Pending)"
+  },
+  "completed": "Аякталды",
+  "@completed": {
+    "description": "UI string (source key: Completed)"
+  },
+  "expired": "Мөөнөтү бүттү",
+  "@expired": {
+    "description": "UI string (source key: Expired)"
+  },
+  "your_Bookings": "Сиздин брондоолор",
+  "@your_Bookings": {
+    "description": "UI string (source key: Your Bookings)"
+  },
+  "order_2847": "Сураныч №2847",
+  "@order_2847": {
+    "description": "UI string (source key: Order #2847)"
+  },
+  "paris_France": "Париж, Франция",
+  "@paris_France": {
+    "description": "UI string (source key: Paris, France)"
+  },
+  "sept_15_2024": "15-сентябрь, 2024",
+  "@sept_15_2024": {
+    "description": "UI string (source key: Sept 15, 2024)"
+  },
+  "order_2831": "Сураныч №2831",
+  "@order_2831": {
+    "description": "UI string (source key: Order #2831)"
+  },
+  "rome_Italy": "Рим, Италия",
+  "@rome_Italy": {
+    "description": "UI string (source key: Rome, Italy)"
+  },
+  "sept_12_2024": "12-сентябрь, 2024",
+  "@sept_12_2024": {
+    "description": "UI string (source key: Sept 12, 2024)"
+  },
+  "order_2819": "Сураныч №2819",
+  "@order_2819": {
+    "description": "UI string (source key: Order #2819)"
+  },
+  "london_UK": "Лондон, УК",
+  "@london_UK": {
+    "description": "UI string (source key: London, UK)"
+  },
+  "sept_8_2024": "8-сентябрь, 2024",
+  "@sept_8_2024": {
+    "description": "UI string (source key: Sept 8, 2024)"
+  },
+  "new_York_City": "Нью-Йорк шаары",
+  "@new_York_City": {
+    "description": "UI string (source key: New York City)"
+  },
+  "in_Progress": "Жүрүүдө",
+  "@in_Progress": {
+    "description": "UI string (source key: In Progress)"
+  },
+  "check_in": "Келип кирүү",
+  "@check_in": {
+    "description": "UI string (source key: Check-in)"
+  },
+  "sep_12_2024": "12-сентябрь, 2024",
+  "@sep_12_2024": {
+    "description": "UI string (source key: Sep 12, 2024)"
+  },
+  "check_out": "Кетип чыгуу",
+  "@check_out": {
+    "description": "UI string (source key: Check-out)"
+  },
+  "sep_15_2024": "15-сентябрь, 2024",
+  "@sep_15_2024": {
+    "description": "UI string (source key: Sep 15, 2024)"
+  },
+  "n840_00": "$840.00",
+  "@n840_00": {
+    "description": "UI string (source key: $840.00)"
+  },
+  "search_by_name_or_booking_ID": "Ат же брондоо ID боюнча издөө...",
+  "@search_by_name_or_booking_ID": {
+    "description": "UI string (source key: Search by name or booking ID...)"
+  },
+  "date_Range": "Дата аралыгы",
+  "@date_Range": {
+    "description": "UI string (source key: Date Range)"
+  },
+  "city": "Шаар",
+  "@city": {
+    "description": "UI string (source key: City)"
+  },
+  "sort_by": "Иреттөө",
+  "@sort_by": {
+    "description": "UI string (source key: Sort by)"
+  },
+  "apply_Filters": "Фильтрлерди колдонуу",
+  "@apply_Filters": {
+    "description": "UI string (source key: Apply Filters)"
+  },
+  "booking_Status": "Брондоо статусу",
+  "@booking_Status": {
+    "description": "UI string (source key: Booking Status)"
+  },
+  "you_don_t_have_any_bookings_in_this_category_yet_Start_exploring_and_book_your_n": "Бул категорияда сизде эч кандай брондоо жок. Издөөнү баштап, кийинки тажрыйбаңызды брондоңуз!",
+  "@you_don_t_have_any_bookings_in_this_category_yet_Start_exploring_and_book_your_n": {
+    "description": "UI string (source key: You don't have any bookings in this category yet. Start exploring and book your next experience!)"
+  },
+  "browse_Services": "Кызматтарды карап чыгуу",
+  "@browse_Services": {
+    "description": "UI string (source key: Browse Services)"
+  },
+  "support_Tickets": "Колдоо билеттери",
+  "@support_Tickets": {
+    "description": "UI string (source key: Support Tickets)"
+  },
+  "create_New_Support_Ticket": "Жаңы колдоо билетин түзүү",
+  "@create_New_Support_Ticket": {
+    "description": "UI string (source key: Create New Support Ticket)"
+  },
+  "contact_us_directly": "Бизге түздөн-түз байланыш",
+  "@contact_us_directly": {
+    "description": "UI string (source key: Contact us directly)"
+  },
+  "would_you_like_to_contact_our_support_team_directly_via_WhatsApp_for_faster_assi": "Тез жардам алуу үчүн колдоо командабызга WhatsApp аркылуу түздөн-түз байланыш кургуңуз келеби?",
+  "@would_you_like_to_contact_our_support_team_directly_via_WhatsApp_for_faster_assi": {
+    "description": "UI string (source key: Would you like to contact our support team directly via WhatsApp for faster assistance?)"
+  },
+  "whatsApp": "WhatsApp",
+  "@whatsApp": {
+    "description": "UI string (source key: WhatsApp)"
+  },
+  "new_Support_Ticket": "Жаңы колдоо билети",
+  "@new_Support_Ticket": {
+    "description": "UI string (source key: New Support Ticket)"
+  },
+  "brief_description_of_your_issue": "Маселеңиздин кыскача сүрөттөлүшү",
+  "@brief_description_of_your_issue": {
+    "description": "UI string (source key: Brief description of your issue)"
+  },
+  "category": "Категория",
+  "@category": {
+    "description": "UI string (source key: Category)"
+  },
+  "select_a_category": "Категория тандаңыз",
+  "@select_a_category": {
+    "description": "UI string (source key: Select a category)"
+  },
+  "search_categories": "Категорияларды издөө...",
+  "@search_categories": {
+    "description": "UI string (source key: Search categories...)"
+  },
+  "inquiry": "Суроо",
+  "@inquiry": {
+    "description": "UI string (source key: Inquiry)"
+  },
+  "suggestion": "Сунуш",
+  "@suggestion": {
+    "description": "UI string (source key: Suggestion)"
+  },
+  "complaint": "Арыз",
+  "@complaint": {
+    "description": "UI string (source key: Complaint)"
+  },
+  "booking_Issue": "Брондоо маселеси",
+  "@booking_Issue": {
+    "description": "UI string (source key: Booking Issue)"
+  },
+  "other": "Башка",
+  "@other": {
+    "description": "UI string (source key: Other)"
+  },
+  "message": "Билдирүү",
+  "@message": {
+    "description": "UI string (source key: Message)"
+  },
+  "please_provide_detailed_information_about_your_issue": "Маселеңиз жөнүндө толук маалымат бериңиз...",
+  "@please_provide_detailed_information_about_your_issue": {
+    "description": "UI string (source key: Please provide detailed information about your issue...)"
+  },
+  "support_ticket_information": "Колдоо билети маалыматы",
+  "@support_ticket_information": {
+    "description": "UI string (source key: Support ticket information)"
+  },
+  "our_support_team_typically_responds_within_24_48_hours_For_urgent_matters_please": "Биздин колдоо командабыз адатта 24-48 саат ичинде жооп берет. Шашылыш маселелер үчүн, бизге түздөн-түз телефон аркылуу байланыш.",
+  "@our_support_team_typically_responds_within_24_48_hours_For_urgent_matters_please": {
+    "description": "UI string (source key: Our support team typically responds within 24-48 hours. For urgent matters, please contact us directly by phone.)"
+  },
+  "create_New_Ticket": "Жаңы билет түзүү",
+  "@create_New_Ticket": {
+    "description": "UI string (source key: Create New Ticket)"
+  },
+  "back": "Артка",
+  "@back": {
+    "description": "UI string (source key: Back)"
+  },
+  "forgot_Password2": "Сырсөзүмдү унуттум",
+  "@forgot_Password2": {
+    "description": "UI string (source key: Forgot Password)"
+  },
+  "we_will_send_you_an_email_with_a_link_to_reset_your_password_please_enter_the_em": "Биз сизге сырсөзүңүздү баштапкы абалга келтирүү үчүн шилтеме менен электрондук кат жөнөтөбүз, төмөндө каттоо эсебиңизге байланыштуу электрондук почтаңызды киргизиңиз.",
+  "@we_will_send_you_an_email_with_a_link_to_reset_your_password_please_enter_the_em": {
+    "description": "UI string (source key: We will send you an email with a link to reset your password, please enter the email associated with your account below.)"
+  },
+  "your_email_address": "Электрондук почта дарегиңиз...",
+  "@your_email_address": {
+    "description": "UI string (source key: Your email address...)"
+  },
+  "send_Link": "Шилтеме жөнөтүү",
+  "@send_Link": {
+    "description": "UI string (source key: Send Link)"
+  },
+  "bMW_5_Series": "BMW 5 Сериясы",
+  "@bMW_5_Series": {
+    "description": "UI string (source key: BMW 5 Series)"
+  },
+  "min_4_hours": "Мин: 4 саат",
+  "@min_4_hours": {
+    "description": "UI string (source key: Min: 4 hours)"
+  },
+  "n35_hour": "$35/саат",
+  "@n35_hour": {
+    "description": "UI string (source key: $35/hour)"
+  },
+  "honda_CR_V": "Honda CR-V",
+  "@honda_CR_V": {
+    "description": "UI string (source key: Honda CR-V)"
+  },
+  "min_2_hours": "Мин: 2 саат",
+  "@min_2_hours": {
+    "description": "UI string (source key: Min: 2 hours)"
+  },
+  "n25_hour": "$25/саат",
+  "@n25_hour": {
+    "description": "UI string (source key: $25/hour)"
+  },
+  "tesla_Model_3": "Tesla Model 3",
+  "@tesla_Model_3": {
+    "description": "UI string (source key: Tesla Model 3)"
+  },
+  "min_5_hours": "Мин: 5 саат",
+  "@min_5_hours": {
+    "description": "UI string (source key: Min: 5 hours)"
+  },
+  "n40_hour": "$40/саат",
+  "@n40_hour": {
+    "description": "UI string (source key: $40/hour)"
+  },
+  "ford_Mustang": "Ford Mustang",
+  "@ford_Mustang": {
+    "description": "UI string (source key: Ford Mustang)"
+  },
+  "min_6_hours": "Мин: 6 саат",
+  "@min_6_hours": {
+    "description": "UI string (source key: Min: 6 hours)"
+  },
+  "n45_hour": "$45/саат",
+  "@n45_hour": {
+    "description": "UI string (source key: $45/hour)"
+  },
+  "list_of_cars": "Машиналардын тизмеси",
+  "@list_of_cars": {
+    "description": "UI string (source key: List of cars)"
+  },
+  "button": "Баскыч",
+  "@button": {
+    "description": "UI string (source key: Button)"
+  },
+  "edit_the_address": "Дарек түзөтүү.",
+  "@edit_the_address": {
+    "description": "UI string (source key: Edit the address.)"
+  },
+  "update": "Жаңыртуу",
+  "@update": {
+    "description": "UI string (source key: Update)"
+  },
+  "maryam_Kutob": "Марям Кутоб",
+  "@maryam_Kutob": {
+    "description": "UI string (source key: Maryam Kutob)"
+  },
+  "kutob_m1413_gmail_com": "kutob.m1413@gmail.com",
+  "@kutob_m1413_gmail_com": {
+    "description": "UI string (source key: kutob.m1413@gmail.com)"
+  },
+  "hGSHUM": "HGSHUM",
+  "@hGSHUM": {
+    "description": "UI string (source key: HGSHUM)"
+  },
+  "gregory_Smith": "Грегори Смит",
+  "@gregory_Smith": {
+    "description": "UI string (source key: Gregory Smith)"
+  },
+  "n652_UKW": "652 - UKW",
+  "@n652_UKW": {
+    "description": "UI string (source key: 652 - UKW)"
+  },
+  "how_is_your_trip": "Сапарыңыз кандай?",
+  "@how_is_your_trip": {
+    "description": "UI string (source key: How is your trip?)"
+  },
+  "your_feedback_will_help_improve_driving_experience": "Сиздин пикириңиз айдоо тажрыйбасын жакшыртууга жардам берет",
+  "@your_feedback_will_help_improve_driving_experience": {
+    "description": "UI string (source key: Your feedback will help improve driving experience)"
+  },
+  "additional_comments": "Кошумча комментарийлер...",
+  "@additional_comments": {
+    "description": "UI string (source key: Additional comments...)"
+  },
+  "submit_Review": "Пикир жөнөтүү",
+  "@submit_Review": {
+    "description": "UI string (source key: Submit Review)"
+  },
+  "rating": "Рейтинг",
+  "@rating": {
+    "description": "UI string (source key: Rating)"
+  },
+  "wow_A_5_star_Wanna_add_tip_for_Gregory": "Wow! 5 жылдыз!\nГрегори үчүн чай акча кошкуңуз келеби?",
+  "@wow_A_5_star_Wanna_add_tip_for_Gregory": {
+    "description": "UI string (source key: Wow! A 5 star !\nWanna add tip for Gregory?)"
+  },
+  "choose_other_amount": "Башка сумма тандаңыз",
+  "@choose_other_amount": {
+    "description": "UI string (source key: Choose other amount)"
+  },
+  "done": "Аяктады",
+  "@done": {
+    "description": "UI string (source key: Done)"
+  },
+  "maybe_next_time": "Балким кийинки жолу",
+  "@maybe_next_time": {
+    "description": "UI string (source key: Maybe next time)"
+  },
+  "tips": "Чай акчалар",
+  "@tips": {
+    "description": "UI string (source key: Tips)"
+  },
+  "choose_the_type_of_entity_you_represent": "Өкүлчүлүк кылган субъекттин түрүн тандаңыз",
+  "@choose_the_type_of_entity_you_represent": {
+    "description": "UI string (source key: Choose the type of entity you represent)"
+  },
+  "government_Entity": "Мамлекеттик субъект",
+  "@government_Entity": {
+    "description": "UI string (source key: Government Entity)"
+  },
+  "company_or_Organization": "Компания же Уюм",
+  "@company_or_Organization": {
+    "description": "UI string (source key: Company or Organization)"
+  },
+  "individual": "Жеке жак",
+  "@individual": {
+    "description": "UI string (source key: Individual)"
+  },
+  "next": "Кийинки",
+  "@next": {
+    "description": "UI string (source key: Next)"
+  },
+  "register_a_Success_Partner_Step_1_of_3": "Ийгилик Партнер Каттоосу - 3 кадамдын 1-кадамы",
+  "@register_a_Success_Partner_Step_1_of_3": {
+    "description": "UI string (source key: Register a Success Partner - Step 1 of 3 )"
+  },
+  "company_Information": "Компания маалыматы",
+  "@company_Information": {
+    "description": "UI string (source key: Company Information)"
+  },
+  "enter_company_name": "Компания атын киргизиңиз *",
+  "@enter_company_name": {
+    "description": "UI string (source key: Enter company name *)"
+  },
+  "enter_phone_number": "Телефон номерин киргизиңиз *",
+  "@enter_phone_number": {
+    "description": "UI string (source key: Enter phone number *)"
+  },
+  "set_Location": "Жерди белгилөө *",
+  "@set_Location": {
+    "description": "UI string (source key: Set Location *)"
+  },
+  "enter_business_description": "Бизнес сүрөттөмөсүн киргизиңиз *",
+  "@enter_business_description": {
+    "description": "UI string (source key: Enter business description *)"
+  },
+  "documents": "Документтер",
+  "@documents": {
+    "description": "UI string (source key: Documents)"
+  },
+  "upload_Place_Image": "Жердин сүрөтүн жүктөө *",
+  "@upload_Place_Image": {
+    "description": "UI string (source key: Upload Place Image *)"
+  },
+  "tap_to_select_image": "Сүрөт тандаш үчүн басыңыз",
+  "@tap_to_select_image": {
+    "description": "UI string (source key: Tap to select image)"
+  },
+  "attach_License_Document": "Лицензия документин тиркеңиз *",
+  "@attach_License_Document": {
+    "description": "UI string (source key: Attach License Document *)"
+  },
+  "the_file_has_been_successfully_uploaded": "Файл ийгиликтүү жүктөлдү.",
+  "@the_file_has_been_successfully_uploaded": {
+    "description": "UI string (source key: The file has been successfully uploaded.)"
+  },
+  "attach_Registration_Letter": "Каттоо катын тиркеңиз *",
+  "@attach_Registration_Letter": {
+    "description": "UI string (source key: Attach Registration Letter *)"
+  },
+  "service_Details": "Кызмат деталдары",
+  "@service_Details": {
+    "description": "UI string (source key: Service Details)"
+  },
+  "describe_your_provided_services": "Сунуштаган кызматтарыңызды сүрөттөңүз *",
+  "@describe_your_provided_services": {
+    "description": "UI string (source key: Describe your provided services *)"
+  },
+  "cancel_Order": "Суранычты жокко чыгаруу",
+  "@cancel_Order": {
+    "description": "UI string (source key: Cancel Order)"
+  },
+  "company_Information_Step_3_of_3": "Компания маалыматы - 3 кадамдын 3-кадамы",
+  "@company_Information_Step_3_of_3": {
+    "description": "UI string (source key: Company Information -  Step 3 of 3)"
+  },
+  "step_2_of_3": "3 кадамдын 2-кадамы",
+  "@step_2_of_3": {
+    "description": "UI string (source key: Step 2 of 3)"
+  },
+  "create_an_account": "Каттоо эсебин түзүү",
+  "@create_an_account": {
+    "description": "UI string (source key: Create an account)"
+  },
+  "let_s_get_started_by_filling_out_the_form_below": "Төмөнкү форманы толтуруу менен баштайлы.",
+  "@let_s_get_started_by_filling_out_the_form_below": {
+    "description": "UI string (source key: Let's get started by filling out the form below.)"
+  },
+  "next2": "Кийинки ",
+  "@next2": {
+    "description": "UI string (source key: Next )"
+  },
+  "initiate": "Демилгелөө ",
+  "@initiate": {
+    "description": "UI string (source key: Initiate )"
+  },
+  "what_kind_of_tour_would_you_like_to_explore_today": "Бүгүн кандай турду изилдегиңиз келет?",
+  "@what_kind_of_tour_would_you_like_to_explore_today": {
+    "description": "UI string (source key: What kind of tour would you like to explore today?)"
+  },
+  "select_My_Own_Tour_Route": "Өз тур маршрутумду тандаңыз",
+  "@select_My_Own_Tour_Route": {
+    "description": "UI string (source key: Select My Own Tour Route)"
+  },
+  "get_Help_from_the_Driver_Guide": "Айдоочу жетекчиден жардам алуу",
+  "@get_Help_from_the_Driver_Guide": {
+    "description": "UI string (source key: Get Help from the Driver Guide)"
+  },
+  "current_Address": "Учурдагы дарек",
+  "@current_Address": {
+    "description": "UI string (source key: Current Address)"
+  },
+  "current_Country": "Учурдагы өлкө",
+  "@current_Country": {
+    "description": "UI string (source key: Current Country)"
+  },
+  "current_City": "Учурдагы шаар",
+  "@current_City": {
+    "description": "UI string (source key: Current City)"
+  },
+  "initiate2": "Демилгелөө",
+  "@initiate2": {
+    "description": "UI string (source key: Initiate)"
+  },
+  "trip_Assistance_Selected": "Сапарга жардам тандалды",
+  "@trip_Assistance_Selected": {
+    "description": "UI string (source key: Trip Assistance Selected)"
+  },
+  "personalized_Route": "Жекечеленген маршрут",
+  "@personalized_Route": {
+    "description": "UI string (source key: Personalized Route)"
+  },
+  "top_local_attractions_curated_just_for_you": "Сиз үчүн гана тандалган жергиликтүү көрүнүктүү жерлер",
+  "@top_local_attractions_curated_just_for_you": {
+    "description": "UI string (source key: Top local attractions curated just for you)"
+  },
+  "historical_Sites": "Тарыхый жерлер",
+  "@historical_Sites": {
+    "description": "UI string (source key: Historical Sites)"
+  },
+  "local_Markets": "Жергиликтүү рыноктор",
+  "@local_Markets": {
+    "description": "UI string (source key: Local Markets)"
+  },
+  "scenic_Views": "Көрүнүктүү көрүнүштөр",
+  "@scenic_Views": {
+    "description": "UI string (source key: Scenic Views)"
+  },
+  "cultural_Centers": "Маданий борборлор",
+  "@cultural_Centers": {
+    "description": "UI string (source key: Cultural Centers)"
+  },
+  "contact_Your_Guide": "Жетекчиңиз менен байланыш",
+  "@contact_Your_Guide": {
+    "description": "UI string (source key: Contact Your Guide)"
+  },
+  "view_Trip_Details": "Сапар деталдарын көрүү",
+  "@view_Trip_Details": {
+    "description": "UI string (source key: View Trip Details)"
+  },
+  "suggest_a_New_Place": "Жаңы жер сунуштоо!",
+  "@suggest_a_New_Place": {
+    "description": "UI string (source key: Suggest a New Place!)"
+  },
+  "help_Us_Enrich_the_Experience": "Тажрыйбаны байытууга жардам бериңиз",
+  "@help_Us_Enrich_the_Experience": {
+    "description": "UI string (source key: Help Us Enrich the Experience)"
+  },
+  "do_you_know_a_hidden_gem_or_a_must_visit_spot_that_s_not_listed_in_our_app_We_d_": "Биздин колдонмодо тизмеленбеген жашыруун же каалаган жерди билесизби? Биз сизден уккубуз келет!",
+  "@do_you_know_a_hidden_gem_or_a_must_visit_spot_that_s_not_listed_in_our_app_We_d_": {
+    "description": "UI string (source key: Do you know a hidden gem or a must-visit spot that's not listed in our app? We'd love to hear from you!)"
+  },
+  "your_suggestions_help_others_discover_more_amazing_places": "Сиздин сунуштарыңыз башкаларга керемет жерлерди табууга жардам берет!",
+  "@your_suggestions_help_others_discover_more_amazing_places": {
+    "description": "UI string (source key: Your suggestions help others discover more amazing places!)"
+  },
+  "share_your_favorite_place_with_the_community": "Сүйүктүү жериңизди коомчулук менен бөлүшүңүз:",
+  "@share_your_favorite_place_with_the_community": {
+    "description": "UI string (source key: Share your favorite place with the community:)"
+  },
+  "place_Name": "Жердин аты",
+  "@place_Name": {
+    "description": "UI string (source key: Place Name)"
+  },
+  "enter_the_name_of_the_place": "Жердин атын киргизиңиз",
+  "@enter_the_name_of_the_place": {
+    "description": "UI string (source key: Enter the name of the place)"
+  },
+  "tell_us_what_makes_it_special": "Аны өзгөчө кылган нерсени айтыңыз",
+  "@tell_us_what_makes_it_special": {
+    "description": "UI string (source key: Tell us what makes it special)"
+  },
+  "describe_what_makes_this_place_unique_and_worth_visiting": "Бул жерди уникалдуу жана көрүүгө арзырлык кылган нерсени сүрөттөңүз...",
+  "@describe_what_makes_this_place_unique_and_worth_visiting": {
+    "description": "UI string (source key: Describe what makes this place unique and worth visiting...)"
+  },
+  "upload_Photos": "Сүрөттөрдү жүктөө",
+  "@upload_Photos": {
+    "description": "UI string (source key: Upload  Photos)"
+  },
+  "tap_to_upload_photos": "Сүрөт жүктөө үчүн басыңыз",
+  "@tap_to_upload_photos": {
+    "description": "UI string (source key: Tap to upload photos)"
+  },
+  "image_uploaded_successfully": "Сүрөт ийгиликтүү жүктөлдү. ✅",
+  "@image_uploaded_successfully": {
+    "description": "UI string (source key: Image uploaded successfully. ✅)"
+  },
+  "maximum_3_photos": "Максимум 3 сүрөт",
+  "@maximum_3_photos": {
+    "description": "UI string (source key: Maximum 3 photos)"
+  },
+  "mark_the_Location_on_the_Map": "Картада жерди белгилөө",
+  "@mark_the_Location_on_the_Map": {
+    "description": "UI string (source key: Mark the Location on the Map)"
+  },
+  "tap_to_select_location_on_map": "Картада жер тандаш үчүн басыңыз",
+  "@tap_to_select_location_on_map": {
+    "description": "UI string (source key: Tap to select location on map)"
+  },
+  "location_has_been_set": "Жер белгиленди✅",
+  "@location_has_been_set": {
+    "description": "UI string (source key: Location has been set✅)"
+  },
+  "submit": " Жөнөтүү",
+  "@submit": {
+    "description": "UI string (source key:  Submit)"
+  },
+  "ahmed_Al_Qahtani": "Ахмед аль-Каһтани",
+  "@ahmed_Al_Qahtani": {
+    "description": "UI string (source key: Ahmed Al-Qahtani)"
+  },
+  "delivery_Agent": "Жеткирүү агенти",
+  "@delivery_Agent": {
+    "description": "UI string (source key: Delivery Agent)"
+  },
+  "n966_50_123_4567": "+966 50 123 4567",
+  "@n966_50_123_4567": {
+    "description": "UI string (source key: +966 50 123 4567)"
+  },
+  "chat_Messages": "Чат билдирүүлөрү",
+  "@chat_Messages": {
+    "description": "UI string (source key: Chat Messages)"
+  },
+  "vehicle_Plate": "Машинанын номери",
+  "@vehicle_Plate": {
+    "description": "UI string (source key: Vehicle Plate)"
+  },
+  "kSA_1234_ABC": "САА | 1234 ABC",
+  "@kSA_1234_ABC": {
+    "description": "UI string (source key: KSA | 1234 ABC)"
+  },
+  "vERIFIED": "ТЕКШЕРИЛДИ",
+  "@vERIFIED": {
+    "description": "UI string (source key: VERIFIED)"
+  },
+  "live_Location_Tracking": "Тирүү жерди көзөмөлдөө",
+  "@live_Location_Tracking": {
+    "description": "UI string (source key: Live Location Tracking)"
+  },
+  "real_time_tracking_active": "Реалдуу убакытта көзөмөлдөө активдүү",
+  "@real_time_tracking_active": {
+    "description": "UI string (source key: Real-time tracking active)"
+  },
+  "track_Location": "Жерди көзөмөлдөө",
+  "@track_Location": {
+    "description": "UI string (source key: Track Location)"
+  },
+  "call_Now": "Азыр чалуу",
+  "@call_Now": {
+    "description": "UI string (source key: Call Now)"
+  },
+  "type_your_message": "Билдирүүңүздү териңиз...",
+  "@type_your_message": {
+    "description": "UI string (source key: Type your message...)"
+  },
+  "pay_the_reservation_fee": "Брондоо төлөмүн төлөө",
+  "@pay_the_reservation_fee": {
+    "description": "UI string (source key: Pay the reservation fee)"
+  },
+  "where_would_you_like_to_start_your_ride": "Сапарыңызды кайдан баштоону каалайсыз?",
+  "@where_would_you_like_to_start_your_ride": {
+    "description": "UI string (source key: Where would you like to start your ride?)"
+  },
+  "united_States": "Америка Кошмо Штаттары",
+  "@united_States": {
+    "description": "UI string (source key: United States)"
+  },
+  "san_Francisco": "Сан-Франциско",
+  "@san_Francisco": {
+    "description": "UI string (source key: San Francisco)"
+  },
+  "n1234_Market_Street_Downtown": "1234 Market Street, Downtown",
+  "@n1234_Market_Street_Downtown": {
+    "description": "UI string (source key: 1234 Market Street, Downtown)"
+  },
+  "map_showing_your_current_location": "Учурдагы жерди көрсөтүүчү карта",
+  "@map_showing_your_current_location": {
+    "description": "UI string (source key: Map showing your current location)"
+  },
+  "design_My_Route": "Менин маршрутумду долбоорлоо",
+  "@design_My_Route": {
+    "description": "UI string (source key: Design My Route)"
+  },
+  "add_landmarks_to_customize_your_journey": "Сапарыңызды жекечелөө үчүн белгилүү жерлерди кошуңуз",
+  "@add_landmarks_to_customize_your_journey": {
+    "description": "UI string (source key: Add landmarks to customize your journey)"
+  },
+  "let_the_Driver_Decide": "Айдоочу чечим чыгарсын",
+  "@let_the_Driver_Decide": {
+    "description": "UI string (source key: Let the Driver Decide)"
+  },
+  "rely_on_the_driver_s_local_expertise": "Айдоочунун жергиликтүү тажрыйбасына таяныңыз",
+  "@rely_on_the_driver_s_local_expertise": {
+    "description": "UI string (source key: Rely on the driver's local expertise)"
+  },
+  "choose_Your_Location": "Жериңизди тандаңыз",
+  "@choose_Your_Location": {
+    "description": "UI string (source key: Choose Your Location)"
+  },
+  "cardholder_Name": "Карта ээсинин аты",
+  "@cardholder_Name": {
+    "description": "UI string (source key: Cardholder Name)"
+  },
+  "enter_cardholder_name": "Карта ээсинин атын киргизиңиз",
+  "@enter_cardholder_name": {
+    "description": "UI string (source key: Enter cardholder name)"
+  },
+  "card_Number": "Картанын номери",
+  "@card_Number": {
+    "description": "UI string (source key: Card Number)"
+  },
+  "expiry_Month": "Жарамдуулук айы",
+  "@expiry_Month": {
+    "description": "UI string (source key: Expiry Month)"
+  },
+  "mM": "АА",
+  "@mM": {
+    "description": "UI string (source key: MM)"
+  },
+  "expiry_Year": "Жарамдуулук жылы",
+  "@expiry_Year": {
+    "description": "UI string (source key: Expiry Year)"
+  },
+  "yY": "ЖЖ",
+  "@yY": {
+    "description": "UI string (source key: YY)"
+  },
+  "save_this_card_for_future_payments": "Келечектеги төлөмдөр үчүн бул картаны сактоо",
+  "@save_this_card_for_future_payments": {
+    "description": "UI string (source key: Save this card for future payments)"
+  },
+  "save_Card": "Картаны сактоо",
+  "@save_Card": {
+    "description": "UI string (source key: Save Card)"
+  },
+  "close_Page": "Баракты жабуу",
+  "@close_Page": {
+    "description": "UI string (source key: Close Page)"
+  },
+  "please_do_not_close_the_page_until_the_payment_is_completed": "Төлөм аяктаганга чейин баракты жаппаңыз",
+  "@please_do_not_close_the_page_until_the_payment_is_completed": {
+    "description": "UI string (source key: Please do not close the page until the payment is completed)"
+  },
+  "payment_Confirmed": "Төлөм ырасталды!",
+  "@payment_Confirmed": {
+    "description": "UI string (source key: Payment Confirmed!)"
+  },
+  "your_request_has_been_sent_successfully_and_a_driver_will_accept_your_request_wi": "\"Суранычыңыз ийгиликтүү жөнөтүлдү, жана айдоочу кийинки бир нече мүнөт ичинде суранычыңызды кабыл алат",
+  "@your_request_has_been_sent_successfully_and_a_driver_will_accept_your_request_wi": {
+    "description": "UI string (source key: \"Your request has been sent successfully, and a driver will accept your request within the next few minutes)"
+  },
+  "go_to_Order": "Суранычка өтүү",
+  "@go_to_Order": {
+    "description": "UI string (source key: Go to Order)"
+  },
+  "the_last_payment_was_not_completed_please_try_again": "Акыркы төлөм аяктаган эмес, кайра аракет кылыңыз",
+  "@the_last_payment_was_not_completed_please_try_again": {
+    "description": "UI string (source key: The last payment was not completed, please try again)"
+  },
+  "payment_History": "Төлөмдөрдүн тарыхы",
+  "@payment_History": {
+    "description": "UI string (source key: Payment History)"
+  },
+  "tXN_ID": "Транзакция ID:",
+  "@tXN_ID": {
+    "description": "UI string (source key: TXN ID:)"
+  },
+  "k3603b6854b": "Операция ID",
+  "@k3603b6854b": {
+    "description": "UI string (source key: معرف العملية)"
+  },
+  "online_Payment_ID": "Онлайн төлөм ID:",
+  "@online_Payment_ID": {
+    "description": "UI string (source key: Online Payment ID:)"
+  },
+  "online_Payment_ID2": "Онлайн төлөм ID",
+  "@online_Payment_ID2": {
+    "description": "UI string (source key: Online Payment ID)"
+  },
+  "salary_Deposit": "Эмгек акы депозити",
+  "@salary_Deposit": {
+    "description": "UI string (source key: Salary Deposit)"
+  },
+  "tXN_ID_TXN654321987": "Транзакция ID: TXN654321987",
+  "@tXN_ID_TXN654321987": {
+    "description": "UI string (source key: TXN ID: TXN654321987)"
+  },
+  "dec_14_2024_9_15_AM": "14-декабрь, 2024 • 9:15 таңкы",
+  "@dec_14_2024_9_15_AM": {
+    "description": "UI string (source key: Dec 14, 2024 • 9:15 AM)"
+  },
+  "n3_250_00": "+$3,250.00",
+  "@n3_250_00": {
+    "description": "UI string (source key: +$3,250.00)"
+  },
+  "electronic_Payment_ID": "Электрондук төлөм ID",
+  "@electronic_Payment_ID": {
+    "description": "UI string (source key: Electronic Payment ID)"
+  },
+  "ePY_2024_654321": "EPY-2024-654321",
+  "@ePY_2024_654321": {
+    "description": "UI string (source key: EPY-2024-654321)"
+  },
+  "utility_Bill_Payment": "Коммуналдык төлөм",
+  "@utility_Bill_Payment": {
+    "description": "UI string (source key: Utility Bill Payment)"
+  },
+  "tXN_ID_TXN456789012": "Транзакция ID: TXN456789012",
+  "@tXN_ID_TXN456789012": {
+    "description": "UI string (source key: TXN ID: TXN456789012)"
+  },
+  "dec_13_2024_4_22_PM": "13-декабрь, 2024 • 16:22 кечки",
+  "@dec_13_2024_4_22_PM": {
+    "description": "UI string (source key: Dec 13, 2024 • 4:22 PM)"
+  },
+  "n156_78": "-$156.78",
+  "@n156_78": {
+    "description": "UI string (source key: -$156.78)"
+  },
+  "ePY_2024_456789": "EPY-2024-456789",
+  "@ePY_2024_456789": {
+    "description": "UI string (source key: EPY-2024-456789)"
+  },
+  "restaurant_Payment": "Ресторан төлөмү",
+  "@restaurant_Payment": {
+    "description": "UI string (source key: Restaurant Payment)"
+  },
+  "tXN_ID_TXN321654987": "Транзакция ID: TXN321654987",
+  "@tXN_ID_TXN321654987": {
+    "description": "UI string (source key: TXN ID: TXN321654987)"
+  },
+  "dec_12_2024_7_45_PM": "12-декабрь, 2024 • 19:45 кечки",
+  "@dec_12_2024_7_45_PM": {
+    "description": "UI string (source key: Dec 12, 2024 • 7:45 PM)"
+  },
+  "n42_50": "-$42.50",
+  "@n42_50": {
+    "description": "UI string (source key: -$42.50)"
+  },
+  "ePY_2024_321654": "EPY-2024-321654",
+  "@ePY_2024_321654": {
+    "description": "UI string (source key: EPY-2024-321654)"
+  },
+  "investment_Transfer": "Инвестиция которуу",
+  "@investment_Transfer": {
+    "description": "UI string (source key: Investment Transfer)"
+  },
+  "tXN_ID_TXN987123456": "Транзакция ID: TXN987123456",
+  "@tXN_ID_TXN987123456": {
+    "description": "UI string (source key: TXN ID: TXN987123456)"
+  },
+  "dec_11_2024_11_30_AM": "11-декабрь, 2024 • 11:30 таңкы",
+  "@dec_11_2024_11_30_AM": {
+    "description": "UI string (source key: Dec 11, 2024 • 11:30 AM)"
+  },
+  "n500_00": "-$500.00",
+  "@n500_00": {
+    "description": "UI string (source key: -$500.00)"
+  },
+  "ePY_2024_987123": "EPY-2024-987123",
+  "@ePY_2024_987123": {
+    "description": "UI string (source key: EPY-2024-987123)"
+  },
+  "refund_Online_Store": "Кайтарым - Онлайн дүкөн",
+  "@refund_Online_Store": {
+    "description": "UI string (source key: Refund - Online Store)"
+  },
+  "tXN_ID_TXN147258369": "Транзакция ID: TXN147258369",
+  "@tXN_ID_TXN147258369": {
+    "description": "UI string (source key: TXN ID: TXN147258369)"
+  },
+  "dec_10_2024_3_18_PM": "10-декабрь, 2024 • 15:18 кечки",
+  "@dec_10_2024_3_18_PM": {
+    "description": "UI string (source key: Dec 10, 2024 • 3:18 PM)"
+  },
+  "start_from_your_current_location": "Учурдагы жериңизден баштоо",
+  "@start_from_your_current_location": {
+    "description": "UI string (source key: Start from your current location)"
+  },
+  "change_city": "Шаарды өзгөртүү",
+  "@change_city": {
+    "description": "UI string (source key: Change city)"
+  },
+  "view_My_Trip": "Менин сапарымды көрүү",
+  "@view_My_Trip": {
+    "description": "UI string (source key: View My Trip)"
+  },
+  "experience_top_destinations": "Эң мыкты жерлерди тажрыйбалоо",
+  "@experience_top_destinations": {
+    "description": "UI string (source key: Experience top destinations)"
+  },
+  "tourist_landmarks": "Туристтик белгилүү жерлер",
+  "@tourist_landmarks": {
+    "description": "UI string (source key: Tourist landmarks)"
+  },
+  "landmarks": "Белгилүү жерлер - Туристтик белгилүү жерлер",
+  "@landmarks": {
+    "description": "UI string (source key: Landmarks - معالم سياحية)"
+  },
+  "google_Map": "Google Картасы",
+  "@google_Map": {
+    "description": "UI string (source key: Google Map)"
+  },
+  "agent_Location": "Агенттин жердиги",
+  "@agent_Location": {
+    "description": "UI string (source key: Agent Location)"
+  },
+  "the_details": "деталдар",
+  "@the_details": {
+    "description": "UI string (source key: the details)"
+  },
+  "select_Travel_Date": "Сапар датасын тандаңыз",
+  "@select_Travel_Date": {
+    "description": "UI string (source key: Select Travel Date)"
+  },
+  "choose_your_preferred_departure_date": "Каалаган кетүү датаңызды тандаңыз",
+  "@choose_your_preferred_departure_date": {
+    "description": "UI string (source key: Choose your preferred departure date)"
+  },
+  "selected_Date": "Тандалган дата",
+  "@selected_Date": {
+    "description": "UI string (source key: Selected Date)"
+  },
+  "march_15_2024": "15-март, 2024",
+  "@march_15_2024": {
+    "description": "UI string (source key: March 15, 2024)"
+  },
+  "change_Date": "Датаны өзгөртүү",
+  "@change_Date": {
+    "description": "UI string (source key: Change Date)"
+  },
+  "select_Time": "Убакыт тандаңыз",
+  "@select_Time": {
+    "description": "UI string (source key: Select Time)"
+  },
+  "aM_PM": "AM/PM",
+  "@aM_PM": {
+    "description": "UI string (source key: AM/PM)"
+  },
+  "no_Addresses_Found": "Даректер табылган жок",
+  "@no_Addresses_Found": {
+    "description": "UI string (source key: No Addresses Found)"
+  },
+  "you_haven_t_added_any_addresses_yet_Add_a_title_to_get_started": "Сиз дагы эч кандай дарек кошкон эмессиз. Баштоо үчүн аталыш кошуңуз.",
+  "@you_haven_t_added_any_addresses_yet_Add_a_title_to_get_started": {
+    "description": "UI string (source key: You haven't added any addresses yet. Add a title to get started.)"
+  },
+  "payment_Methods": "Төлөм ыкмалары",
+  "@payment_Methods": {
+    "description": "UI string (source key: Payment Methods)"
+  },
+  "select": "Тандаңыз ",
+  "@select": {
+    "description": "UI string (source key: Select )"
+  },
+  "save": "Сактоо",
+  "@save": {
+    "description": "UI string (source key: Save)"
+  },
+  "quick_Pay_Options": "Тез төлөм опциялары",
+  "@quick_Pay_Options": {
+    "description": "UI string (source key: Quick Pay Options)"
+  },
+  "saved_Cards": "Сакталган карталар",
+  "@saved_Cards": {
+    "description": "UI string (source key: Saved Cards)"
+  },
+  "add_New_Payment_Method": "Жаңы төлөм ыкмасын кошуу",
+  "@add_New_Payment_Method": {
+    "description": "UI string (source key: Add New Payment Method)"
+  },
+  "hello_World": "Салам дүйнө",
+  "@hello_World": {
+    "description": "UI string (source key: Hello World)"
+  },
+  "no_cards_have_been_added": "Эч кандай карта кошулган эмес!",
+  "@no_cards_have_been_added": {
+    "description": "UI string (source key: No cards have been added!)"
+  },
+  "payment_Card": "Төлөм картасы",
+  "@payment_Card": {
+    "description": "UI string (source key: Payment Card)"
+  },
+  "choice": "Тандоо",
+  "@choice": {
+    "description": "UI string (source key: Choice)"
+  },
+  "n8901": "•••• •••• •••• 8901",
+  "@n8901": {
+    "description": "UI string (source key: •••• •••• •••• 8901)"
+  },
+  "mastercard_Expires_08_25": "Mastercard • Мөөнөтү 08/25",
+  "@mastercard_Expires_08_25": {
+    "description": "UI string (source key: Mastercard • Expires 08/25)"
+  },
+  "n2468": "•••• •••• •••• 2468",
+  "@n2468": {
+    "description": "UI string (source key: •••• •••• •••• 2468)"
+  },
+  "american_Express_Expires_03_27": "American Express • Мөөнөтү 03/27",
+  "@american_Express_Expires_03_27": {
+    "description": "UI string (source key: American Express • Expires 03/27)"
+  },
+  "number_of_Extra_Hours": "Кошумча сааттардын саны",
+  "@number_of_Extra_Hours": {
+    "description": "UI string (source key: Number of Extra Hours)"
+  },
+  "payment_Method": "Төлөм ыкмасы",
+  "@payment_Method": {
+    "description": "UI string (source key: Payment Method)"
+  },
+  "add_Card": "Карта кошуу",
+  "@add_Card": {
+    "description": "UI string (source key: Add Card)"
+  },
+  "total_Price": "Жалпы баа",
+  "@total_Price": {
+    "description": "UI string (source key: Total Price)"
+  },
+  "n4_00pm": "16:00",
+  "@n4_00pm": {
+    "description": "UI string (source key: 4:00pm)"
+  },
+  "n52": "5+ саат",
+  "@n52": {
+    "description": "UI string (source key: 5+ ساعات)"
+  },
+  "extra_hours_have_been_added_to_the_trip": "Сапарга кошумча сааттар кошулду",
+  "@extra_hours_have_been_added_to_the_trip": {
+    "description": "UI string (source key: Extra hours have been added to the trip)"
+  },
+  "order_Summary": "Суранычтын жыйынтыгы",
+  "@order_Summary": {
+    "description": "UI string (source key: Order Summary)"
+  },
+  "request_summary": "сураныч жыйынтыгы",
+  "@request_summary": {
+    "description": "UI string (source key: request summary)"
+  },
+  "n25_40": "$25.40",
+  "@n25_40": {
+    "description": "UI string (source key: $25.40)"
+  },
+  "n4_items": "(4 буюм)",
+  "@n4_items": {
+    "description": "UI string (source key: (4 items))"
+  },
+  "reservations": "Менин брондорум",
+  "@reservations": {
+    "description": "UI string (source key: Reservations)"
+  },
+  "ux_welcome_login": "Touri Taxi колдонмосуна кош келиңиз",
+  "@ux_welcome_login": {
+    "description": "UI string (source key: ux_welcome_login)"
+  },
+  "ux_welcome_login_sub": "Сапарыңызды оңой брондоо үчүн кириңиз же аккаунт түзүңүз",
+  "@ux_welcome_login_sub": {
+    "description": "UI string (source key: ux_welcome_login_sub)"
+  },
+  "ux_booking_steps": "Брондоо кадамдары",
+  "@ux_booking_steps": {
+    "description": "UI string (source key: ux_booking_steps)"
+  },
+  "ux_step_trip_type": "Trip type",
+  "@ux_step_trip_type": {
+    "description": "UI string (source key: ux_step_trip_type)"
+  },
+  "ux_step_location": "Жайгашкан жер",
+  "@ux_step_location": {
+    "description": "UI string (source key: ux_step_location)"
+  },
+  "ux_step_details": "Details",
+  "@ux_step_details": {
+    "description": "UI string (source key: ux_step_details)"
+  },
+  "ux_step_payment": "Payment",
+  "@ux_step_payment": {
+    "description": "UI string (source key: ux_step_payment)"
+  },
+  "ux_choose_trip_type": "How do you want to explore?",
+  "@ux_choose_trip_type": {
+    "description": "UI string (source key: ux_choose_trip_type)"
+  },
+  "ux_choose_trip_hint": "Төмөнкү бир вариантты тандап, андан соң улантуу үчүн жайгашкан жериңизди коюңуз",
+  "@ux_choose_trip_hint": {
+    "description": "UI string (source key: ux_choose_trip_hint)"
+  },
+  "ux_car_list_hint": "Сапарыңыз үчүн туура унааны тандап, андан кийин Тандоо баскычын таптаңыз",
+  "@ux_car_list_hint": {
+    "description": "UI string (source key: ux_car_list_hint)"
+  },
+  "ux_car_available": "машиналар жеткиликтүү",
+  "@ux_car_available": {
+    "description": "UI string (source key: ux_car_available)"
+  },
+  "ux_per_hour": "саатына",
+  "@ux_per_hour": {
+    "description": "UI string (source key: ux_per_hour)"
+  },
+  "ux_min_hours": "Минималдуу",
+  "@ux_min_hours": {
+    "description": "UI string (source key: ux_min_hours)"
+  },
+  "ux_car_list_empty_title": "Машиналар жок",
+  "@ux_car_list_empty_title": {
+    "description": "UI string (source key: ux_car_list_empty_title)"
+  },
+  "ux_car_list_empty_msg": "Азыр эч кандай унаа жок. Сураныч, кийинчерээк кайра аракет кылыңыз",
+  "@ux_car_list_empty_msg": {
+    "description": "UI string (source key: ux_car_list_empty_msg)"
+  },
+  "ux_car_list_error_title": "Машиналарды жүктөй алган жок",
+  "@ux_car_list_error_title": {
+    "description": "UI string (source key: ux_car_list_error_title)"
+  },
+  "ux_car_list_error_msg": "Интернет туташууңузду текшерип, кайра аракет кылыңыз",
+  "@ux_car_list_error_msg": {
+    "description": "UI string (source key: ux_car_list_error_msg)"
+  },
+  "ux_retry": "Кайталап көрүңүз",
+  "@ux_retry": {
+    "description": "UI string (source key: ux_retry)"
+  },
+  "booking_success_title": "Брондоо ырасталды",
+  "@booking_success_title": {
+    "description": "UI string (source key: booking_success_title)"
+  },
+  "booking_success_msg": "Сурамыңыз ийгиликтүү жөнөтүлдү. Айдоочулар кабарланат жана аны жакында кабыл алышы керек.",
+  "@booking_success_msg": {
+    "description": "UI string (source key: booking_success_msg)"
+  },
+  "booking_login_required": "Ээлеп коюуну бүтөрдөн мурун кириңиз",
+  "@booking_login_required": {
+    "description": "UI string (source key: booking_login_required)"
+  },
+  "booking_save_failed": "Өтүнүчүңүз жөнөтүлгөн жок. Туташууңузду текшерип, кайра аракет кылыңыз",
+  "@booking_save_failed": {
+    "description": "UI string (source key: booking_save_failed)"
+  },
+  "ux_custom_route_desc": "Сиз картадан жерлерди тандап, өзүңүздүн маршрутуңузду пландайсыз",
+  "@ux_custom_route_desc": {
+    "description": "UI string (source key: ux_custom_route_desc)"
+  },
+  "ux_driver_guide_desc": "Айдоочуңуз сизге жол көрсөтүп, эң жакшы аттракциондорду сунуштайт",
+  "@ux_driver_guide_desc": {
+    "description": "UI string (source key: ux_driver_guide_desc)"
+  },
+  "ux_my_bookings_sub": "Учурдагы жана мурунку ээлеп коюуларыңызга бул жерден көз салыңыз",
+  "@ux_my_bookings_sub": {
+    "description": "UI string (source key: ux_my_bookings_sub)"
+  },
+  "ux_no_bookings_title": "Азырынча ээлөө жок",
+  "@ux_no_bookings_title": {
+    "description": "UI string (source key: ux_no_bookings_title)"
+  },
+  "ux_no_bookings_msg": "Биринчи саякатыңызды \"Азыр Book Now\" өтмөгүнөн баштаңыз",
+  "@ux_no_bookings_msg": {
+    "description": "UI string (source key: ux_no_bookings_msg)"
+  },
+  "ux_account_sub": "Профилди, тилди жана колдоону башкарыңыз",
+  "@ux_account_sub": {
+    "description": "UI string (source key: ux_account_sub)"
+  },
+  "ux_account_settings": "Каттоо эсебинин жөндөөлөрү",
+  "@ux_account_settings": {
+    "description": "UI string (source key: ux_account_settings)"
+  },
+  "ux_new_booking": "Book a new trip",
+  "@ux_new_booking": {
+    "description": "UI string (source key: ux_new_booking)"
+  },
+  "dialog_ok": "макул",
+  "@dialog_ok": {
+    "description": "UI string (source key: dialog_ok)"
+  },
+  "dialog_yes": "Ооба",
+  "@dialog_yes": {
+    "description": "UI string (source key: dialog_yes)"
+  },
+  "dialog_no": "Жок",
+  "@dialog_no": {
+    "description": "UI string (source key: dialog_no)"
+  },
+  "dialog_confirm": "ырастоо",
+  "@dialog_confirm": {
+    "description": "UI string (source key: dialog_confirm)"
+  },
+  "dialog_cancel": "Жокко чыгаруу",
+  "@dialog_cancel": {
+    "description": "UI string (source key: dialog_cancel)"
+  },
+  "dialog_error_title": "Ката",
+  "@dialog_error_title": {
+    "description": "UI string (source key: dialog_error_title)"
+  },
+  "dialog_location_error": "Учурдагы жайгашкан жериңизди таба алган жокпуз. Сураныч, жайгашкан жер кызматтарын иштетиңиз.",
+  "@dialog_location_error": {
+    "description": "UI string (source key: dialog_location_error)"
+  },
+  "dialog_country_mismatch_title": "Туура эмес өлкө",
+  "@dialog_country_mismatch_title": {
+    "description": "UI string (source key: dialog_country_mismatch_title)"
+  },
+  "dialog_country_mismatch_msg": "Көрсөтүлгөн өлкө учурдагы жайгашкан жериңизге дал келбейт. Сураныч, туура өлкөнү тандаңыз.",
+  "@dialog_country_mismatch_msg": {
+    "description": "UI string (source key: dialog_country_mismatch_msg)"
+  },
+  "dialog_outside_coverage_title": "Тышкы тейлөө аймагы",
+  "@dialog_outside_coverage_title": {
+    "description": "UI string (source key: dialog_outside_coverage_title)"
+  },
+  "dialog_outside_coverage_msg": "Учурдагы өлкөңүз системанын тейлөө аймагынан тышкары. Жайгашкан жериңизден ээлеп коюу мүмкүн эмес.",
+  "@dialog_outside_coverage_msg": {
+    "description": "UI string (source key: dialog_outside_coverage_msg)"
+  },
+  "dialog_change_country_title": "Өлкөнү өзгөртүү",
+  "@dialog_change_country_title": {
+    "description": "UI string (source key: dialog_change_country_title)"
+  },
+  "dialog_change_country_msg": "Чын эле өлкөнү өзгөрткүңүз келеби?",
+  "@dialog_change_country_msg": {
+    "description": "UI string (source key: dialog_change_country_msg)"
+  },
+  "dialog_change_city_title": "Шаарды өзгөртүү",
+  "@dialog_change_city_title": {
+    "description": "UI string (source key: dialog_change_city_title)"
+  },
+  "dialog_change_city_msg": "Чын эле шаарды өзгөрткүңүз келеби?",
+  "@dialog_change_city_msg": {
+    "description": "UI string (source key: dialog_change_city_msg)"
+  },
+  "dialog_select_trip_or_location": "Сураныч, сапардын түрүн же жайгашкан жерди тандаңыз",
+  "@dialog_select_trip_or_location": {
+    "description": "UI string (source key: dialog_select_trip_or_location)"
+  },
+  "dialog_update_location_title": "Жайгашкан жерди жаңыртуу",
+  "@dialog_update_location_title": {
+    "description": "UI string (source key: dialog_update_location_title)"
+  },
+  "dialog_update_location_msg": "Учурдагы жайгашкан жериңизди чын эле жаңырткыңыз келеби?",
+  "@dialog_update_location_msg": {
+    "description": "UI string (source key: dialog_update_location_msg)"
+  },
+  "dialog_select_all_options": "Сураныч, бардык керектүү опцияларды тандаңыз",
+  "@dialog_select_all_options": {
+    "description": "UI string (source key: dialog_select_all_options)"
+  },
+  "dialog_delete_account_title": "Каттоо эсебин жок кылуу",
+  "@dialog_delete_account_title": {
+    "description": "UI string (source key: dialog_delete_account_title)"
+  },
+  "dialog_delete_account_msg": "Каттоо эсебин жок кылууну чын эле сурангыңыз келеби? Күтүүдөгү суммалар же баланс жок болсо, өчүрүү 24 саатка созулушу мүмкүн.",
+  "@dialog_delete_account_msg": {
+    "description": "UI string (source key: dialog_delete_account_msg)"
+  },
+  "dialog_request_sent_title": "Сурам тапшырылды",
+  "@dialog_request_sent_title": {
+    "description": "UI string (source key: dialog_request_sent_title)"
+  },
+  "dialog_request_sent_msg": "Сурамыңыздын абалын колдоо билеттери аркылуу көзөмөлдөй аласыз",
+  "@dialog_request_sent_msg": {
+    "description": "UI string (source key: dialog_request_sent_msg)"
+  },
+  "take_a_photo_to_set_your_profile_picture_using_the_camera_directly": "Профил сүрөтүңүздү коюу үчүн түздөн-түз камера менен сүрөт тартыңыз.",
+  "@take_a_photo_to_set_your_profile_picture_using_the_camera_directly": {
+    "description": "UI string (source key: Take a photo to set your profile picture using the camera directly.)"
+  },
+  "upload_images_to_set_your_account_profile_picture": "Каттоо эсебиңиздин профил сүрөтүн коюу үчүн сүрөттөрдү жүктөңүз.\n",
+  "@upload_images_to_set_your_account_profile_picture": {
+    "description": "UI string (source key: Upload images to set your account profile picture.\n)"
+  },
+  "allow_the_Ara_Watan_app_to_access_your_location_for_the_purpose_of_delivering_yo": "\"Touri Taxi\" колдонмосун белгиленген туристтик жерлерге жеткирүү максатында сиздин жердигиңизге кирүүгө уруксат бериңиз.",
+  "@allow_the_Ara_Watan_app_to_access_your_location_for_the_purpose_of_delivering_yo": {
+    "description": "UI string (source key: Allow the \"Ara Watan\" app to access your location for the purpose of delivering you to the specified tourist destinations.)"
+  },
+  "this_allows_for_the_exploitation_of_the_nation_s_resources_to_access_distinctive": "Бул өзгөчө туристтик аймактарга жетүү үчүн улуттун ресурстарын пайдаланууга мүмкүндүк берет.",
+  "@this_allows_for_the_exploitation_of_the_nation_s_resources_to_access_distinctive": {
+    "description": "UI string (source key: this allows for the exploitation of the nation's resources to access distinctive tourist areas.)"
+  },
+  "unexpected_error_title": "Күтүлбөгөн ката кетти",
+  "@unexpected_error_title": {
+    "description": "UI string (source key: unexpected_error_title)"
+  },
+  "unexpected_error_msg": "Сураныч, колдонмону өчүрүп күйгүзүңүз же үй экранына кайтыңыз.",
+  "@unexpected_error_msg": {
+    "description": "UI string (source key: unexpected_error_msg)"
+  },
+  "dialog_location_required": "Учурдагы жайгашкан жериңизди коюңуз.",
+  "@dialog_location_required": {
+    "description": "UI string (source key: dialog_location_required)"
+  },
+  "custom_place_name_required": "Жердин атын киргизиңиз же издөөдөн бирөөнү тандаңыз",
+  "@custom_place_name_required": {
+    "description": "UI string (source key: custom_place_name_required)"
+  },
+  "custom_place_duplicate": "Бул жер сиздин сапарыңызда",
+  "@custom_place_duplicate": {
+    "description": "UI string (source key: custom_place_duplicate)"
+  },
+  "instant_booking": "Азыр ээлеп коюңуз",
+  "@instant_booking": {
+    "description": "UI string (source key: instant_booking)"
+  },
+  "custom_place_added": "Кошулган: {name}",
+  "@custom_place_added": {
+    "description": "UI string (source key: custom_place_added)",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "name"
+      }
+    }
+  },
+  "view_my_trip": "Менин саякатым",
+  "@view_my_trip": {
+    "description": "UI string (source key: view_my_trip)"
+  },
+  "landmarks_loaded_count": "{count} жерлерди көрсөтүү",
+  "@landmarks_loaded_count": {
+    "description": "UI string (source key: landmarks_loaded_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "load_more_landmarks": "Көбүрөөк жүктөө",
+  "@load_more_landmarks": {
+    "description": "UI string (source key: load_more_landmarks)"
+  },
+  "load_more_landmarks_count": "Көбүрөөк жүктөө ({loaded} / {total}+)",
+  "@load_more_landmarks_count": {
+    "description": "UI string (source key: load_more_landmarks_count)",
+    "placeholders": {
+      "loaded": {
+        "type": "String",
+        "example": "loaded"
+      },
+      "total": {
+        "type": "String",
+        "example": "total"
+      }
+    }
+  },
+  "add_destination_first": "Адегенде жок дегенде бир көздөгөн жерди кошуңуз",
+  "@add_destination_first": {
+    "description": "UI string (source key: add_destination_first)"
+  },
+  "car_selected_success": "Машина ийгиликтүү тандалды",
+  "@car_selected_success": {
+    "description": "UI string (source key: car_selected_success)"
+  },
+  "generic_error_retry": "Бир жерден ката кетти. Сураныч, кайра аракет кылыңыз.",
+  "@generic_error_retry": {
+    "description": "UI string (source key: generic_error_retry)"
+  },
+  "custom_place_title": "Ыңгайлаштырылган жер",
+  "@custom_place_title": {
+    "description": "UI string (source key: custom_place_title)"
+  },
+  "custom_place_map_hint": "Сиз кошкон ар бир жер сапарыңыз үчүн маанилүү белгилер сыяктуу мааниге ээ (2 аялдама = эң аз 1 саат)",
+  "@custom_place_map_hint": {
+    "description": "UI string (source key: custom_place_map_hint)"
+  },
+  "custom_place_search_hint": "Жер издөө...",
+  "@custom_place_search_hint": {
+    "description": "UI string (source key: custom_place_search_hint)"
+  },
+  "custom_place_add_to_trip": "Менин сапарыма кошуу",
+  "@custom_place_add_to_trip": {
+    "description": "UI string (source key: custom_place_add_to_trip)"
+  },
+  "landmarks_custom_banner": "Can't find your place? Add a custom location on the map",
+  "@landmarks_custom_banner": {
+    "description": "UI string (source key: landmarks_custom_banner)"
+  },
+  "ux_pick_location_next_hint": "Туруңузду баштоо үчүн жайгашкан жериңизди коюп, Кийинки баскычын басыңыз",
+  "@ux_pick_location_next_hint": {
+    "description": "UI string (source key: ux_pick_location_next_hint)"
+  },
+  "ux_driver_guide_location_hint": "Сиздин айдоочуңуз сиздин жол көрсөткүчүңүз болот — жайгашкан жериңизди коюп, Кийинки баскычын басыңыз",
+  "@ux_driver_guide_location_hint": {
+    "description": "UI string (source key: ux_driver_guide_location_hint)"
+  },
+  "custom_place_move_map_hint": "Жайгашкан жерди коюу үчүн картаны жылдырыңыз",
+  "@custom_place_move_map_hint": {
+    "description": "UI string (source key: custom_place_move_map_hint)"
+  },
+  "custom_place_name_label": "Жердин аты (милдеттүү эмес)",
+  "@custom_place_name_label": {
+    "description": "UI string (source key: custom_place_name_label)"
+  },
+  "custom_place_name_hint": "мис. Үй-бүлөлүк кафе, жеке пляж...",
+  "@custom_place_name_hint": {
+    "description": "UI string (source key: custom_place_name_hint)"
+  },
+  "my_trip_count": "Менин сапарым ({count})",
+  "@my_trip_count": {
+    "description": "UI string (source key: my_trip_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "landmarks_custom_list_title": "Тизмеден өз ордуңузду таба албай жатасызбы?",
+  "@landmarks_custom_list_title": {
+    "description": "UI string (source key: landmarks_custom_list_title)"
+  },
+  "ux_not_available": "жеткиликтүү эмес",
+  "@ux_not_available": {
+    "description": "UI string (source key: ux_not_available)"
+  },
+  "ux_no_car_selected": "Эч кандай унаа тандалган жок",
+  "@ux_no_car_selected": {
+    "description": "UI string (source key: ux_no_car_selected)"
+  },
+  "ux_preferred_car": "Артыкчылыктуу унаа",
+  "@ux_preferred_car": {
+    "description": "UI string (source key: ux_preferred_car)"
+  },
+  "ux_meeting_point": "Жолугушуу пункту",
+  "@ux_meeting_point": {
+    "description": "UI string (source key: ux_meeting_point)"
+  },
+  "ux_pick_meeting_point": "Сураныч, жолугушуу жерин тандаңыз",
+  "@ux_pick_meeting_point": {
+    "description": "UI string (source key: ux_pick_meeting_point)"
+  },
+  "ux_schedule_optional": "Кошумча, сапардын башталышын жана убактысын тандаңыз",
+  "@ux_schedule_optional": {
+    "description": "UI string (source key: ux_schedule_optional)"
+  },
+  "ux_choose_payment_method": "Төлөм ыкмасын тандаңыз",
+  "@ux_choose_payment_method": {
+    "description": "UI string (source key: ux_choose_payment_method)"
+  },
+  "ux_one_hour": "Бир саат",
+  "@ux_one_hour": {
+    "description": "UI string (source key: ux_one_hour)"
+  },
+  "ux_two_hours": "Эки саат",
+  "@ux_two_hours": {
+    "description": "UI string (source key: ux_two_hours)"
+  },
+  "ux_hours_count": "{count} саат",
+  "@ux_hours_count": {
+    "description": "UI string (source key: ux_hours_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "ux_car_select_failed": "Унаа тандай алган жок. Сураныч, кайра аракет кылыңыз.",
+  "@ux_car_select_failed": {
+    "description": "UI string (source key: ux_car_select_failed)"
+  },
+  "app_title": "Тури Такси",
+  "@app_title": {
+    "description": "UI string (source key: app_title)"
+  },
+  "ux_cash_payment": "Накталай акча",
+  "@ux_cash_payment": {
+    "description": "UI string (source key: ux_cash_payment)"
+  },
+  "ux_change": "Өзгөртүү",
+  "@ux_change": {
+    "description": "UI string (source key: ux_change)"
+  },
+  "ux_card_payment_network": "Network International аркылуу коопсуз карта төлөмү",
+  "@ux_card_payment_network": {
+    "description": "UI string (source key: ux_card_payment_network)"
+  },
+  "checkout_extra_hour_discount": "Ар бир кошумча саатыңыз үчүн {percent}% арзандатуу аласыз, {max}{currency} чейин",
+  "@checkout_extra_hour_discount": {
+    "description": "UI string (source key: checkout_extra_hour_discount)",
+    "placeholders": {
+      "percent": {
+        "type": "String",
+        "example": "percent"
+      },
+      "max": {
+        "type": "String",
+        "example": "max"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "checkout_min_hours_hint": "Тандалган аялдамаларыңыздын негизинде сапардын минималдуу узактыгы {hours} саат",
+  "@checkout_min_hours_hint": {
+    "description": "UI string (source key: checkout_min_hours_hint)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      }
+    }
+  },
+  "checkout_payment_card_error": "Төлөм же картанын маалыматы туура эмес",
+  "@checkout_payment_card_error": {
+    "description": "UI string (source key: checkout_payment_card_error)"
+  },
+  "checkout_order_status_pending": "Айдоочунун кабыл алуусун күтүүдө",
+  "@checkout_order_status_pending": {
+    "description": "UI string (source key: checkout_order_status_pending)"
+  },
+  "checkout_add_hours_prompt": "Улантуу үчүн кеминде дагы {hours} саат кошуңуз",
+  "@checkout_add_hours_prompt": {
+    "description": "UI string (source key: checkout_add_hours_prompt)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      }
+    }
+  },
+  "checkout_complete_options_prompt": "Complete all options or add more hours to match your trip",
+  "@checkout_complete_options_prompt": {
+    "description": "UI string (source key: checkout_complete_options_prompt)"
+  },
+  "landmark_added_success": "Кошулган: {name}",
+  "@landmark_added_success": {
+    "description": "UI string (source key: landmark_added_success)",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "name"
+      }
+    }
+  },
+  "landmark_already_in_cart": "Бул жер сиздин сапарыңызда",
+  "@landmark_already_in_cart": {
+    "description": "UI string (source key: landmark_already_in_cart)"
+  },
+  "load_error_title": "Жүктөй алган жок",
+  "@load_error_title": {
+    "description": "UI string (source key: load_error_title)"
+  },
+  "load_error_message": "Туташууңузду текшерип, кайра аракет кылыңыз",
+  "@load_error_message": {
+    "description": "UI string (source key: load_error_message)"
+  },
+  "change_region2": "Аймакты өзгөртүү",
+  "@change_region2": {
+    "description": "UI string (source key: change_region)"
+  },
+  "places_in_city": "{city} жерлери",
+  "@places_in_city": {
+    "description": "UI string (source key: places_in_city)",
+    "placeholders": {
+      "city": {
+        "type": "String",
+        "example": "city"
+      }
+    }
+  },
+  "destinations_added_label": "Кошулган багыттар:",
+  "@destinations_added_label": {
+    "description": "UI string (source key: destinations_added_label)"
+  },
+  "custom_place_list_hint": "Картадан тандаңыз же издеңиз — бул сиздин саякатыңызга кирет",
+  "@custom_place_list_hint": {
+    "description": "UI string (source key: custom_place_list_hint)"
+  },
+  "filter_all": "Баары",
+  "@filter_all": {
+    "description": "UI string (source key: filter_all)"
+  },
+  "map_locating": "Жайгашкан жериңиз табылууда...",
+  "@map_locating": {
+    "description": "UI string (source key: map_locating)"
+  },
+  "map_calculating_route": "Маршрут эсептелүүдө...",
+  "@map_calculating_route": {
+    "description": "UI string (source key: map_calculating_route)"
+  },
+  "map_distance_label": "Дистанция",
+  "@map_distance_label": {
+    "description": "UI string (source key: map_distance_label)"
+  },
+  "map_estimated_time": "Болжолдуу убакыт",
+  "@map_estimated_time": {
+    "description": "UI string (source key: map_estimated_time)"
+  },
+  "map_stops_count": "Токтойт",
+  "@map_stops_count": {
+    "description": "UI string (source key: map_stops_count)"
+  },
+  "map_avg_speed": "Орточо ылдамдык",
+  "@map_avg_speed": {
+    "description": "UI string (source key: map_avg_speed)"
+  },
+  "map_calc_type": "Эсептөө түрү",
+  "@map_calc_type": {
+    "description": "UI string (source key: map_calc_type)"
+  },
+  "map_calc_accurate": "Так",
+  "@map_calc_accurate": {
+    "description": "UI string (source key: map_calc_accurate)"
+  },
+  "map_calc_approximate": "Болжолдуу",
+  "@map_calc_approximate": {
+    "description": "UI string (source key: map_calc_approximate)"
+  },
+  "map_route_fallback": "Эң жакшы маршрутту эсептей алган жок; болжолдуу аралыкты колдонуу",
+  "@map_route_fallback": {
+    "description": "UI string (source key: map_route_fallback)"
+  },
+  "map_your_location": "Сиздин жайгашкан жериңиз",
+  "@map_your_location": {
+    "description": "UI string (source key: map_your_location)"
+  },
+  "map_destination_n": "Токтотуу {n}",
+  "@map_destination_n": {
+    "description": "UI string (source key: map_destination_n)",
+    "placeholders": {
+      "n": {
+        "type": "String",
+        "example": "n"
+      }
+    }
+  },
+  "map_load_failed": "Карта жүктөлгөн жок. Интернет байланышын жана карта кызматынын жөндөөлөрүн текшериңиз.",
+  "@map_load_failed": {
+    "description": "UI string (source key: map_load_failed)"
+  },
+  "wallet_title": "Менин капчыгым",
+  "@wallet_title": {
+    "description": "UI string (source key: wallet_title)"
+  },
+  "wallet_load_error": "Капчык жүктөлгөн жок",
+  "@wallet_load_error": {
+    "description": "UI string (source key: wallet_load_error)"
+  },
+  "wallet_not_created": "Азырынча капчык жок",
+  "@wallet_not_created": {
+    "description": "UI string (source key: wallet_not_created)"
+  },
+  "wallet_created_success": "Капчык ийгиликтүү түзүлдү",
+  "@wallet_created_success": {
+    "description": "UI string (source key: wallet_created_success)"
+  },
+  "wallet_create_button": "Капчык түзүү",
+  "@wallet_create_button": {
+    "description": "UI string (source key: wallet_create_button)"
+  },
+  "wallet_current_balance": "Учурдагы баланс",
+  "@wallet_current_balance": {
+    "description": "UI string (source key: wallet_current_balance)"
+  },
+  "wallet_currency_label": "Валюта",
+  "@wallet_currency_label": {
+    "description": "UI string (source key: wallet_currency_label)"
+  },
+  "wallet_last_updated": "Акыркы жолу жаңыртылган",
+  "@wallet_last_updated": {
+    "description": "UI string (source key: wallet_last_updated)"
+  },
+  "wallet_never": "Эч качан",
+  "@wallet_never": {
+    "description": "UI string (source key: wallet_never)"
+  },
+  "wallet_login_required_title": "Сураныч, кириңиз",
+  "@wallet_login_required_title": {
+    "description": "UI string (source key: wallet_login_required_title)"
+  },
+  "wallet_login_required_msg": "Капчыгыңызды көрүү үчүн кириңиз",
+  "@wallet_login_required_msg": {
+    "description": "UI string (source key: wallet_login_required_msg)"
+  },
+  "wallet_add_balance": "Баланс кошуу",
+  "@wallet_add_balance": {
+    "description": "UI string (source key: wallet_add_balance)"
+  },
+  "wallet_withdraw": "тартып алуу",
+  "@wallet_withdraw": {
+    "description": "UI string (source key: wallet_withdraw)"
+  },
+  "wallet_transactions": "Транзакция тарыхы",
+  "@wallet_transactions": {
+    "description": "UI string (source key: wallet_transactions)"
+  },
+  "wallet_view_all": "Баарын көрүү",
+  "@wallet_view_all": {
+    "description": "UI string (source key: wallet_view_all)"
+  },
+  "wallet_transactions_error": "Транзакциялар жүктөлгөн жок",
+  "@wallet_transactions_error": {
+    "description": "UI string (source key: wallet_transactions_error)"
+  },
+  "wallet_tx_deposit": "Депозит",
+  "@wallet_tx_deposit": {
+    "description": "UI string (source key: wallet_tx_deposit)"
+  },
+  "wallet_tx_withdraw": "Алып салуу",
+  "@wallet_tx_withdraw": {
+    "description": "UI string (source key: wallet_tx_withdraw)"
+  },
+  "wallet_tx_refund": "Төлөмдү кайтаруу",
+  "@wallet_tx_refund": {
+    "description": "UI string (source key: wallet_tx_refund)"
+  },
+  "wallet_tx_transfer": "Transfer",
+  "@wallet_tx_transfer": {
+    "description": "UI string (source key: wallet_tx_transfer)"
+  },
+  "wallet_status_completed": "Аякталды",
+  "@wallet_status_completed": {
+    "description": "UI string (source key: wallet_status_completed)"
+  },
+  "wallet_status_pending": "Күтүүдө",
+  "@wallet_status_pending": {
+    "description": "UI string (source key: wallet_status_pending)"
+  },
+  "wallet_status_failed": "Ийгиликсиз",
+  "@wallet_status_failed": {
+    "description": "UI string (source key: wallet_status_failed)"
+  },
+  "wallet_status_cancelled": "Жокко чыгарылды",
+  "@wallet_status_cancelled": {
+    "description": "UI string (source key: wallet_status_cancelled)"
+  },
+  "wallet_no_transactions": "Азырынча транзакциялар жок",
+  "@wallet_no_transactions": {
+    "description": "UI string (source key: wallet_no_transactions)"
+  },
+  "wallet_no_transactions_hint": "Транзакцияларыңыз бул жерде көрүнөт",
+  "@wallet_no_transactions_hint": {
+    "description": "UI string (source key: wallet_no_transactions_hint)"
+  },
+  "wallet_login_first": "Сураныч, биринчи кириңиз",
+  "@wallet_login_first": {
+    "description": "UI string (source key: wallet_login_first)"
+  },
+  "wallet_add_balance_title": "Капчыктын балансын кошуу",
+  "@wallet_add_balance_title": {
+    "description": "UI string (source key: wallet_add_balance_title)"
+  },
+  "wallet_amount_label": "Суммасы",
+  "@wallet_amount_label": {
+    "description": "UI string (source key: wallet_amount_label)"
+  },
+  "wallet_amount_required": "Сураныч, сумманы киргизиңиз",
+  "@wallet_amount_required": {
+    "description": "UI string (source key: wallet_amount_required)"
+  },
+  "wallet_amount_invalid": "Жарактуу сумманы киргизиңиз",
+  "@wallet_amount_invalid": {
+    "description": "UI string (source key: wallet_amount_invalid)"
+  },
+  "wallet_amount_max": "Максималдуу депозит 10 000",
+  "@wallet_amount_max": {
+    "description": "UI string (source key: wallet_amount_max)"
+  },
+  "wallet_no_payment_methods": "Төлөм ыкмасы жеткиликтүү эмес",
+  "@wallet_no_payment_methods": {
+    "description": "UI string (source key: wallet_no_payment_methods)"
+  },
+  "wallet_add_payment_method": "Жаңы төлөм ыкмасын кошуу",
+  "@wallet_add_payment_method": {
+    "description": "UI string (source key: wallet_add_payment_method)"
+  },
+  "wallet_choose_payment": "Төлөм ыкмасын тандаңыз:",
+  "@wallet_choose_payment": {
+    "description": "UI string (source key: wallet_choose_payment)"
+  },
+  "wallet_card_ending": "****{last4} менен аяктаган карта",
+  "@wallet_card_ending": {
+    "description": "UI string (source key: wallet_card_ending)",
+    "placeholders": {
+      "last4": {
+        "type": "String",
+        "example": "last4"
+      }
+    }
+  },
+  "wallet_add_new_card": "Жаңы карта кошуу",
+  "@wallet_add_new_card": {
+    "description": "UI string (source key: wallet_add_new_card)"
+  },
+  "wallet_add_confirm": "Кошуу",
+  "@wallet_add_confirm": {
+    "description": "UI string (source key: wallet_add_confirm)"
+  },
+  "wallet_add_description": "Капчыктын балансын кошуу",
+  "@wallet_add_description": {
+    "description": "UI string (source key: wallet_add_description)"
+  },
+  "wallet_add_success": "Капчыгыңызга {amount} ийгиликтүү кошулду",
+  "@wallet_add_success": {
+    "description": "UI string (source key: wallet_add_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      }
+    }
+  },
+  "wallet_error_generic": "Ката: {error}",
+  "@wallet_error_generic": {
+    "description": "UI string (source key: wallet_error_generic)",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "error"
+      }
+    }
+  },
+  "wallet_select_payment": "Төлөм ыкмасын тандаңыз",
+  "@wallet_select_payment": {
+    "description": "UI string (source key: wallet_select_payment)"
+  },
+  "wallet_withdraw_title": "Каражат чыгаруу",
+  "@wallet_withdraw_title": {
+    "description": "UI string (source key: wallet_withdraw_title)"
+  },
+  "wallet_withdraw_request_note": "Каражат чыгаруу өтүнүчү которуудан мурун текшерилет. Сумма жактырылгандан кийин гана биротоло алынат.",
+  "@wallet_withdraw_request_note": {
+    "description": "UI string (source key: wallet_withdraw_request_note)"
+  },
+  "wallet_withdraw_request_success": "{amount} {currency} чыгаруу өтүнүчү текшерүүгө жөнөтүлдү",
+  "@wallet_withdraw_request_success": {
+    "description": "UI string (source key: wallet_withdraw_request_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_withdraw_request_failed": "Каражат чыгаруу өтүнүчүн жөнөтүү мүмкүн болгон жок",
+  "@wallet_withdraw_request_failed": {
+    "description": "UI string (source key: wallet_withdraw_request_failed)"
+  },
+  "don_t_have_account": "Аккаунтуңуз жокпу?",
+  "@don_t_have_account": {
+    "description": "UI string (source key: don't_have_account)"
+  },
+  "message2": "Билдирүү...",
+  "@message2": {
+    "description": "UI string (source key: Message...)"
+  },
+  "wallet_available_balance": "Жеткиликтүү баланс: {amount} {currency}",
+  "@wallet_available_balance": {
+    "description": "UI string (source key: wallet_available_balance)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_withdraw_confirm": "Чыгарып алуу",
+  "@wallet_withdraw_confirm": {
+    "description": "UI string (source key: wallet_withdraw_confirm)"
+  },
+  "wallet_withdraw_description": "Капчыктан каражат чыгаруу",
+  "@wallet_withdraw_description": {
+    "description": "UI string (source key: wallet_withdraw_description)"
+  },
+  "wallet_withdraw_no_card_deposit": "Бул сумманы жаба турган карта аркылуу толуктоо жок",
+  "@wallet_withdraw_no_card_deposit": {
+    "description": "UI string (source key: wallet_withdraw_no_card_deposit)"
+  },
+  "wallet_withdraw_refund_failed": "Төлөмдү кайтаруу мүмкүн болгон жок",
+  "@wallet_withdraw_refund_failed": {
+    "description": "UI string (source key: wallet_withdraw_refund_failed)"
+  },
+  "wallet_card_topup_success": "Капчык ийгиликтүү толукталды. Капчыкка кайтасызбы?",
+  "@wallet_card_topup_success": {
+    "description": "UI string (source key: wallet_card_topup_success)"
+  },
+  "payment_pending_message": "Төлөм дагы иштетилүүдө. Бир аз күтүңүз же кайра аракет кылыңыз.",
+  "@payment_pending_message": {
+    "description": "UI string (source key: payment_pending_message)"
+  },
+  "payment_failed_message": "Төлөм аяктаган жок. Картаны текшерип, кайра аракет кылыңыз.",
+  "@payment_failed_message": {
+    "description": "UI string (source key: payment_failed_message)"
+  },
+  "payment_verify_error": "Төлөмдү текшерүү мүмкүн болгон жок. Кайра аракет кылыңыз.",
+  "@payment_verify_error": {
+    "description": "UI string (source key: payment_verify_error)"
+  },
+  "payment_order_save_error": "Буйрутманы сактоо мүмкүн болгон жок. Акча алынган болсо, колдоо кызматына кайрылыңыз.",
+  "@payment_order_save_error": {
+    "description": "UI string (source key: payment_order_save_error)"
+  },
+  "wallet_withdraw_success": "{amount} {currency} ийгиликтүү чыгарылды",
+  "@wallet_withdraw_success": {
+    "description": "UI string (source key: wallet_withdraw_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_amount_exceeds_balance": "Сумма жеткиликтүү баланстан ашат",
+  "@wallet_amount_exceeds_balance": {
+    "description": "UI string (source key: wallet_amount_exceeds_balance)"
+  },
+  "wallet_choose_payout": "Каражат түшө турган картаны тандаңыз:",
+  "@wallet_choose_payout": {
+    "description": "UI string (source key: wallet_choose_payout)"
+  },
+  "country_saudi": "Сауд Арабиясы",
+  "@country_saudi": {
+    "description": "UI string (source key: country_saudi)"
+  },
+  "map_driver": "Айдоочу",
+  "@map_driver": {
+    "description": "UI string (source key: map_driver)"
+  },
+  "map_pickup": "Алып кетүү жери",
+  "@map_pickup": {
+    "description": "UI string (source key: map_pickup)"
+  },
+  "map_destination": "Бара турган жер",
+  "@map_destination": {
+    "description": "UI string (source key: map_destination)"
+  },
+  "map_open_google_maps": "Google Карталарда ачуу",
+  "@map_open_google_maps": {
+    "description": "UI string (source key: map_open_google_maps)"
+  },
+  "map_track_driver_title": "Айдоочуну картадан көзөмөлдөө",
+  "@map_track_driver_title": {
+    "description": "UI string (source key: map_track_driver_title)"
+  },
+  "map_waiting_driver_location": "Айдоочунун жайгашкан жери күтүлүүдө",
+  "@map_waiting_driver_location": {
+    "description": "UI string (source key: map_waiting_driver_location)"
+  },
+  "booking_status_active": "Активдүү",
+  "@booking_status_active": {
+    "description": "UI string (source key: booking_status_active)"
+  },
+  "booking_view_route": "Маршрутту көрүү",
+  "@booking_view_route": {
+    "description": "UI string (source key: booking_view_route)"
+  },
+  "map_eta_minutes": "Болжол менен {minutes} мүнөттө келет",
+  "@map_eta_minutes": {
+    "description": "UI string (source key: map_eta_minutes)",
+    "placeholders": {
+      "minutes": {
+        "type": "String",
+        "example": "minutes"
+      }
+    }
+  },
+  "browsing_now": "Азыр {country} карап жатасыз",
+  "@browsing_now": {
+    "description": "UI string (source key: browsing_now)",
+    "placeholders": {
+      "country": {
+        "type": "String",
+        "example": "country"
+      }
+    }
+  },
+  "card_confirm_title": "Картаны ырастоо",
+  "@card_confirm_title": {
+    "description": "UI string (source key: card_confirm_title)"
+  },
+  "card_confirm_msg": "{last4} менен аяктаган картанын номерин жана CVV киргизиңиз.",
+  "@card_confirm_msg": {
+    "description": "UI string (source key: card_confirm_msg)",
+    "placeholders": {
+      "last4": {
+        "type": "String",
+        "example": "last4"
+      }
+    }
+  },
+  "select_region_title": "Аймакты тандоо",
+  "@select_region_title": {
+    "description": "UI string (source key: select_region_title)"
+  },
+  "select_region_msg": "Бул шаарды тандоону же өзгөртүүнү каалайсызбы?",
+  "@select_region_msg": {
+    "description": "UI string (source key: select_region_msg)"
+  },
+  "card_number_label": "Карта номери",
+  "@card_number_label": {
+    "description": "UI string (source key: card_number_label)"
+  },
+  "dialog_continue": "Улантуу",
+  "@dialog_continue": {
+    "description": "UI string (source key: dialog_continue)"
+  },
+  "card_invalid_data": "Карта маалыматы жараксыз",
+  "@card_invalid_data": {
+    "description": "UI string (source key: card_invalid_data)"
+  },
+  "checkout_paying": "Network International аркылуу төлөм иштетилүүдө...",
+  "@checkout_paying": {
+    "description": "UI string (source key: checkout_paying)"
+  },
+  "map_trip_destination": "Сапардын көздөгөн жери",
+  "@map_trip_destination": {
+    "description": "UI string (source key: map_trip_destination)"
+  },
+  "map_invalid_destinations": "Маршруттан жараксыз же аймактан тышкаркы {count} аялдама чыгарылды.",
+  "@map_invalid_destinations": {
+    "description": "UI string (source key: map_invalid_destinations)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "checkout_estimated_time_warning": "Болжолдуу жол убактысы ({time}) сунушталган брондоо мөөнөтүнөн кыска. Жол кыймылы эсепке таасир этиши мүмкүн.",
+  "@checkout_estimated_time_warning": {
+    "description": "UI string (source key: checkout_estimated_time_warning)",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "time"
+      }
+    }
+  },
+  "checkout_vat_rate": "КНС ({rate}%):",
+  "@checkout_vat_rate": {
+    "description": "UI string (source key: checkout_vat_rate)",
+    "placeholders": {
+      "rate": {
+        "type": "String",
+        "example": "rate"
+      }
+    }
+  },
+  "map_location_unavailable": "Учурдагы жайгашкан жериңиз жеткиликсиз.",
+  "@map_location_unavailable": {
+    "description": "UI string (source key: map_location_unavailable)"
+  },
+  "map_no_valid_destinations": "Бул маршрут үчүн жарактуу аялдамалар жок.",
+  "@map_no_valid_destinations": {
+    "description": "UI string (source key: map_no_valid_destinations)"
+  },
+  "unit_km": "км",
+  "@unit_km": {
+    "description": "UI string (source key: unit_km)"
+  },
+  "unit_meter": "м",
+  "@unit_meter": {
+    "description": "UI string (source key: unit_meter)"
+  },
+  "unit_minute": "мүн",
+  "@unit_minute": {
+    "description": "UI string (source key: unit_minute)"
+  },
+  "unit_hour": "саат",
+  "@unit_hour": {
+    "description": "UI string (source key: unit_hour)"
+  },
+  "unit_kmh": "км/саат",
+  "@unit_kmh": {
+    "description": "UI string (source key: unit_kmh)"
+  },
+  "duration_hours_minutes": "{hours} саат {minutes} мүнөт",
+  "@duration_hours_minutes": {
+    "description": "UI string (source key: duration_hours_minutes)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      },
+      "minutes": {
+        "type": "String",
+        "example": "minutes"
+      }
+    }
+  },
+  "location_city_unresolved": "Шаарыңызды так аныктоо мүмкүн болгон жок.",
+  "@location_city_unresolved": {
+    "description": "UI string (source key: location_city_unresolved)"
+  },
+  "country_map": "Өлкөнүн картасы",
+  "@country_map": {
+    "description": "UI string (source key: country_map)"
+  },
+  "ui_text_44134f762b": "Сырсөздөр дал келбейт!",
+  "@ui_text_44134f762b": {
+    "description": "UI string (source key: ui_text_44134f762b)"
+  },
+  "ui_text_b6f51cadc4": "ката",
+  "@ui_text_b6f51cadc4": {
+    "description": "UI string (source key: ui_text_b6f51cadc4)"
+  },
+  "ui_text_1a4e87f7a9": "Сиз шарттарга макул болушуңуз керек",
+  "@ui_text_1a4e87f7a9": {
+    "description": "UI string (source key: ui_text_1a4e87f7a9)"
+  },
+  "ui_text_b0a98216a3": "Макул",
+  "@ui_text_b0a98216a3": {
+    "description": "UI string (source key: ui_text_b0a98216a3)"
+  },
+  "ui_text_224b63d8e3": "Сураныч, аймакты тандаңыз",
+  "@ui_text_224b63d8e3": {
+    "description": "UI string (source key: ui_text_224b63d8e3)"
+  },
+  "ui_text_af02762d6d": "Сураныч, аймакты тандаңыз",
+  "@ui_text_af02762d6d": {
+    "description": "UI string (source key: ui_text_af02762d6d)"
+  },
+  "ui_text_9072549574": "макул",
+  "@ui_text_9072549574": {
+    "description": "UI string (source key: ui_text_9072549574)"
+  },
+  "ui_text_17db754851": "Кошулган: Жайгашкан жер ийгиликтүү тандалды",
+  "@ui_text_17db754851": {
+    "description": "UI string (source key: ui_text_17db754851)"
+  },
+  "ui_text_71995f6f4a": "Жайгашкан жер мурунтан эле кошулган.",
+  "@ui_text_71995f6f4a": {
+    "description": "UI string (source key: ui_text_71995f6f4a)"
+  },
+  "ui_text_b73e88df71": "Билдирүү жаз",
+  "@ui_text_b73e88df71": {
+    "description": "UI string (source key: ui_text_b73e88df71)"
+  },
+  "ui_text_b4bbf18b10": "Буйрутманы жокко чыгаруу",
+  "@ui_text_b4bbf18b10": {
+    "description": "UI string (source key: ui_text_b4bbf18b10)"
+  },
+  "ui_text_cf4d76accb": "Заказды жокко чыгарасызбы?",
+  "@ui_text_cf4d76accb": {
+    "description": "UI string (source key: ui_text_cf4d76accb)"
+  },
+  "ui_text_5c528d9fa3": "жок",
+  "@ui_text_5c528d9fa3": {
+    "description": "UI string (source key: ui_text_5c528d9fa3)"
+  },
+  "ui_text_d045bef8e5": "Ооба",
+  "@ui_text_d045bef8e5": {
+    "description": "UI string (source key: ui_text_d045bef8e5)"
+  },
+  "ui_text_1431f68f35": "Жөндөлбөйт",
+  "@ui_text_1431f68f35": {
+    "description": "UI string (source key: ui_text_1431f68f35)"
+  },
+  "ui_text_8bc9b333df": "Булакты тандаңыз",
+  "@ui_text_8bc9b333df": {
+    "description": "UI string (source key: ui_text_8bc9b333df)"
+  },
+  "ui_text_35d76b889c": "Электрондук почта керек!",
+  "@ui_text_35d76b889c": {
+    "description": "UI string (source key: ui_text_35d76b889c)"
+  },
+  "ui_text_f0ad7ac205": "Рахмат",
+  "@ui_text_f0ad7ac205": {
+    "description": "UI string (source key: ui_text_f0ad7ac205)"
+  },
+  "ui_text_12ee72ca4f": "Сапардын корутундусу",
+  "@ui_text_12ee72ca4f": {
+    "description": "UI string (source key: ui_text_12ee72ca4f)"
+  },
+  "ui_text_d93bf2eb9f": "Аралык жана убакыт болжолдуу жана трафикке, маршруттун өзгөрүшүнө же жайгашкан жердин тактыгына жараша өзгөрүшү мүмкүн.",
+  "@ui_text_d93bf2eb9f": {
+    "description": "UI string (source key: ui_text_d93bf2eb9f)"
+  },
+  "ui_text_e93e07976e": "Рейтинг жөнөтүлдү",
+  "@ui_text_e93e07976e": {
+    "description": "UI string (source key: ui_text_e93e07976e)"
+  },
+  "ui_text_7f2f6a15cf": "Ката",
+  "@ui_text_7f2f6a15cf": {
+    "description": "UI string (source key: ui_text_7f2f6a15cf)"
+  },
+  "ui_text_9262ef60ec": "Дата менен убакытты текшериңиз",
+  "@ui_text_9262ef60ec": {
+    "description": "UI string (source key: ui_text_9262ef60ec)"
+  },
+  "ui_text_cff8cb30ef": "Буйрутманы жокко чыгарып, төлөмдү кайтарып ала турганыңыз чынбы?",
+  "@ui_text_cff8cb30ef": {
+    "description": "UI string (source key: ui_text_cff8cb30ef)"
+  },
+  "ui_text_23ef9d7d03": "Ооба, буйрутманы жокко чыгарыңыз",
+  "@ui_text_23ef9d7d03": {
+    "description": "UI string (source key: ui_text_23ef9d7d03)"
+  },
+  "ui_text_eae6165343": "Буйрутма ийгиликтүү жокко чыгарылды",
+  "@ui_text_eae6165343": {
+    "description": "UI string (source key: ui_text_eae6165343)"
+  },
+  "ui_text_860c735760": "Буйрутманы жокко чыгара албайсыз, анткени жокко чыгаруу убактысы ашып кетти. Сураныч, колдоо тобуна кайрылыңыз",
+  "@ui_text_860c735760": {
+    "description": "UI string (source key: ui_text_860c735760)"
+  },
+  "ui_text_5a9a57155e": "Көчүрүлгөн",
+  "@ui_text_5a9a57155e": {
+    "description": "UI string (source key: ui_text_5a9a57155e)"
+  },
+  "ui_text_5eac766a7c": "Учурдагы жайгашкан жериңиз бир шаарда экенин текшериңиз жана бардык маалыматтарды так толтуруңуз.",
+  "@ui_text_5eac766a7c": {
+    "description": "UI string (source key: ui_text_5eac766a7c)"
+  },
+  "ui_text_1d36255e4a": "Сураныч, бардык маалыматтарды туура толтуруңуз",
+  "@ui_text_1d36255e4a": {
+    "description": "UI string (source key: ui_text_1d36255e4a)"
+  },
+  "ui_text_def4060285": "Даректи чын эле жок кылгыңыз келеби?",
+  "@ui_text_def4060285": {
+    "description": "UI string (source key: ui_text_def4060285)"
+  },
+  "ui_text_85d0e17cdb": "Дарек ийгиликтүү жок кылынды",
+  "@ui_text_85d0e17cdb": {
+    "description": "UI string (source key: ui_text_85d0e17cdb)"
+  },
+  "ui_text_471f24ef6b": "Жөнөтүлдү",
+  "@ui_text_471f24ef6b": {
+    "description": "UI string (source key: ui_text_471f24ef6b)"
+  },
+  "ui_text_dbee2e6613": "Сурам ийгиликтүү жөнөтүлдү, биз аны карап чыгып, бир аздан кийин сиз менен байланышабыз.",
+  "@ui_text_dbee2e6613": {
+    "description": "UI string (source key: ui_text_dbee2e6613)"
+  },
+  "ui_text_095479cd38": "Урматтуу өнөктөш, өтүнмөнү ийгиликтүү тапшыруу үчүн бардык талап кылынган талааларды толтуруңуз.",
+  "@ui_text_095479cd38": {
+    "description": "UI string (source key: ui_text_095479cd38)"
+  },
+  "rating_driver_title": "Баалоо {driver}",
+  "@rating_driver_title": {
+    "description": "UI string (source key: rating_driver_title)",
+    "placeholders": {
+      "driver": {
+        "type": "String",
+        "example": "driver"
+      }
+    }
+  },
+  "rating_driver_question": "{driver} кандай баа берет элеңиз?",
+  "@rating_driver_question": {
+    "description": "UI string (source key: rating_driver_question)",
+    "placeholders": {
+      "driver": {
+        "type": "String",
+        "example": "driver"
+      }
+    }
+  },
+  "order_details_number": "Буйрутма чоо-жайы #{id}",
+  "@order_details_number": {
+    "description": "UI string (source key: order_details_number)",
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "id"
+      }
+    }
+  },
+  "order_time_label": "Заказ убактысы: {time}",
+  "@order_time_label": {
+    "description": "UI string (source key: order_time_label)",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "time"
+      }
+    }
+  },
+  "support_ticket_number": "Билет №{id}",
+  "@support_ticket_number": {
+    "description": "UI string (source key: support_ticket_number)",
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "id"
+      }
+    }
+  },
+  "place_city_only": "Сиз {city} ичинде гана жер тандай аласыз же шаарды өзгөртө аласыз.",
+  "@place_city_only": {
+    "description": "UI string (source key: place_city_only)",
+    "placeholders": {
+      "city": {
+        "type": "String",
+        "example": "city"
+      }
+    }
+  },
+  "notification_payment_success_title": "Төлөм ийгиликтүү болду",
+  "@notification_payment_success_title": {
+    "description": "UI string (source key: notification_payment_success_title)"
+  },
+  "notification_payment_success_body": "#{bookingId} ээлөө үчүн төлөм ырасталды. Биз сиз үчүн айдоочу издеп жатабыз.",
+  "@notification_payment_success_body": {
+    "description": "UI string (source key: notification_payment_success_body)",
+    "placeholders": {
+      "bookingId": {
+        "type": "String",
+        "example": "bookingId"
+      }
+    }
+  },
+  "notification_paid_order_admin_title": "Жаңы төлөнүүчү ээлөө",
+  "@notification_paid_order_admin_title": {
+    "description": "UI string (source key: notification_paid_order_admin_title)"
+  },
+  "notification_paid_order_admin_body": "Жаңы акы төлөнүүчү брондоо #{bookingId}: {hours} саат, {amount} {currency}.",
+  "@notification_paid_order_admin_body": {
+    "description": "UI string (source key: notification_paid_order_admin_body)",
+    "placeholders": {
+      "bookingId": {
+        "type": "String",
+        "example": "bookingId"
+      },
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      },
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "notification_wallet_topup_title": "Капчык толукталды",
+  "@notification_wallet_topup_title": {
+    "description": "UI string (source key: notification_wallet_topup_title)"
+  },
+  "notification_wallet_topup_body": "{amount} SAR сиздин капчыгыңызга ийгиликтүү кошулду.",
+  "@notification_wallet_topup_body": {
+    "description": "UI string (source key: notification_wallet_topup_body)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      }
+    }
+  },
+  "notification_new_order_driver_title": "Жаңы ээлөө",
+  "@notification_new_order_driver_title": {
+    "description": "UI string (source key: notification_new_order_driver_title)"
+  },
+  "notification_new_order_driver_body": "Жаңы Touri Taxi ээлөө {amount} {currency} кирешеси менен {hours} саатка жеткиликтүү. Аны карап чыгуу үчүн айдоочу колдонмосун ачыңыз.",
+  "@notification_new_order_driver_body": {
+    "description": "UI string (source key: notification_new_order_driver_body)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      },
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      }
+    }
+  },
+  "notification_private_message_title": "Жаңы купуя билдирүү",
+  "@notification_private_message_title": {
+    "description": "UI string (source key: notification_private_message_title)"
+  },
+  "notification_private_message_body": "Сизде {sender} жаңы билдирүү бар.",
+  "@notification_private_message_body": {
+    "description": "UI string (source key: notification_private_message_body)",
+    "placeholders": {
+      "sender": {
+        "type": "String",
+        "example": "sender"
+      }
+    }
+  },
+  "status_pending_driver": "Айдоочунун кабыл алуусун күтүүдө",
+  "@status_pending_driver": {
+    "description": "UI string (source key: status_pending_driver)"
+  },
+  "status_driver_assigned": "Айдоочу дайындалды",
+  "@status_driver_assigned": {
+    "description": "UI string (source key: status_driver_assigned)"
+  },
+  "status_driver_arrived": "Айдоочу келди",
+  "@status_driver_arrived": {
+    "description": "UI string (source key: status_driver_arrived)"
+  },
+  "status_trip_started": "Сапар башталды",
+  "@status_trip_started": {
+    "description": "UI string (source key: status_trip_started)"
+  },
+  "status_trip_completed": "Сапар аяктады",
+  "@status_trip_completed": {
+    "description": "UI string (source key: status_trip_completed)"
+  },
+  "status_cancelled": "Жокко чыгарылды",
+  "@status_cancelled": {
+    "description": "UI string (source key: status_cancelled)"
+  },
+  "status_payment_pending": "Төлөм күтүлүүдө",
+  "@status_payment_pending": {
+    "description": "UI string (source key: status_payment_pending)"
+  },
+  "status_paid": "Төлөндү",
+  "@status_paid": {
+    "description": "UI string (source key: status_paid)"
+  },
+  "status_payment_failed": "Төлөм ишке ашкан жок",
+  "@status_payment_failed": {
+    "description": "UI string (source key: status_payment_failed)"
+  },
+  "looking_for_destination": "Бара турган жер изделүүдө...",
+  "@looking_for_destination": {
+    "description": "UI string (source key: looking_for_destination)"
+  },
+  "map_selected_location": "Картадан тандалган жер",
+  "@map_selected_location": {
+    "description": "UI string (source key: map_selected_location)"
+  },
+  "current_location_label": "Учурдагы жайгашуу",
+  "@current_location_label": {
+    "description": "UI string (source key: current_location_label)"
+  },
+  "pickup_location_label": "Баштапкы пункт",
+  "@pickup_location_label": {
+    "description": "UI string (source key: pickup_location_label)"
+  },
+  "destination_label": "Бара турган жер",
+  "@destination_label": {
+    "description": "UI string (source key: destination_label)"
+  },
+  "stops_label": "Токтоочу жайлар",
+  "@stops_label": {
+    "description": "UI string (source key: stops_label)"
+  },
+  "view_route_label": "Багытты көрүү",
+  "@view_route_label": {
+    "description": "UI string (source key: view_route_label)"
+  },
+  "trip_details_label": "Сапардын чоо-жайы",
+  "@trip_details_label": {
+    "description": "UI string (source key: trip_details_label)"
+  },
+  "choose_payment_method": "Төлөм ыкмасын тандаңыз",
+  "@choose_payment_method": {
+    "description": "UI string (source key: choose_payment_method)"
+  },
+  "pay_online_option": "Электрондук төлөм",
+  "@pay_online_option": {
+    "description": "UI string (source key: pay_online_option)"
+  },
+  "pay_cash_option": "Накталай төлөм",
+  "@pay_cash_option": {
+    "description": "UI string (source key: pay_cash_option)"
+  },
+  "driver_fee_label": "Айдоочунун акысы",
+  "@driver_fee_label": {
+    "description": "UI string (source key: driver_fee_label)"
+  },
+  "app_fee_label": "Колдонмонун комиссиясы",
+  "@app_fee_label": {
+    "description": "UI string (source key: app_fee_label)"
+  },
+  "vat_label": "Кошумча нарк салыгы",
+  "@vat_label": {
+    "description": "UI string (source key: vat_label)"
+  },
+  "total_amount_label": "Жалпы сумма",
+  "@total_amount_label": {
+    "description": "UI string (source key: total_amount_label)"
+  },
+  "my_bookings_nav": "Менин брондорум",
+  "@my_bookings_nav": {
+    "description": "UI string (source key: my_bookings_nav)"
+  },
+  "my_account_nav": "Менин аккаунтум",
+  "@my_account_nav": {
+    "description": "UI string (source key: my_account_nav)"
+  },
+  "home_nav": "Башкы бет",
+  "@home_nav": {
+    "description": "UI string (source key: home_nav)"
+  },
+  "error_generic_user": "Бир жерден ката кетти. Кайра аракет кылыңыз.",
+  "@error_generic_user": {
+    "description": "UI string (source key: error_generic_user)"
+  },
+  "error_network_user": "Интернет байланышы жок. Тармакты текшерип, кайра аракет кылыңыз.",
+  "@error_network_user": {
+    "description": "UI string (source key: error_network_user)"
+  },
+  "error_location_permission": "Жайгашууга уруксат керек.",
+  "@error_location_permission": {
+    "description": "UI string (source key: error_location_permission)"
+  },
+  "error_route_unavailable": "Багыт жеткиликсиз",
+  "@error_route_unavailable": {
+    "description": "UI string (source key: error_route_unavailable)"
+  },
+  "error_outside_service_area": "Тейлөө аймагынан тышкары",
+  "@error_outside_service_area": {
+    "description": "UI string (source key: error_outside_service_area)"
+  },
+  "kyrgyz_char_sample": "Кыргыз тили: ң ө ү Ң Ө Ү",
+  "@kyrgyz_char_sample": {
+    "description": "UI string (source key: kyrgyz_char_sample)"
+  },
+  "booking_hours": "{count, plural, =0{Брондоо сааты жок} one{{count} брондоо сааты} other{{count} брондоо сааты}}",
+  "@booking_hours": {
+    "description": "booking_hours",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "example": "3"
+      }
+    }
+  },
+  "minutes_count": "{count, plural, =0{0 мүнөт} one{{count} мүнөт} other{{count} мүнөт}}",
+  "@minutes_count": {
+    "description": "minutes_count",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "example": "3"
+      }
+    }
+  }
+}

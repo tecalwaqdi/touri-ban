@@ -1,0 +1,3409 @@
+{
+  "@@locale": "ru",
+  "n1": "1",
+  "@n1": {
+    "description": "UI string (source key: 1)"
+  },
+  "n2": "2",
+  "@n2": {
+    "description": "UI string (source key: 2)"
+  },
+  "n4": "4",
+  "@n4": {
+    "description": "UI string (source key: 4)"
+  },
+  "n5": "5",
+  "@n5": {
+    "description": "UI string (source key: 5)"
+  },
+  "n6": "6",
+  "@n6": {
+    "description": "UI string (source key: 6)"
+  },
+  "n7": "7",
+  "@n7": {
+    "description": "UI string (source key: 7)"
+  },
+  "n8": "8",
+  "@n8": {
+    "description": "UI string (source key: 8)"
+  },
+  "n9": "9",
+  "@n9": {
+    "description": "UI string (source key: 9)"
+  },
+  "n10": "10",
+  "@n10": {
+    "description": "UI string (source key: 10)"
+  },
+  "n11": "11",
+  "@n11": {
+    "description": "UI string (source key: 11)"
+  },
+  "n15": "15",
+  "@n15": {
+    "description": "UI string (source key: 15)"
+  },
+  "n24": "24",
+  "@n24": {
+    "description": "UI string (source key: 24)"
+  },
+  "n25": "25",
+  "@n25": {
+    "description": "UI string (source key: 25)"
+  },
+  "n26": "26",
+  "@n26": {
+    "description": "UI string (source key: 26)"
+  },
+  "n27": "27",
+  "@n27": {
+    "description": "UI string (source key: 27)"
+  },
+  "n28": "28",
+  "@n28": {
+    "description": "UI string (source key: 28)"
+  },
+  "n29": "29",
+  "@n29": {
+    "description": "UI string (source key: 29)"
+  },
+  "n30": "30",
+  "@n30": {
+    "description": "UI string (source key: 30)"
+  },
+  "n31": "31",
+  "@n31": {
+    "description": "UI string (source key: 31)"
+  },
+  "n32": "32",
+  "@n32": {
+    "description": "UI string (source key: 32)"
+  },
+  "n33": "33",
+  "@n33": {
+    "description": "UI string (source key: 33)"
+  },
+  "n34": "34",
+  "@n34": {
+    "description": "UI string (source key: 34)"
+  },
+  "n45": "45",
+  "@n45": {
+    "description": "UI string (source key: 45)"
+  },
+  "n123": "123",
+  "@n123": {
+    "description": "UI string (source key: 123)"
+  },
+  "n561790844": "561790844",
+  "@n561790844": {
+    "description": "UI string (source key: 561790844)"
+  },
+  "login": "Вход",
+  "@login": {
+    "description": "UI string (source key: Login)"
+  },
+  "email_Address": "Адрес электронной почты",
+  "@email_Address": {
+    "description": "UI string (source key: Email Address)"
+  },
+  "create_Account": "Создать аккаунт",
+  "@create_Account": {
+    "description": "UI string (source key: Create Account )"
+  },
+  "enter_your_email": "Введите вашу электронную почту...",
+  "@enter_your_email": {
+    "description": "UI string (source key: Enter your email...)"
+  },
+  "password": "Пароль",
+  "@password": {
+    "description": "UI string (source key: Password)"
+  },
+  "enter_your_password": "Введите ваш пароль...",
+  "@enter_your_password": {
+    "description": "UI string (source key: Enter your password...)"
+  },
+  "select_the_app_language": "Выберите язык приложения",
+  "@select_the_app_language": {
+    "description": "UI string (source key: Select the app language)"
+  },
+  "login_with_Google": "Войти с помощью Google",
+  "@login_with_Google": {
+    "description": "UI string (source key: Login with Google)"
+  },
+  "auth_google_pick_title": "Выберите аккаунт Google",
+  "@auth_google_pick_title": {
+    "description": "UI string (source key: auth_google_pick_title)"
+  },
+  "auth_google_pick_sub": "Аккаунты, привязанные к этому устройству",
+  "@auth_google_pick_sub": {
+    "description": "UI string (source key: auth_google_pick_sub)"
+  },
+  "auth_google_recent_account": "Последний использованный аккаунт",
+  "@auth_google_recent_account": {
+    "description": "UI string (source key: auth_google_recent_account)"
+  },
+  "auth_google_show_accounts": "Показать аккаунты Google на устройстве",
+  "@auth_google_show_accounts": {
+    "description": "UI string (source key: auth_google_show_accounts)"
+  },
+  "auth_google_other_account": "Выбрать другой аккаунт",
+  "@auth_google_other_account": {
+    "description": "UI string (source key: auth_google_other_account)"
+  },
+  "auth_google_failed": "Не удалось войти через Google. Попробуйте снова.",
+  "@auth_google_failed": {
+    "description": "UI string (source key: auth_google_failed)"
+  },
+  "auth_google_developer_error": "Google не настроен. Добавьте SHA-1 Android в Firebase Console.",
+  "@auth_google_developer_error": {
+    "description": "UI string (source key: auth_google_developer_error)"
+  },
+  "auth_google_not_enabled": "Вход через Google не включён в Firebase.",
+  "@auth_google_not_enabled": {
+    "description": "UI string (source key: auth_google_not_enabled)"
+  },
+  "auth_google_account_conflict": "Этот email привязан к другому способу входа. Используйте email и пароль.",
+  "@auth_google_account_conflict": {
+    "description": "UI string (source key: auth_google_account_conflict)"
+  },
+  "auth_google_or": "или",
+  "@auth_google_or": {
+    "description": "UI string (source key: auth_google_or)"
+  },
+  "forgot_Password": "Забыли пароль?",
+  "@forgot_Password": {
+    "description": "UI string (source key: Forgot Password ?)"
+  },
+  "register": "Регистрация",
+  "@register": {
+    "description": "UI string (source key: Register)"
+  },
+  "create_an_account_with_Google": "Создать аккаунт с помощью Google",
+  "@create_an_account_with_Google": {
+    "description": "UI string (source key: Create an account with Google)"
+  },
+  "please_fill_in_all_fields_to_register": "Пожалуйста, заполните все поля для регистрации",
+  "@please_fill_in_all_fields_to_register": {
+    "description": "UI string (source key: Please fill in all fields to register)"
+  },
+  "full_Name": "Полное имя",
+  "@full_Name": {
+    "description": "UI string (source key: Full Name)"
+  },
+  "confirm_Password": "Подтвердите пароль",
+  "@confirm_Password": {
+    "description": "UI string (source key: Confirm Password)"
+  },
+  "read_the_Terms_of_Service_and_Privacy_Policy": "Прочитайте Условия использования и Политику конфиденциальности",
+  "@read_the_Terms_of_Service_and_Privacy_Policy": {
+    "description": "UI string (source key: Read the Terms of Service and Privacy Policy)"
+  },
+  "i_agree_to_the_Terms_Conditions": "Я согласен с Условиями и положениями",
+  "@i_agree_to_the_Terms_Conditions": {
+    "description": "UI string (source key: I agree to the Terms & Conditions)"
+  },
+  "full_Name_is_required": "Требуется полное имя",
+  "@full_Name_is_required": {
+    "description": "UI string (source key: Full Name is required)"
+  },
+  "please_choose_an_option_from_the_dropdown": "Пожалуйста, выберите вариант из выпадающего списка",
+  "@please_choose_an_option_from_the_dropdown": {
+    "description": "UI string (source key: Please choose an option from the dropdown)"
+  },
+  "email_Address_is_required": "Требуется адрес электронной почты",
+  "@email_Address_is_required": {
+    "description": "UI string (source key: Email Address is required)"
+  },
+  "mobile_Number_is_required": "Требуется номер мобильного телефона",
+  "@mobile_Number_is_required": {
+    "description": "UI string (source key: Mobile Number is required)"
+  },
+  "password_is_required": "Требуется пароль",
+  "@password_is_required": {
+    "description": "UI string (source key: Password is required)"
+  },
+  "confirm_Password_is_required": "Требуется подтверждение пароля",
+  "@confirm_Password_is_required": {
+    "description": "UI string (source key: Confirm Password is required)"
+  },
+  "already_have_an_account": "Уже есть аккаунт?",
+  "@already_have_an_account": {
+    "description": "UI string (source key: Already have an account?)"
+  },
+  "sign_In": "Войти",
+  "@sign_In": {
+    "description": "UI string (source key: Sign In)"
+  },
+  "success_Partner_Registration": "Регистрация партнера по успеху",
+  "@success_Partner_Registration": {
+    "description": "UI string (source key: Success Partner Registration)"
+  },
+  "welcome_to_Become_a_Success_Partner": "Добро пожаловать в программу «Стать партнером по успеху»",
+  "@welcome_to_Become_a_Success_Partner": {
+    "description": "UI string (source key: Welcome to Become a Success Partner)"
+  },
+  "join_us_as_a_Success_Partner_to_enhance_our_service_quality_and_accelerate_outre": "Присоединяйтесь к нам в качестве партнера по успеху, чтобы повысить качество наших услуг и ускорить охват, независимо от того, являетесь ли вы государственным органом, компанией или частным лицом.",
+  "@join_us_as_a_Success_Partner_to_enhance_our_service_quality_and_accelerate_outre": {
+    "description": "UI string (source key: Join us as a Success Partner to enhance our service quality and accelerate outreach, whether you are a government entity, a company, or an individual.)"
+  },
+  "register_Now": "Зарегистрироваться сейчас",
+  "@register_Now": {
+    "description": "UI string (source key: Register Now)"
+  },
+  "home": "Главная",
+  "@home": {
+    "description": "UI string (source key: Home)"
+  },
+  "the_Qibla_for_Islam_and_Muslims": "Кибла для ислама и мусульман",
+  "@the_Qibla_for_Islam_and_Muslims": {
+    "description": "UI string (source key: The Qibla for Islam and Muslims)"
+  },
+  "list_of_regions": "Список регионов",
+  "@list_of_regions": {
+    "description": "UI string (source key: List of regions)"
+  },
+  "number_of_destinations": "Количество направлений: ",
+  "@number_of_destinations": {
+    "description": "UI string (source key: Number of destinations: )"
+  },
+  "specify_the_region": "Укажите регион",
+  "@specify_the_region": {
+    "description": "UI string (source key: Specify the region)"
+  },
+  "saudi": "Саудовская Аравия",
+  "@saudi": {
+    "description": "UI string (source key: saudi)"
+  },
+  "select_region_city": "Выберите регион / город",
+  "@select_region_city": {
+    "description": "UI string (source key: Select region / city)"
+  },
+  "cities_provinces": "Города/провинции",
+  "@cities_provinces": {
+    "description": "UI string (source key: Cities/provinces)"
+  },
+  "browse_cities_counties_in": "Просмотр городов/районов в",
+  "@browse_cities_counties_in": {
+    "description": "UI string (source key: Browse cities/counties in)"
+  },
+  "change": "Изменить",
+  "@change": {
+    "description": "UI string (source key: Change)"
+  },
+  "view_Now": "Посмотреть сейчас",
+  "@view_Now": {
+    "description": "UI string (source key: View Now)"
+  },
+  "devils_Cove": "Бухта Дьявола",
+  "@devils_Cove": {
+    "description": "UI string (source key: Devils Cove)"
+  },
+  "n4_7_Stars": "4,7 звезды",
+  "@n4_7_Stars": {
+    "description": "UI string (source key: 4.7 Stars)"
+  },
+  "juniper_Beach": "Пляж Можжевельник",
+  "@juniper_Beach": {
+    "description": "UI string (source key: Juniper Beach)"
+  },
+  "n4_5_Stars": "4,5 звезды",
+  "@n4_5_Stars": {
+    "description": "UI string (source key: 4.5 Stars)"
+  },
+  "yOU_ARE_BROWSING_NOW": "Вы сейчас просматриваете",
+  "@yOU_ARE_BROWSING_NOW": {
+    "description": "UI string (source key: YOU ARE BROWSING NOW)"
+  },
+  "change_country": "Изменить страну",
+  "@change_country": {
+    "description": "UI string (source key: Change country)"
+  },
+  "change_region": "Изменить регион",
+  "@change_region": {
+    "description": "UI string (source key: Change region)"
+  },
+  "added_destinations": "Добавленные направления",
+  "@added_destinations": {
+    "description": "UI string (source key: Added destinations)"
+  },
+  "suggest_a_Place": "Предложить место",
+  "@suggest_a_Place": {
+    "description": "UI string (source key: Suggest a Place)"
+  },
+  "add_a_Special_Place": "Добавить особое место",
+  "@add_a_Special_Place": {
+    "description": "UI string (source key: Add a Special Place)"
+  },
+  "settings": "Настройки",
+  "@settings": {
+    "description": "UI string (source key: Settings)"
+  },
+  "help": "Помощь",
+  "@help": {
+    "description": "UI string (source key: Help)"
+  },
+  "log_Out": "Выйти",
+  "@log_Out": {
+    "description": "UI string (source key: Log Out)"
+  },
+  "browse": "Просмотр",
+  "@browse": {
+    "description": "UI string (source key: Browse)"
+  },
+  "prayer_room": "Комната для молитвы",
+  "@prayer_room": {
+    "description": "UI string (source key: Prayer room)"
+  },
+  "restroom": "Туалет",
+  "@restroom": {
+    "description": "UI string (source key: Restroom)"
+  },
+  "restaurant": "Ресторан",
+  "@restaurant": {
+    "description": "UI string (source key: Restaurant)"
+  },
+  "add": "Добавить",
+  "@add": {
+    "description": "UI string (source key: Add)"
+  },
+  "description": "Описание",
+  "@description": {
+    "description": "UI string (source key: Description)"
+  },
+  "enable_notifications": "Включить уведомления",
+  "@enable_notifications": {
+    "description": "UI string (source key: Enable notifications)"
+  },
+  "edit_Profile": "Редактировать профиль",
+  "@edit_Profile": {
+    "description": "UI string (source key: Edit Profile)"
+  },
+  "add_your_phone_number": "Добавьте свой номер телефона",
+  "@add_your_phone_number": {
+    "description": "UI string (source key: Add your phone number)"
+  },
+  "address_list": "Список адресов",
+  "@address_list": {
+    "description": "UI string (source key: Address list)"
+  },
+  "support_Customer_Service": "Поддержка и обслуживание клиентов",
+  "@support_Customer_Service": {
+    "description": "UI string (source key: Support & Customer Service)"
+  },
+  "electronic_Payment_History": "История электронных платежей",
+  "@electronic_Payment_History": {
+    "description": "UI string (source key: Electronic Payment History)"
+  },
+  "night_mode": "Ночной режим",
+  "@night_mode": {
+    "description": "UI string (source key: Night mode)"
+  },
+  "dark_mode": "Тёмная тема",
+  "@dark_mode": {
+    "description": "UI string (source key: Dark  mode)"
+  },
+  "request_to_delete_the_account": "Запрос на удаление аккаунта.",
+  "@request_to_delete_the_account": {
+    "description": "UI string (source key: Request to delete the account.)"
+  },
+  "my_account": "Мой аккаунт",
+  "@my_account": {
+    "description": "UI string (source key: My account)"
+  },
+  "name": "Имя",
+  "@name": {
+    "description": "UI string (source key: Name)"
+  },
+  "enter_your_full_name": "Введите ваше полное имя",
+  "@enter_your_full_name": {
+    "description": "UI string (source key: Enter your full name)"
+  },
+  "phone_Number": "Номер телефона",
+  "@phone_Number": {
+    "description": "UI string (source key: Phone Number)"
+  },
+  "enter_your_mobile_number": "Введите ваш номер мобильного телефона",
+  "@enter_your_mobile_number": {
+    "description": "UI string (source key: Enter your mobile number)"
+  },
+  "email": "Электронная почта",
+  "@email": {
+    "description": "UI string (source key: Email)"
+  },
+  "outside_your_city_prices_are_agreed_upon_with_the_captain": "За пределами вашего города цены согласовываются с капитаном.",
+  "@outside_your_city_prices_are_agreed_upon_with_the_captain": {
+    "description": "UI string (source key: Outside your city prices are agreed upon with the captain)"
+  },
+  "update_Profile": "Обновить профиль",
+  "@update_Profile": {
+    "description": "UI string (source key: Update Profile)"
+  },
+  "welcome_to_the_Arra_Watan_app": "Добро пожаловать в приложение Arra Watan",
+  "@welcome_to_the_Arra_Watan_app": {
+    "description": "UI string (source key: Welcome to the Arra Watan app)"
+  },
+  "first_global_saudi_tourist_taxi_app": "первое глобальное приложение такси для туристов в Саудовской Аравии",
+  "@first_global_saudi_tourist_taxi_app": {
+    "description": "UI string (source key: first global saudi tourist taxi app)"
+  },
+  "select_the_country": "Выберите страну",
+  "@select_the_country": {
+    "description": "UI string (source key: Select the country)"
+  },
+  "start": "Начать",
+  "@start": {
+    "description": "UI string (source key: Start)"
+  },
+  "credit_Card": "Кредитная карта",
+  "@credit_Card": {
+    "description": "UI string (source key: Credit Card)"
+  },
+  "your_Name": "Ваше имя",
+  "@your_Name": {
+    "description": "UI string (source key: Your Name)"
+  },
+  "example_2026": "Пример 2026",
+  "@example_2026": {
+    "description": "UI string (source key: Example 2026)"
+  },
+  "example_11": "Пример 11",
+  "@example_11": {
+    "description": "UI string (source key: Example 11)"
+  },
+  "cCV": "CCV",
+  "@cCV": {
+    "description": "UI string (source key: CCV)"
+  },
+  "your_Name_is_required": "Требуется ваше имя",
+  "@your_Name_is_required": {
+    "description": "UI string (source key: Your Name is required)"
+  },
+  "is_required": "Требуется номер карты",
+  "@is_required": {
+    "description": "UI string (source key: رقم البطاقة is required)"
+  },
+  "is_required2": "Требуется год окончания срока действия",
+  "@is_required2": {
+    "description": "UI string (source key: سنة الإنتهاء is required)"
+  },
+  "is_required3": "Требуется месяц окончания срока действия",
+  "@is_required3": {
+    "description": "UI string (source key: شهر الإنتهاء is required)"
+  },
+  "cCV_is_required": "Требуется CCV",
+  "@cCV_is_required": {
+    "description": "UI string (source key: CCV is required)"
+  },
+  "sTC_pay": "STC pay",
+  "@sTC_pay": {
+    "description": "UI string (source key: STC pay)"
+  },
+  "apple_Pay": "Apple Pay",
+  "@apple_Pay": {
+    "description": "UI string (source key: Apple Pay)"
+  },
+  "cash": "Наличные",
+  "@cash": {
+    "description": "UI string (source key: Cash)"
+  },
+  "subscription": "Подписка",
+  "@subscription": {
+    "description": "UI string (source key: Subscription)"
+  },
+  "view_my_trip_list_map": "Просмотр карты списка моих поездок",
+  "@view_my_trip_list_map": {
+    "description": "UI string (source key: View my trip list map)"
+  },
+  "trip_scheduling": "Планирование поездок",
+  "@trip_scheduling": {
+    "description": "UI string (source key: Trip scheduling)"
+  },
+  "payment_method": "Способ оплаты.",
+  "@payment_method": {
+    "description": "UI string (source key: Payment method.)"
+  },
+  "wrong_payment_method": "неправильный способ оплаты",
+  "@wrong_payment_method": {
+    "description": "UI string (source key: wrong payment method)"
+  },
+  "payment_details_are_incorrect_Please_check_with_your_bank": "Данные платежа неверны. Пожалуйста, проверьте с вашим банком",
+  "@payment_details_are_incorrect_Please_check_with_your_bank": {
+    "description": "UI string (source key: Payment details are incorrect. Please check with your bank)"
+  },
+  "agreed": "Согласен",
+  "@agreed": {
+    "description": "UI string (source key: Agreed)"
+  },
+  "general_tips_when_visiting_this_city_today": "общие советы при посещении этого города сегодня:",
+  "@general_tips_when_visiting_this_city_today": {
+    "description": "UI string (source key: general tips when visiting this city today:)"
+  },
+  "need_extra_hours": "Нужны дополнительные часы?",
+  "@need_extra_hours": {
+    "description": "UI string (source key: Need extra hours?)"
+  },
+  "planning_for_a_longer_trip_Add_more_hours_and_enjoy_the_ride": "Планируете более длительную поездку? Добавьте больше часов и наслаждайтесь поездкой!",
+  "@planning_for_a_longer_trip_Add_more_hours_and_enjoy_the_ride": {
+    "description": "UI string (source key: Planning for a longer trip? Add more hours and enjoy the ride!)"
+  },
+  "current_Hours": "Текущие часы",
+  "@current_Hours": {
+    "description": "UI string (source key: Current Hours)"
+  },
+  "additional_Hours": "Дополнительные часы?",
+  "@additional_Hours": {
+    "description": "UI string (source key: Additional Hours?)"
+  },
+  "list_of_added_locations": "Список добавленных мест.",
+  "@list_of_added_locations": {
+    "description": "UI string (source key: List of added locations.)"
+  },
+  "no_tours_have_been_added": "Туры не добавлены!",
+  "@no_tours_have_been_added": {
+    "description": "UI string (source key: No tours have been added!)"
+  },
+  "the_driver_has_been_assigned_and_he_will_be_your_tour_guide_based_on_his_knowled": "Водитель назначен,\n и он будет вашим гидом на основе своих знаний о местах.",
+  "@the_driver_has_been_assigned_and_he_will_be_your_tour_guide_based_on_his_knowled": {
+    "description": "UI string (source key: The driver has been assigned,\n and he will be your tour guide based on his knowledge of the places.)"
+  },
+  "select_the_car_type": "Выберите тип автомобиля",
+  "@select_the_car_type": {
+    "description": "UI string (source key: Select the car type)"
+  },
+  "textField": "Текстовое поле",
+  "@textField": {
+    "description": "UI string (source key: TextField)"
+  },
+  "price_Summary": " Сводка по цене",
+  "@price_Summary": {
+    "description": "UI string (source key:  Price Summary)"
+  },
+  "total_Booking_Hours": "Общее количество часов бронирования:",
+  "@total_Booking_Hours": {
+    "description": "UI string (source key: Total Booking Hours:)"
+  },
+  "driver_Fee": "Плата водителю:",
+  "@driver_Fee": {
+    "description": "UI string (source key: Driver Fee:)"
+  },
+  "app_Fee_15": "Комиссия приложения (15%):",
+  "@app_Fee_15": {
+    "description": "UI string (source key: App Fee  (15%):)"
+  },
+  "total_Deductions": "Всего вычетов:",
+  "@total_Deductions": {
+    "description": "UI string (source key: Total Deductions:)"
+  },
+  "total_Amount": "Общая сумма:",
+  "@total_Amount": {
+    "description": "UI string (source key: Total Amount:)"
+  },
+  "pay_Now": "Оплатить сейчас",
+  "@pay_Now": {
+    "description": "UI string (source key: Pay Now)"
+  },
+  "book_now": "Забронировать",
+  "@book_now": {
+    "description": "UI string (source key: Book now)"
+  },
+  "you_are_currently_browsing": "Вы сейчас просматриваете.",
+  "@you_are_currently_browsing": {
+    "description": "UI string (source key: You are currently browsing.)"
+  },
+  "go_now": "Идти сейчас.",
+  "@go_now": {
+    "description": "UI string (source key: Go now.)"
+  },
+  "booking_list": "Список бронирований.",
+  "@booking_list": {
+    "description": "UI string (source key: Booking list.)"
+  },
+  "my_trip_list": "Список моих поездок",
+  "@my_trip_list": {
+    "description": "UI string (source key: My trip list)"
+  },
+  "show_the_interactive_map": "Показать интерактивную карту",
+  "@show_the_interactive_map": {
+    "description": "UI string (source key: Show the interactive map)"
+  },
+  "select_your_favorite_car": "Выберите ваш любимый автомобиль.",
+  "@select_your_favorite_car": {
+    "description": "UI string (source key: Select your favorite car.)"
+  },
+  "total_amount": "Общая сумма:",
+  "@total_amount": {
+    "description": "UI string (source key: Total amount:)"
+  },
+  "k4b0ced258d": "SAR ",
+  "@k4b0ced258d": {
+    "description": "UI string (source key: ر.س )"
+  },
+  "you_are_currently_browsing2": "Вы сейчас просматриваете:",
+  "@you_are_currently_browsing2": {
+    "description": "UI string (source key: You are currently browsing:)"
+  },
+  "browse_the_map": "Просмотр карты",
+  "@browse_the_map": {
+    "description": "UI string (source key: Browse the map)"
+  },
+  "view_list": "Просмотр списка",
+  "@view_list": {
+    "description": "UI string (source key: View list)"
+  },
+  "add_a_place_from_the_map": "Добавить место с карты.",
+  "@add_a_place_from_the_map": {
+    "description": "UI string (source key: Add a place from the map.)"
+  },
+  "general_information": "общая информация",
+  "@general_information": {
+    "description": "UI string (source key: general information)"
+  },
+  "feedback": "Обратная связь",
+  "@feedback": {
+    "description": "UI string (source key: Feedback)"
+  },
+  "specify_the_location_on_the_map": "Укажите местоположение на карте.",
+  "@specify_the_location_on_the_map": {
+    "description": "UI string (source key: Specify the location on the map.)"
+  },
+  "select_Location": "Выбрать местоположение",
+  "@select_Location": {
+    "description": "UI string (source key: Select Location)"
+  },
+  "add_the_specific_location": "Добавьте конкретное местоположение.",
+  "@add_the_specific_location": {
+    "description": "UI string (source key: Add the specific location.)"
+  },
+  "try_to_zoom_the_map_to_the_last_point_to_get_an_accurate_location": "Попробуйте увеличить карту до последней точки, чтобы получить точное местоположение",
+  "@try_to_zoom_the_map_to_the_last_point_to_get_an_accurate_location": {
+    "description": "UI string (source key: Try to zoom the map to the last point to get an accurate location)"
+  },
+  "search": "Поиск",
+  "@search": {
+    "description": "UI string (source key: Search)"
+  },
+  "show_the_list_of_added_trips": "Показать список добавленных поездок.",
+  "@show_the_list_of_added_trips": {
+    "description": "UI string (source key: Show the list of added trips.)"
+  },
+  "manage_your_team_below": "Управляйте своей командой ниже.",
+  "@manage_your_team_below": {
+    "description": "UI string (source key: Manage your team below.)"
+  },
+  "random_Name": "Случайное имя",
+  "@random_Name": {
+    "description": "UI string (source key: Random Name)"
+  },
+  "user_randomname_com": "user@randomname.com",
+  "@user_randomname_com": {
+    "description": "UI string (source key: user@randomname.com)"
+  },
+  "current_city_of_residence": "Текущий город проживания",
+  "@current_city_of_residence": {
+    "description": "UI string (source key: Current city of residence)"
+  },
+  "please_select_the_city_you_are_currently_in": "Пожалуйста, выберите город, в котором вы находитесь в данный момент",
+  "@please_select_the_city_you_are_currently_in": {
+    "description": "UI string (source key: Please select the city you are currently in)"
+  },
+  "additional_hours": "Дополнительные часы",
+  "@additional_hours": {
+    "description": "UI string (source key: Additional hours)"
+  },
+  "total_number_of_hours": "Общее количество часов: ",
+  "@total_number_of_hours": {
+    "description": "UI string (source key: Total number of hours: )"
+  },
+  "hours": "  Часы  ",
+  "@hours": {
+    "description": "UI string (source key:   Hours  )"
+  },
+  "total_price": "Общая цена:",
+  "@total_price": {
+    "description": "UI string (source key: Total price:)"
+  },
+  "r_S": "SAR",
+  "@r_S": {
+    "description": "UI string (source key: R.S)"
+  },
+  "application_fee_10": "Комиссия приложения 10%:",
+  "@application_fee_10": {
+    "description": "UI string (source key: Application fee 10%:)"
+  },
+  "vAT_15": "НДС 15%: ",
+  "@vAT_15": {
+    "description": "UI string (source key: VAT 15%: )"
+  },
+  "r_S2": " SAR ",
+  "@r_S2": {
+    "description": "UI string (source key:  R.S )"
+  },
+  "total": "Итого:  ",
+  "@total": {
+    "description": "UI string (source key: Total:  )"
+  },
+  "address_Details": "Детали адреса",
+  "@address_Details": {
+    "description": "UI string (source key: Address Details)"
+  },
+  "note_This_is_the_address_where_the_driver_will_be_directed": "Примечание: это адрес, куда будет направлен водитель",
+  "@note_This_is_the_address_where_the_driver_will_be_directed": {
+    "description": "UI string (source key: Note: This is the address where the driver will be directed)"
+  },
+  "address_Name_e_g_Home_Work": "Название адреса (например, Дом, Работа)",
+  "@address_Name_e_g_Home_Work": {
+    "description": "UI string (source key: Address Name (e.g. Home, Work))"
+  },
+  "field_is_required": "Поле обязательно для заполнения",
+  "@field_is_required": {
+    "description": "UI string (source key: Field is required)"
+  },
+  "my_current_location": "Текущее местоположение",
+  "@my_current_location": {
+    "description": "UI string (source key: My current location)"
+  },
+  "save_Address": "Сохранить адрес",
+  "@save_Address": {
+    "description": "UI string (source key: Save Address)"
+  },
+  "add_Your_Address": "Добавьте ваш адрес",
+  "@add_Your_Address": {
+    "description": "UI string (source key: Add Your Address)"
+  },
+  "schedule_the_Trip": "Запланировать поездку",
+  "@schedule_the_Trip": {
+    "description": "UI string (source key: Schedule the Trip)"
+  },
+  "select_the_Time": "Выберите время",
+  "@select_the_Time": {
+    "description": "UI string (source key: Select the Time)"
+  },
+  "hour": "Час",
+  "@hour": {
+    "description": "UI string (source key: Hour)"
+  },
+  "search2": "Поиск...",
+  "@search2": {
+    "description": "UI string (source key: Search...)"
+  },
+  "n00": "00",
+  "@n00": {
+    "description": "UI string (source key: 00)"
+  },
+  "minute": "Минута",
+  "@minute": {
+    "description": "UI string (source key: Minute)"
+  },
+  "pM": "PM",
+  "@pM": {
+    "description": "UI string (source key: PM)"
+  },
+  "aM": "AM",
+  "@aM": {
+    "description": "UI string (source key: AM)"
+  },
+  "the_trip_time_is": "Время поездки",
+  "@the_trip_time_is": {
+    "description": "UI string (source key: The trip time is)"
+  },
+  "confirm": "Подтвердить",
+  "@confirm": {
+    "description": "UI string (source key: Confirm)"
+  },
+  "add_New_Address": "+ Добавить новый адрес",
+  "@add_New_Address": {
+    "description": "UI string (source key: + Add New Address)"
+  },
+  "choose_your_delivery_address": "Выберите ваш адрес доставки:",
+  "@choose_your_delivery_address": {
+    "description": "UI string (source key: Choose your delivery address:)"
+  },
+  "n456_Park_Avenue": "456 Парк-авеню",
+  "@n456_Park_Avenue": {
+    "description": "UI string (source key: 456 Park Avenue)"
+  },
+  "suite_789_New_York_NY_10022": "Апартаменты 789, Нью-Йорк, NY 10022",
+  "@suite_789_New_York_NY_10022": {
+    "description": "UI string (source key: Suite 789, New York, NY 10022)"
+  },
+  "n789_Broadway": "789 Бродвей",
+  "@n789_Broadway": {
+    "description": "UI string (source key: 789 Broadway)"
+  },
+  "floor_12_New_York_NY_10003": "12 этаж, Нью-Йорк, NY 10003",
+  "@floor_12_New_York_NY_10003": {
+    "description": "UI string (source key: Floor 12, New York, NY 10003)"
+  },
+  "select_the_address": "Выберите адрес",
+  "@select_the_address": {
+    "description": "UI string (source key: Select the address)"
+  },
+  "note_This_is_the_address_where_the_driver_will_be_directed2": "Примечание: это адрес, куда будет направлен водитель.",
+  "@note_This_is_the_address_where_the_driver_will_be_directed2": {
+    "description": "UI string (source key: Note: This is the address where the driver will be directed.)"
+  },
+  "update_Address": "Обновить адрес",
+  "@update_Address": {
+    "description": "UI string (source key: update Address)"
+  },
+  "selecting_the_address": "Выбор адреса",
+  "@selecting_the_address": {
+    "description": "UI string (source key: Selecting the address)"
+  },
+  "n456_Oak_Avenue": "456 Оук-авеню",
+  "@n456_Oak_Avenue": {
+    "description": "UI string (source key: 456 Oak Avenue)"
+  },
+  "los_Angeles_CA_90012": "Лос-Анджелес, Калифорния 90012",
+  "@los_Angeles_CA_90012": {
+    "description": "UI string (source key: Los Angeles, CA 90012)"
+  },
+  "n789_Pine_Street": "789 Пайн-стрит",
+  "@n789_Pine_Street": {
+    "description": "UI string (source key: 789 Pine Street)"
+  },
+  "chicago_IL_60601": "Чикаго, Иллинойс 60601",
+  "@chicago_IL_60601": {
+    "description": "UI string (source key: Chicago, IL 60601)"
+  },
+  "don_t_have_an_account": "Нет аккаунта?  ",
+  "@don_t_have_an_account": {
+    "description": "UI string (source key: Don't have an account?  )"
+  },
+  "sign_Up_here": "Зарегистрируйтесь здесь",
+  "@sign_Up_here": {
+    "description": "UI string (source key: Sign Up here)"
+  },
+  "option_1": "Вариант 1",
+  "@option_1": {
+    "description": "UI string (source key: Option 1)"
+  },
+  "page_Title": "Название страницы",
+  "@page_Title": {
+    "description": "UI string (source key: Page Title)"
+  },
+  "your_request_has_been_successfully_submitted": "Ваш запрос был успешно отправлен.",
+  "@your_request_has_been_successfully_submitted": {
+    "description": "UI string (source key: Your request has been successfully submitted.)"
+  },
+  "you_can_track_the_status_of_your_order_through_the_My_Orders_page": "Вы можете отслеживать статус вашего заказа через страницу «Мои заказы».",
+  "@you_can_track_the_status_of_your_order_through_the_My_Orders_page": {
+    "description": "UI string (source key: You can track the status of your order through the \"My Orders\" page.)"
+  },
+  "view_Orders": "Посмотреть заказы",
+  "@view_Orders": {
+    "description": "UI string (source key: View Orders)"
+  },
+  "pending": "В ожидании",
+  "@pending": {
+    "description": "UI string (source key: Pending)"
+  },
+  "completed": "Завершено",
+  "@completed": {
+    "description": "UI string (source key: Completed)"
+  },
+  "expired": "Истекло",
+  "@expired": {
+    "description": "UI string (source key: Expired)"
+  },
+  "your_Bookings": "Ваши бронирования",
+  "@your_Bookings": {
+    "description": "UI string (source key: Your Bookings)"
+  },
+  "order_2847": "Заказ №2847",
+  "@order_2847": {
+    "description": "UI string (source key: Order #2847)"
+  },
+  "paris_France": "Париж, Франция",
+  "@paris_France": {
+    "description": "UI string (source key: Paris, France)"
+  },
+  "sept_15_2024": "15 сентября 2024",
+  "@sept_15_2024": {
+    "description": "UI string (source key: Sept 15, 2024)"
+  },
+  "order_2831": "Заказ №2831",
+  "@order_2831": {
+    "description": "UI string (source key: Order #2831)"
+  },
+  "rome_Italy": "Рим, Италия",
+  "@rome_Italy": {
+    "description": "UI string (source key: Rome, Italy)"
+  },
+  "sept_12_2024": "12 сентября 2024",
+  "@sept_12_2024": {
+    "description": "UI string (source key: Sept 12, 2024)"
+  },
+  "order_2819": "Заказ №2819",
+  "@order_2819": {
+    "description": "UI string (source key: Order #2819)"
+  },
+  "london_UK": "Лондон, Великобритания",
+  "@london_UK": {
+    "description": "UI string (source key: London, UK)"
+  },
+  "sept_8_2024": "8 сентября 2024",
+  "@sept_8_2024": {
+    "description": "UI string (source key: Sept 8, 2024)"
+  },
+  "new_York_City": "Нью-Йорк",
+  "@new_York_City": {
+    "description": "UI string (source key: New York City)"
+  },
+  "in_Progress": "В процессе",
+  "@in_Progress": {
+    "description": "UI string (source key: In Progress)"
+  },
+  "check_in": "Заезд",
+  "@check_in": {
+    "description": "UI string (source key: Check-in)"
+  },
+  "sep_12_2024": "12 сентября 2024",
+  "@sep_12_2024": {
+    "description": "UI string (source key: Sep 12, 2024)"
+  },
+  "check_out": "Выезд",
+  "@check_out": {
+    "description": "UI string (source key: Check-out)"
+  },
+  "sep_15_2024": "15 сентября 2024",
+  "@sep_15_2024": {
+    "description": "UI string (source key: Sep 15, 2024)"
+  },
+  "n840_00": "$840.00",
+  "@n840_00": {
+    "description": "UI string (source key: $840.00)"
+  },
+  "search_by_name_or_booking_ID": "Поиск по имени или ID бронирования...",
+  "@search_by_name_or_booking_ID": {
+    "description": "UI string (source key: Search by name or booking ID...)"
+  },
+  "date_Range": "Диапазон дат",
+  "@date_Range": {
+    "description": "UI string (source key: Date Range)"
+  },
+  "city": "Город",
+  "@city": {
+    "description": "UI string (source key: City)"
+  },
+  "sort_by": "Сортировать по",
+  "@sort_by": {
+    "description": "UI string (source key: Sort by)"
+  },
+  "apply_Filters": "Применить фильтры",
+  "@apply_Filters": {
+    "description": "UI string (source key: Apply Filters)"
+  },
+  "booking_Status": "Статус бронирования",
+  "@booking_Status": {
+    "description": "UI string (source key: Booking Status)"
+  },
+  "you_don_t_have_any_bookings_in_this_category_yet_Start_exploring_and_book_your_n": "У вас еще нет бронирований в этой категории. Начните исследовать и забронируйте свой следующий опыт!",
+  "@you_don_t_have_any_bookings_in_this_category_yet_Start_exploring_and_book_your_n": {
+    "description": "UI string (source key: You don't have any bookings in this category yet. Start exploring and book your next experience!)"
+  },
+  "browse_Services": "Просмотр услуг",
+  "@browse_Services": {
+    "description": "UI string (source key: Browse Services)"
+  },
+  "support_Tickets": "Тикеты поддержки",
+  "@support_Tickets": {
+    "description": "UI string (source key: Support Tickets)"
+  },
+  "create_New_Support_Ticket": "Создать новый тикет поддержки",
+  "@create_New_Support_Ticket": {
+    "description": "UI string (source key: Create New Support Ticket)"
+  },
+  "contact_us_directly": "Свяжитесь с нами напрямую",
+  "@contact_us_directly": {
+    "description": "UI string (source key: Contact us directly)"
+  },
+  "would_you_like_to_contact_our_support_team_directly_via_WhatsApp_for_faster_assi": "Хотите связаться с нашей командой поддержки напрямую через WhatsApp для более быстрой помощи?",
+  "@would_you_like_to_contact_our_support_team_directly_via_WhatsApp_for_faster_assi": {
+    "description": "UI string (source key: Would you like to contact our support team directly via WhatsApp for faster assistance?)"
+  },
+  "whatsApp": "WhatsApp",
+  "@whatsApp": {
+    "description": "UI string (source key: WhatsApp)"
+  },
+  "new_Support_Ticket": "Новый тикет поддержки",
+  "@new_Support_Ticket": {
+    "description": "UI string (source key: New Support Ticket)"
+  },
+  "brief_description_of_your_issue": "Краткое описание вашей проблемы",
+  "@brief_description_of_your_issue": {
+    "description": "UI string (source key: Brief description of your issue)"
+  },
+  "category": "Категория",
+  "@category": {
+    "description": "UI string (source key: Category)"
+  },
+  "select_a_category": "Выберите категорию",
+  "@select_a_category": {
+    "description": "UI string (source key: Select a category)"
+  },
+  "search_categories": "Поиск категорий...",
+  "@search_categories": {
+    "description": "UI string (source key: Search categories...)"
+  },
+  "inquiry": "Запрос",
+  "@inquiry": {
+    "description": "UI string (source key: Inquiry)"
+  },
+  "suggestion": "Предложение",
+  "@suggestion": {
+    "description": "UI string (source key: Suggestion)"
+  },
+  "complaint": "Жалоба",
+  "@complaint": {
+    "description": "UI string (source key: Complaint)"
+  },
+  "booking_Issue": "Проблема с бронированием",
+  "@booking_Issue": {
+    "description": "UI string (source key: Booking Issue)"
+  },
+  "other": "Другое",
+  "@other": {
+    "description": "UI string (source key: Other)"
+  },
+  "message": "Сообщение",
+  "@message": {
+    "description": "UI string (source key: Message)"
+  },
+  "please_provide_detailed_information_about_your_issue": "Пожалуйста, предоставьте подробную информацию о вашей проблеме...",
+  "@please_provide_detailed_information_about_your_issue": {
+    "description": "UI string (source key: Please provide detailed information about your issue...)"
+  },
+  "support_ticket_information": "Информация о тикете поддержки",
+  "@support_ticket_information": {
+    "description": "UI string (source key: Support ticket information)"
+  },
+  "our_support_team_typically_responds_within_24_48_hours_For_urgent_matters_please": "Наша команда поддержки обычно отвечает в течение 24-48 часов. По срочным вопросам, пожалуйста, свяжитесь с нами напрямую по телефону.",
+  "@our_support_team_typically_responds_within_24_48_hours_For_urgent_matters_please": {
+    "description": "UI string (source key: Our support team typically responds within 24-48 hours. For urgent matters, please contact us directly by phone.)"
+  },
+  "create_New_Ticket": "Создать новый тикет",
+  "@create_New_Ticket": {
+    "description": "UI string (source key: Create New Ticket)"
+  },
+  "back": "Назад",
+  "@back": {
+    "description": "UI string (source key: Back)"
+  },
+  "forgot_Password2": "Забыли пароль",
+  "@forgot_Password2": {
+    "description": "UI string (source key: Forgot Password)"
+  },
+  "we_will_send_you_an_email_with_a_link_to_reset_your_password_please_enter_the_em": "Мы вышлем вам электронное письмо со ссылкой для сброса пароля. Пожалуйста, введите адрес электронной почты, связанный с вашим аккаунтом, ниже.",
+  "@we_will_send_you_an_email_with_a_link_to_reset_your_password_please_enter_the_em": {
+    "description": "UI string (source key: We will send you an email with a link to reset your password, please enter the email associated with your account below.)"
+  },
+  "your_email_address": "Ваш адрес электронной почты...",
+  "@your_email_address": {
+    "description": "UI string (source key: Your email address...)"
+  },
+  "send_Link": "Отправить ссылку",
+  "@send_Link": {
+    "description": "UI string (source key: Send Link)"
+  },
+  "bMW_5_Series": "BMW 5 серии",
+  "@bMW_5_Series": {
+    "description": "UI string (source key: BMW 5 Series)"
+  },
+  "min_4_hours": "Мин: 4 часа",
+  "@min_4_hours": {
+    "description": "UI string (source key: Min: 4 hours)"
+  },
+  "n35_hour": "$35/час",
+  "@n35_hour": {
+    "description": "UI string (source key: $35/hour)"
+  },
+  "honda_CR_V": "Honda CR-V",
+  "@honda_CR_V": {
+    "description": "UI string (source key: Honda CR-V)"
+  },
+  "min_2_hours": "Мин: 2 часа",
+  "@min_2_hours": {
+    "description": "UI string (source key: Min: 2 hours)"
+  },
+  "n25_hour": "$25/час",
+  "@n25_hour": {
+    "description": "UI string (source key: $25/hour)"
+  },
+  "tesla_Model_3": "Tesla Model 3",
+  "@tesla_Model_3": {
+    "description": "UI string (source key: Tesla Model 3)"
+  },
+  "min_5_hours": "Мин: 5 часов",
+  "@min_5_hours": {
+    "description": "UI string (source key: Min: 5 hours)"
+  },
+  "n40_hour": "$40/час",
+  "@n40_hour": {
+    "description": "UI string (source key: $40/hour)"
+  },
+  "ford_Mustang": "Ford Mustang",
+  "@ford_Mustang": {
+    "description": "UI string (source key: Ford Mustang)"
+  },
+  "min_6_hours": "Мин: 6 часов",
+  "@min_6_hours": {
+    "description": "UI string (source key: Min: 6 hours)"
+  },
+  "n45_hour": "$45/час",
+  "@n45_hour": {
+    "description": "UI string (source key: $45/hour)"
+  },
+  "list_of_cars": "Список автомобилей",
+  "@list_of_cars": {
+    "description": "UI string (source key: List of cars)"
+  },
+  "button": "Кнопка",
+  "@button": {
+    "description": "UI string (source key: Button)"
+  },
+  "edit_the_address": "Редактировать адрес.",
+  "@edit_the_address": {
+    "description": "UI string (source key: Edit the address.)"
+  },
+  "update": "Обновить",
+  "@update": {
+    "description": "UI string (source key: Update)"
+  },
+  "maryam_Kutob": "Марьям Кутоб",
+  "@maryam_Kutob": {
+    "description": "UI string (source key: Maryam Kutob)"
+  },
+  "kutob_m1413_gmail_com": "kutob.m1413@gmail.com",
+  "@kutob_m1413_gmail_com": {
+    "description": "UI string (source key: kutob.m1413@gmail.com)"
+  },
+  "hGSHUM": "HGSHUM",
+  "@hGSHUM": {
+    "description": "UI string (source key: HGSHUM)"
+  },
+  "gregory_Smith": "Грегори Смит",
+  "@gregory_Smith": {
+    "description": "UI string (source key: Gregory Smith)"
+  },
+  "n652_UKW": "652 - UKW",
+  "@n652_UKW": {
+    "description": "UI string (source key: 652 - UKW)"
+  },
+  "how_is_your_trip": "Как ваша поездка?",
+  "@how_is_your_trip": {
+    "description": "UI string (source key: How is your trip?)"
+  },
+  "your_feedback_will_help_improve_driving_experience": "Ваш отзыв поможет улучшить опыт вождения",
+  "@your_feedback_will_help_improve_driving_experience": {
+    "description": "UI string (source key: Your feedback will help improve driving experience)"
+  },
+  "additional_comments": "Дополнительные комментарии...",
+  "@additional_comments": {
+    "description": "UI string (source key: Additional comments...)"
+  },
+  "submit_Review": "Отправить отзыв",
+  "@submit_Review": {
+    "description": "UI string (source key: Submit Review)"
+  },
+  "rating": "Рейтинг",
+  "@rating": {
+    "description": "UI string (source key: Rating)"
+  },
+  "wow_A_5_star_Wanna_add_tip_for_Gregory": "Вау! 5 звезд!\nХотите добавить чаевые для Грегори?",
+  "@wow_A_5_star_Wanna_add_tip_for_Gregory": {
+    "description": "UI string (source key: Wow! A 5 star !\nWanna add tip for Gregory?)"
+  },
+  "choose_other_amount": "Выбрать другую сумму",
+  "@choose_other_amount": {
+    "description": "UI string (source key: Choose other amount)"
+  },
+  "done": "Готово",
+  "@done": {
+    "description": "UI string (source key: Done)"
+  },
+  "maybe_next_time": "Может быть, в следующий раз",
+  "@maybe_next_time": {
+    "description": "UI string (source key: Maybe next time)"
+  },
+  "tips": "Чаевые",
+  "@tips": {
+    "description": "UI string (source key: Tips)"
+  },
+  "choose_the_type_of_entity_you_represent": "Выберите тип организации, которую вы представляете",
+  "@choose_the_type_of_entity_you_represent": {
+    "description": "UI string (source key: Choose the type of entity you represent)"
+  },
+  "government_Entity": "Государственный орган",
+  "@government_Entity": {
+    "description": "UI string (source key: Government Entity)"
+  },
+  "company_or_Organization": "Компания или организация",
+  "@company_or_Organization": {
+    "description": "UI string (source key: Company or Organization)"
+  },
+  "individual": "Частное лицо",
+  "@individual": {
+    "description": "UI string (source key: Individual)"
+  },
+  "next": "Далее",
+  "@next": {
+    "description": "UI string (source key: Next)"
+  },
+  "register_a_Success_Partner_Step_1_of_3": "Регистрация партнера по успеху - Шаг 1 из 3",
+  "@register_a_Success_Partner_Step_1_of_3": {
+    "description": "UI string (source key: Register a Success Partner - Step 1 of 3 )"
+  },
+  "company_Information": "Информация о компании",
+  "@company_Information": {
+    "description": "UI string (source key: Company Information)"
+  },
+  "enter_company_name": "Введите название компании *",
+  "@enter_company_name": {
+    "description": "UI string (source key: Enter company name *)"
+  },
+  "enter_phone_number": "Введите номер телефона *",
+  "@enter_phone_number": {
+    "description": "UI string (source key: Enter phone number *)"
+  },
+  "set_Location": "Установить местоположение *",
+  "@set_Location": {
+    "description": "UI string (source key: Set Location *)"
+  },
+  "enter_business_description": "Введите описание бизнеса *",
+  "@enter_business_description": {
+    "description": "UI string (source key: Enter business description *)"
+  },
+  "documents": "Документы",
+  "@documents": {
+    "description": "UI string (source key: Documents)"
+  },
+  "upload_Place_Image": "Загрузите изображение места *",
+  "@upload_Place_Image": {
+    "description": "UI string (source key: Upload Place Image *)"
+  },
+  "tap_to_select_image": "Нажмите, чтобы выбрать изображение",
+  "@tap_to_select_image": {
+    "description": "UI string (source key: Tap to select image)"
+  },
+  "attach_License_Document": "Прикрепите лицензионный документ *",
+  "@attach_License_Document": {
+    "description": "UI string (source key: Attach License Document *)"
+  },
+  "the_file_has_been_successfully_uploaded": "Файл успешно загружен.",
+  "@the_file_has_been_successfully_uploaded": {
+    "description": "UI string (source key: The file has been successfully uploaded.)"
+  },
+  "attach_Registration_Letter": "Прикрепите регистрационное письмо *",
+  "@attach_Registration_Letter": {
+    "description": "UI string (source key: Attach Registration Letter *)"
+  },
+  "service_Details": "Детали услуг",
+  "@service_Details": {
+    "description": "UI string (source key: Service Details)"
+  },
+  "describe_your_provided_services": "Опишите предоставляемые вами услуги *",
+  "@describe_your_provided_services": {
+    "description": "UI string (source key: Describe your provided services *)"
+  },
+  "cancel_Order": "Отменить заказ",
+  "@cancel_Order": {
+    "description": "UI string (source key: Cancel Order)"
+  },
+  "company_Information_Step_3_of_3": "Информация о компании - Шаг 3 из 3",
+  "@company_Information_Step_3_of_3": {
+    "description": "UI string (source key: Company Information -  Step 3 of 3)"
+  },
+  "step_2_of_3": "Шаг 2 из 3",
+  "@step_2_of_3": {
+    "description": "UI string (source key: Step 2 of 3)"
+  },
+  "create_an_account": "Создать аккаунт",
+  "@create_an_account": {
+    "description": "UI string (source key: Create an account)"
+  },
+  "let_s_get_started_by_filling_out_the_form_below": "Давайте начнем, заполнив форму ниже.",
+  "@let_s_get_started_by_filling_out_the_form_below": {
+    "description": "UI string (source key: Let's get started by filling out the form below.)"
+  },
+  "next2": "Далее ",
+  "@next2": {
+    "description": "UI string (source key: Next )"
+  },
+  "initiate": "Инициировать ",
+  "@initiate": {
+    "description": "UI string (source key: Initiate )"
+  },
+  "what_kind_of_tour_would_you_like_to_explore_today": "Какой тип тура вы хотели бы исследовать сегодня?",
+  "@what_kind_of_tour_would_you_like_to_explore_today": {
+    "description": "UI string (source key: What kind of tour would you like to explore today?)"
+  },
+  "select_My_Own_Tour_Route": "Выбрать собственный маршрут тура",
+  "@select_My_Own_Tour_Route": {
+    "description": "UI string (source key: Select My Own Tour Route)"
+  },
+  "get_Help_from_the_Driver_Guide": "Получить помощь от водителя-гида",
+  "@get_Help_from_the_Driver_Guide": {
+    "description": "UI string (source key: Get Help from the Driver Guide)"
+  },
+  "current_Address": "Текущий адрес",
+  "@current_Address": {
+    "description": "UI string (source key: Current Address)"
+  },
+  "current_Country": "Текущая страна",
+  "@current_Country": {
+    "description": "UI string (source key: Current Country)"
+  },
+  "current_City": "Текущий город",
+  "@current_City": {
+    "description": "UI string (source key: Current City)"
+  },
+  "initiate2": "Инициировать",
+  "@initiate2": {
+    "description": "UI string (source key: Initiate)"
+  },
+  "trip_Assistance_Selected": "Выбрана помощь в поездке",
+  "@trip_Assistance_Selected": {
+    "description": "UI string (source key: Trip Assistance Selected)"
+  },
+  "personalized_Route": "Персонализированный маршрут",
+  "@personalized_Route": {
+    "description": "UI string (source key: Personalized Route)"
+  },
+  "top_local_attractions_curated_just_for_you": "Лучшие местные достопримечательности, подобранные специально для вас",
+  "@top_local_attractions_curated_just_for_you": {
+    "description": "UI string (source key: Top local attractions curated just for you)"
+  },
+  "historical_Sites": "Исторические места",
+  "@historical_Sites": {
+    "description": "UI string (source key: Historical Sites)"
+  },
+  "local_Markets": "Местные рынки",
+  "@local_Markets": {
+    "description": "UI string (source key: Local Markets)"
+  },
+  "scenic_Views": "Живописные виды",
+  "@scenic_Views": {
+    "description": "UI string (source key: Scenic Views)"
+  },
+  "cultural_Centers": "Культурные центры",
+  "@cultural_Centers": {
+    "description": "UI string (source key: Cultural Centers)"
+  },
+  "contact_Your_Guide": "Связаться с вашим гидом",
+  "@contact_Your_Guide": {
+    "description": "UI string (source key: Contact Your Guide)"
+  },
+  "view_Trip_Details": "Просмотреть детали поездки",
+  "@view_Trip_Details": {
+    "description": "UI string (source key: View Trip Details)"
+  },
+  "suggest_a_New_Place": "Предложить новое место!",
+  "@suggest_a_New_Place": {
+    "description": "UI string (source key: Suggest a New Place!)"
+  },
+  "help_Us_Enrich_the_Experience": "Помогите нам обогатить опыт",
+  "@help_Us_Enrich_the_Experience": {
+    "description": "UI string (source key: Help Us Enrich the Experience)"
+  },
+  "do_you_know_a_hidden_gem_or_a_must_visit_spot_that_s_not_listed_in_our_app_We_d_": "Знаете ли вы скрытую жемчужину или обязательное для посещения место, которого нет в нашем приложении? Мы будем рады услышать от вас!",
+  "@do_you_know_a_hidden_gem_or_a_must_visit_spot_that_s_not_listed_in_our_app_We_d_": {
+    "description": "UI string (source key: Do you know a hidden gem or a must-visit spot that's not listed in our app? We'd love to hear from you!)"
+  },
+  "your_suggestions_help_others_discover_more_amazing_places": "Ваши предложения помогают другим открывать более удивительные места!",
+  "@your_suggestions_help_others_discover_more_amazing_places": {
+    "description": "UI string (source key: Your suggestions help others discover more amazing places!)"
+  },
+  "share_your_favorite_place_with_the_community": "Поделитесь своим любимым местом с сообществом:",
+  "@share_your_favorite_place_with_the_community": {
+    "description": "UI string (source key: Share your favorite place with the community:)"
+  },
+  "place_Name": "Название места",
+  "@place_Name": {
+    "description": "UI string (source key: Place Name)"
+  },
+  "enter_the_name_of_the_place": "Введите название места",
+  "@enter_the_name_of_the_place": {
+    "description": "UI string (source key: Enter the name of the place)"
+  },
+  "tell_us_what_makes_it_special": "Расскажите нам, что делает его особенным",
+  "@tell_us_what_makes_it_special": {
+    "description": "UI string (source key: Tell us what makes it special)"
+  },
+  "describe_what_makes_this_place_unique_and_worth_visiting": "Опишите, что делает это место уникальным и достойным посещения...",
+  "@describe_what_makes_this_place_unique_and_worth_visiting": {
+    "description": "UI string (source key: Describe what makes this place unique and worth visiting...)"
+  },
+  "upload_Photos": "Загрузить фотографии",
+  "@upload_Photos": {
+    "description": "UI string (source key: Upload  Photos)"
+  },
+  "tap_to_upload_photos": "Нажмите, чтобы загрузить фотографии",
+  "@tap_to_upload_photos": {
+    "description": "UI string (source key: Tap to upload photos)"
+  },
+  "image_uploaded_successfully": "Изображение успешно загружено. ✅",
+  "@image_uploaded_successfully": {
+    "description": "UI string (source key: Image uploaded successfully. ✅)"
+  },
+  "maximum_3_photos": "Максимум 3 фотографии",
+  "@maximum_3_photos": {
+    "description": "UI string (source key: Maximum 3 photos)"
+  },
+  "mark_the_Location_on_the_Map": "Отметьте местоположение на карте",
+  "@mark_the_Location_on_the_Map": {
+    "description": "UI string (source key: Mark the Location on the Map)"
+  },
+  "tap_to_select_location_on_map": "Нажмите, чтобы выбрать местоположение на карте",
+  "@tap_to_select_location_on_map": {
+    "description": "UI string (source key: Tap to select location on map)"
+  },
+  "location_has_been_set": "Местоположение установлено✅",
+  "@location_has_been_set": {
+    "description": "UI string (source key: Location has been set✅)"
+  },
+  "submit": " Отправить",
+  "@submit": {
+    "description": "UI string (source key:  Submit)"
+  },
+  "ahmed_Al_Qahtani": "Ахмед Аль-Кахтани",
+  "@ahmed_Al_Qahtani": {
+    "description": "UI string (source key: Ahmed Al-Qahtani)"
+  },
+  "delivery_Agent": "Агент по доставке",
+  "@delivery_Agent": {
+    "description": "UI string (source key: Delivery Agent)"
+  },
+  "n966_50_123_4567": "+966 50 123 4567",
+  "@n966_50_123_4567": {
+    "description": "UI string (source key: +966 50 123 4567)"
+  },
+  "chat_Messages": "Сообщения чата",
+  "@chat_Messages": {
+    "description": "UI string (source key: Chat Messages)"
+  },
+  "vehicle_Plate": "Номерной знак автомобиля",
+  "@vehicle_Plate": {
+    "description": "UI string (source key: Vehicle Plate)"
+  },
+  "kSA_1234_ABC": "Саудовская Аравия | 1234 ABC",
+  "@kSA_1234_ABC": {
+    "description": "UI string (source key: KSA | 1234 ABC)"
+  },
+  "vERIFIED": "ПОДТВЕРЖДЕНО",
+  "@vERIFIED": {
+    "description": "UI string (source key: VERIFIED)"
+  },
+  "live_Location_Tracking": "Отслеживание местоположения в реальном времени",
+  "@live_Location_Tracking": {
+    "description": "UI string (source key: Live Location Tracking)"
+  },
+  "real_time_tracking_active": "Отслеживание в реальном времени активно",
+  "@real_time_tracking_active": {
+    "description": "UI string (source key: Real-time tracking active)"
+  },
+  "track_Location": "Отслеживать местоположение",
+  "@track_Location": {
+    "description": "UI string (source key: Track Location)"
+  },
+  "call_Now": "Позвонить сейчас",
+  "@call_Now": {
+    "description": "UI string (source key: Call Now)"
+  },
+  "type_your_message": "Введите ваше сообщение...",
+  "@type_your_message": {
+    "description": "UI string (source key: Type your message...)"
+  },
+  "pay_the_reservation_fee": "Оплатить сбор за бронирование",
+  "@pay_the_reservation_fee": {
+    "description": "UI string (source key: Pay the reservation fee)"
+  },
+  "where_would_you_like_to_start_your_ride": "Откуда бы вы хотели начать поездку?",
+  "@where_would_you_like_to_start_your_ride": {
+    "description": "UI string (source key: Where would you like to start your ride?)"
+  },
+  "united_States": "Соединенные Штаты",
+  "@united_States": {
+    "description": "UI string (source key: United States)"
+  },
+  "san_Francisco": "Сан-Франциско",
+  "@san_Francisco": {
+    "description": "UI string (source key: San Francisco)"
+  },
+  "n1234_Market_Street_Downtown": "1234 Маркет-стрит, центр города",
+  "@n1234_Market_Street_Downtown": {
+    "description": "UI string (source key: 1234 Market Street, Downtown)"
+  },
+  "map_showing_your_current_location": "Карта, показывающая ваше текущее местоположение",
+  "@map_showing_your_current_location": {
+    "description": "UI string (source key: Map showing your current location)"
+  },
+  "design_My_Route": "Спроектировать мой маршрут",
+  "@design_My_Route": {
+    "description": "UI string (source key: Design My Route)"
+  },
+  "add_landmarks_to_customize_your_journey": "Добавьте достопримечательности, чтобы настроить ваше путешествие",
+  "@add_landmarks_to_customize_your_journey": {
+    "description": "UI string (source key: Add landmarks to customize your journey)"
+  },
+  "let_the_Driver_Decide": "Пусть водитель решит",
+  "@let_the_Driver_Decide": {
+    "description": "UI string (source key: Let the Driver Decide)"
+  },
+  "rely_on_the_driver_s_local_expertise": "Положитесь на местные знания водителя",
+  "@rely_on_the_driver_s_local_expertise": {
+    "description": "UI string (source key: Rely on the driver's local expertise)"
+  },
+  "choose_Your_Location": "Выберите ваше местоположение",
+  "@choose_Your_Location": {
+    "description": "UI string (source key: Choose Your Location)"
+  },
+  "cardholder_Name": "Имя держателя карты",
+  "@cardholder_Name": {
+    "description": "UI string (source key: Cardholder Name)"
+  },
+  "enter_cardholder_name": "Введите имя держателя карты",
+  "@enter_cardholder_name": {
+    "description": "UI string (source key: Enter cardholder name)"
+  },
+  "card_Number": "Номер карты",
+  "@card_Number": {
+    "description": "UI string (source key: Card Number)"
+  },
+  "expiry_Month": "Месяц окончания срока действия",
+  "@expiry_Month": {
+    "description": "UI string (source key: Expiry Month)"
+  },
+  "mM": "ММ",
+  "@mM": {
+    "description": "UI string (source key: MM)"
+  },
+  "expiry_Year": "Год окончания срока действия",
+  "@expiry_Year": {
+    "description": "UI string (source key: Expiry Year)"
+  },
+  "yY": "ГГ",
+  "@yY": {
+    "description": "UI string (source key: YY)"
+  },
+  "save_this_card_for_future_payments": "Сохранить эту карту для будущих платежей",
+  "@save_this_card_for_future_payments": {
+    "description": "UI string (source key: Save this card for future payments)"
+  },
+  "save_Card": "Сохранить карту",
+  "@save_Card": {
+    "description": "UI string (source key: Save Card)"
+  },
+  "close_Page": "Закрыть страницу",
+  "@close_Page": {
+    "description": "UI string (source key: Close Page)"
+  },
+  "please_do_not_close_the_page_until_the_payment_is_completed": "Пожалуйста, не закрывайте страницу до завершения платежа",
+  "@please_do_not_close_the_page_until_the_payment_is_completed": {
+    "description": "UI string (source key: Please do not close the page until the payment is completed)"
+  },
+  "payment_Confirmed": "Платеж подтвержден!",
+  "@payment_Confirmed": {
+    "description": "UI string (source key: Payment Confirmed!)"
+  },
+  "your_request_has_been_sent_successfully_and_a_driver_will_accept_your_request_wi": "\"Ваш запрос успешно отправлен, и водитель примет ваш запрос в течение следующих нескольких минут",
+  "@your_request_has_been_sent_successfully_and_a_driver_will_accept_your_request_wi": {
+    "description": "UI string (source key: \"Your request has been sent successfully, and a driver will accept your request within the next few minutes)"
+  },
+  "go_to_Order": "Перейти к заказу",
+  "@go_to_Order": {
+    "description": "UI string (source key: Go to Order)"
+  },
+  "the_last_payment_was_not_completed_please_try_again": "Последний платеж не был завершен, пожалуйста, попробуйте еще раз",
+  "@the_last_payment_was_not_completed_please_try_again": {
+    "description": "UI string (source key: The last payment was not completed, please try again)"
+  },
+  "payment_History": "История платежей",
+  "@payment_History": {
+    "description": "UI string (source key: Payment History)"
+  },
+  "tXN_ID": "ID транзакции:",
+  "@tXN_ID": {
+    "description": "UI string (source key: TXN ID:)"
+  },
+  "k3603b6854b": "ID операции",
+  "@k3603b6854b": {
+    "description": "UI string (source key: معرف العملية)"
+  },
+  "online_Payment_ID": "ID онлайн-платежа:",
+  "@online_Payment_ID": {
+    "description": "UI string (source key: Online Payment ID:)"
+  },
+  "online_Payment_ID2": "ID онлайн-платежа",
+  "@online_Payment_ID2": {
+    "description": "UI string (source key: Online Payment ID)"
+  },
+  "salary_Deposit": "Депозит заработной платы",
+  "@salary_Deposit": {
+    "description": "UI string (source key: Salary Deposit)"
+  },
+  "tXN_ID_TXN654321987": "ID транзакции: TXN654321987",
+  "@tXN_ID_TXN654321987": {
+    "description": "UI string (source key: TXN ID: TXN654321987)"
+  },
+  "dec_14_2024_9_15_AM": "14 дек. 2024 • 9:15",
+  "@dec_14_2024_9_15_AM": {
+    "description": "UI string (source key: Dec 14, 2024 • 9:15 AM)"
+  },
+  "n3_250_00": "+$3 250,00",
+  "@n3_250_00": {
+    "description": "UI string (source key: +$3,250.00)"
+  },
+  "electronic_Payment_ID": "ID электронного платежа",
+  "@electronic_Payment_ID": {
+    "description": "UI string (source key: Electronic Payment ID)"
+  },
+  "ePY_2024_654321": "EPY-2024-654321",
+  "@ePY_2024_654321": {
+    "description": "UI string (source key: EPY-2024-654321)"
+  },
+  "utility_Bill_Payment": "Оплата коммунальных услуг",
+  "@utility_Bill_Payment": {
+    "description": "UI string (source key: Utility Bill Payment)"
+  },
+  "tXN_ID_TXN456789012": "ID транзакции: TXN456789012",
+  "@tXN_ID_TXN456789012": {
+    "description": "UI string (source key: TXN ID: TXN456789012)"
+  },
+  "dec_13_2024_4_22_PM": "13 дек. 2024 • 16:22",
+  "@dec_13_2024_4_22_PM": {
+    "description": "UI string (source key: Dec 13, 2024 • 4:22 PM)"
+  },
+  "n156_78": "-$156,78",
+  "@n156_78": {
+    "description": "UI string (source key: -$156.78)"
+  },
+  "ePY_2024_456789": "EPY-2024-456789",
+  "@ePY_2024_456789": {
+    "description": "UI string (source key: EPY-2024-456789)"
+  },
+  "restaurant_Payment": "Оплата в ресторане",
+  "@restaurant_Payment": {
+    "description": "UI string (source key: Restaurant Payment)"
+  },
+  "tXN_ID_TXN321654987": "ID транзакции: TXN321654987",
+  "@tXN_ID_TXN321654987": {
+    "description": "UI string (source key: TXN ID: TXN321654987)"
+  },
+  "dec_12_2024_7_45_PM": "12 дек. 2024 • 19:45",
+  "@dec_12_2024_7_45_PM": {
+    "description": "UI string (source key: Dec 12, 2024 • 7:45 PM)"
+  },
+  "n42_50": "-$42,50",
+  "@n42_50": {
+    "description": "UI string (source key: -$42.50)"
+  },
+  "ePY_2024_321654": "EPY-2024-321654",
+  "@ePY_2024_321654": {
+    "description": "UI string (source key: EPY-2024-321654)"
+  },
+  "investment_Transfer": "Перевод инвестиций",
+  "@investment_Transfer": {
+    "description": "UI string (source key: Investment Transfer)"
+  },
+  "tXN_ID_TXN987123456": "ID транзакции: TXN987123456",
+  "@tXN_ID_TXN987123456": {
+    "description": "UI string (source key: TXN ID: TXN987123456)"
+  },
+  "dec_11_2024_11_30_AM": "11 дек. 2024 • 11:30",
+  "@dec_11_2024_11_30_AM": {
+    "description": "UI string (source key: Dec 11, 2024 • 11:30 AM)"
+  },
+  "n500_00": "-$500,00",
+  "@n500_00": {
+    "description": "UI string (source key: -$500.00)"
+  },
+  "ePY_2024_987123": "EPY-2024-987123",
+  "@ePY_2024_987123": {
+    "description": "UI string (source key: EPY-2024-987123)"
+  },
+  "refund_Online_Store": "Возврат - Интернет-магазин",
+  "@refund_Online_Store": {
+    "description": "UI string (source key: Refund - Online Store)"
+  },
+  "tXN_ID_TXN147258369": "ID транзакции: TXN147258369",
+  "@tXN_ID_TXN147258369": {
+    "description": "UI string (source key: TXN ID: TXN147258369)"
+  },
+  "dec_10_2024_3_18_PM": "10 дек. 2024 • 15:18",
+  "@dec_10_2024_3_18_PM": {
+    "description": "UI string (source key: Dec 10, 2024 • 3:18 PM)"
+  },
+  "start_from_your_current_location": "Начать с вашего текущего местоположения",
+  "@start_from_your_current_location": {
+    "description": "UI string (source key: Start from your current location)"
+  },
+  "change_city": "Изменить город",
+  "@change_city": {
+    "description": "UI string (source key: Change city)"
+  },
+  "view_My_Trip": "Просмотреть мою поездку",
+  "@view_My_Trip": {
+    "description": "UI string (source key: View My Trip)"
+  },
+  "experience_top_destinations": "Испытайте лучшие направления",
+  "@experience_top_destinations": {
+    "description": "UI string (source key: Experience top destinations)"
+  },
+  "tourist_landmarks": "Туристические достопримечательности",
+  "@tourist_landmarks": {
+    "description": "UI string (source key: Tourist landmarks)"
+  },
+  "landmarks": "Достопримечательности - Туристические достопримечательности",
+  "@landmarks": {
+    "description": "UI string (source key: Landmarks - معالم سياحية)"
+  },
+  "google_Map": "Google Карта",
+  "@google_Map": {
+    "description": "UI string (source key: Google Map)"
+  },
+  "agent_Location": "Местоположение агента",
+  "@agent_Location": {
+    "description": "UI string (source key: Agent Location)"
+  },
+  "the_details": "детали",
+  "@the_details": {
+    "description": "UI string (source key: the details)"
+  },
+  "select_Travel_Date": "Выберите дату поездки",
+  "@select_Travel_Date": {
+    "description": "UI string (source key: Select Travel Date)"
+  },
+  "choose_your_preferred_departure_date": "Выберите предпочтительную дату отправления",
+  "@choose_your_preferred_departure_date": {
+    "description": "UI string (source key: Choose your preferred departure date)"
+  },
+  "selected_Date": "Выбранная дата",
+  "@selected_Date": {
+    "description": "UI string (source key: Selected Date)"
+  },
+  "march_15_2024": "15 марта 2024",
+  "@march_15_2024": {
+    "description": "UI string (source key: March 15, 2024)"
+  },
+  "change_Date": "Изменить дату",
+  "@change_Date": {
+    "description": "UI string (source key: Change Date)"
+  },
+  "select_Time": "Выберите время",
+  "@select_Time": {
+    "description": "UI string (source key: Select Time)"
+  },
+  "aM_PM": "AM/PM",
+  "@aM_PM": {
+    "description": "UI string (source key: AM/PM)"
+  },
+  "no_Addresses_Found": "Адреса не найдены",
+  "@no_Addresses_Found": {
+    "description": "UI string (source key: No Addresses Found)"
+  },
+  "you_haven_t_added_any_addresses_yet_Add_a_title_to_get_started": "Вы еще не добавили ни одного адреса. Добавьте название, чтобы начать.",
+  "@you_haven_t_added_any_addresses_yet_Add_a_title_to_get_started": {
+    "description": "UI string (source key: You haven't added any addresses yet. Add a title to get started.)"
+  },
+  "payment_Methods": "Способы оплаты",
+  "@payment_Methods": {
+    "description": "UI string (source key: Payment Methods)"
+  },
+  "select": "Выбрать ",
+  "@select": {
+    "description": "UI string (source key: Select )"
+  },
+  "save": "Сохранить",
+  "@save": {
+    "description": "UI string (source key: Save)"
+  },
+  "quick_Pay_Options": "Опции быстрой оплаты",
+  "@quick_Pay_Options": {
+    "description": "UI string (source key: Quick Pay Options)"
+  },
+  "saved_Cards": "Сохраненные карты",
+  "@saved_Cards": {
+    "description": "UI string (source key: Saved Cards)"
+  },
+  "add_New_Payment_Method": "Добавить новый способ оплаты",
+  "@add_New_Payment_Method": {
+    "description": "UI string (source key: Add New Payment Method)"
+  },
+  "hello_World": "Привет, мир",
+  "@hello_World": {
+    "description": "UI string (source key: Hello World)"
+  },
+  "no_cards_have_been_added": "Карты не добавлены!",
+  "@no_cards_have_been_added": {
+    "description": "UI string (source key: No cards have been added!)"
+  },
+  "payment_Card": "Платежная карта",
+  "@payment_Card": {
+    "description": "UI string (source key: Payment Card)"
+  },
+  "choice": "Выбор",
+  "@choice": {
+    "description": "UI string (source key: Choice)"
+  },
+  "n8901": "•••• •••• •••• 8901",
+  "@n8901": {
+    "description": "UI string (source key: •••• •••• •••• 8901)"
+  },
+  "mastercard_Expires_08_25": "Mastercard • Действительна до 08/25",
+  "@mastercard_Expires_08_25": {
+    "description": "UI string (source key: Mastercard • Expires 08/25)"
+  },
+  "n2468": "•••• •••• •••• 2468",
+  "@n2468": {
+    "description": "UI string (source key: •••• •••• •••• 2468)"
+  },
+  "american_Express_Expires_03_27": "American Express • Действительна до 03/27",
+  "@american_Express_Expires_03_27": {
+    "description": "UI string (source key: American Express • Expires 03/27)"
+  },
+  "number_of_Extra_Hours": "Количество дополнительных часов",
+  "@number_of_Extra_Hours": {
+    "description": "UI string (source key: Number of Extra Hours)"
+  },
+  "payment_Method": "Способ оплаты",
+  "@payment_Method": {
+    "description": "UI string (source key: Payment Method)"
+  },
+  "add_Card": "Добавить карту",
+  "@add_Card": {
+    "description": "UI string (source key: Add Card)"
+  },
+  "total_Price": "Общая цена",
+  "@total_Price": {
+    "description": "UI string (source key: Total Price)"
+  },
+  "n4_00pm": "16:00",
+  "@n4_00pm": {
+    "description": "UI string (source key: 4:00pm)"
+  },
+  "n52": "5+ часов",
+  "@n52": {
+    "description": "UI string (source key: 5+ ساعات)"
+  },
+  "extra_hours_have_been_added_to_the_trip": "К поездке добавлены дополнительные часы",
+  "@extra_hours_have_been_added_to_the_trip": {
+    "description": "UI string (source key: Extra hours have been added to the trip)"
+  },
+  "order_Summary": "Сводка заказа",
+  "@order_Summary": {
+    "description": "UI string (source key: Order Summary)"
+  },
+  "request_summary": "сводка запроса",
+  "@request_summary": {
+    "description": "UI string (source key: request summary)"
+  },
+  "n25_40": "$25,40",
+  "@n25_40": {
+    "description": "UI string (source key: $25.40)"
+  },
+  "n4_items": "(4 товара)",
+  "@n4_items": {
+    "description": "UI string (source key: (4 items))"
+  },
+  "reservations": "Мои бронирования",
+  "@reservations": {
+    "description": "UI string (source key: Reservations)"
+  },
+  "ux_welcome_login": "Добро пожаловать в Touri Taxi",
+  "@ux_welcome_login": {
+    "description": "UI string (source key: ux_welcome_login)"
+  },
+  "ux_welcome_login_sub": "Войдите или создайте аккаунт, чтобы легко забронировать поездку",
+  "@ux_welcome_login_sub": {
+    "description": "UI string (source key: ux_welcome_login_sub)"
+  },
+  "ux_booking_steps": "Этапы бронирования",
+  "@ux_booking_steps": {
+    "description": "UI string (source key: ux_booking_steps)"
+  },
+  "ux_step_trip_type": "Trip type",
+  "@ux_step_trip_type": {
+    "description": "UI string (source key: ux_step_trip_type)"
+  },
+  "ux_step_location": "Расположение",
+  "@ux_step_location": {
+    "description": "UI string (source key: ux_step_location)"
+  },
+  "ux_step_details": "Details",
+  "@ux_step_details": {
+    "description": "UI string (source key: ux_step_details)"
+  },
+  "ux_step_payment": "Payment",
+  "@ux_step_payment": {
+    "description": "UI string (source key: ux_step_payment)"
+  },
+  "ux_choose_trip_type": "How do you want to explore?",
+  "@ux_choose_trip_type": {
+    "description": "UI string (source key: ux_choose_trip_type)"
+  },
+  "ux_choose_trip_hint": "Выберите один вариант ниже, затем укажите свое местоположение, чтобы продолжить.",
+  "@ux_choose_trip_hint": {
+    "description": "UI string (source key: ux_choose_trip_hint)"
+  },
+  "ux_car_list_hint": "Выберите подходящий автомобиль для поездки, затем нажмите «Выбрать».",
+  "@ux_car_list_hint": {
+    "description": "UI string (source key: ux_car_list_hint)"
+  },
+  "ux_car_available": "доступны автомобили",
+  "@ux_car_available": {
+    "description": "UI string (source key: ux_car_available)"
+  },
+  "ux_per_hour": "в час",
+  "@ux_per_hour": {
+    "description": "UI string (source key: ux_per_hour)"
+  },
+  "ux_min_hours": "Минимум",
+  "@ux_min_hours": {
+    "description": "UI string (source key: ux_min_hours)"
+  },
+  "ux_car_list_empty_title": "Нет доступных автомобилей",
+  "@ux_car_list_empty_title": {
+    "description": "UI string (source key: ux_car_list_empty_title)"
+  },
+  "ux_car_list_empty_msg": "Машин сейчас нет. Пожалуйста, повторите попытку позже",
+  "@ux_car_list_empty_msg": {
+    "description": "UI string (source key: ux_car_list_empty_msg)"
+  },
+  "ux_car_list_error_title": "Не удалось загрузить автомобили",
+  "@ux_car_list_error_title": {
+    "description": "UI string (source key: ux_car_list_error_title)"
+  },
+  "ux_car_list_error_msg": "Проверьте подключение к Интернету и повторите попытку.",
+  "@ux_car_list_error_msg": {
+    "description": "UI string (source key: ux_car_list_error_msg)"
+  },
+  "ux_retry": "Повторить попытку",
+  "@ux_retry": {
+    "description": "UI string (source key: ux_retry)"
+  },
+  "booking_success_title": "Бронирование подтверждено",
+  "@booking_success_title": {
+    "description": "UI string (source key: booking_success_title)"
+  },
+  "booking_success_msg": "Ваш запрос успешно отправлен. Водители будут уведомлены, и вам следует принять это в ближайшее время.",
+  "@booking_success_msg": {
+    "description": "UI string (source key: booking_success_msg)"
+  },
+  "booking_login_required": "Пожалуйста, войдите в систему перед завершением бронирования",
+  "@booking_login_required": {
+    "description": "UI string (source key: booking_login_required)"
+  },
+  "booking_save_failed": "Не удалось отправить ваш запрос. Проверьте подключение и повторите попытку.",
+  "@booking_save_failed": {
+    "description": "UI string (source key: booking_save_failed)"
+  },
+  "ux_custom_route_desc": "Вы выбираете места на карте и сами планируете маршрут",
+  "@ux_custom_route_desc": {
+    "description": "UI string (source key: ux_custom_route_desc)"
+  },
+  "ux_driver_guide_desc": "Ваш водитель проведет вас и предложит лучшие достопримечательности.",
+  "@ux_driver_guide_desc": {
+    "description": "UI string (source key: ux_driver_guide_desc)"
+  },
+  "ux_my_bookings_sub": "Отслеживайте свои текущие и прошлые бронирования здесь",
+  "@ux_my_bookings_sub": {
+    "description": "UI string (source key: ux_my_bookings_sub)"
+  },
+  "ux_no_bookings_title": "Бронирований пока нет",
+  "@ux_no_bookings_title": {
+    "description": "UI string (source key: ux_no_bookings_title)"
+  },
+  "ux_no_bookings_msg": "Начните свою первую поездку со вкладки «Забронировать сейчас».",
+  "@ux_no_bookings_msg": {
+    "description": "UI string (source key: ux_no_bookings_msg)"
+  },
+  "ux_account_sub": "Управление профилем, языком и поддержкой",
+  "@ux_account_sub": {
+    "description": "UI string (source key: ux_account_sub)"
+  },
+  "ux_account_settings": "Настройки учетной записи",
+  "@ux_account_settings": {
+    "description": "UI string (source key: ux_account_settings)"
+  },
+  "ux_new_booking": "Book a new trip",
+  "@ux_new_booking": {
+    "description": "UI string (source key: ux_new_booking)"
+  },
+  "dialog_ok": "ХОРОШО",
+  "@dialog_ok": {
+    "description": "UI string (source key: dialog_ok)"
+  },
+  "dialog_yes": "Да",
+  "@dialog_yes": {
+    "description": "UI string (source key: dialog_yes)"
+  },
+  "dialog_no": "Нет",
+  "@dialog_no": {
+    "description": "UI string (source key: dialog_no)"
+  },
+  "dialog_confirm": "Подтверждать",
+  "@dialog_confirm": {
+    "description": "UI string (source key: dialog_confirm)"
+  },
+  "dialog_cancel": "Отмена",
+  "@dialog_cancel": {
+    "description": "UI string (source key: dialog_cancel)"
+  },
+  "dialog_error_title": "Ошибка",
+  "@dialog_error_title": {
+    "description": "UI string (source key: dialog_error_title)"
+  },
+  "dialog_location_error": "Нам не удалось найти ваше текущее местоположение. Пожалуйста, включите службы определения местоположения.",
+  "@dialog_location_error": {
+    "description": "UI string (source key: dialog_location_error)"
+  },
+  "dialog_country_mismatch_title": "Неверная страна",
+  "@dialog_country_mismatch_title": {
+    "description": "UI string (source key: dialog_country_mismatch_title)"
+  },
+  "dialog_country_mismatch_msg": "Отображаемая страна не соответствует вашему текущему местоположению. Пожалуйста, выберите правильную страну.",
+  "@dialog_country_mismatch_msg": {
+    "description": "UI string (source key: dialog_country_mismatch_msg)"
+  },
+  "dialog_outside_coverage_title": "Вне зоны обслуживания",
+  "@dialog_outside_coverage_title": {
+    "description": "UI string (source key: dialog_outside_coverage_title)"
+  },
+  "dialog_outside_coverage_msg": "Ваша текущая страна находится за пределами зоны обслуживания системы. Бронирование недоступно из вашего местоположения.",
+  "@dialog_outside_coverage_msg": {
+    "description": "UI string (source key: dialog_outside_coverage_msg)"
+  },
+  "dialog_change_country_title": "Изменить страну",
+  "@dialog_change_country_title": {
+    "description": "UI string (source key: dialog_change_country_title)"
+  },
+  "dialog_change_country_msg": "Вы уверены, что хотите сменить страну?",
+  "@dialog_change_country_msg": {
+    "description": "UI string (source key: dialog_change_country_msg)"
+  },
+  "dialog_change_city_title": "Изменить город",
+  "@dialog_change_city_title": {
+    "description": "UI string (source key: dialog_change_city_title)"
+  },
+  "dialog_change_city_msg": "Вы уверены, что хотите сменить город?",
+  "@dialog_change_city_msg": {
+    "description": "UI string (source key: dialog_change_city_msg)"
+  },
+  "dialog_select_trip_or_location": "Пожалуйста, выберите тип поездки или место",
+  "@dialog_select_trip_or_location": {
+    "description": "UI string (source key: dialog_select_trip_or_location)"
+  },
+  "dialog_update_location_title": "Обновить местоположение",
+  "@dialog_update_location_title": {
+    "description": "UI string (source key: dialog_update_location_title)"
+  },
+  "dialog_update_location_msg": "Вы уверены, что хотите обновить свое текущее местоположение?",
+  "@dialog_update_location_msg": {
+    "description": "UI string (source key: dialog_update_location_msg)"
+  },
+  "dialog_select_all_options": "Пожалуйста, выберите все необходимые опции",
+  "@dialog_select_all_options": {
+    "description": "UI string (source key: dialog_select_all_options)"
+  },
+  "dialog_delete_account_title": "Удалить аккаунт",
+  "@dialog_delete_account_title": {
+    "description": "UI string (source key: dialog_delete_account_title)"
+  },
+  "dialog_delete_account_msg": "Вы уверены, что хотите запросить удаление учетной записи? Удаление может занять 24 часа, если нет ожидающих сумм или баланса.",
+  "@dialog_delete_account_msg": {
+    "description": "UI string (source key: dialog_delete_account_msg)"
+  },
+  "dialog_request_sent_title": "Запрос отправлен",
+  "@dialog_request_sent_title": {
+    "description": "UI string (source key: dialog_request_sent_title)"
+  },
+  "dialog_request_sent_msg": "Вы можете отслеживать статус вашего запроса через заявки в службу поддержки.",
+  "@dialog_request_sent_msg": {
+    "description": "UI string (source key: dialog_request_sent_msg)"
+  },
+  "take_a_photo_to_set_your_profile_picture_using_the_camera_directly": "Сделайте фотографию, чтобы установить ваше фото профиля, используя камеру напрямую.",
+  "@take_a_photo_to_set_your_profile_picture_using_the_camera_directly": {
+    "description": "UI string (source key: Take a photo to set your profile picture using the camera directly.)"
+  },
+  "upload_images_to_set_your_account_profile_picture": "Загрузите изображения, чтобы установить фото профиля вашего аккаунта.\n",
+  "@upload_images_to_set_your_account_profile_picture": {
+    "description": "UI string (source key: Upload images to set your account profile picture.\n)"
+  },
+  "allow_the_Ara_Watan_app_to_access_your_location_for_the_purpose_of_delivering_yo": "Разрешите приложению «Touri Taxi» доступ к вашему местоположению с целью доставки вас в указанные туристические направления.",
+  "@allow_the_Ara_Watan_app_to_access_your_location_for_the_purpose_of_delivering_yo": {
+    "description": "UI string (source key: Allow the \"Ara Watan\" app to access your location for the purpose of delivering you to the specified tourist destinations.)"
+  },
+  "this_allows_for_the_exploitation_of_the_nation_s_resources_to_access_distinctive": "это позволяет использовать ресурсы страны для доступа к отличительным туристическим районам.",
+  "@this_allows_for_the_exploitation_of_the_nation_s_resources_to_access_distinctive": {
+    "description": "UI string (source key: this allows for the exploitation of the nation's resources to access distinctive tourist areas.)"
+  },
+  "unexpected_error_title": "Произошла непредвиденная ошибка",
+  "@unexpected_error_title": {
+    "description": "UI string (source key: unexpected_error_title)"
+  },
+  "unexpected_error_msg": "Пожалуйста, перезапустите приложение или вернитесь на главный экран.",
+  "@unexpected_error_msg": {
+    "description": "UI string (source key: unexpected_error_msg)"
+  },
+  "dialog_location_required": "Пожалуйста, укажите свое текущее местоположение.",
+  "@dialog_location_required": {
+    "description": "UI string (source key: dialog_location_required)"
+  },
+  "custom_place_name_required": "Введите название места или выберите его из поиска",
+  "@custom_place_name_required": {
+    "description": "UI string (source key: custom_place_name_required)"
+  },
+  "custom_place_duplicate": "Это место уже в вашей поездке",
+  "@custom_place_duplicate": {
+    "description": "UI string (source key: custom_place_duplicate)"
+  },
+  "instant_booking": "Забронируйте сейчас",
+  "@instant_booking": {
+    "description": "UI string (source key: instant_booking)"
+  },
+  "custom_place_added": "Добавлено: {name}",
+  "@custom_place_added": {
+    "description": "UI string (source key: custom_place_added)",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "name"
+      }
+    }
+  },
+  "view_my_trip": "Моя поездка",
+  "@view_my_trip": {
+    "description": "UI string (source key: view_my_trip)"
+  },
+  "landmarks_loaded_count": "Показаны достопримечательности {count}",
+  "@landmarks_loaded_count": {
+    "description": "UI string (source key: landmarks_loaded_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "load_more_landmarks": "Загрузить больше",
+  "@load_more_landmarks": {
+    "description": "UI string (source key: load_more_landmarks)"
+  },
+  "load_more_landmarks_count": "Загрузить больше ({loaded} / {total}+)",
+  "@load_more_landmarks_count": {
+    "description": "UI string (source key: load_more_landmarks_count)",
+    "placeholders": {
+      "loaded": {
+        "type": "String",
+        "example": "loaded"
+      },
+      "total": {
+        "type": "String",
+        "example": "total"
+      }
+    }
+  },
+  "add_destination_first": "Сначала добавьте хотя бы один пункт назначения",
+  "@add_destination_first": {
+    "description": "UI string (source key: add_destination_first)"
+  },
+  "car_selected_success": "Автомобиль выбран успешно",
+  "@car_selected_success": {
+    "description": "UI string (source key: car_selected_success)"
+  },
+  "generic_error_retry": "Что-то пошло не так. Пожалуйста, попробуйте еще раз.",
+  "@generic_error_retry": {
+    "description": "UI string (source key: generic_error_retry)"
+  },
+  "custom_place_title": "Пользовательское место",
+  "@custom_place_title": {
+    "description": "UI string (source key: custom_place_title)"
+  },
+  "custom_place_map_hint": "Каждое добавленное вами место учитывается в вашей поездке как достопримечательности (2 остановки = минимум 1 час).",
+  "@custom_place_map_hint": {
+    "description": "UI string (source key: custom_place_map_hint)"
+  },
+  "custom_place_search_hint": "Искать место...",
+  "@custom_place_search_hint": {
+    "description": "UI string (source key: custom_place_search_hint)"
+  },
+  "custom_place_add_to_trip": "Добавить в мою поездку",
+  "@custom_place_add_to_trip": {
+    "description": "UI string (source key: custom_place_add_to_trip)"
+  },
+  "landmarks_custom_banner": "Can't find your place? Add a custom location on the map",
+  "@landmarks_custom_banner": {
+    "description": "UI string (source key: landmarks_custom_banner)"
+  },
+  "ux_pick_location_next_hint": "Укажите свое местоположение и нажмите «Далее», чтобы начать тур.",
+  "@ux_pick_location_next_hint": {
+    "description": "UI string (source key: ux_pick_location_next_hint)"
+  },
+  "ux_driver_guide_location_hint": "Ваш водитель будет вашим гидом — укажите свое местоположение и нажмите «Далее».",
+  "@ux_driver_guide_location_hint": {
+    "description": "UI string (source key: ux_driver_guide_location_hint)"
+  },
+  "custom_place_move_map_hint": "Переместите карту, чтобы указать местоположение",
+  "@custom_place_move_map_hint": {
+    "description": "UI string (source key: custom_place_move_map_hint)"
+  },
+  "custom_place_name_label": "Название места (необязательно)",
+  "@custom_place_name_label": {
+    "description": "UI string (source key: custom_place_name_label)"
+  },
+  "custom_place_name_hint": "например Семейное кафе, частный пляж...",
+  "@custom_place_name_hint": {
+    "description": "UI string (source key: custom_place_name_hint)"
+  },
+  "my_trip_count": "Моя поездка ({count})",
+  "@my_trip_count": {
+    "description": "UI string (source key: my_trip_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "landmarks_custom_list_title": "Не можете найти свое место в списке?",
+  "@landmarks_custom_list_title": {
+    "description": "UI string (source key: landmarks_custom_list_title)"
+  },
+  "ux_not_available": "Нет в наличии",
+  "@ux_not_available": {
+    "description": "UI string (source key: ux_not_available)"
+  },
+  "ux_no_car_selected": "Автомобиль не выбран",
+  "@ux_no_car_selected": {
+    "description": "UI string (source key: ux_no_car_selected)"
+  },
+  "ux_preferred_car": "Предпочитаемый автомобиль",
+  "@ux_preferred_car": {
+    "description": "UI string (source key: ux_preferred_car)"
+  },
+  "ux_meeting_point": "Место встречи",
+  "@ux_meeting_point": {
+    "description": "UI string (source key: ux_meeting_point)"
+  },
+  "ux_pick_meeting_point": "Пожалуйста, выберите место встречи",
+  "@ux_pick_meeting_point": {
+    "description": "UI string (source key: ux_pick_meeting_point)"
+  },
+  "ux_schedule_optional": "При желании выберите дату и время начала поездки.",
+  "@ux_schedule_optional": {
+    "description": "UI string (source key: ux_schedule_optional)"
+  },
+  "ux_choose_payment_method": "Выберите способ оплаты",
+  "@ux_choose_payment_method": {
+    "description": "UI string (source key: ux_choose_payment_method)"
+  },
+  "ux_one_hour": "Один час",
+  "@ux_one_hour": {
+    "description": "UI string (source key: ux_one_hour)"
+  },
+  "ux_two_hours": "Два часа",
+  "@ux_two_hours": {
+    "description": "UI string (source key: ux_two_hours)"
+  },
+  "ux_hours_count": "{count} часов",
+  "@ux_hours_count": {
+    "description": "UI string (source key: ux_hours_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "ux_car_select_failed": "Не смог выбрать машину. Пожалуйста, попробуйте еще раз.",
+  "@ux_car_select_failed": {
+    "description": "UI string (source key: ux_car_select_failed)"
+  },
+  "app_title": "Тури Такси",
+  "@app_title": {
+    "description": "UI string (source key: app_title)"
+  },
+  "ux_cash_payment": "Наличные",
+  "@ux_cash_payment": {
+    "description": "UI string (source key: ux_cash_payment)"
+  },
+  "ux_change": "Изменить",
+  "@ux_change": {
+    "description": "UI string (source key: ux_change)"
+  },
+  "ux_card_payment_network": "Безопасная оплата картой через Network International",
+  "@ux_card_payment_network": {
+    "description": "UI string (source key: ux_card_payment_network)"
+  },
+  "checkout_extra_hour_discount": "Вы получаете скидку {percent}% за каждый дополнительный час до {max}{currency}.",
+  "@checkout_extra_hour_discount": {
+    "description": "UI string (source key: checkout_extra_hour_discount)",
+    "placeholders": {
+      "percent": {
+        "type": "String",
+        "example": "percent"
+      },
+      "max": {
+        "type": "String",
+        "example": "max"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "checkout_min_hours_hint": "С учетом выбранных вами остановок минимальная продолжительность поездки составляет {hours} часов.",
+  "@checkout_min_hours_hint": {
+    "description": "UI string (source key: checkout_min_hours_hint)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      }
+    }
+  },
+  "checkout_payment_card_error": "Данные платежа или карты неверны.",
+  "@checkout_payment_card_error": {
+    "description": "UI string (source key: checkout_payment_card_error)"
+  },
+  "checkout_order_status_pending": "Ожидает подтверждения водителя",
+  "@checkout_order_status_pending": {
+    "description": "UI string (source key: checkout_order_status_pending)"
+  },
+  "checkout_add_hours_prompt": "Пожалуйста, добавьте еще как минимум {hours} часов, чтобы продолжить",
+  "@checkout_add_hours_prompt": {
+    "description": "UI string (source key: checkout_add_hours_prompt)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      }
+    }
+  },
+  "checkout_complete_options_prompt": "Complete all options or add more hours to match your trip",
+  "@checkout_complete_options_prompt": {
+    "description": "UI string (source key: checkout_complete_options_prompt)"
+  },
+  "landmark_added_success": "Добавлено: {name}",
+  "@landmark_added_success": {
+    "description": "UI string (source key: landmark_added_success)",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "name"
+      }
+    }
+  },
+  "landmark_already_in_cart": "Это место уже в вашей поездке",
+  "@landmark_already_in_cart": {
+    "description": "UI string (source key: landmark_already_in_cart)"
+  },
+  "load_error_title": "Не удалось загрузить",
+  "@load_error_title": {
+    "description": "UI string (source key: load_error_title)"
+  },
+  "load_error_message": "Проверьте подключение и повторите попытку.",
+  "@load_error_message": {
+    "description": "UI string (source key: load_error_message)"
+  },
+  "change_region2": "Изменить регион",
+  "@change_region2": {
+    "description": "UI string (source key: change_region)"
+  },
+  "places_in_city": "Места в {city}",
+  "@places_in_city": {
+    "description": "UI string (source key: places_in_city)",
+    "placeholders": {
+      "city": {
+        "type": "String",
+        "example": "city"
+      }
+    }
+  },
+  "destinations_added_label": "Добавлены направления:",
+  "@destinations_added_label": {
+    "description": "UI string (source key: destinations_added_label)"
+  },
+  "custom_place_list_hint": "Выберите карту или выполните поиск — это засчитывается в вашу поездку.",
+  "@custom_place_list_hint": {
+    "description": "UI string (source key: custom_place_list_hint)"
+  },
+  "filter_all": "Все",
+  "@filter_all": {
+    "description": "UI string (source key: filter_all)"
+  },
+  "map_locating": "Поиск вашего местоположения...",
+  "@map_locating": {
+    "description": "UI string (source key: map_locating)"
+  },
+  "map_calculating_route": "Расчет маршрута...",
+  "@map_calculating_route": {
+    "description": "UI string (source key: map_calculating_route)"
+  },
+  "map_distance_label": "Расстояние",
+  "@map_distance_label": {
+    "description": "UI string (source key: map_distance_label)"
+  },
+  "map_estimated_time": "Расчетное время",
+  "@map_estimated_time": {
+    "description": "UI string (source key: map_estimated_time)"
+  },
+  "map_stops_count": "Остановки",
+  "@map_stops_count": {
+    "description": "UI string (source key: map_stops_count)"
+  },
+  "map_avg_speed": "Средняя скорость",
+  "@map_avg_speed": {
+    "description": "UI string (source key: map_avg_speed)"
+  },
+  "map_calc_type": "Тип расчета",
+  "@map_calc_type": {
+    "description": "UI string (source key: map_calc_type)"
+  },
+  "map_calc_accurate": "Точный",
+  "@map_calc_accurate": {
+    "description": "UI string (source key: map_calc_accurate)"
+  },
+  "map_calc_approximate": "Приблизительный",
+  "@map_calc_approximate": {
+    "description": "UI string (source key: map_calc_approximate)"
+  },
+  "map_route_fallback": "Не удалось рассчитать лучший маршрут; используя приблизительное расстояние",
+  "@map_route_fallback": {
+    "description": "UI string (source key: map_route_fallback)"
+  },
+  "map_your_location": "Ваше местоположение",
+  "@map_your_location": {
+    "description": "UI string (source key: map_your_location)"
+  },
+  "map_destination_n": "Остановить {n}",
+  "@map_destination_n": {
+    "description": "UI string (source key: map_destination_n)",
+    "placeholders": {
+      "n": {
+        "type": "String",
+        "example": "n"
+      }
+    }
+  },
+  "map_load_failed": "Не удалось загрузить карту. Проверьте подключение и настройки карт.",
+  "@map_load_failed": {
+    "description": "UI string (source key: map_load_failed)"
+  },
+  "wallet_title": "Мой кошелек",
+  "@wallet_title": {
+    "description": "UI string (source key: wallet_title)"
+  },
+  "wallet_load_error": "Не удалось загрузить кошелек",
+  "@wallet_load_error": {
+    "description": "UI string (source key: wallet_load_error)"
+  },
+  "wallet_not_created": "кошелька пока нет",
+  "@wallet_not_created": {
+    "description": "UI string (source key: wallet_not_created)"
+  },
+  "wallet_created_success": "Кошелек успешно создан",
+  "@wallet_created_success": {
+    "description": "UI string (source key: wallet_created_success)"
+  },
+  "wallet_create_button": "Создать кошелек",
+  "@wallet_create_button": {
+    "description": "UI string (source key: wallet_create_button)"
+  },
+  "wallet_current_balance": "Текущий баланс",
+  "@wallet_current_balance": {
+    "description": "UI string (source key: wallet_current_balance)"
+  },
+  "wallet_currency_label": "Валюта",
+  "@wallet_currency_label": {
+    "description": "UI string (source key: wallet_currency_label)"
+  },
+  "wallet_last_updated": "Последнее обновление",
+  "@wallet_last_updated": {
+    "description": "UI string (source key: wallet_last_updated)"
+  },
+  "wallet_never": "Никогда",
+  "@wallet_never": {
+    "description": "UI string (source key: wallet_never)"
+  },
+  "wallet_login_required_title": "Пожалуйста, войдите в систему",
+  "@wallet_login_required_title": {
+    "description": "UI string (source key: wallet_login_required_title)"
+  },
+  "wallet_login_required_msg": "Войдите, чтобы просмотреть свой кошелек",
+  "@wallet_login_required_msg": {
+    "description": "UI string (source key: wallet_login_required_msg)"
+  },
+  "wallet_add_balance": "Добавить баланс",
+  "@wallet_add_balance": {
+    "description": "UI string (source key: wallet_add_balance)"
+  },
+  "wallet_withdraw": "Отзывать",
+  "@wallet_withdraw": {
+    "description": "UI string (source key: wallet_withdraw)"
+  },
+  "wallet_transactions": "История транзакций",
+  "@wallet_transactions": {
+    "description": "UI string (source key: wallet_transactions)"
+  },
+  "wallet_view_all": "Посмотреть все",
+  "@wallet_view_all": {
+    "description": "UI string (source key: wallet_view_all)"
+  },
+  "wallet_transactions_error": "Не удалось загрузить транзакции",
+  "@wallet_transactions_error": {
+    "description": "UI string (source key: wallet_transactions_error)"
+  },
+  "wallet_tx_deposit": "Депозит",
+  "@wallet_tx_deposit": {
+    "description": "UI string (source key: wallet_tx_deposit)"
+  },
+  "wallet_tx_withdraw": "Снятие",
+  "@wallet_tx_withdraw": {
+    "description": "UI string (source key: wallet_tx_withdraw)"
+  },
+  "wallet_tx_refund": "Возвращать деньги",
+  "@wallet_tx_refund": {
+    "description": "UI string (source key: wallet_tx_refund)"
+  },
+  "wallet_tx_transfer": "Передача",
+  "@wallet_tx_transfer": {
+    "description": "UI string (source key: wallet_tx_transfer)"
+  },
+  "wallet_status_completed": "Завершенный",
+  "@wallet_status_completed": {
+    "description": "UI string (source key: wallet_status_completed)"
+  },
+  "wallet_status_pending": "В ожидании",
+  "@wallet_status_pending": {
+    "description": "UI string (source key: wallet_status_pending)"
+  },
+  "wallet_status_failed": "Неуспешный",
+  "@wallet_status_failed": {
+    "description": "UI string (source key: wallet_status_failed)"
+  },
+  "wallet_status_cancelled": "Отменено",
+  "@wallet_status_cancelled": {
+    "description": "UI string (source key: wallet_status_cancelled)"
+  },
+  "wallet_no_transactions": "Транзакций пока нет",
+  "@wallet_no_transactions": {
+    "description": "UI string (source key: wallet_no_transactions)"
+  },
+  "wallet_no_transactions_hint": "Ваши транзакции появятся здесь",
+  "@wallet_no_transactions_hint": {
+    "description": "UI string (source key: wallet_no_transactions_hint)"
+  },
+  "wallet_login_first": "Пожалуйста, сначала войдите в систему",
+  "@wallet_login_first": {
+    "description": "UI string (source key: wallet_login_first)"
+  },
+  "wallet_add_balance_title": "Добавить баланс кошелька",
+  "@wallet_add_balance_title": {
+    "description": "UI string (source key: wallet_add_balance_title)"
+  },
+  "wallet_amount_label": "Количество",
+  "@wallet_amount_label": {
+    "description": "UI string (source key: wallet_amount_label)"
+  },
+  "wallet_amount_required": "Пожалуйста, введите сумму",
+  "@wallet_amount_required": {
+    "description": "UI string (source key: wallet_amount_required)"
+  },
+  "wallet_amount_invalid": "Пожалуйста, введите действительную сумму",
+  "@wallet_amount_invalid": {
+    "description": "UI string (source key: wallet_amount_invalid)"
+  },
+  "wallet_amount_max": "Максимальный депозит 10 000",
+  "@wallet_amount_max": {
+    "description": "UI string (source key: wallet_amount_max)"
+  },
+  "wallet_no_payment_methods": "Нет доступных способов оплаты",
+  "@wallet_no_payment_methods": {
+    "description": "UI string (source key: wallet_no_payment_methods)"
+  },
+  "wallet_add_payment_method": "Добавить способ оплаты",
+  "@wallet_add_payment_method": {
+    "description": "UI string (source key: wallet_add_payment_method)"
+  },
+  "wallet_choose_payment": "Выберите способ оплаты:",
+  "@wallet_choose_payment": {
+    "description": "UI string (source key: wallet_choose_payment)"
+  },
+  "wallet_card_ending": "Карта заканчивается на ****{last4}",
+  "@wallet_card_ending": {
+    "description": "UI string (source key: wallet_card_ending)",
+    "placeholders": {
+      "last4": {
+        "type": "String",
+        "example": "last4"
+      }
+    }
+  },
+  "wallet_add_new_card": "Добавить новую карту",
+  "@wallet_add_new_card": {
+    "description": "UI string (source key: wallet_add_new_card)"
+  },
+  "wallet_add_confirm": "Добавить",
+  "@wallet_add_confirm": {
+    "description": "UI string (source key: wallet_add_confirm)"
+  },
+  "wallet_add_description": "Добавить баланс кошелька",
+  "@wallet_add_description": {
+    "description": "UI string (source key: wallet_add_description)"
+  },
+  "wallet_add_success": "{amount} успешно добавлен в ваш кошелек",
+  "@wallet_add_success": {
+    "description": "UI string (source key: wallet_add_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      }
+    }
+  },
+  "wallet_error_generic": "Ошибка: {error}",
+  "@wallet_error_generic": {
+    "description": "UI string (source key: wallet_error_generic)",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "error"
+      }
+    }
+  },
+  "wallet_select_payment": "Выберите способ оплаты",
+  "@wallet_select_payment": {
+    "description": "UI string (source key: wallet_select_payment)"
+  },
+  "wallet_withdraw_title": "Вывести средства",
+  "@wallet_withdraw_title": {
+    "description": "UI string (source key: wallet_withdraw_title)"
+  },
+  "wallet_withdraw_request_note": "Запрос будет проверен перед переводом. Средства будут окончательно списаны только после одобрения.",
+  "@wallet_withdraw_request_note": {
+    "description": "UI string (source key: wallet_withdraw_request_note)"
+  },
+  "wallet_withdraw_request_success": "Запрос на вывод {amount} {currency} отправлен на проверку",
+  "@wallet_withdraw_request_success": {
+    "description": "UI string (source key: wallet_withdraw_request_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_withdraw_request_failed": "Не удалось отправить запрос на вывод",
+  "@wallet_withdraw_request_failed": {
+    "description": "UI string (source key: wallet_withdraw_request_failed)"
+  },
+  "don_t_have_account": "Нет аккаунта?",
+  "@don_t_have_account": {
+    "description": "UI string (source key: don't_have_account)"
+  },
+  "message2": "Сообщение...",
+  "@message2": {
+    "description": "UI string (source key: Message...)"
+  },
+  "wallet_available_balance": "Доступный баланс: {amount} {currency}",
+  "@wallet_available_balance": {
+    "description": "UI string (source key: wallet_available_balance)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_withdraw_confirm": "Вывести",
+  "@wallet_withdraw_confirm": {
+    "description": "UI string (source key: wallet_withdraw_confirm)"
+  },
+  "wallet_withdraw_description": "Вывод средств из кошелька",
+  "@wallet_withdraw_description": {
+    "description": "UI string (source key: wallet_withdraw_description)"
+  },
+  "wallet_withdraw_no_card_deposit": "Нет пополнения с карты, покрывающего сумму вывода",
+  "@wallet_withdraw_no_card_deposit": {
+    "description": "UI string (source key: wallet_withdraw_no_card_deposit)"
+  },
+  "wallet_withdraw_refund_failed": "Не удалось вернуть платёж",
+  "@wallet_withdraw_refund_failed": {
+    "description": "UI string (source key: wallet_withdraw_refund_failed)"
+  },
+  "wallet_card_topup_success": "Кошелёк пополнен. Вернуться в кошелёк?",
+  "@wallet_card_topup_success": {
+    "description": "UI string (source key: wallet_card_topup_success)"
+  },
+  "payment_pending_message": "Платёж ещё обрабатывается. Подождите или повторите попытку.",
+  "@payment_pending_message": {
+    "description": "UI string (source key: payment_pending_message)"
+  },
+  "payment_failed_message": "Платёж не завершён. Проверьте карту и повторите попытку.",
+  "@payment_failed_message": {
+    "description": "UI string (source key: payment_failed_message)"
+  },
+  "payment_verify_error": "Не удалось проверить платёж. Повторите попытку.",
+  "@payment_verify_error": {
+    "description": "UI string (source key: payment_verify_error)"
+  },
+  "payment_order_save_error": "Не удалось сохранить заказ. Если деньги списаны, обратитесь в поддержку.",
+  "@payment_order_save_error": {
+    "description": "UI string (source key: payment_order_save_error)"
+  },
+  "wallet_withdraw_success": "Успешно выведено {amount} {currency}",
+  "@wallet_withdraw_success": {
+    "description": "UI string (source key: wallet_withdraw_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_amount_exceeds_balance": "Сумма превышает доступный баланс",
+  "@wallet_amount_exceeds_balance": {
+    "description": "UI string (source key: wallet_amount_exceeds_balance)"
+  },
+  "wallet_choose_payout": "Выберите карту для получения средств:",
+  "@wallet_choose_payout": {
+    "description": "UI string (source key: wallet_choose_payout)"
+  },
+  "country_saudi": "Саудовская Аравия",
+  "@country_saudi": {
+    "description": "UI string (source key: country_saudi)"
+  },
+  "map_driver": "Водитель",
+  "@map_driver": {
+    "description": "UI string (source key: map_driver)"
+  },
+  "map_pickup": "Место посадки",
+  "@map_pickup": {
+    "description": "UI string (source key: map_pickup)"
+  },
+  "map_destination": "Пункт назначения",
+  "@map_destination": {
+    "description": "UI string (source key: map_destination)"
+  },
+  "map_open_google_maps": "Открыть в Google Картах",
+  "@map_open_google_maps": {
+    "description": "UI string (source key: map_open_google_maps)"
+  },
+  "map_track_driver_title": "Отслеживание водителя на карте",
+  "@map_track_driver_title": {
+    "description": "UI string (source key: map_track_driver_title)"
+  },
+  "map_waiting_driver_location": "Ожидание местоположения водителя",
+  "@map_waiting_driver_location": {
+    "description": "UI string (source key: map_waiting_driver_location)"
+  },
+  "booking_status_active": "Активна",
+  "@booking_status_active": {
+    "description": "UI string (source key: booking_status_active)"
+  },
+  "booking_view_route": "Показать маршрут",
+  "@booking_view_route": {
+    "description": "UI string (source key: booking_view_route)"
+  },
+  "map_eta_minutes": "Прибытие примерно через {minutes} мин.",
+  "@map_eta_minutes": {
+    "description": "UI string (source key: map_eta_minutes)",
+    "placeholders": {
+      "minutes": {
+        "type": "String",
+        "example": "minutes"
+      }
+    }
+  },
+  "browsing_now": "Сейчас вы просматриваете {country}",
+  "@browsing_now": {
+    "description": "UI string (source key: browsing_now)",
+    "placeholders": {
+      "country": {
+        "type": "String",
+        "example": "country"
+      }
+    }
+  },
+  "card_confirm_title": "Подтверждение карты",
+  "@card_confirm_title": {
+    "description": "UI string (source key: card_confirm_title)"
+  },
+  "card_confirm_msg": "Введите номер карты, оканчивающийся на {last4}, и CVV.",
+  "@card_confirm_msg": {
+    "description": "UI string (source key: card_confirm_msg)",
+    "placeholders": {
+      "last4": {
+        "type": "String",
+        "example": "last4"
+      }
+    }
+  },
+  "select_region_title": "Выбор региона",
+  "@select_region_title": {
+    "description": "UI string (source key: select_region_title)"
+  },
+  "select_region_msg": "Вы уверены, что хотите выбрать или изменить этот город?",
+  "@select_region_msg": {
+    "description": "UI string (source key: select_region_msg)"
+  },
+  "card_number_label": "Номер карты",
+  "@card_number_label": {
+    "description": "UI string (source key: card_number_label)"
+  },
+  "dialog_continue": "Продолжить",
+  "@dialog_continue": {
+    "description": "UI string (source key: dialog_continue)"
+  },
+  "card_invalid_data": "Данные карты недействительны",
+  "@card_invalid_data": {
+    "description": "UI string (source key: card_invalid_data)"
+  },
+  "checkout_paying": "Обработка платежа через Network International...",
+  "@checkout_paying": {
+    "description": "UI string (source key: checkout_paying)"
+  },
+  "map_trip_destination": "Пункт назначения",
+  "@map_trip_destination": {
+    "description": "UI string (source key: map_trip_destination)"
+  },
+  "map_invalid_destinations": "Из маршрута исключено недопустимых или удалённых остановок: {count}.",
+  "@map_invalid_destinations": {
+    "description": "UI string (source key: map_invalid_destinations)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "checkout_estimated_time_warning": "Расчётное время в пути ({time}) меньше рекомендуемой длительности бронирования. На расчёт может повлиять дорожная обстановка.",
+  "@checkout_estimated_time_warning": {
+    "description": "UI string (source key: checkout_estimated_time_warning)",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "time"
+      }
+    }
+  },
+  "checkout_vat_rate": "НДС ({rate}%):",
+  "@checkout_vat_rate": {
+    "description": "UI string (source key: checkout_vat_rate)",
+    "placeholders": {
+      "rate": {
+        "type": "String",
+        "example": "rate"
+      }
+    }
+  },
+  "map_location_unavailable": "Текущее местоположение недоступно.",
+  "@map_location_unavailable": {
+    "description": "UI string (source key: map_location_unavailable)"
+  },
+  "map_no_valid_destinations": "Для этого маршрута нет допустимых остановок.",
+  "@map_no_valid_destinations": {
+    "description": "UI string (source key: map_no_valid_destinations)"
+  },
+  "unit_km": "км",
+  "@unit_km": {
+    "description": "UI string (source key: unit_km)"
+  },
+  "unit_meter": "м",
+  "@unit_meter": {
+    "description": "UI string (source key: unit_meter)"
+  },
+  "unit_minute": "мин",
+  "@unit_minute": {
+    "description": "UI string (source key: unit_minute)"
+  },
+  "unit_hour": "ч",
+  "@unit_hour": {
+    "description": "UI string (source key: unit_hour)"
+  },
+  "unit_kmh": "км/ч",
+  "@unit_kmh": {
+    "description": "UI string (source key: unit_kmh)"
+  },
+  "duration_hours_minutes": "{hours} ч {minutes} мин",
+  "@duration_hours_minutes": {
+    "description": "UI string (source key: duration_hours_minutes)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      },
+      "minutes": {
+        "type": "String",
+        "example": "minutes"
+      }
+    }
+  },
+  "location_city_unresolved": "Не удалось точно определить ваш город.",
+  "@location_city_unresolved": {
+    "description": "UI string (source key: location_city_unresolved)"
+  },
+  "country_map": "Карта страны",
+  "@country_map": {
+    "description": "UI string (source key: country_map)"
+  },
+  "ui_text_44134f762b": "Пароли не совпадают!",
+  "@ui_text_44134f762b": {
+    "description": "UI string (source key: ui_text_44134f762b)"
+  },
+  "ui_text_b6f51cadc4": "ошибка",
+  "@ui_text_b6f51cadc4": {
+    "description": "UI string (source key: ui_text_b6f51cadc4)"
+  },
+  "ui_text_1a4e87f7a9": "Вы должны согласиться с условиями",
+  "@ui_text_1a4e87f7a9": {
+    "description": "UI string (source key: ui_text_1a4e87f7a9)"
+  },
+  "ui_text_b0a98216a3": "Хорошо",
+  "@ui_text_b0a98216a3": {
+    "description": "UI string (source key: ui_text_b0a98216a3)"
+  },
+  "ui_text_224b63d8e3": "Пожалуйста, выберите регион",
+  "@ui_text_224b63d8e3": {
+    "description": "UI string (source key: ui_text_224b63d8e3)"
+  },
+  "ui_text_af02762d6d": "Пожалуйста, выберите регион",
+  "@ui_text_af02762d6d": {
+    "description": "UI string (source key: ui_text_af02762d6d)"
+  },
+  "ui_text_9072549574": "соглашаться",
+  "@ui_text_9072549574": {
+    "description": "UI string (source key: ui_text_9072549574)"
+  },
+  "ui_text_17db754851": "Добавлено: местоположение успешно выбрано.",
+  "@ui_text_17db754851": {
+    "description": "UI string (source key: ui_text_17db754851)"
+  },
+  "ui_text_71995f6f4a": "Местоположение уже добавлено.",
+  "@ui_text_71995f6f4a": {
+    "description": "UI string (source key: ui_text_71995f6f4a)"
+  },
+  "ui_text_b73e88df71": "Написать сообщение",
+  "@ui_text_b73e88df71": {
+    "description": "UI string (source key: ui_text_b73e88df71)"
+  },
+  "ui_text_b4bbf18b10": "Отменить заказ",
+  "@ui_text_b4bbf18b10": {
+    "description": "UI string (source key: ui_text_b4bbf18b10)"
+  },
+  "ui_text_cf4d76accb": "Вы уверены, что отмените заказ?",
+  "@ui_text_cf4d76accb": {
+    "description": "UI string (source key: ui_text_cf4d76accb)"
+  },
+  "ui_text_5c528d9fa3": "нет",
+  "@ui_text_5c528d9fa3": {
+    "description": "UI string (source key: ui_text_5c528d9fa3)"
+  },
+  "ui_text_d045bef8e5": "Да",
+  "@ui_text_d045bef8e5": {
+    "description": "UI string (source key: ui_text_d045bef8e5)"
+  },
+  "ui_text_1431f68f35": "Сброшено",
+  "@ui_text_1431f68f35": {
+    "description": "UI string (source key: ui_text_1431f68f35)"
+  },
+  "ui_text_8bc9b333df": "Выберите источник",
+  "@ui_text_8bc9b333df": {
+    "description": "UI string (source key: ui_text_8bc9b333df)"
+  },
+  "ui_text_35d76b889c": "Требуется электронная почта!",
+  "@ui_text_35d76b889c": {
+    "description": "UI string (source key: ui_text_35d76b889c)"
+  },
+  "ui_text_f0ad7ac205": "Спасибо",
+  "@ui_text_f0ad7ac205": {
+    "description": "UI string (source key: ui_text_f0ad7ac205)"
+  },
+  "ui_text_12ee72ca4f": "Краткое описание поездки",
+  "@ui_text_12ee72ca4f": {
+    "description": "UI string (source key: ui_text_12ee72ca4f)"
+  },
+  "ui_text_d93bf2eb9f": "Расстояние и время являются приблизительными и могут варьироваться в зависимости от трафика, изменений маршрута или точности местоположения.",
+  "@ui_text_d93bf2eb9f": {
+    "description": "UI string (source key: ui_text_d93bf2eb9f)"
+  },
+  "ui_text_e93e07976e": "Оценка отправлена",
+  "@ui_text_e93e07976e": {
+    "description": "UI string (source key: ui_text_e93e07976e)"
+  },
+  "ui_text_7f2f6a15cf": "Ошибка",
+  "@ui_text_7f2f6a15cf": {
+    "description": "UI string (source key: ui_text_7f2f6a15cf)"
+  },
+  "ui_text_9262ef60ec": "Пожалуйста, проверьте дату и время",
+  "@ui_text_9262ef60ec": {
+    "description": "UI string (source key: ui_text_9262ef60ec)"
+  },
+  "ui_text_cff8cb30ef": "Вы уверены, что отмените заказ и получите возврат средств?",
+  "@ui_text_cff8cb30ef": {
+    "description": "UI string (source key: ui_text_cff8cb30ef)"
+  },
+  "ui_text_23ef9d7d03": "Да, отменить заказ",
+  "@ui_text_23ef9d7d03": {
+    "description": "UI string (source key: ui_text_23ef9d7d03)"
+  },
+  "ui_text_eae6165343": "Заказ успешно отменен",
+  "@ui_text_eae6165343": {
+    "description": "UI string (source key: ui_text_eae6165343)"
+  },
+  "ui_text_860c735760": "Вы не можете отменить заказ, поскольку время отмены истекло. Пожалуйста, свяжитесь со службой поддержки",
+  "@ui_text_860c735760": {
+    "description": "UI string (source key: ui_text_860c735760)"
+  },
+  "ui_text_5a9a57155e": "Скопировано",
+  "@ui_text_5a9a57155e": {
+    "description": "UI string (source key: ui_text_5a9a57155e)"
+  },
+  "ui_text_5eac766a7c": "Убедитесь, что ваше текущее местоположение находится в том же городе, и введите все данные точно.",
+  "@ui_text_5eac766a7c": {
+    "description": "UI string (source key: ui_text_5eac766a7c)"
+  },
+  "ui_text_1d36255e4a": "Пожалуйста, заполните все данные правильно",
+  "@ui_text_1d36255e4a": {
+    "description": "UI string (source key: ui_text_1d36255e4a)"
+  },
+  "ui_text_def4060285": "Вы уверены, что хотите удалить адрес?",
+  "@ui_text_def4060285": {
+    "description": "UI string (source key: ui_text_def4060285)"
+  },
+  "ui_text_85d0e17cdb": "Адрес успешно удален",
+  "@ui_text_85d0e17cdb": {
+    "description": "UI string (source key: ui_text_85d0e17cdb)"
+  },
+  "ui_text_471f24ef6b": "Отправил",
+  "@ui_text_471f24ef6b": {
+    "description": "UI string (source key: ui_text_471f24ef6b)"
+  },
+  "ui_text_dbee2e6613": "Запрос успешно отправлен, мы рассмотрим его и свяжемся с вами в ближайшее время.",
+  "@ui_text_dbee2e6613": {
+    "description": "UI string (source key: ui_text_dbee2e6613)"
+  },
+  "ui_text_095479cd38": "Уважаемый партнер, пожалуйста, заполните все обязательные поля, чтобы успешно подать заявку.",
+  "@ui_text_095479cd38": {
+    "description": "UI string (source key: ui_text_095479cd38)"
+  },
+  "rating_driver_title": "Оценить {driver}",
+  "@rating_driver_title": {
+    "description": "UI string (source key: rating_driver_title)",
+    "placeholders": {
+      "driver": {
+        "type": "String",
+        "example": "driver"
+      }
+    }
+  },
+  "rating_driver_question": "Как бы вы оценили {driver}?",
+  "@rating_driver_question": {
+    "description": "UI string (source key: rating_driver_question)",
+    "placeholders": {
+      "driver": {
+        "type": "String",
+        "example": "driver"
+      }
+    }
+  },
+  "order_details_number": "Детали заказа #{id}",
+  "@order_details_number": {
+    "description": "UI string (source key: order_details_number)",
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "id"
+      }
+    }
+  },
+  "order_time_label": "Время заказа: {time}",
+  "@order_time_label": {
+    "description": "UI string (source key: order_time_label)",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "time"
+      }
+    }
+  },
+  "support_ticket_number": "Билет №{id}",
+  "@support_ticket_number": {
+    "description": "UI string (source key: support_ticket_number)",
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "id"
+      }
+    }
+  },
+  "place_city_only": "Вы можете выбрать место только в пределах {city} или изменить город.",
+  "@place_city_only": {
+    "description": "UI string (source key: place_city_only)",
+    "placeholders": {
+      "city": {
+        "type": "String",
+        "example": "city"
+      }
+    }
+  },
+  "notification_payment_success_title": "Платеж успешен",
+  "@notification_payment_success_title": {
+    "description": "UI string (source key: notification_payment_success_title)"
+  },
+  "notification_payment_success_body": "Оплата бронирования №{bookingId} подтверждена. Мы находим для вас водителя.",
+  "@notification_payment_success_body": {
+    "description": "UI string (source key: notification_payment_success_body)",
+    "placeholders": {
+      "bookingId": {
+        "type": "String",
+        "example": "bookingId"
+      }
+    }
+  },
+  "notification_paid_order_admin_title": "Новое платное бронирование",
+  "@notification_paid_order_admin_title": {
+    "description": "UI string (source key: notification_paid_order_admin_title)"
+  },
+  "notification_paid_order_admin_body": "Новое платное бронирование №{bookingId}: {hours} часов, {amount} {currency}.",
+  "@notification_paid_order_admin_body": {
+    "description": "UI string (source key: notification_paid_order_admin_body)",
+    "placeholders": {
+      "bookingId": {
+        "type": "String",
+        "example": "bookingId"
+      },
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      },
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "notification_wallet_topup_title": "Кошелек пополнен",
+  "@notification_wallet_topup_title": {
+    "description": "UI string (source key: notification_wallet_topup_title)"
+  },
+  "notification_wallet_topup_body": "{amount} SAR был успешно добавлен в ваш кошелек.",
+  "@notification_wallet_topup_body": {
+    "description": "UI string (source key: notification_wallet_topup_body)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      }
+    }
+  },
+  "notification_new_order_driver_title": "Новое бронирование",
+  "@notification_new_order_driver_title": {
+    "description": "UI string (source key: notification_new_order_driver_title)"
+  },
+  "notification_new_order_driver_body": "Новое бронирование Touri Taxi доступно на {hours} часов с доходом {amount} {currency}. Откройте приложение для водителя, чтобы просмотреть его.",
+  "@notification_new_order_driver_body": {
+    "description": "UI string (source key: notification_new_order_driver_body)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      },
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "notification_private_message_title": "Новое личное сообщение",
+  "@notification_private_message_title": {
+    "description": "UI string (source key: notification_private_message_title)"
+  },
+  "notification_private_message_body": "У вас новое сообщение от {sender}.",
+  "@notification_private_message_body": {
+    "description": "UI string (source key: notification_private_message_body)",
+    "placeholders": {
+      "sender": {
+        "type": "String",
+        "example": "sender"
+      }
+    }
+  },
+  "status_pending_driver": "Ожидает подтверждения водителя",
+  "@status_pending_driver": {
+    "description": "UI string (source key: status_pending_driver)"
+  },
+  "status_driver_assigned": "Водитель назначен",
+  "@status_driver_assigned": {
+    "description": "UI string (source key: status_driver_assigned)"
+  },
+  "status_driver_arrived": "Водитель прибыл",
+  "@status_driver_arrived": {
+    "description": "UI string (source key: status_driver_arrived)"
+  },
+  "status_trip_started": "Поездка началась",
+  "@status_trip_started": {
+    "description": "UI string (source key: status_trip_started)"
+  },
+  "status_trip_completed": "Поездка завершена",
+  "@status_trip_completed": {
+    "description": "UI string (source key: status_trip_completed)"
+  },
+  "status_cancelled": "Отменено",
+  "@status_cancelled": {
+    "description": "UI string (source key: status_cancelled)"
+  },
+  "status_payment_pending": "Ожидает оплаты",
+  "@status_payment_pending": {
+    "description": "UI string (source key: status_payment_pending)"
+  },
+  "status_paid": "Оплачено",
+  "@status_paid": {
+    "description": "UI string (source key: status_paid)"
+  },
+  "status_payment_failed": "Ошибка оплаты",
+  "@status_payment_failed": {
+    "description": "UI string (source key: status_payment_failed)"
+  },
+  "looking_for_destination": "Поиск пункта назначения...",
+  "@looking_for_destination": {
+    "description": "UI string (source key: looking_for_destination)"
+  },
+  "map_selected_location": "Точка, выбранная на карте",
+  "@map_selected_location": {
+    "description": "UI string (source key: map_selected_location)"
+  },
+  "current_location_label": "Текущее местоположение",
+  "@current_location_label": {
+    "description": "UI string (source key: current_location_label)"
+  },
+  "pickup_location_label": "Место отправления",
+  "@pickup_location_label": {
+    "description": "UI string (source key: pickup_location_label)"
+  },
+  "destination_label": "Пункт назначения",
+  "@destination_label": {
+    "description": "UI string (source key: destination_label)"
+  },
+  "stops_label": "Остановки",
+  "@stops_label": {
+    "description": "UI string (source key: stops_label)"
+  },
+  "view_route_label": "Посмотреть маршрут",
+  "@view_route_label": {
+    "description": "UI string (source key: view_route_label)"
+  },
+  "trip_details_label": "Детали поездки",
+  "@trip_details_label": {
+    "description": "UI string (source key: trip_details_label)"
+  },
+  "choose_payment_method": "Выберите способ оплаты",
+  "@choose_payment_method": {
+    "description": "UI string (source key: choose_payment_method)"
+  },
+  "pay_online_option": "Оплата картой",
+  "@pay_online_option": {
+    "description": "UI string (source key: pay_online_option)"
+  },
+  "pay_cash_option": "Оплата наличными",
+  "@pay_cash_option": {
+    "description": "UI string (source key: pay_cash_option)"
+  },
+  "driver_fee_label": "Стоимость услуг водителя",
+  "@driver_fee_label": {
+    "description": "UI string (source key: driver_fee_label)"
+  },
+  "app_fee_label": "Комиссия приложения",
+  "@app_fee_label": {
+    "description": "UI string (source key: app_fee_label)"
+  },
+  "vat_label": "НДС",
+  "@vat_label": {
+    "description": "UI string (source key: vat_label)"
+  },
+  "total_amount_label": "Итоговая сумма",
+  "@total_amount_label": {
+    "description": "UI string (source key: total_amount_label)"
+  },
+  "my_bookings_nav": "Мои бронирования",
+  "@my_bookings_nav": {
+    "description": "UI string (source key: my_bookings_nav)"
+  },
+  "my_account_nav": "Мой аккаунт",
+  "@my_account_nav": {
+    "description": "UI string (source key: my_account_nav)"
+  },
+  "home_nav": "Главная",
+  "@home_nav": {
+    "description": "UI string (source key: home_nav)"
+  },
+  "error_generic_user": "Что-то пошло не так. Попробуйте ещё раз.",
+  "@error_generic_user": {
+    "description": "UI string (source key: error_generic_user)"
+  },
+  "error_network_user": "Нет подключения к интернету. Проверьте сеть и попробуйте снова.",
+  "@error_network_user": {
+    "description": "UI string (source key: error_network_user)"
+  },
+  "error_location_permission": "Требуется разрешение на доступ к местоположению.",
+  "@error_location_permission": {
+    "description": "UI string (source key: error_location_permission)"
+  },
+  "error_route_unavailable": "Маршрут недоступен",
+  "@error_route_unavailable": {
+    "description": "UI string (source key: error_route_unavailable)"
+  },
+  "error_outside_service_area": "Вне зоны обслуживания",
+  "@error_outside_service_area": {
+    "description": "UI string (source key: error_outside_service_area)"
+  },
+  "kyrgyz_char_sample": "Кыргызский: ң ө ү Ң Ө Ү",
+  "@kyrgyz_char_sample": {
+    "description": "UI string (source key: kyrgyz_char_sample)"
+  },
+  "booking_hours": "{count, plural, =0{Нет часов бронирования} one{{count} час бронирования} few{{count} часа бронирования} many{{count} часов бронирования} other{{count} часа бронирования}}",
+  "@booking_hours": {
+    "description": "booking_hours",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "example": "3"
+      }
+    }
+  },
+  "minutes_count": "{count, plural, =0{0 минут} one{{count} минута} few{{count} минуты} many{{count} минут} other{{count} минуты}}",
+  "@minutes_count": {
+    "description": "minutes_count",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "example": "3"
+      }
+    }
+  }
+}

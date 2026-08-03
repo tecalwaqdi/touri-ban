@@ -1,0 +1,33 @@
+{
+  "phase": 1,
+  "name": "vehicles",
+  "target": "production",
+  "written": 24,
+  "paths": [
+    "type_car/economy",
+    "type_car/compact",
+    "type_car/sedan_standard",
+    "type_car/comfort",
+    "type_car/premium",
+    "type_car/business",
+    "type_car/luxury",
+    "type_car/suv_compact",
+    "type_car/suv_standard",
+    "type_car/suv_large",
+    "type_car/suv_family",
+    "type_car/offroad_4x4",
+    "type_car/pickup_4x4",
+    "type_car/minivan",
+    "type_car/van_family",
+    "type_car/van_vip",
+    "type_car/coach_mini",
+    "type_car/coach_tour",
+    "type_car/executive_shuttle",
+    "type_car/electric",
+    "type_car/hybrid",
+    "type_car/wheelchair",
+    "type_car/airport_transfer",
+    "type_car/tourist_vehicle"
+  ],
+  "finishedAt": "2026-07-22T21:49:25.262Z"
+}

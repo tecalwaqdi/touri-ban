@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_ru_grozny",
+  "__writtenAt": "2026-07-22T11:29:01.915Z",
+  "__target": "local-staging",
+  "naim": "غروزني",
+  "names_i18n": {
+    "ar": "غروزني",
+    "en": "Grozny",
+    "ru": "Грозный",
+    "ky": "Грозный",
+    "uz": "Grozniy"
+  },
+  "cities": "cities/region_ru_chechnya",
+  "dolh": "countries/russia",
+  "lat_ling": {
+    "latitude": 43.3186,
+    "longitude": 45.6989
+  },
+  "acctev": true,
+  "country_iso": "RU",
+  "geo_import_id": "city_ru_grozny",
+  "geo_import_source": "touri_geo_import"
+}

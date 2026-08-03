@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_sa_tabuk",
+  "__writtenAt": "2026-07-22T11:28:58.895Z",
+  "__target": "local-staging",
+  "naim": "تبوك",
+  "names_i18n": {
+    "ar": "تبوك",
+    "en": "Tabuk",
+    "ru": "Табук",
+    "ky": "Табук",
+    "uz": "Tabuk"
+  },
+  "cities": "cities/region_sa_tabuk",
+  "dolh": "countries/saudi_arabia",
+  "lat_ling": {
+    "latitude": 28.3838,
+    "longitude": 36.555
+  },
+  "acctev": true,
+  "country_iso": "SA",
+  "geo_import_id": "city_sa_tabuk",
+  "geo_import_source": "touri_geo_import"
+}

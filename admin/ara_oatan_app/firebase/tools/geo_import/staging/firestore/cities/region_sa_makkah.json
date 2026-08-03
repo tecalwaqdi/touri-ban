@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_sa_makkah",
+  "__writtenAt": "2026-07-22T11:28:58.040Z",
+  "__target": "local-staging",
+  "naim": "منطقة مكة المكرمة",
+  "names_i18n": {
+    "ar": "منطقة مكة المكرمة",
+    "en": "Makkah Region",
+    "ru": "Провинция Мекка",
+    "ky": "Мекке аймагы",
+    "uz": "Makka viloyati"
+  },
+  "dolh": "countries/saudi_arabia",
+  "acctev": true,
+  "iso_code": "SA-02",
+  "country_iso": "SA",
+  "geo_import_id": "region_sa_makkah",
+  "geo_import_source": "touri_geo_import"
+}

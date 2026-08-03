@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_uz_qashqadaryo",
+  "__writtenAt": "2026-07-22T11:29:00.825Z",
+  "__target": "local-staging",
+  "naim": "ولاية قشقداريا",
+  "names_i18n": {
+    "ar": "ولاية قشقداريا",
+    "en": "Qashqadaryo Region",
+    "ru": "Кашкадарьинская область",
+    "ky": "Кашкадаря облусу",
+    "uz": "Qashqadaryo viloyati"
+  },
+  "dolh": "countries/uzbekistan",
+  "acctev": true,
+  "iso_code": "UZ-QA",
+  "country_iso": "UZ",
+  "geo_import_id": "region_uz_qashqadaryo",
+  "geo_import_source": "touri_geo_import"
+}

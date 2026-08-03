@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/wheelchair",
+  "__writtenAt": "2026-07-22T11:29:02.689Z",
+  "__target": "local-staging",
+  "naim": "مجهزة لكرسي متحرك",
+  "names_i18n": {
+    "ar": "مجهزة لكرسي متحرك",
+    "en": "Wheelchair Accessible",
+    "ru": "Для инвалидных колясок",
+    "ky": "Майыптар үчүн",
+    "uz": "Nogironlar aravachasi uchun"
+  },
+  "codeCar": "wheelchair",
+  "sr": 280,
+  "agl_saat": 4,
+  "actev": true,
+  "ishafelh": false,
+  "not": "Wheelchair Accessible",
+  "geo_import_id": "vehcat_wheelchair",
+  "geo_import_source": "touri_geo_import"
+}

@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_ru_gatchina",
+  "__writtenAt": "2026-07-22T11:29:01.303Z",
+  "__target": "local-staging",
+  "naim": "غاتتشينا",
+  "names_i18n": {
+    "ar": "غاتتشينا",
+    "en": "Gatchina",
+    "ru": "Гатчина",
+    "ky": "Гатчина",
+    "uz": "Gatchina"
+  },
+  "cities": "cities/region_ru_leningrad",
+  "dolh": "countries/russia",
+  "lat_ling": {
+    "latitude": 59.5764,
+    "longitude": 30.1283
+  },
+  "acctev": true,
+  "country_iso": "RU",
+  "geo_import_id": "city_ru_gatchina",
+  "geo_import_source": "touri_geo_import"
+}

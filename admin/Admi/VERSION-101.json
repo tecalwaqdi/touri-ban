@@ -1,0 +1,9 @@
+{
+  "version": "101",
+  "label": "admin_arawatan v101",
+  "createdAt": "2026-06-28T12:52:00+03:00",
+  "backupFolder": "e:\\my project\\osama\\watan\\backups\\admin_arawatan-v101",
+  "backupZip": "e:\\my project\\osama\\watan\\backups\\admin_arawatan-v101.zip",
+  "restoreScript": "tools\\restore_version_101.ps1",
+  "restoreHint": "Ask the agent: اعد لي النسخة 101 — or run tools/restore_version_101.ps1"
+}

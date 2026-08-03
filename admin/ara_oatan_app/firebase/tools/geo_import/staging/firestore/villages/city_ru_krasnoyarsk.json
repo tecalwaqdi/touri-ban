@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_ru_krasnoyarsk",
+  "__writtenAt": "2026-07-22T11:29:02.147Z",
+  "__target": "local-staging",
+  "naim": "كراسنويارسك",
+  "names_i18n": {
+    "ar": "كراسنويارسك",
+    "en": "Krasnoyarsk",
+    "ru": "Красноярск",
+    "ky": "Красноярск",
+    "uz": "Krasnoyarsk"
+  },
+  "cities": "cities/region_ru_krasnoyarsk",
+  "dolh": "countries/russia",
+  "lat_ling": {
+    "latitude": 56.0153,
+    "longitude": 92.8932
+  },
+  "acctev": true,
+  "country_iso": "RU",
+  "geo_import_id": "city_ru_krasnoyarsk",
+  "geo_import_source": "touri_geo_import"
+}

@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_kg_naryn",
+  "__writtenAt": "2026-07-22T11:28:59.595Z",
+  "__target": "local-staging",
+  "naim": "إقليم نارين",
+  "names_i18n": {
+    "ar": "إقليم نارين",
+    "en": "Naryn Region",
+    "ru": "Нарынская область",
+    "ky": "Нарын облусу",
+    "uz": "Norin viloyati"
+  },
+  "dolh": "countries/kyrgyzstan",
+  "acctev": true,
+  "iso_code": "KG-N",
+  "country_iso": "KG",
+  "geo_import_id": "region_kg_naryn",
+  "geo_import_source": "touri_geo_import"
+}

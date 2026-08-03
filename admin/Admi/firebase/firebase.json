@@ -1,0 +1,26 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": [
+    {
+      "rules": "storage.rules",
+      "bucket": "tutorial-multi-language-70gx4j.firebasestorage.app"
+    }
+  ],
+  "functions": [
+    {
+      "source": "custom_cloud_functions",
+      "codebase": "admin_custom_functions"
+    },
+    {
+      "source": "functions",
+      "codebase": "admin_functions"
+    }
+  ],
+  "hosting": {
+    "public": "public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+  }
+}

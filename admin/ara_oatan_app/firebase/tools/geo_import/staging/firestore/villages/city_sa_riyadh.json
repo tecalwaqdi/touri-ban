@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_sa_riyadh",
+  "__writtenAt": "2026-07-22T11:28:57.898Z",
+  "__target": "local-staging",
+  "naim": "الرياض",
+  "names_i18n": {
+    "ar": "الرياض",
+    "en": "Riyadh",
+    "ru": "Эр-Рияд",
+    "ky": "Эр-Рияд",
+    "uz": "Ar-Riyod"
+  },
+  "cities": "cities/region_sa_riyadh",
+  "dolh": "countries/saudi_arabia",
+  "lat_ling": {
+    "latitude": 24.7136,
+    "longitude": 46.6753
+  },
+  "acctev": true,
+  "country_iso": "SA",
+  "geo_import_id": "city_sa_riyadh",
+  "geo_import_source": "touri_geo_import"
+}

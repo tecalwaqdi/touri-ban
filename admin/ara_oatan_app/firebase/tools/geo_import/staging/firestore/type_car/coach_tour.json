@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/coach_tour",
+  "__writtenAt": "2026-07-22T11:29:02.683Z",
+  "__target": "local-staging",
+  "naim": "باص سياحي",
+  "names_i18n": {
+    "ar": "باص سياحي",
+    "en": "Tour Bus",
+    "ru": "Туристический автобус",
+    "ky": "Туристтик автобус",
+    "uz": "Turistik avtobus"
+  },
+  "codeCar": "coach_tour",
+  "sr": 900,
+  "agl_saat": 6,
+  "actev": true,
+  "ishafelh": true,
+  "not": "Tour Bus",
+  "geo_import_id": "vehcat_coach_tour",
+  "geo_import_source": "touri_geo_import"
+}

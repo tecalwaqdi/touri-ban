@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_ru_ufa",
+  "__writtenAt": "2026-07-22T11:29:01.393Z",
+  "__target": "local-staging",
+  "naim": "أوفا",
+  "names_i18n": {
+    "ar": "أوفا",
+    "en": "Ufa",
+    "ru": "Уфа",
+    "ky": "Уфа",
+    "uz": "Ufa"
+  },
+  "cities": "cities/region_ru_bashkortostan",
+  "dolh": "countries/russia",
+  "lat_ling": {
+    "latitude": 54.7388,
+    "longitude": 55.9721
+  },
+  "acctev": true,
+  "country_iso": "RU",
+  "geo_import_id": "city_ru_ufa",
+  "geo_import_source": "touri_geo_import"
+}

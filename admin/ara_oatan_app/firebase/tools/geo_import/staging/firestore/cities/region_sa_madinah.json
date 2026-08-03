@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_sa_madinah",
+  "__writtenAt": "2026-07-22T11:28:58.130Z",
+  "__target": "local-staging",
+  "naim": "منطقة المدينة المنورة",
+  "names_i18n": {
+    "ar": "منطقة المدينة المنورة",
+    "en": "Madinah Region",
+    "ru": "Провинция Медина",
+    "ky": "Мадина аймагы",
+    "uz": "Madina viloyati"
+  },
+  "dolh": "countries/saudi_arabia",
+  "acctev": true,
+  "iso_code": "SA-03",
+  "country_iso": "SA",
+  "geo_import_id": "region_sa_madinah",
+  "geo_import_source": "touri_geo_import"
+}

@@ -1,0 +1,342 @@
+{
+  "project_info": {
+    "project_number": "638010533068",
+    "project_id": "tutorial-multi-language-70gx4j",
+    "storage_bucket": "tutorial-multi-language-70gx4j.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638010533068:android:6dc1f98d8c07b48a844e69",
+        "android_client_info": {
+          "package_name": "com.mycompany.araoatanapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "638010533068-ai5d89bq6rfjcfo1q15obmmql8uv0uom.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.araoatanapp",
+            "certificate_hash": "896e0630c558ddbb6c584ed762af3a999514b116"
+          }
+        },
+        {
+          "client_id": "638010533068-fuad8o58c8ejctjkdahmbj72m88jocon.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.araoatanapp",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "638010533068-i0je5prtf3dohfp9a49jad50leqi1l2e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.araoatanapp",
+            "certificate_hash": "0bfb4192dec2096ecfd813cb3b8f4bcba1452238"
+          }
+        },
+        {
+          "client_id": "638010533068-pm52feh7mifg3jllek9dj79kabn0n6ne.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.araoatanapp",
+            "certificate_hash": "4febe0aac5756853f0f04f89e41ac7e9bc378f66"
+          }
+        },
+        {
+          "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCynvmYpEHNlSvB-tf5v6AdaA2q7IT4P5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "638010533068-02bs5t8qc6ej8islspc2f7kkqsola85a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.tutorialmultilanguageapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638010533068:android:9b840965a0423f89844e69",
+        "android_client_info": {
+          "package_name": "com.mycompany.araoatanapp2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "638010533068-etjsqfcgv1evduo4aisbjqvf3hsnem7l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.araoatanapp2",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCynvmYpEHNlSvB-tf5v6AdaA2q7IT4P5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "638010533068-02bs5t8qc6ej8islspc2f7kkqsola85a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.tutorialmultilanguageapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638010533068:android:75da336bd9617bc5844e69",
+        "android_client_info": {
+          "package_name": "com.mycompany.arawatanhotel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "638010533068-ker81lsasrskfoes65cnk86r84r21r1i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.arawatanhotel",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCynvmYpEHNlSvB-tf5v6AdaA2q7IT4P5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "638010533068-02bs5t8qc6ej8islspc2f7kkqsola85a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.tutorialmultilanguageapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638010533068:android:3b31a17fccdae15a844e69",
+        "android_client_info": {
+          "package_name": "com.mycompany.mndob"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "638010533068-g09hlof7fomd0c3f2nujbg91k0otv9g5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.mndob",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCynvmYpEHNlSvB-tf5v6AdaA2q7IT4P5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "638010533068-02bs5t8qc6ej8islspc2f7kkqsola85a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.tutorialmultilanguageapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638010533068:android:b2082f2bff0b5376844e69",
+        "android_client_info": {
+          "package_name": "com.mycompany.mndob2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "638010533068-egh7se5lsnipst4ru26110b03skpbk0g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.mndob2",
+            "certificate_hash": "ec66d3a8c62f5e682f5fd76d88caf9ffd67c9a6e"
+          }
+        },
+        {
+          "client_id": "638010533068-rlb6cfp4iatc8pmb4pldrdjl812lmf4s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.mndob2",
+            "certificate_hash": "4febe0aac5756853f0f04f89e41ac7e9bc378f66"
+          }
+        },
+        {
+          "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCynvmYpEHNlSvB-tf5v6AdaA2q7IT4P5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "638010533068-02bs5t8qc6ej8islspc2f7kkqsola85a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.tutorialmultilanguageapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638010533068:android:6f8862dbbc37fdb7844e69",
+        "android_client_info": {
+          "package_name": "com.mycompany.mndob3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "638010533068-oun9pii9b7g64i47avh18t30j9pi86hl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.mndob3",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCynvmYpEHNlSvB-tf5v6AdaA2q7IT4P5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "638010533068-02bs5t8qc6ej8islspc2f7kkqsola85a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.tutorialmultilanguageapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638010533068:android:16c1029a0603103c844e69",
+        "android_client_info": {
+          "package_name": "com.mycompany.tutorialmultilanguageapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCynvmYpEHNlSvB-tf5v6AdaA2q7IT4P5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "638010533068-0mrbpin1uol2mbe25fs875p7uvsv6d1g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "638010533068-02bs5t8qc6ej8islspc2f7kkqsola85a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.tutorialmultilanguageapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

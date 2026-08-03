@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/coach_mini",
+  "__writtenAt": "2026-07-22T11:29:02.682Z",
+  "__target": "local-staging",
+  "naim": "ميني باص",
+  "names_i18n": {
+    "ar": "ميني باص",
+    "en": "Minibus",
+    "ru": "Мини-автобус",
+    "ky": "Кичи автобус",
+    "uz": "Miniavtobus"
+  },
+  "codeCar": "coach_mini",
+  "sr": 600,
+  "agl_saat": 6,
+  "actev": true,
+  "ishafelh": true,
+  "not": "Minibus",
+  "geo_import_id": "vehcat_coach_mini",
+  "geo_import_source": "touri_geo_import"
+}

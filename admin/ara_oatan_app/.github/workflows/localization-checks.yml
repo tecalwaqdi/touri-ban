@@ -1,0 +1,35 @@
+name: localization-checks
+on:
+  push:
+    paths:
+      - 'assets/langs/**'
+      - 'lib/l10n/**'
+      - 'lib/**/*.dart'
+      - 'tool/check_*.dart'
+  pull_request:
+    paths:
+      - 'assets/langs/**'
+      - 'lib/l10n/**'
+      - 'lib/**/*.dart'
+      - 'tool/check_*.dart'
+
+jobs:
+  l10n:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: admin/ara_oatan_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+      - run: flutter gen-l10n
+      - run: dart run tool/check_localizations.dart
+      - run: dart run tool/check_kyrgyz_characters.dart
+      - run: dart run tool/check_mixed_languages.dart
+      - run: dart run tool/check_translation_consistency.dart
+      - run: dart run tool/localization_coverage_report.dart
+      - run: dart run tool/check_hardcoded_strings.dart
+      - run: flutter test test/localization

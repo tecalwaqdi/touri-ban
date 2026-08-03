@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_uz_nurafshon",
+  "__writtenAt": "2026-07-22T11:29:00.131Z",
+  "__target": "local-staging",
+  "naim": "نورافشان",
+  "names_i18n": {
+    "ar": "نورافشان",
+    "en": "Nurafshon",
+    "ru": "Нурафшон",
+    "ky": "Нурафшон",
+    "uz": "Nurafshon"
+  },
+  "cities": "cities/region_uz_tashkent_region",
+  "dolh": "countries/uzbekistan",
+  "lat_ling": {
+    "latitude": 41,
+    "longitude": 69.35
+  },
+  "acctev": true,
+  "country_iso": "UZ",
+  "geo_import_id": "city_uz_nurafshon",
+  "geo_import_source": "touri_geo_import"
+}

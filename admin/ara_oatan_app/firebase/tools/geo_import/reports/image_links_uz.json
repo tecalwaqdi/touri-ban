@@ -1,0 +1,2023 @@
+{
+  "country": "UZ",
+  "linked": 57,
+  "skipped": 223,
+  "wouldWriteToFirebaseStorage": false,
+  "rows": [
+    {
+      "id": "lm_uz_tashkent_city_osm_node_1141921741",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Tashkent. Courage monument. USSR stamp. 1979.jpg"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_node_2117483202",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Conglomerate from the riverbed of Isfayramsoy river.JPG"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_node_3317925819",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q868874&property=P18&format=json"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_node_6380365875",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Yuriy Gagarin haykali.jpg"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_31974956",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 2.0",
+      "reason": null,
+      "commonsFile": "History Museum (8145371419).jpg"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_102781576",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "St. Alexander Nevsky Orthodox church in Tashkent 16-20.JPG"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_107146064",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_107285056",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Qaldirgʻochbiy maqbarasi 58.jpg"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_141175715",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3AKnyaz%20Romanov%20saroyi.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_325125766",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 4.0",
+      "reason": null,
+      "commonsFile": "Toshkent teleminorasi.jpg"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_471761355",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Государственный музей искусств Узбекистана (42052).jpg"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_98106080",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": "Attribution",
+      "reason": "license not allowed: Attribution"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_107285055",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Mausoleum Hovendi 15-52.JPG"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_107285057",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Portal of Yunuskhan mausoleum.jpg"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_node_734882527",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q3330166&property=P18&format=json"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_node_2012720166",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_31972619",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Stamps of Uzbekistan, 2009-19.jpg"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_44864779",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Stamps of Uzbekistan, 2010-23.jpg"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_140356382",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Stamps of Uzbekistan, 2009-22.jpg"
+    },
+    {
+      "id": "lm_uz_tashkent_city_osm_way_802384567",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Amir-Timur-Platz vom Hotel Usbekistan in Richtung Westen.jpg"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_1252316685",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3AKanka1.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_way_134524850",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_way_109507198",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_11237905361",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_11237905362",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_way_383572349",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_way_383572350",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_way_383572351",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_way_383572356",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_349034274",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_1227627958",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_1227649698",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_1227649702",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_1227652673",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_1227686999",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_1253778386",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_4851008523",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_8137659342",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_9510802608",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_tashkent_region_osm_node_9510802612",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_relation_17141908",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0 de",
+      "reason": null,
+      "commonsFile": "Shah-i-Zinda.jpg"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_way_183108084",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 2.5",
+      "reason": null,
+      "commonsFile": "Chorsu.JPG"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_way_110296439",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Afrasiab - details from The Ambassadors' Painting.JPG"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_way_631559749",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_relation_17141748",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Registan 01.jpg"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_relation_2554586",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3AAfrasiab%20Museum%20of%20Samarkand.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_relation_17144889",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Вечерний Гур-Эмир.jpg"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_node_4317765008",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_way_189129099",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_relation_19075595",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_way_1083701137",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_node_4149199389",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_node_6487459285",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_node_12565847239",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_way_1089545459",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_way_1380040744",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_way_1409467501",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_node_1600847172",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_node_2294320662",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_samarkand_osm_node_4433022895",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_node_3628025870",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Kalyan Minaret, Bukhara (Минарет Калян в Бухаре, Minorai Kalon).jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_node_4745883987",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Bukhara Baland Mosque 2.jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_150076606",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Magʻoki attori masjidi (Мечеть Магоки-Аттари, Бухара, Magok-i-Attari Mosque).jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_163272972",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 2.0",
+      "reason": null,
+      "commonsFile": "La mosquée Bolo-Khaouz (Boukhara, Ouzbékistan) (5720017982).jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_202146561",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4517198&property=P18&format=json"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_229095231",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Ханака Диван-Беги, Бухара (Khanqah of Nodir Devonbegi, Nodir devonbegi xonaqohi).jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_292686319",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Varaxsha 9.jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_529372721",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "«Пайкент» табиий ёдгорлиги.png"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_relation_2022830",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Divanbegi Madrassah Bukhara.jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_229522623",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Токи Саррофон 1.jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_171235472",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3ALa%20mosqu%C3%A9e%20Bolo-Khaouz%20(Boukhara%2C%20Ouzb%C3%A9kistan)%20(5720017982).jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_197708190",
+      "linked": true,
+      "source": "existing",
+      "license": "CC0"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_358548180",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "MaBucharaMedrGaukushon3.jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_458001905",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Комплекс Ходжа-Зайнутдин.jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_relation_18942176",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Toqi Telpakfurushon Bukhara.jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_172613228",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Bukhara Namazgoh Mosque 3.jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_way_1446270185",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 4.0",
+      "reason": null,
+      "commonsFile": "Poi Kalon.jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_node_10815792405",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4069358&property=P18&format=json"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_relation_2519677",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Медресе Мулло Турсунжон.jpg"
+    },
+    {
+      "id": "lm_uz_bukhara_osm_relation_3235683",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Бухара, медресе Улугбека (2).jpg"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_way_185036984",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "KhivaWalls.jpg"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_node_1956482954",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_way_178606424",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_way_185257927",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_way_497049563",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_relation_2466227",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_relation_13911901",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Komplex Said Scheliker Bei.jpg"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_node_1956482975",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_relation_2469420",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_relation_2469422",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_way_456490807",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "025A5247.jpg"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_way_167449168",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q12821481&property=P18&format=json"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_relation_2469418",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_way_497537062",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_node_1788437717",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_node_4886614122",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_node_4886614123",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_node_4886614124",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_node_4886626622",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_xorazm_osm_way_316905939",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_way_174718684",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Узбекистан, Коканд, дворец Худояр-хана (4).jpg"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_5462180236",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_1824458609",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_4196472372",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_4222113791",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_5159139802",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_5159141240",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_7996843785",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_way_84969065",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_1851594557",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_4333686690",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_5306242321",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_way_207485007",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_1232186498",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_4190078032",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_4462877555",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_5875629185",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_5903310785",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_6113387185",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_fergana_osm_node_6617436216",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_way_475472408",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Achsikent.jpg"
+    },
+    {
+      "id": "lm_uz_namangan_osm_way_475472407",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Achsikent.jpg"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_4488865794",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_4744045721",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_4882969021",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_1232186408",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_1423838735",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_1423838736",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_1423838737",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_1423838738",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_1423838739",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_4979727621",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_way_250258013",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_way_452349254",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_3246589279",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_way_816104774",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_7184600885",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_node_11333165169",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_way_531786432",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_namangan_osm_way_560575723",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_5629675321",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_way_202278967",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_1913855224",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_4419005891",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_5054092721",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_4221370772",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_4221374102",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_4221388475",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_4418824896",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_4592027592",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_4720124920",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_4730569526",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_5060215522",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_5884155985",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_6595154913",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_way_124552417",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_way_617412045",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_way_674376685",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_relation_20813209",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_andijan_osm_node_3381119696",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_relation_2278282",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_node_2388912460",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_way_498978099",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_way_551704160",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_way_171374621",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_way_499204351",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_node_825443521",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_relation_15361685",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_node_10578174296",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_way_572201817",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_node_825443512",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_node_5010855626",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_node_7207971085",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_node_9082394918",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_node_11368226962",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_node_12505926094",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_way_171374617",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_way_229494930",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_way_348529307",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_qashqadaryo_osm_way_458397048",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_way_244130562",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_way_448234922",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Sultan Saodat Komplex Seit.JPG"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_way_493758365",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3AQoratepa-1.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_way_494660496",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Kampirtepa - 3.jpg"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_way_1093072077",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_way_1190223409",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Dalverzine Tepe - Denau - Surkhandarya.JPG"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_way_430091385",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_way_521748980",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_way_525836007",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_node_5878130366",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_way_351273157",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_node_1745149512",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_node_2468957374",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_node_2468969869",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_node_2468970466",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_node_2468971869",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_node_4443815489",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_node_4464306925",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_node_4910926006",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_surxondaryo_osm_node_6388713525",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_way_299867377",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Rabati Malik caravanserai 03.jpg"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_way_557904232",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_node_5838811340",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3ATurpan-karez-maqueta-d01.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_way_454347657",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Навои1.jpg"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_way_299867372",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_node_10118866599",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_way_192145581",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_way_215404258",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_way_976482586",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_node_3588167911",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_node_10118866600",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_node_10118866601",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_node_10118866602",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_node_5866999285",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_node_10617776406",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_node_11809319512",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_node_11809352381",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_node_12644079758",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_way_299867383",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_navoiy_osm_way_677599500",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_4763570221",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Тамерлановы ворота.jpg"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_6553066385",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_way_490620944",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_8234076773",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_4796674625",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_5118799721",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_8235149651",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_8420087163",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_8473995705",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_8515913858",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_way_443152431",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_way_498777842",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_6741547395",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_8235088952",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_8420087187",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_10115899264",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_way_885409616",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_5475389421",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_6553066386",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_jizzax_osm_node_6937222685",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_node_5297018111",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_node_5882326977",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_node_10760439502",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_way_622819724",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_way_1009909870",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_way_1158973479",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_node_5935282065",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_node_6900353405",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_node_11237612603",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_way_736301681",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_way_737055763",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_way_1335593843",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_node_4227650050",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_node_4253741718",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_node_5935282066",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_way_478650751",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_way_737051639",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_way_1333740327",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_way_1335727278",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_sirdaryo_osm_way_1159134468",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_way_166029472",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Toprak-Kala 01.jpg"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_way_251432679",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Koi Krylgan Kala (reconstruction).jpg"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_way_287502330",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Ayaz-Kala-2.jpg"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_way_390009114",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q12820857&property=P18&format=json"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_way_168249296",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Ancient Complex Mizdahkan.jpg"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_way_884013231",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "The Karakalpakstan State Museum of Art named after I.V. Savitsky.jpg"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_relation_12537937",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Ayaz-Kala-2.jpg"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_way_444851837",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_way_617242015",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Flag of Karakalpakstan.svg"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_way_628614053",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Истории и культуры Республики Каракалпакстан.jpg"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_node_807718125",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q1400974&property=P18&format=json"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_way_66944665",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Kantubek.jpg"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_node_5657821921",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_node_8212102116",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_way_348697797",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_node_3698427718",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_node_3856902965",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_node_4397854552",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_node_4423152599",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_uz_karakalpakstan_osm_node_4423152604",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_kg_uzgen",
+  "__writtenAt": "2026-07-22T11:28:59.730Z",
+  "__target": "local-staging",
+  "naim": "أوزجن",
+  "names_i18n": {
+    "ar": "أوزجن",
+    "en": "Uzgen",
+    "ru": "Узген",
+    "ky": "Өзгөн",
+    "uz": "Oʻzgan"
+  },
+  "cities": "cities/region_kg_osh",
+  "dolh": "countries/kyrgyzstan",
+  "lat_ling": {
+    "latitude": 40.7667,
+    "longitude": 73.3
+  },
+  "acctev": true,
+  "country_iso": "KG",
+  "geo_import_id": "city_kg_uzgen",
+  "geo_import_source": "touri_geo_import"
+}

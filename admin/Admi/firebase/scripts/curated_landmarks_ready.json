@@ -1,0 +1,527 @@
+{
+  "countries": [
+    {
+      "id": "saudi_arabia",
+      "iso2": "SA",
+      "names": {
+        "ar": "المملكة العربية السعودية",
+        "en": "Saudi Arabia",
+        "ru": "Саудовская Аравия",
+        "ky": "Сауд Арабиясы"
+      }
+    },
+    {
+      "id": "kyrgyzstan",
+      "iso2": "KG",
+      "names": {
+        "ar": "قرغيزستان",
+        "en": "Kyrgyzstan",
+        "ru": "Кыргызстан",
+        "ky": "Кыргызстан"
+      }
+    }
+  ],
+  "regions": [
+    {
+      "id": "region_makkah",
+      "countryId": "saudi_arabia",
+      "names": {
+        "ar": "منطقة مكة المكرمة",
+        "en": "Makkah Region",
+        "ru": "Регион Мекка",
+        "ky": "Мекке аймагы"
+      },
+      "cities": [
+        {
+          "id": "city_makkah",
+          "lat": 21.4225,
+          "lng": 39.8262,
+          "names": {
+            "ar": "مكة المكرمة",
+            "en": "Makkah",
+            "ru": "Мекка",
+            "ky": "Мекке"
+          }
+        },
+        {
+          "id": "city_jeddah",
+          "lat": 21.4858,
+          "lng": 39.1925,
+          "names": {
+            "ar": "جدة",
+            "en": "Jeddah",
+            "ru": "Джидда",
+            "ky": "Жидда"
+          }
+        }
+      ]
+    },
+    {
+      "id": "region_riyadh",
+      "countryId": "saudi_arabia",
+      "names": {
+        "ar": "منطقة الرياض",
+        "en": "Riyadh Region",
+        "ru": "Регион Эр-Рияд",
+        "ky": "Эр-Рияд аймагы"
+      },
+      "cities": [
+        {
+          "id": "city_riyadh",
+          "lat": 24.7136,
+          "lng": 46.6753,
+          "names": {
+            "ar": "الرياض",
+            "en": "Riyadh",
+            "ru": "Эр-Рияд",
+            "ky": "Эр-Рияд"
+          }
+        }
+      ]
+    },
+    {
+      "id": "kg-chuy",
+      "countryId": "kyrgyzstan",
+      "names": {
+        "ar": "إقليم تشوي",
+        "en": "Chuy Region",
+        "ru": "Чуйская область",
+        "ky": "Чүй облусу"
+      },
+      "cities": [
+        {
+          "id": "city_bishkek",
+          "lat": 42.8746,
+          "lng": 74.5698,
+          "names": {
+            "ar": "بيشكيك",
+            "en": "Bishkek",
+            "ru": "Бишкек",
+            "ky": "Бишкек"
+          }
+        }
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "id": "curated_makkah_haram",
+      "countryId": "saudi_arabia",
+      "regionId": "region_makkah",
+      "cityId": "city_makkah",
+      "lat": 21.4225,
+      "lng": 39.8262,
+      "sortOrder": 1,
+      "isMosque": true,
+      "rate": 5.0,
+      "categoryAr": "معالم دينية",
+      "categoryEn": "Religious landmarks",
+      "names": {
+        "ar": "المسجد الحرام",
+        "en": "Masjid al-Haram",
+        "ru": "Заповедная мечеть",
+        "ky": "Ыйык Мечит (аль-Харам)"
+      },
+      "descriptions": {
+        "ar": "أقدس موقع في الإسلام ويضم الكعبة المشرفة.",
+        "en": "The holiest site in Islam, home of the Kaaba.",
+        "ru": "Самое священное место в исламе, где находится Кааба.",
+        "ky": "Исламдагы эң ыйык жай, Кааба жайгашкан."
+      },
+      "address": { "ar": "المسجد الحرام، مكة المكرمة" },
+      "img1": "https://images.unsplash.com/photo-1564769625905-50e93615e769?w=1200&q=80"
+    },
+    {
+      "id": "curated_makkah_clock_tower",
+      "countryId": "saudi_arabia",
+      "regionId": "region_makkah",
+      "cityId": "city_makkah",
+      "lat": 21.4189,
+      "lng": 39.8257,
+      "sortOrder": 2,
+      "isMosque": false,
+      "rate": 4.8,
+      "categoryAr": "معالم حديثة",
+      "categoryEn": "Modern landmarks",
+      "names": {
+        "ar": "أبراج البيت (ساعة مكة)",
+        "en": "Abraj Al Bait (Makkah Clock Tower)",
+        "ru": "Башни Абрадж Аль-Байт (часы Мекки)",
+        "ky": "Абраж Аль-Байт (Мекке сааты)"
+      },
+      "descriptions": {
+        "ar": "مجمع فنادق وتسوق بجوار الحرام مع برج الساعة الشهير.",
+        "en": "Hotel and shopping complex next to the Haram with the famous clock tower.",
+        "ru": "Гостинично-торговый комплекс у Харама со знаменитой часовой башней.",
+        "ky": "Харамга жакын мейманкана жана соода комплекси, атактуу саат мунарасы менен."
+      },
+      "address": { "ar": "أبراج البيت، مكة المكرمة" },
+      "img1": "https://images.unsplash.com/photo-1591604129939-f1efa4d9f1fa?w=1200&q=80"
+    },
+    {
+      "id": "curated_makkah_jabal_nour",
+      "countryId": "saudi_arabia",
+      "regionId": "region_makkah",
+      "cityId": "city_makkah",
+      "lat": 21.4578,
+      "lng": 39.8598,
+      "sortOrder": 3,
+      "rate": 4.7,
+      "categoryAr": "معالم دينية",
+      "categoryEn": "Religious landmarks",
+      "names": {
+        "ar": "جبل النور — غار حراء",
+        "en": "Jabal al-Nour — Cave of Hira",
+        "ru": "Джабаль ан-Нур — пещера Хира",
+        "ky": "Жабал ан-Нур — Хира үңкүрү"
+      },
+      "descriptions": {
+        "ar": "موقع تاريخي ديني مشهور بتسلق جبل النور وغار حراء.",
+        "en": "Historic religious site known for the climb to Hira Cave.",
+        "ru": "Историко-религиозное место, известное восхождением к пещере Хира.",
+        "ky": "Хира үңкүрүнө чыгуу менен белгилүү тарыхый-дини жай."
+      },
+      "address": { "ar": "جبل النور، مكة المكرمة" },
+      "img1": "https://images.unsplash.com/photo-1546412414-e1885259563a?w=1200&q=80"
+    },
+    {
+      "id": "curated_makkah_arafat",
+      "countryId": "saudi_arabia",
+      "regionId": "region_makkah",
+      "cityId": "city_makkah",
+      "lat": 21.3547,
+      "lng": 39.9841,
+      "sortOrder": 4,
+      "rate": 4.9,
+      "categoryAr": "معالم دينية",
+      "categoryEn": "Religious landmarks",
+      "names": {
+        "ar": "جبل عرفات",
+        "en": "Mount Arafat",
+        "ru": "Гора Арафат",
+        "ky": "Арафат тоосу"
+      },
+      "descriptions": {
+        "ar": "موقع الوقوف بعرفة خلال موسم الحج.",
+        "en": "The standing place of Arafah during Hajj.",
+        "ru": "Место стояния на Арафате во время хаджа.",
+        "ky": "Ажылык учурунда Арафатта туруу жери."
+      },
+      "address": { "ar": "عرفات، مكة المكرمة" },
+      "img1": "https://images.unsplash.com/photo-1580418827634-2301c7416009?w=1200&q=80"
+    },
+    {
+      "id": "curated_makkah_black_stone",
+      "countryId": "saudi_arabia",
+      "regionId": "region_makkah",
+      "cityId": "city_makkah",
+      "lat": 21.4225,
+      "lng": 39.8264,
+      "sortOrder": 5,
+      "isMosque": true,
+      "rate": 5.0,
+      "categoryAr": "معالم دينية",
+      "categoryEn": "Religious landmarks",
+      "names": {
+        "ar": "الحجر الأسود",
+        "en": "The Black Stone",
+        "ru": "Чёрный камень",
+        "ky": "Кара таш"
+      },
+      "descriptions": {
+        "ar": "جزء من الكعبة المشرفة داخل المسجد الحرام.",
+        "en": "Part of the Kaaba inside Masjid al-Haram.",
+        "ru": "Часть Каабы внутри Заповедной мечети.",
+        "ky": "Ыйык Мечиттеги Каабанын бөлүгү."
+      },
+      "address": { "ar": "المسجد الحرام، مكة المكرمة" },
+      "img1": "https://images.unsplash.com/photo-1564769625905-50e93615e769?w=1200&q=80"
+    },
+    {
+      "id": "curated_jeddah_corniche",
+      "countryId": "saudi_arabia",
+      "regionId": "region_makkah",
+      "cityId": "city_jeddah",
+      "lat": 21.589,
+      "lng": 39.106,
+      "sortOrder": 1,
+      "rate": 4.7,
+      "categoryAr": "أماكن ترفيهية",
+      "categoryEn": "Entertainment",
+      "names": {
+        "ar": "كورنيش جدة",
+        "en": "Jeddah Corniche",
+        "ru": "Набережная Джидды",
+        "ky": "Жидда жээги"
+      },
+      "descriptions": {
+        "ar": "واجهة بحرية شهيرة للمشي والعائلات وإطلالة على البحر الأحمر.",
+        "en": "Famous waterfront for walking, families, and Red Sea views.",
+        "ru": "Известная набережная для прогулок и видов на Красное море.",
+        "ky": "Жөө басуу жана Кызыл деңиз көрүнүшү үчүн белгилүү жээк."
+      },
+      "address": { "ar": "الكورنيش، جدة" },
+      "img1": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80"
+    },
+    {
+      "id": "curated_jeddah_albalad",
+      "countryId": "saudi_arabia",
+      "regionId": "region_makkah",
+      "cityId": "city_jeddah",
+      "lat": 21.4853,
+      "lng": 39.187,
+      "sortOrder": 2,
+      "rate": 4.8,
+      "categoryAr": "معالم تاريخية",
+      "categoryEn": "Historical landmarks",
+      "names": {
+        "ar": "جدة التاريخية (البلد)",
+        "en": "Historic Jeddah (Al-Balad)",
+        "ru": "Историческая Джидда (Аль-Балад)",
+        "ky": "Тарыхый Жидда (Аль-Балад)"
+      },
+      "descriptions": {
+        "ar": "حي تراثي مدرج في اليونسكو بمنازله ورواشينه التاريخية.",
+        "en": "UNESCO-listed heritage district with historic houses and rawashin.",
+        "ru": "Исторический район в списке ЮНЕСКО.",
+        "ky": "ЮНЕСКОнун тизмесиндеги тарыхый район."
+      },
+      "address": { "ar": "البلد، جدة" },
+      "img1": "https://images.unsplash.com/photo-1580418827634-2301c7416009?w=1200&q=80"
+    },
+    {
+      "id": "curated_jeddah_fountain",
+      "countryId": "saudi_arabia",
+      "regionId": "region_makkah",
+      "cityId": "city_jeddah",
+      "lat": 21.514,
+      "lng": 39.146,
+      "sortOrder": 3,
+      "rate": 4.6,
+      "categoryAr": "معالم سياحية",
+      "categoryEn": "Tourist landmarks",
+      "names": {
+        "ar": "نافورة الملك فهد",
+        "en": "King Fahd Fountain",
+        "ru": "Фонтан короля Фахда",
+        "ky": "Король Фахд фонтаны"
+      },
+      "descriptions": {
+        "ar": "من أشهر معالم جدة على البحر الأحمر.",
+        "en": "One of Jeddah’s most famous Red Sea landmarks.",
+        "ru": "Одна из самых известных достопримечательностей Джидды.",
+        "ky": "Жидданын эң белгилүү белгилеринин бири."
+      },
+      "address": { "ar": "الكورنيش، جدة" },
+      "img1": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80"
+    },
+    {
+      "id": "curated_riyadh_masmak",
+      "countryId": "saudi_arabia",
+      "regionId": "region_riyadh",
+      "cityId": "city_riyadh",
+      "lat": 24.6311,
+      "lng": 46.7133,
+      "sortOrder": 1,
+      "rate": 4.7,
+      "categoryAr": "معالم تاريخية",
+      "categoryEn": "Historical landmarks",
+      "names": {
+        "ar": "قصر المصمك",
+        "en": "Masmak Fortress",
+        "ru": "Крепость Масмак",
+        "ky": "Масмак чеби"
+      },
+      "descriptions": {
+        "ar": "قلعة تاريخية في وسط الرياض ورمز لتوحيد المملكة.",
+        "en": "Historic fort in central Riyadh, a symbol of unification.",
+        "ru": "Историческая крепость в центре Эр-Рияда.",
+        "ky": "Эр-Рияддын борборундагы тарыхый чеп."
+      },
+      "address": { "ar": "الديرة، الرياض" },
+      "img1": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80"
+    },
+    {
+      "id": "curated_riyadh_national_museum",
+      "countryId": "saudi_arabia",
+      "regionId": "region_riyadh",
+      "cityId": "city_riyadh",
+      "lat": 24.6473,
+      "lng": 46.7102,
+      "sortOrder": 2,
+      "rate": 4.8,
+      "categoryAr": "متحف",
+      "categoryEn": "Museum",
+      "names": {
+        "ar": "المتحف الوطني السعودي",
+        "en": "National Museum of Saudi Arabia",
+        "ru": "Национальный музей Саудовской Аравии",
+        "ky": "Сауд Арабиясынын Улуттук музейи"
+      },
+      "descriptions": {
+        "ar": "متحف رئيسي يعرض تاريخ الجزيرة العربية والمملكة.",
+        "en": "Major museum covering Arabian Peninsula and Kingdom history.",
+        "ru": "Главный музей истории Аравийского полуострова и королевства.",
+        "ky": "Араб жарым аралы жана падышалыктын тарыхы боюнча негизги музей."
+      },
+      "address": { "ar": "المربع، الرياض" },
+      "img1": "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?w=1200&q=80"
+    },
+    {
+      "id": "curated_riyadh_kingdom_centre",
+      "countryId": "saudi_arabia",
+      "regionId": "region_riyadh",
+      "cityId": "city_riyadh",
+      "lat": 24.7113,
+      "lng": 46.6743,
+      "sortOrder": 3,
+      "rate": 4.7,
+      "categoryAr": "معالم حديثة",
+      "categoryEn": "Modern landmarks",
+      "names": {
+        "ar": "برج المملكة",
+        "en": "Kingdom Centre Tower",
+        "ru": "Башня Kingdom Centre",
+        "ky": "Кингдом борбор мунарасы"
+      },
+      "descriptions": {
+        "ar": "ناطحة سحاب أيقونية مع جسر مشاهدة.",
+        "en": "Iconic skyscraper with a sky bridge viewpoint.",
+        "ru": "Знаковый небоскрёб со смотровым мостом.",
+        "ky": "Көрүү көпүрөсү бар атактуу асман тиреген имарат."
+      },
+      "address": { "ar": "العليا، الرياض" },
+      "img1": "https://images.unsplash.com/photo-1580418827634-2301c7416009?w=1200&q=80"
+    },
+    {
+      "id": "curated_riyadh_boulevard",
+      "countryId": "saudi_arabia",
+      "regionId": "region_riyadh",
+      "cityId": "city_riyadh",
+      "lat": 24.768,
+      "lng": 46.664,
+      "sortOrder": 4,
+      "rate": 4.6,
+      "categoryAr": "أماكن ترفيهية",
+      "categoryEn": "Entertainment",
+      "names": {
+        "ar": "بوليفارد الرياض",
+        "en": "Boulevard Riyadh",
+        "ru": "Бульвар Эр-Рияд",
+        "ky": "Эр-Рияд бульвары"
+      },
+      "descriptions": {
+        "ar": "وجهة ترفيهية ومناسبات كبرى في الرياض.",
+        "en": "Major entertainment and events destination in Riyadh.",
+        "ru": "Крупное развлекательное пространство Эр-Рияда.",
+        "ky": "Эр-Рияддагы негизги көңүл ачуу жана иш-чаралар жайы."
+      },
+      "address": { "ar": "البوليفارد، الرياض" },
+      "img1": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80"
+    },
+    {
+      "id": "curated_bishkek_ala_too",
+      "countryId": "kyrgyzstan",
+      "regionId": "kg-chuy",
+      "cityId": "city_bishkek",
+      "lat": 42.8746,
+      "lng": 74.6122,
+      "sortOrder": 1,
+      "rate": 4.7,
+      "categoryAr": "معالم سياحية",
+      "categoryEn": "Tourist landmarks",
+      "names": {
+        "ar": "ساحة ألا توو",
+        "en": "Ala-Too Square",
+        "ru": "Площадь Ала-Тоо",
+        "ky": "Ала-Тоо аянты"
+      },
+      "descriptions": {
+        "ar": "الساحة المركزية في بيشكيك.",
+        "en": "The central square of Bishkek.",
+        "ru": "Центральная площадь Бишкека.",
+        "ky": "Бишкектин борбордук аянты."
+      },
+      "address": { "ar": "ساحة ألا توو، بيشكيك" },
+      "img1": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=80"
+    },
+    {
+      "id": "curated_bishkek_ala_archa",
+      "countryId": "kyrgyzstan",
+      "regionId": "kg-chuy",
+      "cityId": "city_bishkek",
+      "lat": 42.6369,
+      "lng": 74.488,
+      "sortOrder": 2,
+      "rate": 4.9,
+      "categoryAr": "طبيعة وحدائق",
+      "categoryEn": "Nature and parks",
+      "names": {
+        "ar": "منتزه ألا أرتشا الوطني",
+        "en": "Ala Archa National Park",
+        "ru": "Национальный парк Ала-Арча",
+        "ky": "Ала-Арча улуттук паркы"
+      },
+      "descriptions": {
+        "ar": "حديقة وطنية جبلية قرب بيشكيك للتخييم والمشي.",
+        "en": "Mountain national park near Bishkek for hiking and nature.",
+        "ru": "Горный нацпарк рядом с Бишкеком.",
+        "ky": "Бишкекке жакын тоо улуттук паркы."
+      },
+      "address": { "ar": "ألا أرتشا، قرب بيشكيك" },
+      "img1": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=80"
+    },
+    {
+      "id": "curated_bishkek_osh_bazaar",
+      "countryId": "kyrgyzstan",
+      "regionId": "kg-chuy",
+      "cityId": "city_bishkek",
+      "lat": 42.874,
+      "lng": 74.5696,
+      "sortOrder": 3,
+      "rate": 4.5,
+      "categoryAr": "أسواق",
+      "categoryEn": "Markets",
+      "names": {
+        "ar": "سوق أوش",
+        "en": "Osh Bazaar",
+        "ru": "Ошский базар",
+        "ky": "Ош базары"
+      },
+      "descriptions": {
+        "ar": "سوق تقليدي كبير في بيشكيك.",
+        "en": "Large traditional market in Bishkek.",
+        "ru": "Крупный традиционный рынок Бишкека.",
+        "ky": "Бишкектеги чоң салттуу базар."
+      },
+      "address": { "ar": "سوق أوش، بيشكيك" },
+      "img1": "https://images.unsplash.com/photo-1555529902-5261145633bf?w=1200&q=80"
+    },
+    {
+      "id": "curated_bishkek_burana",
+      "countryId": "kyrgyzstan",
+      "regionId": "kg-chuy",
+      "cityId": "city_bishkek",
+      "lat": 42.7468,
+      "lng": 75.2502,
+      "sortOrder": 4,
+      "rate": 4.8,
+      "categoryAr": "معالم تاريخية",
+      "categoryEn": "Historical landmarks",
+      "names": {
+        "ar": "برج بورانا",
+        "en": "Burana Tower",
+        "ru": "Башня Бурана",
+        "ky": "Бурана мунарасы"
+      },
+      "descriptions": {
+        "ar": "مئذنة تاريخية من طريق الحرير قرب بيشكيك.",
+        "en": "Historic Silk Road minaret near Bishkek.",
+        "ru": "Исторический минарет Великого шёлкового пути.",
+        "ky": "Бишкекке жакын Жибек жолунун тарыхый мунарасы."
+      },
+      "address": { "ar": "بورانا، قرب بيشكيك" },
+      "img1": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80"
+    }
+  ]
+}

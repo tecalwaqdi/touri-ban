@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/suv_standard",
+  "__writtenAt": "2026-07-22T11:29:02.563Z",
+  "__target": "local-staging",
+  "naim": "SUV قياسية",
+  "names_i18n": {
+    "ar": "SUV قياسية",
+    "en": "SUV Standard",
+    "ru": "Стандартный SUV",
+    "ky": "Стандарт SUV",
+    "uz": "Standart SUV"
+  },
+  "codeCar": "suv_standard",
+  "sr": 300,
+  "agl_saat": 4,
+  "actev": true,
+  "ishafelh": false,
+  "not": "SUV Standard",
+  "geo_import_id": "vehcat_suv_standard",
+  "geo_import_source": "touri_geo_import"
+}

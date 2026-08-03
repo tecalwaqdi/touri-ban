@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/tourist_vehicle",
+  "__writtenAt": "2026-07-22T11:29:02.689Z",
+  "__target": "local-staging",
+  "naim": "مركبة سياحية",
+  "names_i18n": {
+    "ar": "مركبة سياحية",
+    "en": "Tourist Vehicle",
+    "ru": "Туристический транспорт",
+    "ky": "Туристтик унаа",
+    "uz": "Turistik transport"
+  },
+  "codeCar": "tourist_vehicle",
+  "sr": 350,
+  "agl_saat": 5,
+  "actev": true,
+  "ishafelh": false,
+  "not": "Tourist Vehicle",
+  "geo_import_id": "vehcat_tourist_vehicle",
+  "geo_import_source": "touri_geo_import"
+}

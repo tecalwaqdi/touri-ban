@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "638010533068",
+    "project_id": "tutorial-multi-language-70gx4j",
+    "storage_bucket": "tutorial-multi-language-70gx4j.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638010533068:android:3b31a17fccdae15a844e69",
+        "android_client_info": {
+          "package_name": "com.mycompany.mndob"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCynvmYpEHNlSvB-tf5v6AdaA2q7IT4P5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638010533068:android:16c1029a0603103c844e69",
+        "android_client_info": {
+          "package_name": "com.mycompany.tutorialmultilanguageapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCynvmYpEHNlSvB-tf5v6AdaA2q7IT4P5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

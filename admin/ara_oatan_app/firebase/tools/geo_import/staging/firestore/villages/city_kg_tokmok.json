@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_kg_tokmok",
+  "__writtenAt": "2026-07-22T11:28:59.559Z",
+  "__target": "local-staging",
+  "naim": "توكموك",
+  "names_i18n": {
+    "ar": "توكموك",
+    "en": "Tokmok",
+    "ru": "Токмок",
+    "ky": "Токмок",
+    "uz": "Toqmoq"
+  },
+  "cities": "cities/region_kg_chuy",
+  "dolh": "countries/kyrgyzstan",
+  "lat_ling": {
+    "latitude": 42.841,
+    "longitude": 75.301
+  },
+  "acctev": true,
+  "country_iso": "KG",
+  "geo_import_id": "city_kg_tokmok",
+  "geo_import_source": "touri_geo_import"
+}

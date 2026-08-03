@@ -1,0 +1,20 @@
+flutter_native_splash:
+  color: "#39D2C0"
+  image: assets/images/torytaxi.png
+  android_gravity: center
+  ios_content_mode: scaleAspectFit
+
+  color_dark: "#1F7372"
+  image_dark: assets/images/torytaxi.png
+
+  android_12:
+    color: "#39D2C0"
+    image: assets/images/torytaxi.png
+    icon_background_color: "#FFFFFF"
+    color_dark: "#1F7372"
+    image_dark: assets/images/torytaxi.png
+    icon_background_color_dark: "#155E5D"
+
+  android: true
+  ios: true
+  web: true

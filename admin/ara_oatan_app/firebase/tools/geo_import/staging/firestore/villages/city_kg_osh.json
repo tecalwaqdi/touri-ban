@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_kg_osh",
+  "__writtenAt": "2026-07-22T11:28:59.893Z",
+  "__target": "local-staging",
+  "naim": "أوش",
+  "names_i18n": {
+    "ar": "أوش",
+    "en": "Osh",
+    "ru": "Ош",
+    "ky": "Ош",
+    "uz": "Oʻsh"
+  },
+  "cities": "cities/region_kg_osh_city",
+  "dolh": "countries/kyrgyzstan",
+  "lat_ling": {
+    "latitude": 40.5283,
+    "longitude": 72.7985
+  },
+  "acctev": true,
+  "country_iso": "KG",
+  "geo_import_id": "city_kg_osh",
+  "geo_import_source": "touri_geo_import"
+}

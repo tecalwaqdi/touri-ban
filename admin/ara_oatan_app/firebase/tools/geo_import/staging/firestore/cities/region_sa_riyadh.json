@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_sa_riyadh",
+  "__writtenAt": "2026-07-22T11:28:57.890Z",
+  "__target": "local-staging",
+  "naim": "منطقة الرياض",
+  "names_i18n": {
+    "ar": "منطقة الرياض",
+    "en": "Riyadh Region",
+    "ru": "Провинция Эр-Рияд",
+    "ky": "Эр-Рияд аймагы",
+    "uz": "Ar-Riyod viloyati"
+  },
+  "dolh": "countries/saudi_arabia",
+  "acctev": true,
+  "iso_code": "SA-01",
+  "country_iso": "SA",
+  "geo_import_id": "region_sa_riyadh",
+  "geo_import_source": "touri_geo_import"
+}

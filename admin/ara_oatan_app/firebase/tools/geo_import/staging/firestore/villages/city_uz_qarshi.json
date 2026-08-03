@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_uz_qarshi",
+  "__writtenAt": "2026-07-22T11:29:00.825Z",
+  "__target": "local-staging",
+  "naim": "قرشي",
+  "names_i18n": {
+    "ar": "قرشي",
+    "en": "Qarshi",
+    "ru": "Карши",
+    "ky": "Карши",
+    "uz": "Qarshi"
+  },
+  "cities": "cities/region_uz_qashqadaryo",
+  "dolh": "countries/uzbekistan",
+  "lat_ling": {
+    "latitude": 38.8667,
+    "longitude": 65.8
+  },
+  "acctev": true,
+  "country_iso": "UZ",
+  "geo_import_id": "city_uz_qarshi",
+  "geo_import_source": "touri_geo_import"
+}

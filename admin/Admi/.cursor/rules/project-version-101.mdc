@@ -1,0 +1,25 @@
+---
+description: Restore project snapshot version 101 (admin_arawatan backup)
+alwaysApply: true
+---
+
+# Project version 101
+
+When the user asks to restore **version 101**, **النسخة 101**, or **اعد لي النسخة 101**:
+
+1. **Backup location (full project snapshot):**
+   `e:\my project\osama\watan\backups\admin_arawatan-v101`
+
+2. **Alternate archive:**
+   `e:\my project\osama\watan\backups\admin_arawatan-v101.zip`
+
+3. **Manifest:** `VERSION-101.json` (project root and backups folder)
+
+4. **Restore steps:**
+   - Run: `powershell -ExecutionPolicy Bypass -File "e:\my project\osama\watan\admin_arawatan-main\tools\restore_version_101.ps1" -Force`
+   - Or robocopy from backup folder to `e:\my project\osama\watan\admin_arawatan-main`
+   - Then: `flutter pub get` in the restored project
+
+5. **Snapshot date:** 2026-06-28 — includes stability fixes, delete success popup, CRUD list refresh.
+
+Do not delete the backup folder unless the user explicitly requests it.

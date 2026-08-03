@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_kg_talas",
+  "__writtenAt": "2026-07-22T11:28:59.694Z",
+  "__target": "local-staging",
+  "naim": "إقليم تالاس",
+  "names_i18n": {
+    "ar": "إقليم تالاس",
+    "en": "Talas Region",
+    "ru": "Таласская область",
+    "ky": "Талас облусу",
+    "uz": "Talas viloyati"
+  },
+  "dolh": "countries/kyrgyzstan",
+  "acctev": true,
+  "iso_code": "KG-T",
+  "country_iso": "KG",
+  "geo_import_id": "region_kg_talas",
+  "geo_import_source": "touri_geo_import"
+}

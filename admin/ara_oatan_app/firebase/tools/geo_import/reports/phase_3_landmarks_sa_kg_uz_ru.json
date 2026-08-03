@@ -1,0 +1,13 @@
+{
+  "phase": 3,
+  "name": "landmarks",
+  "countries": [
+    "SA",
+    "KG",
+    "UZ",
+    "RU"
+  ],
+  "written": 1120,
+  "gaps": [],
+  "finishedAt": "2026-07-23T10:29:23.059Z"
+}

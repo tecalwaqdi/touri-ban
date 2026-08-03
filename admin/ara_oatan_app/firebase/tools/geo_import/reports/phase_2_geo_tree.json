@@ -1,0 +1,12 @@
+{
+  "phase": 2,
+  "name": "countries_regions_cities",
+  "countries": [
+    "SA",
+    "KG",
+    "UZ",
+    "RU"
+  ],
+  "written": 116,
+  "finishedAt": "2026-07-22T21:50:59.798Z"
+}

@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_kg_batken",
+  "__writtenAt": "2026-07-22T11:28:59.911Z",
+  "__target": "local-staging",
+  "naim": "باتكين",
+  "names_i18n": {
+    "ar": "باتكين",
+    "en": "Batken",
+    "ru": "Баткен",
+    "ky": "Баткен",
+    "uz": "Botken"
+  },
+  "cities": "cities/region_kg_batken",
+  "dolh": "countries/kyrgyzstan",
+  "lat_ling": {
+    "latitude": 40.0626,
+    "longitude": 70.8194
+  },
+  "acctev": true,
+  "country_iso": "KG",
+  "geo_import_id": "city_kg_batken",
+  "geo_import_source": "touri_geo_import"
+}

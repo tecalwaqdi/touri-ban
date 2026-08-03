@@ -1,0 +1,3409 @@
+{
+  "@@locale": "en",
+  "n1": "1",
+  "@n1": {
+    "description": "UI string (source key: 1)"
+  },
+  "n2": "2",
+  "@n2": {
+    "description": "UI string (source key: 2)"
+  },
+  "n4": "4",
+  "@n4": {
+    "description": "UI string (source key: 4)"
+  },
+  "n5": "5",
+  "@n5": {
+    "description": "UI string (source key: 5)"
+  },
+  "n6": "6",
+  "@n6": {
+    "description": "UI string (source key: 6)"
+  },
+  "n7": "7",
+  "@n7": {
+    "description": "UI string (source key: 7)"
+  },
+  "n8": "8",
+  "@n8": {
+    "description": "UI string (source key: 8)"
+  },
+  "n9": "9",
+  "@n9": {
+    "description": "UI string (source key: 9)"
+  },
+  "n10": "10",
+  "@n10": {
+    "description": "UI string (source key: 10)"
+  },
+  "n11": "11",
+  "@n11": {
+    "description": "UI string (source key: 11)"
+  },
+  "n15": "15",
+  "@n15": {
+    "description": "UI string (source key: 15)"
+  },
+  "n24": "24",
+  "@n24": {
+    "description": "UI string (source key: 24)"
+  },
+  "n25": "25",
+  "@n25": {
+    "description": "UI string (source key: 25)"
+  },
+  "n26": "26",
+  "@n26": {
+    "description": "UI string (source key: 26)"
+  },
+  "n27": "27",
+  "@n27": {
+    "description": "UI string (source key: 27)"
+  },
+  "n28": "28",
+  "@n28": {
+    "description": "UI string (source key: 28)"
+  },
+  "n29": "29",
+  "@n29": {
+    "description": "UI string (source key: 29)"
+  },
+  "n30": "30",
+  "@n30": {
+    "description": "UI string (source key: 30)"
+  },
+  "n31": "31",
+  "@n31": {
+    "description": "UI string (source key: 31)"
+  },
+  "n32": "32",
+  "@n32": {
+    "description": "UI string (source key: 32)"
+  },
+  "n33": "33",
+  "@n33": {
+    "description": "UI string (source key: 33)"
+  },
+  "n34": "34",
+  "@n34": {
+    "description": "UI string (source key: 34)"
+  },
+  "n45": "45",
+  "@n45": {
+    "description": "UI string (source key: 45)"
+  },
+  "n123": "123",
+  "@n123": {
+    "description": "UI string (source key: 123)"
+  },
+  "n561790844": "561790844",
+  "@n561790844": {
+    "description": "UI string (source key: 561790844)"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "UI string (source key: Login)"
+  },
+  "email_Address": "Email Address",
+  "@email_Address": {
+    "description": "UI string (source key: Email Address)"
+  },
+  "create_Account": "Create account",
+  "@create_Account": {
+    "description": "UI string (source key: Create Account )"
+  },
+  "enter_your_email": "Enter your email...",
+  "@enter_your_email": {
+    "description": "UI string (source key: Enter your email...)"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "UI string (source key: Password)"
+  },
+  "enter_your_password": "Enter your password...",
+  "@enter_your_password": {
+    "description": "UI string (source key: Enter your password...)"
+  },
+  "select_the_app_language": "Select the app language",
+  "@select_the_app_language": {
+    "description": "UI string (source key: Select the app language)"
+  },
+  "login_with_Google": "Login with Google",
+  "@login_with_Google": {
+    "description": "UI string (source key: Login with Google)"
+  },
+  "auth_google_pick_title": "Choose a Google account",
+  "@auth_google_pick_title": {
+    "description": "UI string (source key: auth_google_pick_title)"
+  },
+  "auth_google_pick_sub": "Accounts linked to this device",
+  "@auth_google_pick_sub": {
+    "description": "UI string (source key: auth_google_pick_sub)"
+  },
+  "auth_google_recent_account": "Last used account",
+  "@auth_google_recent_account": {
+    "description": "UI string (source key: auth_google_recent_account)"
+  },
+  "auth_google_show_accounts": "Show Google accounts on this device",
+  "@auth_google_show_accounts": {
+    "description": "UI string (source key: auth_google_show_accounts)"
+  },
+  "auth_google_other_account": "Choose another account",
+  "@auth_google_other_account": {
+    "description": "UI string (source key: auth_google_other_account)"
+  },
+  "auth_google_failed": "Google sign-in failed. Please try again.",
+  "@auth_google_failed": {
+    "description": "UI string (source key: auth_google_failed)"
+  },
+  "auth_google_developer_error": "Google sign-in is not configured. Add your Android SHA-1 in Firebase Console, enable Google in Authentication, and download a new google-services.json.",
+  "@auth_google_developer_error": {
+    "description": "UI string (source key: auth_google_developer_error)"
+  },
+  "auth_google_not_enabled": "Google sign-in is disabled in Firebase. Enable it under Authentication → Sign-in method.",
+  "@auth_google_not_enabled": {
+    "description": "UI string (source key: auth_google_not_enabled)"
+  },
+  "auth_google_account_conflict": "This email is linked to another sign-in method. Use email and password.",
+  "@auth_google_account_conflict": {
+    "description": "UI string (source key: auth_google_account_conflict)"
+  },
+  "auth_google_or": "or",
+  "@auth_google_or": {
+    "description": "UI string (source key: auth_google_or)"
+  },
+  "forgot_Password": "Forgot Password ?",
+  "@forgot_Password": {
+    "description": "UI string (source key: Forgot Password ?)"
+  },
+  "register": "Register",
+  "@register": {
+    "description": "UI string (source key: Register)"
+  },
+  "create_an_account_with_Google": "Create an account with Google",
+  "@create_an_account_with_Google": {
+    "description": "UI string (source key: Create an account with Google)"
+  },
+  "please_fill_in_all_fields_to_register": "Please fill in all fields to register",
+  "@please_fill_in_all_fields_to_register": {
+    "description": "UI string (source key: Please fill in all fields to register)"
+  },
+  "full_Name": "Full Name",
+  "@full_Name": {
+    "description": "UI string (source key: Full Name)"
+  },
+  "confirm_Password": "Confirm Password",
+  "@confirm_Password": {
+    "description": "UI string (source key: Confirm Password)"
+  },
+  "read_the_Terms_of_Service_and_Privacy_Policy": "Read the Terms of Service and Privacy Policy",
+  "@read_the_Terms_of_Service_and_Privacy_Policy": {
+    "description": "UI string (source key: Read the Terms of Service and Privacy Policy)"
+  },
+  "i_agree_to_the_Terms_Conditions": "I agree to the Terms & Conditions",
+  "@i_agree_to_the_Terms_Conditions": {
+    "description": "UI string (source key: I agree to the Terms & Conditions)"
+  },
+  "full_Name_is_required": "Full Name is required",
+  "@full_Name_is_required": {
+    "description": "UI string (source key: Full Name is required)"
+  },
+  "please_choose_an_option_from_the_dropdown": "Please choose an option from the dropdown",
+  "@please_choose_an_option_from_the_dropdown": {
+    "description": "UI string (source key: Please choose an option from the dropdown)"
+  },
+  "email_Address_is_required": "Email Address is required",
+  "@email_Address_is_required": {
+    "description": "UI string (source key: Email Address is required)"
+  },
+  "mobile_Number_is_required": "Mobile Number is required",
+  "@mobile_Number_is_required": {
+    "description": "UI string (source key: Mobile Number is required)"
+  },
+  "password_is_required": "Password is required",
+  "@password_is_required": {
+    "description": "UI string (source key: Password is required)"
+  },
+  "confirm_Password_is_required": "Confirm Password is required",
+  "@confirm_Password_is_required": {
+    "description": "UI string (source key: Confirm Password is required)"
+  },
+  "already_have_an_account": "Already have an account?",
+  "@already_have_an_account": {
+    "description": "UI string (source key: Already have an account?)"
+  },
+  "sign_In": "Sign In",
+  "@sign_In": {
+    "description": "UI string (source key: Sign In)"
+  },
+  "success_Partner_Registration": "Success Partner Registration",
+  "@success_Partner_Registration": {
+    "description": "UI string (source key: Success Partner Registration)"
+  },
+  "welcome_to_Become_a_Success_Partner": "Welcome to Become a Success Partner",
+  "@welcome_to_Become_a_Success_Partner": {
+    "description": "UI string (source key: Welcome to Become a Success Partner)"
+  },
+  "join_us_as_a_Success_Partner_to_enhance_our_service_quality_and_accelerate_outre": "Join us as a Success Partner to enhance our service quality and accelerate outreach, whether you are a government entity, a company, or an individual.",
+  "@join_us_as_a_Success_Partner_to_enhance_our_service_quality_and_accelerate_outre": {
+    "description": "UI string (source key: Join us as a Success Partner to enhance our service quality and accelerate outreach, whether you are a government entity, a company, or an individual.)"
+  },
+  "register_Now": "Register Now",
+  "@register_Now": {
+    "description": "UI string (source key: Register Now)"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "UI string (source key: Home)"
+  },
+  "the_Qibla_for_Islam_and_Muslims": "The Qibla for Islam and Muslims",
+  "@the_Qibla_for_Islam_and_Muslims": {
+    "description": "UI string (source key: The Qibla for Islam and Muslims)"
+  },
+  "list_of_regions": "List of regions",
+  "@list_of_regions": {
+    "description": "UI string (source key: List of regions)"
+  },
+  "number_of_destinations": "Number of destinations: ",
+  "@number_of_destinations": {
+    "description": "UI string (source key: Number of destinations: )"
+  },
+  "specify_the_region": "Specify the region",
+  "@specify_the_region": {
+    "description": "UI string (source key: Specify the region)"
+  },
+  "saudi": "saudi",
+  "@saudi": {
+    "description": "UI string (source key: saudi)"
+  },
+  "select_region_city": "Select region / city",
+  "@select_region_city": {
+    "description": "UI string (source key: Select region / city)"
+  },
+  "cities_provinces": "Cities/provinces",
+  "@cities_provinces": {
+    "description": "UI string (source key: Cities/provinces)"
+  },
+  "browse_cities_counties_in": "Browse cities/counties in",
+  "@browse_cities_counties_in": {
+    "description": "UI string (source key: Browse cities/counties in)"
+  },
+  "change": "Change",
+  "@change": {
+    "description": "UI string (source key: Change)"
+  },
+  "view_Now": "View Now",
+  "@view_Now": {
+    "description": "UI string (source key: View Now)"
+  },
+  "devils_Cove": "Devils Cove",
+  "@devils_Cove": {
+    "description": "UI string (source key: Devils Cove)"
+  },
+  "n4_7_Stars": "4.7 Stars",
+  "@n4_7_Stars": {
+    "description": "UI string (source key: 4.7 Stars)"
+  },
+  "juniper_Beach": "Juniper Beach",
+  "@juniper_Beach": {
+    "description": "UI string (source key: Juniper Beach)"
+  },
+  "n4_5_Stars": "4.5 Stars",
+  "@n4_5_Stars": {
+    "description": "UI string (source key: 4.5 Stars)"
+  },
+  "yOU_ARE_BROWSING_NOW": "YOU ARE BROWSING NOW",
+  "@yOU_ARE_BROWSING_NOW": {
+    "description": "UI string (source key: YOU ARE BROWSING NOW)"
+  },
+  "change_country": "Change country",
+  "@change_country": {
+    "description": "UI string (source key: Change country)"
+  },
+  "change_region": "Change region",
+  "@change_region": {
+    "description": "UI string (source key: Change region)"
+  },
+  "added_destinations": "Added destinations",
+  "@added_destinations": {
+    "description": "UI string (source key: Added destinations)"
+  },
+  "suggest_a_Place": "Suggest a Place",
+  "@suggest_a_Place": {
+    "description": "UI string (source key: Suggest a Place)"
+  },
+  "add_a_Special_Place": "Add a Special Place",
+  "@add_a_Special_Place": {
+    "description": "UI string (source key: Add a Special Place)"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "UI string (source key: Settings)"
+  },
+  "help": "Help",
+  "@help": {
+    "description": "UI string (source key: Help)"
+  },
+  "log_Out": "Log Out",
+  "@log_Out": {
+    "description": "UI string (source key: Log Out)"
+  },
+  "browse": "Browse",
+  "@browse": {
+    "description": "UI string (source key: Browse)"
+  },
+  "prayer_room": "Prayer room",
+  "@prayer_room": {
+    "description": "UI string (source key: Prayer room)"
+  },
+  "restroom": "Restroom",
+  "@restroom": {
+    "description": "UI string (source key: Restroom)"
+  },
+  "restaurant": "Restaurant",
+  "@restaurant": {
+    "description": "UI string (source key: Restaurant)"
+  },
+  "add": "Add",
+  "@add": {
+    "description": "UI string (source key: Add)"
+  },
+  "description": "Description",
+  "@description": {
+    "description": "UI string (source key: Description)"
+  },
+  "enable_notifications": "Enable notifications",
+  "@enable_notifications": {
+    "description": "UI string (source key: Enable notifications)"
+  },
+  "edit_Profile": "Edit Profile",
+  "@edit_Profile": {
+    "description": "UI string (source key: Edit Profile)"
+  },
+  "add_your_phone_number": "Add your phone number",
+  "@add_your_phone_number": {
+    "description": "UI string (source key: Add your phone number)"
+  },
+  "address_list": "Address list",
+  "@address_list": {
+    "description": "UI string (source key: Address list)"
+  },
+  "support_Customer_Service": "Support & Customer Service",
+  "@support_Customer_Service": {
+    "description": "UI string (source key: Support & Customer Service)"
+  },
+  "electronic_Payment_History": "Electronic Payment History",
+  "@electronic_Payment_History": {
+    "description": "UI string (source key: Electronic Payment History)"
+  },
+  "night_mode": "Night mode",
+  "@night_mode": {
+    "description": "UI string (source key: Night mode)"
+  },
+  "dark_mode": "Dark mode",
+  "@dark_mode": {
+    "description": "UI string (source key: Dark  mode)"
+  },
+  "request_to_delete_the_account": "Request to delete the account.",
+  "@request_to_delete_the_account": {
+    "description": "UI string (source key: Request to delete the account.)"
+  },
+  "my_account": "My account",
+  "@my_account": {
+    "description": "UI string (source key: My account)"
+  },
+  "name": "Name",
+  "@name": {
+    "description": "UI string (source key: Name)"
+  },
+  "enter_your_full_name": "Enter your full name",
+  "@enter_your_full_name": {
+    "description": "UI string (source key: Enter your full name)"
+  },
+  "phone_Number": "Phone Number",
+  "@phone_Number": {
+    "description": "UI string (source key: Phone Number)"
+  },
+  "enter_your_mobile_number": "Enter your mobile number",
+  "@enter_your_mobile_number": {
+    "description": "UI string (source key: Enter your mobile number)"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "UI string (source key: Email)"
+  },
+  "outside_your_city_prices_are_agreed_upon_with_the_captain": "Outside your city prices are agreed upon with the captain",
+  "@outside_your_city_prices_are_agreed_upon_with_the_captain": {
+    "description": "UI string (source key: Outside your city prices are agreed upon with the captain)"
+  },
+  "update_Profile": "Update Profile",
+  "@update_Profile": {
+    "description": "UI string (source key: Update Profile)"
+  },
+  "welcome_to_the_Arra_Watan_app": "Welcome to the Arra Watan app",
+  "@welcome_to_the_Arra_Watan_app": {
+    "description": "UI string (source key: Welcome to the Arra Watan app)"
+  },
+  "first_global_saudi_tourist_taxi_app": "first global saudi tourist taxi app",
+  "@first_global_saudi_tourist_taxi_app": {
+    "description": "UI string (source key: first global saudi tourist taxi app)"
+  },
+  "select_the_country": "Select the country",
+  "@select_the_country": {
+    "description": "UI string (source key: Select the country)"
+  },
+  "start": "Start",
+  "@start": {
+    "description": "UI string (source key: Start)"
+  },
+  "credit_Card": "Credit Card",
+  "@credit_Card": {
+    "description": "UI string (source key: Credit Card)"
+  },
+  "your_Name": "Your Name",
+  "@your_Name": {
+    "description": "UI string (source key: Your Name)"
+  },
+  "example_2026": "Example 2026",
+  "@example_2026": {
+    "description": "UI string (source key: Example 2026)"
+  },
+  "example_11": "Example 11",
+  "@example_11": {
+    "description": "UI string (source key: Example 11)"
+  },
+  "cCV": "CCV",
+  "@cCV": {
+    "description": "UI string (source key: CCV)"
+  },
+  "your_Name_is_required": "Your Name is required",
+  "@your_Name_is_required": {
+    "description": "UI string (source key: Your Name is required)"
+  },
+  "is_required": "رقم البطاقة is required",
+  "@is_required": {
+    "description": "UI string (source key: رقم البطاقة is required)"
+  },
+  "is_required2": "سنة الإنتهاء is required",
+  "@is_required2": {
+    "description": "UI string (source key: سنة الإنتهاء is required)"
+  },
+  "is_required3": "شهر الإنتهاء is required",
+  "@is_required3": {
+    "description": "UI string (source key: شهر الإنتهاء is required)"
+  },
+  "cCV_is_required": "CCV is required",
+  "@cCV_is_required": {
+    "description": "UI string (source key: CCV is required)"
+  },
+  "sTC_pay": "STC pay",
+  "@sTC_pay": {
+    "description": "UI string (source key: STC pay)"
+  },
+  "apple_Pay": "Apple Pay",
+  "@apple_Pay": {
+    "description": "UI string (source key: Apple Pay)"
+  },
+  "cash": "Cash",
+  "@cash": {
+    "description": "UI string (source key: Cash)"
+  },
+  "subscription": "Subscription",
+  "@subscription": {
+    "description": "UI string (source key: Subscription)"
+  },
+  "view_my_trip_list_map": "View my trip list map",
+  "@view_my_trip_list_map": {
+    "description": "UI string (source key: View my trip list map)"
+  },
+  "trip_scheduling": "Trip scheduling",
+  "@trip_scheduling": {
+    "description": "UI string (source key: Trip scheduling)"
+  },
+  "payment_method": "Payment method.",
+  "@payment_method": {
+    "description": "UI string (source key: Payment method.)"
+  },
+  "wrong_payment_method": "wrong payment method",
+  "@wrong_payment_method": {
+    "description": "UI string (source key: wrong payment method)"
+  },
+  "payment_details_are_incorrect_Please_check_with_your_bank": "Payment details are incorrect. Please check with your bank",
+  "@payment_details_are_incorrect_Please_check_with_your_bank": {
+    "description": "UI string (source key: Payment details are incorrect. Please check with your bank)"
+  },
+  "agreed": "Agreed",
+  "@agreed": {
+    "description": "UI string (source key: Agreed)"
+  },
+  "general_tips_when_visiting_this_city_today": "general tips when visiting this city today:",
+  "@general_tips_when_visiting_this_city_today": {
+    "description": "UI string (source key: general tips when visiting this city today:)"
+  },
+  "need_extra_hours": "Need extra hours?",
+  "@need_extra_hours": {
+    "description": "UI string (source key: Need extra hours?)"
+  },
+  "planning_for_a_longer_trip_Add_more_hours_and_enjoy_the_ride": "Planning for a longer trip? Add more hours and enjoy the ride!",
+  "@planning_for_a_longer_trip_Add_more_hours_and_enjoy_the_ride": {
+    "description": "UI string (source key: Planning for a longer trip? Add more hours and enjoy the ride!)"
+  },
+  "current_Hours": "Current Hours",
+  "@current_Hours": {
+    "description": "UI string (source key: Current Hours)"
+  },
+  "additional_Hours": "Additional Hours?",
+  "@additional_Hours": {
+    "description": "UI string (source key: Additional Hours?)"
+  },
+  "list_of_added_locations": "List of added locations.",
+  "@list_of_added_locations": {
+    "description": "UI string (source key: List of added locations.)"
+  },
+  "no_tours_have_been_added": "No tours have been added!",
+  "@no_tours_have_been_added": {
+    "description": "UI string (source key: No tours have been added!)"
+  },
+  "the_driver_has_been_assigned_and_he_will_be_your_tour_guide_based_on_his_knowled": "The driver has been assigned,\n and he will be your tour guide based on his knowledge of the places.",
+  "@the_driver_has_been_assigned_and_he_will_be_your_tour_guide_based_on_his_knowled": {
+    "description": "UI string (source key: The driver has been assigned,\n and he will be your tour guide based on his knowledge of the places.)"
+  },
+  "select_the_car_type": "Select the car type",
+  "@select_the_car_type": {
+    "description": "UI string (source key: Select the car type)"
+  },
+  "textField": "TextField",
+  "@textField": {
+    "description": "UI string (source key: TextField)"
+  },
+  "price_Summary": " Price Summary",
+  "@price_Summary": {
+    "description": "UI string (source key:  Price Summary)"
+  },
+  "total_Booking_Hours": "Total Booking Hours:",
+  "@total_Booking_Hours": {
+    "description": "UI string (source key: Total Booking Hours:)"
+  },
+  "driver_Fee": "Driver Fee:",
+  "@driver_Fee": {
+    "description": "UI string (source key: Driver Fee:)"
+  },
+  "app_Fee_15": "App Fee  (15%):",
+  "@app_Fee_15": {
+    "description": "UI string (source key: App Fee  (15%):)"
+  },
+  "total_Deductions": "Total Deductions:",
+  "@total_Deductions": {
+    "description": "UI string (source key: Total Deductions:)"
+  },
+  "total_Amount": "Total Amount:",
+  "@total_Amount": {
+    "description": "UI string (source key: Total Amount:)"
+  },
+  "pay_Now": "Pay Now",
+  "@pay_Now": {
+    "description": "UI string (source key: Pay Now)"
+  },
+  "book_now": "Book now",
+  "@book_now": {
+    "description": "UI string (source key: Book now)"
+  },
+  "you_are_currently_browsing": "You are currently browsing.",
+  "@you_are_currently_browsing": {
+    "description": "UI string (source key: You are currently browsing.)"
+  },
+  "go_now": "Go now.",
+  "@go_now": {
+    "description": "UI string (source key: Go now.)"
+  },
+  "booking_list": "Booking list.",
+  "@booking_list": {
+    "description": "UI string (source key: Booking list.)"
+  },
+  "my_trip_list": "My trip list",
+  "@my_trip_list": {
+    "description": "UI string (source key: My trip list)"
+  },
+  "show_the_interactive_map": "Show the interactive map",
+  "@show_the_interactive_map": {
+    "description": "UI string (source key: Show the interactive map)"
+  },
+  "select_your_favorite_car": "Select your favorite car.",
+  "@select_your_favorite_car": {
+    "description": "UI string (source key: Select your favorite car.)"
+  },
+  "total_amount": "Total amount:",
+  "@total_amount": {
+    "description": "UI string (source key: Total amount:)"
+  },
+  "k4b0ced258d": "ر.س ",
+  "@k4b0ced258d": {
+    "description": "UI string (source key: ر.س )"
+  },
+  "you_are_currently_browsing2": "You are currently browsing:",
+  "@you_are_currently_browsing2": {
+    "description": "UI string (source key: You are currently browsing:)"
+  },
+  "browse_the_map": "Browse the map",
+  "@browse_the_map": {
+    "description": "UI string (source key: Browse the map)"
+  },
+  "view_list": "View list",
+  "@view_list": {
+    "description": "UI string (source key: View list)"
+  },
+  "add_a_place_from_the_map": "Add a place from the map.",
+  "@add_a_place_from_the_map": {
+    "description": "UI string (source key: Add a place from the map.)"
+  },
+  "general_information": "general information",
+  "@general_information": {
+    "description": "UI string (source key: general information)"
+  },
+  "feedback": "Feedback",
+  "@feedback": {
+    "description": "UI string (source key: Feedback)"
+  },
+  "specify_the_location_on_the_map": "Specify the location on the map.",
+  "@specify_the_location_on_the_map": {
+    "description": "UI string (source key: Specify the location on the map.)"
+  },
+  "select_Location": "Select Location",
+  "@select_Location": {
+    "description": "UI string (source key: Select Location)"
+  },
+  "add_the_specific_location": "Add the specific location.",
+  "@add_the_specific_location": {
+    "description": "UI string (source key: Add the specific location.)"
+  },
+  "try_to_zoom_the_map_to_the_last_point_to_get_an_accurate_location": "Try to zoom the map to the last point to get an accurate location",
+  "@try_to_zoom_the_map_to_the_last_point_to_get_an_accurate_location": {
+    "description": "UI string (source key: Try to zoom the map to the last point to get an accurate location)"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "UI string (source key: Search)"
+  },
+  "show_the_list_of_added_trips": "Show the list of added trips.",
+  "@show_the_list_of_added_trips": {
+    "description": "UI string (source key: Show the list of added trips.)"
+  },
+  "manage_your_team_below": "Manage your team below.",
+  "@manage_your_team_below": {
+    "description": "UI string (source key: Manage your team below.)"
+  },
+  "random_Name": "Random Name",
+  "@random_Name": {
+    "description": "UI string (source key: Random Name)"
+  },
+  "user_randomname_com": "user@randomname.com",
+  "@user_randomname_com": {
+    "description": "UI string (source key: user@randomname.com)"
+  },
+  "current_city_of_residence": "Current city of residence",
+  "@current_city_of_residence": {
+    "description": "UI string (source key: Current city of residence)"
+  },
+  "please_select_the_city_you_are_currently_in": "Please select the city you are currently in",
+  "@please_select_the_city_you_are_currently_in": {
+    "description": "UI string (source key: Please select the city you are currently in)"
+  },
+  "additional_hours": "Additional hours",
+  "@additional_hours": {
+    "description": "UI string (source key: Additional hours)"
+  },
+  "total_number_of_hours": "Total number of hours: ",
+  "@total_number_of_hours": {
+    "description": "UI string (source key: Total number of hours: )"
+  },
+  "hours": "  Hours  ",
+  "@hours": {
+    "description": "UI string (source key:   Hours  )"
+  },
+  "total_price": "Total price:",
+  "@total_price": {
+    "description": "UI string (source key: Total price:)"
+  },
+  "r_S": "R.S",
+  "@r_S": {
+    "description": "UI string (source key: R.S)"
+  },
+  "application_fee_10": "Application fee 10%:",
+  "@application_fee_10": {
+    "description": "UI string (source key: Application fee 10%:)"
+  },
+  "vAT_15": "VAT 15%: ",
+  "@vAT_15": {
+    "description": "UI string (source key: VAT 15%: )"
+  },
+  "r_S2": " R.S ",
+  "@r_S2": {
+    "description": "UI string (source key:  R.S )"
+  },
+  "total": "Total:  ",
+  "@total": {
+    "description": "UI string (source key: Total:  )"
+  },
+  "address_Details": "Address Details",
+  "@address_Details": {
+    "description": "UI string (source key: Address Details)"
+  },
+  "note_This_is_the_address_where_the_driver_will_be_directed": "Note: This is the address where the driver will be directed",
+  "@note_This_is_the_address_where_the_driver_will_be_directed": {
+    "description": "UI string (source key: Note: This is the address where the driver will be directed)"
+  },
+  "address_Name_e_g_Home_Work": "Address Name (e.g. Home, Work)",
+  "@address_Name_e_g_Home_Work": {
+    "description": "UI string (source key: Address Name (e.g. Home, Work))"
+  },
+  "field_is_required": "Field is required",
+  "@field_is_required": {
+    "description": "UI string (source key: Field is required)"
+  },
+  "my_current_location": "Current location",
+  "@my_current_location": {
+    "description": "UI string (source key: My current location)"
+  },
+  "save_Address": "Save Address",
+  "@save_Address": {
+    "description": "UI string (source key: Save Address)"
+  },
+  "add_Your_Address": "Add Your Address",
+  "@add_Your_Address": {
+    "description": "UI string (source key: Add Your Address)"
+  },
+  "schedule_the_Trip": "Schedule the Trip",
+  "@schedule_the_Trip": {
+    "description": "UI string (source key: Schedule the Trip)"
+  },
+  "select_the_Time": "Select the Time",
+  "@select_the_Time": {
+    "description": "UI string (source key: Select the Time)"
+  },
+  "hour": "Hour",
+  "@hour": {
+    "description": "UI string (source key: Hour)"
+  },
+  "search2": "Search...",
+  "@search2": {
+    "description": "UI string (source key: Search...)"
+  },
+  "n00": "00",
+  "@n00": {
+    "description": "UI string (source key: 00)"
+  },
+  "minute": "Minute",
+  "@minute": {
+    "description": "UI string (source key: Minute)"
+  },
+  "pM": "PM",
+  "@pM": {
+    "description": "UI string (source key: PM)"
+  },
+  "aM": "AM",
+  "@aM": {
+    "description": "UI string (source key: AM)"
+  },
+  "the_trip_time_is": "The trip time is",
+  "@the_trip_time_is": {
+    "description": "UI string (source key: The trip time is)"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "UI string (source key: Confirm)"
+  },
+  "add_New_Address": "+ Add New Address",
+  "@add_New_Address": {
+    "description": "UI string (source key: + Add New Address)"
+  },
+  "choose_your_delivery_address": "Choose your delivery address:",
+  "@choose_your_delivery_address": {
+    "description": "UI string (source key: Choose your delivery address:)"
+  },
+  "n456_Park_Avenue": "456 Park Avenue",
+  "@n456_Park_Avenue": {
+    "description": "UI string (source key: 456 Park Avenue)"
+  },
+  "suite_789_New_York_NY_10022": "Suite 789, New York, NY 10022",
+  "@suite_789_New_York_NY_10022": {
+    "description": "UI string (source key: Suite 789, New York, NY 10022)"
+  },
+  "n789_Broadway": "789 Broadway",
+  "@n789_Broadway": {
+    "description": "UI string (source key: 789 Broadway)"
+  },
+  "floor_12_New_York_NY_10003": "Floor 12, New York, NY 10003",
+  "@floor_12_New_York_NY_10003": {
+    "description": "UI string (source key: Floor 12, New York, NY 10003)"
+  },
+  "select_the_address": "Select the address",
+  "@select_the_address": {
+    "description": "UI string (source key: Select the address)"
+  },
+  "note_This_is_the_address_where_the_driver_will_be_directed2": "Note: This is the address where the driver will be directed.",
+  "@note_This_is_the_address_where_the_driver_will_be_directed2": {
+    "description": "UI string (source key: Note: This is the address where the driver will be directed.)"
+  },
+  "update_Address": "update Address",
+  "@update_Address": {
+    "description": "UI string (source key: update Address)"
+  },
+  "selecting_the_address": "Selecting the address",
+  "@selecting_the_address": {
+    "description": "UI string (source key: Selecting the address)"
+  },
+  "n456_Oak_Avenue": "456 Oak Avenue",
+  "@n456_Oak_Avenue": {
+    "description": "UI string (source key: 456 Oak Avenue)"
+  },
+  "los_Angeles_CA_90012": "Los Angeles, CA 90012",
+  "@los_Angeles_CA_90012": {
+    "description": "UI string (source key: Los Angeles, CA 90012)"
+  },
+  "n789_Pine_Street": "789 Pine Street",
+  "@n789_Pine_Street": {
+    "description": "UI string (source key: 789 Pine Street)"
+  },
+  "chicago_IL_60601": "Chicago, IL 60601",
+  "@chicago_IL_60601": {
+    "description": "UI string (source key: Chicago, IL 60601)"
+  },
+  "don_t_have_an_account": "Don't have an account?  ",
+  "@don_t_have_an_account": {
+    "description": "UI string (source key: Don't have an account?  )"
+  },
+  "sign_Up_here": "Sign Up here",
+  "@sign_Up_here": {
+    "description": "UI string (source key: Sign Up here)"
+  },
+  "option_1": "Option 1",
+  "@option_1": {
+    "description": "UI string (source key: Option 1)"
+  },
+  "page_Title": "Page Title",
+  "@page_Title": {
+    "description": "UI string (source key: Page Title)"
+  },
+  "your_request_has_been_successfully_submitted": "Your request has been successfully submitted.",
+  "@your_request_has_been_successfully_submitted": {
+    "description": "UI string (source key: Your request has been successfully submitted.)"
+  },
+  "you_can_track_the_status_of_your_order_through_the_My_Orders_page": "You can track the status of your order through the \"My Orders\" page.",
+  "@you_can_track_the_status_of_your_order_through_the_My_Orders_page": {
+    "description": "UI string (source key: You can track the status of your order through the \"My Orders\" page.)"
+  },
+  "view_Orders": "View Orders",
+  "@view_Orders": {
+    "description": "UI string (source key: View Orders)"
+  },
+  "pending": "Pending",
+  "@pending": {
+    "description": "UI string (source key: Pending)"
+  },
+  "completed": "Completed",
+  "@completed": {
+    "description": "UI string (source key: Completed)"
+  },
+  "expired": "Expired",
+  "@expired": {
+    "description": "UI string (source key: Expired)"
+  },
+  "your_Bookings": "Your Bookings",
+  "@your_Bookings": {
+    "description": "UI string (source key: Your Bookings)"
+  },
+  "order_2847": "Order #2847",
+  "@order_2847": {
+    "description": "UI string (source key: Order #2847)"
+  },
+  "paris_France": "Paris, France",
+  "@paris_France": {
+    "description": "UI string (source key: Paris, France)"
+  },
+  "sept_15_2024": "Sept 15, 2024",
+  "@sept_15_2024": {
+    "description": "UI string (source key: Sept 15, 2024)"
+  },
+  "order_2831": "Order #2831",
+  "@order_2831": {
+    "description": "UI string (source key: Order #2831)"
+  },
+  "rome_Italy": "Rome, Italy",
+  "@rome_Italy": {
+    "description": "UI string (source key: Rome, Italy)"
+  },
+  "sept_12_2024": "Sept 12, 2024",
+  "@sept_12_2024": {
+    "description": "UI string (source key: Sept 12, 2024)"
+  },
+  "order_2819": "Order #2819",
+  "@order_2819": {
+    "description": "UI string (source key: Order #2819)"
+  },
+  "london_UK": "London, UK",
+  "@london_UK": {
+    "description": "UI string (source key: London, UK)"
+  },
+  "sept_8_2024": "Sept 8, 2024",
+  "@sept_8_2024": {
+    "description": "UI string (source key: Sept 8, 2024)"
+  },
+  "new_York_City": "New York City",
+  "@new_York_City": {
+    "description": "UI string (source key: New York City)"
+  },
+  "in_Progress": "In Progress",
+  "@in_Progress": {
+    "description": "UI string (source key: In Progress)"
+  },
+  "check_in": "Check-in",
+  "@check_in": {
+    "description": "UI string (source key: Check-in)"
+  },
+  "sep_12_2024": "Sep 12, 2024",
+  "@sep_12_2024": {
+    "description": "UI string (source key: Sep 12, 2024)"
+  },
+  "check_out": "Check-out",
+  "@check_out": {
+    "description": "UI string (source key: Check-out)"
+  },
+  "sep_15_2024": "Sep 15, 2024",
+  "@sep_15_2024": {
+    "description": "UI string (source key: Sep 15, 2024)"
+  },
+  "n840_00": "$840.00",
+  "@n840_00": {
+    "description": "UI string (source key: $840.00)"
+  },
+  "search_by_name_or_booking_ID": "Search by name or booking ID...",
+  "@search_by_name_or_booking_ID": {
+    "description": "UI string (source key: Search by name or booking ID...)"
+  },
+  "date_Range": "Date Range",
+  "@date_Range": {
+    "description": "UI string (source key: Date Range)"
+  },
+  "city": "City",
+  "@city": {
+    "description": "UI string (source key: City)"
+  },
+  "sort_by": "Sort by",
+  "@sort_by": {
+    "description": "UI string (source key: Sort by)"
+  },
+  "apply_Filters": "Apply Filters",
+  "@apply_Filters": {
+    "description": "UI string (source key: Apply Filters)"
+  },
+  "booking_Status": "Booking Status",
+  "@booking_Status": {
+    "description": "UI string (source key: Booking Status)"
+  },
+  "you_don_t_have_any_bookings_in_this_category_yet_Start_exploring_and_book_your_n": "You don't have any bookings in this category yet. Start exploring and book your next experience!",
+  "@you_don_t_have_any_bookings_in_this_category_yet_Start_exploring_and_book_your_n": {
+    "description": "UI string (source key: You don't have any bookings in this category yet. Start exploring and book your next experience!)"
+  },
+  "browse_Services": "Browse Services",
+  "@browse_Services": {
+    "description": "UI string (source key: Browse Services)"
+  },
+  "support_Tickets": "Support Tickets",
+  "@support_Tickets": {
+    "description": "UI string (source key: Support Tickets)"
+  },
+  "create_New_Support_Ticket": "Create New Support Ticket",
+  "@create_New_Support_Ticket": {
+    "description": "UI string (source key: Create New Support Ticket)"
+  },
+  "contact_us_directly": "Contact us directly",
+  "@contact_us_directly": {
+    "description": "UI string (source key: Contact us directly)"
+  },
+  "would_you_like_to_contact_our_support_team_directly_via_WhatsApp_for_faster_assi": "Would you like to contact our support team directly via WhatsApp for faster assistance?",
+  "@would_you_like_to_contact_our_support_team_directly_via_WhatsApp_for_faster_assi": {
+    "description": "UI string (source key: Would you like to contact our support team directly via WhatsApp for faster assistance?)"
+  },
+  "whatsApp": "WhatsApp",
+  "@whatsApp": {
+    "description": "UI string (source key: WhatsApp)"
+  },
+  "new_Support_Ticket": "New Support Ticket",
+  "@new_Support_Ticket": {
+    "description": "UI string (source key: New Support Ticket)"
+  },
+  "brief_description_of_your_issue": "Brief description of your issue",
+  "@brief_description_of_your_issue": {
+    "description": "UI string (source key: Brief description of your issue)"
+  },
+  "category": "Category",
+  "@category": {
+    "description": "UI string (source key: Category)"
+  },
+  "select_a_category": "Select a category",
+  "@select_a_category": {
+    "description": "UI string (source key: Select a category)"
+  },
+  "search_categories": "Search categories...",
+  "@search_categories": {
+    "description": "UI string (source key: Search categories...)"
+  },
+  "inquiry": "Inquiry",
+  "@inquiry": {
+    "description": "UI string (source key: Inquiry)"
+  },
+  "suggestion": "Suggestion",
+  "@suggestion": {
+    "description": "UI string (source key: Suggestion)"
+  },
+  "complaint": "Complaint",
+  "@complaint": {
+    "description": "UI string (source key: Complaint)"
+  },
+  "booking_Issue": "Booking Issue",
+  "@booking_Issue": {
+    "description": "UI string (source key: Booking Issue)"
+  },
+  "other": "Other",
+  "@other": {
+    "description": "UI string (source key: Other)"
+  },
+  "message": "Message",
+  "@message": {
+    "description": "UI string (source key: Message)"
+  },
+  "please_provide_detailed_information_about_your_issue": "Please provide detailed information about your issue...",
+  "@please_provide_detailed_information_about_your_issue": {
+    "description": "UI string (source key: Please provide detailed information about your issue...)"
+  },
+  "support_ticket_information": "Support ticket information",
+  "@support_ticket_information": {
+    "description": "UI string (source key: Support ticket information)"
+  },
+  "our_support_team_typically_responds_within_24_48_hours_For_urgent_matters_please": "Our support team typically responds within 24-48 hours. For urgent matters, please contact us directly by phone.",
+  "@our_support_team_typically_responds_within_24_48_hours_For_urgent_matters_please": {
+    "description": "UI string (source key: Our support team typically responds within 24-48 hours. For urgent matters, please contact us directly by phone.)"
+  },
+  "create_New_Ticket": "Create New Ticket",
+  "@create_New_Ticket": {
+    "description": "UI string (source key: Create New Ticket)"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "UI string (source key: Back)"
+  },
+  "forgot_Password2": "Forgot Password",
+  "@forgot_Password2": {
+    "description": "UI string (source key: Forgot Password)"
+  },
+  "we_will_send_you_an_email_with_a_link_to_reset_your_password_please_enter_the_em": "We will send you an email with a link to reset your password, please enter the email associated with your account below.",
+  "@we_will_send_you_an_email_with_a_link_to_reset_your_password_please_enter_the_em": {
+    "description": "UI string (source key: We will send you an email with a link to reset your password, please enter the email associated with your account below.)"
+  },
+  "your_email_address": "Your email address...",
+  "@your_email_address": {
+    "description": "UI string (source key: Your email address...)"
+  },
+  "send_Link": "Send Link",
+  "@send_Link": {
+    "description": "UI string (source key: Send Link)"
+  },
+  "bMW_5_Series": "BMW 5 Series",
+  "@bMW_5_Series": {
+    "description": "UI string (source key: BMW 5 Series)"
+  },
+  "min_4_hours": "Min: 4 hours",
+  "@min_4_hours": {
+    "description": "UI string (source key: Min: 4 hours)"
+  },
+  "n35_hour": "$35/hour",
+  "@n35_hour": {
+    "description": "UI string (source key: $35/hour)"
+  },
+  "honda_CR_V": "Honda CR-V",
+  "@honda_CR_V": {
+    "description": "UI string (source key: Honda CR-V)"
+  },
+  "min_2_hours": "Min: 2 hours",
+  "@min_2_hours": {
+    "description": "UI string (source key: Min: 2 hours)"
+  },
+  "n25_hour": "$25/hour",
+  "@n25_hour": {
+    "description": "UI string (source key: $25/hour)"
+  },
+  "tesla_Model_3": "Tesla Model 3",
+  "@tesla_Model_3": {
+    "description": "UI string (source key: Tesla Model 3)"
+  },
+  "min_5_hours": "Min: 5 hours",
+  "@min_5_hours": {
+    "description": "UI string (source key: Min: 5 hours)"
+  },
+  "n40_hour": "$40/hour",
+  "@n40_hour": {
+    "description": "UI string (source key: $40/hour)"
+  },
+  "ford_Mustang": "Ford Mustang",
+  "@ford_Mustang": {
+    "description": "UI string (source key: Ford Mustang)"
+  },
+  "min_6_hours": "Min: 6 hours",
+  "@min_6_hours": {
+    "description": "UI string (source key: Min: 6 hours)"
+  },
+  "n45_hour": "$45/hour",
+  "@n45_hour": {
+    "description": "UI string (source key: $45/hour)"
+  },
+  "list_of_cars": "List of cars",
+  "@list_of_cars": {
+    "description": "UI string (source key: List of cars)"
+  },
+  "button": "Button",
+  "@button": {
+    "description": "UI string (source key: Button)"
+  },
+  "edit_the_address": "Edit the address.",
+  "@edit_the_address": {
+    "description": "UI string (source key: Edit the address.)"
+  },
+  "update": "Update",
+  "@update": {
+    "description": "UI string (source key: Update)"
+  },
+  "maryam_Kutob": "Maryam Kutob",
+  "@maryam_Kutob": {
+    "description": "UI string (source key: Maryam Kutob)"
+  },
+  "kutob_m1413_gmail_com": "kutob.m1413@gmail.com",
+  "@kutob_m1413_gmail_com": {
+    "description": "UI string (source key: kutob.m1413@gmail.com)"
+  },
+  "hGSHUM": "HGSHUM",
+  "@hGSHUM": {
+    "description": "UI string (source key: HGSHUM)"
+  },
+  "gregory_Smith": "Gregory Smith",
+  "@gregory_Smith": {
+    "description": "UI string (source key: Gregory Smith)"
+  },
+  "n652_UKW": "652 - UKW",
+  "@n652_UKW": {
+    "description": "UI string (source key: 652 - UKW)"
+  },
+  "how_is_your_trip": "How is your trip?",
+  "@how_is_your_trip": {
+    "description": "UI string (source key: How is your trip?)"
+  },
+  "your_feedback_will_help_improve_driving_experience": "Your feedback will help improve driving experience",
+  "@your_feedback_will_help_improve_driving_experience": {
+    "description": "UI string (source key: Your feedback will help improve driving experience)"
+  },
+  "additional_comments": "Additional comments...",
+  "@additional_comments": {
+    "description": "UI string (source key: Additional comments...)"
+  },
+  "submit_Review": "Submit Review",
+  "@submit_Review": {
+    "description": "UI string (source key: Submit Review)"
+  },
+  "rating": "Rating",
+  "@rating": {
+    "description": "UI string (source key: Rating)"
+  },
+  "wow_A_5_star_Wanna_add_tip_for_Gregory": "Wow! A 5 star !\nWanna add tip for Gregory?",
+  "@wow_A_5_star_Wanna_add_tip_for_Gregory": {
+    "description": "UI string (source key: Wow! A 5 star !\nWanna add tip for Gregory?)"
+  },
+  "choose_other_amount": "Choose other amount",
+  "@choose_other_amount": {
+    "description": "UI string (source key: Choose other amount)"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "UI string (source key: Done)"
+  },
+  "maybe_next_time": "Maybe next time",
+  "@maybe_next_time": {
+    "description": "UI string (source key: Maybe next time)"
+  },
+  "tips": "Tips",
+  "@tips": {
+    "description": "UI string (source key: Tips)"
+  },
+  "choose_the_type_of_entity_you_represent": "Choose the type of entity you represent",
+  "@choose_the_type_of_entity_you_represent": {
+    "description": "UI string (source key: Choose the type of entity you represent)"
+  },
+  "government_Entity": "Government Entity",
+  "@government_Entity": {
+    "description": "UI string (source key: Government Entity)"
+  },
+  "company_or_Organization": "Company or Organization",
+  "@company_or_Organization": {
+    "description": "UI string (source key: Company or Organization)"
+  },
+  "individual": "Individual",
+  "@individual": {
+    "description": "UI string (source key: Individual)"
+  },
+  "next": "Next",
+  "@next": {
+    "description": "UI string (source key: Next)"
+  },
+  "register_a_Success_Partner_Step_1_of_3": "Register a Success Partner - Step 1 of 3 ",
+  "@register_a_Success_Partner_Step_1_of_3": {
+    "description": "UI string (source key: Register a Success Partner - Step 1 of 3 )"
+  },
+  "company_Information": "Company Information",
+  "@company_Information": {
+    "description": "UI string (source key: Company Information)"
+  },
+  "enter_company_name": "Enter company name *",
+  "@enter_company_name": {
+    "description": "UI string (source key: Enter company name *)"
+  },
+  "enter_phone_number": "Enter phone number *",
+  "@enter_phone_number": {
+    "description": "UI string (source key: Enter phone number *)"
+  },
+  "set_Location": "Set Location *",
+  "@set_Location": {
+    "description": "UI string (source key: Set Location *)"
+  },
+  "enter_business_description": "Enter business description *",
+  "@enter_business_description": {
+    "description": "UI string (source key: Enter business description *)"
+  },
+  "documents": "Documents",
+  "@documents": {
+    "description": "UI string (source key: Documents)"
+  },
+  "upload_Place_Image": "Upload Place Image *",
+  "@upload_Place_Image": {
+    "description": "UI string (source key: Upload Place Image *)"
+  },
+  "tap_to_select_image": "Tap to select image",
+  "@tap_to_select_image": {
+    "description": "UI string (source key: Tap to select image)"
+  },
+  "attach_License_Document": "Attach License Document *",
+  "@attach_License_Document": {
+    "description": "UI string (source key: Attach License Document *)"
+  },
+  "the_file_has_been_successfully_uploaded": "The file has been successfully uploaded.",
+  "@the_file_has_been_successfully_uploaded": {
+    "description": "UI string (source key: The file has been successfully uploaded.)"
+  },
+  "attach_Registration_Letter": "Attach Registration Letter *",
+  "@attach_Registration_Letter": {
+    "description": "UI string (source key: Attach Registration Letter *)"
+  },
+  "service_Details": "Service Details",
+  "@service_Details": {
+    "description": "UI string (source key: Service Details)"
+  },
+  "describe_your_provided_services": "Describe your provided services *",
+  "@describe_your_provided_services": {
+    "description": "UI string (source key: Describe your provided services *)"
+  },
+  "cancel_Order": "Cancel Order",
+  "@cancel_Order": {
+    "description": "UI string (source key: Cancel Order)"
+  },
+  "company_Information_Step_3_of_3": "Company Information -  Step 3 of 3",
+  "@company_Information_Step_3_of_3": {
+    "description": "UI string (source key: Company Information -  Step 3 of 3)"
+  },
+  "step_2_of_3": "Step 2 of 3",
+  "@step_2_of_3": {
+    "description": "UI string (source key: Step 2 of 3)"
+  },
+  "create_an_account": "Create an account",
+  "@create_an_account": {
+    "description": "UI string (source key: Create an account)"
+  },
+  "let_s_get_started_by_filling_out_the_form_below": "Let's get started by filling out the form below.",
+  "@let_s_get_started_by_filling_out_the_form_below": {
+    "description": "UI string (source key: Let's get started by filling out the form below.)"
+  },
+  "next2": "Next ",
+  "@next2": {
+    "description": "UI string (source key: Next )"
+  },
+  "initiate": "Initiate ",
+  "@initiate": {
+    "description": "UI string (source key: Initiate )"
+  },
+  "what_kind_of_tour_would_you_like_to_explore_today": "What kind of tour would you like to explore today?",
+  "@what_kind_of_tour_would_you_like_to_explore_today": {
+    "description": "UI string (source key: What kind of tour would you like to explore today?)"
+  },
+  "select_My_Own_Tour_Route": "Select My Own Tour Route",
+  "@select_My_Own_Tour_Route": {
+    "description": "UI string (source key: Select My Own Tour Route)"
+  },
+  "get_Help_from_the_Driver_Guide": "Get Help from the Driver Guide",
+  "@get_Help_from_the_Driver_Guide": {
+    "description": "UI string (source key: Get Help from the Driver Guide)"
+  },
+  "current_Address": "Current Address",
+  "@current_Address": {
+    "description": "UI string (source key: Current Address)"
+  },
+  "current_Country": "Current Country",
+  "@current_Country": {
+    "description": "UI string (source key: Current Country)"
+  },
+  "current_City": "Current City",
+  "@current_City": {
+    "description": "UI string (source key: Current City)"
+  },
+  "initiate2": "Book Now",
+  "@initiate2": {
+    "description": "UI string (source key: Initiate)"
+  },
+  "trip_Assistance_Selected": "Trip Assistance Selected",
+  "@trip_Assistance_Selected": {
+    "description": "UI string (source key: Trip Assistance Selected)"
+  },
+  "personalized_Route": "Personalized Route",
+  "@personalized_Route": {
+    "description": "UI string (source key: Personalized Route)"
+  },
+  "top_local_attractions_curated_just_for_you": "Top local attractions curated just for you",
+  "@top_local_attractions_curated_just_for_you": {
+    "description": "UI string (source key: Top local attractions curated just for you)"
+  },
+  "historical_Sites": "Historical Sites",
+  "@historical_Sites": {
+    "description": "UI string (source key: Historical Sites)"
+  },
+  "local_Markets": "Local Markets",
+  "@local_Markets": {
+    "description": "UI string (source key: Local Markets)"
+  },
+  "scenic_Views": "Scenic Views",
+  "@scenic_Views": {
+    "description": "UI string (source key: Scenic Views)"
+  },
+  "cultural_Centers": "Cultural Centers",
+  "@cultural_Centers": {
+    "description": "UI string (source key: Cultural Centers)"
+  },
+  "contact_Your_Guide": "Contact Your Guide",
+  "@contact_Your_Guide": {
+    "description": "UI string (source key: Contact Your Guide)"
+  },
+  "view_Trip_Details": "View Trip Details",
+  "@view_Trip_Details": {
+    "description": "UI string (source key: View Trip Details)"
+  },
+  "suggest_a_New_Place": "Suggest a New Place!",
+  "@suggest_a_New_Place": {
+    "description": "UI string (source key: Suggest a New Place!)"
+  },
+  "help_Us_Enrich_the_Experience": "Help Us Enrich the Experience",
+  "@help_Us_Enrich_the_Experience": {
+    "description": "UI string (source key: Help Us Enrich the Experience)"
+  },
+  "do_you_know_a_hidden_gem_or_a_must_visit_spot_that_s_not_listed_in_our_app_We_d_": "Do you know a hidden gem or a must-visit spot that's not listed in our app? We'd love to hear from you!",
+  "@do_you_know_a_hidden_gem_or_a_must_visit_spot_that_s_not_listed_in_our_app_We_d_": {
+    "description": "UI string (source key: Do you know a hidden gem or a must-visit spot that's not listed in our app? We'd love to hear from you!)"
+  },
+  "your_suggestions_help_others_discover_more_amazing_places": "Your suggestions help others discover more amazing places!",
+  "@your_suggestions_help_others_discover_more_amazing_places": {
+    "description": "UI string (source key: Your suggestions help others discover more amazing places!)"
+  },
+  "share_your_favorite_place_with_the_community": "Share your favorite place with the community:",
+  "@share_your_favorite_place_with_the_community": {
+    "description": "UI string (source key: Share your favorite place with the community:)"
+  },
+  "place_Name": "Place Name",
+  "@place_Name": {
+    "description": "UI string (source key: Place Name)"
+  },
+  "enter_the_name_of_the_place": "Enter the name of the place",
+  "@enter_the_name_of_the_place": {
+    "description": "UI string (source key: Enter the name of the place)"
+  },
+  "tell_us_what_makes_it_special": "Tell us what makes it special",
+  "@tell_us_what_makes_it_special": {
+    "description": "UI string (source key: Tell us what makes it special)"
+  },
+  "describe_what_makes_this_place_unique_and_worth_visiting": "Describe what makes this place unique and worth visiting...",
+  "@describe_what_makes_this_place_unique_and_worth_visiting": {
+    "description": "UI string (source key: Describe what makes this place unique and worth visiting...)"
+  },
+  "upload_Photos": "Upload  Photos",
+  "@upload_Photos": {
+    "description": "UI string (source key: Upload  Photos)"
+  },
+  "tap_to_upload_photos": "Tap to upload photos",
+  "@tap_to_upload_photos": {
+    "description": "UI string (source key: Tap to upload photos)"
+  },
+  "image_uploaded_successfully": "Image uploaded successfully. ✅",
+  "@image_uploaded_successfully": {
+    "description": "UI string (source key: Image uploaded successfully. ✅)"
+  },
+  "maximum_3_photos": "Maximum 3 photos",
+  "@maximum_3_photos": {
+    "description": "UI string (source key: Maximum 3 photos)"
+  },
+  "mark_the_Location_on_the_Map": "Mark the Location on the Map",
+  "@mark_the_Location_on_the_Map": {
+    "description": "UI string (source key: Mark the Location on the Map)"
+  },
+  "tap_to_select_location_on_map": "Tap to select location on map",
+  "@tap_to_select_location_on_map": {
+    "description": "UI string (source key: Tap to select location on map)"
+  },
+  "location_has_been_set": "Location has been set✅",
+  "@location_has_been_set": {
+    "description": "UI string (source key: Location has been set✅)"
+  },
+  "submit": " Submit",
+  "@submit": {
+    "description": "UI string (source key:  Submit)"
+  },
+  "ahmed_Al_Qahtani": "Ahmed Al-Qahtani",
+  "@ahmed_Al_Qahtani": {
+    "description": "UI string (source key: Ahmed Al-Qahtani)"
+  },
+  "delivery_Agent": "Delivery Agent",
+  "@delivery_Agent": {
+    "description": "UI string (source key: Delivery Agent)"
+  },
+  "n966_50_123_4567": "+966 50 123 4567",
+  "@n966_50_123_4567": {
+    "description": "UI string (source key: +966 50 123 4567)"
+  },
+  "chat_Messages": "Chat Messages",
+  "@chat_Messages": {
+    "description": "UI string (source key: Chat Messages)"
+  },
+  "vehicle_Plate": "Vehicle Plate",
+  "@vehicle_Plate": {
+    "description": "UI string (source key: Vehicle Plate)"
+  },
+  "kSA_1234_ABC": "KSA | 1234 ABC",
+  "@kSA_1234_ABC": {
+    "description": "UI string (source key: KSA | 1234 ABC)"
+  },
+  "vERIFIED": "VERIFIED",
+  "@vERIFIED": {
+    "description": "UI string (source key: VERIFIED)"
+  },
+  "live_Location_Tracking": "Live Location Tracking",
+  "@live_Location_Tracking": {
+    "description": "UI string (source key: Live Location Tracking)"
+  },
+  "real_time_tracking_active": "Real-time tracking active",
+  "@real_time_tracking_active": {
+    "description": "UI string (source key: Real-time tracking active)"
+  },
+  "track_Location": "Track Location",
+  "@track_Location": {
+    "description": "UI string (source key: Track Location)"
+  },
+  "call_Now": "Call Now",
+  "@call_Now": {
+    "description": "UI string (source key: Call Now)"
+  },
+  "type_your_message": "Type your message...",
+  "@type_your_message": {
+    "description": "UI string (source key: Type your message...)"
+  },
+  "pay_the_reservation_fee": "Pay the reservation fee",
+  "@pay_the_reservation_fee": {
+    "description": "UI string (source key: Pay the reservation fee)"
+  },
+  "where_would_you_like_to_start_your_ride": "Where would you like to start your ride?",
+  "@where_would_you_like_to_start_your_ride": {
+    "description": "UI string (source key: Where would you like to start your ride?)"
+  },
+  "united_States": "United States",
+  "@united_States": {
+    "description": "UI string (source key: United States)"
+  },
+  "san_Francisco": "San Francisco",
+  "@san_Francisco": {
+    "description": "UI string (source key: San Francisco)"
+  },
+  "n1234_Market_Street_Downtown": "1234 Market Street, Downtown",
+  "@n1234_Market_Street_Downtown": {
+    "description": "UI string (source key: 1234 Market Street, Downtown)"
+  },
+  "map_showing_your_current_location": "Map showing your current location",
+  "@map_showing_your_current_location": {
+    "description": "UI string (source key: Map showing your current location)"
+  },
+  "design_My_Route": "Design My Route",
+  "@design_My_Route": {
+    "description": "UI string (source key: Design My Route)"
+  },
+  "add_landmarks_to_customize_your_journey": "Add landmarks to customize your journey",
+  "@add_landmarks_to_customize_your_journey": {
+    "description": "UI string (source key: Add landmarks to customize your journey)"
+  },
+  "let_the_Driver_Decide": "Let the Driver Decide",
+  "@let_the_Driver_Decide": {
+    "description": "UI string (source key: Let the Driver Decide)"
+  },
+  "rely_on_the_driver_s_local_expertise": "Rely on the driver's local expertise",
+  "@rely_on_the_driver_s_local_expertise": {
+    "description": "UI string (source key: Rely on the driver's local expertise)"
+  },
+  "choose_Your_Location": "Choose Your Location",
+  "@choose_Your_Location": {
+    "description": "UI string (source key: Choose Your Location)"
+  },
+  "cardholder_Name": "Cardholder Name",
+  "@cardholder_Name": {
+    "description": "UI string (source key: Cardholder Name)"
+  },
+  "enter_cardholder_name": "Enter cardholder name",
+  "@enter_cardholder_name": {
+    "description": "UI string (source key: Enter cardholder name)"
+  },
+  "card_Number": "Card Number",
+  "@card_Number": {
+    "description": "UI string (source key: Card Number)"
+  },
+  "expiry_Month": "Expiry Month",
+  "@expiry_Month": {
+    "description": "UI string (source key: Expiry Month)"
+  },
+  "mM": "MM",
+  "@mM": {
+    "description": "UI string (source key: MM)"
+  },
+  "expiry_Year": "Expiry Year",
+  "@expiry_Year": {
+    "description": "UI string (source key: Expiry Year)"
+  },
+  "yY": "YY",
+  "@yY": {
+    "description": "UI string (source key: YY)"
+  },
+  "save_this_card_for_future_payments": "Save this card for future payments",
+  "@save_this_card_for_future_payments": {
+    "description": "UI string (source key: Save this card for future payments)"
+  },
+  "save_Card": "Save Card",
+  "@save_Card": {
+    "description": "UI string (source key: Save Card)"
+  },
+  "close_Page": "Close Page",
+  "@close_Page": {
+    "description": "UI string (source key: Close Page)"
+  },
+  "please_do_not_close_the_page_until_the_payment_is_completed": "Please do not close the page until the payment is completed",
+  "@please_do_not_close_the_page_until_the_payment_is_completed": {
+    "description": "UI string (source key: Please do not close the page until the payment is completed)"
+  },
+  "payment_Confirmed": "Payment Confirmed!",
+  "@payment_Confirmed": {
+    "description": "UI string (source key: Payment Confirmed!)"
+  },
+  "your_request_has_been_sent_successfully_and_a_driver_will_accept_your_request_wi": "\"Your request has been sent successfully, and a driver will accept your request within the next few minutes",
+  "@your_request_has_been_sent_successfully_and_a_driver_will_accept_your_request_wi": {
+    "description": "UI string (source key: \"Your request has been sent successfully, and a driver will accept your request within the next few minutes)"
+  },
+  "go_to_Order": "Go to Order",
+  "@go_to_Order": {
+    "description": "UI string (source key: Go to Order)"
+  },
+  "the_last_payment_was_not_completed_please_try_again": "The last payment was not completed, please try again",
+  "@the_last_payment_was_not_completed_please_try_again": {
+    "description": "UI string (source key: The last payment was not completed, please try again)"
+  },
+  "payment_History": "Payment History",
+  "@payment_History": {
+    "description": "UI string (source key: Payment History)"
+  },
+  "tXN_ID": "TXN ID:",
+  "@tXN_ID": {
+    "description": "UI string (source key: TXN ID:)"
+  },
+  "k3603b6854b": "معرف العملية",
+  "@k3603b6854b": {
+    "description": "UI string (source key: معرف العملية)"
+  },
+  "online_Payment_ID": "Online Payment ID:",
+  "@online_Payment_ID": {
+    "description": "UI string (source key: Online Payment ID:)"
+  },
+  "online_Payment_ID2": "Online Payment ID",
+  "@online_Payment_ID2": {
+    "description": "UI string (source key: Online Payment ID)"
+  },
+  "salary_Deposit": "Salary Deposit",
+  "@salary_Deposit": {
+    "description": "UI string (source key: Salary Deposit)"
+  },
+  "tXN_ID_TXN654321987": "TXN ID: TXN654321987",
+  "@tXN_ID_TXN654321987": {
+    "description": "UI string (source key: TXN ID: TXN654321987)"
+  },
+  "dec_14_2024_9_15_AM": "Dec 14, 2024 • 9:15 AM",
+  "@dec_14_2024_9_15_AM": {
+    "description": "UI string (source key: Dec 14, 2024 • 9:15 AM)"
+  },
+  "n3_250_00": "+$3,250.00",
+  "@n3_250_00": {
+    "description": "UI string (source key: +$3,250.00)"
+  },
+  "electronic_Payment_ID": "Electronic Payment ID",
+  "@electronic_Payment_ID": {
+    "description": "UI string (source key: Electronic Payment ID)"
+  },
+  "ePY_2024_654321": "EPY-2024-654321",
+  "@ePY_2024_654321": {
+    "description": "UI string (source key: EPY-2024-654321)"
+  },
+  "utility_Bill_Payment": "Utility Bill Payment",
+  "@utility_Bill_Payment": {
+    "description": "UI string (source key: Utility Bill Payment)"
+  },
+  "tXN_ID_TXN456789012": "TXN ID: TXN456789012",
+  "@tXN_ID_TXN456789012": {
+    "description": "UI string (source key: TXN ID: TXN456789012)"
+  },
+  "dec_13_2024_4_22_PM": "Dec 13, 2024 • 4:22 PM",
+  "@dec_13_2024_4_22_PM": {
+    "description": "UI string (source key: Dec 13, 2024 • 4:22 PM)"
+  },
+  "n156_78": "-$156.78",
+  "@n156_78": {
+    "description": "UI string (source key: -$156.78)"
+  },
+  "ePY_2024_456789": "EPY-2024-456789",
+  "@ePY_2024_456789": {
+    "description": "UI string (source key: EPY-2024-456789)"
+  },
+  "restaurant_Payment": "Restaurant Payment",
+  "@restaurant_Payment": {
+    "description": "UI string (source key: Restaurant Payment)"
+  },
+  "tXN_ID_TXN321654987": "TXN ID: TXN321654987",
+  "@tXN_ID_TXN321654987": {
+    "description": "UI string (source key: TXN ID: TXN321654987)"
+  },
+  "dec_12_2024_7_45_PM": "Dec 12, 2024 • 7:45 PM",
+  "@dec_12_2024_7_45_PM": {
+    "description": "UI string (source key: Dec 12, 2024 • 7:45 PM)"
+  },
+  "n42_50": "-$42.50",
+  "@n42_50": {
+    "description": "UI string (source key: -$42.50)"
+  },
+  "ePY_2024_321654": "EPY-2024-321654",
+  "@ePY_2024_321654": {
+    "description": "UI string (source key: EPY-2024-321654)"
+  },
+  "investment_Transfer": "Investment Transfer",
+  "@investment_Transfer": {
+    "description": "UI string (source key: Investment Transfer)"
+  },
+  "tXN_ID_TXN987123456": "TXN ID: TXN987123456",
+  "@tXN_ID_TXN987123456": {
+    "description": "UI string (source key: TXN ID: TXN987123456)"
+  },
+  "dec_11_2024_11_30_AM": "Dec 11, 2024 • 11:30 AM",
+  "@dec_11_2024_11_30_AM": {
+    "description": "UI string (source key: Dec 11, 2024 • 11:30 AM)"
+  },
+  "n500_00": "-$500.00",
+  "@n500_00": {
+    "description": "UI string (source key: -$500.00)"
+  },
+  "ePY_2024_987123": "EPY-2024-987123",
+  "@ePY_2024_987123": {
+    "description": "UI string (source key: EPY-2024-987123)"
+  },
+  "refund_Online_Store": "Refund - Online Store",
+  "@refund_Online_Store": {
+    "description": "UI string (source key: Refund - Online Store)"
+  },
+  "tXN_ID_TXN147258369": "TXN ID: TXN147258369",
+  "@tXN_ID_TXN147258369": {
+    "description": "UI string (source key: TXN ID: TXN147258369)"
+  },
+  "dec_10_2024_3_18_PM": "Dec 10, 2024 • 3:18 PM",
+  "@dec_10_2024_3_18_PM": {
+    "description": "UI string (source key: Dec 10, 2024 • 3:18 PM)"
+  },
+  "start_from_your_current_location": "Start from your current location",
+  "@start_from_your_current_location": {
+    "description": "UI string (source key: Start from your current location)"
+  },
+  "change_city": "Change city",
+  "@change_city": {
+    "description": "UI string (source key: Change city)"
+  },
+  "view_My_Trip": "View My Trip",
+  "@view_My_Trip": {
+    "description": "UI string (source key: View My Trip)"
+  },
+  "experience_top_destinations": "Experience top destinations",
+  "@experience_top_destinations": {
+    "description": "UI string (source key: Experience top destinations)"
+  },
+  "tourist_landmarks": "Tourist landmarks",
+  "@tourist_landmarks": {
+    "description": "UI string (source key: Tourist landmarks)"
+  },
+  "landmarks": "Landmarks - معالم سياحية",
+  "@landmarks": {
+    "description": "UI string (source key: Landmarks - معالم سياحية)"
+  },
+  "google_Map": "Google Map",
+  "@google_Map": {
+    "description": "UI string (source key: Google Map)"
+  },
+  "agent_Location": "Agent Location",
+  "@agent_Location": {
+    "description": "UI string (source key: Agent Location)"
+  },
+  "the_details": "the details",
+  "@the_details": {
+    "description": "UI string (source key: the details)"
+  },
+  "select_Travel_Date": "Select Travel Date",
+  "@select_Travel_Date": {
+    "description": "UI string (source key: Select Travel Date)"
+  },
+  "choose_your_preferred_departure_date": "Choose your preferred departure date",
+  "@choose_your_preferred_departure_date": {
+    "description": "UI string (source key: Choose your preferred departure date)"
+  },
+  "selected_Date": "Selected Date",
+  "@selected_Date": {
+    "description": "UI string (source key: Selected Date)"
+  },
+  "march_15_2024": "March 15, 2024",
+  "@march_15_2024": {
+    "description": "UI string (source key: March 15, 2024)"
+  },
+  "change_Date": "Change Date",
+  "@change_Date": {
+    "description": "UI string (source key: Change Date)"
+  },
+  "select_Time": "Select Time",
+  "@select_Time": {
+    "description": "UI string (source key: Select Time)"
+  },
+  "aM_PM": "AM/PM",
+  "@aM_PM": {
+    "description": "UI string (source key: AM/PM)"
+  },
+  "no_Addresses_Found": "No Addresses Found",
+  "@no_Addresses_Found": {
+    "description": "UI string (source key: No Addresses Found)"
+  },
+  "you_haven_t_added_any_addresses_yet_Add_a_title_to_get_started": "You haven't added any addresses yet. Add a title to get started.",
+  "@you_haven_t_added_any_addresses_yet_Add_a_title_to_get_started": {
+    "description": "UI string (source key: You haven't added any addresses yet. Add a title to get started.)"
+  },
+  "payment_Methods": "Payment Methods",
+  "@payment_Methods": {
+    "description": "UI string (source key: Payment Methods)"
+  },
+  "select": "Select ",
+  "@select": {
+    "description": "UI string (source key: Select )"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "UI string (source key: Save)"
+  },
+  "quick_Pay_Options": "Quick Pay Options",
+  "@quick_Pay_Options": {
+    "description": "UI string (source key: Quick Pay Options)"
+  },
+  "saved_Cards": "Saved Cards",
+  "@saved_Cards": {
+    "description": "UI string (source key: Saved Cards)"
+  },
+  "add_New_Payment_Method": "Add New Payment Method",
+  "@add_New_Payment_Method": {
+    "description": "UI string (source key: Add New Payment Method)"
+  },
+  "hello_World": "Hello World",
+  "@hello_World": {
+    "description": "UI string (source key: Hello World)"
+  },
+  "no_cards_have_been_added": "No cards have been added!",
+  "@no_cards_have_been_added": {
+    "description": "UI string (source key: No cards have been added!)"
+  },
+  "payment_Card": "Payment Card",
+  "@payment_Card": {
+    "description": "UI string (source key: Payment Card)"
+  },
+  "choice": "Choice",
+  "@choice": {
+    "description": "UI string (source key: Choice)"
+  },
+  "n8901": "•••• •••• •••• 8901",
+  "@n8901": {
+    "description": "UI string (source key: •••• •••• •••• 8901)"
+  },
+  "mastercard_Expires_08_25": "Mastercard • Expires 08/25",
+  "@mastercard_Expires_08_25": {
+    "description": "UI string (source key: Mastercard • Expires 08/25)"
+  },
+  "n2468": "•••• •••• •••• 2468",
+  "@n2468": {
+    "description": "UI string (source key: •••• •••• •••• 2468)"
+  },
+  "american_Express_Expires_03_27": "American Express • Expires 03/27",
+  "@american_Express_Expires_03_27": {
+    "description": "UI string (source key: American Express • Expires 03/27)"
+  },
+  "number_of_Extra_Hours": "Number of Extra Hours",
+  "@number_of_Extra_Hours": {
+    "description": "UI string (source key: Number of Extra Hours)"
+  },
+  "payment_Method": "Payment Method",
+  "@payment_Method": {
+    "description": "UI string (source key: Payment Method)"
+  },
+  "add_Card": "Add Card",
+  "@add_Card": {
+    "description": "UI string (source key: Add Card)"
+  },
+  "total_Price": "Total Price",
+  "@total_Price": {
+    "description": "UI string (source key: Total Price)"
+  },
+  "n4_00pm": "4:00pm",
+  "@n4_00pm": {
+    "description": "UI string (source key: 4:00pm)"
+  },
+  "n52": "5+ ساعات",
+  "@n52": {
+    "description": "UI string (source key: 5+ ساعات)"
+  },
+  "extra_hours_have_been_added_to_the_trip": "Extra hours have been added to the trip",
+  "@extra_hours_have_been_added_to_the_trip": {
+    "description": "UI string (source key: Extra hours have been added to the trip)"
+  },
+  "order_Summary": "Order Summary",
+  "@order_Summary": {
+    "description": "UI string (source key: Order Summary)"
+  },
+  "request_summary": "Request Summary",
+  "@request_summary": {
+    "description": "UI string (source key: request summary)"
+  },
+  "n25_40": "$25.40",
+  "@n25_40": {
+    "description": "UI string (source key: $25.40)"
+  },
+  "n4_items": "(4 items)",
+  "@n4_items": {
+    "description": "UI string (source key: (4 items))"
+  },
+  "reservations": "My Bookings",
+  "@reservations": {
+    "description": "UI string (source key: Reservations)"
+  },
+  "ux_welcome_login": "Welcome to Touri Taxi",
+  "@ux_welcome_login": {
+    "description": "UI string (source key: ux_welcome_login)"
+  },
+  "ux_welcome_login_sub": "Sign in or create an account to start booking your tour easily",
+  "@ux_welcome_login_sub": {
+    "description": "UI string (source key: ux_welcome_login_sub)"
+  },
+  "ux_booking_steps": "Booking steps",
+  "@ux_booking_steps": {
+    "description": "UI string (source key: ux_booking_steps)"
+  },
+  "ux_step_trip_type": "Trip type",
+  "@ux_step_trip_type": {
+    "description": "UI string (source key: ux_step_trip_type)"
+  },
+  "ux_step_location": "Location",
+  "@ux_step_location": {
+    "description": "UI string (source key: ux_step_location)"
+  },
+  "ux_step_details": "Details",
+  "@ux_step_details": {
+    "description": "UI string (source key: ux_step_details)"
+  },
+  "ux_step_payment": "Payment",
+  "@ux_step_payment": {
+    "description": "UI string (source key: ux_step_payment)"
+  },
+  "ux_choose_trip_type": "How do you want to explore?",
+  "@ux_choose_trip_type": {
+    "description": "UI string (source key: ux_choose_trip_type)"
+  },
+  "ux_choose_trip_hint": "Choose one option below, then set your location to continue",
+  "@ux_choose_trip_hint": {
+    "description": "UI string (source key: ux_choose_trip_hint)"
+  },
+  "ux_car_list_hint": "Choose the right car for your trip, then tap Select",
+  "@ux_car_list_hint": {
+    "description": "UI string (source key: ux_car_list_hint)"
+  },
+  "ux_car_available": "cars available",
+  "@ux_car_available": {
+    "description": "UI string (source key: ux_car_available)"
+  },
+  "ux_per_hour": "per hour",
+  "@ux_per_hour": {
+    "description": "UI string (source key: ux_per_hour)"
+  },
+  "ux_min_hours": "Minimum",
+  "@ux_min_hours": {
+    "description": "UI string (source key: ux_min_hours)"
+  },
+  "ux_car_list_empty_title": "No cars available",
+  "@ux_car_list_empty_title": {
+    "description": "UI string (source key: ux_car_list_empty_title)"
+  },
+  "ux_car_list_empty_msg": "No cars are available right now. Please try again later",
+  "@ux_car_list_empty_msg": {
+    "description": "UI string (source key: ux_car_list_empty_msg)"
+  },
+  "ux_car_list_error_title": "Could not load cars",
+  "@ux_car_list_error_title": {
+    "description": "UI string (source key: ux_car_list_error_title)"
+  },
+  "ux_car_list_error_msg": "Check your internet connection and try again",
+  "@ux_car_list_error_msg": {
+    "description": "UI string (source key: ux_car_list_error_msg)"
+  },
+  "ux_retry": "Retry",
+  "@ux_retry": {
+    "description": "UI string (source key: ux_retry)"
+  },
+  "booking_success_title": "Booking confirmed",
+  "@booking_success_title": {
+    "description": "UI string (source key: booking_success_title)"
+  },
+  "booking_success_msg": "Your request was sent successfully. Drivers will be notified and one should accept it soon.",
+  "@booking_success_msg": {
+    "description": "UI string (source key: booking_success_msg)"
+  },
+  "booking_login_required": "Please sign in before completing your booking",
+  "@booking_login_required": {
+    "description": "UI string (source key: booking_login_required)"
+  },
+  "booking_save_failed": "Could not send your request. Check your connection and try again",
+  "@booking_save_failed": {
+    "description": "UI string (source key: booking_save_failed)"
+  },
+  "ux_custom_route_desc": "You pick places on the map and plan your own route",
+  "@ux_custom_route_desc": {
+    "description": "UI string (source key: ux_custom_route_desc)"
+  },
+  "ux_driver_guide_desc": "Your driver guides you and suggests the best attractions",
+  "@ux_driver_guide_desc": {
+    "description": "UI string (source key: ux_driver_guide_desc)"
+  },
+  "ux_my_bookings_sub": "Track your current and past bookings here",
+  "@ux_my_bookings_sub": {
+    "description": "UI string (source key: ux_my_bookings_sub)"
+  },
+  "ux_no_bookings_title": "No bookings yet",
+  "@ux_no_bookings_title": {
+    "description": "UI string (source key: ux_no_bookings_title)"
+  },
+  "ux_no_bookings_msg": "Start your first trip from the Book Now tab",
+  "@ux_no_bookings_msg": {
+    "description": "UI string (source key: ux_no_bookings_msg)"
+  },
+  "ux_account_sub": "Manage profile, language, and support",
+  "@ux_account_sub": {
+    "description": "UI string (source key: ux_account_sub)"
+  },
+  "ux_account_settings": "Account settings",
+  "@ux_account_settings": {
+    "description": "UI string (source key: ux_account_settings)"
+  },
+  "ux_new_booking": "Book a new trip",
+  "@ux_new_booking": {
+    "description": "UI string (source key: ux_new_booking)"
+  },
+  "dialog_ok": "OK",
+  "@dialog_ok": {
+    "description": "UI string (source key: dialog_ok)"
+  },
+  "dialog_yes": "Yes",
+  "@dialog_yes": {
+    "description": "UI string (source key: dialog_yes)"
+  },
+  "dialog_no": "No",
+  "@dialog_no": {
+    "description": "UI string (source key: dialog_no)"
+  },
+  "dialog_confirm": "Confirm",
+  "@dialog_confirm": {
+    "description": "UI string (source key: dialog_confirm)"
+  },
+  "dialog_cancel": "Cancel",
+  "@dialog_cancel": {
+    "description": "UI string (source key: dialog_cancel)"
+  },
+  "dialog_error_title": "Error",
+  "@dialog_error_title": {
+    "description": "UI string (source key: dialog_error_title)"
+  },
+  "dialog_location_error": "We couldn't find your current location. Please enable location services.",
+  "@dialog_location_error": {
+    "description": "UI string (source key: dialog_location_error)"
+  },
+  "dialog_country_mismatch_title": "Incorrect country",
+  "@dialog_country_mismatch_title": {
+    "description": "UI string (source key: dialog_country_mismatch_title)"
+  },
+  "dialog_country_mismatch_msg": "The displayed country doesn't match your current location. Please select the correct country.",
+  "@dialog_country_mismatch_msg": {
+    "description": "UI string (source key: dialog_country_mismatch_msg)"
+  },
+  "dialog_outside_coverage_title": "Outside service area",
+  "@dialog_outside_coverage_title": {
+    "description": "UI string (source key: dialog_outside_coverage_title)"
+  },
+  "dialog_outside_coverage_msg": "Your current country is outside the system's service area. Booking is not available from your location.",
+  "@dialog_outside_coverage_msg": {
+    "description": "UI string (source key: dialog_outside_coverage_msg)"
+  },
+  "dialog_change_country_title": "Change country",
+  "@dialog_change_country_title": {
+    "description": "UI string (source key: dialog_change_country_title)"
+  },
+  "dialog_change_country_msg": "Are you sure you want to change the country?",
+  "@dialog_change_country_msg": {
+    "description": "UI string (source key: dialog_change_country_msg)"
+  },
+  "dialog_change_city_title": "Change city",
+  "@dialog_change_city_title": {
+    "description": "UI string (source key: dialog_change_city_title)"
+  },
+  "dialog_change_city_msg": "Are you sure you want to change the city?",
+  "@dialog_change_city_msg": {
+    "description": "UI string (source key: dialog_change_city_msg)"
+  },
+  "dialog_select_trip_or_location": "Please select a trip type or location",
+  "@dialog_select_trip_or_location": {
+    "description": "UI string (source key: dialog_select_trip_or_location)"
+  },
+  "dialog_update_location_title": "Update location",
+  "@dialog_update_location_title": {
+    "description": "UI string (source key: dialog_update_location_title)"
+  },
+  "dialog_update_location_msg": "Are you sure you want to update your current location?",
+  "@dialog_update_location_msg": {
+    "description": "UI string (source key: dialog_update_location_msg)"
+  },
+  "dialog_select_all_options": "Please select all required options",
+  "@dialog_select_all_options": {
+    "description": "UI string (source key: dialog_select_all_options)"
+  },
+  "dialog_delete_account_title": "Delete account",
+  "@dialog_delete_account_title": {
+    "description": "UI string (source key: dialog_delete_account_title)"
+  },
+  "dialog_delete_account_msg": "Are you sure you want to request account deletion? Deletion may take 24 hours if there are no pending amounts or balance.",
+  "@dialog_delete_account_msg": {
+    "description": "UI string (source key: dialog_delete_account_msg)"
+  },
+  "dialog_request_sent_title": "Request submitted",
+  "@dialog_request_sent_title": {
+    "description": "UI string (source key: dialog_request_sent_title)"
+  },
+  "dialog_request_sent_msg": "You can track your request status through support tickets",
+  "@dialog_request_sent_msg": {
+    "description": "UI string (source key: dialog_request_sent_msg)"
+  },
+  "take_a_photo_to_set_your_profile_picture_using_the_camera_directly": "Take a photo to set your profile picture using the camera directly.",
+  "@take_a_photo_to_set_your_profile_picture_using_the_camera_directly": {
+    "description": "UI string (source key: Take a photo to set your profile picture using the camera directly.)"
+  },
+  "upload_images_to_set_your_account_profile_picture": "Upload images to set your account profile picture.\n",
+  "@upload_images_to_set_your_account_profile_picture": {
+    "description": "UI string (source key: Upload images to set your account profile picture.\n)"
+  },
+  "allow_the_Ara_Watan_app_to_access_your_location_for_the_purpose_of_delivering_yo": "Allow the \"Touri Taxi\" app to access your location for the purpose of delivering you to the specified tourist destinations.",
+  "@allow_the_Ara_Watan_app_to_access_your_location_for_the_purpose_of_delivering_yo": {
+    "description": "UI string (source key: Allow the \"Ara Watan\" app to access your location for the purpose of delivering you to the specified tourist destinations.)"
+  },
+  "this_allows_for_the_exploitation_of_the_nation_s_resources_to_access_distinctive": "This allows for the exploitation of the nation's resources to access distinctive tourist areas.",
+  "@this_allows_for_the_exploitation_of_the_nation_s_resources_to_access_distinctive": {
+    "description": "UI string (source key: this allows for the exploitation of the nation's resources to access distinctive tourist areas.)"
+  },
+  "unexpected_error_title": "An unexpected error occurred",
+  "@unexpected_error_title": {
+    "description": "UI string (source key: unexpected_error_title)"
+  },
+  "unexpected_error_msg": "Please restart the app or return to the home screen.",
+  "@unexpected_error_msg": {
+    "description": "UI string (source key: unexpected_error_msg)"
+  },
+  "dialog_location_required": "Please set your current location.",
+  "@dialog_location_required": {
+    "description": "UI string (source key: dialog_location_required)"
+  },
+  "custom_place_name_required": "Enter a place name or pick one from search",
+  "@custom_place_name_required": {
+    "description": "UI string (source key: custom_place_name_required)"
+  },
+  "custom_place_duplicate": "This place is already in your trip",
+  "@custom_place_duplicate": {
+    "description": "UI string (source key: custom_place_duplicate)"
+  },
+  "instant_booking": "Book now",
+  "@instant_booking": {
+    "description": "UI string (source key: instant_booking)"
+  },
+  "custom_place_added": "Added: {name}",
+  "@custom_place_added": {
+    "description": "UI string (source key: custom_place_added)",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "name"
+      }
+    }
+  },
+  "view_my_trip": "View my trip",
+  "@view_my_trip": {
+    "description": "UI string (source key: view_my_trip)"
+  },
+  "landmarks_loaded_count": "Showing {count} landmarks",
+  "@landmarks_loaded_count": {
+    "description": "UI string (source key: landmarks_loaded_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "load_more_landmarks": "Load more",
+  "@load_more_landmarks": {
+    "description": "UI string (source key: load_more_landmarks)"
+  },
+  "load_more_landmarks_count": "Load more ({loaded} / {total}+)",
+  "@load_more_landmarks_count": {
+    "description": "UI string (source key: load_more_landmarks_count)",
+    "placeholders": {
+      "loaded": {
+        "type": "String",
+        "example": "loaded"
+      },
+      "total": {
+        "type": "String",
+        "example": "total"
+      }
+    }
+  },
+  "add_destination_first": "Add at least one destination first",
+  "@add_destination_first": {
+    "description": "UI string (source key: add_destination_first)"
+  },
+  "car_selected_success": "Car selected successfully",
+  "@car_selected_success": {
+    "description": "UI string (source key: car_selected_success)"
+  },
+  "generic_error_retry": "Something went wrong. Please try again.",
+  "@generic_error_retry": {
+    "description": "UI string (source key: generic_error_retry)"
+  },
+  "custom_place_title": "Custom place",
+  "@custom_place_title": {
+    "description": "UI string (source key: custom_place_title)"
+  },
+  "custom_place_map_hint": "Every place you add counts toward your trip like landmarks (2 stops = 1 hour minimum)",
+  "@custom_place_map_hint": {
+    "description": "UI string (source key: custom_place_map_hint)"
+  },
+  "custom_place_search_hint": "Search for a place...",
+  "@custom_place_search_hint": {
+    "description": "UI string (source key: custom_place_search_hint)"
+  },
+  "custom_place_add_to_trip": "Add to my trip",
+  "@custom_place_add_to_trip": {
+    "description": "UI string (source key: custom_place_add_to_trip)"
+  },
+  "landmarks_custom_banner": "Can't find your place? Add a custom location on the map",
+  "@landmarks_custom_banner": {
+    "description": "UI string (source key: landmarks_custom_banner)"
+  },
+  "ux_pick_location_next_hint": "Set your location and tap Next to start your tour",
+  "@ux_pick_location_next_hint": {
+    "description": "UI string (source key: ux_pick_location_next_hint)"
+  },
+  "ux_driver_guide_location_hint": "Your driver will be your guide — set your location and tap Next",
+  "@ux_driver_guide_location_hint": {
+    "description": "UI string (source key: ux_driver_guide_location_hint)"
+  },
+  "custom_place_move_map_hint": "Move the map to set the location",
+  "@custom_place_move_map_hint": {
+    "description": "UI string (source key: custom_place_move_map_hint)"
+  },
+  "custom_place_name_label": "Place name (optional)",
+  "@custom_place_name_label": {
+    "description": "UI string (source key: custom_place_name_label)"
+  },
+  "custom_place_name_hint": "e.g. Family café, private beach...",
+  "@custom_place_name_hint": {
+    "description": "UI string (source key: custom_place_name_hint)"
+  },
+  "my_trip_count": "My trip ({count})",
+  "@my_trip_count": {
+    "description": "UI string (source key: my_trip_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "landmarks_custom_list_title": "Can't find your place in the list?",
+  "@landmarks_custom_list_title": {
+    "description": "UI string (source key: landmarks_custom_list_title)"
+  },
+  "ux_not_available": "Not available",
+  "@ux_not_available": {
+    "description": "UI string (source key: ux_not_available)"
+  },
+  "ux_no_car_selected": "No car selected",
+  "@ux_no_car_selected": {
+    "description": "UI string (source key: ux_no_car_selected)"
+  },
+  "ux_preferred_car": "Preferred car",
+  "@ux_preferred_car": {
+    "description": "UI string (source key: ux_preferred_car)"
+  },
+  "ux_meeting_point": "Meeting point",
+  "@ux_meeting_point": {
+    "description": "UI string (source key: ux_meeting_point)"
+  },
+  "ux_pick_meeting_point": "Please select a meeting point",
+  "@ux_pick_meeting_point": {
+    "description": "UI string (source key: ux_pick_meeting_point)"
+  },
+  "ux_schedule_optional": "Optionally, choose a trip start date and time",
+  "@ux_schedule_optional": {
+    "description": "UI string (source key: ux_schedule_optional)"
+  },
+  "ux_choose_payment_method": "Choose payment method",
+  "@ux_choose_payment_method": {
+    "description": "UI string (source key: ux_choose_payment_method)"
+  },
+  "ux_one_hour": "One hour",
+  "@ux_one_hour": {
+    "description": "UI string (source key: ux_one_hour)"
+  },
+  "ux_two_hours": "Two hours",
+  "@ux_two_hours": {
+    "description": "UI string (source key: ux_two_hours)"
+  },
+  "ux_hours_count": "{count} hours",
+  "@ux_hours_count": {
+    "description": "UI string (source key: ux_hours_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "ux_car_select_failed": "Could not select the car. Please try again.",
+  "@ux_car_select_failed": {
+    "description": "UI string (source key: ux_car_select_failed)"
+  },
+  "app_title": "Touri Taxi",
+  "@app_title": {
+    "description": "UI string (source key: app_title)"
+  },
+  "ux_cash_payment": "Cash",
+  "@ux_cash_payment": {
+    "description": "UI string (source key: ux_cash_payment)"
+  },
+  "ux_change": "Change",
+  "@ux_change": {
+    "description": "UI string (source key: ux_change)"
+  },
+  "ux_card_payment_network": "Secure card payment via Network International",
+  "@ux_card_payment_network": {
+    "description": "UI string (source key: ux_card_payment_network)"
+  },
+  "checkout_extra_hour_discount": "You get {percent}% off each extra hour you add, up to {max}{currency}",
+  "@checkout_extra_hour_discount": {
+    "description": "UI string (source key: checkout_extra_hour_discount)",
+    "placeholders": {
+      "percent": {
+        "type": "String",
+        "example": "percent"
+      },
+      "max": {
+        "type": "String",
+        "example": "max"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "checkout_min_hours_hint": "Based on your selected stops, the minimum trip length is {hours} hours",
+  "@checkout_min_hours_hint": {
+    "description": "UI string (source key: checkout_min_hours_hint)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      }
+    }
+  },
+  "checkout_payment_card_error": "Payment or card details are incorrect",
+  "@checkout_payment_card_error": {
+    "description": "UI string (source key: checkout_payment_card_error)"
+  },
+  "checkout_order_status_pending": "Waiting for driver acceptance",
+  "@checkout_order_status_pending": {
+    "description": "UI string (source key: checkout_order_status_pending)"
+  },
+  "checkout_add_hours_prompt": "Please add at least {hours} more hour(s) to continue",
+  "@checkout_add_hours_prompt": {
+    "description": "UI string (source key: checkout_add_hours_prompt)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      }
+    }
+  },
+  "checkout_complete_options_prompt": "Complete all options or add more hours to match your trip",
+  "@checkout_complete_options_prompt": {
+    "description": "UI string (source key: checkout_complete_options_prompt)"
+  },
+  "landmark_added_success": "Added: {name}",
+  "@landmark_added_success": {
+    "description": "UI string (source key: landmark_added_success)",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "name"
+      }
+    }
+  },
+  "landmark_already_in_cart": "This place is already in your trip",
+  "@landmark_already_in_cart": {
+    "description": "UI string (source key: landmark_already_in_cart)"
+  },
+  "load_error_title": "Could not load",
+  "@load_error_title": {
+    "description": "UI string (source key: load_error_title)"
+  },
+  "load_error_message": "Check your connection and try again",
+  "@load_error_message": {
+    "description": "UI string (source key: load_error_message)"
+  },
+  "change_region2": "Change region",
+  "@change_region2": {
+    "description": "UI string (source key: change_region)"
+  },
+  "places_in_city": "Places in {city}",
+  "@places_in_city": {
+    "description": "UI string (source key: places_in_city)",
+    "placeholders": {
+      "city": {
+        "type": "String",
+        "example": "city"
+      }
+    }
+  },
+  "destinations_added_label": "Added destinations:",
+  "@destinations_added_label": {
+    "description": "UI string (source key: destinations_added_label)"
+  },
+  "custom_place_list_hint": "Pick on the map or search — it counts toward your trip",
+  "@custom_place_list_hint": {
+    "description": "UI string (source key: custom_place_list_hint)"
+  },
+  "filter_all": "All",
+  "@filter_all": {
+    "description": "UI string (source key: filter_all)"
+  },
+  "map_locating": "Finding your location...",
+  "@map_locating": {
+    "description": "UI string (source key: map_locating)"
+  },
+  "map_calculating_route": "Calculating route...",
+  "@map_calculating_route": {
+    "description": "UI string (source key: map_calculating_route)"
+  },
+  "map_distance_label": "Distance",
+  "@map_distance_label": {
+    "description": "UI string (source key: map_distance_label)"
+  },
+  "map_estimated_time": "Estimated time",
+  "@map_estimated_time": {
+    "description": "UI string (source key: map_estimated_time)"
+  },
+  "map_stops_count": "Stops",
+  "@map_stops_count": {
+    "description": "UI string (source key: map_stops_count)"
+  },
+  "map_avg_speed": "Average speed",
+  "@map_avg_speed": {
+    "description": "UI string (source key: map_avg_speed)"
+  },
+  "map_calc_type": "Calculation type",
+  "@map_calc_type": {
+    "description": "UI string (source key: map_calc_type)"
+  },
+  "map_calc_accurate": "Accurate",
+  "@map_calc_accurate": {
+    "description": "UI string (source key: map_calc_accurate)"
+  },
+  "map_calc_approximate": "Approximate",
+  "@map_calc_approximate": {
+    "description": "UI string (source key: map_calc_approximate)"
+  },
+  "map_route_fallback": "Could not calculate the best route; using approximate distance",
+  "@map_route_fallback": {
+    "description": "UI string (source key: map_route_fallback)"
+  },
+  "map_your_location": "Your location",
+  "@map_your_location": {
+    "description": "UI string (source key: map_your_location)"
+  },
+  "map_destination_n": "Stop {n}",
+  "@map_destination_n": {
+    "description": "UI string (source key: map_destination_n)",
+    "placeholders": {
+      "n": {
+        "type": "String",
+        "example": "n"
+      }
+    }
+  },
+  "map_load_failed": "The map could not load. Check your connection and map service settings.",
+  "@map_load_failed": {
+    "description": "UI string (source key: map_load_failed)"
+  },
+  "wallet_title": "My wallet",
+  "@wallet_title": {
+    "description": "UI string (source key: wallet_title)"
+  },
+  "wallet_load_error": "Could not load wallet",
+  "@wallet_load_error": {
+    "description": "UI string (source key: wallet_load_error)"
+  },
+  "wallet_not_created": "No wallet yet",
+  "@wallet_not_created": {
+    "description": "UI string (source key: wallet_not_created)"
+  },
+  "wallet_created_success": "Wallet created successfully",
+  "@wallet_created_success": {
+    "description": "UI string (source key: wallet_created_success)"
+  },
+  "wallet_create_button": "Create wallet",
+  "@wallet_create_button": {
+    "description": "UI string (source key: wallet_create_button)"
+  },
+  "wallet_current_balance": "Current balance",
+  "@wallet_current_balance": {
+    "description": "UI string (source key: wallet_current_balance)"
+  },
+  "wallet_currency_label": "Currency",
+  "@wallet_currency_label": {
+    "description": "UI string (source key: wallet_currency_label)"
+  },
+  "wallet_last_updated": "Last updated",
+  "@wallet_last_updated": {
+    "description": "UI string (source key: wallet_last_updated)"
+  },
+  "wallet_never": "Never",
+  "@wallet_never": {
+    "description": "UI string (source key: wallet_never)"
+  },
+  "wallet_login_required_title": "Please sign in",
+  "@wallet_login_required_title": {
+    "description": "UI string (source key: wallet_login_required_title)"
+  },
+  "wallet_login_required_msg": "Sign in to view your wallet",
+  "@wallet_login_required_msg": {
+    "description": "UI string (source key: wallet_login_required_msg)"
+  },
+  "wallet_add_balance": "Add balance",
+  "@wallet_add_balance": {
+    "description": "UI string (source key: wallet_add_balance)"
+  },
+  "wallet_withdraw": "Withdraw",
+  "@wallet_withdraw": {
+    "description": "UI string (source key: wallet_withdraw)"
+  },
+  "wallet_transactions": "Transaction history",
+  "@wallet_transactions": {
+    "description": "UI string (source key: wallet_transactions)"
+  },
+  "wallet_view_all": "View all",
+  "@wallet_view_all": {
+    "description": "UI string (source key: wallet_view_all)"
+  },
+  "wallet_transactions_error": "Could not load transactions",
+  "@wallet_transactions_error": {
+    "description": "UI string (source key: wallet_transactions_error)"
+  },
+  "wallet_tx_deposit": "Deposit",
+  "@wallet_tx_deposit": {
+    "description": "UI string (source key: wallet_tx_deposit)"
+  },
+  "wallet_tx_withdraw": "Withdrawal",
+  "@wallet_tx_withdraw": {
+    "description": "UI string (source key: wallet_tx_withdraw)"
+  },
+  "wallet_tx_refund": "Refund",
+  "@wallet_tx_refund": {
+    "description": "UI string (source key: wallet_tx_refund)"
+  },
+  "wallet_tx_transfer": "Transfer",
+  "@wallet_tx_transfer": {
+    "description": "UI string (source key: wallet_tx_transfer)"
+  },
+  "wallet_status_completed": "Completed",
+  "@wallet_status_completed": {
+    "description": "UI string (source key: wallet_status_completed)"
+  },
+  "wallet_status_pending": "Pending",
+  "@wallet_status_pending": {
+    "description": "UI string (source key: wallet_status_pending)"
+  },
+  "wallet_status_failed": "Failed",
+  "@wallet_status_failed": {
+    "description": "UI string (source key: wallet_status_failed)"
+  },
+  "wallet_status_cancelled": "Cancelled",
+  "@wallet_status_cancelled": {
+    "description": "UI string (source key: wallet_status_cancelled)"
+  },
+  "wallet_no_transactions": "No transactions yet",
+  "@wallet_no_transactions": {
+    "description": "UI string (source key: wallet_no_transactions)"
+  },
+  "wallet_no_transactions_hint": "Your transactions will appear here",
+  "@wallet_no_transactions_hint": {
+    "description": "UI string (source key: wallet_no_transactions_hint)"
+  },
+  "wallet_login_first": "Please sign in first",
+  "@wallet_login_first": {
+    "description": "UI string (source key: wallet_login_first)"
+  },
+  "wallet_add_balance_title": "Add wallet balance",
+  "@wallet_add_balance_title": {
+    "description": "UI string (source key: wallet_add_balance_title)"
+  },
+  "wallet_amount_label": "Amount",
+  "@wallet_amount_label": {
+    "description": "UI string (source key: wallet_amount_label)"
+  },
+  "wallet_amount_required": "Please enter an amount",
+  "@wallet_amount_required": {
+    "description": "UI string (source key: wallet_amount_required)"
+  },
+  "wallet_amount_invalid": "Please enter a valid amount",
+  "@wallet_amount_invalid": {
+    "description": "UI string (source key: wallet_amount_invalid)"
+  },
+  "wallet_amount_max": "Maximum deposit is 10,000",
+  "@wallet_amount_max": {
+    "description": "UI string (source key: wallet_amount_max)"
+  },
+  "wallet_no_payment_methods": "No payment methods available",
+  "@wallet_no_payment_methods": {
+    "description": "UI string (source key: wallet_no_payment_methods)"
+  },
+  "wallet_add_payment_method": "Add new payment method",
+  "@wallet_add_payment_method": {
+    "description": "UI string (source key: wallet_add_payment_method)"
+  },
+  "wallet_choose_payment": "Choose payment method:",
+  "@wallet_choose_payment": {
+    "description": "UI string (source key: wallet_choose_payment)"
+  },
+  "wallet_card_ending": "Card ending in ****{last4}",
+  "@wallet_card_ending": {
+    "description": "UI string (source key: wallet_card_ending)",
+    "placeholders": {
+      "last4": {
+        "type": "String",
+        "example": "last4"
+      }
+    }
+  },
+  "wallet_add_new_card": "Add new card",
+  "@wallet_add_new_card": {
+    "description": "UI string (source key: wallet_add_new_card)"
+  },
+  "wallet_add_confirm": "Add",
+  "@wallet_add_confirm": {
+    "description": "UI string (source key: wallet_add_confirm)"
+  },
+  "wallet_add_description": "Add wallet balance",
+  "@wallet_add_description": {
+    "description": "UI string (source key: wallet_add_description)"
+  },
+  "wallet_add_success": "Added {amount} to your wallet successfully",
+  "@wallet_add_success": {
+    "description": "UI string (source key: wallet_add_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      }
+    }
+  },
+  "wallet_error_generic": "Error: {error}",
+  "@wallet_error_generic": {
+    "description": "UI string (source key: wallet_error_generic)",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "error"
+      }
+    }
+  },
+  "wallet_select_payment": "Please select a payment method",
+  "@wallet_select_payment": {
+    "description": "UI string (source key: wallet_select_payment)"
+  },
+  "wallet_withdraw_title": "Withdraw balance",
+  "@wallet_withdraw_title": {
+    "description": "UI string (source key: wallet_withdraw_title)"
+  },
+  "wallet_withdraw_request_note": "Your withdrawal will be reviewed before transfer. The balance is not finally deducted until approval.",
+  "@wallet_withdraw_request_note": {
+    "description": "UI string (source key: wallet_withdraw_request_note)"
+  },
+  "wallet_withdraw_request_success": "Withdrawal request for {amount} {currency} was sent for review",
+  "@wallet_withdraw_request_success": {
+    "description": "UI string (source key: wallet_withdraw_request_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_withdraw_request_failed": "Could not submit the withdrawal request",
+  "@wallet_withdraw_request_failed": {
+    "description": "UI string (source key: wallet_withdraw_request_failed)"
+  },
+  "don_t_have_account": "Don't have an account?",
+  "@don_t_have_account": {
+    "description": "UI string (source key: don't_have_account)"
+  },
+  "message2": "Message...",
+  "@message2": {
+    "description": "UI string (source key: Message...)"
+  },
+  "wallet_available_balance": "Available balance: {amount} {currency}",
+  "@wallet_available_balance": {
+    "description": "UI string (source key: wallet_available_balance)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_withdraw_confirm": "Withdraw",
+  "@wallet_withdraw_confirm": {
+    "description": "UI string (source key: wallet_withdraw_confirm)"
+  },
+  "wallet_withdraw_description": "Withdraw from wallet",
+  "@wallet_withdraw_description": {
+    "description": "UI string (source key: wallet_withdraw_description)"
+  },
+  "wallet_withdraw_no_card_deposit": "No card deposit covers this withdrawal amount",
+  "@wallet_withdraw_no_card_deposit": {
+    "description": "UI string (source key: wallet_withdraw_no_card_deposit)"
+  },
+  "wallet_withdraw_refund_failed": "Payment refund failed",
+  "@wallet_withdraw_refund_failed": {
+    "description": "UI string (source key: wallet_withdraw_refund_failed)"
+  },
+  "wallet_card_topup_success": "Wallet topped up successfully. Return to wallet?",
+  "@wallet_card_topup_success": {
+    "description": "UI string (source key: wallet_card_topup_success)"
+  },
+  "payment_pending_message": "Payment is still pending. Please wait or try again.",
+  "@payment_pending_message": {
+    "description": "UI string (source key: payment_pending_message)"
+  },
+  "payment_failed_message": "Payment was not completed. Check your card and try again.",
+  "@payment_failed_message": {
+    "description": "UI string (source key: payment_failed_message)"
+  },
+  "payment_verify_error": "Payment could not be verified. Please try again.",
+  "@payment_verify_error": {
+    "description": "UI string (source key: payment_verify_error)"
+  },
+  "payment_order_save_error": "The order could not be saved. Contact support if you were charged.",
+  "@payment_order_save_error": {
+    "description": "UI string (source key: payment_order_save_error)"
+  },
+  "wallet_withdraw_success": "Withdrew {amount} {currency} successfully",
+  "@wallet_withdraw_success": {
+    "description": "UI string (source key: wallet_withdraw_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_amount_exceeds_balance": "Amount exceeds available balance",
+  "@wallet_amount_exceeds_balance": {
+    "description": "UI string (source key: wallet_amount_exceeds_balance)"
+  },
+  "wallet_choose_payout": "Choose the card to receive funds:",
+  "@wallet_choose_payout": {
+    "description": "UI string (source key: wallet_choose_payout)"
+  },
+  "country_saudi": "Saudi Arabia",
+  "@country_saudi": {
+    "description": "UI string (source key: country_saudi)"
+  },
+  "map_driver": "Driver",
+  "@map_driver": {
+    "description": "UI string (source key: map_driver)"
+  },
+  "map_pickup": "Pickup point",
+  "@map_pickup": {
+    "description": "UI string (source key: map_pickup)"
+  },
+  "map_destination": "Destination",
+  "@map_destination": {
+    "description": "UI string (source key: map_destination)"
+  },
+  "map_open_google_maps": "Open in Google Maps",
+  "@map_open_google_maps": {
+    "description": "UI string (source key: map_open_google_maps)"
+  },
+  "map_track_driver_title": "Track driver on the map",
+  "@map_track_driver_title": {
+    "description": "UI string (source key: map_track_driver_title)"
+  },
+  "map_waiting_driver_location": "Waiting for the driver's location",
+  "@map_waiting_driver_location": {
+    "description": "UI string (source key: map_waiting_driver_location)"
+  },
+  "booking_status_active": "Active",
+  "@booking_status_active": {
+    "description": "UI string (source key: booking_status_active)"
+  },
+  "booking_view_route": "View route",
+  "@booking_view_route": {
+    "description": "UI string (source key: booking_view_route)"
+  },
+  "map_eta_minutes": "Arriving in about {minutes} min",
+  "@map_eta_minutes": {
+    "description": "UI string (source key: map_eta_minutes)",
+    "placeholders": {
+      "minutes": {
+        "type": "String",
+        "example": "minutes"
+      }
+    }
+  },
+  "browsing_now": "You are browsing {country}",
+  "@browsing_now": {
+    "description": "UI string (source key: browsing_now)",
+    "placeholders": {
+      "country": {
+        "type": "String",
+        "example": "country"
+      }
+    }
+  },
+  "card_confirm_title": "Confirm card",
+  "@card_confirm_title": {
+    "description": "UI string (source key: card_confirm_title)"
+  },
+  "card_confirm_msg": "Enter the full card number ending in {last4} and the CVV to continue.",
+  "@card_confirm_msg": {
+    "description": "UI string (source key: card_confirm_msg)",
+    "placeholders": {
+      "last4": {
+        "type": "String",
+        "example": "last4"
+      }
+    }
+  },
+  "select_region_title": "Select region",
+  "@select_region_title": {
+    "description": "UI string (source key: select_region_title)"
+  },
+  "select_region_msg": "Are you sure you want to select or change this city?",
+  "@select_region_msg": {
+    "description": "UI string (source key: select_region_msg)"
+  },
+  "card_number_label": "Card number",
+  "@card_number_label": {
+    "description": "UI string (source key: card_number_label)"
+  },
+  "dialog_continue": "Continue",
+  "@dialog_continue": {
+    "description": "UI string (source key: dialog_continue)"
+  },
+  "card_invalid_data": "Card details are invalid",
+  "@card_invalid_data": {
+    "description": "UI string (source key: card_invalid_data)"
+  },
+  "checkout_paying": "Processing payment via Network International...",
+  "@checkout_paying": {
+    "description": "UI string (source key: checkout_paying)"
+  },
+  "map_trip_destination": "Trip destination",
+  "@map_trip_destination": {
+    "description": "UI string (source key: map_trip_destination)"
+  },
+  "map_invalid_destinations": "{count} invalid or out-of-area stop(s) were excluded from the route.",
+  "@map_invalid_destinations": {
+    "description": "UI string (source key: map_invalid_destinations)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "checkout_estimated_time_warning": "The estimated drive time ({time}) is shorter than the recommended booking duration. Traffic may affect the estimate.",
+  "@checkout_estimated_time_warning": {
+    "description": "UI string (source key: checkout_estimated_time_warning)",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "time"
+      }
+    }
+  },
+  "checkout_vat_rate": "VAT ({rate}%):",
+  "@checkout_vat_rate": {
+    "description": "UI string (source key: checkout_vat_rate)",
+    "placeholders": {
+      "rate": {
+        "type": "String",
+        "example": "rate"
+      }
+    }
+  },
+  "map_location_unavailable": "Your current location is unavailable.",
+  "@map_location_unavailable": {
+    "description": "UI string (source key: map_location_unavailable)"
+  },
+  "map_no_valid_destinations": "No valid stops are available for this route.",
+  "@map_no_valid_destinations": {
+    "description": "UI string (source key: map_no_valid_destinations)"
+  },
+  "unit_km": "km",
+  "@unit_km": {
+    "description": "UI string (source key: unit_km)"
+  },
+  "unit_meter": "m",
+  "@unit_meter": {
+    "description": "UI string (source key: unit_meter)"
+  },
+  "unit_minute": "min",
+  "@unit_minute": {
+    "description": "UI string (source key: unit_minute)"
+  },
+  "unit_hour": "h",
+  "@unit_hour": {
+    "description": "UI string (source key: unit_hour)"
+  },
+  "unit_kmh": "km/h",
+  "@unit_kmh": {
+    "description": "UI string (source key: unit_kmh)"
+  },
+  "duration_hours_minutes": "{hours} h {minutes} min",
+  "@duration_hours_minutes": {
+    "description": "UI string (source key: duration_hours_minutes)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      },
+      "minutes": {
+        "type": "String",
+        "example": "minutes"
+      }
+    }
+  },
+  "location_city_unresolved": "Your city could not be determined accurately.",
+  "@location_city_unresolved": {
+    "description": "UI string (source key: location_city_unresolved)"
+  },
+  "country_map": "Country map",
+  "@country_map": {
+    "description": "UI string (source key: country_map)"
+  },
+  "ui_text_44134f762b": "Passwords don't match!",
+  "@ui_text_44134f762b": {
+    "description": "UI string (source key: ui_text_44134f762b)"
+  },
+  "ui_text_b6f51cadc4": "error",
+  "@ui_text_b6f51cadc4": {
+    "description": "UI string (source key: ui_text_b6f51cadc4)"
+  },
+  "ui_text_1a4e87f7a9": "You must agree to the terms and conditions",
+  "@ui_text_1a4e87f7a9": {
+    "description": "UI string (source key: ui_text_1a4e87f7a9)"
+  },
+  "ui_text_b0a98216a3": "Ok",
+  "@ui_text_b0a98216a3": {
+    "description": "UI string (source key: ui_text_b0a98216a3)"
+  },
+  "ui_text_224b63d8e3": "Please select a region",
+  "@ui_text_224b63d8e3": {
+    "description": "UI string (source key: ui_text_224b63d8e3)"
+  },
+  "ui_text_af02762d6d": "Please select a region",
+  "@ui_text_af02762d6d": {
+    "description": "UI string (source key: ui_text_af02762d6d)"
+  },
+  "ui_text_9072549574": "agree",
+  "@ui_text_9072549574": {
+    "description": "UI string (source key: ui_text_9072549574)"
+  },
+  "ui_text_17db754851": "Added: Selected location successfully",
+  "@ui_text_17db754851": {
+    "description": "UI string (source key: ui_text_17db754851)"
+  },
+  "ui_text_71995f6f4a": "Location is already added.",
+  "@ui_text_71995f6f4a": {
+    "description": "UI string (source key: ui_text_71995f6f4a)"
+  },
+  "ui_text_b73e88df71": "Write a message",
+  "@ui_text_b73e88df71": {
+    "description": "UI string (source key: ui_text_b73e88df71)"
+  },
+  "ui_text_b4bbf18b10": "Cancel order",
+  "@ui_text_b4bbf18b10": {
+    "description": "UI string (source key: ui_text_b4bbf18b10)"
+  },
+  "ui_text_cf4d76accb": "Are you sure to cancel the order?",
+  "@ui_text_cf4d76accb": {
+    "description": "UI string (source key: ui_text_cf4d76accb)"
+  },
+  "ui_text_5c528d9fa3": "no",
+  "@ui_text_5c528d9fa3": {
+    "description": "UI string (source key: ui_text_5c528d9fa3)"
+  },
+  "ui_text_d045bef8e5": "Yes",
+  "@ui_text_d045bef8e5": {
+    "description": "UI string (source key: ui_text_d045bef8e5)"
+  },
+  "ui_text_1431f68f35": "Unset",
+  "@ui_text_1431f68f35": {
+    "description": "UI string (source key: ui_text_1431f68f35)"
+  },
+  "ui_text_8bc9b333df": "Choose Source",
+  "@ui_text_8bc9b333df": {
+    "description": "UI string (source key: ui_text_8bc9b333df)"
+  },
+  "ui_text_35d76b889c": "Email required!",
+  "@ui_text_35d76b889c": {
+    "description": "UI string (source key: ui_text_35d76b889c)"
+  },
+  "ui_text_f0ad7ac205": "Thanks",
+  "@ui_text_f0ad7ac205": {
+    "description": "UI string (source key: ui_text_f0ad7ac205)"
+  },
+  "ui_text_12ee72ca4f": "Trip summary",
+  "@ui_text_12ee72ca4f": {
+    "description": "UI string (source key: ui_text_12ee72ca4f)"
+  },
+  "ui_text_d93bf2eb9f": "Distance and time are estimates and may vary based on traffic, route changes, or location accuracy.",
+  "@ui_text_d93bf2eb9f": {
+    "description": "UI string (source key: ui_text_d93bf2eb9f)"
+  },
+  "ui_text_e93e07976e": "Rating sent",
+  "@ui_text_e93e07976e": {
+    "description": "UI string (source key: ui_text_e93e07976e)"
+  },
+  "ui_text_7f2f6a15cf": "Error",
+  "@ui_text_7f2f6a15cf": {
+    "description": "UI string (source key: ui_text_7f2f6a15cf)"
+  },
+  "ui_text_9262ef60ec": "Please check the date and time",
+  "@ui_text_9262ef60ec": {
+    "description": "UI string (source key: ui_text_9262ef60ec)"
+  },
+  "ui_text_cff8cb30ef": "Are you sure to cancel the order and get a refund?",
+  "@ui_text_cff8cb30ef": {
+    "description": "UI string (source key: ui_text_cff8cb30ef)"
+  },
+  "ui_text_23ef9d7d03": "Yes, cancel the order",
+  "@ui_text_23ef9d7d03": {
+    "description": "UI string (source key: ui_text_23ef9d7d03)"
+  },
+  "ui_text_eae6165343": "The order has been successfully cancelled",
+  "@ui_text_eae6165343": {
+    "description": "UI string (source key: ui_text_eae6165343)"
+  },
+  "ui_text_860c735760": "You cannot cancel the order because the cancellation time has exceeded. Please contact the support team",
+  "@ui_text_860c735760": {
+    "description": "UI string (source key: ui_text_860c735760)"
+  },
+  "ui_text_5a9a57155e": "Copied",
+  "@ui_text_5a9a57155e": {
+    "description": "UI string (source key: ui_text_5a9a57155e)"
+  },
+  "ui_text_5eac766a7c": "Verify that your current location is within the same city, and complete all data accurately.",
+  "@ui_text_5eac766a7c": {
+    "description": "UI string (source key: ui_text_5eac766a7c)"
+  },
+  "ui_text_1d36255e4a": "Please complete all data correctly",
+  "@ui_text_1d36255e4a": {
+    "description": "UI string (source key: ui_text_1d36255e4a)"
+  },
+  "ui_text_def4060285": "Are you sure you want to delete the address?",
+  "@ui_text_def4060285": {
+    "description": "UI string (source key: ui_text_def4060285)"
+  },
+  "ui_text_85d0e17cdb": "The address has been successfully deleted",
+  "@ui_text_85d0e17cdb": {
+    "description": "UI string (source key: ui_text_85d0e17cdb)"
+  },
+  "ui_text_471f24ef6b": "Sent",
+  "@ui_text_471f24ef6b": {
+    "description": "UI string (source key: ui_text_471f24ef6b)"
+  },
+  "ui_text_dbee2e6613": "The request has been sent successfully, and we will review it and contact you shortly.",
+  "@ui_text_dbee2e6613": {
+    "description": "UI string (source key: ui_text_dbee2e6613)"
+  },
+  "ui_text_095479cd38": "Dear partner, please fill out all the required fields so that you can submit the application successfully.",
+  "@ui_text_095479cd38": {
+    "description": "UI string (source key: ui_text_095479cd38)"
+  },
+  "rating_driver_title": "Rate {driver}",
+  "@rating_driver_title": {
+    "description": "UI string (source key: rating_driver_title)",
+    "placeholders": {
+      "driver": {
+        "type": "String",
+        "example": "driver"
+      }
+    }
+  },
+  "rating_driver_question": "How would you rate {driver}?",
+  "@rating_driver_question": {
+    "description": "UI string (source key: rating_driver_question)",
+    "placeholders": {
+      "driver": {
+        "type": "String",
+        "example": "driver"
+      }
+    }
+  },
+  "order_details_number": "Order details #{id}",
+  "@order_details_number": {
+    "description": "UI string (source key: order_details_number)",
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "id"
+      }
+    }
+  },
+  "order_time_label": "Order time: {time}",
+  "@order_time_label": {
+    "description": "UI string (source key: order_time_label)",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "time"
+      }
+    }
+  },
+  "support_ticket_number": "Ticket #{id}",
+  "@support_ticket_number": {
+    "description": "UI string (source key: support_ticket_number)",
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "id"
+      }
+    }
+  },
+  "place_city_only": "You can only choose a place within {city}, or change the city.",
+  "@place_city_only": {
+    "description": "UI string (source key: place_city_only)",
+    "placeholders": {
+      "city": {
+        "type": "String",
+        "example": "city"
+      }
+    }
+  },
+  "notification_payment_success_title": "Payment successful",
+  "@notification_payment_success_title": {
+    "description": "UI string (source key: notification_payment_success_title)"
+  },
+  "notification_payment_success_body": "Payment for booking #{bookingId} was confirmed. We are finding a driver for you.",
+  "@notification_payment_success_body": {
+    "description": "UI string (source key: notification_payment_success_body)",
+    "placeholders": {
+      "bookingId": {
+        "type": "String",
+        "example": "bookingId"
+      }
+    }
+  },
+  "notification_paid_order_admin_title": "New paid booking",
+  "@notification_paid_order_admin_title": {
+    "description": "UI string (source key: notification_paid_order_admin_title)"
+  },
+  "notification_paid_order_admin_body": "New paid booking #{bookingId}: {hours} hours, {amount} {currency}.",
+  "@notification_paid_order_admin_body": {
+    "description": "UI string (source key: notification_paid_order_admin_body)",
+    "placeholders": {
+      "bookingId": {
+        "type": "String",
+        "example": "bookingId"
+      },
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      },
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "notification_wallet_topup_title": "Wallet topped up",
+  "@notification_wallet_topup_title": {
+    "description": "UI string (source key: notification_wallet_topup_title)"
+  },
+  "notification_wallet_topup_body": "{amount} SAR was added to your wallet successfully.",
+  "@notification_wallet_topup_body": {
+    "description": "UI string (source key: notification_wallet_topup_body)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      }
+    }
+  },
+  "notification_new_order_driver_title": "New booking",
+  "@notification_new_order_driver_title": {
+    "description": "UI string (source key: notification_new_order_driver_title)"
+  },
+  "notification_new_order_driver_body": "A new Touri Taxi booking is available for {hours} hours with earnings of {amount} {currency}. Open the driver app to review it.",
+  "@notification_new_order_driver_body": {
+    "description": "UI string (source key: notification_new_order_driver_body)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      },
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "notification_private_message_title": "New private message",
+  "@notification_private_message_title": {
+    "description": "UI string (source key: notification_private_message_title)"
+  },
+  "notification_private_message_body": "You have a new message from {sender}.",
+  "@notification_private_message_body": {
+    "description": "UI string (source key: notification_private_message_body)",
+    "placeholders": {
+      "sender": {
+        "type": "String",
+        "example": "sender"
+      }
+    }
+  },
+  "status_pending_driver": "Waiting for driver acceptance",
+  "@status_pending_driver": {
+    "description": "UI string (source key: status_pending_driver)"
+  },
+  "status_driver_assigned": "Driver assigned",
+  "@status_driver_assigned": {
+    "description": "UI string (source key: status_driver_assigned)"
+  },
+  "status_driver_arrived": "Driver arrived",
+  "@status_driver_arrived": {
+    "description": "UI string (source key: status_driver_arrived)"
+  },
+  "status_trip_started": "Trip started",
+  "@status_trip_started": {
+    "description": "UI string (source key: status_trip_started)"
+  },
+  "status_trip_completed": "Trip completed",
+  "@status_trip_completed": {
+    "description": "UI string (source key: status_trip_completed)"
+  },
+  "status_cancelled": "Cancelled",
+  "@status_cancelled": {
+    "description": "UI string (source key: status_cancelled)"
+  },
+  "status_payment_pending": "Payment pending",
+  "@status_payment_pending": {
+    "description": "UI string (source key: status_payment_pending)"
+  },
+  "status_paid": "Paid",
+  "@status_paid": {
+    "description": "UI string (source key: status_paid)"
+  },
+  "status_payment_failed": "Payment failed",
+  "@status_payment_failed": {
+    "description": "UI string (source key: status_payment_failed)"
+  },
+  "looking_for_destination": "Looking for a destination...",
+  "@looking_for_destination": {
+    "description": "UI string (source key: looking_for_destination)"
+  },
+  "map_selected_location": "Selected location on map",
+  "@map_selected_location": {
+    "description": "UI string (source key: map_selected_location)"
+  },
+  "current_location_label": "Current location",
+  "@current_location_label": {
+    "description": "UI string (source key: current_location_label)"
+  },
+  "pickup_location_label": "Pickup location",
+  "@pickup_location_label": {
+    "description": "UI string (source key: pickup_location_label)"
+  },
+  "destination_label": "Destination",
+  "@destination_label": {
+    "description": "UI string (source key: destination_label)"
+  },
+  "stops_label": "Stops",
+  "@stops_label": {
+    "description": "UI string (source key: stops_label)"
+  },
+  "view_route_label": "View route",
+  "@view_route_label": {
+    "description": "UI string (source key: view_route_label)"
+  },
+  "trip_details_label": "Trip details",
+  "@trip_details_label": {
+    "description": "UI string (source key: trip_details_label)"
+  },
+  "choose_payment_method": "Choose payment method",
+  "@choose_payment_method": {
+    "description": "UI string (source key: choose_payment_method)"
+  },
+  "pay_online_option": "Pay online",
+  "@pay_online_option": {
+    "description": "UI string (source key: pay_online_option)"
+  },
+  "pay_cash_option": "Pay with cash",
+  "@pay_cash_option": {
+    "description": "UI string (source key: pay_cash_option)"
+  },
+  "driver_fee_label": "Driver fee",
+  "@driver_fee_label": {
+    "description": "UI string (source key: driver_fee_label)"
+  },
+  "app_fee_label": "App fee",
+  "@app_fee_label": {
+    "description": "UI string (source key: app_fee_label)"
+  },
+  "vat_label": "VAT",
+  "@vat_label": {
+    "description": "UI string (source key: vat_label)"
+  },
+  "total_amount_label": "Total amount",
+  "@total_amount_label": {
+    "description": "UI string (source key: total_amount_label)"
+  },
+  "my_bookings_nav": "My Bookings",
+  "@my_bookings_nav": {
+    "description": "UI string (source key: my_bookings_nav)"
+  },
+  "my_account_nav": "My Account",
+  "@my_account_nav": {
+    "description": "UI string (source key: my_account_nav)"
+  },
+  "home_nav": "Home",
+  "@home_nav": {
+    "description": "UI string (source key: home_nav)"
+  },
+  "error_generic_user": "Something went wrong. Please try again.",
+  "@error_generic_user": {
+    "description": "UI string (source key: error_generic_user)"
+  },
+  "error_network_user": "No internet connection. Check your network and try again.",
+  "@error_network_user": {
+    "description": "UI string (source key: error_network_user)"
+  },
+  "error_location_permission": "Location permission is required.",
+  "@error_location_permission": {
+    "description": "UI string (source key: error_location_permission)"
+  },
+  "error_route_unavailable": "Route unavailable",
+  "@error_route_unavailable": {
+    "description": "UI string (source key: error_route_unavailable)"
+  },
+  "error_outside_service_area": "Outside service area",
+  "@error_outside_service_area": {
+    "description": "UI string (source key: error_outside_service_area)"
+  },
+  "kyrgyz_char_sample": "Kyrgyz: ң ө ү Ң Ө Ү",
+  "@kyrgyz_char_sample": {
+    "description": "UI string (source key: kyrgyz_char_sample)"
+  },
+  "booking_hours": "{count, plural, =0{No booking hours} one{1 booking hour} other{{count} booking hours}}",
+  "@booking_hours": {
+    "description": "booking_hours",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "example": "3"
+      }
+    }
+  },
+  "minutes_count": "{count, plural, =0{0 minutes} one{1 minute} other{{count} minutes}}",
+  "@minutes_count": {
+    "description": "minutes_count",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "example": "3"
+      }
+    }
+  }
+}

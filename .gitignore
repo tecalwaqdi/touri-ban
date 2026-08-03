@@ -1,0 +1,59 @@
+# Root ignores for Ara monorepo (admin apps)
+
+# Local tooling / caches
+.tools/
+.agents/
+**/node_modules/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/build/
+**/.gradle/
+**/.kotlin/
+**/.cxx/
+**/.idea/
+**/.vscode/
+**/*.iml
+.firebase/
+*.log
+
+# Flutter / Android / iOS generated
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/ephemeral/
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# Secrets — never commit
+.env
+.env.*
+*.pem
+**/serviceAccount*.json
+**/credentials.json
+**/keystore.properties
+**/key.properties
+**/*.jks
+**/*.keystore
+**/flutter_native_integration.env
+
+# Build artifacts
+*.apk
+*.aab
+*.ipa
+*.dSYM.zip
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Cursor chat image dumps
+**/assets/c__Users_*/
+
+# Local Android release artifacts
+admin/release-builds/
+

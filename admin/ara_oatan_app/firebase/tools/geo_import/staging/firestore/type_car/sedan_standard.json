@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/sedan_standard",
+  "__writtenAt": "2026-07-22T11:29:02.561Z",
+  "__target": "local-staging",
+  "naim": "سيدان قياسية",
+  "names_i18n": {
+    "ar": "سيدان قياسية",
+    "en": "Standard Sedan",
+    "ru": "Стандартный седан",
+    "ky": "Стандарт седан",
+    "uz": "Standart sedan"
+  },
+  "codeCar": "sedan_standard",
+  "sr": 180,
+  "agl_saat": 4,
+  "actev": true,
+  "ishafelh": false,
+  "not": "Standard Sedan",
+  "geo_import_id": "vehcat_sedan_standard",
+  "geo_import_source": "touri_geo_import"
+}

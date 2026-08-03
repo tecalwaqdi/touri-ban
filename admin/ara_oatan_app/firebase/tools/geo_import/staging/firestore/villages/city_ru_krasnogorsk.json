@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_ru_krasnogorsk",
+  "__writtenAt": "2026-07-22T11:29:01.289Z",
+  "__target": "local-staging",
+  "naim": "كراسنوغورسك",
+  "names_i18n": {
+    "ar": "كراسنوغورسك",
+    "en": "Krasnogorsk",
+    "ru": "Красногорск",
+    "ky": "Красногорск",
+    "uz": "Krasnogorsk"
+  },
+  "cities": "cities/region_ru_moscow_oblast",
+  "dolh": "countries/russia",
+  "lat_ling": {
+    "latitude": 55.8225,
+    "longitude": 37.3181
+  },
+  "acctev": true,
+  "country_iso": "RU",
+  "geo_import_id": "city_ru_krasnogorsk",
+  "geo_import_source": "touri_geo_import"
+}

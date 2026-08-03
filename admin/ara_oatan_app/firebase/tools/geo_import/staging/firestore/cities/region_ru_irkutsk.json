@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_ru_irkutsk",
+  "__writtenAt": "2026-07-22T11:29:02.192Z",
+  "__target": "local-staging",
+  "naim": "محافظة إيركوتسك",
+  "names_i18n": {
+    "ar": "محافظة إيركوتسك",
+    "en": "Irkutsk Oblast",
+    "ru": "Иркутская область",
+    "ky": "Иркутск облусу",
+    "uz": "Irkutsk viloyati"
+  },
+  "dolh": "countries/russia",
+  "acctev": true,
+  "iso_code": "RU-IRK",
+  "country_iso": "RU",
+  "geo_import_id": "region_ru_irkutsk",
+  "geo_import_source": "touri_geo_import"
+}

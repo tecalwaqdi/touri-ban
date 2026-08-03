@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/suv_large",
+  "__writtenAt": "2026-07-22T11:29:02.563Z",
+  "__target": "local-staging",
+  "naim": "SUV كبيرة",
+  "names_i18n": {
+    "ar": "SUV كبيرة",
+    "en": "SUV Large",
+    "ru": "Большой SUV",
+    "ky": "Чоң SUV",
+    "uz": "Katta SUV"
+  },
+  "codeCar": "suv_large",
+  "sr": 380,
+  "agl_saat": 5,
+  "actev": true,
+  "ishafelh": false,
+  "not": "SUV Large",
+  "geo_import_id": "vehcat_suv_large",
+  "geo_import_source": "touri_geo_import"
+}

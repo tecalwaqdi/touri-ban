@@ -1,0 +1,1057 @@
+{
+  "mode": "dry-run",
+  "wouldWriteToFirestore": false,
+  "generatedAt": "2026-07-22T09:45:09.421Z",
+  "geo": [
+    {
+      "country": "SA",
+      "status": "dry-run-ready",
+      "totals": {
+        "regions": 13,
+        "landmarks": 260,
+        "regionsMeetingQuota": 13,
+        "regionsShort": 0
+      },
+      "regionsShort": [],
+      "sampleLandmarkIds": [
+        "lm_sa_riyadh_osm_way_978220391",
+        "lm_sa_riyadh_osm_way_1385940120",
+        "lm_sa_makkah_osm_node_1236463804",
+        "lm_sa_makkah_osm_way_440922995",
+        "lm_sa_madinah_osm_way_849621507",
+        "lm_sa_madinah_osm_way_66510098",
+        "lm_sa_eastern_osm_way_94639308",
+        "lm_sa_eastern_osm_way_881726514",
+        "lm_sa_qassim_osm_way_315139966",
+        "lm_sa_qassim_osm_relation_13313504"
+      ]
+    },
+    {
+      "country": "KG",
+      "status": "dry-run-ready",
+      "totals": {
+        "regions": 9,
+        "landmarks": 180,
+        "regionsMeetingQuota": 9,
+        "regionsShort": 0
+      },
+      "regionsShort": [],
+      "sampleLandmarkIds": [
+        "lm_kg_bishkek_ala-too",
+        "lm_kg_bishkek_history-museum",
+        "lm_kg_chuy_ala-archa",
+        "lm_kg_chuy_burana",
+        "lm_kg_issyk_kul_issyk-kul-lake",
+        "lm_kg_issyk_kul_cholpon-petroglyphs",
+        "lm_kg_naryn_song-kol",
+        "lm_kg_naryn_tash-rabat",
+        "lm_kg_talas_manas-ordo",
+        "lm_kg_talas_besh-tash"
+      ]
+    },
+    {
+      "country": "UZ",
+      "status": "dry-run-ready",
+      "totals": {
+        "regions": 14,
+        "landmarks": 280,
+        "regionsMeetingQuota": 14,
+        "regionsShort": 0
+      },
+      "regionsShort": [],
+      "sampleLandmarkIds": [
+        "lm_uz_tashkent_city_osm_node_1141921741",
+        "lm_uz_tashkent_city_osm_node_2117483202",
+        "lm_uz_tashkent_region_osm_node_1252316685",
+        "lm_uz_tashkent_region_osm_way_134524850",
+        "lm_uz_samarkand_osm_relation_17141908",
+        "lm_uz_samarkand_osm_way_183108084",
+        "lm_uz_bukhara_osm_node_3628025870",
+        "lm_uz_bukhara_osm_node_4745883987",
+        "lm_uz_xorazm_osm_way_185036984",
+        "lm_uz_xorazm_osm_node_1956482954"
+      ]
+    },
+    {
+      "country": "RU",
+      "status": "dry-run-ready",
+      "totals": {
+        "regions": 3,
+        "landmarks": 60,
+        "regionsMeetingQuota": 3,
+        "regionsShort": 0
+      },
+      "regionsShort": [],
+      "sampleLandmarkIds": [
+        "lm_ru_moscow_osm_relation_1543094",
+        "lm_ru_moscow_osm_relation_3272726",
+        "lm_ru_saint_petersburg_osm_node_3515072703",
+        "lm_ru_saint_petersburg_osm_way_216655164",
+        "lm_ru_tatarstan_osm_relation_14454789",
+        "lm_ru_tatarstan_osm_way_91769591"
+      ]
+    }
+  ],
+  "vehicles": {
+    "categories": 24,
+    "models": [
+      {
+        "make": "Toyota",
+        "model": "Camry",
+        "categoryIds": [
+          "sedan_standard",
+          "comfort",
+          "business"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2018,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Toyota",
+        "model": "Corolla",
+        "categoryIds": [
+          "economy",
+          "compact",
+          "sedan_standard"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Toyota",
+        "model": "Yaris",
+        "categoryIds": [
+          "economy",
+          "compact"
+        ],
+        "seats": 5,
+        "luggage": 1,
+        "years": [
+          2016,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Toyota",
+        "model": "Land Cruiser",
+        "categoryIds": [
+          "suv_large",
+          "offroad_4x4",
+          "luxury"
+        ],
+        "seats": 7,
+        "luggage": 5,
+        "years": [
+          2010,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Toyota",
+        "model": "Prado",
+        "categoryIds": [
+          "suv_standard",
+          "offroad_4x4",
+          "suv_family"
+        ],
+        "seats": 7,
+        "luggage": 4,
+        "years": [
+          2010,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Toyota",
+        "model": "RAV4",
+        "categoryIds": [
+          "suv_compact",
+          "suv_standard",
+          "hybrid"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Toyota",
+        "model": "Hiace",
+        "categoryIds": [
+          "van_family",
+          "minivan",
+          "airport_transfer"
+        ],
+        "seats": 12,
+        "luggage": 6,
+        "years": [
+          2010,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Toyota",
+        "model": "Coaster",
+        "categoryIds": [
+          "coach_mini",
+          "tourist_vehicle"
+        ],
+        "seats": 22,
+        "luggage": 10,
+        "years": [
+          2010,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Hyundai",
+        "model": "Elantra",
+        "categoryIds": [
+          "economy",
+          "sedan_standard",
+          "comfort"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2016,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Hyundai",
+        "model": "Sonata",
+        "categoryIds": [
+          "comfort",
+          "business"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Hyundai",
+        "model": "Tucson",
+        "categoryIds": [
+          "suv_compact",
+          "suv_standard"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2016,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Hyundai",
+        "model": "Santa Fe",
+        "categoryIds": [
+          "suv_family",
+          "suv_standard"
+        ],
+        "seats": 7,
+        "luggage": 4,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Hyundai",
+        "model": "Staria",
+        "categoryIds": [
+          "van_family",
+          "minivan",
+          "van_vip"
+        ],
+        "seats": 9,
+        "luggage": 5,
+        "years": [
+          2021,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Hyundai",
+        "model": "H-1 / Starex",
+        "categoryIds": [
+          "van_family",
+          "airport_transfer"
+        ],
+        "seats": 9,
+        "luggage": 5,
+        "years": [
+          2010,
+          2024
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Kia",
+        "model": "K5 / Optima",
+        "categoryIds": [
+          "comfort",
+          "business"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2016,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Kia",
+        "model": "Sportage",
+        "categoryIds": [
+          "suv_compact",
+          "suv_standard"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2016,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Kia",
+        "model": "Sorento",
+        "categoryIds": [
+          "suv_family",
+          "suv_large"
+        ],
+        "seats": 7,
+        "luggage": 4,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Kia",
+        "model": "Carnival",
+        "categoryIds": [
+          "van_family",
+          "minivan",
+          "van_vip"
+        ],
+        "seats": 8,
+        "luggage": 5,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Nissan",
+        "model": "Sunny / Almera",
+        "categoryIds": [
+          "economy",
+          "sedan_standard"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Nissan",
+        "model": "Patrol",
+        "categoryIds": [
+          "suv_large",
+          "offroad_4x4",
+          "luxury"
+        ],
+        "seats": 7,
+        "luggage": 5,
+        "years": [
+          2010,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Nissan",
+        "model": "X-Trail",
+        "categoryIds": [
+          "suv_standard",
+          "suv_family"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Lexus",
+        "model": "ES",
+        "categoryIds": [
+          "premium",
+          "business",
+          "luxury"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "RU"
+        ]
+      },
+      {
+        "make": "Lexus",
+        "model": "LX",
+        "categoryIds": [
+          "luxury",
+          "suv_large"
+        ],
+        "seats": 7,
+        "luggage": 5,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "RU"
+        ]
+      },
+      {
+        "make": "Chevrolet",
+        "model": "Tahoe",
+        "categoryIds": [
+          "suv_standard",
+          "suv_family"
+        ],
+        "seats": 7,
+        "luggage": 4,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Chevrolet",
+        "model": "Tahoe Tracker",
+        "categoryIds": [
+          "suv_compact"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2019,
+          2026
+        ],
+        "countries": [
+          "UZ"
+        ]
+      },
+      {
+        "make": "Chevrolet",
+        "model": "Cobalt",
+        "categoryIds": [
+          "economy",
+          "sedan_standard"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2013,
+          2026
+        ],
+        "countries": [
+          "UZ"
+        ]
+      },
+      {
+        "make": "Chevrolet",
+        "model": "Damas",
+        "categoryIds": [
+          "minivan",
+          "economy"
+        ],
+        "seats": 7,
+        "luggage": 2,
+        "years": [
+          2010,
+          2026
+        ],
+        "countries": [
+          "UZ"
+        ]
+      },
+      {
+        "make": "GMC",
+        "model": "Yukon",
+        "categoryIds": [
+          "suv_large",
+          "luxury"
+        ],
+        "seats": 7,
+        "luggage": 5,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA"
+        ]
+      },
+      {
+        "make": "Ford",
+        "model": "Explorer",
+        "categoryIds": [
+          "suv_family",
+          "suv_large"
+        ],
+        "seats": 7,
+        "luggage": 4,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "RU"
+        ]
+      },
+      {
+        "make": "Mercedes-Benz",
+        "model": "E-Class",
+        "categoryIds": [
+          "business",
+          "premium",
+          "luxury"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "RU"
+        ]
+      },
+      {
+        "make": "Mercedes-Benz",
+        "model": "S-Class",
+        "categoryIds": [
+          "luxury"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "RU"
+        ]
+      },
+      {
+        "make": "Mercedes-Benz",
+        "model": "V-Class / Vito",
+        "categoryIds": [
+          "van_vip",
+          "van_family",
+          "airport_transfer"
+        ],
+        "seats": 7,
+        "luggage": 4,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "RU",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Mercedes-Benz",
+        "model": "Sprinter",
+        "categoryIds": [
+          "coach_mini",
+          "tourist_vehicle"
+        ],
+        "seats": 16,
+        "luggage": 8,
+        "years": [
+          2010,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "RU",
+          "UZ"
+        ]
+      },
+      {
+        "make": "BMW",
+        "model": "5 Series",
+        "categoryIds": [
+          "business",
+          "premium"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "RU"
+        ]
+      },
+      {
+        "make": "BMW",
+        "model": "X5",
+        "categoryIds": [
+          "suv_standard",
+          "premium",
+          "luxury"
+        ],
+        "seats": 5,
+        "luggage": 4,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "KG",
+          "RU"
+        ]
+      },
+      {
+        "make": "Audi",
+        "model": "A6",
+        "categoryIds": [
+          "business",
+          "premium"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "RU"
+        ]
+      },
+      {
+        "make": "Volkswagen",
+        "model": "Polo",
+        "categoryIds": [
+          "economy",
+          "compact"
+        ],
+        "seats": 5,
+        "luggage": 1,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "RU",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Volkswagen",
+        "model": "Tiguan",
+        "categoryIds": [
+          "suv_compact",
+          "suv_standard"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2016,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "RU"
+        ]
+      },
+      {
+        "make": "Volkswagen",
+        "model": "Caravelle / Multivan",
+        "categoryIds": [
+          "van_family",
+          "van_vip"
+        ],
+        "seats": 7,
+        "luggage": 4,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "RU"
+        ]
+      },
+      {
+        "make": "Skoda",
+        "model": "Octavia",
+        "categoryIds": [
+          "comfort",
+          "sedan_standard"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "RU",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Renault",
+        "model": "Duster",
+        "categoryIds": [
+          "suv_compact",
+          "offroad_4x4"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "RU",
+          "UZ"
+        ]
+      },
+      {
+        "make": "Lada",
+        "model": "Vesta",
+        "categoryIds": [
+          "economy",
+          "sedan_standard"
+        ],
+        "seats": 5,
+        "luggage": 2,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "RU",
+          "KG"
+        ]
+      },
+      {
+        "make": "Lada",
+        "model": "Niva / Niva Travel",
+        "categoryIds": [
+          "offroad_4x4",
+          "economy"
+        ],
+        "seats": 4,
+        "luggage": 2,
+        "years": [
+          2010,
+          2026
+        ],
+        "countries": [
+          "RU",
+          "KG"
+        ]
+      },
+      {
+        "make": "UAZ",
+        "model": "Patriot",
+        "categoryIds": [
+          "offroad_4x4",
+          "suv_standard"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2010,
+          2026
+        ],
+        "countries": [
+          "RU",
+          "KG"
+        ]
+      },
+      {
+        "make": "GAZ",
+        "model": "Gazelle Next",
+        "categoryIds": [
+          "coach_mini",
+          "tourist_vehicle"
+        ],
+        "seats": 14,
+        "luggage": 6,
+        "years": [
+          2015,
+          2026
+        ],
+        "countries": [
+          "RU",
+          "KG",
+          "UZ"
+        ]
+      },
+      {
+        "make": "BYD",
+        "model": "Song / Seal family",
+        "categoryIds": [
+          "electric",
+          "hybrid",
+          "suv_compact"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2022,
+          2026
+        ],
+        "countries": [
+          "UZ",
+          "RU"
+        ]
+      },
+      {
+        "make": "Geely",
+        "model": "Coolray / Monjaro",
+        "categoryIds": [
+          "suv_compact",
+          "suv_standard"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2020,
+          2026
+        ],
+        "countries": [
+          "UZ",
+          "RU",
+          "KG"
+        ]
+      },
+      {
+        "make": "Chery",
+        "model": "Tiggo 7/8",
+        "categoryIds": [
+          "suv_compact",
+          "suv_family"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2019,
+          2026
+        ],
+        "countries": [
+          "UZ",
+          "RU",
+          "KG",
+          "SA"
+        ]
+      },
+      {
+        "make": "Haval",
+        "model": "Jolion / H6",
+        "categoryIds": [
+          "suv_compact",
+          "suv_standard"
+        ],
+        "seats": 5,
+        "luggage": 3,
+        "years": [
+          2020,
+          2026
+        ],
+        "countries": [
+          "RU",
+          "UZ",
+          "SA"
+        ]
+      },
+      {
+        "make": "Jetour",
+        "model": "X70 / Dashing",
+        "categoryIds": [
+          "suv_family",
+          "suv_standard"
+        ],
+        "seats": 7,
+        "luggage": 4,
+        "years": [
+          2021,
+          2026
+        ],
+        "countries": [
+          "SA",
+          "UZ"
+        ]
+      }
+    ],
+    "modelsByCountry": {
+      "SA": 38,
+      "KG": 28,
+      "UZ": 36,
+      "RU": 36
+    }
+  }
+}

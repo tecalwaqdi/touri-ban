@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_kg_jalal_abad",
+  "__writtenAt": "2026-07-22T11:28:59.711Z",
+  "__target": "local-staging",
+  "naim": "جلال آباد",
+  "names_i18n": {
+    "ar": "جلال آباد",
+    "en": "Jalal-Abad",
+    "ru": "Джалал-Абад",
+    "ky": "Жалал-Абад",
+    "uz": "Jalolobod"
+  },
+  "cities": "cities/region_kg_jalal_abad",
+  "dolh": "countries/kyrgyzstan",
+  "lat_ling": {
+    "latitude": 40.9333,
+    "longitude": 73
+  },
+  "acctev": true,
+  "country_iso": "KG",
+  "geo_import_id": "city_kg_jalal_abad",
+  "geo_import_source": "touri_geo_import"
+}

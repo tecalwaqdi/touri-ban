@@ -1,0 +1,31 @@
+{
+  "target": "local-staging",
+  "wouldWriteToProduction": false,
+  "generatedAt": "2026-07-22T11:29:02.690Z",
+  "stats": {
+    "countries": 4,
+    "regions": 56,
+    "cities": 56,
+    "landmarks": 1120,
+    "vehicles": 24
+  },
+  "docCount": 1260,
+  "root": "D:/Projects/ara/admin/ara_oatan_app/firebase/tools/geo_import/staging/firestore",
+  "samplePaths": [
+    "countries/saudi_arabia",
+    "cities/region_sa_riyadh",
+    "villages/city_sa_riyadh",
+    "mkan/lm_sa_riyadh_osm_way_978220391",
+    "mkan/lm_sa_riyadh_osm_way_1385940120",
+    "mkan/lm_sa_riyadh_osm_way_1451027859",
+    "mkan/lm_sa_riyadh_osm_node_13415346082",
+    "mkan/lm_sa_riyadh_osm_node_13415346083",
+    "mkan/lm_sa_riyadh_osm_relation_6196003",
+    "mkan/lm_sa_riyadh_osm_way_915570666",
+    "mkan/lm_sa_riyadh_osm_relation_239102",
+    "mkan/lm_sa_riyadh_osm_node_1056080874",
+    "mkan/lm_sa_riyadh_osm_node_10998027804",
+    "mkan/lm_sa_riyadh_osm_way_391008132",
+    "mkan/lm_sa_riyadh_osm_way_1218670088"
+  ]
+}

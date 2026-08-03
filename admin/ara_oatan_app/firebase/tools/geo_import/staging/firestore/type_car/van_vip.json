@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/van_vip",
+  "__writtenAt": "2026-07-22T11:29:02.682Z",
+  "__target": "local-staging",
+  "naim": "فان VIP",
+  "names_i18n": {
+    "ar": "فان VIP",
+    "en": "VIP Van",
+    "ru": "VIP минивэн",
+    "ky": "VIP минивэн",
+    "uz": "VIP miniven"
+  },
+  "codeCar": "van_vip",
+  "sr": 450,
+  "agl_saat": 5,
+  "actev": true,
+  "ishafelh": false,
+  "not": "VIP Van",
+  "geo_import_id": "vehcat_van_vip",
+  "geo_import_source": "touri_geo_import"
+}

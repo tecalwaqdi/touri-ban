@@ -1,0 +1,108 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function claimBool(name) {
+      return signedIn() && request.auth.token[name] == true;
+    }
+
+    function isSuperAdmin() {
+      return claimBool('super_admin');
+    }
+
+    function isCountryAdmin() {
+      return claimBool('country_admin');
+    }
+
+    function isPanelWriter() {
+      return isSuperAdmin()
+        || isCountryAdmin()
+        || claimBool('agent')
+        || claimBool('partner')
+        || claimBool('transport_manager');
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isUserDocument() {
+      return isImage()
+        || request.resource.contentType == 'application/pdf';
+    }
+
+    function validUserUpload() {
+      return request.resource.size <= 15 * 1024 * 1024
+        && isUserDocument();
+    }
+
+    function validContentImage() {
+      return request.resource.size <= 12 * 1024 * 1024
+        && isImage();
+    }
+
+    function validPanelUpload() {
+      return request.resource.size <= 20 * 1024 * 1024
+        && (isUserDocument()
+          || request.resource.contentType.matches('video/.*'));
+    }
+
+    match /users/{userId}/{allPaths=**} {
+      allow read: if signedIn()
+        && (request.auth.uid == userId || isSuperAdmin());
+      allow create, update: if signedIn()
+        && request.auth.uid == userId
+        && validUserUpload();
+      allow delete: if signedIn() && request.auth.uid == userId;
+    }
+
+    match /landmarks/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isSuperAdmin() && validContentImage();
+      allow delete: if isSuperAdmin();
+    }
+
+    match /countries/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isSuperAdmin() && validContentImage();
+      allow delete: if isSuperAdmin();
+    }
+
+    match /regions/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isSuperAdmin() && validContentImage();
+      allow delete: if isSuperAdmin();
+    }
+
+    match /cities/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isSuperAdmin() && validContentImage();
+      allow delete: if isSuperAdmin();
+    }
+
+    match /type_car/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isSuperAdmin() && validContentImage();
+      allow delete: if isSuperAdmin();
+    }
+
+    match /representatives/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isSuperAdmin() && validContentImage();
+      allow delete: if isSuperAdmin();
+    }
+
+    match /places/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isSuperAdmin() && validContentImage();
+      allow delete: if isSuperAdmin();
+    }
+
+    match /{allPaths=**} {
+      allow read, create, update, delete: if false;
+    }
+  }
+}

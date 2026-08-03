@@ -1,0 +1,3409 @@
+{
+  "@@locale": "ar",
+  "n1": "1",
+  "@n1": {
+    "description": "UI string (source key: 1)"
+  },
+  "n2": "2",
+  "@n2": {
+    "description": "UI string (source key: 2)"
+  },
+  "n4": "4",
+  "@n4": {
+    "description": "UI string (source key: 4)"
+  },
+  "n5": "5",
+  "@n5": {
+    "description": "UI string (source key: 5)"
+  },
+  "n6": "6",
+  "@n6": {
+    "description": "UI string (source key: 6)"
+  },
+  "n7": "7",
+  "@n7": {
+    "description": "UI string (source key: 7)"
+  },
+  "n8": "8",
+  "@n8": {
+    "description": "UI string (source key: 8)"
+  },
+  "n9": "9",
+  "@n9": {
+    "description": "UI string (source key: 9)"
+  },
+  "n10": "10",
+  "@n10": {
+    "description": "UI string (source key: 10)"
+  },
+  "n11": "11",
+  "@n11": {
+    "description": "UI string (source key: 11)"
+  },
+  "n15": "15",
+  "@n15": {
+    "description": "UI string (source key: 15)"
+  },
+  "n24": "24",
+  "@n24": {
+    "description": "UI string (source key: 24)"
+  },
+  "n25": "25",
+  "@n25": {
+    "description": "UI string (source key: 25)"
+  },
+  "n26": "26",
+  "@n26": {
+    "description": "UI string (source key: 26)"
+  },
+  "n27": "27",
+  "@n27": {
+    "description": "UI string (source key: 27)"
+  },
+  "n28": "28",
+  "@n28": {
+    "description": "UI string (source key: 28)"
+  },
+  "n29": "29",
+  "@n29": {
+    "description": "UI string (source key: 29)"
+  },
+  "n30": "30",
+  "@n30": {
+    "description": "UI string (source key: 30)"
+  },
+  "n31": "31",
+  "@n31": {
+    "description": "UI string (source key: 31)"
+  },
+  "n32": "32",
+  "@n32": {
+    "description": "UI string (source key: 32)"
+  },
+  "n33": "33",
+  "@n33": {
+    "description": "UI string (source key: 33)"
+  },
+  "n34": "34",
+  "@n34": {
+    "description": "UI string (source key: 34)"
+  },
+  "n45": "45",
+  "@n45": {
+    "description": "UI string (source key: 45)"
+  },
+  "n123": "123",
+  "@n123": {
+    "description": "UI string (source key: 123)"
+  },
+  "n561790844": "561790844",
+  "@n561790844": {
+    "description": "UI string (source key: 561790844)"
+  },
+  "login": "تسجيل الدخول",
+  "@login": {
+    "description": "UI string (source key: Login)"
+  },
+  "email_Address": "عنوان البريد الإلكتروني",
+  "@email_Address": {
+    "description": "UI string (source key: Email Address)"
+  },
+  "create_Account": "إنشاء حساب",
+  "@create_Account": {
+    "description": "UI string (source key: Create Account )"
+  },
+  "enter_your_email": "أدخل بريدك الإلكتروني...",
+  "@enter_your_email": {
+    "description": "UI string (source key: Enter your email...)"
+  },
+  "password": "كلمة المرور",
+  "@password": {
+    "description": "UI string (source key: Password)"
+  },
+  "enter_your_password": "أدخل كلمة المرور...",
+  "@enter_your_password": {
+    "description": "UI string (source key: Enter your password...)"
+  },
+  "select_the_app_language": "اختر لغة التطبيق",
+  "@select_the_app_language": {
+    "description": "UI string (source key: Select the app language)"
+  },
+  "login_with_Google": "تسجيل الدخول عبر جوجل",
+  "@login_with_Google": {
+    "description": "UI string (source key: Login with Google)"
+  },
+  "auth_google_pick_title": "اختر حساب Google",
+  "@auth_google_pick_title": {
+    "description": "UI string (source key: auth_google_pick_title)"
+  },
+  "auth_google_pick_sub": "الحسابات المرتبطة بهذا الجهاز",
+  "@auth_google_pick_sub": {
+    "description": "UI string (source key: auth_google_pick_sub)"
+  },
+  "auth_google_recent_account": "آخر حساب استُخدم",
+  "@auth_google_recent_account": {
+    "description": "UI string (source key: auth_google_recent_account)"
+  },
+  "auth_google_show_accounts": "عرض حسابات Google على الجهاز",
+  "@auth_google_show_accounts": {
+    "description": "UI string (source key: auth_google_show_accounts)"
+  },
+  "auth_google_other_account": "اختيار حساب آخر",
+  "@auth_google_other_account": {
+    "description": "UI string (source key: auth_google_other_account)"
+  },
+  "auth_google_failed": "تعذّر تسجيل الدخول عبر Google. حاول مرة أخرى.",
+  "@auth_google_failed": {
+    "description": "UI string (source key: auth_google_failed)"
+  },
+  "auth_google_developer_error": "إعداد Google غير مكتمل. أضف بصمة SHA-1 لتطبيق Android في Firebase Console، وفعّل Google في Authentication، ثم حمّل google-services.json من جديد.",
+  "@auth_google_developer_error": {
+    "description": "UI string (source key: auth_google_developer_error)"
+  },
+  "auth_google_not_enabled": "تسجيل الدخول عبر Google غير مفعّل في Firebase. فعّله من Authentication → Sign-in method.",
+  "@auth_google_not_enabled": {
+    "description": "UI string (source key: auth_google_not_enabled)"
+  },
+  "auth_google_account_conflict": "هذا البريد مرتبط بطريقة دخول أخرى. استخدم البريد وكلمة المرور.",
+  "@auth_google_account_conflict": {
+    "description": "UI string (source key: auth_google_account_conflict)"
+  },
+  "auth_google_or": "أو",
+  "@auth_google_or": {
+    "description": "UI string (source key: auth_google_or)"
+  },
+  "forgot_Password": "هل نسيت كلمة المرور؟",
+  "@forgot_Password": {
+    "description": "UI string (source key: Forgot Password ?)"
+  },
+  "register": "تسجيل",
+  "@register": {
+    "description": "UI string (source key: Register)"
+  },
+  "create_an_account_with_Google": "إنشاء حساب عبر جوجل",
+  "@create_an_account_with_Google": {
+    "description": "UI string (source key: Create an account with Google)"
+  },
+  "please_fill_in_all_fields_to_register": "يرجى ملء جميع الحقول للتسجيل",
+  "@please_fill_in_all_fields_to_register": {
+    "description": "UI string (source key: Please fill in all fields to register)"
+  },
+  "full_Name": "الاسم الكامل",
+  "@full_Name": {
+    "description": "UI string (source key: Full Name)"
+  },
+  "confirm_Password": "تأكيد كلمة المرور",
+  "@confirm_Password": {
+    "description": "UI string (source key: Confirm Password)"
+  },
+  "read_the_Terms_of_Service_and_Privacy_Policy": "اقرأ شروط الخدمة وسياسة الخصوصية",
+  "@read_the_Terms_of_Service_and_Privacy_Policy": {
+    "description": "UI string (source key: Read the Terms of Service and Privacy Policy)"
+  },
+  "i_agree_to_the_Terms_Conditions": "أوافق على الشروط والأحكام",
+  "@i_agree_to_the_Terms_Conditions": {
+    "description": "UI string (source key: I agree to the Terms & Conditions)"
+  },
+  "full_Name_is_required": "الاسم الكامل مطلوب",
+  "@full_Name_is_required": {
+    "description": "UI string (source key: Full Name is required)"
+  },
+  "please_choose_an_option_from_the_dropdown": "يرجى اختيار خيار من القائمة المنسدلة",
+  "@please_choose_an_option_from_the_dropdown": {
+    "description": "UI string (source key: Please choose an option from the dropdown)"
+  },
+  "email_Address_is_required": "عنوان البريد الإلكتروني مطلوب",
+  "@email_Address_is_required": {
+    "description": "UI string (source key: Email Address is required)"
+  },
+  "mobile_Number_is_required": "رقم الجوال مطلوب",
+  "@mobile_Number_is_required": {
+    "description": "UI string (source key: Mobile Number is required)"
+  },
+  "password_is_required": "كلمة المرور مطلوبة",
+  "@password_is_required": {
+    "description": "UI string (source key: Password is required)"
+  },
+  "confirm_Password_is_required": "تأكيد كلمة المرور مطلوب",
+  "@confirm_Password_is_required": {
+    "description": "UI string (source key: Confirm Password is required)"
+  },
+  "already_have_an_account": "هل لديك حساب بالفعل؟",
+  "@already_have_an_account": {
+    "description": "UI string (source key: Already have an account?)"
+  },
+  "sign_In": "تسجيل الدخول",
+  "@sign_In": {
+    "description": "UI string (source key: Sign In)"
+  },
+  "success_Partner_Registration": "تسجيل شريك نجاح",
+  "@success_Partner_Registration": {
+    "description": "UI string (source key: Success Partner Registration)"
+  },
+  "welcome_to_Become_a_Success_Partner": "مرحباً بك لتصبح شريك نجاح",
+  "@welcome_to_Become_a_Success_Partner": {
+    "description": "UI string (source key: Welcome to Become a Success Partner)"
+  },
+  "join_us_as_a_Success_Partner_to_enhance_our_service_quality_and_accelerate_outre": "انضم إلينا كشريك نجاح لتعزيز جودة خدماتنا وتسريع انتشارنا، سواء كنت جهة حكومية أو شركة أو فرداً",
+  "@join_us_as_a_Success_Partner_to_enhance_our_service_quality_and_accelerate_outre": {
+    "description": "UI string (source key: Join us as a Success Partner to enhance our service quality and accelerate outreach, whether you are a government entity, a company, or an individual.)"
+  },
+  "register_Now": "سجل الآن",
+  "@register_Now": {
+    "description": "UI string (source key: Register Now)"
+  },
+  "home": "الرئيسية",
+  "@home": {
+    "description": "UI string (source key: Home)"
+  },
+  "the_Qibla_for_Islam_and_Muslims": "القبلة للإسلام والمسلمين",
+  "@the_Qibla_for_Islam_and_Muslims": {
+    "description": "UI string (source key: The Qibla for Islam and Muslims)"
+  },
+  "list_of_regions": "قائمة المناطق",
+  "@list_of_regions": {
+    "description": "UI string (source key: List of regions)"
+  },
+  "number_of_destinations": "عدد الوجهات: ",
+  "@number_of_destinations": {
+    "description": "UI string (source key: Number of destinations: )"
+  },
+  "specify_the_region": "حدد المنطقة",
+  "@specify_the_region": {
+    "description": "UI string (source key: Specify the region)"
+  },
+  "saudi": "سعودي",
+  "@saudi": {
+    "description": "UI string (source key: saudi)"
+  },
+  "select_region_city": "اختر المنطقة / المدينة",
+  "@select_region_city": {
+    "description": "UI string (source key: Select region / city)"
+  },
+  "cities_provinces": "المدن/المحافظات",
+  "@cities_provinces": {
+    "description": "UI string (source key: Cities/provinces)"
+  },
+  "browse_cities_counties_in": "تصفح المدن/المحافظات في",
+  "@browse_cities_counties_in": {
+    "description": "UI string (source key: Browse cities/counties in)"
+  },
+  "change": "تغيير",
+  "@change": {
+    "description": "UI string (source key: Change)"
+  },
+  "view_Now": "شاهد الآن",
+  "@view_Now": {
+    "description": "UI string (source key: View Now)"
+  },
+  "devils_Cove": "خليج الشياطين",
+  "@devils_Cove": {
+    "description": "UI string (source key: Devils Cove)"
+  },
+  "n4_7_Stars": "4.7 نجوم",
+  "@n4_7_Stars": {
+    "description": "UI string (source key: 4.7 Stars)"
+  },
+  "juniper_Beach": "شاطئ جونيبر",
+  "@juniper_Beach": {
+    "description": "UI string (source key: Juniper Beach)"
+  },
+  "n4_5_Stars": "4.5 نجوم",
+  "@n4_5_Stars": {
+    "description": "UI string (source key: 4.5 Stars)"
+  },
+  "yOU_ARE_BROWSING_NOW": "تتصفح الآن",
+  "@yOU_ARE_BROWSING_NOW": {
+    "description": "UI string (source key: YOU ARE BROWSING NOW)"
+  },
+  "change_country": "تغيير البلد",
+  "@change_country": {
+    "description": "UI string (source key: Change country)"
+  },
+  "change_region": "تغيير المنطقة",
+  "@change_region": {
+    "description": "UI string (source key: Change region)"
+  },
+  "added_destinations": "الوجهات المضافة",
+  "@added_destinations": {
+    "description": "UI string (source key: Added destinations)"
+  },
+  "suggest_a_Place": "اقترح مكاناً",
+  "@suggest_a_Place": {
+    "description": "UI string (source key: Suggest a Place)"
+  },
+  "add_a_Special_Place": "أضف مكاناً خاصاً",
+  "@add_a_Special_Place": {
+    "description": "UI string (source key: Add a Special Place)"
+  },
+  "settings": "الإعدادات",
+  "@settings": {
+    "description": "UI string (source key: Settings)"
+  },
+  "help": "المساعدة",
+  "@help": {
+    "description": "UI string (source key: Help)"
+  },
+  "log_Out": "تسجيل الخروج",
+  "@log_Out": {
+    "description": "UI string (source key: Log Out)"
+  },
+  "browse": "تصفح",
+  "@browse": {
+    "description": "UI string (source key: Browse)"
+  },
+  "prayer_room": "غرفة الصلاة",
+  "@prayer_room": {
+    "description": "UI string (source key: Prayer room)"
+  },
+  "restroom": "دورة المياه",
+  "@restroom": {
+    "description": "UI string (source key: Restroom)"
+  },
+  "restaurant": "مطعم",
+  "@restaurant": {
+    "description": "UI string (source key: Restaurant)"
+  },
+  "add": "إضافة",
+  "@add": {
+    "description": "UI string (source key: Add)"
+  },
+  "description": "الوصف",
+  "@description": {
+    "description": "UI string (source key: Description)"
+  },
+  "enable_notifications": "تفعيل الإشعارات",
+  "@enable_notifications": {
+    "description": "UI string (source key: Enable notifications)"
+  },
+  "edit_Profile": "تعديل الملف الشخصي",
+  "@edit_Profile": {
+    "description": "UI string (source key: Edit Profile)"
+  },
+  "add_your_phone_number": "أضف رقم هاتفك",
+  "@add_your_phone_number": {
+    "description": "UI string (source key: Add your phone number)"
+  },
+  "address_list": "قائمة العناوين",
+  "@address_list": {
+    "description": "UI string (source key: Address list)"
+  },
+  "support_Customer_Service": "الدعم وخدمة العملاء",
+  "@support_Customer_Service": {
+    "description": "UI string (source key: Support & Customer Service)"
+  },
+  "electronic_Payment_History": "سجل المدفوعات الإلكترونية",
+  "@electronic_Payment_History": {
+    "description": "UI string (source key: Electronic Payment History)"
+  },
+  "night_mode": "الوضع الليلي",
+  "@night_mode": {
+    "description": "UI string (source key: Night mode)"
+  },
+  "dark_mode": "الوضع الداكن",
+  "@dark_mode": {
+    "description": "UI string (source key: Dark  mode)"
+  },
+  "request_to_delete_the_account": "طلب حذف الحساب",
+  "@request_to_delete_the_account": {
+    "description": "UI string (source key: Request to delete the account.)"
+  },
+  "my_account": "حسابي",
+  "@my_account": {
+    "description": "UI string (source key: My account)"
+  },
+  "name": "الاسم",
+  "@name": {
+    "description": "UI string (source key: Name)"
+  },
+  "enter_your_full_name": "أدخل اسمك الكامل",
+  "@enter_your_full_name": {
+    "description": "UI string (source key: Enter your full name)"
+  },
+  "phone_Number": "رقم الهاتف",
+  "@phone_Number": {
+    "description": "UI string (source key: Phone Number)"
+  },
+  "enter_your_mobile_number": "أدخل رقم هاتفك المحمول",
+  "@enter_your_mobile_number": {
+    "description": "UI string (source key: Enter your mobile number)"
+  },
+  "email": "البريد الإلكتروني",
+  "@email": {
+    "description": "UI string (source key: Email)"
+  },
+  "outside_your_city_prices_are_agreed_upon_with_the_captain": "خارج مدينتك الاسعار حسب الاتفاق مع الكابتن ",
+  "@outside_your_city_prices_are_agreed_upon_with_the_captain": {
+    "description": "UI string (source key: Outside your city prices are agreed upon with the captain)"
+  },
+  "update_Profile": "تحديث الملف الشخصي",
+  "@update_Profile": {
+    "description": "UI string (source key: Update Profile)"
+  },
+  "welcome_to_the_Arra_Watan_app": "مرحباً بك في تطبيق أرى وطن",
+  "@welcome_to_the_Arra_Watan_app": {
+    "description": "UI string (source key: Welcome to the Arra Watan app)"
+  },
+  "first_global_saudi_tourist_taxi_app": "أول تطبيق تاكسي سياحي سعودي عالمي",
+  "@first_global_saudi_tourist_taxi_app": {
+    "description": "UI string (source key: first global saudi tourist taxi app)"
+  },
+  "select_the_country": "اختر البلد",
+  "@select_the_country": {
+    "description": "UI string (source key: Select the country)"
+  },
+  "start": "ابدأ",
+  "@start": {
+    "description": "UI string (source key: Start)"
+  },
+  "credit_Card": "بطاقة ائتمان",
+  "@credit_Card": {
+    "description": "UI string (source key: Credit Card)"
+  },
+  "your_Name": "اسمك",
+  "@your_Name": {
+    "description": "UI string (source key: Your Name)"
+  },
+  "example_2026": "مثال 2026",
+  "@example_2026": {
+    "description": "UI string (source key: Example 2026)"
+  },
+  "example_11": "مثال 11",
+  "@example_11": {
+    "description": "UI string (source key: Example 11)"
+  },
+  "cCV": "كود التحقق",
+  "@cCV": {
+    "description": "UI string (source key: CCV)"
+  },
+  "your_Name_is_required": "اسمك مطلوب",
+  "@your_Name_is_required": {
+    "description": "UI string (source key: Your Name is required)"
+  },
+  "is_required": "رقم البطاقة مطلوب",
+  "@is_required": {
+    "description": "UI string (source key: رقم البطاقة is required)"
+  },
+  "is_required2": "سنة الانتهاء مطلوبة",
+  "@is_required2": {
+    "description": "UI string (source key: سنة الإنتهاء is required)"
+  },
+  "is_required3": "شهر الانتهاء مطلوب",
+  "@is_required3": {
+    "description": "UI string (source key: شهر الإنتهاء is required)"
+  },
+  "cCV_is_required": "كود التحقق مطلوب",
+  "@cCV_is_required": {
+    "description": "UI string (source key: CCV is required)"
+  },
+  "sTC_pay": "STC باي",
+  "@sTC_pay": {
+    "description": "UI string (source key: STC pay)"
+  },
+  "apple_Pay": "آبل باي",
+  "@apple_Pay": {
+    "description": "UI string (source key: Apple Pay)"
+  },
+  "cash": "نقداً",
+  "@cash": {
+    "description": "UI string (source key: Cash)"
+  },
+  "subscription": "اشتراك",
+  "@subscription": {
+    "description": "UI string (source key: Subscription)"
+  },
+  "view_my_trip_list_map": "عرض خريطة قائمة رحلاتي",
+  "@view_my_trip_list_map": {
+    "description": "UI string (source key: View my trip list map)"
+  },
+  "trip_scheduling": "جدولة الرحلة",
+  "@trip_scheduling": {
+    "description": "UI string (source key: Trip scheduling)"
+  },
+  "payment_method": "طريقة الدفع",
+  "@payment_method": {
+    "description": "UI string (source key: Payment method.)"
+  },
+  "wrong_payment_method": "طريقة دفع خاطئة",
+  "@wrong_payment_method": {
+    "description": "UI string (source key: wrong payment method)"
+  },
+  "payment_details_are_incorrect_Please_check_with_your_bank": "تفاصيل الدفع غير صحيحة. يرجى التحقق مع البنك الخاص بك",
+  "@payment_details_are_incorrect_Please_check_with_your_bank": {
+    "description": "UI string (source key: Payment details are incorrect. Please check with your bank)"
+  },
+  "agreed": "موافق",
+  "@agreed": {
+    "description": "UI string (source key: Agreed)"
+  },
+  "general_tips_when_visiting_this_city_today": "نصائح عامة عند زيارة هذه المدينة اليوم:",
+  "@general_tips_when_visiting_this_city_today": {
+    "description": "UI string (source key: general tips when visiting this city today:)"
+  },
+  "need_extra_hours": "تحتاج ساعات إضافية؟",
+  "@need_extra_hours": {
+    "description": "UI string (source key: Need extra hours?)"
+  },
+  "planning_for_a_longer_trip_Add_more_hours_and_enjoy_the_ride": "تخطط لرحلة أطول؟ أضف ساعات إضافية واستمتع بالرحلة!",
+  "@planning_for_a_longer_trip_Add_more_hours_and_enjoy_the_ride": {
+    "description": "UI string (source key: Planning for a longer trip? Add more hours and enjoy the ride!)"
+  },
+  "current_Hours": "الساعات الحالية",
+  "@current_Hours": {
+    "description": "UI string (source key: Current Hours)"
+  },
+  "additional_Hours": "ساعات إضافية؟",
+  "@additional_Hours": {
+    "description": "UI string (source key: Additional Hours?)"
+  },
+  "list_of_added_locations": "قائمة المواقع المضافة",
+  "@list_of_added_locations": {
+    "description": "UI string (source key: List of added locations.)"
+  },
+  "no_tours_have_been_added": "لم تتم إضافة أي جولات!",
+  "@no_tours_have_been_added": {
+    "description": "UI string (source key: No tours have been added!)"
+  },
+  "the_driver_has_been_assigned_and_he_will_be_your_tour_guide_based_on_his_knowled": "تم تعيين السائق، وسيكون دليلك السياحي بناءً على معرفته بالأماكن",
+  "@the_driver_has_been_assigned_and_he_will_be_your_tour_guide_based_on_his_knowled": {
+    "description": "UI string (source key: The driver has been assigned,\n and he will be your tour guide based on his knowledge of the places.)"
+  },
+  "select_the_car_type": "اختر نوع السيارة",
+  "@select_the_car_type": {
+    "description": "UI string (source key: Select the car type)"
+  },
+  "textField": "حقل النص",
+  "@textField": {
+    "description": "UI string (source key: TextField)"
+  },
+  "price_Summary": "ملخص السعر",
+  "@price_Summary": {
+    "description": "UI string (source key:  Price Summary)"
+  },
+  "total_Booking_Hours": "إجمالي ساعات الحجز:",
+  "@total_Booking_Hours": {
+    "description": "UI string (source key: Total Booking Hours:)"
+  },
+  "driver_Fee": "رسوم السائق:",
+  "@driver_Fee": {
+    "description": "UI string (source key: Driver Fee:)"
+  },
+  "app_Fee_15": "رسوم التطبيق (15%):",
+  "@app_Fee_15": {
+    "description": "UI string (source key: App Fee  (15%):)"
+  },
+  "total_Deductions": "إجمالي الخصومات:",
+  "@total_Deductions": {
+    "description": "UI string (source key: Total Deductions:)"
+  },
+  "total_Amount": "المبلغ الإجمالي:",
+  "@total_Amount": {
+    "description": "UI string (source key: Total Amount:)"
+  },
+  "pay_Now": "ادفع الآن",
+  "@pay_Now": {
+    "description": "UI string (source key: Pay Now)"
+  },
+  "book_now": "احجز الآن",
+  "@book_now": {
+    "description": "UI string (source key: Book now)"
+  },
+  "you_are_currently_browsing": "أنت تتصفح حالياً",
+  "@you_are_currently_browsing": {
+    "description": "UI string (source key: You are currently browsing.)"
+  },
+  "go_now": "اذهب الآن",
+  "@go_now": {
+    "description": "UI string (source key: Go now.)"
+  },
+  "booking_list": "قائمة الحجوزات",
+  "@booking_list": {
+    "description": "UI string (source key: Booking list.)"
+  },
+  "my_trip_list": "قائمة رحلاتي",
+  "@my_trip_list": {
+    "description": "UI string (source key: My trip list)"
+  },
+  "show_the_interactive_map": "إظهار الخريطة التفاعلية",
+  "@show_the_interactive_map": {
+    "description": "UI string (source key: Show the interactive map)"
+  },
+  "select_your_favorite_car": "اختر سيارتك المفضلة",
+  "@select_your_favorite_car": {
+    "description": "UI string (source key: Select your favorite car.)"
+  },
+  "total_amount": "المبلغ الإجمالي:",
+  "@total_amount": {
+    "description": "UI string (source key: Total amount:)"
+  },
+  "k4b0ced258d": "ريال سعودي ",
+  "@k4b0ced258d": {
+    "description": "UI string (source key: ر.س )"
+  },
+  "you_are_currently_browsing2": "أنت تتصفح حالياً:",
+  "@you_are_currently_browsing2": {
+    "description": "UI string (source key: You are currently browsing:)"
+  },
+  "browse_the_map": "تصفح الخريطة",
+  "@browse_the_map": {
+    "description": "UI string (source key: Browse the map)"
+  },
+  "view_list": "عرض القائمة",
+  "@view_list": {
+    "description": "UI string (source key: View list)"
+  },
+  "add_a_place_from_the_map": "أضف مكاناً من الخريطة",
+  "@add_a_place_from_the_map": {
+    "description": "UI string (source key: Add a place from the map.)"
+  },
+  "general_information": "معلومات عامة",
+  "@general_information": {
+    "description": "UI string (source key: general information)"
+  },
+  "feedback": "ملاحظات",
+  "@feedback": {
+    "description": "UI string (source key: Feedback)"
+  },
+  "specify_the_location_on_the_map": "حدد الموقع على الخريطة",
+  "@specify_the_location_on_the_map": {
+    "description": "UI string (source key: Specify the location on the map.)"
+  },
+  "select_Location": "اختر الموقع",
+  "@select_Location": {
+    "description": "UI string (source key: Select Location)"
+  },
+  "add_the_specific_location": "أضف الموقع المحدد",
+  "@add_the_specific_location": {
+    "description": "UI string (source key: Add the specific location.)"
+  },
+  "try_to_zoom_the_map_to_the_last_point_to_get_an_accurate_location": "حاول تكبير الخريطة إلى آخر نقطة للحصول على موقع دقيق",
+  "@try_to_zoom_the_map_to_the_last_point_to_get_an_accurate_location": {
+    "description": "UI string (source key: Try to zoom the map to the last point to get an accurate location)"
+  },
+  "search": "بحث",
+  "@search": {
+    "description": "UI string (source key: Search)"
+  },
+  "show_the_list_of_added_trips": "عرض قائمة الرحلات المضافة",
+  "@show_the_list_of_added_trips": {
+    "description": "UI string (source key: Show the list of added trips.)"
+  },
+  "manage_your_team_below": "إدارة فريقك أدناه",
+  "@manage_your_team_below": {
+    "description": "UI string (source key: Manage your team below.)"
+  },
+  "random_Name": "اسم عشوائي",
+  "@random_Name": {
+    "description": "UI string (source key: Random Name)"
+  },
+  "user_randomname_com": "مستخدم@اسمعشوائي.com",
+  "@user_randomname_com": {
+    "description": "UI string (source key: user@randomname.com)"
+  },
+  "current_city_of_residence": "مدينة الإقامة الحالية",
+  "@current_city_of_residence": {
+    "description": "UI string (source key: Current city of residence)"
+  },
+  "please_select_the_city_you_are_currently_in": "يرجى اختيار المدينة التي تتواجد فيها حالياً",
+  "@please_select_the_city_you_are_currently_in": {
+    "description": "UI string (source key: Please select the city you are currently in)"
+  },
+  "additional_hours": "ساعات إضافية",
+  "@additional_hours": {
+    "description": "UI string (source key: Additional hours)"
+  },
+  "total_number_of_hours": "إجمالي عدد الساعات: ",
+  "@total_number_of_hours": {
+    "description": "UI string (source key: Total number of hours: )"
+  },
+  "hours": "  ساعات  ",
+  "@hours": {
+    "description": "UI string (source key:   Hours  )"
+  },
+  "total_price": "السعر الإجمالي:",
+  "@total_price": {
+    "description": "UI string (source key: Total price:)"
+  },
+  "r_S": "ر.س",
+  "@r_S": {
+    "description": "UI string (source key: R.S)"
+  },
+  "application_fee_10": "رسوم التقديم 10%:",
+  "@application_fee_10": {
+    "description": "UI string (source key: Application fee 10%:)"
+  },
+  "vAT_15": "ضريبة القيمة المضافة 15%: ",
+  "@vAT_15": {
+    "description": "UI string (source key: VAT 15%: )"
+  },
+  "r_S2": " ر.س ",
+  "@r_S2": {
+    "description": "UI string (source key:  R.S )"
+  },
+  "total": "الإجمالي:  ",
+  "@total": {
+    "description": "UI string (source key: Total:  )"
+  },
+  "address_Details": "تفاصيل العنوان",
+  "@address_Details": {
+    "description": "UI string (source key: Address Details)"
+  },
+  "note_This_is_the_address_where_the_driver_will_be_directed": "ملاحظة: هذا هو العنوان الذي سيتم توجيه السائق إليه",
+  "@note_This_is_the_address_where_the_driver_will_be_directed": {
+    "description": "UI string (source key: Note: This is the address where the driver will be directed)"
+  },
+  "address_Name_e_g_Home_Work": "اسم العنوان (مثال: المنزل، العمل)",
+  "@address_Name_e_g_Home_Work": {
+    "description": "UI string (source key: Address Name (e.g. Home, Work))"
+  },
+  "field_is_required": "الحقل مطلوب",
+  "@field_is_required": {
+    "description": "UI string (source key: Field is required)"
+  },
+  "my_current_location": "الموقع الحالي",
+  "@my_current_location": {
+    "description": "UI string (source key: My current location)"
+  },
+  "save_Address": "حفظ العنوان",
+  "@save_Address": {
+    "description": "UI string (source key: Save Address)"
+  },
+  "add_Your_Address": "أضف عنوانك",
+  "@add_Your_Address": {
+    "description": "UI string (source key: Add Your Address)"
+  },
+  "schedule_the_Trip": "جدولة الرحلة",
+  "@schedule_the_Trip": {
+    "description": "UI string (source key: Schedule the Trip)"
+  },
+  "select_the_Time": "اختر الوقت",
+  "@select_the_Time": {
+    "description": "UI string (source key: Select the Time)"
+  },
+  "hour": "ساعة",
+  "@hour": {
+    "description": "UI string (source key: Hour)"
+  },
+  "search2": "بحث...",
+  "@search2": {
+    "description": "UI string (source key: Search...)"
+  },
+  "n00": "00",
+  "@n00": {
+    "description": "UI string (source key: 00)"
+  },
+  "minute": "دقيقة",
+  "@minute": {
+    "description": "UI string (source key: Minute)"
+  },
+  "pM": "مساءً",
+  "@pM": {
+    "description": "UI string (source key: PM)"
+  },
+  "aM": "صباحاً",
+  "@aM": {
+    "description": "UI string (source key: AM)"
+  },
+  "the_trip_time_is": "وقت الرحلة هو",
+  "@the_trip_time_is": {
+    "description": "UI string (source key: The trip time is)"
+  },
+  "confirm": "تأكيد",
+  "@confirm": {
+    "description": "UI string (source key: Confirm)"
+  },
+  "add_New_Address": "+ إضافة عنوان جديد",
+  "@add_New_Address": {
+    "description": "UI string (source key: + Add New Address)"
+  },
+  "choose_your_delivery_address": "اختر عنوان التوصيل:",
+  "@choose_your_delivery_address": {
+    "description": "UI string (source key: Choose your delivery address:)"
+  },
+  "n456_Park_Avenue": "456 جادة بارك",
+  "@n456_Park_Avenue": {
+    "description": "UI string (source key: 456 Park Avenue)"
+  },
+  "suite_789_New_York_NY_10022": "جناح 789، نيويورك، NY 10022",
+  "@suite_789_New_York_NY_10022": {
+    "description": "UI string (source key: Suite 789, New York, NY 10022)"
+  },
+  "n789_Broadway": "789 برودواي",
+  "@n789_Broadway": {
+    "description": "UI string (source key: 789 Broadway)"
+  },
+  "floor_12_New_York_NY_10003": "الطابق 12، نيويورك، NY 10003",
+  "@floor_12_New_York_NY_10003": {
+    "description": "UI string (source key: Floor 12, New York, NY 10003)"
+  },
+  "select_the_address": "اختر العنوان",
+  "@select_the_address": {
+    "description": "UI string (source key: Select the address)"
+  },
+  "note_This_is_the_address_where_the_driver_will_be_directed2": "ملاحظة: هذا هو العنوان الذي سيتم توجيه السائق إليه",
+  "@note_This_is_the_address_where_the_driver_will_be_directed2": {
+    "description": "UI string (source key: Note: This is the address where the driver will be directed.)"
+  },
+  "update_Address": "تحديث العنوان",
+  "@update_Address": {
+    "description": "UI string (source key: update Address)"
+  },
+  "selecting_the_address": "تحديد العنوان",
+  "@selecting_the_address": {
+    "description": "UI string (source key: Selecting the address)"
+  },
+  "n456_Oak_Avenue": "456 جادة البلوط",
+  "@n456_Oak_Avenue": {
+    "description": "UI string (source key: 456 Oak Avenue)"
+  },
+  "los_Angeles_CA_90012": "لوس أنجلوس، CA 90012",
+  "@los_Angeles_CA_90012": {
+    "description": "UI string (source key: Los Angeles, CA 90012)"
+  },
+  "n789_Pine_Street": "789 شارع الصنوبر",
+  "@n789_Pine_Street": {
+    "description": "UI string (source key: 789 Pine Street)"
+  },
+  "chicago_IL_60601": "شيكاغو، IL 60601",
+  "@chicago_IL_60601": {
+    "description": "UI string (source key: Chicago, IL 60601)"
+  },
+  "don_t_have_an_account": "ليس لديك حساب؟  ",
+  "@don_t_have_an_account": {
+    "description": "UI string (source key: Don't have an account?  )"
+  },
+  "sign_Up_here": "سجل هنا",
+  "@sign_Up_here": {
+    "description": "UI string (source key: Sign Up here)"
+  },
+  "option_1": "الخيار 1",
+  "@option_1": {
+    "description": "UI string (source key: Option 1)"
+  },
+  "page_Title": "عنوان الصفحة",
+  "@page_Title": {
+    "description": "UI string (source key: Page Title)"
+  },
+  "your_request_has_been_successfully_submitted": "تم تقديم طلبك بنجاح",
+  "@your_request_has_been_successfully_submitted": {
+    "description": "UI string (source key: Your request has been successfully submitted.)"
+  },
+  "you_can_track_the_status_of_your_order_through_the_My_Orders_page": "يمكنك تتبع حالة طلبك من خلال صفحة \"طلباتي\"",
+  "@you_can_track_the_status_of_your_order_through_the_My_Orders_page": {
+    "description": "UI string (source key: You can track the status of your order through the \"My Orders\" page.)"
+  },
+  "view_Orders": "عرض الطلبات",
+  "@view_Orders": {
+    "description": "UI string (source key: View Orders)"
+  },
+  "pending": "قيد الانتظار",
+  "@pending": {
+    "description": "UI string (source key: Pending)"
+  },
+  "completed": "مكتمل",
+  "@completed": {
+    "description": "UI string (source key: Completed)"
+  },
+  "expired": "منتهي الصلاحية",
+  "@expired": {
+    "description": "UI string (source key: Expired)"
+  },
+  "your_Bookings": "حجوزاتك",
+  "@your_Bookings": {
+    "description": "UI string (source key: Your Bookings)"
+  },
+  "order_2847": "طلب رقم 2847",
+  "@order_2847": {
+    "description": "UI string (source key: Order #2847)"
+  },
+  "paris_France": "باريس، فرنسا",
+  "@paris_France": {
+    "description": "UI string (source key: Paris, France)"
+  },
+  "sept_15_2024": "15 سبتمبر 2024",
+  "@sept_15_2024": {
+    "description": "UI string (source key: Sept 15, 2024)"
+  },
+  "order_2831": "طلب رقم 2831",
+  "@order_2831": {
+    "description": "UI string (source key: Order #2831)"
+  },
+  "rome_Italy": "روما، إيطاليا",
+  "@rome_Italy": {
+    "description": "UI string (source key: Rome, Italy)"
+  },
+  "sept_12_2024": "12 سبتمبر 2024",
+  "@sept_12_2024": {
+    "description": "UI string (source key: Sept 12, 2024)"
+  },
+  "order_2819": "طلب رقم 2819",
+  "@order_2819": {
+    "description": "UI string (source key: Order #2819)"
+  },
+  "london_UK": "لندن، المملكة المتحدة",
+  "@london_UK": {
+    "description": "UI string (source key: London, UK)"
+  },
+  "sept_8_2024": "8 سبتمبر 2024",
+  "@sept_8_2024": {
+    "description": "UI string (source key: Sept 8, 2024)"
+  },
+  "new_York_City": "مدينة نيويورك",
+  "@new_York_City": {
+    "description": "UI string (source key: New York City)"
+  },
+  "in_Progress": "قيد التنفيذ",
+  "@in_Progress": {
+    "description": "UI string (source key: In Progress)"
+  },
+  "check_in": "تسجيل الوصول",
+  "@check_in": {
+    "description": "UI string (source key: Check-in)"
+  },
+  "sep_12_2024": "12 سبتمبر 2024",
+  "@sep_12_2024": {
+    "description": "UI string (source key: Sep 12, 2024)"
+  },
+  "check_out": "تسجيل المغادرة",
+  "@check_out": {
+    "description": "UI string (source key: Check-out)"
+  },
+  "sep_15_2024": "15 سبتمبر 2024",
+  "@sep_15_2024": {
+    "description": "UI string (source key: Sep 15, 2024)"
+  },
+  "n840_00": "840.00 دولار",
+  "@n840_00": {
+    "description": "UI string (source key: $840.00)"
+  },
+  "search_by_name_or_booking_ID": "ابحث بالاسم أو معرف الحجز...",
+  "@search_by_name_or_booking_ID": {
+    "description": "UI string (source key: Search by name or booking ID...)"
+  },
+  "date_Range": "نطاق التاريخ",
+  "@date_Range": {
+    "description": "UI string (source key: Date Range)"
+  },
+  "city": "المدينة",
+  "@city": {
+    "description": "UI string (source key: City)"
+  },
+  "sort_by": "ترتيب حسب",
+  "@sort_by": {
+    "description": "UI string (source key: Sort by)"
+  },
+  "apply_Filters": "تطبيق الفلاتر",
+  "@apply_Filters": {
+    "description": "UI string (source key: Apply Filters)"
+  },
+  "booking_Status": "حالة الحجز",
+  "@booking_Status": {
+    "description": "UI string (source key: Booking Status)"
+  },
+  "you_don_t_have_any_bookings_in_this_category_yet_Start_exploring_and_book_your_n": "ليس لديك أي حجوزات في هذه الفئة بعد. ابدأ الاستكشاف واحجز تجربتك القادمة!",
+  "@you_don_t_have_any_bookings_in_this_category_yet_Start_exploring_and_book_your_n": {
+    "description": "UI string (source key: You don't have any bookings in this category yet. Start exploring and book your next experience!)"
+  },
+  "browse_Services": "تصفح الخدمات",
+  "@browse_Services": {
+    "description": "UI string (source key: Browse Services)"
+  },
+  "support_Tickets": "تذاكر الدعم",
+  "@support_Tickets": {
+    "description": "UI string (source key: Support Tickets)"
+  },
+  "create_New_Support_Ticket": "إنشاء تذكرة دعم جديدة",
+  "@create_New_Support_Ticket": {
+    "description": "UI string (source key: Create New Support Ticket)"
+  },
+  "contact_us_directly": "اتصل بنا مباشرة",
+  "@contact_us_directly": {
+    "description": "UI string (source key: Contact us directly)"
+  },
+  "would_you_like_to_contact_our_support_team_directly_via_WhatsApp_for_faster_assi": "هل ترغب في التواصل مع فريق الدعم لدينا مباشرة عبر واتساب للحصول على مساعدة أسرع؟",
+  "@would_you_like_to_contact_our_support_team_directly_via_WhatsApp_for_faster_assi": {
+    "description": "UI string (source key: Would you like to contact our support team directly via WhatsApp for faster assistance?)"
+  },
+  "whatsApp": "واتساب",
+  "@whatsApp": {
+    "description": "UI string (source key: WhatsApp)"
+  },
+  "new_Support_Ticket": "تذكرة دعم جديدة",
+  "@new_Support_Ticket": {
+    "description": "UI string (source key: New Support Ticket)"
+  },
+  "brief_description_of_your_issue": "وصف مختصر لمشكلتك",
+  "@brief_description_of_your_issue": {
+    "description": "UI string (source key: Brief description of your issue)"
+  },
+  "category": "الفئة",
+  "@category": {
+    "description": "UI string (source key: Category)"
+  },
+  "select_a_category": "اختر فئة",
+  "@select_a_category": {
+    "description": "UI string (source key: Select a category)"
+  },
+  "search_categories": "ابحث في الفئات...",
+  "@search_categories": {
+    "description": "UI string (source key: Search categories...)"
+  },
+  "inquiry": "استفسار",
+  "@inquiry": {
+    "description": "UI string (source key: Inquiry)"
+  },
+  "suggestion": "اقتراح",
+  "@suggestion": {
+    "description": "UI string (source key: Suggestion)"
+  },
+  "complaint": "شكوى",
+  "@complaint": {
+    "description": "UI string (source key: Complaint)"
+  },
+  "booking_Issue": "مشكلة في الحجز",
+  "@booking_Issue": {
+    "description": "UI string (source key: Booking Issue)"
+  },
+  "other": "أخرى",
+  "@other": {
+    "description": "UI string (source key: Other)"
+  },
+  "message": "رسالة",
+  "@message": {
+    "description": "UI string (source key: Message)"
+  },
+  "please_provide_detailed_information_about_your_issue": "يرجى تقديم معلومات مفصلة عن مشكلتك...",
+  "@please_provide_detailed_information_about_your_issue": {
+    "description": "UI string (source key: Please provide detailed information about your issue...)"
+  },
+  "support_ticket_information": "معلومات تذكرة الدعم",
+  "@support_ticket_information": {
+    "description": "UI string (source key: Support ticket information)"
+  },
+  "our_support_team_typically_responds_within_24_48_hours_For_urgent_matters_please": "عادة ما يستجيب فريق الدعم لدينا خلال 24-48 ساعة. بالنسبة للمسائل العاجلة، يرجى الاتصال بنا مباشرة عبر الهاتف",
+  "@our_support_team_typically_responds_within_24_48_hours_For_urgent_matters_please": {
+    "description": "UI string (source key: Our support team typically responds within 24-48 hours. For urgent matters, please contact us directly by phone.)"
+  },
+  "create_New_Ticket": "إنشاء تذكرة جديدة",
+  "@create_New_Ticket": {
+    "description": "UI string (source key: Create New Ticket)"
+  },
+  "back": "رجوع",
+  "@back": {
+    "description": "UI string (source key: Back)"
+  },
+  "forgot_Password2": "نسيت كلمة المرور",
+  "@forgot_Password2": {
+    "description": "UI string (source key: Forgot Password)"
+  },
+  "we_will_send_you_an_email_with_a_link_to_reset_your_password_please_enter_the_em": "سنرسل لك بريداً إلكترونياً يحتوي على رابط لإعادة تعيين كلمة المرور، يرجى إدخال البريد الإلكتروني المرتبط بحسابك أدناه",
+  "@we_will_send_you_an_email_with_a_link_to_reset_your_password_please_enter_the_em": {
+    "description": "UI string (source key: We will send you an email with a link to reset your password, please enter the email associated with your account below.)"
+  },
+  "your_email_address": "عنوان بريدك الإلكتروني...",
+  "@your_email_address": {
+    "description": "UI string (source key: Your email address...)"
+  },
+  "send_Link": "إرسال الرابط",
+  "@send_Link": {
+    "description": "UI string (source key: Send Link)"
+  },
+  "bMW_5_Series": "بي إم دبليو الفئة الخامسة",
+  "@bMW_5_Series": {
+    "description": "UI string (source key: BMW 5 Series)"
+  },
+  "min_4_hours": "الحد الأدنى: 4 ساعات",
+  "@min_4_hours": {
+    "description": "UI string (source key: Min: 4 hours)"
+  },
+  "n35_hour": "35 دولار/ساعة",
+  "@n35_hour": {
+    "description": "UI string (source key: $35/hour)"
+  },
+  "honda_CR_V": "هوندا CR-V",
+  "@honda_CR_V": {
+    "description": "UI string (source key: Honda CR-V)"
+  },
+  "min_2_hours": "الحد الأدنى: 2 ساعة",
+  "@min_2_hours": {
+    "description": "UI string (source key: Min: 2 hours)"
+  },
+  "n25_hour": "25 دولار/ساعة",
+  "@n25_hour": {
+    "description": "UI string (source key: $25/hour)"
+  },
+  "tesla_Model_3": "تيسلا موديل 3",
+  "@tesla_Model_3": {
+    "description": "UI string (source key: Tesla Model 3)"
+  },
+  "min_5_hours": "الحد الأدنى: 5 ساعات",
+  "@min_5_hours": {
+    "description": "UI string (source key: Min: 5 hours)"
+  },
+  "n40_hour": "40 دولار/ساعة",
+  "@n40_hour": {
+    "description": "UI string (source key: $40/hour)"
+  },
+  "ford_Mustang": "فورد موستانج",
+  "@ford_Mustang": {
+    "description": "UI string (source key: Ford Mustang)"
+  },
+  "min_6_hours": "الحد الأدنى: 6 ساعات",
+  "@min_6_hours": {
+    "description": "UI string (source key: Min: 6 hours)"
+  },
+  "n45_hour": "45 دولار/ساعة",
+  "@n45_hour": {
+    "description": "UI string (source key: $45/hour)"
+  },
+  "list_of_cars": "قائمة السيارات",
+  "@list_of_cars": {
+    "description": "UI string (source key: List of cars)"
+  },
+  "button": "زر",
+  "@button": {
+    "description": "UI string (source key: Button)"
+  },
+  "edit_the_address": "تعديل العنوان",
+  "@edit_the_address": {
+    "description": "UI string (source key: Edit the address.)"
+  },
+  "update": "تحديث",
+  "@update": {
+    "description": "UI string (source key: Update)"
+  },
+  "maryam_Kutob": "مريم قطوب",
+  "@maryam_Kutob": {
+    "description": "UI string (source key: Maryam Kutob)"
+  },
+  "kutob_m1413_gmail_com": "kutob.m1413@gmail.com",
+  "@kutob_m1413_gmail_com": {
+    "description": "UI string (source key: kutob.m1413@gmail.com)"
+  },
+  "hGSHUM": "HGSHUM",
+  "@hGSHUM": {
+    "description": "UI string (source key: HGSHUM)"
+  },
+  "gregory_Smith": "جريجوري سميث",
+  "@gregory_Smith": {
+    "description": "UI string (source key: Gregory Smith)"
+  },
+  "n652_UKW": "652 - UKW",
+  "@n652_UKW": {
+    "description": "UI string (source key: 652 - UKW)"
+  },
+  "how_is_your_trip": "كيف كانت رحلتك؟",
+  "@how_is_your_trip": {
+    "description": "UI string (source key: How is your trip?)"
+  },
+  "your_feedback_will_help_improve_driving_experience": "ملاحظاتك ستساعد في تحسين تجربة القيادة",
+  "@your_feedback_will_help_improve_driving_experience": {
+    "description": "UI string (source key: Your feedback will help improve driving experience)"
+  },
+  "additional_comments": "تعليقات إضافية...",
+  "@additional_comments": {
+    "description": "UI string (source key: Additional comments...)"
+  },
+  "submit_Review": "إرسال التقييم",
+  "@submit_Review": {
+    "description": "UI string (source key: Submit Review)"
+  },
+  "rating": "التقييم",
+  "@rating": {
+    "description": "UI string (source key: Rating)"
+  },
+  "wow_A_5_star_Wanna_add_tip_for_Gregory": "واو! 5 نجوم!\nهل تريد إضافة إكرامية لجريجوري؟",
+  "@wow_A_5_star_Wanna_add_tip_for_Gregory": {
+    "description": "UI string (source key: Wow! A 5 star !\nWanna add tip for Gregory?)"
+  },
+  "choose_other_amount": "اختر مبلغاً آخر",
+  "@choose_other_amount": {
+    "description": "UI string (source key: Choose other amount)"
+  },
+  "done": "تم",
+  "@done": {
+    "description": "UI string (source key: Done)"
+  },
+  "maybe_next_time": "ربما في المرة القادمة",
+  "@maybe_next_time": {
+    "description": "UI string (source key: Maybe next time)"
+  },
+  "tips": "إكراميات",
+  "@tips": {
+    "description": "UI string (source key: Tips)"
+  },
+  "choose_the_type_of_entity_you_represent": "اختر نوع الجهة التي تمثلها",
+  "@choose_the_type_of_entity_you_represent": {
+    "description": "UI string (source key: Choose the type of entity you represent)"
+  },
+  "government_Entity": "جهة حكومية",
+  "@government_Entity": {
+    "description": "UI string (source key: Government Entity)"
+  },
+  "company_or_Organization": "شركة أو منظمة",
+  "@company_or_Organization": {
+    "description": "UI string (source key: Company or Organization)"
+  },
+  "individual": "فرد",
+  "@individual": {
+    "description": "UI string (source key: Individual)"
+  },
+  "next": "التالي",
+  "@next": {
+    "description": "UI string (source key: Next)"
+  },
+  "register_a_Success_Partner_Step_1_of_3": "تسجيل شريك نجاح - الخطوة 1 من 3",
+  "@register_a_Success_Partner_Step_1_of_3": {
+    "description": "UI string (source key: Register a Success Partner - Step 1 of 3 )"
+  },
+  "company_Information": "معلومات الشركة",
+  "@company_Information": {
+    "description": "UI string (source key: Company Information)"
+  },
+  "enter_company_name": "أدخل اسم الشركة *",
+  "@enter_company_name": {
+    "description": "UI string (source key: Enter company name *)"
+  },
+  "enter_phone_number": "أدخل رقم الهاتف *",
+  "@enter_phone_number": {
+    "description": "UI string (source key: Enter phone number *)"
+  },
+  "set_Location": "تعيين الموقع *",
+  "@set_Location": {
+    "description": "UI string (source key: Set Location *)"
+  },
+  "enter_business_description": "أدخل وصف النشاط التجاري *",
+  "@enter_business_description": {
+    "description": "UI string (source key: Enter business description *)"
+  },
+  "documents": "المستندات",
+  "@documents": {
+    "description": "UI string (source key: Documents)"
+  },
+  "upload_Place_Image": "رفع صورة المكان *",
+  "@upload_Place_Image": {
+    "description": "UI string (source key: Upload Place Image *)"
+  },
+  "tap_to_select_image": "انقر لاختيار صورة",
+  "@tap_to_select_image": {
+    "description": "UI string (source key: Tap to select image)"
+  },
+  "attach_License_Document": "إرفاق وثيقة الترخيص *",
+  "@attach_License_Document": {
+    "description": "UI string (source key: Attach License Document *)"
+  },
+  "the_file_has_been_successfully_uploaded": "تم رفع الملف بنجاح",
+  "@the_file_has_been_successfully_uploaded": {
+    "description": "UI string (source key: The file has been successfully uploaded.)"
+  },
+  "attach_Registration_Letter": "إرفاق خطاب التسجيل *",
+  "@attach_Registration_Letter": {
+    "description": "UI string (source key: Attach Registration Letter *)"
+  },
+  "service_Details": "تفاصيل الخدمة",
+  "@service_Details": {
+    "description": "UI string (source key: Service Details)"
+  },
+  "describe_your_provided_services": "صف الخدمات التي تقدمها *",
+  "@describe_your_provided_services": {
+    "description": "UI string (source key: Describe your provided services *)"
+  },
+  "cancel_Order": "إلغاء الطلب",
+  "@cancel_Order": {
+    "description": "UI string (source key: Cancel Order)"
+  },
+  "company_Information_Step_3_of_3": "معلومات الشركة - الخطوة 3 من 3",
+  "@company_Information_Step_3_of_3": {
+    "description": "UI string (source key: Company Information -  Step 3 of 3)"
+  },
+  "step_2_of_3": "الخطوة 2 من 3",
+  "@step_2_of_3": {
+    "description": "UI string (source key: Step 2 of 3)"
+  },
+  "create_an_account": "إنشاء حساب",
+  "@create_an_account": {
+    "description": "UI string (source key: Create an account)"
+  },
+  "let_s_get_started_by_filling_out_the_form_below": "لنبدأ بملء النموذج أدناه",
+  "@let_s_get_started_by_filling_out_the_form_below": {
+    "description": "UI string (source key: Let's get started by filling out the form below.)"
+  },
+  "next2": "التالي ",
+  "@next2": {
+    "description": "UI string (source key: Next )"
+  },
+  "initiate": "بدء ",
+  "@initiate": {
+    "description": "UI string (source key: Initiate )"
+  },
+  "what_kind_of_tour_would_you_like_to_explore_today": "أي نوع من الجولات تود استكشافه اليوم؟",
+  "@what_kind_of_tour_would_you_like_to_explore_today": {
+    "description": "UI string (source key: What kind of tour would you like to explore today?)"
+  },
+  "select_My_Own_Tour_Route": "اختر مسار جولتي الخاص",
+  "@select_My_Own_Tour_Route": {
+    "description": "UI string (source key: Select My Own Tour Route)"
+  },
+  "get_Help_from_the_Driver_Guide": "احصل على مساعدة من دليل السائق",
+  "@get_Help_from_the_Driver_Guide": {
+    "description": "UI string (source key: Get Help from the Driver Guide)"
+  },
+  "current_Address": "العنوان الحالي",
+  "@current_Address": {
+    "description": "UI string (source key: Current Address)"
+  },
+  "current_Country": "البلد الحالي",
+  "@current_Country": {
+    "description": "UI string (source key: Current Country)"
+  },
+  "current_City": "المدينة الحالية",
+  "@current_City": {
+    "description": "UI string (source key: Current City)"
+  },
+  "initiate2": "احجز الآن",
+  "@initiate2": {
+    "description": "UI string (source key: Initiate)"
+  },
+  "trip_Assistance_Selected": "تم اختيار المساعدة في الرحلة",
+  "@trip_Assistance_Selected": {
+    "description": "UI string (source key: Trip Assistance Selected)"
+  },
+  "personalized_Route": "مسار مخصص",
+  "@personalized_Route": {
+    "description": "UI string (source key: Personalized Route)"
+  },
+  "top_local_attractions_curated_just_for_you": "أبرز المعالم المحلية المختارة خصيصاً لك",
+  "@top_local_attractions_curated_just_for_you": {
+    "description": "UI string (source key: Top local attractions curated just for you)"
+  },
+  "historical_Sites": "مواقع تاريخية",
+  "@historical_Sites": {
+    "description": "UI string (source key: Historical Sites)"
+  },
+  "local_Markets": "أسواق محلية",
+  "@local_Markets": {
+    "description": "UI string (source key: Local Markets)"
+  },
+  "scenic_Views": "مناظر خلابة",
+  "@scenic_Views": {
+    "description": "UI string (source key: Scenic Views)"
+  },
+  "cultural_Centers": "مراكز ثقافية",
+  "@cultural_Centers": {
+    "description": "UI string (source key: Cultural Centers)"
+  },
+  "contact_Your_Guide": "اتصل بدليلك",
+  "@contact_Your_Guide": {
+    "description": "UI string (source key: Contact Your Guide)"
+  },
+  "view_Trip_Details": "عرض تفاصيل الرحلة",
+  "@view_Trip_Details": {
+    "description": "UI string (source key: View Trip Details)"
+  },
+  "suggest_a_New_Place": "اقترح مكاناً جديداً!",
+  "@suggest_a_New_Place": {
+    "description": "UI string (source key: Suggest a New Place!)"
+  },
+  "help_Us_Enrich_the_Experience": "ساعدنا في إثراء التجربة",
+  "@help_Us_Enrich_the_Experience": {
+    "description": "UI string (source key: Help Us Enrich the Experience)"
+  },
+  "do_you_know_a_hidden_gem_or_a_must_visit_spot_that_s_not_listed_in_our_app_We_d_": "هل تعرف مكاناً مخفياً أو موقعاً يجب زيارته غير مدرج في تطبيقنا؟ نحب أن نسمع منك!",
+  "@do_you_know_a_hidden_gem_or_a_must_visit_spot_that_s_not_listed_in_our_app_We_d_": {
+    "description": "UI string (source key: Do you know a hidden gem or a must-visit spot that's not listed in our app? We'd love to hear from you!)"
+  },
+  "your_suggestions_help_others_discover_more_amazing_places": "اقتراحاتك تساعد الآخرين على اكتشاف أماكن مذهلة أكثر!",
+  "@your_suggestions_help_others_discover_more_amazing_places": {
+    "description": "UI string (source key: Your suggestions help others discover more amazing places!)"
+  },
+  "share_your_favorite_place_with_the_community": "شارك مكانك المفضل مع المجتمع:",
+  "@share_your_favorite_place_with_the_community": {
+    "description": "UI string (source key: Share your favorite place with the community:)"
+  },
+  "place_Name": "اسم المكان",
+  "@place_Name": {
+    "description": "UI string (source key: Place Name)"
+  },
+  "enter_the_name_of_the_place": "أدخل اسم المكان",
+  "@enter_the_name_of_the_place": {
+    "description": "UI string (source key: Enter the name of the place)"
+  },
+  "tell_us_what_makes_it_special": "أخبرنا ما الذي يجعله مميزاً",
+  "@tell_us_what_makes_it_special": {
+    "description": "UI string (source key: Tell us what makes it special)"
+  },
+  "describe_what_makes_this_place_unique_and_worth_visiting": "صف ما يجعل هذا المكان فريداً ويستحق الزيارة...",
+  "@describe_what_makes_this_place_unique_and_worth_visiting": {
+    "description": "UI string (source key: Describe what makes this place unique and worth visiting...)"
+  },
+  "upload_Photos": "رفع  صور",
+  "@upload_Photos": {
+    "description": "UI string (source key: Upload  Photos)"
+  },
+  "tap_to_upload_photos": "انقر لرفع الصور",
+  "@tap_to_upload_photos": {
+    "description": "UI string (source key: Tap to upload photos)"
+  },
+  "image_uploaded_successfully": "تم رفع الصورة بنجاح ✅",
+  "@image_uploaded_successfully": {
+    "description": "UI string (source key: Image uploaded successfully. ✅)"
+  },
+  "maximum_3_photos": "الحد الأقصى 3 صور",
+  "@maximum_3_photos": {
+    "description": "UI string (source key: Maximum 3 photos)"
+  },
+  "mark_the_Location_on_the_Map": "حدد الموقع على الخريطة",
+  "@mark_the_Location_on_the_Map": {
+    "description": "UI string (source key: Mark the Location on the Map)"
+  },
+  "tap_to_select_location_on_map": "انقر لتحديد الموقع على الخريطة",
+  "@tap_to_select_location_on_map": {
+    "description": "UI string (source key: Tap to select location on map)"
+  },
+  "location_has_been_set": "تم تعيين الموقع ✅",
+  "@location_has_been_set": {
+    "description": "UI string (source key: Location has been set✅)"
+  },
+  "submit": "إرسال",
+  "@submit": {
+    "description": "UI string (source key:  Submit)"
+  },
+  "ahmed_Al_Qahtani": "أحمد القحطاني",
+  "@ahmed_Al_Qahtani": {
+    "description": "UI string (source key: Ahmed Al-Qahtani)"
+  },
+  "delivery_Agent": "مندوب التوصيل",
+  "@delivery_Agent": {
+    "description": "UI string (source key: Delivery Agent)"
+  },
+  "n966_50_123_4567": "+966 50 123 4567",
+  "@n966_50_123_4567": {
+    "description": "UI string (source key: +966 50 123 4567)"
+  },
+  "chat_Messages": "رسائل الدردشة",
+  "@chat_Messages": {
+    "description": "UI string (source key: Chat Messages)"
+  },
+  "vehicle_Plate": "لوحة المركبة",
+  "@vehicle_Plate": {
+    "description": "UI string (source key: Vehicle Plate)"
+  },
+  "kSA_1234_ABC": "KSA | 1234 ABC",
+  "@kSA_1234_ABC": {
+    "description": "UI string (source key: KSA | 1234 ABC)"
+  },
+  "vERIFIED": "تم التحقق",
+  "@vERIFIED": {
+    "description": "UI string (source key: VERIFIED)"
+  },
+  "live_Location_Tracking": "تتبع الموقع الحي",
+  "@live_Location_Tracking": {
+    "description": "UI string (source key: Live Location Tracking)"
+  },
+  "real_time_tracking_active": "تتبع حي مفعل",
+  "@real_time_tracking_active": {
+    "description": "UI string (source key: Real-time tracking active)"
+  },
+  "track_Location": "تتبع الموقع",
+  "@track_Location": {
+    "description": "UI string (source key: Track Location)"
+  },
+  "call_Now": "اتصل الآن",
+  "@call_Now": {
+    "description": "UI string (source key: Call Now)"
+  },
+  "type_your_message": "اكتب رسالتك...",
+  "@type_your_message": {
+    "description": "UI string (source key: Type your message...)"
+  },
+  "pay_the_reservation_fee": "دفع رسوم الحجز",
+  "@pay_the_reservation_fee": {
+    "description": "UI string (source key: Pay the reservation fee)"
+  },
+  "where_would_you_like_to_start_your_ride": "من أين تود بدء رحلتك؟",
+  "@where_would_you_like_to_start_your_ride": {
+    "description": "UI string (source key: Where would you like to start your ride?)"
+  },
+  "united_States": "الولايات المتحدة",
+  "@united_States": {
+    "description": "UI string (source key: United States)"
+  },
+  "san_Francisco": "سان فرانسيسكو",
+  "@san_Francisco": {
+    "description": "UI string (source key: San Francisco)"
+  },
+  "n1234_Market_Street_Downtown": "1234 شارع السوق، وسط المدينة",
+  "@n1234_Market_Street_Downtown": {
+    "description": "UI string (source key: 1234 Market Street, Downtown)"
+  },
+  "map_showing_your_current_location": "خريطة تظهر موقعك الحالي",
+  "@map_showing_your_current_location": {
+    "description": "UI string (source key: Map showing your current location)"
+  },
+  "design_My_Route": "صمم مساري",
+  "@design_My_Route": {
+    "description": "UI string (source key: Design My Route)"
+  },
+  "add_landmarks_to_customize_your_journey": "أضف معالم لتخصيص رحلتك",
+  "@add_landmarks_to_customize_your_journey": {
+    "description": "UI string (source key: Add landmarks to customize your journey)"
+  },
+  "let_the_Driver_Decide": "دع السائق يقرر",
+  "@let_the_Driver_Decide": {
+    "description": "UI string (source key: Let the Driver Decide)"
+  },
+  "rely_on_the_driver_s_local_expertise": "اعتمد على خبرة السائق المحلية",
+  "@rely_on_the_driver_s_local_expertise": {
+    "description": "UI string (source key: Rely on the driver's local expertise)"
+  },
+  "choose_Your_Location": "اختر موقعك",
+  "@choose_Your_Location": {
+    "description": "UI string (source key: Choose Your Location)"
+  },
+  "cardholder_Name": "اسم حامل البطاقة",
+  "@cardholder_Name": {
+    "description": "UI string (source key: Cardholder Name)"
+  },
+  "enter_cardholder_name": "أدخل اسم حامل البطاقة",
+  "@enter_cardholder_name": {
+    "description": "UI string (source key: Enter cardholder name)"
+  },
+  "card_Number": "رقم البطاقة",
+  "@card_Number": {
+    "description": "UI string (source key: Card Number)"
+  },
+  "expiry_Month": "شهر الانتهاء",
+  "@expiry_Month": {
+    "description": "UI string (source key: Expiry Month)"
+  },
+  "mM": "ش",
+  "@mM": {
+    "description": "UI string (source key: MM)"
+  },
+  "expiry_Year": "سنة الانتهاء",
+  "@expiry_Year": {
+    "description": "UI string (source key: Expiry Year)"
+  },
+  "yY": "س",
+  "@yY": {
+    "description": "UI string (source key: YY)"
+  },
+  "save_this_card_for_future_payments": "احفظ هذه البطاقة للمدفوعات المستقبلية",
+  "@save_this_card_for_future_payments": {
+    "description": "UI string (source key: Save this card for future payments)"
+  },
+  "save_Card": "حفظ البطاقة",
+  "@save_Card": {
+    "description": "UI string (source key: Save Card)"
+  },
+  "close_Page": "إغلاق الصفحة",
+  "@close_Page": {
+    "description": "UI string (source key: Close Page)"
+  },
+  "please_do_not_close_the_page_until_the_payment_is_completed": "يرجى عدم إغلاق الصفحة حتى اكتمال الدفع",
+  "@please_do_not_close_the_page_until_the_payment_is_completed": {
+    "description": "UI string (source key: Please do not close the page until the payment is completed)"
+  },
+  "payment_Confirmed": "تم تأكيد الدفع!",
+  "@payment_Confirmed": {
+    "description": "UI string (source key: Payment Confirmed!)"
+  },
+  "your_request_has_been_sent_successfully_and_a_driver_will_accept_your_request_wi": "\"تم إرسال طلبك بنجاح، وسيقبل أحد السائقين طلبك خلال الدقائق القليلة القادمة",
+  "@your_request_has_been_sent_successfully_and_a_driver_will_accept_your_request_wi": {
+    "description": "UI string (source key: \"Your request has been sent successfully, and a driver will accept your request within the next few minutes)"
+  },
+  "go_to_Order": "اذهب إلى الطلب",
+  "@go_to_Order": {
+    "description": "UI string (source key: Go to Order)"
+  },
+  "the_last_payment_was_not_completed_please_try_again": "لم يتم إكمال الدفع الأخير، يرجى المحاولة مرة أخرى",
+  "@the_last_payment_was_not_completed_please_try_again": {
+    "description": "UI string (source key: The last payment was not completed, please try again)"
+  },
+  "payment_History": "سجل المدفوعات",
+  "@payment_History": {
+    "description": "UI string (source key: Payment History)"
+  },
+  "tXN_ID": "معرف العملية:",
+  "@tXN_ID": {
+    "description": "UI string (source key: TXN ID:)"
+  },
+  "k3603b6854b": "معرف العملية",
+  "@k3603b6854b": {
+    "description": "UI string (source key: معرف العملية)"
+  },
+  "online_Payment_ID": "معرف الدفع الإلكتروني:",
+  "@online_Payment_ID": {
+    "description": "UI string (source key: Online Payment ID:)"
+  },
+  "online_Payment_ID2": "معرف الدفع الإلكتروني",
+  "@online_Payment_ID2": {
+    "description": "UI string (source key: Online Payment ID)"
+  },
+  "salary_Deposit": "إيداع الراتب",
+  "@salary_Deposit": {
+    "description": "UI string (source key: Salary Deposit)"
+  },
+  "tXN_ID_TXN654321987": "معرف العملية: TXN654321987",
+  "@tXN_ID_TXN654321987": {
+    "description": "UI string (source key: TXN ID: TXN654321987)"
+  },
+  "dec_14_2024_9_15_AM": "14 ديسمبر 2024 • 9:15 صباحاً",
+  "@dec_14_2024_9_15_AM": {
+    "description": "UI string (source key: Dec 14, 2024 • 9:15 AM)"
+  },
+  "n3_250_00": "+3,250.00 دولار",
+  "@n3_250_00": {
+    "description": "UI string (source key: +$3,250.00)"
+  },
+  "electronic_Payment_ID": "معرف الدفع الإلكتروني",
+  "@electronic_Payment_ID": {
+    "description": "UI string (source key: Electronic Payment ID)"
+  },
+  "ePY_2024_654321": "EPY-2024-654321",
+  "@ePY_2024_654321": {
+    "description": "UI string (source key: EPY-2024-654321)"
+  },
+  "utility_Bill_Payment": "دفع فواتير الخدمات",
+  "@utility_Bill_Payment": {
+    "description": "UI string (source key: Utility Bill Payment)"
+  },
+  "tXN_ID_TXN456789012": "معرف العملية: TXN456789012",
+  "@tXN_ID_TXN456789012": {
+    "description": "UI string (source key: TXN ID: TXN456789012)"
+  },
+  "dec_13_2024_4_22_PM": "13 ديسمبر 2024 • 4:22 مساءً",
+  "@dec_13_2024_4_22_PM": {
+    "description": "UI string (source key: Dec 13, 2024 • 4:22 PM)"
+  },
+  "n156_78": "-156.78 دولار",
+  "@n156_78": {
+    "description": "UI string (source key: -$156.78)"
+  },
+  "ePY_2024_456789": "EPY-2024-456789",
+  "@ePY_2024_456789": {
+    "description": "UI string (source key: EPY-2024-456789)"
+  },
+  "restaurant_Payment": "دفع مطعم",
+  "@restaurant_Payment": {
+    "description": "UI string (source key: Restaurant Payment)"
+  },
+  "tXN_ID_TXN321654987": "معرف العملية: TXN321654987",
+  "@tXN_ID_TXN321654987": {
+    "description": "UI string (source key: TXN ID: TXN321654987)"
+  },
+  "dec_12_2024_7_45_PM": "12 ديسمبر 2024 • 7:45 مساءً",
+  "@dec_12_2024_7_45_PM": {
+    "description": "UI string (source key: Dec 12, 2024 • 7:45 PM)"
+  },
+  "n42_50": "-42.50 دولار",
+  "@n42_50": {
+    "description": "UI string (source key: -$42.50)"
+  },
+  "ePY_2024_321654": "EPY-2024-321654",
+  "@ePY_2024_321654": {
+    "description": "UI string (source key: EPY-2024-321654)"
+  },
+  "investment_Transfer": "تحويل استثماري",
+  "@investment_Transfer": {
+    "description": "UI string (source key: Investment Transfer)"
+  },
+  "tXN_ID_TXN987123456": "معرف العملية: TXN987123456",
+  "@tXN_ID_TXN987123456": {
+    "description": "UI string (source key: TXN ID: TXN987123456)"
+  },
+  "dec_11_2024_11_30_AM": "11 ديسمبر 2024 • 11:30 صباحاً",
+  "@dec_11_2024_11_30_AM": {
+    "description": "UI string (source key: Dec 11, 2024 • 11:30 AM)"
+  },
+  "n500_00": "-500.00 دولار",
+  "@n500_00": {
+    "description": "UI string (source key: -$500.00)"
+  },
+  "ePY_2024_987123": "EPY-2024-987123",
+  "@ePY_2024_987123": {
+    "description": "UI string (source key: EPY-2024-987123)"
+  },
+  "refund_Online_Store": "استرداد - متجر إلكتروني",
+  "@refund_Online_Store": {
+    "description": "UI string (source key: Refund - Online Store)"
+  },
+  "tXN_ID_TXN147258369": "معرف العملية: TXN147258369",
+  "@tXN_ID_TXN147258369": {
+    "description": "UI string (source key: TXN ID: TXN147258369)"
+  },
+  "dec_10_2024_3_18_PM": "10 ديسمبر 2024 • 3:18 مساءً",
+  "@dec_10_2024_3_18_PM": {
+    "description": "UI string (source key: Dec 10, 2024 • 3:18 PM)"
+  },
+  "start_from_your_current_location": "ابدأ من موقعك الحالي",
+  "@start_from_your_current_location": {
+    "description": "UI string (source key: Start from your current location)"
+  },
+  "change_city": "تغيير المدينة",
+  "@change_city": {
+    "description": "UI string (source key: Change city)"
+  },
+  "view_My_Trip": "عرض رحلتي",
+  "@view_My_Trip": {
+    "description": "UI string (source key: View My Trip)"
+  },
+  "experience_top_destinations": "اختبر أفضل الوجهات",
+  "@experience_top_destinations": {
+    "description": "UI string (source key: Experience top destinations)"
+  },
+  "tourist_landmarks": "معالم سياحية",
+  "@tourist_landmarks": {
+    "description": "UI string (source key: Tourist landmarks)"
+  },
+  "landmarks": "معالم - معالم سياحية",
+  "@landmarks": {
+    "description": "UI string (source key: Landmarks - معالم سياحية)"
+  },
+  "google_Map": "خريطة جوجل",
+  "@google_Map": {
+    "description": "UI string (source key: Google Map)"
+  },
+  "agent_Location": "موقع المندوب",
+  "@agent_Location": {
+    "description": "UI string (source key: Agent Location)"
+  },
+  "the_details": "التفاصيل",
+  "@the_details": {
+    "description": "UI string (source key: the details)"
+  },
+  "select_Travel_Date": "اختر تاريخ السفر",
+  "@select_Travel_Date": {
+    "description": "UI string (source key: Select Travel Date)"
+  },
+  "choose_your_preferred_departure_date": "اختر تاريخ المغادرة المفضل لديك",
+  "@choose_your_preferred_departure_date": {
+    "description": "UI string (source key: Choose your preferred departure date)"
+  },
+  "selected_Date": "التاريخ المختار",
+  "@selected_Date": {
+    "description": "UI string (source key: Selected Date)"
+  },
+  "march_15_2024": "15 مارس 2024",
+  "@march_15_2024": {
+    "description": "UI string (source key: March 15, 2024)"
+  },
+  "change_Date": "تغيير التاريخ",
+  "@change_Date": {
+    "description": "UI string (source key: Change Date)"
+  },
+  "select_Time": "اختر الوقت",
+  "@select_Time": {
+    "description": "UI string (source key: Select Time)"
+  },
+  "aM_PM": "صباحاً/مساءً",
+  "@aM_PM": {
+    "description": "UI string (source key: AM/PM)"
+  },
+  "no_Addresses_Found": "لم يتم العثور على عناوين",
+  "@no_Addresses_Found": {
+    "description": "UI string (source key: No Addresses Found)"
+  },
+  "you_haven_t_added_any_addresses_yet_Add_a_title_to_get_started": "لم تقم بإضافة أي عناوين بعد. أضف عنواناً للبدء",
+  "@you_haven_t_added_any_addresses_yet_Add_a_title_to_get_started": {
+    "description": "UI string (source key: You haven't added any addresses yet. Add a title to get started.)"
+  },
+  "payment_Methods": "طرق الدفع",
+  "@payment_Methods": {
+    "description": "UI string (source key: Payment Methods)"
+  },
+  "select": "اختر ",
+  "@select": {
+    "description": "UI string (source key: Select )"
+  },
+  "save": "حفظ",
+  "@save": {
+    "description": "UI string (source key: Save)"
+  },
+  "quick_Pay_Options": "خيارات الدفع السريع",
+  "@quick_Pay_Options": {
+    "description": "UI string (source key: Quick Pay Options)"
+  },
+  "saved_Cards": "البطاقات المحفوظة",
+  "@saved_Cards": {
+    "description": "UI string (source key: Saved Cards)"
+  },
+  "add_New_Payment_Method": "إضافة طريقة دفع جديدة",
+  "@add_New_Payment_Method": {
+    "description": "UI string (source key: Add New Payment Method)"
+  },
+  "hello_World": "مرحباً بالعالم",
+  "@hello_World": {
+    "description": "UI string (source key: Hello World)"
+  },
+  "no_cards_have_been_added": "لم تتم إضافة أي بطاقات!",
+  "@no_cards_have_been_added": {
+    "description": "UI string (source key: No cards have been added!)"
+  },
+  "payment_Card": "بطاقة الدفع",
+  "@payment_Card": {
+    "description": "UI string (source key: Payment Card)"
+  },
+  "choice": "اختيار",
+  "@choice": {
+    "description": "UI string (source key: Choice)"
+  },
+  "n8901": "•••• •••• •••• 8901",
+  "@n8901": {
+    "description": "UI string (source key: •••• •••• •••• 8901)"
+  },
+  "mastercard_Expires_08_25": "ماستركارد • تنتهي 08/25",
+  "@mastercard_Expires_08_25": {
+    "description": "UI string (source key: Mastercard • Expires 08/25)"
+  },
+  "n2468": "•••• •••• •••• 2468",
+  "@n2468": {
+    "description": "UI string (source key: •••• •••• •••• 2468)"
+  },
+  "american_Express_Expires_03_27": "أمريكان إكسبريس • تنتهي 03/27",
+  "@american_Express_Expires_03_27": {
+    "description": "UI string (source key: American Express • Expires 03/27)"
+  },
+  "number_of_Extra_Hours": "عدد الساعات الإضافية",
+  "@number_of_Extra_Hours": {
+    "description": "UI string (source key: Number of Extra Hours)"
+  },
+  "payment_Method": "طريقة الدفع",
+  "@payment_Method": {
+    "description": "UI string (source key: Payment Method)"
+  },
+  "add_Card": "إضافة بطاقة",
+  "@add_Card": {
+    "description": "UI string (source key: Add Card)"
+  },
+  "total_Price": "السعر الإجمالي",
+  "@total_Price": {
+    "description": "UI string (source key: Total Price)"
+  },
+  "n4_00pm": "4:00 مساءً",
+  "@n4_00pm": {
+    "description": "UI string (source key: 4:00pm)"
+  },
+  "n52": "5+ ساعات",
+  "@n52": {
+    "description": "UI string (source key: 5+ ساعات)"
+  },
+  "extra_hours_have_been_added_to_the_trip": "تمت إضافة ساعات إضافية للرحلة",
+  "@extra_hours_have_been_added_to_the_trip": {
+    "description": "UI string (source key: Extra hours have been added to the trip)"
+  },
+  "order_Summary": "ملخص الطلب",
+  "@order_Summary": {
+    "description": "UI string (source key: Order Summary)"
+  },
+  "request_summary": "ملخص الطلب",
+  "@request_summary": {
+    "description": "UI string (source key: request summary)"
+  },
+  "n25_40": "25.40 دولار",
+  "@n25_40": {
+    "description": "UI string (source key: $25.40)"
+  },
+  "n4_items": "(4 عناصر)",
+  "@n4_items": {
+    "description": "UI string (source key: (4 items))"
+  },
+  "reservations": "حجوزاتي",
+  "@reservations": {
+    "description": "UI string (source key: Reservations)"
+  },
+  "ux_welcome_login": "مرحباً بك في توري تاكسي",
+  "@ux_welcome_login": {
+    "description": "UI string (source key: ux_welcome_login)"
+  },
+  "ux_welcome_login_sub": "سجّل دخولك أو أنشئ حساباً لبدء حجز رحلتك السياحية بسهولة",
+  "@ux_welcome_login_sub": {
+    "description": "UI string (source key: ux_welcome_login_sub)"
+  },
+  "ux_booking_steps": "خطوات الحجز",
+  "@ux_booking_steps": {
+    "description": "UI string (source key: ux_booking_steps)"
+  },
+  "ux_step_trip_type": "نوع الرحلة",
+  "@ux_step_trip_type": {
+    "description": "UI string (source key: ux_step_trip_type)"
+  },
+  "ux_step_location": "الموقع",
+  "@ux_step_location": {
+    "description": "UI string (source key: ux_step_location)"
+  },
+  "ux_step_details": "التفاصيل",
+  "@ux_step_details": {
+    "description": "UI string (source key: ux_step_details)"
+  },
+  "ux_step_payment": "الدفع",
+  "@ux_step_payment": {
+    "description": "UI string (source key: ux_step_payment)"
+  },
+  "ux_choose_trip_type": "كيف تريد استكشاف وجهتك؟",
+  "@ux_choose_trip_type": {
+    "description": "UI string (source key: ux_choose_trip_type)"
+  },
+  "ux_choose_trip_hint": "اختر أحد الخيارين أدناه، ثم حدّد موقعك للمتابعة",
+  "@ux_choose_trip_hint": {
+    "description": "UI string (source key: ux_choose_trip_hint)"
+  },
+  "ux_car_list_hint": "اختر السيارة المناسبة لرحلتك ثم اضغط اختيار",
+  "@ux_car_list_hint": {
+    "description": "UI string (source key: ux_car_list_hint)"
+  },
+  "ux_car_available": "سيارة متاحة",
+  "@ux_car_available": {
+    "description": "UI string (source key: ux_car_available)"
+  },
+  "ux_per_hour": "للساعة",
+  "@ux_per_hour": {
+    "description": "UI string (source key: ux_per_hour)"
+  },
+  "ux_min_hours": "الحد الأدنى",
+  "@ux_min_hours": {
+    "description": "UI string (source key: ux_min_hours)"
+  },
+  "ux_car_list_empty_title": "لا توجد سيارات",
+  "@ux_car_list_empty_title": {
+    "description": "UI string (source key: ux_car_list_empty_title)"
+  },
+  "ux_car_list_empty_msg": "لا توجد سيارات متاحة حالياً، حاول لاحقاً",
+  "@ux_car_list_empty_msg": {
+    "description": "UI string (source key: ux_car_list_empty_msg)"
+  },
+  "ux_car_list_error_title": "تعذّر تحميل السيارات",
+  "@ux_car_list_error_title": {
+    "description": "UI string (source key: ux_car_list_error_title)"
+  },
+  "ux_car_list_error_msg": "تحقق من الاتصال بالإنترنت ثم أعد المحاولة",
+  "@ux_car_list_error_msg": {
+    "description": "UI string (source key: ux_car_list_error_msg)"
+  },
+  "ux_retry": "إعادة المحاولة",
+  "@ux_retry": {
+    "description": "UI string (source key: ux_retry)"
+  },
+  "booking_success_title": "تم الحجز بنجاح",
+  "@booking_success_title": {
+    "description": "UI string (source key: booking_success_title)"
+  },
+  "booking_success_msg": "تم إرسال طلبك بنجاح. سيتم إشعار السائقين وسيقبل أحدها طلبك خلال الدقائق القادمة.",
+  "@booking_success_msg": {
+    "description": "UI string (source key: booking_success_msg)"
+  },
+  "booking_login_required": "يجب تسجيل الدخول أولاً لإتمام الحجز",
+  "@booking_login_required": {
+    "description": "UI string (source key: booking_login_required)"
+  },
+  "booking_save_failed": "تعذّر إرسال الطلب. تحقق من الاتصال وحاول مرة أخرى",
+  "@booking_save_failed": {
+    "description": "UI string (source key: booking_save_failed)"
+  },
+  "ux_custom_route_desc": "أنت تختار الأماكن على الخريطة وتحدد مسارك بنفسك",
+  "@ux_custom_route_desc": {
+    "description": "UI string (source key: ux_custom_route_desc)"
+  },
+  "ux_driver_guide_desc": "السائق يرشدك ويقترح أفضل الأماكن السياحية",
+  "@ux_driver_guide_desc": {
+    "description": "UI string (source key: ux_driver_guide_desc)"
+  },
+  "ux_my_bookings_sub": "تابع حالة حجوزاتك الحالية والسابقة من هنا",
+  "@ux_my_bookings_sub": {
+    "description": "UI string (source key: ux_my_bookings_sub)"
+  },
+  "ux_no_bookings_title": "لا توجد حجوزات بعد",
+  "@ux_no_bookings_title": {
+    "description": "UI string (source key: ux_no_bookings_title)"
+  },
+  "ux_no_bookings_msg": "ابدأ بحجز رحلتك الأولى من تبويب «احجز الآن»",
+  "@ux_no_bookings_msg": {
+    "description": "UI string (source key: ux_no_bookings_msg)"
+  },
+  "ux_account_sub": "إدارة ملفك الشخصي، اللغة، والدعم",
+  "@ux_account_sub": {
+    "description": "UI string (source key: ux_account_sub)"
+  },
+  "ux_account_settings": "إعدادات الحساب",
+  "@ux_account_settings": {
+    "description": "UI string (source key: ux_account_settings)"
+  },
+  "ux_new_booking": "حجز رحلة جديدة",
+  "@ux_new_booking": {
+    "description": "UI string (source key: ux_new_booking)"
+  },
+  "dialog_ok": "حسناً",
+  "@dialog_ok": {
+    "description": "UI string (source key: dialog_ok)"
+  },
+  "dialog_yes": "نعم",
+  "@dialog_yes": {
+    "description": "UI string (source key: dialog_yes)"
+  },
+  "dialog_no": "لا",
+  "@dialog_no": {
+    "description": "UI string (source key: dialog_no)"
+  },
+  "dialog_confirm": "تأكيد",
+  "@dialog_confirm": {
+    "description": "UI string (source key: dialog_confirm)"
+  },
+  "dialog_cancel": "إلغاء",
+  "@dialog_cancel": {
+    "description": "UI string (source key: dialog_cancel)"
+  },
+  "dialog_error_title": "خطأ",
+  "@dialog_error_title": {
+    "description": "UI string (source key: dialog_error_title)"
+  },
+  "dialog_location_error": "لم نتمكن من العثور على موقعك الحالي، يرجى تفعيل الموقع",
+  "@dialog_location_error": {
+    "description": "UI string (source key: dialog_location_error)"
+  },
+  "dialog_country_mismatch_title": "الدولة غير صحيحة",
+  "@dialog_country_mismatch_title": {
+    "description": "UI string (source key: dialog_country_mismatch_title)"
+  },
+  "dialog_country_mismatch_msg": "الدولة المعروضة لا تطابق موقعك الحالي. يرجى اختيار الدولة الصحيحة.",
+  "@dialog_country_mismatch_msg": {
+    "description": "UI string (source key: dialog_country_mismatch_msg)"
+  },
+  "dialog_outside_coverage_title": "خارج نطاق الخدمة",
+  "@dialog_outside_coverage_title": {
+    "description": "UI string (source key: dialog_outside_coverage_title)"
+  },
+  "dialog_outside_coverage_msg": "الدولة التي أنت فيها حالياً خارج حدود عمل النظام. لا يمكن إتمام الحجز من موقعك الحالي.",
+  "@dialog_outside_coverage_msg": {
+    "description": "UI string (source key: dialog_outside_coverage_msg)"
+  },
+  "dialog_change_country_title": "تغيير الدولة",
+  "@dialog_change_country_title": {
+    "description": "UI string (source key: dialog_change_country_title)"
+  },
+  "dialog_change_country_msg": "هل أنت متأكد من تغيير الدولة؟",
+  "@dialog_change_country_msg": {
+    "description": "UI string (source key: dialog_change_country_msg)"
+  },
+  "dialog_change_city_title": "تغيير المدينة",
+  "@dialog_change_city_title": {
+    "description": "UI string (source key: dialog_change_city_title)"
+  },
+  "dialog_change_city_msg": "هل أنت متأكد من تغيير المدينة؟",
+  "@dialog_change_city_msg": {
+    "description": "UI string (source key: dialog_change_city_msg)"
+  },
+  "dialog_select_trip_or_location": "يرجى تحديد نوع الجولة المطلوبة أو الموقع",
+  "@dialog_select_trip_or_location": {
+    "description": "UI string (source key: dialog_select_trip_or_location)"
+  },
+  "dialog_update_location_title": "تحديث الموقع",
+  "@dialog_update_location_title": {
+    "description": "UI string (source key: dialog_update_location_title)"
+  },
+  "dialog_update_location_msg": "هل أنت متأكد من تحديث موقعك الحالي؟",
+  "@dialog_update_location_msg": {
+    "description": "UI string (source key: dialog_update_location_msg)"
+  },
+  "dialog_select_all_options": "يرجى تحديد كل الخيارات",
+  "@dialog_select_all_options": {
+    "description": "UI string (source key: dialog_select_all_options)"
+  },
+  "dialog_delete_account_title": "حذف الحساب",
+  "@dialog_delete_account_title": {
+    "description": "UI string (source key: dialog_delete_account_title)"
+  },
+  "dialog_delete_account_msg": "هل أنت متأكد من إرسال طلب حذف الحساب؟ قد يستغرق الحذف 24 ساعة في حال عدم وجود مبالغ معلقة أو رصيد.",
+  "@dialog_delete_account_msg": {
+    "description": "UI string (source key: dialog_delete_account_msg)"
+  },
+  "dialog_request_sent_title": "تم إرسال الطلب",
+  "@dialog_request_sent_title": {
+    "description": "UI string (source key: dialog_request_sent_title)"
+  },
+  "dialog_request_sent_msg": "يمكنك متابعة حالة الطلب من خلال تذاكر الدعم الفني",
+  "@dialog_request_sent_msg": {
+    "description": "UI string (source key: dialog_request_sent_msg)"
+  },
+  "take_a_photo_to_set_your_profile_picture_using_the_camera_directly": "التقط صورة لتعيين صورة ملفك الشخصي باستخدام الكاميرا مباشرة",
+  "@take_a_photo_to_set_your_profile_picture_using_the_camera_directly": {
+    "description": "UI string (source key: Take a photo to set your profile picture using the camera directly.)"
+  },
+  "upload_images_to_set_your_account_profile_picture": "رفع صور لتعيين صورة ملفك الشخصي",
+  "@upload_images_to_set_your_account_profile_picture": {
+    "description": "UI string (source key: Upload images to set your account profile picture.\n)"
+  },
+  "allow_the_Ara_Watan_app_to_access_your_location_for_the_purpose_of_delivering_yo": "السماح لتطبيق \"عرا وطن\" بالوصول إلى موقعك لغرض توصيلك إلى الوجهات السياحية المحددة",
+  "@allow_the_Ara_Watan_app_to_access_your_location_for_the_purpose_of_delivering_yo": {
+    "description": "UI string (source key: Allow the \"Ara Watan\" app to access your location for the purpose of delivering you to the specified tourist destinations.)"
+  },
+  "this_allows_for_the_exploitation_of_the_nation_s_resources_to_access_distinctive": "هذا يسمح باستغلال موارد الوطن للوصول إلى المناطق السياحية المميزة",
+  "@this_allows_for_the_exploitation_of_the_nation_s_resources_to_access_distinctive": {
+    "description": "UI string (source key: this allows for the exploitation of the nation's resources to access distinctive tourist areas.)"
+  },
+  "unexpected_error_title": "حدث خطأ غير متوقع",
+  "@unexpected_error_title": {
+    "description": "UI string (source key: unexpected_error_title)"
+  },
+  "unexpected_error_msg": "أعد فتح التطبيق أو ارجع للصفحة الرئيسية.",
+  "@unexpected_error_msg": {
+    "description": "UI string (source key: unexpected_error_msg)"
+  },
+  "dialog_location_required": "يرجى تحديد موقعك الحالي.",
+  "@dialog_location_required": {
+    "description": "UI string (source key: dialog_location_required)"
+  },
+  "custom_place_name_required": "أدخل اسماً للموقع أو اختره من البحث",
+  "@custom_place_name_required": {
+    "description": "UI string (source key: custom_place_name_required)"
+  },
+  "custom_place_duplicate": "هذا الموقع مضاف مسبقاً في رحلتك",
+  "@custom_place_duplicate": {
+    "description": "UI string (source key: custom_place_duplicate)"
+  },
+  "instant_booking": "حجز فوري",
+  "@instant_booking": {
+    "description": "UI string (source key: instant_booking)"
+  },
+  "custom_place_added": "تمت إضافة: {name}",
+  "@custom_place_added": {
+    "description": "UI string (source key: custom_place_added)",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "name"
+      }
+    }
+  },
+  "view_my_trip": "عرض رحلتي",
+  "@view_my_trip": {
+    "description": "UI string (source key: view_my_trip)"
+  },
+  "landmarks_loaded_count": "تم عرض {count} معلم",
+  "@landmarks_loaded_count": {
+    "description": "UI string (source key: landmarks_loaded_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "load_more_landmarks": "تحميل المزيد",
+  "@load_more_landmarks": {
+    "description": "UI string (source key: load_more_landmarks)"
+  },
+  "load_more_landmarks_count": "تحميل المزيد ({loaded} / {total}+)",
+  "@load_more_landmarks_count": {
+    "description": "UI string (source key: load_more_landmarks_count)",
+    "placeholders": {
+      "loaded": {
+        "type": "String",
+        "example": "loaded"
+      },
+      "total": {
+        "type": "String",
+        "example": "total"
+      }
+    }
+  },
+  "add_destination_first": "أضف وجهة واحدة على الأقل أولاً",
+  "@add_destination_first": {
+    "description": "UI string (source key: add_destination_first)"
+  },
+  "car_selected_success": "تم اختيار السيارة بنجاح",
+  "@car_selected_success": {
+    "description": "UI string (source key: car_selected_success)"
+  },
+  "generic_error_retry": "حدث خطأ. حاول مرة أخرى.",
+  "@generic_error_retry": {
+    "description": "UI string (source key: generic_error_retry)"
+  },
+  "custom_place_title": "موقع مخصص",
+  "@custom_place_title": {
+    "description": "UI string (source key: custom_place_title)"
+  },
+  "custom_place_map_hint": "كل موقع تضيفه يُحسب ضمن رحلتك بنفس آلية المعالم (كل وجهتين = ساعة حد أدنى)",
+  "@custom_place_map_hint": {
+    "description": "UI string (source key: custom_place_map_hint)"
+  },
+  "custom_place_search_hint": "ابحث عن مكان...",
+  "@custom_place_search_hint": {
+    "description": "UI string (source key: custom_place_search_hint)"
+  },
+  "custom_place_add_to_trip": "إضافة إلى رحلتي",
+  "@custom_place_add_to_trip": {
+    "description": "UI string (source key: custom_place_add_to_trip)"
+  },
+  "landmarks_custom_banner": "لم تجد مكانك؟ أضف موقعاً مخصصاً على الخريطة",
+  "@landmarks_custom_banner": {
+    "description": "UI string (source key: landmarks_custom_banner)"
+  },
+  "ux_pick_location_next_hint": "اختر موقعك واضغط \"التالي\" لبدء جولتك السياحية",
+  "@ux_pick_location_next_hint": {
+    "description": "UI string (source key: ux_pick_location_next_hint)"
+  },
+  "ux_driver_guide_location_hint": "السائق سيكون مرشدك السياحي، حدّد موقعك واضغط \"التالي\"",
+  "@ux_driver_guide_location_hint": {
+    "description": "UI string (source key: ux_driver_guide_location_hint)"
+  },
+  "custom_place_move_map_hint": "حرّك الخريطة لتحديد الموقع",
+  "@custom_place_move_map_hint": {
+    "description": "UI string (source key: custom_place_move_map_hint)"
+  },
+  "custom_place_name_label": "اسم الموقع (اختياري)",
+  "@custom_place_name_label": {
+    "description": "UI string (source key: custom_place_name_label)"
+  },
+  "custom_place_name_hint": "مثال: مقهى العائلة، شاطئ خاص...",
+  "@custom_place_name_hint": {
+    "description": "UI string (source key: custom_place_name_hint)"
+  },
+  "my_trip_count": "رحلتي ({count})",
+  "@my_trip_count": {
+    "description": "UI string (source key: my_trip_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "landmarks_custom_list_title": "موقع مخصص غير موجود في القائمة؟",
+  "@landmarks_custom_list_title": {
+    "description": "UI string (source key: landmarks_custom_list_title)"
+  },
+  "ux_not_available": "غير متاح",
+  "@ux_not_available": {
+    "description": "UI string (source key: ux_not_available)"
+  },
+  "ux_no_car_selected": "لم يتم تحديد سيارة",
+  "@ux_no_car_selected": {
+    "description": "UI string (source key: ux_no_car_selected)"
+  },
+  "ux_preferred_car": "السيارة المفضلة",
+  "@ux_preferred_car": {
+    "description": "UI string (source key: ux_preferred_car)"
+  },
+  "ux_meeting_point": "مكان الالتقاء",
+  "@ux_meeting_point": {
+    "description": "UI string (source key: ux_meeting_point)"
+  },
+  "ux_pick_meeting_point": "يجب اختيار مكان الالتقاء",
+  "@ux_pick_meeting_point": {
+    "description": "UI string (source key: ux_pick_meeting_point)"
+  },
+  "ux_schedule_optional": "اختيارياً، يمكنك اختيار تاريخ ووقت بدء الرحلة",
+  "@ux_schedule_optional": {
+    "description": "UI string (source key: ux_schedule_optional)"
+  },
+  "ux_choose_payment_method": "حدد طريقة الدفع",
+  "@ux_choose_payment_method": {
+    "description": "UI string (source key: ux_choose_payment_method)"
+  },
+  "ux_one_hour": "ساعة واحدة",
+  "@ux_one_hour": {
+    "description": "UI string (source key: ux_one_hour)"
+  },
+  "ux_two_hours": "ساعتان",
+  "@ux_two_hours": {
+    "description": "UI string (source key: ux_two_hours)"
+  },
+  "ux_hours_count": "{count} ساعات",
+  "@ux_hours_count": {
+    "description": "UI string (source key: ux_hours_count)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "ux_car_select_failed": "تعذّر اختيار السيارة. حاول مرة أخرى.",
+  "@ux_car_select_failed": {
+    "description": "UI string (source key: ux_car_select_failed)"
+  },
+  "app_title": "توري تاكسي",
+  "@app_title": {
+    "description": "UI string (source key: app_title)"
+  },
+  "ux_cash_payment": "نقداً",
+  "@ux_cash_payment": {
+    "description": "UI string (source key: ux_cash_payment)"
+  },
+  "ux_change": "تغيير",
+  "@ux_change": {
+    "description": "UI string (source key: ux_change)"
+  },
+  "ux_card_payment_network": "دفع آمن بالبطاقة عبر Network International",
+  "@ux_card_payment_network": {
+    "description": "UI string (source key: ux_card_payment_network)"
+  },
+  "checkout_extra_hour_discount": "تحصل على خصم {percent}% لكل ساعة إضافية تضيفها، بحد أقصى {max}{currency}",
+  "@checkout_extra_hour_discount": {
+    "description": "UI string (source key: checkout_extra_hour_discount)",
+    "placeholders": {
+      "percent": {
+        "type": "String",
+        "example": "percent"
+      },
+      "max": {
+        "type": "String",
+        "example": "max"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "checkout_min_hours_hint": "بناءً على الجولات المحددة، الحد الأدنى للساعات هو {hours} ساعات",
+  "@checkout_min_hours_hint": {
+    "description": "UI string (source key: checkout_min_hours_hint)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      }
+    }
+  },
+  "checkout_payment_card_error": "خطأ في معلومات الدفع أو البطاقة",
+  "@checkout_payment_card_error": {
+    "description": "UI string (source key: checkout_payment_card_error)"
+  },
+  "checkout_order_status_pending": "بانتظار قبول السائق",
+  "@checkout_order_status_pending": {
+    "description": "UI string (source key: checkout_order_status_pending)"
+  },
+  "checkout_add_hours_prompt": "يرجى إضافة {hours} ساعة إضافية على الأقل للمتابعة",
+  "@checkout_add_hours_prompt": {
+    "description": "UI string (source key: checkout_add_hours_prompt)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      }
+    }
+  },
+  "checkout_complete_options_prompt": "يرجى استكمال الخيارات أو زيادة الساعات الإضافية لتتوافق مع الرحلة",
+  "@checkout_complete_options_prompt": {
+    "description": "UI string (source key: checkout_complete_options_prompt)"
+  },
+  "landmark_added_success": "تمت إضافة: {name}",
+  "@landmark_added_success": {
+    "description": "UI string (source key: landmark_added_success)",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "name"
+      }
+    }
+  },
+  "landmark_already_in_cart": "المكان مضاف مسبقاً",
+  "@landmark_already_in_cart": {
+    "description": "UI string (source key: landmark_already_in_cart)"
+  },
+  "load_error_title": "تعذّر التحميل",
+  "@load_error_title": {
+    "description": "UI string (source key: load_error_title)"
+  },
+  "load_error_message": "تحقق من الاتصال وحاول مجدداً",
+  "@load_error_message": {
+    "description": "UI string (source key: load_error_message)"
+  },
+  "change_region2": "تغيير المنطقة",
+  "@change_region2": {
+    "description": "UI string (source key: change_region)"
+  },
+  "places_in_city": "الأماكن في {city}",
+  "@places_in_city": {
+    "description": "UI string (source key: places_in_city)",
+    "placeholders": {
+      "city": {
+        "type": "String",
+        "example": "city"
+      }
+    }
+  },
+  "destinations_added_label": "الوجهات المضافة:",
+  "@destinations_added_label": {
+    "description": "UI string (source key: destinations_added_label)"
+  },
+  "custom_place_list_hint": "حدّد على الخريطة أو ابحث — يُحسب ضمن رحلتك",
+  "@custom_place_list_hint": {
+    "description": "UI string (source key: custom_place_list_hint)"
+  },
+  "filter_all": "الكل",
+  "@filter_all": {
+    "description": "UI string (source key: filter_all)"
+  },
+  "map_locating": "جاري تحديد الموقع...",
+  "@map_locating": {
+    "description": "UI string (source key: map_locating)"
+  },
+  "map_calculating_route": "جاري حساب المسار...",
+  "@map_calculating_route": {
+    "description": "UI string (source key: map_calculating_route)"
+  },
+  "map_distance_label": "المسافة",
+  "@map_distance_label": {
+    "description": "UI string (source key: map_distance_label)"
+  },
+  "map_estimated_time": "الوقت المتوقع",
+  "@map_estimated_time": {
+    "description": "UI string (source key: map_estimated_time)"
+  },
+  "map_stops_count": "عدد المحطات",
+  "@map_stops_count": {
+    "description": "UI string (source key: map_stops_count)"
+  },
+  "map_avg_speed": "متوسط السرعة",
+  "@map_avg_speed": {
+    "description": "UI string (source key: map_avg_speed)"
+  },
+  "map_calc_type": "نوع الحساب",
+  "@map_calc_type": {
+    "description": "UI string (source key: map_calc_type)"
+  },
+  "map_calc_accurate": "دقيق",
+  "@map_calc_accurate": {
+    "description": "UI string (source key: map_calc_accurate)"
+  },
+  "map_calc_approximate": "تقريبي",
+  "@map_calc_approximate": {
+    "description": "UI string (source key: map_calc_approximate)"
+  },
+  "map_route_fallback": "تعذر حساب المسار الأمثل، سيتم استخدام المسافة التقريبية",
+  "@map_route_fallback": {
+    "description": "UI string (source key: map_route_fallback)"
+  },
+  "map_your_location": "موقعك الحالي",
+  "@map_your_location": {
+    "description": "UI string (source key: map_your_location)"
+  },
+  "map_destination_n": "الوجهة {n}",
+  "@map_destination_n": {
+    "description": "UI string (source key: map_destination_n)",
+    "placeholders": {
+      "n": {
+        "type": "String",
+        "example": "n"
+      }
+    }
+  },
+  "map_load_failed": "تعذر تحميل الخريطة. تحقق من الاتصال وإعدادات خدمة الخرائط.",
+  "@map_load_failed": {
+    "description": "UI string (source key: map_load_failed)"
+  },
+  "wallet_title": "محفظتي",
+  "@wallet_title": {
+    "description": "UI string (source key: wallet_title)"
+  },
+  "wallet_load_error": "خطأ في تحميل المحفظة",
+  "@wallet_load_error": {
+    "description": "UI string (source key: wallet_load_error)"
+  },
+  "wallet_not_created": "لم يتم إنشاء محفظة بعد",
+  "@wallet_not_created": {
+    "description": "UI string (source key: wallet_not_created)"
+  },
+  "wallet_created_success": "تم إنشاء المحفظة بنجاح",
+  "@wallet_created_success": {
+    "description": "UI string (source key: wallet_created_success)"
+  },
+  "wallet_create_button": "إنشاء محفظة",
+  "@wallet_create_button": {
+    "description": "UI string (source key: wallet_create_button)"
+  },
+  "wallet_current_balance": "الرصيد الحالي",
+  "@wallet_current_balance": {
+    "description": "UI string (source key: wallet_current_balance)"
+  },
+  "wallet_currency_label": "العملة",
+  "@wallet_currency_label": {
+    "description": "UI string (source key: wallet_currency_label)"
+  },
+  "wallet_last_updated": "آخر تحديث",
+  "@wallet_last_updated": {
+    "description": "UI string (source key: wallet_last_updated)"
+  },
+  "wallet_never": "أبداً",
+  "@wallet_never": {
+    "description": "UI string (source key: wallet_never)"
+  },
+  "wallet_login_required_title": "يرجى تسجيل الدخول",
+  "@wallet_login_required_title": {
+    "description": "UI string (source key: wallet_login_required_title)"
+  },
+  "wallet_login_required_msg": "يجب تسجيل الدخول لعرض المحفظة",
+  "@wallet_login_required_msg": {
+    "description": "UI string (source key: wallet_login_required_msg)"
+  },
+  "wallet_add_balance": "إضافة رصيد",
+  "@wallet_add_balance": {
+    "description": "UI string (source key: wallet_add_balance)"
+  },
+  "wallet_withdraw": "سحب رصيد",
+  "@wallet_withdraw": {
+    "description": "UI string (source key: wallet_withdraw)"
+  },
+  "wallet_transactions": "سجل المعاملات",
+  "@wallet_transactions": {
+    "description": "UI string (source key: wallet_transactions)"
+  },
+  "wallet_view_all": "عرض الكل",
+  "@wallet_view_all": {
+    "description": "UI string (source key: wallet_view_all)"
+  },
+  "wallet_transactions_error": "خطأ في تحميل المعاملات",
+  "@wallet_transactions_error": {
+    "description": "UI string (source key: wallet_transactions_error)"
+  },
+  "wallet_tx_deposit": "إيداع",
+  "@wallet_tx_deposit": {
+    "description": "UI string (source key: wallet_tx_deposit)"
+  },
+  "wallet_tx_withdraw": "سحب",
+  "@wallet_tx_withdraw": {
+    "description": "UI string (source key: wallet_tx_withdraw)"
+  },
+  "wallet_tx_refund": "استرجاع",
+  "@wallet_tx_refund": {
+    "description": "UI string (source key: wallet_tx_refund)"
+  },
+  "wallet_tx_transfer": "تحويل",
+  "@wallet_tx_transfer": {
+    "description": "UI string (source key: wallet_tx_transfer)"
+  },
+  "wallet_status_completed": "مكتمل",
+  "@wallet_status_completed": {
+    "description": "UI string (source key: wallet_status_completed)"
+  },
+  "wallet_status_pending": "قيد الانتظار",
+  "@wallet_status_pending": {
+    "description": "UI string (source key: wallet_status_pending)"
+  },
+  "wallet_status_failed": "فشل",
+  "@wallet_status_failed": {
+    "description": "UI string (source key: wallet_status_failed)"
+  },
+  "wallet_status_cancelled": "ملغي",
+  "@wallet_status_cancelled": {
+    "description": "UI string (source key: wallet_status_cancelled)"
+  },
+  "wallet_no_transactions": "لا توجد معاملات بعد",
+  "@wallet_no_transactions": {
+    "description": "UI string (source key: wallet_no_transactions)"
+  },
+  "wallet_no_transactions_hint": "سيظهر سجل معاملاتك هنا",
+  "@wallet_no_transactions_hint": {
+    "description": "UI string (source key: wallet_no_transactions_hint)"
+  },
+  "wallet_login_first": "يجب تسجيل الدخول أولاً",
+  "@wallet_login_first": {
+    "description": "UI string (source key: wallet_login_first)"
+  },
+  "wallet_add_balance_title": "إضافة رصيد للمحفظة",
+  "@wallet_add_balance_title": {
+    "description": "UI string (source key: wallet_add_balance_title)"
+  },
+  "wallet_amount_label": "المبلغ",
+  "@wallet_amount_label": {
+    "description": "UI string (source key: wallet_amount_label)"
+  },
+  "wallet_amount_required": "الرجاء إدخال المبلغ",
+  "@wallet_amount_required": {
+    "description": "UI string (source key: wallet_amount_required)"
+  },
+  "wallet_amount_invalid": "الرجاء إدخال مبلغ صحيح",
+  "@wallet_amount_invalid": {
+    "description": "UI string (source key: wallet_amount_invalid)"
+  },
+  "wallet_amount_max": "الحد الأقصى للإيداع 10,000",
+  "@wallet_amount_max": {
+    "description": "UI string (source key: wallet_amount_max)"
+  },
+  "wallet_no_payment_methods": "لا توجد طرق دفع متاحة",
+  "@wallet_no_payment_methods": {
+    "description": "UI string (source key: wallet_no_payment_methods)"
+  },
+  "wallet_add_payment_method": "إضافة طريقة دفع جديدة",
+  "@wallet_add_payment_method": {
+    "description": "UI string (source key: wallet_add_payment_method)"
+  },
+  "wallet_choose_payment": "اختر طريقة الدفع:",
+  "@wallet_choose_payment": {
+    "description": "UI string (source key: wallet_choose_payment)"
+  },
+  "wallet_card_ending": "بطاقة تنتهي بـ ****{last4}",
+  "@wallet_card_ending": {
+    "description": "UI string (source key: wallet_card_ending)",
+    "placeholders": {
+      "last4": {
+        "type": "String",
+        "example": "last4"
+      }
+    }
+  },
+  "wallet_add_new_card": "إضافة بطاقة جديدة",
+  "@wallet_add_new_card": {
+    "description": "UI string (source key: wallet_add_new_card)"
+  },
+  "wallet_add_confirm": "إضافة",
+  "@wallet_add_confirm": {
+    "description": "UI string (source key: wallet_add_confirm)"
+  },
+  "wallet_add_description": "إضافة رصيد للمحفظة",
+  "@wallet_add_description": {
+    "description": "UI string (source key: wallet_add_description)"
+  },
+  "wallet_add_success": "تم إضافة {amount} إلى المحفظة بنجاح",
+  "@wallet_add_success": {
+    "description": "UI string (source key: wallet_add_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      }
+    }
+  },
+  "wallet_error_generic": "خطأ: {error}",
+  "@wallet_error_generic": {
+    "description": "UI string (source key: wallet_error_generic)",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "error"
+      }
+    }
+  },
+  "wallet_select_payment": "الرجاء اختيار طريقة دفع",
+  "@wallet_select_payment": {
+    "description": "UI string (source key: wallet_select_payment)"
+  },
+  "wallet_withdraw_title": "سحب الرصيد",
+  "@wallet_withdraw_title": {
+    "description": "UI string (source key: wallet_withdraw_title)"
+  },
+  "wallet_withdraw_request_note": "سيُراجع طلب السحب ماليًا قبل التحويل، ولن يُخصم المبلغ نهائيًا حتى اعتماده.",
+  "@wallet_withdraw_request_note": {
+    "description": "UI string (source key: wallet_withdraw_request_note)"
+  },
+  "wallet_withdraw_request_success": "تم إرسال طلب سحب {amount} {currency} للمراجعة",
+  "@wallet_withdraw_request_success": {
+    "description": "UI string (source key: wallet_withdraw_request_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_withdraw_request_failed": "تعذر إرسال طلب السحب",
+  "@wallet_withdraw_request_failed": {
+    "description": "UI string (source key: wallet_withdraw_request_failed)"
+  },
+  "don_t_have_account": "ليس لديك حساب؟",
+  "@don_t_have_account": {
+    "description": "UI string (source key: don't_have_account)"
+  },
+  "message2": "رسالة...",
+  "@message2": {
+    "description": "UI string (source key: Message...)"
+  },
+  "wallet_available_balance": "الرصيد المتاح: {amount} {currency}",
+  "@wallet_available_balance": {
+    "description": "UI string (source key: wallet_available_balance)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_withdraw_confirm": "سحب",
+  "@wallet_withdraw_confirm": {
+    "description": "UI string (source key: wallet_withdraw_confirm)"
+  },
+  "wallet_withdraw_description": "سحب من المحفظة",
+  "@wallet_withdraw_description": {
+    "description": "UI string (source key: wallet_withdraw_description)"
+  },
+  "wallet_withdraw_no_card_deposit": "لا توجد عملية إيداع بالبطاقة تغطي مبلغ السحب",
+  "@wallet_withdraw_no_card_deposit": {
+    "description": "UI string (source key: wallet_withdraw_no_card_deposit)"
+  },
+  "wallet_withdraw_refund_failed": "تعذر استرداد مبلغ الدفع",
+  "@wallet_withdraw_refund_failed": {
+    "description": "UI string (source key: wallet_withdraw_refund_failed)"
+  },
+  "wallet_card_topup_success": "تم شحن المحفظة بنجاح. هل تريد العودة إلى المحفظة؟",
+  "@wallet_card_topup_success": {
+    "description": "UI string (source key: wallet_card_topup_success)"
+  },
+  "payment_pending_message": "عملية الدفع ما زالت قيد المعالجة. انتظر قليلاً أو حاول مرة أخرى.",
+  "@payment_pending_message": {
+    "description": "UI string (source key: payment_pending_message)"
+  },
+  "payment_failed_message": "لم تكتمل عملية الدفع. تحقق من البطاقة وحاول مرة أخرى.",
+  "@payment_failed_message": {
+    "description": "UI string (source key: payment_failed_message)"
+  },
+  "payment_verify_error": "تعذر التحقق من عملية الدفع. حاول مرة أخرى.",
+  "@payment_verify_error": {
+    "description": "UI string (source key: payment_verify_error)"
+  },
+  "payment_order_save_error": "تعذر حفظ الطلب. تواصل مع الدعم إذا تم خصم المبلغ.",
+  "@payment_order_save_error": {
+    "description": "UI string (source key: payment_order_save_error)"
+  },
+  "wallet_withdraw_success": "تم سحب {amount} {currency} بنجاح",
+  "@wallet_withdraw_success": {
+    "description": "UI string (source key: wallet_withdraw_success)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "wallet_amount_exceeds_balance": "المبلغ يتجاوز الرصيد المتاح",
+  "@wallet_amount_exceeds_balance": {
+    "description": "UI string (source key: wallet_amount_exceeds_balance)"
+  },
+  "wallet_choose_payout": "اختر البطاقة التي ستستقبل المبلغ:",
+  "@wallet_choose_payout": {
+    "description": "UI string (source key: wallet_choose_payout)"
+  },
+  "country_saudi": "السعودية",
+  "@country_saudi": {
+    "description": "UI string (source key: country_saudi)"
+  },
+  "map_driver": "المندوب",
+  "@map_driver": {
+    "description": "UI string (source key: map_driver)"
+  },
+  "map_pickup": "نقطة الالتقاط",
+  "@map_pickup": {
+    "description": "UI string (source key: map_pickup)"
+  },
+  "map_destination": "الوجهة",
+  "@map_destination": {
+    "description": "UI string (source key: map_destination)"
+  },
+  "map_open_google_maps": "فتح في خرائط Google",
+  "@map_open_google_maps": {
+    "description": "UI string (source key: map_open_google_maps)"
+  },
+  "map_track_driver_title": "تتبع المندوب على الخريطة",
+  "@map_track_driver_title": {
+    "description": "UI string (source key: map_track_driver_title)"
+  },
+  "map_waiting_driver_location": "في انتظار تحديث موقع المندوب",
+  "@map_waiting_driver_location": {
+    "description": "UI string (source key: map_waiting_driver_location)"
+  },
+  "booking_status_active": "نشطة",
+  "@booking_status_active": {
+    "description": "UI string (source key: booking_status_active)"
+  },
+  "booking_view_route": "عرض المسار",
+  "@booking_view_route": {
+    "description": "UI string (source key: booking_view_route)"
+  },
+  "map_eta_minutes": "الوصول خلال نحو {minutes} دقيقة",
+  "@map_eta_minutes": {
+    "description": "UI string (source key: map_eta_minutes)",
+    "placeholders": {
+      "minutes": {
+        "type": "String",
+        "example": "minutes"
+      }
+    }
+  },
+  "browsing_now": "أنت تتصفح الآن {country}",
+  "@browsing_now": {
+    "description": "UI string (source key: browsing_now)",
+    "placeholders": {
+      "country": {
+        "type": "String",
+        "example": "country"
+      }
+    }
+  },
+  "card_confirm_title": "تأكيد البطاقة",
+  "@card_confirm_title": {
+    "description": "UI string (source key: card_confirm_title)"
+  },
+  "card_confirm_msg": "أدخل رقم البطاقة المنتهية بـ {last4} و CVV للمتابعة.",
+  "@card_confirm_msg": {
+    "description": "UI string (source key: card_confirm_msg)",
+    "placeholders": {
+      "last4": {
+        "type": "String",
+        "example": "last4"
+      }
+    }
+  },
+  "select_region_title": "تحديد المنطقة",
+  "@select_region_title": {
+    "description": "UI string (source key: select_region_title)"
+  },
+  "select_region_msg": "هل أنت متأكد من تغيير أو تحديد هذه المدينة؟",
+  "@select_region_msg": {
+    "description": "UI string (source key: select_region_msg)"
+  },
+  "card_number_label": "رقم البطاقة",
+  "@card_number_label": {
+    "description": "UI string (source key: card_number_label)"
+  },
+  "dialog_continue": "متابعة",
+  "@dialog_continue": {
+    "description": "UI string (source key: dialog_continue)"
+  },
+  "card_invalid_data": "بيانات البطاقة غير صحيحة",
+  "@card_invalid_data": {
+    "description": "UI string (source key: card_invalid_data)"
+  },
+  "checkout_paying": "جاري الدفع عبر Network International...",
+  "@checkout_paying": {
+    "description": "UI string (source key: checkout_paying)"
+  },
+  "map_trip_destination": "وجهة الرحلة",
+  "@map_trip_destination": {
+    "description": "UI string (source key: map_trip_destination)"
+  },
+  "map_invalid_destinations": "تم استبعاد {count} محطة غير صالحة أو خارج النطاق من المسار.",
+  "@map_invalid_destinations": {
+    "description": "UI string (source key: map_invalid_destinations)",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "count"
+      }
+    }
+  },
+  "checkout_estimated_time_warning": "وقت القيادة التقديري ({time}) أقصر من مدة الحجز الموصى بها، وقد تؤثر حركة المرور في التقدير.",
+  "@checkout_estimated_time_warning": {
+    "description": "UI string (source key: checkout_estimated_time_warning)",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "time"
+      }
+    }
+  },
+  "checkout_vat_rate": "ضريبة القيمة المضافة ({rate}%):",
+  "@checkout_vat_rate": {
+    "description": "UI string (source key: checkout_vat_rate)",
+    "placeholders": {
+      "rate": {
+        "type": "String",
+        "example": "rate"
+      }
+    }
+  },
+  "map_location_unavailable": "تعذر الحصول على موقعك الحالي.",
+  "@map_location_unavailable": {
+    "description": "UI string (source key: map_location_unavailable)"
+  },
+  "map_no_valid_destinations": "لا توجد محطات صالحة لحساب هذا المسار.",
+  "@map_no_valid_destinations": {
+    "description": "UI string (source key: map_no_valid_destinations)"
+  },
+  "unit_km": "كم",
+  "@unit_km": {
+    "description": "UI string (source key: unit_km)"
+  },
+  "unit_meter": "م",
+  "@unit_meter": {
+    "description": "UI string (source key: unit_meter)"
+  },
+  "unit_minute": "دقيقة",
+  "@unit_minute": {
+    "description": "UI string (source key: unit_minute)"
+  },
+  "unit_hour": "ساعة",
+  "@unit_hour": {
+    "description": "UI string (source key: unit_hour)"
+  },
+  "unit_kmh": "كم/س",
+  "@unit_kmh": {
+    "description": "UI string (source key: unit_kmh)"
+  },
+  "duration_hours_minutes": "{hours} ساعة و{minutes} دقيقة",
+  "@duration_hours_minutes": {
+    "description": "UI string (source key: duration_hours_minutes)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      },
+      "minutes": {
+        "type": "String",
+        "example": "minutes"
+      }
+    }
+  },
+  "location_city_unresolved": "تعذر تحديد مدينتك بدقة.",
+  "@location_city_unresolved": {
+    "description": "UI string (source key: location_city_unresolved)"
+  },
+  "country_map": "خريطة الدولة",
+  "@country_map": {
+    "description": "UI string (source key: country_map)"
+  },
+  "ui_text_44134f762b": "كلمات المرور غير متطابقة!",
+  "@ui_text_44134f762b": {
+    "description": "UI string (source key: ui_text_44134f762b)"
+  },
+  "ui_text_b6f51cadc4": "خطأ",
+  "@ui_text_b6f51cadc4": {
+    "description": "UI string (source key: ui_text_b6f51cadc4)"
+  },
+  "ui_text_1a4e87f7a9": "يجب الموافقة على  الشروط والأحكام",
+  "@ui_text_1a4e87f7a9": {
+    "description": "UI string (source key: ui_text_1a4e87f7a9)"
+  },
+  "ui_text_b0a98216a3": "نعم",
+  "@ui_text_b0a98216a3": {
+    "description": "UI string (source key: ui_text_b0a98216a3)"
+  },
+  "ui_text_224b63d8e3": "يرجى إختيار منطقة",
+  "@ui_text_224b63d8e3": {
+    "description": "UI string (source key: ui_text_224b63d8e3)"
+  },
+  "ui_text_af02762d6d": "يرجى إختيار منطقة",
+  "@ui_text_af02762d6d": {
+    "description": "UI string (source key: ui_text_af02762d6d)"
+  },
+  "ui_text_9072549574": "يوافق",
+  "@ui_text_9072549574": {
+    "description": "UI string (source key: ui_text_9072549574)"
+  },
+  "ui_text_17db754851": "تمت إضافة :   المكان المحدد  بنجاح",
+  "@ui_text_17db754851": {
+    "description": "UI string (source key: ui_text_17db754851)"
+  },
+  "ui_text_71995f6f4a": "المكان مضاف مسبقًا.",
+  "@ui_text_71995f6f4a": {
+    "description": "UI string (source key: ui_text_71995f6f4a)"
+  },
+  "ui_text_b73e88df71": "اكتب رسالة",
+  "@ui_text_b73e88df71": {
+    "description": "UI string (source key: ui_text_b73e88df71)"
+  },
+  "ui_text_b4bbf18b10": "إلغاء الطلب",
+  "@ui_text_b4bbf18b10": {
+    "description": "UI string (source key: ui_text_b4bbf18b10)"
+  },
+  "ui_text_cf4d76accb": "هل أنت متأكد من إلغاء الطلب ؟",
+  "@ui_text_cf4d76accb": {
+    "description": "UI string (source key: ui_text_cf4d76accb)"
+  },
+  "ui_text_5c528d9fa3": "لا",
+  "@ui_text_5c528d9fa3": {
+    "description": "UI string (source key: ui_text_5c528d9fa3)"
+  },
+  "ui_text_d045bef8e5": "نعم",
+  "@ui_text_d045bef8e5": {
+    "description": "UI string (source key: ui_text_d045bef8e5)"
+  },
+  "ui_text_1431f68f35": "غير محدد",
+  "@ui_text_1431f68f35": {
+    "description": "UI string (source key: ui_text_1431f68f35)"
+  },
+  "ui_text_8bc9b333df": "اختر المصدر",
+  "@ui_text_8bc9b333df": {
+    "description": "UI string (source key: ui_text_8bc9b333df)"
+  },
+  "ui_text_35d76b889c": "البريد الإلكتروني مطلوب!",
+  "@ui_text_35d76b889c": {
+    "description": "UI string (source key: ui_text_35d76b889c)"
+  },
+  "ui_text_f0ad7ac205": "شكرا",
+  "@ui_text_f0ad7ac205": {
+    "description": "UI string (source key: ui_text_f0ad7ac205)"
+  },
+  "ui_text_12ee72ca4f": "ملخص الرحلة",
+  "@ui_text_12ee72ca4f": {
+    "description": "UI string (source key: ui_text_12ee72ca4f)"
+  },
+  "ui_text_d93bf2eb9f": "المسافة والوقت عبارة عن تقديرات وقد تختلف بناءً على حركة المرور أو تغيرات المسار أو دقة الموقع.",
+  "@ui_text_d93bf2eb9f": {
+    "description": "UI string (source key: ui_text_d93bf2eb9f)"
+  },
+  "ui_text_e93e07976e": "تم إرسال التقييم",
+  "@ui_text_e93e07976e": {
+    "description": "UI string (source key: ui_text_e93e07976e)"
+  },
+  "ui_text_7f2f6a15cf": "خطأ",
+  "@ui_text_7f2f6a15cf": {
+    "description": "UI string (source key: ui_text_7f2f6a15cf)"
+  },
+  "ui_text_9262ef60ec": "يرجى التحقق من التاريخ والوقت",
+  "@ui_text_9262ef60ec": {
+    "description": "UI string (source key: ui_text_9262ef60ec)"
+  },
+  "ui_text_cff8cb30ef": "هل أنت متأكد من إلغاء الطلب وإسترداد المبلغ ؟",
+  "@ui_text_cff8cb30ef": {
+    "description": "UI string (source key: ui_text_cff8cb30ef)"
+  },
+  "ui_text_23ef9d7d03": "نعم إلغاء الطلب",
+  "@ui_text_23ef9d7d03": {
+    "description": "UI string (source key: ui_text_23ef9d7d03)"
+  },
+  "ui_text_eae6165343": "تم إلغاء الطلب بنجاح",
+  "@ui_text_eae6165343": {
+    "description": "UI string (source key: ui_text_eae6165343)"
+  },
+  "ui_text_860c735760": "لايمكنك إلغاء الطلب بسبب تجاوز الوقت للالغاء يرجى التواصل مع فريق الدعم",
+  "@ui_text_860c735760": {
+    "description": "UI string (source key: ui_text_860c735760)"
+  },
+  "ui_text_5a9a57155e": "تم النسخ",
+  "@ui_text_5a9a57155e": {
+    "description": "UI string (source key: ui_text_5a9a57155e)"
+  },
+  "ui_text_5eac766a7c": "تحقّق من أن موقعك الحالي ضمن نفس المدينة، وأكمل جميع البيانات بدقة.",
+  "@ui_text_5eac766a7c": {
+    "description": "UI string (source key: ui_text_5eac766a7c)"
+  },
+  "ui_text_1d36255e4a": "يرجى إكمال جميع البيانات بشكل صحيح",
+  "@ui_text_1d36255e4a": {
+    "description": "UI string (source key: ui_text_1d36255e4a)"
+  },
+  "ui_text_def4060285": "هل أنت متأكد من حذف العنوان؟",
+  "@ui_text_def4060285": {
+    "description": "UI string (source key: ui_text_def4060285)"
+  },
+  "ui_text_85d0e17cdb": "تم حذف العنوان بنجاح",
+  "@ui_text_85d0e17cdb": {
+    "description": "UI string (source key: ui_text_85d0e17cdb)"
+  },
+  "ui_text_471f24ef6b": "تم الإرسال",
+  "@ui_text_471f24ef6b": {
+    "description": "UI string (source key: ui_text_471f24ef6b)"
+  },
+  "ui_text_dbee2e6613": "تم إرسال الطلب بنجاح، وسيتم مراجعته والتواصل معك قريباً.",
+  "@ui_text_dbee2e6613": {
+    "description": "UI string (source key: ui_text_dbee2e6613)"
+  },
+  "ui_text_095479cd38": "شريكنا العزيز، يرجى منك تعبئة جميع الحقول المطلوبة لكي تتمكن من إرسال الطلب بنجاح.",
+  "@ui_text_095479cd38": {
+    "description": "UI string (source key: ui_text_095479cd38)"
+  },
+  "rating_driver_title": "معدل {driver}",
+  "@rating_driver_title": {
+    "description": "UI string (source key: rating_driver_title)",
+    "placeholders": {
+      "driver": {
+        "type": "String",
+        "example": "driver"
+      }
+    }
+  },
+  "rating_driver_question": "كيف تقيم {driver}؟",
+  "@rating_driver_question": {
+    "description": "UI string (source key: rating_driver_question)",
+    "placeholders": {
+      "driver": {
+        "type": "String",
+        "example": "driver"
+      }
+    }
+  },
+  "order_details_number": "تفاصيل الطلب #{id}",
+  "@order_details_number": {
+    "description": "UI string (source key: order_details_number)",
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "id"
+      }
+    }
+  },
+  "order_time_label": "وقت الطلب: {time}",
+  "@order_time_label": {
+    "description": "UI string (source key: order_time_label)",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "time"
+      }
+    }
+  },
+  "support_ticket_number": "التذكرة رقم {id}",
+  "@support_ticket_number": {
+    "description": "UI string (source key: support_ticket_number)",
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "id"
+      }
+    }
+  },
+  "place_city_only": "يمكنك فقط اختيار مكان داخل {city}، أو تغيير المدينة.",
+  "@place_city_only": {
+    "description": "UI string (source key: place_city_only)",
+    "placeholders": {
+      "city": {
+        "type": "String",
+        "example": "city"
+      }
+    }
+  },
+  "notification_payment_success_title": "تم الدفع بنجاح",
+  "@notification_payment_success_title": {
+    "description": "UI string (source key: notification_payment_success_title)"
+  },
+  "notification_payment_success_body": "تم تأكيد الدفع للحجز #{bookingId}. نحن نبحث عن سائق لك.",
+  "@notification_payment_success_body": {
+    "description": "UI string (source key: notification_payment_success_body)",
+    "placeholders": {
+      "bookingId": {
+        "type": "String",
+        "example": "bookingId"
+      }
+    }
+  },
+  "notification_paid_order_admin_title": "حجز مدفوع جديد",
+  "@notification_paid_order_admin_title": {
+    "description": "UI string (source key: notification_paid_order_admin_title)"
+  },
+  "notification_paid_order_admin_body": "الحجز المدفوع الجديد #{bookingId}: {hours} ساعات، {amount} {currency}.",
+  "@notification_paid_order_admin_body": {
+    "description": "UI string (source key: notification_paid_order_admin_body)",
+    "placeholders": {
+      "bookingId": {
+        "type": "String",
+        "example": "bookingId"
+      },
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      },
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "notification_wallet_topup_title": "المحفظة تعلوها",
+  "@notification_wallet_topup_title": {
+    "description": "UI string (source key: notification_wallet_topup_title)"
+  },
+  "notification_wallet_topup_body": "{amount} تمت إضافة الريال السعودي إلى محفظتك بنجاح.",
+  "@notification_wallet_topup_body": {
+    "description": "UI string (source key: notification_wallet_topup_body)",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      }
+    }
+  },
+  "notification_new_order_driver_title": "حجز جديد",
+  "@notification_new_order_driver_title": {
+    "description": "UI string (source key: notification_new_order_driver_title)"
+  },
+  "notification_new_order_driver_body": "حجز تاكسي Touri جديد متاح لمدة {hours} ساعة مع أرباح {amount} {currency}. افتح تطبيق برنامج التشغيل لمراجعته.",
+  "@notification_new_order_driver_body": {
+    "description": "UI string (source key: notification_new_order_driver_body)",
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "example": "hours"
+      },
+      "amount": {
+        "type": "String",
+        "example": "amount"
+      },
+      "currency": {
+        "type": "String",
+        "example": "currency"
+      }
+    }
+  },
+  "notification_private_message_title": "رسالة خاصة جديدة",
+  "@notification_private_message_title": {
+    "description": "UI string (source key: notification_private_message_title)"
+  },
+  "notification_private_message_body": "لديك رسالة جديدة من {sender}.",
+  "@notification_private_message_body": {
+    "description": "UI string (source key: notification_private_message_body)",
+    "placeholders": {
+      "sender": {
+        "type": "String",
+        "example": "sender"
+      }
+    }
+  },
+  "status_pending_driver": "بانتظار قبول السائق",
+  "@status_pending_driver": {
+    "description": "UI string (source key: status_pending_driver)"
+  },
+  "status_driver_assigned": "تم تعيين السائق",
+  "@status_driver_assigned": {
+    "description": "UI string (source key: status_driver_assigned)"
+  },
+  "status_driver_arrived": "وصل السائق",
+  "@status_driver_arrived": {
+    "description": "UI string (source key: status_driver_arrived)"
+  },
+  "status_trip_started": "بدأت الرحلة",
+  "@status_trip_started": {
+    "description": "UI string (source key: status_trip_started)"
+  },
+  "status_trip_completed": "اكتملت الرحلة",
+  "@status_trip_completed": {
+    "description": "UI string (source key: status_trip_completed)"
+  },
+  "status_cancelled": "تم الإلغاء",
+  "@status_cancelled": {
+    "description": "UI string (source key: status_cancelled)"
+  },
+  "status_payment_pending": "قيد الانتظار",
+  "@status_payment_pending": {
+    "description": "UI string (source key: status_payment_pending)"
+  },
+  "status_paid": "تم الدفع",
+  "@status_paid": {
+    "description": "UI string (source key: status_paid)"
+  },
+  "status_payment_failed": "فشل الدفع",
+  "@status_payment_failed": {
+    "description": "UI string (source key: status_payment_failed)"
+  },
+  "looking_for_destination": "البحث عن وجهة...",
+  "@looking_for_destination": {
+    "description": "UI string (source key: looking_for_destination)"
+  },
+  "map_selected_location": "موقع محدد على الخريطة",
+  "@map_selected_location": {
+    "description": "UI string (source key: map_selected_location)"
+  },
+  "current_location_label": "الموقع الحالي",
+  "@current_location_label": {
+    "description": "UI string (source key: current_location_label)"
+  },
+  "pickup_location_label": "نقطة الانطلاق",
+  "@pickup_location_label": {
+    "description": "UI string (source key: pickup_location_label)"
+  },
+  "destination_label": "الوجهة",
+  "@destination_label": {
+    "description": "UI string (source key: destination_label)"
+  },
+  "stops_label": "المحطات",
+  "@stops_label": {
+    "description": "UI string (source key: stops_label)"
+  },
+  "view_route_label": "عرض المسار",
+  "@view_route_label": {
+    "description": "UI string (source key: view_route_label)"
+  },
+  "trip_details_label": "تفاصيل الرحلة",
+  "@trip_details_label": {
+    "description": "UI string (source key: trip_details_label)"
+  },
+  "choose_payment_method": "اختر طريقة الدفع",
+  "@choose_payment_method": {
+    "description": "UI string (source key: choose_payment_method)"
+  },
+  "pay_online_option": "الدفع الإلكتروني",
+  "@pay_online_option": {
+    "description": "UI string (source key: pay_online_option)"
+  },
+  "pay_cash_option": "الدفع نقداً",
+  "@pay_cash_option": {
+    "description": "UI string (source key: pay_cash_option)"
+  },
+  "driver_fee_label": "رسوم السائق",
+  "@driver_fee_label": {
+    "description": "UI string (source key: driver_fee_label)"
+  },
+  "app_fee_label": "رسوم التطبيق",
+  "@app_fee_label": {
+    "description": "UI string (source key: app_fee_label)"
+  },
+  "vat_label": "ضريبة القيمة المضافة",
+  "@vat_label": {
+    "description": "UI string (source key: vat_label)"
+  },
+  "total_amount_label": "المبلغ الإجمالي",
+  "@total_amount_label": {
+    "description": "UI string (source key: total_amount_label)"
+  },
+  "my_bookings_nav": "حجوزاتي",
+  "@my_bookings_nav": {
+    "description": "UI string (source key: my_bookings_nav)"
+  },
+  "my_account_nav": "حسابي",
+  "@my_account_nav": {
+    "description": "UI string (source key: my_account_nav)"
+  },
+  "home_nav": "الرئيسية",
+  "@home_nav": {
+    "description": "UI string (source key: home_nav)"
+  },
+  "error_generic_user": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+  "@error_generic_user": {
+    "description": "UI string (source key: error_generic_user)"
+  },
+  "error_network_user": "لا يوجد اتصال بالإنترنت. تحقق من الشبكة وحاول مرة أخرى.",
+  "@error_network_user": {
+    "description": "UI string (source key: error_network_user)"
+  },
+  "error_location_permission": "يلزم السماح بالوصول إلى الموقع.",
+  "@error_location_permission": {
+    "description": "UI string (source key: error_location_permission)"
+  },
+  "error_route_unavailable": "المسار غير متاح",
+  "@error_route_unavailable": {
+    "description": "UI string (source key: error_route_unavailable)"
+  },
+  "error_outside_service_area": "خارج منطقة الخدمة",
+  "@error_outside_service_area": {
+    "description": "UI string (source key: error_outside_service_area)"
+  },
+  "kyrgyz_char_sample": "القرغيزية: ң ө ү Ң Ө Ү",
+  "@kyrgyz_char_sample": {
+    "description": "UI string (source key: kyrgyz_char_sample)"
+  },
+  "booking_hours": "{count, plural, =0{لا توجد ساعات حجز} one{ساعة حجز واحدة} two{ساعتا حجز} few{{count} ساعات حجز} many{{count} ساعة حجز} other{{count} ساعة حجز}}",
+  "@booking_hours": {
+    "description": "booking_hours",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "example": "3"
+      }
+    }
+  },
+  "minutes_count": "{count, plural, =0{0 دقيقة} one{دقيقة واحدة} two{دقيقتان} few{{count} دقائق} many{{count} دقيقة} other{{count} دقيقة}}",
+  "@minutes_count": {
+    "description": "minutes_count",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "example": "3"
+      }
+    }
+  }
+}

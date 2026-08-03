@@ -1,0 +1,110 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '/auth/firebase_auth/auth_util.dart';
+import '/core/driver_live_location_service.dart';
+import '/core/driver_trip_service.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/index.dart';
+
+/// يحدّث موقع المندوب ويستعيد الرحلة النشطة عند فتح/استئناف التطبيق.
+class DriverLocationWakeScope extends StatefulWidget {
+  const DriverLocationWakeScope({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  State<DriverLocationWakeScope> createState() =>
+      _DriverLocationWakeScopeState();
+}
+
+class _DriverLocationWakeScopeState extends State<DriverLocationWakeScope>
+    with WidgetsBindingObserver {
+  bool _restoring = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
+  }
+
+  Future<void> _bootstrap() async {
+    await _restoreActiveTrip(navigate: false);
+    _syncLocation();
+  }
+
+  Future<void> _restoreActiveTrip({required bool navigate}) async {
+    if (!loggedIn || _restoring) return;
+    _restoring = true;
+    try {
+      final ref = await DriverTripService.restoreActiveTripRef();
+      if (ref != null && navigate && mounted) {
+        final loc = GoRouterState.of(context).uri.path;
+        if (!loc.contains('tfaselOrser') && !loc.contains('tfasel')) {
+          context.pushNamed(
+            TfaselOrserWidget.routeName,
+            queryParameters: {
+              'id': serializeParam(
+                ref,
+                ParamType.DocumentReference,
+              ),
+            }.withoutNulls,
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('DriverLocationWakeScope restore: $e');
+    } finally {
+      _restoring = false;
+    }
+  }
+
+  void _syncLocation() {
+    if (!loggedIn) {
+      DriverLiveLocationService.stopIdleSync(force: true);
+      return;
+    }
+    final online = valueOrDefault<bool>(currentUserDocument?.ngl, false);
+    final hasTrip = FFAppState().revOrder != null;
+    DriverLiveLocationService.startIdleSync(isOnline: online || hasTrip);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_restoreActiveTrip(navigate: true));
+      _syncLocation();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    DriverLiveLocationService.stopIdleSync(force: true);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AuthUserStreamWidget(
+      builder: (context) {
+        final online = valueOrDefault<bool>(currentUserDocument?.ngl, false);
+        final hasTrip = FFAppState().revOrder != null;
+        if (online || hasTrip) {
+          DriverLiveLocationService.startIdleSync(isOnline: online || hasTrip);
+        } else {
+          DriverLiveLocationService.stopIdleSync(force: true);
+        }
+        return widget.child;
+      },
+    );
+  }
+}
+
+// Local unawaited helper without dart:async import clash.
+void unawaited(Future<void> future) {
+  future.then((_) {}, onError: (Object e, StackTrace st) {
+    debugPrint('unawaited error: $e');
+  });
+}

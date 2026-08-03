@@ -1,0 +1,50 @@
+{
+  "generatedAt": "2026-07-22T11:28:10.596Z",
+  "wouldWriteToFirestore": false,
+  "rows": [
+    {
+      "country": "SA",
+      "officialRegionsConfigured": 13,
+      "regionsWithDataset": 13,
+      "regionsMeeting20": 13,
+      "landmarksCollected": 260,
+      "targetLandmarks": 260,
+      "gaps": [],
+      "datasetReady": true,
+      "note": null
+    },
+    {
+      "country": "KG",
+      "officialRegionsConfigured": 9,
+      "regionsWithDataset": 9,
+      "regionsMeeting20": 9,
+      "landmarksCollected": 180,
+      "targetLandmarks": 180,
+      "gaps": [],
+      "datasetReady": true,
+      "note": null
+    },
+    {
+      "country": "UZ",
+      "officialRegionsConfigured": 14,
+      "regionsWithDataset": 14,
+      "regionsMeeting20": 14,
+      "landmarksCollected": 280,
+      "targetLandmarks": 280,
+      "gaps": [],
+      "datasetReady": true,
+      "note": null
+    },
+    {
+      "country": "RU",
+      "officialRegionsConfigured": 20,
+      "regionsWithDataset": 20,
+      "regionsMeeting20": 20,
+      "landmarksCollected": 400,
+      "targetLandmarks": 400,
+      "gaps": [],
+      "datasetReady": true,
+      "note": "Wave-1 tourist priority subjects (20). Full federal list can be added later."
+    }
+  ]
+}

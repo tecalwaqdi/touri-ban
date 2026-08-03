@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_uz_bukhara",
+  "__writtenAt": "2026-07-22T11:29:00.356Z",
+  "__target": "local-staging",
+  "naim": "ولاية بخارى",
+  "names_i18n": {
+    "ar": "ولاية بخارى",
+    "en": "Bukhara Region",
+    "ru": "Бухарская область",
+    "ky": "Бухара облусу",
+    "uz": "Buxoro viloyati"
+  },
+  "dolh": "countries/uzbekistan",
+  "acctev": true,
+  "iso_code": "UZ-BU",
+  "country_iso": "UZ",
+  "geo_import_id": "region_uz_bukhara",
+  "geo_import_source": "touri_geo_import"
+}

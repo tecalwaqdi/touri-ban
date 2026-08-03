@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_uz_fergana",
+  "__writtenAt": "2026-07-22T11:29:00.718Z",
+  "__target": "local-staging",
+  "naim": "ولاية فرغانة",
+  "names_i18n": {
+    "ar": "ولاية فرغانة",
+    "en": "Fergana Region",
+    "ru": "Ферганская область",
+    "ky": "Фергана облусу",
+    "uz": "Fargʻona viloyati"
+  },
+  "dolh": "countries/uzbekistan",
+  "acctev": true,
+  "iso_code": "UZ-FA",
+  "country_iso": "UZ",
+  "geo_import_id": "region_uz_fergana",
+  "geo_import_source": "touri_geo_import"
+}

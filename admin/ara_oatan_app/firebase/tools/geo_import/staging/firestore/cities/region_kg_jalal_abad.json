@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_kg_jalal_abad",
+  "__writtenAt": "2026-07-22T11:28:59.710Z",
+  "__target": "local-staging",
+  "naim": "إقليم جلال آباد",
+  "names_i18n": {
+    "ar": "إقليم جلال آباد",
+    "en": "Jalal-Abad Region",
+    "ru": "Джалал-Абадская область",
+    "ky": "Жалал-Абад облусу",
+    "uz": "Jalolobod viloyati"
+  },
+  "dolh": "countries/kyrgyzstan",
+  "acctev": true,
+  "iso_code": "KG-J",
+  "country_iso": "KG",
+  "geo_import_id": "region_kg_jalal_abad",
+  "geo_import_source": "touri_geo_import"
+}

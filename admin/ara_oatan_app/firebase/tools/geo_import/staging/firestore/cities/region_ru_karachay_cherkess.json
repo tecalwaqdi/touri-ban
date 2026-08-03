@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_ru_karachay_cherkess",
+  "__writtenAt": "2026-07-22T11:29:01.758Z",
+  "__target": "local-staging",
+  "naim": "قرتشاي شركيسيا",
+  "names_i18n": {
+    "ar": "قرتشاي شركيسيا",
+    "en": "Karachay-Cherkessia",
+    "ru": "Карачаево-Черкесия",
+    "ky": "Карачай-Черкесия",
+    "uz": "Qorachoy-Cherkesiya"
+  },
+  "dolh": "countries/russia",
+  "acctev": true,
+  "iso_code": "RU-KC",
+  "country_iso": "RU",
+  "geo_import_id": "region_ru_karachay_cherkess",
+  "geo_import_source": "touri_geo_import"
+}

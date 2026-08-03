@@ -1,0 +1,34 @@
+{
+  "name": "cloud-functions",
+  "description": "Firebase Cloud Functions",
+  "dependencies": {
+    "axios": "^1.18.1",
+    "firebase-admin": "^13.10.0",
+    "firebase-functions": "^7.2.5",
+    "qs": "^6.7.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-promise": "^4.2.1"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings=0 .",
+    "serve": "firebase -P tutorial-multi-language-70gx4j emulators:start --only functions",
+    "shell": "firebase -P tutorial-multi-language-70gx4j functions:shell",
+    "start": "npm run shell",
+    "logs": "firebase -P tutorial-multi-language-70gx4j functions:log",
+    "test:unit": "node test/ngenius_payments_unit.test.js",
+    "test:rules": "firebase emulators:exec --project demo-touri-taxi --config ../firebase.json --only firestore \"node --test test/firestore_rules.test.js\"",
+    "seed:toury-content": "node scripts/seed_toury_content.js",
+    "expand:toury-content": "node scripts/expand_toury_content.js",
+    "verify:toury-content": "node scripts/verify_toury_content.js",
+    "backfill:country-geo": "node scripts/backfill_country_geo.js",
+    "seed:kyrgyzstan": "node scripts/seed_kyrgyzstan_content.js",
+    "compile": "cp ../../tsconfig.template.json ./tsconfig-compile.json && tsc --project tsconfig-compile.json"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "private": true
+}

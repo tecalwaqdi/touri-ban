@@ -1,0 +1,965 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Custom claims (set only via Cloud Functions Admin SDK) ──
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function currentUserRef() {
+      return /databases/$(database)/documents/user/$(request.auth.uid);
+    }
+
+    function currentUserData() {
+      return signedIn() ? get(currentUserRef()).data : {};
+    }
+
+    function claimBool(name) {
+      return request.auth != null && request.auth.token[name] == true;
+    }
+
+    function isSuperAdmin() {
+      return claimBool('super_admin')
+        || currentUserData().IsAdmin == true
+        || currentUserData().isAdmin == true
+        || currentUserData().isAdminRule == 1
+        || currentUserData().IsAdminRule == 1;
+    }
+
+    function isCountryAdmin() {
+      return claimBool('country_admin')
+        || currentUserData().isAdminRule == 2
+        || currentUserData().IsAdminRule == 2;
+    }
+
+    function isAgent() {
+      return claimBool('agent')
+        || currentUserData().Isagent == true
+        || currentUserData().isagent == true;
+    }
+
+    function isSupport() {
+      return claimBool('support') || isSuperAdmin() || isCountryAdmin();
+    }
+
+    function isFinance() {
+      return claimBool('finance') || isSuperAdmin() || isCountryAdmin();
+    }
+
+    function isPartner() {
+      return claimBool('partner')
+        || currentUserData().is_partner == true
+        || currentUserData().isPartner == true
+        || currentUserData().isAdminRule == 3
+        || currentUserData().IsAdminRule == 3;
+    }
+
+    function isTransportManager() {
+      return claimBool('transport_manager')
+        || currentUserData().isAdminRule == 4
+        || currentUserData().IsAdminRule == 4;
+    }
+
+    function isDriver() {
+      // Prefer Auth claims; until Blaze/CF can set claims, allow profile-based
+      // activated drivers (cash-wave / no-billing).
+      return claimBool('driver') || profileActivatedDriver();
+    }
+
+    function isApprovedActiveDriver() {
+      return (claimBool('driver') && claimBool('driver_active'))
+        || profileActivatedDriver();
+    }
+
+    // Temporary no-Billing path: ismndob + (actev_mndob OR approved status).
+    // Resolver treats registration_status=approved as activated; rules must match
+    // or drivers get permission-denied on every order query / claim.
+    function profileActivatedDriver() {
+      return signedIn()
+        && (
+          currentUserData().ismndob == true
+          || currentUserData().ismndom == true
+          || currentUserData().get('registration_status', '') == 'approved'
+        )
+        && (
+          currentUserData().actev_mndob == true
+          || currentUserData().get('registration_status', '') == 'approved'
+        )
+        && currentUserData().get('isAdmin', false) == false
+        && currentUserData().get('IsAdmin', false) == false
+        && currentUserData().get('isAdminRule', 0) == 0
+        && currentUserData().get('IsAdminRule', 0) == 0
+        && currentUserData().get('isagent', false) == false
+        && currentUserData().get('Isagent', false) == false
+        && currentUserData().get('isPartner', false) == false
+        && currentUserData().get('is_partner', false) == false
+        && !(currentUserData().get('registration_status', 'approved') in
+          ['rejected', 'suspended', 'blocked', 'pending_review', 'submitted',
+           'changes_requested']);
+    }
+
+    function isPanelUser() {
+      return isSuperAdmin()
+        || isCountryAdmin()
+        || isAgent()
+        || isSupport()
+        || isFinance()
+        || isPartner()
+        || isTransportManager();
+    }
+
+    function claimCountryPath() {
+      return signedIn() && request.auth.token.country_id != null
+        ? request.auth.token.country_id
+        : (
+            currentUserData().Rev_dloh_agent != null
+              ? currentUserData().Rev_dloh_agent.path
+              : (
+                  currentUserData().Rev_dolh != null
+                    ? currentUserData().Rev_dolh.path
+                    : null
+                )
+          );
+    }
+
+    function claimPartnerMkanPath() {
+      return signedIn() && request.auth.token.partner_mkan_id != null
+        ? request.auth.token.partner_mkan_id
+        : (
+            currentUserData().partner_mkan != null
+              ? currentUserData().partner_mkan.path
+              : null
+          );
+    }
+
+    function claimTransportCompanyPath() {
+      return signedIn() && request.auth.token.transport_company_id != null
+        ? request.auth.token.transport_company_id
+        : (
+            currentUserData().transport_company != null
+              ? currentUserData().transport_company.path
+              : null
+          );
+    }
+
+    function countryRefFromClaim() {
+      return claimCountryPath() != null
+        ? /databases/$(database)/documents/$(claimCountryPath())
+        : null;
+    }
+
+    function countriesMatchAdminScope(countryRef) {
+      return countryRef != null
+        && claimCountryPath() != null
+        && countryRef.path == claimCountryPath();
+    }
+
+    function orderBelongsToPartner(data) {
+      return isPartner()
+        && claimPartnerMkanPath() != null
+        && data.partner_mkans != null
+        && claimPartnerMkanPath() in data.partner_mkans;
+    }
+
+    function orderBelongsToConsumer(data) {
+      // Own bookings always readable — do NOT gate on !isPanelUser().
+      // Panel flags on a test account would otherwise break "حجوزاتي" list.
+      return request.auth != null
+        && data.USER == currentUserRef();
+    }
+
+    // List-only: no get(otherDoc) on resource fields (those break queries).
+    // Query constraints must prove one of these branches for every result.
+    function canListOrder(data) {
+      return orderBelongsToConsumer(data)
+        || (
+          isApprovedActiveDriver()
+          && data.ALLNOW == true
+          && data.status_code in ['pending_driver', 'awaiting_driver']
+        )
+        // Assigned driver orders (المقبولة) — do not require isDriver() claims;
+        // profile flags can lag and were blocking Accepted list/details.
+        || (signedIn() && data.mndob_user == currentUserRef())
+        || isSuperAdmin()
+        || isFinance()
+        || (
+          (isCountryAdmin() || isAgent() || isSupport())
+          && countriesMatchAdminScope(data.Rev_dolh)
+        );
+    }
+
+    function orderAssignedToDriver(data) {
+      // Cash-wave: only require auth + assignment field (no isDriver claims).
+      return signedIn() && data.mndob_user == currentUserRef();
+    }
+
+    // Broad assigned-driver patch (location / arrive / start) without money edits.
+    function driverAssignedCanPatchOrder() {
+      return orderAssignedToDriver(resource.data)
+        && request.resource.data.mndob_user == currentUserRef()
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'USER', 'total', 'amount_halalas', 'currency', 'PaymentMethod',
+          'payment_session_id', 'ngeniusOrderId', 'idMoyser'
+        ]);
+    }
+
+    function transportCompanyMatches(data) {
+      return isTransportManager()
+        && claimTransportCompanyPath() != null
+        && data.mndob_user != null
+        && get(data.mndob_user).data.transport_company.path == claimTransportCompanyPath();
+    }
+
+    // Drivers must see open pool orders to accept them (C-04).
+    // Note: do NOT require mndob_user==null here — list queries cannot prove
+    // that unless every cash order writes the field as null AND the client
+    // queries isNull (which also misses docs that omit the field). Client
+    // filters assigned rows; claim rules still enforce unassigned on accept.
+    function driverCanBrowseOpenOrders(data) {
+      return isApprovedActiveDriver()
+        && data.ALLNOW == true
+        && (
+          data.halh_order == 'Pending'
+          || data.status_code == 'pending_driver'
+          || data.status_code == 'awaiting_driver'
+          || data.halh_text == 'بإنتظار قبول المندوب'
+        );
+    }
+
+    function canReadOrder(data) {
+      return isSuperAdmin()
+        || isFinance()
+        || (isCountryAdmin() && countriesMatchAdminScope(data.Rev_dolh))
+        || (isAgent() && countriesMatchAdminScope(data.Rev_dolh))
+        || (isSupport() && countriesMatchAdminScope(data.Rev_dolh))
+        || orderBelongsToPartner(data)
+        || transportCompanyMatches(data)
+        || orderAssignedToDriver(data)
+        || driverCanBrowseOpenOrders(data)
+        || orderBelongsToConsumer(data);
+    }
+
+    function financialOrderFieldsUnchanged() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+        'USER', 'total', 'amount_halalas', 'currency', 'total_mndob',
+        'total_mndob2', 'total_vat', 'total_app', 'ksm', 'SrSAAH',
+        'PaymentMethod', 'ngeniusOrderId', 'idMoyser', 'payment_status',
+        'payment_session_id', 'payment_verified_at', 'carRev', 'Rev_dolh',
+        'total_taim', 'data_order'
+      ]);
+    }
+
+    function consumerOrderFieldsOnly() {
+      return orderBelongsToConsumer(resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'ReviewMndonsend', 'revewSendClent', 'RetengUser',
+          'cancellation_requested', 'cancellation_reason',
+          'cancellation_requested_at'
+        ]);
+    }
+
+    // Customer cancel before driver starts moving toward pickup.
+    // Allowed while pending or assigned; blocked once driver_arriving+.
+    function consumerCanCancelOrder() {
+      return orderBelongsToConsumer(resource.data)
+        && (
+          resource.data.status_code in [
+            'pending_driver', 'awaiting_driver', 'pending', 'driver_assigned'
+          ]
+          || (
+            !('status_code' in resource.data)
+            && resource.data.halh_text in [
+              'بإنتظار قبول المندوب', 'بانتظار قبول المندوب',
+              'بانتظار قبول السائق', 'مقبول'
+            ]
+          )
+        )
+        && request.resource.data.status_code == 'cancelled'
+        && request.resource.data.USER == resource.data.USER
+        && request.resource.data.mndob_user == resource.data.mndob_user
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'USER', 'total', 'amount_halalas', 'currency', 'mndob_user',
+          'PaymentMethod', 'payment_session_id', 'ngeniusOrderId', 'idMoyser'
+        ]);
+    }
+
+    function orderUnassigned(data) {
+      return !('mndob_user' in data) || data.mndob_user == null;
+    }
+
+    // Cash-wave claim — minimal checks only.
+    function driverCanClaimOrder() {
+      return (isApprovedActiveDriver() || isDriver())
+        && orderUnassigned(resource.data)
+        && request.resource.data.mndob_user == currentUserRef()
+        && request.resource.data.status_code == 'driver_assigned'
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'USER', 'total', 'amount_halalas', 'currency'
+        ]);
+    }
+
+    // Live GPS while assigned — status/assignment/money unchanged.
+    function driverCanUpdateLiveLocation() {
+      return orderAssignedToDriver(resource.data)
+        && request.resource.data.mndob_user == resource.data.mndob_user
+        && request.resource.data.status_code == resource.data.status_code
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'USER', 'total', 'amount_halalas', 'currency', 'mndob_user',
+          'PaymentMethod', 'payment_status', 'status_code', 'ALLNOW',
+          'halh_order', 'carRev', 'Rev_dolh'
+        ]);
+    }
+
+    // Assigned driver may advance trip state but never reassign or edit money.
+    // Includes arrive / start / complete / cancel_by_driver (C-04 trip path).
+    function driverCanAdvanceTrip() {
+      return orderAssignedToDriver(resource.data)
+        && request.resource.data.mndob_user == resource.data.mndob_user
+        && financialOrderFieldsUnchanged()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'halh_text', 'mapuser', 'timestamp', 'START', 'ActiveOrder',
+          'status_code', 'trip_started_at', 'driverArrivedAt',
+          'waitingStartedAt', 'customerWaitingTimeInSeconds', 'dateend',
+          'halhOrderMndob', 'endTime', 'halh_text_completed_alias',
+          'completedAt', 'payment_status', 'cash_collection_status',
+          'naim_mndob_text', 'phone_nu_mndob', 'cancelledAt',
+          'cancelledBy', 'cancelReason'
+        ])
+        && (
+          (resource.data.status_code in ['driver_assigned', 'driver_arriving']
+            && request.resource.data.status_code in [
+              'driver_arriving', 'driver_arrived', 'trip_started',
+              'trip_in_progress', 'cancelled_by_driver'
+            ])
+          || (resource.data.status_code == 'driver_arrived'
+            && request.resource.data.status_code in [
+              'trip_started', 'trip_in_progress', 'cancelled_by_driver'
+            ])
+          || (resource.data.status_code in ['trip_started', 'trip_in_progress']
+            && request.resource.data.status_code in [
+              'trip_in_progress', 'completed', 'cancelled_by_driver'
+            ])
+        );
+    }
+
+    // Cash complete may flip collection flags only — never totals/currency.
+    function driverCanCompleteCashCollection() {
+      return orderAssignedToDriver(resource.data)
+        && request.resource.data.mndob_user == resource.data.mndob_user
+        && resource.data.PaymentMethod == 'Cash'
+        && request.resource.data.PaymentMethod == 'Cash'
+        && request.resource.data.status_code == 'completed'
+        && request.resource.data.ActiveOrder == false
+        && request.resource.data.total == resource.data.total
+        && request.resource.data.amount_halalas == resource.data.amount_halalas
+        && request.resource.data.currency == resource.data.currency
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'USER', 'total', 'amount_halalas', 'currency', 'total_mndob',
+          'total_mndob2', 'total_vat', 'total_app', 'ksm', 'SrSAAH',
+          'ngeniusOrderId', 'idMoyser', 'payment_session_id', 'carRev',
+          'Rev_dolh', 'total_taim', 'data_order'
+        ])
+        && request.resource.data.payment_status in ['cash_collected', 'paid']
+        && request.resource.data.cash_collection_status == 'collected';
+    }
+
+    function panelCanWriteOrder(data) {
+      return (
+        isSuperAdmin()
+        || (isCountryAdmin() && countriesMatchAdminScope(data.Rev_dolh))
+        || (isSupport() && countriesMatchAdminScope(data.Rev_dolh))
+        || orderBelongsToPartner(data)
+        || transportCompanyMatches(data)
+      ) && financialOrderFieldsUnchanged();
+    }
+
+    function operationsCanWriteOrder(data) {
+      return driverCanClaimOrder()
+        || driverCanAdvanceTrip()
+        || driverCanCompleteCashCollection()
+        || panelCanWriteOrder(data);
+    }
+
+    function privilegedUserFieldsUnchanged() {
+      let d = request.resource.data;
+      let prev = resource == null ? {} : resource.data;
+      return d.get('isAdmin', prev.get('isAdmin', false)) == prev.get('isAdmin', false)
+        && d.get('IsAdmin', prev.get('IsAdmin', false)) == prev.get('IsAdmin', false)
+        && d.get('isAdminRule', prev.get('isAdminRule', 0)) == prev.get('isAdminRule', 0)
+        && d.get('IsAdminRule', prev.get('IsAdminRule', 0)) == prev.get('IsAdminRule', 0)
+        && d.get('isagent', prev.get('isagent', false)) == prev.get('isagent', false)
+        && d.get('Isagent', prev.get('Isagent', false)) == prev.get('Isagent', false)
+        && d.get('ismndob', prev.get('ismndob', false)) == prev.get('ismndob', false)
+        && d.get('isPartner', prev.get('isPartner', false)) == prev.get('isPartner', false)
+        && d.get('is_partner', prev.get('is_partner', false)) == prev.get('is_partner', false)
+        && d.get('actev_mndob', prev.get('actev_mndob', false)) == prev.get('actev_mndob', false)
+        && d.get('Rev_dloh_agent', prev.get('Rev_dloh_agent', null)) == prev.get('Rev_dloh_agent', null)
+        && d.get('partner_mkan', prev.get('partner_mkan', null)) == prev.get('partner_mkan', null)
+        && d.get('transport_company', prev.get('transport_company', null)) == prev.get('transport_company', null);
+    }
+
+    // Driver app self-registration: non-driver → pending driver (cannot self-activate).
+    function canSelfRegisterAsPendingDriver(userId) {
+      let d = request.resource.data;
+      let prev = resource.data;
+      return request.auth != null
+        && request.auth.uid == userId
+        && d.get('ismndob', false) == true
+        && d.get('ismndom', false) == true
+        && d.get('actev_mndob', false) == false
+        && prev.get('actev_mndob', false) == false
+        && d.get('isAdmin', false) == false
+        && d.get('IsAdmin', false) == false
+        && d.get('isAdminRule', 0) == 0
+        && d.get('IsAdminRule', 0) == 0
+        && d.get('isagent', false) == false
+        && d.get('Isagent', false) == false
+        && d.get('isPartner', false) == false
+        && d.get('is_partner', false) == false
+        && !('Rev_dloh_agent' in d)
+        && !('partner_mkan' in d)
+        && !('transport_company' in d)
+        // First claim OR refresh of an already-pending (inactive) driver profile.
+        && (prev.get('ismndob', false) == false
+            || prev.get('ismndob', false) == true);
+    }
+
+    // Temporary cash-wave: driver may self-activate after registration
+    // (docs/photos not required). Revert when admin review is mandatory again.
+    // Do NOT use `'field' in request.resource.data` — after merge that map is the
+    // full document and existing null/absent partner fields blocked activation.
+    function canSelfActivateAsDriver(userId) {
+      let d = request.resource.data;
+      let prev = resource.data;
+      return request.auth != null
+        && request.auth.uid == userId
+        && d.get('ismndob', false) == true
+        && d.get('ismndom', false) == true
+        && d.get('actev_mndob', false) == true
+        && prev.get('actev_mndob', false) == false
+        && d.get('isAdmin', false) == false
+        && d.get('IsAdmin', false) == false
+        && d.get('isAdminRule', 0) == 0
+        && d.get('IsAdminRule', 0) == 0
+        && d.get('isagent', false) == false
+        && d.get('Isagent', false) == false
+        && d.get('isPartner', false) == false
+        && d.get('is_partner', false) == false
+        && d.get('Rev_dloh_agent', null) == prev.get('Rev_dloh_agent', null)
+        && d.get('partner_mkan', null) == prev.get('partner_mkan', null)
+        && d.get('transport_company', null) == prev.get('transport_company', null)
+        && d.get('registration_status', '') in
+          ['approved', 'pending_review', 'submitted', ''];
+    }
+
+    function userSelfFieldsOnly(userId) {
+      return request.auth.uid == userId
+        && privilegedUserFieldsUnchanged();
+    }
+
+    // Cash-wave: drivers must be able to toggle online + write GPS without
+    // tripping privileged-field comparisons (null/type edge cases).
+    // IMPORTANT: pass match wildcard as userId — bare `document` is unbound in fns.
+    function canDriverSetOnlineOffline(userId) {
+      return signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'ngl', 'loceshnMndobNow', 'operational_status', 'is_online',
+          'last_online_at', 'last_offline_at', 'last_seen_at'
+        ]);
+    }
+
+    // One-shot self-activate + go online for cash-wave approved drivers.
+    function canDriverSelfActivateOnline(userId) {
+      return signedIn()
+        && request.auth.uid == userId
+        && resource.data.get('actev_mndob', false) == false
+        && request.resource.data.get('actev_mndob', false) == true
+        && request.resource.data.get('ismndob', false) == true
+        && request.resource.data.get('isAdmin', false) != true
+        && request.resource.data.get('IsAdmin', false) != true
+        && request.resource.data.get('isAdminRule', 0) != 1
+        && request.resource.data.get('IsAdminRule', 0) != 1
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'ngl', 'loceshnMndobNow', 'operational_status', 'is_online',
+          'last_online_at', 'last_seen_at',
+          'ismndob', 'ismndom', 'actev_mndob', 'registration_status'
+        ]);
+    }
+
+    function countryAdminCanUpdateUser() {
+      return isCountryAdmin()
+        && privilegedUserFieldsUnchanged()
+        && (
+          countriesMatchAdminScope(resource.data.Rev_dloh_agent)
+          || countriesMatchAdminScope(resource.data.Rev_dolh)
+        )
+        && (!('Rev_dloh_agent' in request.resource.data)
+          || countriesMatchAdminScope(request.resource.data.Rev_dloh_agent))
+        && (!('Rev_dolh' in request.resource.data)
+          || countriesMatchAdminScope(request.resource.data.Rev_dolh));
+    }
+
+    function partnerOwnsMkan(mkanId) {
+      return isPartner()
+        && claimPartnerMkanPath() != null
+        && claimPartnerMkanPath() == /databases/$(database)/documents/mkan/$(mkanId);
+    }
+
+  // ── Countries / cities / villages: public catalog read (registration) ──
+    match /countries/{document} {
+      allow read: if true;
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    match /cities/{document} {
+      allow read: if true;
+      allow create: if isSuperAdmin()
+        || (isCountryAdmin() && countriesMatchAdminScope(request.resource.data.dolh));
+      allow update, delete: if isSuperAdmin()
+        || (isCountryAdmin() && countriesMatchAdminScope(resource.data.dolh));
+    }
+
+    match /villages/{document} {
+      allow read: if true;
+      allow create: if isSuperAdmin()
+        || (isCountryAdmin() && countriesMatchAdminScope(request.resource.data.dolh));
+      allow update, delete: if isSuperAdmin()
+        || (isCountryAdmin() && countriesMatchAdminScope(resource.data.dolh));
+    }
+
+    // Panel may provision other users when createPanelUser CF is unavailable.
+    // Country/transport admins cannot create super-admins.
+    function panelCanProvisionUser() {
+      let d = request.resource.data;
+      let prev = resource == null ? {} : resource.data;
+      let notElevatingToSuper =
+        d.get('isAdmin', false) == false
+        && d.get('IsAdmin', false) == false
+        && d.get('isAdminRule', 0) != 1
+        && d.get('IsAdminRule', 0) != 1;
+      let inCountryScope =
+        countriesMatchAdminScope(d.get('Rev_dolh', null))
+        || countriesMatchAdminScope(d.get('Rev_dloh_agent', null))
+        || countriesMatchAdminScope(prev.get('Rev_dolh', null))
+        || countriesMatchAdminScope(prev.get('Rev_dloh_agent', null));
+      return isSuperAdmin()
+        || (isCountryAdmin() && notElevatingToSuper && inCountryScope)
+        || (isTransportManager()
+            && notElevatingToSuper
+            && d.get('ismndob', false) == true
+            && d.get('isagent', false) == false
+            && d.get('Isagent', false) == false
+            && d.get('isPartner', false) == false
+            && d.transport_company != null
+            && claimTransportCompanyPath() != null
+            && d.transport_company.path == claimTransportCompanyPath());
+    }
+
+    match /user/{document} {
+      allow create: if request.auth != null && (
+        (
+          request.auth.uid == document
+          && !('isAdmin' in request.resource.data)
+          && !('IsAdmin' in request.resource.data)
+          && !('isAdminRule' in request.resource.data)
+          && !('IsAdminRule' in request.resource.data)
+          && !('isagent' in request.resource.data)
+          && !('Isagent' in request.resource.data)
+          && !('ismndob' in request.resource.data)
+          && !('isPartner' in request.resource.data)
+          && !('Rev_dloh_agent' in request.resource.data)
+          && !('partner_mkan' in request.resource.data)
+          && !('transport_company' in request.resource.data)
+        )
+        || panelCanProvisionUser()
+      );
+      allow read: if request.auth != null && (
+        isSuperAdmin()
+        || request.auth.uid == document
+        || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dloh_agent))
+        || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dolh))
+        || (isTransportManager()
+            && resource.data.transport_company != null
+            && resource.data.transport_company.path == claimTransportCompanyPath())
+      );
+      allow update: if request.auth != null && (
+        isSuperAdmin()
+        || canDriverSetOnlineOffline(document)
+        || canDriverSelfActivateOnline(document)
+        || userSelfFieldsOnly(document)
+        || canSelfRegisterAsPendingDriver(document)
+        || canSelfActivateAsDriver(document)
+        || countryAdminCanUpdateUser()
+        || panelCanProvisionUser()
+      );
+      allow delete: if isSuperAdmin();
+    }
+
+    match /user/{userId}/fcm_tokens/{tokenId} {
+      allow read, create, update, delete: if signedIn()
+        && request.auth.uid == userId;
+    }
+
+    match /transport_company/{document} {
+      allow read: if request.auth != null && (
+        isSuperAdmin()
+        || isCountryAdmin()
+        || (isTransportManager() && resource.path == claimTransportCompanyPath())
+      );
+      allow create: if isSuperAdmin() || isCountryAdmin();
+      allow update, delete: if isSuperAdmin()
+        || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dolh))
+        || (isTransportManager() && resource.path == claimTransportCompanyPath());
+    }
+
+    match /mkan/{document} {
+      allow read: if request.auth != null;
+      // Create: panel roles as before.
+      allow create: if isSuperAdmin()
+        || (isCountryAdmin() && countriesMatchAdminScope(request.resource.data.Rev_dolh))
+        || (isAgent() && countriesMatchAdminScope(request.resource.data.Rev_dolh));
+      // Update/delete: prefer custom claim to avoid get() recursion, then user doc flags.
+      allow update, delete: if claimBool('super_admin')
+        || (signedIn()
+            && get(/databases/$(database)/documents/user/$(request.auth.uid)).data.get('IsAdmin', false) == true)
+        || (signedIn()
+            && get(/databases/$(database)/documents/user/$(request.auth.uid)).data.get('isAdminRule', 0) == 1)
+        || (signedIn()
+            && get(/databases/$(database)/documents/user/$(request.auth.uid)).data.get('IsAdminRule', 0) == 1)
+        || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dolh))
+        || (isAgent() && countriesMatchAdminScope(resource.data.Rev_dolh))
+        || partnerOwnsMkan(document);
+    }
+
+    match /Classification/{document} {
+      allow read: if request.auth != null;
+      allow write: if isSuperAdmin();
+    }
+
+    match /cart/{document} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    // Public catalog (needed for driver registration before account exists).
+    match /type_car/{document} {
+      allow read: if true;
+      allow create, update, delete: if isSuperAdmin() || isCountryAdmin();
+    }
+
+    // Cash bookings must normally be created by createCashBooking CF.
+    // Until that function is published (requires Cloud Billing), allow a
+    // tightly constrained client create for pending cash only.
+    // rules-rev: cash-fallback-2026-07-19
+    function isValidClientCashOrderCreate() {
+      let d = request.resource.data;
+      return signedIn()
+        && d.USER == currentUserRef()
+        && d.PaymentMethod == 'Cash'
+        && d.halh_order == 'Cash'
+        && d.payment_status in ['cash_pending', 'pending_cash']
+        && d.cash_collection_status == 'uncollected'
+        && d.status_code == 'pending_driver'
+        && d.ActiveOrder == false
+        && d.created_by_client_cash_fallback == true
+        && d.pricing_authority == 'client_fallback_pending_cf'
+        && d.keys().hasAll([
+          'USER', 'total', 'amount_halalas', 'currency', 'carRev', 'Rev_dolh',
+          'PaymentMethod', 'payment_status', 'status_code', 'idempotency_key',
+          'created_by_client_cash_fallback', 'pricing_authority',
+          'pricing_quote_halalas'
+        ])
+        && d.total is number && d.total > 0 && d.total < 1000000
+        && d.amount_halalas is number && d.amount_halalas > 0
+        && d.amount_halalas == d.pricing_quote_halalas
+        && d.currency is string
+        && d.idempotency_key is string
+        && d.idempotency_key.size() >= 8
+        && d.idempotency_key.size() <= 96
+        // Never allow client to mark paid / electronic statuses.
+        && !(d.payment_status in ['paid', 'captured', 'authorized'])
+        && !('ngeniusOrderId' in d)
+        && !('payment_session_id' in d);
+    }
+
+    match /order/{document} {
+      // Prefer createCashBooking CF; until Blaze/CF is live, allow constrained
+      // client cash create (see isValidClientCashOrderCreate).
+      // rules-rev: claim-no-hasonly-2026-08-01
+      allow create: if isValidClientCashOrderCreate();
+      // Idempotent cash create uses a transaction get() on a new doc id.
+      // Missing docs have resource == null — must allow that get, else the
+      // whole create fails as permission-denied (looks like "no internet").
+      // Drivers need get on open-pool docs inside accept transactions.
+      // Cash-wave: signed-in get unblocks details listen (PERMISSION_DENIED
+      // was blanking TfaselOrser body / error screen). List stays gated.
+      // rules-rev: order-get-signedin-2026-08-01b
+      allow get: if signedIn();
+      // Use canListOrder (not canReadOrder): partner/transport get() branches
+      // in canReadOrder make Firestore reject consumer/driver list queries.
+      // rules-rev: order-list-simple-2026-08-01
+      allow list: if signedIn() && canListOrder(resource.data);
+      allow update: if request.auth != null && (
+        // Keep the driver path first and independent from panel get()-heavy
+        // authorization branches; this also stays below emulator expression limits.
+        driverCanClaimOrder()
+        || driverAssignedCanPatchOrder()
+        || driverCanUpdateLiveLocation()
+        || driverCanAdvanceTrip()
+        || driverCanCompleteCashCollection()
+        || consumerCanCancelOrder()
+        || consumerOrderFieldsOnly()
+        || panelCanWriteOrder(resource.data)
+      );
+      allow delete: if false;
+    }
+
+    match /auto_num/{document} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    match /cart_maps/{document} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    match /mapmap/{document} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    match /order_mkss/{document} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    match /order/{parent}/mkss/{document} {
+      allow read: if request.auth != null
+        && canReadOrder(get(/databases/$(database)/documents/order/$(parent)).data);
+      allow create: if false;
+      allow update, delete: if false;
+    }
+
+    match /{path=**}/mkss/{document} {
+      allow read: if false;
+    }
+
+    match /ADRESSUSER/{document} {
+      allow read, update, delete: if signedIn()
+        && resource.data.USER == currentUserRef();
+      allow create: if signedIn()
+        && request.resource.data.USER == currentUserRef();
+    }
+
+    match /listamaknorder/{document} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    match /order2/{document} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    match /order2/{parent}/mkan2/{document} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    match /{path=**}/mkan2/{document} {
+      allow read: if request.auth != null;
+    }
+
+    match /user/{parent}/ordaercart/{document} {
+      allow read, write, create, delete: if request.auth != null
+        && request.auth.uid == parent;
+    }
+
+    match /list_address/{document} {
+      allow read, update, delete: if signedIn()
+        && resource.data.user == currentUserRef();
+      allow create: if signedIn()
+        && request.resource.data.user == currentUserRef();
+    }
+
+    match /idlistorder/{document} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    match /demodelet/{document} {
+      allow read: if isSuperAdmin();
+      allow write: if false;
+    }
+
+    match /support/{document} {
+      allow create: if request.auth != null;
+      allow read, update: if request.auth != null && (
+        isSuperAdmin()
+        || (isSupport() && countriesMatchAdminScope(resource.data.Rev_dolh))
+        || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dolh))
+        || (resource.data.USER == /databases/$(database)/documents/user/$(request.auth.uid))
+      );
+      allow delete: if isSuperAdmin();
+    }
+
+    match /admin_audit_log/{document} {
+      allow read: if isSuperAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /Settings/{document} {
+      allow read: if true;
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    // Wallet top-up package catalog (server-authoritative amounts).
+    match /settings/{document} {
+      allow read: if signedIn();
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    match /mndob/{document} {
+      allow read: if signedIn();
+      allow create, update, delete: if isSuperAdmin() || isCountryAdmin();
+    }
+
+    match /scond/{document} {
+      allow read: if signedIn();
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    match /admin_financial_cache/{document} {
+      allow read: if isSuperAdmin()
+        || claimBool('finance')
+        || (isCountryAdmin()
+          && countriesMatchAdminScope(resource.data.Rev_dolh));
+      allow write: if false;
+    }
+
+    match /payment_sessions/{document} {
+      allow read: if signedIn() && (
+        resource.data.user_id == request.auth.uid || isFinance()
+      );
+      allow create, update, delete: if false;
+    }
+
+    // Webhook idempotency ledger — Admin SDK only.
+    match /webhook_events/{document} {
+      allow read, write: if false;
+    }
+
+    match /PaymentMethods/{document} {
+      allow read, delete: if signedIn()
+        && resource.data.userRev == currentUserRef();
+      allow create, update: if false;
+    }
+
+    match /wallets/{document} {
+      allow read: if signedIn() && (
+        resource.data.userRef == currentUserRef() || isFinance()
+      );
+      allow create, update, delete: if false;
+    }
+
+    match /transactions/{document} {
+      allow read: if signedIn() && (
+        resource.data.userRef == currentUserRef() || isFinance()
+      );
+      allow create, update, delete: if false;
+    }
+
+    match /wallet_withdrawals/{document} {
+      allow read: if signedIn() && (
+        resource.data.userRef == currentUserRef() || isFinance()
+      );
+      allow create, update, delete: if false;
+    }
+
+    match /Paymenthistory/{document} {
+      allow read: if signedIn() && (
+        resource.data.RevUser == currentUserRef() || isFinance()
+      );
+      allow create, update, delete: if false;
+    }
+
+    match /ExtraHours/{document} {
+      allow read: if signedIn() && (
+        resource.data.revUser == currentUserRef()
+        || isFinance()
+        || (resource.data.RevOrder != null
+          && canReadOrder(get(resource.data.RevOrder).data))
+      );
+      allow create, update, delete: if false;
+    }
+
+    match /bank/{document} {
+      allow read: if signedIn() && (
+        isFinance()
+        || resource.data.userRef == currentUserRef()
+        || resource.data.RevUser == currentUserRef()
+      );
+      allow create, update, delete: if false;
+    }
+
+    match /ReviewsUser/{document} {
+      allow read: if signedIn() && (
+        resource.data.RevUser == currentUserRef()
+        || resource.data.UserAlSend == currentUserRef()
+        || isSupport()
+      );
+      allow create: if signedIn()
+        && request.resource.data.UserAlSend == currentUserRef()
+        && request.resource.data.orderRev != null
+        && canReadOrder(get(request.resource.data.orderRev).data);
+      allow update, delete: if false;
+    }
+
+    match /chat/{document} {
+      allow read: if signedIn()
+        && resource.data.idorder != null
+        && canReadOrder(get(resource.data.idorder).data);
+      allow create: if signedIn()
+        && request.resource.data.user1 == currentUserRef()
+        && request.resource.data.idorder != null
+        && canReadOrder(get(request.resource.data.idorder).data);
+      allow update, delete: if false;
+    }
+
+    match /locations/{document} {
+      allow read: if false;
+      allow create, update: if isDriver()
+        && request.auth.uid == document
+        && request.resource.data.userId == request.auth.uid;
+      allow delete: if isDriver() && request.auth.uid == document;
+    }
+
+    match /E-paymentduerequests/{document} {
+      allow read: if signedIn() && (
+        resource.data.userRev == currentUserRef() || isFinance()
+      );
+      allow create, update, delete: if false;
+    }
+
+    match /ff_user_push_notifications/{id} {
+      // Created only by trusted Cloud Functions after recipient derivation.
+      allow read, create, update, delete: if false;
+    }
+
+    match /ff_push_notifications/{id} {
+      allow read, create, update, delete: if false;
+    }
+  }
+}

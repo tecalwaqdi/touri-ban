@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_sa_sakaka",
+  "__writtenAt": "2026-07-22T11:28:59.316Z",
+  "__target": "local-staging",
+  "naim": "سكاكا",
+  "names_i18n": {
+    "ar": "سكاكا",
+    "en": "Sakaka",
+    "ru": "Сакака",
+    "ky": "Сакака",
+    "uz": "Sakaka"
+  },
+  "cities": "cities/region_sa_jouf",
+  "dolh": "countries/saudi_arabia",
+  "lat_ling": {
+    "latitude": 29.9697,
+    "longitude": 40.2064
+  },
+  "acctev": true,
+  "country_iso": "SA",
+  "geo_import_id": "city_sa_sakaka",
+  "geo_import_source": "touri_geo_import"
+}

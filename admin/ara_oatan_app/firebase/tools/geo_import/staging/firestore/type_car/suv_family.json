@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/suv_family",
+  "__writtenAt": "2026-07-22T11:29:02.572Z",
+  "__target": "local-staging",
+  "naim": "SUV عائلية",
+  "names_i18n": {
+    "ar": "SUV عائلية",
+    "en": "Family SUV",
+    "ru": "Семейный SUV",
+    "ky": "Үй-бүлөлүк SUV",
+    "uz": "Oilaviy SUV"
+  },
+  "codeCar": "suv_family",
+  "sr": 320,
+  "agl_saat": 4,
+  "actev": true,
+  "ishafelh": false,
+  "not": "Family SUV",
+  "geo_import_id": "vehcat_suv_family",
+  "geo_import_source": "touri_geo_import"
+}

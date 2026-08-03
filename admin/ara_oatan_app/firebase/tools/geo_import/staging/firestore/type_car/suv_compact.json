@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/suv_compact",
+  "__writtenAt": "2026-07-22T11:29:02.563Z",
+  "__target": "local-staging",
+  "naim": "SUV مدمجة",
+  "names_i18n": {
+    "ar": "SUV مدمجة",
+    "en": "SUV Compact",
+    "ru": "Компактный SUV",
+    "ky": "Ыкчам SUV",
+    "uz": "Kompakt SUV"
+  },
+  "codeCar": "suv_compact",
+  "sr": 260,
+  "agl_saat": 4,
+  "actev": true,
+  "ishafelh": false,
+  "not": "SUV Compact",
+  "geo_import_id": "vehcat_suv_compact",
+  "geo_import_source": "touri_geo_import"
+}

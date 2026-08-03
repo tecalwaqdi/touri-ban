@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_ru_chechnya",
+  "__writtenAt": "2026-07-22T11:29:01.914Z",
+  "__target": "local-staging",
+  "naim": "الشيشان",
+  "names_i18n": {
+    "ar": "الشيشان",
+    "en": "Chechnya",
+    "ru": "Чечня",
+    "ky": "Чечня",
+    "uz": "Checheniston"
+  },
+  "dolh": "countries/russia",
+  "acctev": true,
+  "iso_code": "RU-CE",
+  "country_iso": "RU",
+  "geo_import_id": "region_ru_chechnya",
+  "geo_import_source": "touri_geo_import"
+}

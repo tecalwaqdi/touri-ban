@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_kg_karakol",
+  "__writtenAt": "2026-07-22T11:28:59.577Z",
+  "__target": "local-staging",
+  "naim": "كاراكول",
+  "names_i18n": {
+    "ar": "كاراكول",
+    "en": "Karakol",
+    "ru": "Каракол",
+    "ky": "Каракол",
+    "uz": "Qoraqol"
+  },
+  "cities": "cities/region_kg_issyk_kul",
+  "dolh": "countries/kyrgyzstan",
+  "lat_ling": {
+    "latitude": 42.4907,
+    "longitude": 78.3936
+  },
+  "acctev": true,
+  "country_iso": "KG",
+  "geo_import_id": "city_kg_karakol",
+  "geo_import_source": "touri_geo_import"
+}

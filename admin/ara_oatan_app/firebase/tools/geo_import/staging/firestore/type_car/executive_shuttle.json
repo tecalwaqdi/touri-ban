@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/executive_shuttle",
+  "__writtenAt": "2026-07-22T11:29:02.686Z",
+  "__target": "local-staging",
+  "naim": "شاتل تنفيذي",
+  "names_i18n": {
+    "ar": "شاتل تنفيذي",
+    "en": "Executive Shuttle",
+    "ru": "Представительский шаттл",
+    "ky": "Аткаруучу шаттл",
+    "uz": "Ijro shattli"
+  },
+  "codeCar": "executive_shuttle",
+  "sr": 700,
+  "agl_saat": 6,
+  "actev": true,
+  "ishafelh": true,
+  "not": "Executive Shuttle",
+  "geo_import_id": "vehcat_executive_shuttle",
+  "geo_import_source": "touri_geo_import"
+}

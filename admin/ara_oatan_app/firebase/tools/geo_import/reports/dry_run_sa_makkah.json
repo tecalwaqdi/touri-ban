@@ -1,0 +1,391 @@
+{
+  "mode": "dry-run",
+  "wouldWriteToFirestore": false,
+  "pilotId": "sa-makkah-region-2026-07",
+  "environment": "local-json",
+  "country": "SA",
+  "region": "SA-02",
+  "counts": {
+    "countries": 1,
+    "regions": 1,
+    "cities": 3,
+    "landmarks": 20,
+    "landmarksWithErrors": 0,
+    "publishableCandidates": 12,
+    "needsReview": 8,
+    "licensedImages": 10
+  },
+  "documents": {
+    "country": "countries/saudi_arabia",
+    "region": "cities/region_makkah",
+    "cities": [
+      "villages/city_makkah",
+      "villages/city_jeddah",
+      "villages/city_taif"
+    ],
+    "landmarks": [
+      {
+        "path": "mkan/lm_sa_makkah_masjid_al_haram",
+        "active": true,
+        "confidence": 0.96,
+        "status": "verified",
+        "wikidata": "Q428858",
+        "img1": "commons://Kaba%20(restored).jpg"
+      },
+      {
+        "path": "mkan/lm_sa_makkah_kaaba",
+        "active": true,
+        "confidence": 0.97,
+        "status": "verified",
+        "wikidata": "Q29466",
+        "img1": "commons://Kaaba2.JPG"
+      },
+      {
+        "path": "mkan/lm_sa_makkah_abraj_al_bait",
+        "active": true,
+        "confidence": 0.88,
+        "status": "verified",
+        "wikidata": "Q189476",
+        "img1": null
+      },
+      {
+        "path": "mkan/lm_sa_makkah_mount_arafat",
+        "active": true,
+        "confidence": 0.9,
+        "status": "verified",
+        "wikidata": "Q216894",
+        "img1": null
+      },
+      {
+        "path": "mkan/lm_sa_makkah_jabal_al_nour",
+        "active": true,
+        "confidence": 0.94,
+        "status": "verified",
+        "wikidata": "Q1033157",
+        "img1": "commons://Jabal%20Nur.JPG"
+      },
+      {
+        "path": "mkan/lm_sa_makkah_jabal_thawr",
+        "active": true,
+        "confidence": 0.92,
+        "status": "verified",
+        "wikidata": "Q4116104",
+        "img1": "commons://Jabele%20thor%20-%20panoramio.jpg"
+      },
+      {
+        "path": "mkan/lm_sa_makkah_muzdalifah",
+        "active": true,
+        "confidence": 0.93,
+        "status": "verified",
+        "wikidata": "Q1788735",
+        "img1": "commons://Muzdalifa.JPG"
+      },
+      {
+        "path": "mkan/lm_sa_makkah_masjid_namirah",
+        "active": true,
+        "confidence": 0.93,
+        "status": "verified",
+        "wikidata": "Q12242853",
+        "img1": "commons://Masjid%20al-Namira.jpg"
+      },
+      {
+        "path": "mkan/lm_sa_makkah_jannat_al_mualla",
+        "active": true,
+        "confidence": 0.92,
+        "status": "verified",
+        "wikidata": "Q42004",
+        "img1": "commons://Jannat-ul-Maualla%20at%20present.JPG"
+      },
+      {
+        "path": "mkan/lm_sa_jeddah_king_fahd_fountain",
+        "active": true,
+        "confidence": 0.95,
+        "status": "verified",
+        "wikidata": "Q240426",
+        "img1": "commons://King%20Fahd%E2%80%99s%20Fountain.jpg"
+      },
+      {
+        "path": "mkan/lm_sa_jeddah_corniche",
+        "active": false,
+        "confidence": 0.78,
+        "status": "needs_review",
+        "wikidata": "Q3807760",
+        "img1": "commons://Jeddah%20Corniche%2036.jpg"
+      },
+      {
+        "path": "mkan/lm_sa_jeddah_shallal",
+        "active": true,
+        "confidence": 0.84,
+        "status": "verified",
+        "wikidata": "Q4703222",
+        "img1": null
+      },
+      {
+        "path": "mkan/lm_sa_taif_shubra_palace",
+        "active": true,
+        "confidence": 0.91,
+        "status": "verified",
+        "wikidata": "Q106462652",
+        "img1": "commons://First2.jpg"
+      },
+      {
+        "path": "mkan/lm_sa_makkah_mina",
+        "active": false,
+        "confidence": 0.62,
+        "status": "needs_review",
+        "wikidata": null,
+        "img1": null
+      },
+      {
+        "path": "mkan/lm_sa_jeddah_al_balad",
+        "active": false,
+        "confidence": 0.74,
+        "status": "needs_review",
+        "wikidata": null,
+        "img1": null
+      },
+      {
+        "path": "mkan/lm_sa_jeddah_floating_mosque",
+        "active": false,
+        "confidence": 0.58,
+        "status": "needs_review",
+        "wikidata": null,
+        "img1": null
+      },
+      {
+        "path": "mkan/lm_sa_makkah_masjid_aisha",
+        "active": false,
+        "confidence": 0.55,
+        "status": "needs_review",
+        "wikidata": null,
+        "img1": null
+      },
+      {
+        "path": "mkan/lm_sa_taif_al_hada",
+        "active": false,
+        "confidence": 0.52,
+        "status": "needs_review",
+        "wikidata": null,
+        "img1": null
+      },
+      {
+        "path": "mkan/lm_sa_jeddah_obhur",
+        "active": false,
+        "confidence": 0.5,
+        "status": "needs_review",
+        "wikidata": null,
+        "img1": null
+      },
+      {
+        "path": "mkan/lm_sa_makkah_kiswa_factory_exhibition",
+        "active": false,
+        "confidence": 0.45,
+        "status": "needs_review",
+        "wikidata": null,
+        "img1": null
+      }
+    ]
+  },
+  "validation": {
+    "landmarkTotal": 20,
+    "okCount": 20,
+    "errorCount": 0,
+    "publishableCandidateCount": 12,
+    "needsReviewCount": 8,
+    "nearDuplicatePairs": [
+      [
+        "lm_sa_makkah_masjid_al_haram",
+        "lm_sa_makkah_kaaba"
+      ]
+    ],
+    "results": [
+      {
+        "id": "lm_sa_makkah_masjid_al_haram",
+        "ok": true,
+        "errors": [],
+        "warnings": [],
+        "status": "verified",
+        "confidence": 0.96
+      },
+      {
+        "id": "lm_sa_makkah_kaaba",
+        "ok": true,
+        "errors": [],
+        "warnings": [],
+        "status": "verified",
+        "confidence": 0.97
+      },
+      {
+        "id": "lm_sa_makkah_abraj_al_bait",
+        "ok": true,
+        "errors": [],
+        "warnings": [
+          "no licensed image attached"
+        ],
+        "status": "verified",
+        "confidence": 0.88
+      },
+      {
+        "id": "lm_sa_makkah_mount_arafat",
+        "ok": true,
+        "errors": [],
+        "warnings": [
+          "no licensed image attached"
+        ],
+        "status": "verified",
+        "confidence": 0.9
+      },
+      {
+        "id": "lm_sa_makkah_jabal_al_nour",
+        "ok": true,
+        "errors": [],
+        "warnings": [],
+        "status": "verified",
+        "confidence": 0.94
+      },
+      {
+        "id": "lm_sa_makkah_jabal_thawr",
+        "ok": true,
+        "errors": [],
+        "warnings": [],
+        "status": "verified",
+        "confidence": 0.92
+      },
+      {
+        "id": "lm_sa_makkah_muzdalifah",
+        "ok": true,
+        "errors": [],
+        "warnings": [],
+        "status": "verified",
+        "confidence": 0.93
+      },
+      {
+        "id": "lm_sa_makkah_masjid_namirah",
+        "ok": true,
+        "errors": [],
+        "warnings": [],
+        "status": "verified",
+        "confidence": 0.93
+      },
+      {
+        "id": "lm_sa_makkah_jannat_al_mualla",
+        "ok": true,
+        "errors": [],
+        "warnings": [],
+        "status": "verified",
+        "confidence": 0.92
+      },
+      {
+        "id": "lm_sa_jeddah_king_fahd_fountain",
+        "ok": true,
+        "errors": [],
+        "warnings": [],
+        "status": "verified",
+        "confidence": 0.95
+      },
+      {
+        "id": "lm_sa_jeddah_corniche",
+        "ok": true,
+        "errors": [],
+        "warnings": [],
+        "status": "needs_review",
+        "confidence": 0.78
+      },
+      {
+        "id": "lm_sa_jeddah_shallal",
+        "ok": true,
+        "errors": [],
+        "warnings": [
+          "no licensed image attached"
+        ],
+        "status": "verified",
+        "confidence": 0.84
+      },
+      {
+        "id": "lm_sa_taif_shubra_palace",
+        "ok": true,
+        "errors": [],
+        "warnings": [],
+        "status": "verified",
+        "confidence": 0.91
+      },
+      {
+        "id": "lm_sa_makkah_mina",
+        "ok": true,
+        "errors": [],
+        "warnings": [
+          "fewer than 2 sources and no Wikidata/UNESCO id",
+          "no licensed image attached"
+        ],
+        "status": "needs_review",
+        "confidence": 0.62
+      },
+      {
+        "id": "lm_sa_jeddah_al_balad",
+        "ok": true,
+        "errors": [],
+        "warnings": [
+          "no licensed image attached"
+        ],
+        "status": "needs_review",
+        "confidence": 0.74
+      },
+      {
+        "id": "lm_sa_jeddah_floating_mosque",
+        "ok": true,
+        "errors": [],
+        "warnings": [
+          "fewer than 2 sources and no Wikidata/UNESCO id",
+          "no licensed image attached"
+        ],
+        "status": "needs_review",
+        "confidence": 0.58
+      },
+      {
+        "id": "lm_sa_makkah_masjid_aisha",
+        "ok": true,
+        "errors": [],
+        "warnings": [
+          "fewer than 2 sources and no Wikidata/UNESCO id",
+          "no licensed image attached"
+        ],
+        "status": "needs_review",
+        "confidence": 0.55
+      },
+      {
+        "id": "lm_sa_taif_al_hada",
+        "ok": true,
+        "errors": [],
+        "warnings": [
+          "fewer than 2 sources and no Wikidata/UNESCO id",
+          "no licensed image attached"
+        ],
+        "status": "needs_review",
+        "confidence": 0.52
+      },
+      {
+        "id": "lm_sa_jeddah_obhur",
+        "ok": true,
+        "errors": [],
+        "warnings": [
+          "fewer than 2 sources and no Wikidata/UNESCO id",
+          "no licensed image attached"
+        ],
+        "status": "needs_review",
+        "confidence": 0.5
+      },
+      {
+        "id": "lm_sa_makkah_kiswa_factory_exhibition",
+        "ok": true,
+        "errors": [],
+        "warnings": [
+          "fewer than 2 sources and no Wikidata/UNESCO id",
+          "no licensed image attached"
+        ],
+        "status": "needs_review",
+        "confidence": 0.45
+      }
+    ]
+  },
+  "note": "No Firestore writes performed. Review reports before any staging import approval."
+}

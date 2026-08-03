@@ -1,0 +1,33 @@
+{
+  "scanned": 612,
+  "junkDisabled": [
+    {
+      "id": "osm_node_3351034515",
+      "name": "Lockheed L-1011 Tristar 200"
+    },
+    {
+      "id": "osm_node_3351034516",
+      "name": "Boeing 707-386C"
+    },
+    {
+      "id": "osm_node_3351034517",
+      "name": "Douglas DC-4"
+    },
+    {
+      "id": "osm_node_3351034518",
+      "name": "Lockheed C-130 Hercules"
+    },
+    {
+      "id": "osm_node_3351073634",
+      "name": "McDonnell Douglas F-15D Eagle"
+    },
+    {
+      "id": "osm_node_3351073635",
+      "name": "Panavia Tornado ADV F3"
+    }
+  ],
+  "i18nSanitized": 247,
+  "curatedUpserted": 16,
+  "geoUpserted": 9,
+  "errors": []
+}

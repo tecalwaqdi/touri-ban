@@ -1,0 +1,34 @@
+{
+  "completedCodePhases": [1, 2, 3, 4],
+  "completedWorkstreams": [
+    "A-review-submit-admin-activation",
+    "B-localization-phase1",
+    "C-design-system-foundation",
+    "D-home-online-eligibility",
+    "E-location-hardening",
+    "F-fcm-offers-code",
+    "G-trip-state-machine-code",
+    "J-customer-status-aliases",
+    "K-admin-ops-sync",
+    "L-rules-local-acceptedAt"
+  ],
+  "partialWorkstreams": [
+    "H-payment-wallet-i18n",
+    "I-history-profile-support",
+    "M-offline-lifecycle"
+  ],
+  "currentWorkstream": "N-performance",
+  "deviceQaStatus": "pending",
+  "firebaseDeployStatus": "not_deployed",
+  "productionReady": false,
+  "blockingIssues": [
+    "device_qa_not_run",
+    "firebase_functions_deploy_required_for_server_approve",
+    "fcm_console_device_proof_pending",
+    "git_no_baseline_commit"
+  ],
+  "lastAnalyzeResult": "infos_only_on_touched_paths",
+  "lastTestResult": "107 passed (widget_test smoke fixed; no Deploy)",
+  "nextWorkstream": "N-performance",
+  "updatedAt": "2026-07-28T05:45:00+03:00"
+}

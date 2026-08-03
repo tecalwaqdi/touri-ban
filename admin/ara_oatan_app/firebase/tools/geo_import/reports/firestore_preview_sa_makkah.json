@@ -1,0 +1,1018 @@
+{
+  "country": {
+    "path": "countries/saudi_arabia",
+    "data": {
+      "naim": "المملكة العربية السعودية",
+      "naimEnglesh": "Saudi Arabia",
+      "names_i18n": {
+        "ar": "المملكة العربية السعودية",
+        "en": "Saudi Arabia",
+        "ru": "Саудовская Аравия",
+        "ky": "Сауд Арабиясы",
+        "uz": "Saudiya Arabistoni"
+      },
+      "iso_code": "SA",
+      "CurrencySymbol": "ر.س",
+      "acctev": true,
+      "saudi": true,
+      "geo_import_id": "country_sa",
+      "geo_import_pilot": "sa-makkah-region-2026-07"
+    }
+  },
+  "region": {
+    "path": "cities/region_makkah",
+    "data": {
+      "naim": "منطقة مكة المكرمة",
+      "names_i18n": {
+        "local": "منطقة مكة المكرمة",
+        "ar": "منطقة مكة المكرمة",
+        "en": "Makkah Region",
+        "ru": "Провинция Мекка",
+        "ky": "Мекке аймагы",
+        "uz": "Makka viloyati"
+      },
+      "dolh": "countries/saudi_arabia",
+      "acctev": true,
+      "iso_code": "SA-02",
+      "country_iso": "SA",
+      "geo_import_id": "region_sa_makkah",
+      "geo_import_pilot": "sa-makkah-region-2026-07"
+    }
+  },
+  "cities": [
+    {
+      "path": "villages/city_makkah",
+      "data": {
+        "naim": "مكة المكرمة",
+        "names_i18n": {
+          "local": "مكة المكرمة",
+          "ar": "مكة المكرمة",
+          "en": "Makkah",
+          "ru": "Мекка",
+          "ky": "Мекке",
+          "uz": "Makka"
+        },
+        "cities": "cities/region_makkah",
+        "dolh": "countries/saudi_arabia",
+        "lat_ling": {
+          "latitude": 21.4225,
+          "longitude": 39.8262
+        },
+        "acctev": true,
+        "country_iso": "SA",
+        "geo_import_id": "city_sa_makkah",
+        "geo_import_pilot": "sa-makkah-region-2026-07"
+      }
+    },
+    {
+      "path": "villages/city_jeddah",
+      "data": {
+        "naim": "جدة",
+        "names_i18n": {
+          "local": "جدة",
+          "ar": "جدة",
+          "en": "Jeddah",
+          "ru": "Джидда",
+          "ky": "Жидда",
+          "uz": "Jidda"
+        },
+        "cities": "cities/region_makkah",
+        "dolh": "countries/saudi_arabia",
+        "lat_ling": {
+          "latitude": 21.4858,
+          "longitude": 39.1925
+        },
+        "acctev": true,
+        "country_iso": "SA",
+        "geo_import_id": "city_sa_jeddah",
+        "geo_import_pilot": "sa-makkah-region-2026-07"
+      }
+    },
+    {
+      "path": "villages/city_taif",
+      "data": {
+        "naim": "الطائف",
+        "names_i18n": {
+          "local": "الطائف",
+          "ar": "الطائف",
+          "en": "Taif",
+          "ru": "Таиф",
+          "ky": "Таиф",
+          "uz": "Toif"
+        },
+        "cities": "cities/region_makkah",
+        "dolh": "countries/saudi_arabia",
+        "lat_ling": {
+          "latitude": 21.2703,
+          "longitude": 40.4158
+        },
+        "acctev": true,
+        "country_iso": "SA",
+        "geo_import_id": "city_sa_taif",
+        "geo_import_pilot": "sa-makkah-region-2026-07"
+      }
+    }
+  ],
+  "landmarks": [
+    {
+      "path": "mkan/lm_sa_makkah_masjid_al_haram",
+      "data": {
+        "naim": "المسجد الحرام",
+        "osf": "أقدس مسجد في الإسلام في مكة المكرمة، ويضم الكعبة المشرفة.",
+        "names_i18n": {
+          "local": "المسجد الحرام",
+          "ar": "المسجد الحرام",
+          "en": "Al-Masjid Al-Haram",
+          "ru": "Мечеть аль-Харам",
+          "ky": "Масжид аль-Харам",
+          "uz": "Masjid al-Harom"
+        },
+        "osf_i18n": {
+          "ar": "أقدس مسجد في الإسلام في مكة المكرمة، ويضم الكعبة المشرفة.",
+          "en": "Islam’s holiest mosque in Makkah, surrounding the Kaaba.",
+          "ru": "Священная мечеть в Мекке, окружающая Каабу.",
+          "ky": "Меккедеги эң ыйык мечит, Каабанын айланасында.",
+          "uz": "Makkadagi eng muqaddas masjid, Kaʼba atrofida."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.4225,
+          "longitude": 39.82611111111111
+        },
+        "img1": "commons://Kaba%20(restored).jpg",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "religious",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q428858",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q428858",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.96,
+        "geo_import_id": "lm_sa_makkah_masjid_al_haram",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "al-masjid-al-haram"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_makkah_kaaba",
+      "data": {
+        "naim": "الكعبة",
+        "osf": "المبنى المكعب في صحن المسجد الحرام، قبلة المسلمين.",
+        "names_i18n": {
+          "local": "الكعبة",
+          "ar": "الكعبة",
+          "en": "Kaaba",
+          "ru": "Кааба",
+          "ky": "Кааба",
+          "uz": "Kaʼba"
+        },
+        "osf_i18n": {
+          "ar": "المبنى المكعب في صحن المسجد الحرام، قبلة المسلمين.",
+          "en": "The cubical shrine at the center of Al-Masjid Al-Haram; qibla for Muslims.",
+          "ru": "Кубовидное святилище в центре Заповедной мечети; кибла мусульман.",
+          "ky": "Масжид аль-Харамдын борборундагы куб сымал ыйык жай.",
+          "uz": "Masjid al-Harom markazidagi kub shaklidagi muqaddas joy."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.4225,
+          "longitude": 39.826166666667
+        },
+        "img1": "commons://Kaaba2.JPG",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "religious",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q29466",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q29466",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.97,
+        "geo_import_id": "lm_sa_makkah_kaaba",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "kaaba"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_makkah_abraj_al_bait",
+      "data": {
+        "naim": "أبراج البيت",
+        "osf": "مجمع أبراج قرب الحرم يشمل برج الساعة الشهير.",
+        "names_i18n": {
+          "local": "أبراج البيت",
+          "ar": "أبراج البيت",
+          "en": "Abraj Al Bait",
+          "ru": "Абрадж аль-Бейт",
+          "ky": "Абраж аль-Байт",
+          "uz": "Abraj al-Bayt"
+        },
+        "osf_i18n": {
+          "ar": "مجمع أبراج قرب الحرم يشمل برج الساعة الشهير.",
+          "en": "Skyscraper complex beside the Haram, including the Makkah Clock Tower.",
+          "ru": "Комплекс небоскрёбов у Заповедной мечети, включая Часовую башню.",
+          "ky": "Харамга жакын асман тиреген комплекс, саат мунарасы менен.",
+          "uz": "Haram yonidagi osmonoʻpar majmua, soat minorasi bilan."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.418888888889,
+          "longitude": 39.826388888889
+        },
+        "img1": "",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "architecture",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q189476",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q189476",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.88,
+        "geo_import_id": "lm_sa_makkah_abraj_al_bait",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "abraj-al-bait"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_makkah_mount_arafat",
+      "data": {
+        "naim": "جبل عرفة",
+        "osf": "جبل شرقي مكة مرتبط بوقوف عرفة في موسم الحج.",
+        "names_i18n": {
+          "local": "جبل عرفة",
+          "ar": "جبل عرفة",
+          "en": "Mount Arafat",
+          "ru": "Гора Арафат",
+          "ky": "Арафат тоосу",
+          "uz": "Arofat togʻi"
+        },
+        "osf_i18n": {
+          "ar": "جبل شرقي مكة مرتبط بوقوف عرفة في موسم الحج.",
+          "en": "Mountain east of Makkah central to the Day of Arafah during Hajj.",
+          "ru": "Гора к востоку от Мекки, связанная с днём Арафа во время хаджа.",
+          "ky": "Меккенин чыгышындагы тоо, Арафат күнү менен байланыштуу.",
+          "uz": "Makka sharqidagi togʻ, Arofat kuni bilan bogʻliq."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.354831,
+          "longitude": 39.983886
+        },
+        "img1": "",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "nature",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q216894",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q216894",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.9,
+        "geo_import_id": "lm_sa_makkah_mount_arafat",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "mount-arafat"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_makkah_jabal_al_nour",
+      "data": {
+        "naim": "جبل النور",
+        "osf": "جبل شمال شرق مكة يشتهر بغار حراء.",
+        "names_i18n": {
+          "local": "جبل النور",
+          "ar": "جبل النور",
+          "en": "Jabal al-Nour",
+          "ru": "Джабаль ан-Нур",
+          "ky": "Жабал ан-Нур",
+          "uz": "Jabal an-Nur"
+        },
+        "osf_i18n": {
+          "ar": "جبل شمال شرق مكة يشتهر بغار حراء.",
+          "en": "Mountain northeast of Makkah known for the Cave of Hira.",
+          "ru": "Гора к северо-востоку от Мекки, известная пещерой Хира.",
+          "ky": "Меккенин түндүк-чыгышындагы тоо, Хира үңкүрү менен белгилүү.",
+          "uz": "Makka shimoli-sharqidagi togʻ, Hiro gʻori bilan mashhur."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.458055555556,
+          "longitude": 39.861388888889
+        },
+        "img1": "commons://Jabal%20Nur.JPG",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "nature",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q1033157",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q1033157",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.94,
+        "geo_import_id": "lm_sa_makkah_jabal_al_nour",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "jabal-al-nour"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_makkah_jabal_thawr",
+      "data": {
+        "naim": "جبل ثور",
+        "osf": "جبل جنوب مكة مرتبط بغار ثور في الهجرة النبوية.",
+        "names_i18n": {
+          "local": "جبل ثور",
+          "ar": "جبل ثور",
+          "en": "Jabal Thawr",
+          "ru": "Джабаль Саур",
+          "ky": "Жабал Саур",
+          "uz": "Jabal Savr"
+        },
+        "osf_i18n": {
+          "ar": "جبل جنوب مكة مرتبط بغار ثور في الهجرة النبوية.",
+          "en": "Mountain south of Makkah associated with the Cave of Thawr in the Hijra.",
+          "ru": "Гора к югу от Мекки, связанная с пещерой Саур во время хиджры.",
+          "ky": "Меккенин түштүгүндөгү тоо, Саур үңкүрү менен байланыштуу.",
+          "uz": "Makka janubidagi togʻ, Savr gʻori bilan bogʻliq."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.383333333333,
+          "longitude": 39.85
+        },
+        "img1": "commons://Jabele%20thor%20-%20panoramio.jpg",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "nature",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q4116104",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q4116104",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.92,
+        "geo_import_id": "lm_sa_makkah_jabal_thawr",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "jabal-thawr"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_makkah_muzdalifah",
+      "data": {
+        "naim": "مزدلفة",
+        "osf": "موقع بين عرفات ومنى يُقام فيه المبيت وجمع الحصى في الحج.",
+        "names_i18n": {
+          "local": "مزدلفة",
+          "ar": "مزدلفة",
+          "en": "Muzdalifah",
+          "ru": "Муздалифа",
+          "ky": "Мүздәлифә",
+          "uz": "Muzdalifa"
+        },
+        "osf_i18n": {
+          "ar": "موقع بين عرفات ومنى يُقام فيه المبيت وجمع الحصى في الحج.",
+          "en": "Open plain between Arafat and Mina used for overnight stay during Hajj.",
+          "ru": "Равнина между Арафатом и Миной, где паломники проводят ночь во время хаджа.",
+          "ky": "Арафат менен Минанын ортосундагы түздүк, ажылыкта түндөп өтөт.",
+          "uz": "Arofat va Mina orasidagi tekislik, hajda tunash joyi."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.3925,
+          "longitude": 39.937777777778
+        },
+        "img1": "commons://Muzdalifa.JPG",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "religious",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q1788735",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q1788735",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.93,
+        "geo_import_id": "lm_sa_makkah_muzdalifah",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "muzdalifah"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_makkah_masjid_namirah",
+      "data": {
+        "naim": "مسجد نمرة",
+        "osf": "مسجد في عرفات تُلقى فيه خطبة يوم عرفة.",
+        "names_i18n": {
+          "local": "مسجد نمرة",
+          "ar": "مسجد نمرة",
+          "en": "Masjid Namirah",
+          "ru": "Мечеть Намира",
+          "ky": "Масжид Намира",
+          "uz": "Namira masjidi"
+        },
+        "osf_i18n": {
+          "ar": "مسجد في عرفات تُلقى فيه خطبة يوم عرفة.",
+          "en": "Mosque on the plain of Arafat where the Day of Arafah sermon is delivered.",
+          "ru": "Мечеть на равнине Арафат, где произносится проповедь в день Арафа.",
+          "ky": "Арафат түздүгүндөгү мечит, Арафат күнүндө хутба окулат.",
+          "uz": "Arofat tekisligidagi masjid, Arofat kunida xutba oʻqiladi."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.352777777778,
+          "longitude": 39.966111111111
+        },
+        "img1": "commons://Masjid%20al-Namira.jpg",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "religious",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q12242853",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q12242853",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.93,
+        "geo_import_id": "lm_sa_makkah_masjid_namirah",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "masjid-namirah"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_makkah_jannat_al_mualla",
+      "data": {
+        "naim": "مقبرة المعلاة",
+        "osf": "مقبرة تاريخية شمال المسجد الحرام في مكة.",
+        "names_i18n": {
+          "local": "مقبرة المعلاة",
+          "ar": "مقبرة المعلاة",
+          "en": "Jannat al-Mu'alla",
+          "ru": "Джаннат аль-Муалля",
+          "ky": "Жаннат аль-Муалла",
+          "uz": "Jannat al-Mualla"
+        },
+        "osf_i18n": {
+          "ar": "مقبرة تاريخية شمال المسجد الحرام في مكة.",
+          "en": "Historic cemetery north of the Grand Mosque in Makkah.",
+          "ru": "Историческое кладбище к северу от Заповедной мечети в Мекке.",
+          "ky": "Меккедеги Харамдын түндүгүндөгү тарыхый көрүстөн.",
+          "uz": "Makkadagi Haram shimolidagi tarixiy qabriston."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.436991,
+          "longitude": 39.829213
+        },
+        "img1": "commons://Jannat-ul-Maualla%20at%20present.JPG",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "historic",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q42004",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q42004",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.92,
+        "geo_import_id": "lm_sa_makkah_jannat_al_mualla",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "jannat-al-mualla"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_jeddah_king_fahd_fountain",
+      "data": {
+        "naim": "نافورة الملك فهد",
+        "osf": "نافورة بحرية شهيرة على كورنيش جدة.",
+        "names_i18n": {
+          "local": "نافورة الملك فهد",
+          "ar": "نافورة الملك فهد",
+          "en": "King Fahd's Fountain",
+          "ru": "Фонтан короля Фахда",
+          "ky": "Король Фахд фонтаны",
+          "uz": "Qirol Fahd favvorasi"
+        },
+        "osf_i18n": {
+          "ar": "نافورة بحرية شهيرة على كورنيش جدة.",
+          "en": "Iconic seawater fountain on the Jeddah waterfront.",
+          "ru": "Знаменитый морской фонтан на набережной Джидды.",
+          "ky": "Жидда жээгиндеги белгилүү деңиз фонтаны.",
+          "uz": "Jidda sohilidagi mashhur dengiz favvorasi."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.515556,
+          "longitude": 39.145
+        },
+        "img1": "commons://King%20Fahd%E2%80%99s%20Fountain.jpg",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "architecture",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_jeddah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q240426",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q240426",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.95,
+        "geo_import_id": "lm_sa_jeddah_king_fahd_fountain",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "king-fahd-fountain"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_jeddah_corniche",
+      "data": {
+        "naim": "كورنيش جدة",
+        "osf": "واجهة بحرية عامة في جدة للمشي والعائلات.",
+        "names_i18n": {
+          "local": "كورنيش جدة",
+          "ar": "كورنيش جدة",
+          "en": "Jeddah Corniche",
+          "ru": "Набережная Джидды",
+          "ky": "Жидда корниши",
+          "uz": "Jidda kornishi"
+        },
+        "osf_i18n": {
+          "ar": "واجهة بحرية عامة في جدة للمشي والعائلات.",
+          "en": "Public waterfront promenade in Jeddah for walking and families.",
+          "ru": "Общественная набережная в Джидде для прогулок и семейного отдыха.",
+          "ky": "Жиддадагы үй-бүлөлүк сейилдөө үчүн деңиз жээги.",
+          "uz": "Jiddadagi oilaviy sayr uchun dengiz sohili."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.5433,
+          "longitude": 39.1728
+        },
+        "img1": "commons://Jeddah%20Corniche%2036.jpg",
+        "acctev": false,
+        "as_ads": false,
+        "tsnef": "family",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_jeddah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q3807760",
+        "source_provider": "wikidata,manual_centroid",
+        "source_url": "https://www.wikidata.org/wiki/Q3807760",
+        "verified_at": "2026-07-22",
+        "verification_status": "needs_review",
+        "verification_confidence": 0.78,
+        "geo_import_id": "lm_sa_jeddah_corniche",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "jeddah-corniche"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_jeddah_shallal",
+      "data": {
+        "naim": "حديقة الشلال الترفيهية",
+        "osf": "مدينة ألعاب ترفيهية في جدة.",
+        "names_i18n": {
+          "local": "حديقة الشلال الترفيهية",
+          "ar": "حديقة الشلال الترفيهية",
+          "en": "Al-Shallal Theme Park",
+          "ru": "Парк развлечений Аш-Шаллаль",
+          "ky": "Аш-Шаллал тематикалык паркы",
+          "uz": "Ash-Shallal atraksionlari bogʻi"
+        },
+        "osf_i18n": {
+          "ar": "مدينة ألعاب ترفيهية في جدة.",
+          "en": "Amusement park in Jeddah.",
+          "ru": "Парк аттракционов в Джидде.",
+          "ky": "Жиддадагы аттракциондор паркы.",
+          "uz": "Jiddadagi attraksionlar bogʻi."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.5676572,
+          "longitude": 39.1114354
+        },
+        "img1": "",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "entertainment",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_jeddah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q4703222",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q4703222",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.84,
+        "geo_import_id": "lm_sa_jeddah_shallal",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "al-shallal-theme-park"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_taif_shubra_palace",
+      "data": {
+        "naim": "قصر شبرا (الطائف)",
+        "osf": "قصر تاريخي في الطائف يُستخدم كمتحف.",
+        "names_i18n": {
+          "local": "قصر شبرا",
+          "ar": "قصر شبرا (الطائف)",
+          "en": "Shubra Palace",
+          "ru": "Дворец Шубра (Таиф)",
+          "ky": "Шубра сарайы (Таиф)",
+          "uz": "Shubra saroyi (Toif)"
+        },
+        "osf_i18n": {
+          "ar": "قصر تاريخي في الطائف يُستخدم كمتحف.",
+          "en": "Historic palace in Taif used as a museum.",
+          "ru": "Исторический дворец в Таифе, используемый как музей.",
+          "ky": "Таифтеги тарыхый сарай, музей катары колдонулат.",
+          "uz": "Toifdagi tarixiy saroy, muzey sifatida ishlatiladi."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.286358333333336,
+          "longitude": 40.41504166666667
+        },
+        "img1": "commons://First2.jpg",
+        "acctev": true,
+        "as_ads": false,
+        "tsnef": "historic",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_taif",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": "Q106462652",
+        "source_provider": "wikidata",
+        "source_url": "https://www.wikidata.org/wiki/Q106462652",
+        "verified_at": "2026-07-22",
+        "verification_status": "verified",
+        "verification_confidence": 0.91,
+        "geo_import_id": "lm_sa_taif_shubra_palace",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "shubra-palace-taif"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_makkah_mina",
+      "data": {
+        "naim": "منى",
+        "osf": "وادي شرقي مكة مرتبط بمناسك الحج ورمي الجمرات.",
+        "names_i18n": {
+          "local": "منى",
+          "ar": "منى",
+          "en": "Mina",
+          "ru": "Мина",
+          "ky": "Мина",
+          "uz": "Mina"
+        },
+        "osf_i18n": {
+          "ar": "وادي شرقي مكة مرتبط بمناسك الحج ورمي الجمرات.",
+          "en": "Valley east of Makkah associated with Hajj rites including the Jamarat.",
+          "ru": "Долина к востоку от Мекки, связанная с обрядами хаджа и бросанием камней.",
+          "ky": "Меккенин чыгышындагы өрөөн, ажылык ырымдары менен байланыштуу.",
+          "uz": "Makka sharqidagi vodiy, haj marosimlari bilan bogʻliq."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.4133,
+          "longitude": 39.8933
+        },
+        "img1": "",
+        "acctev": false,
+        "as_ads": false,
+        "tsnef": "religious",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": null,
+        "source_provider": "geographic_reference",
+        "source_url": "",
+        "verified_at": "2026-07-22",
+        "verification_status": "needs_review",
+        "verification_confidence": 0.62,
+        "geo_import_id": "lm_sa_makkah_mina",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "mina"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_jeddah_al_balad",
+      "data": {
+        "naim": "جدة التاريخية (البلد)",
+        "osf": "الحي التاريخي في جدة، موقع تراث عالمي لليونسكو.",
+        "names_i18n": {
+          "local": "البلد التاريخية",
+          "ar": "جدة التاريخية (البلد)",
+          "en": "Historic Jeddah (Al-Balad)",
+          "ru": "Историческая Джидда (Аль-Балад)",
+          "ky": "Тарыхый Жидда (Аль-Балад)",
+          "uz": "Tarixiy Jidda (Al-Balad)"
+        },
+        "osf_i18n": {
+          "ar": "الحي التاريخي في جدة، موقع تراث عالمي لليونسكو.",
+          "en": "Jeddah’s historic district, a UNESCO World Heritage site.",
+          "ru": "Исторический район Джидды, объект Всемирного наследия ЮНЕСКО.",
+          "ky": "Жидданын тарыхый району, ЮНЕСКО дүйнөлүк мурасы.",
+          "uz": "Jiddaning tarixiy tumani, YuNESKO Jahon merosi."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.4851,
+          "longitude": 39.187
+        },
+        "img1": "",
+        "acctev": false,
+        "as_ads": false,
+        "tsnef": "historic",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_jeddah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": null,
+        "source_provider": "unesco,manual_centroid",
+        "source_url": "https://whc.unesco.org/en/list/1361/",
+        "verified_at": "2026-07-22",
+        "verification_status": "needs_review",
+        "verification_confidence": 0.74,
+        "geo_import_id": "lm_sa_jeddah_al_balad",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "historic-jeddah-al-balad"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_jeddah_floating_mosque",
+      "data": {
+        "naim": "مسجد الرحمة (المسجد العائم)",
+        "osf": "مسجد على كورنيش جدة يُعرف بالمسجد العائم.",
+        "names_i18n": {
+          "local": "مسجد الرحمة",
+          "ar": "مسجد الرحمة (المسجد العائم)",
+          "en": "Al-Rahma Mosque (Floating Mosque)",
+          "ru": "Мечеть ар-Рахма (плавучая мечеть)",
+          "ky": "Ар-Рахма мечити (сүзүүчү мечит)",
+          "uz": "Ar-Rahma masjidi (suzuvchi masjid)"
+        },
+        "osf_i18n": {
+          "ar": "مسجد على كورنيش جدة يُعرف بالمسجد العائم.",
+          "en": "Waterfront mosque on Jeddah Corniche, commonly called the Floating Mosque.",
+          "ru": "Мечеть на набережной Джидды, известная как «плавучая мечеть».",
+          "ky": "Жидда корнишиндеги мечит, сүзүүчү мечит деп аталат.",
+          "uz": "Jidda kornishidagi masjid, suzuvchi masjid deb ataladi."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.6419,
+          "longitude": 39.1036
+        },
+        "img1": "",
+        "acctev": false,
+        "as_ads": false,
+        "tsnef": "religious",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_jeddah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": null,
+        "source_provider": "local_tourism_reference",
+        "source_url": "",
+        "verified_at": "2026-07-22",
+        "verification_status": "needs_review",
+        "verification_confidence": 0.58,
+        "geo_import_id": "lm_sa_jeddah_floating_mosque",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "al-rahma-mosque-jeddah"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_makkah_masjid_aisha",
+      "data": {
+        "naim": "مسجد عائشة (التنعيم)",
+        "osf": "مسجد في التنعيم يُستخدم غالباً للإحرام للعمرة من مكة.",
+        "names_i18n": {
+          "local": "مسجد عائشة",
+          "ar": "مسجد عائشة (التنعيم)",
+          "en": "Masjid Aisha (at-Taneem)",
+          "ru": "Мечеть Аиши (ат-Таним)",
+          "ky": "Аиша мечити (ат-Таним)",
+          "uz": "Oisha masjidi (at-Tanim)"
+        },
+        "osf_i18n": {
+          "ar": "مسجد في التنعيم يُستخدم غالباً للإحرام للعمرة من مكة.",
+          "en": "Mosque at at-Taneem commonly used for entering ihram for Umrah from Makkah.",
+          "ru": "Мечеть в ат-Таниме, часто используемая для входа в ихрам для умры из Мекки.",
+          "ky": "ат-Танимдеги мечит, Меккеден умра үчүн ихрамга кирүүгө колдонулат.",
+          "uz": "at-Tanimdagi masjid, Makkadan umra uchun ihramga kirishda ishlatiladi."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.4675,
+          "longitude": 39.8047
+        },
+        "img1": "",
+        "acctev": false,
+        "as_ads": false,
+        "tsnef": "religious",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": null,
+        "source_provider": "hajj_umrah_geography",
+        "source_url": "",
+        "verified_at": "2026-07-22",
+        "verification_status": "needs_review",
+        "verification_confidence": 0.55,
+        "geo_import_id": "lm_sa_makkah_masjid_aisha",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "masjid-aisha-taneem"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_taif_al_hada",
+      "data": {
+        "naim": "الهدا",
+        "osf": "مرتفعات سياحية قرب الطائف بإطلالات جبلية.",
+        "names_i18n": {
+          "local": "الهدا",
+          "ar": "الهدا",
+          "en": "Al-Hada",
+          "ru": "Аль-Хада",
+          "ky": "Аль-Хада",
+          "uz": "Al-Hada"
+        },
+        "osf_i18n": {
+          "ar": "مرتفعات سياحية قرب الطائف بإطلالات جبلية.",
+          "en": "Mountain resort area near Taif known for views and cool climate.",
+          "ru": "Горная курортная местность близ Таифа с видами и прохладным климатом.",
+          "ky": "Таифке жакын тоолуу эс алуу аймагы, көрүнүштөрү менен белгилүү.",
+          "uz": "Toif yaqinidagi togʻli dam olish hududi, manzaralari bilan mashhur."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.367,
+          "longitude": 40.286
+        },
+        "img1": "",
+        "acctev": false,
+        "as_ads": false,
+        "tsnef": "nature",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_taif",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": null,
+        "source_provider": "regional_tourism",
+        "source_url": "",
+        "verified_at": "2026-07-22",
+        "verification_status": "needs_review",
+        "verification_confidence": 0.52,
+        "geo_import_id": "lm_sa_taif_al_hada",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "al-hada-taif"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_jeddah_obhur",
+      "data": {
+        "naim": "أبحر",
+        "osf": "منطقة ساحلية شمال جدة تُعرف بخور أبحر والأنشطة البحرية.",
+        "names_i18n": {
+          "local": "أبحر",
+          "ar": "أبحر",
+          "en": "Obhur",
+          "ru": "Обхур",
+          "ky": "Обхур",
+          "uz": "Obxur"
+        },
+        "osf_i18n": {
+          "ar": "منطقة ساحلية شمال جدة تُعرف بخور أبحر والأنشطة البحرية.",
+          "en": "Northern Jeddah coastal area known for Obhur Creek and water activities.",
+          "ru": "Прибрежный район к северу от Джидды, известный бухтой Обхур.",
+          "ky": "Жидданын түндүгүндөгү жээк аймагы, Обхур булуңу менен белгилүү.",
+          "uz": "Jidda shimolidagi sohil hududi, Obxur qoʻltigʻi bilan mashhur."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.742,
+          "longitude": 39.108
+        },
+        "img1": "",
+        "acctev": false,
+        "as_ads": false,
+        "tsnef": "nature",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_jeddah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": null,
+        "source_provider": "regional_map_reference",
+        "source_url": "",
+        "verified_at": "2026-07-22",
+        "verification_status": "needs_review",
+        "verification_confidence": 0.5,
+        "geo_import_id": "lm_sa_jeddah_obhur",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "obhur-creek"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "mkan/lm_sa_makkah_kiswa_factory_exhibition",
+      "data": {
+        "naim": "مصنع كسوة الكعبة",
+        "osf": "منشأة ومعرض مرتبطان بصناعة كسوة الكعبة للزوار المهتمين بالتراث.",
+        "names_i18n": {
+          "local": "مصنع كسوة الكعبة / معرض الكسوة",
+          "ar": "مصنع كسوة الكعبة",
+          "en": "Kiswa Factory / Kaaba Covering Exhibition",
+          "ru": "Фабрика кисвы / выставка покрывала Каабы",
+          "ky": "Кисва фабрикасы / Кааба жабуусунун көргөзмөсү",
+          "uz": "Kisva fabrikasi / Kaʼba qoplami koʻrgazmasi"
+        },
+        "osf_i18n": {
+          "ar": "منشأة ومعرض مرتبطان بصناعة كسوة الكعبة للزوار المهتمين بالتراث.",
+          "en": "Facility and exhibition related to the making of the Kaaba covering (kiswa).",
+          "ru": "Объект и экспозиция, связанные с изготовлением покрывала Каабы (кисвы).",
+          "ky": "Каабанын жабуусун (кисва) жасоо менен байланышкан объект/көргөзмө.",
+          "uz": "Kaʼba qoplamini (kisva) tayyorlash bilan bogʻliq obyekt/koʻrgazma."
+        },
+        "content_locale": "ar",
+        "Location": {
+          "latitude": 21.4375,
+          "longitude": 39.78
+        },
+        "img1": "",
+        "acctev": false,
+        "as_ads": false,
+        "tsnef": "museum",
+        "id_cit": "cities/region_makkah",
+        "id_vill": "villages/city_makkah",
+        "Rev_dolh": "countries/saudi_arabia",
+        "country_iso": "SA",
+        "wikidata_id": null,
+        "source_provider": "cultural_heritage_reference",
+        "source_url": "",
+        "verified_at": "2026-07-22",
+        "verification_status": "needs_review",
+        "verification_confidence": 0.45,
+        "geo_import_id": "lm_sa_makkah_kiswa_factory_exhibition",
+        "geo_import_pilot": "sa-makkah-region-2026-07",
+        "geo_import_slug": "kiswa-factory-exhibition"
+      },
+      "wouldWrite": false
+    }
+  ]
+}

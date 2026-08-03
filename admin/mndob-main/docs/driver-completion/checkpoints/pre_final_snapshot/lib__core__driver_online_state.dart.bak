@@ -1,0 +1,120 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '/app_state.dart';
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
+import '/core/driver_eligibility_service.dart';
+import '/core/driver_legacy_field_compat.dart';
+import '/core/driver_lifecycle_state.dart';
+import '/core/driver_live_location_service.dart';
+
+/// Single definition of "driver is online and can receive work".
+abstract final class DriverOnlineState {
+  DriverOnlineState._();
+
+  static DriverLifecycle get lifecycle => DriverLifecycleState.resolve();
+
+  static bool get isApproved =>
+      DriverLegacyFieldCompat.isOperationallyApproved(lifecycle);
+
+  static bool get isMarkedOnline => DriverLegacyFieldCompat.isOnline(lifecycle);
+
+  /// Driver can see/accept new orders when approved + online + not busy.
+  static bool get canReceiveOrders {
+    final life = lifecycle;
+    if (!DriverLegacyFieldCompat.isOperationallyApproved(life)) return false;
+    if (life != DriverLifecycle.activeOnline) return false;
+    return true;
+  }
+
+  /// Banner "inactive" should only show when not approved OR explicitly offline.
+  static bool get showInactiveBanner =>
+      !isApproved || lifecycle == DriverLifecycle.activeOffline;
+
+  static Future<DriverOnlineGateResult> goOnline() async {
+    final eligibility = await DriverEligibilityService.evaluateForOnline();
+    if (!eligibility.isEligible) {
+      return DriverOnlineGateResult(
+        ok: false,
+        code: eligibility.reason.name,
+        message: eligibility.messageKey.isNotEmpty
+            ? eligibility.messageKey
+            : 'Your account is waiting for admin approval before going online.',
+      );
+    }
+
+    final loc = await DriverLiveLocationService.currentPosition();
+    if (loc == null) {
+      return const DriverOnlineGateResult(
+        ok: false,
+        code: 'LOCATION_UNAVAILABLE',
+        message: 'Could not read your current location. Try again.',
+      );
+    }
+
+    await currentUserReference!.update({
+      ...createUserRecordData(
+        ngl: true,
+        loceshnMndobNow: loc,
+      ),
+      'operational_status': 'online',
+      'is_online': true,
+      'last_online_at': FieldValue.serverTimestamp(),
+      'last_seen_at': FieldValue.serverTimestamp(),
+    });
+    DriverLiveLocationService.startIdleSync(isOnline: true);
+    return const DriverOnlineGateResult(ok: true);
+  }
+
+  static Future<DriverOnlineGateResult> goOffline({
+    bool hasActiveTrip = false,
+  }) async {
+    if (!loggedIn || currentUserReference == null) {
+      return const DriverOnlineGateResult(
+        ok: false,
+        code: 'AUTH_REQUIRED',
+        message: 'Please sign in first.',
+      );
+    }
+
+    if (hasActiveTrip) {
+      return const DriverOnlineGateResult(
+        ok: false,
+        code: 'ACTIVE_TRIP',
+        message: 'Trip in progress',
+      );
+    }
+
+    await currentUserReference!.update({
+      ...createUserRecordData(ngl: false),
+      'operational_status': 'offline',
+      'is_online': false,
+      'last_offline_at': FieldValue.serverTimestamp(),
+      'last_seen_at': FieldValue.serverTimestamp(),
+    });
+
+    // Keep trip tracking alive; only stop idle online sync when not on a trip.
+    DriverLiveLocationService.stopIdleSync(force: true);
+    return const DriverOnlineGateResult(ok: true);
+  }
+
+  static Future<void> setOnline(bool online) async {
+    if (online) {
+      await goOnline();
+    } else {
+      await goOffline(hasActiveTrip: FFAppState().revOrder != null);
+    }
+  }
+}
+
+class DriverOnlineGateResult {
+  const DriverOnlineGateResult({
+    required this.ok,
+    this.message,
+    this.code,
+  });
+
+  final bool ok;
+  final String? message;
+  final String? code;
+}

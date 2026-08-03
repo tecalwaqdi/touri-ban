@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_uz_karakalpakstan",
+  "__writtenAt": "2026-07-22T11:29:01.178Z",
+  "__target": "local-staging",
+  "naim": "جمهورية قرقل باغستان",
+  "names_i18n": {
+    "ar": "جمهورية قرقل باغستان",
+    "en": "Republic of Karakalpakstan",
+    "ru": "Республика Каракалпакстан",
+    "ky": "Каракалпакстан",
+    "uz": "Qoraqalpogʻiston Respublikasi"
+  },
+  "dolh": "countries/uzbekistan",
+  "acctev": true,
+  "iso_code": "UZ-QR",
+  "country_iso": "UZ",
+  "geo_import_id": "region_uz_karakalpakstan",
+  "geo_import_source": "touri_geo_import"
+}

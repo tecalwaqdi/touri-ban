@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/luxury",
+  "__writtenAt": "2026-07-22T11:29:02.562Z",
+  "__target": "local-staging",
+  "naim": "فاخرة",
+  "names_i18n": {
+    "ar": "فاخرة",
+    "en": "Luxury",
+    "ru": "Люкс",
+    "ky": "Люкс",
+    "uz": "Lyuks"
+  },
+  "codeCar": "luxury",
+  "sr": 480,
+  "agl_saat": 5,
+  "actev": true,
+  "ishafelh": false,
+  "not": "Luxury",
+  "geo_import_id": "vehcat_luxury",
+  "geo_import_source": "touri_geo_import"
+}

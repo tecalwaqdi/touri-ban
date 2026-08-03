@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<key>CFBundleDisplayName</key>
+		<string>توري تأكسي - للمندوب</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>MNDOB</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleLocalizations</key>
+		<array>
+			<string>en</string>
+			<string>ar</string>
+		</array>
+		<key>CFBundleShortVersionString</key>
+		<string>$(FLUTTER_BUILD_NAME)</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.638010533068-7q56rtt23tmngtp2pm0s9t31rlpiccr1</string>
+				</array>
+			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>mndob.com</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>mndob</string>
+				</array>
+			</dict>
+		</array>
+		<key>FlutterDeepLinkingEnabled</key>
+		<true/>
+		<key>CFBundleVersion</key>
+		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>CFVFV</string>
+		<key>NSCameraUsageDescription</key>
+		<string>Please allow camera access to update your profile picture.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Please allow access to photos to update your profile picture from the photo gallery.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>نحتاج لموقعك لتتبع الرحلة حتى عند إغلاق التطبيق</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>نحتاج إلى موقعك لتحديث حالة طلب التوصيل وتتبع السائق حتى عند إغلاق التطبيق. هذا يساعدنا على توفير خدمة دقيقة.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>نحتاج للوصول إلى موقعك لتحديد مكانك على الخريطة أثناء استخدام التطبيق</string>
+		<key>NSMotionUsageDescription</key>
+		<string>نستخدم بيانات الحركة لتقليل استهلاك البطارية وتحديد حالة السائق أثناء التتبع</string>
+		<key>NSFaceIDUsageDescription</key>
+		<string>نستخدم الصلاحيات الأمنية لتأمين حسابك والتأكد من هوية المستخدم.</string>
+		<key>NSFaceIDUsageDescription</key>
+		<string>لتتبع حركة الموقع وذلك للتبع الرحلة</string>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>fetch</string>
+			<string>remote-notification</string>
+			<string>location</string>
+		</array>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>comgooglemaps</string>
+			<string>baidumap</string>
+			<string>iosamap</string>
+			<string>waze</string>
+			<string>yandexmaps</string>
+			<string>yandexnavi</string>
+			<string>citymapper</string>
+			<string>mapswithme</string>
+			<string>osmandmaps</string>
+			<string>dgis</string>
+			<string>qqmap</string>
+			<string>here-location</string>
+		</array>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
+		<false/>
+		<key>UIStatusBarHidden</key>
+		<false/>
+	</dict>
+</plist>

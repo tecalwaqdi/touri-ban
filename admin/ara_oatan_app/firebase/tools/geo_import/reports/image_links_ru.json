@@ -1,0 +1,3003 @@
+{
+  "country": "RU",
+  "linked": 219,
+  "skipped": 181,
+  "wouldWriteToFirebaseStorage": false,
+  "rows": [
+    {
+      "id": "lm_ru_moscow_osm_relation_1543094",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "2024 Novodevichy Convent in Moscow.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_relation_3272726",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "0 234 Roter Platz (Lenin-Mausoleum.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_node_1666070895",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q21639958&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_moscow_osm_relation_3061015",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 1.0",
+      "reason": null,
+      "commonsFile": "Kutafiya Tower2.JPG"
+    },
+    {
+      "id": "lm_ru_moscow_osm_relation_3440930",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Останкинская башня вечером.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_relation_16492515",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "2014 Moscow Tomb of the Unknown Soldier 2.JPG"
+    },
+    {
+      "id": "lm_ru_moscow_osm_way_118989786",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Moscow 2026-06-12 24.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_way_122743551",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Tango B-396 Moscow.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_way_122743553",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q277771&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_moscow_osm_relation_1359243",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Cathedral of the Archangel in Moscow 01 by shakko.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_relation_1577673",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 4.0",
+      "reason": null,
+      "commonsFile": "Kremlin and Red Square.1.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_relation_3028585",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Dormition (Kremlin).JPG"
+    },
+    {
+      "id": "lm_ru_moscow_osm_relation_16685841",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": "FAL",
+      "reason": "license not allowed: FAL"
+    },
+    {
+      "id": "lm_ru_moscow_osm_node_2390706732",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 3.0",
+      "reason": null,
+      "commonsFile": "Près du Kremlin - panoramio.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_way_32693356",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q16710450&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_moscow_osm_relation_1359251",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 2.0",
+      "reason": null,
+      "commonsFile": "The Cathedral of the Annunciation.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_relation_10048315",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Moscow 05-2012 Volkhonka 01.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_node_273354762",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Pushkin museum - 19th and 20th Century European and American Art - building 02 by shakko.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_node_288506766",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Darvinovskiy museum.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_osm_node_2315226688",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Утки парк напротив Новодевичьего монастыря.JPG"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_node_3515072703",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q728971&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_way_216655164",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Menshikov Palace in SPB.jpg"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_relation_227969",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "RUS-2016-Aerial-SPB-Peter and Paul Fortress 02.jpg"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_relation_238571",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Saint Michael's Castle South.jpg"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_node_2477732778",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_way_29359671",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Марли.JPG"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_way_104244532",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Путевой дворец Петра Первого в Стрельне.jpg"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_way_235984453",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q1058832&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_relation_969622",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Spb 06-2012 Palace Embankment various 01.jpg"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_relation_1028087",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 1.0",
+      "reason": null,
+      "commonsFile": "Строгановский дворец (2).jpg"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_relation_2000648",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "00 3043 Column of Alexander - Palace Square in Saint Petersburg.jpg"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_node_2",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_node_446273164",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 2.5"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_node_1421750016",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY 4.0"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_node_1521009686",
+      "linked": true,
+      "source": "existing",
+      "license": "Public domain"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_way_28893849",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Alexandrinsky Theatre.jpg"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_way_853031831",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Pavlovsk Muzyk vokzal (Meier).jpg"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_relation_3296313",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q1149264&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_relation_11763697",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Spb 06-2012 Nevsky various 02.jpg"
+    },
+    {
+      "id": "lm_ru_saint_petersburg_osm_relation_15337766",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Lakhta Center (img4).jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_way_216649646",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Istra, Moscow Oblast, Russia - panoramio (10).jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_node_6948757886",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Museum of the Russian Photo (5).jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_way_169684490",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Музей Органической Культуры.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_way_305950648",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4478033&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_way_341007600",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Фасад музея \"Новый Иерусалим\".jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_node_94057611",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_way_70684381",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Спасо-Бородинский монастырь.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_node_223965838",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_node_1604726434",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "An-30 - RA-26226.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_way_127097459",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Музей техники Вадима Задорожного Мерседес.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_way_169636353",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3A%D0%9C%D1%83%D0%B7%D0%B5%D0%B9%20%D0%BF%D0%B0%D1%81%D1%82%D0%B8%D0%BB%D1%8B%20%D0%B2%20%D0%9A%D0%BE%D0%BB%D0%BE%D0%BC%D0%BD%D0%B5.JPG&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_relation_3538570",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Borodino's museum principal.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_relation_5246176",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Шеврон танкового музея Кубинка.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_relation_19977064",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Vadimrazumov copter - Zaraysk.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_node_693644274",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Главный дом усадьбы Суханово.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_node_3504985010",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Museum of history and fine arts in Mytishchi.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_way_46705486",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4361923&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_way_174817764",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Avdotyino Nikolo-BerlyukovskayaPustyn DJI 0912.jpg"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_way_192135483",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 2.5",
+      "reason": null,
+      "commonsFile": "Sukhoi T-4 (Monino museum).JPG"
+    },
+    {
+      "id": "lm_ru_moscow_oblast_osm_way_192135486",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Aeroflot Tupolev Tu-114.jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_node_2078629169",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Pähkinäsaaren rauhan raja 1323 - Treaty of Nöteborg 1323.jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_way_203601263",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_relation_2592297",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_relation_1738744",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Korela Fort.JPG"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_relation_19317626",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q2272243&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_relation_2729305",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Vyborg ClockTower 006 8692.jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_way_86924608",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Vyborg 06-2012 various listed 12.jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_way_89834819",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Staraya Ladoga Church.JPG"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_way_141608101",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Ladoga Assumption Cathedral.jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_way_173376357",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Church of Kanneljärvi.jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_way_240658166",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q28530016&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_way_448220810",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Operation Iskra January 1943. 01.jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_way_841495106",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 3.0",
+      "reason": null,
+      "commonsFile": "Копорье крепость - panoramio (4).jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_relation_1243635",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Ivangorod-2008-1.jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_relation_1853214",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Крепость Старая Ладога Вид.jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_relation_2144530",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 4.0",
+      "reason": null,
+      "commonsFile": "Alvar Aalto Library Vyborg3.jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_node_1955519822",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_relation_2384833",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4080271&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_relation_3175362",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Vyborg 06-2012 various listed 05.jpg"
+    },
+    {
+      "id": "lm_ru_leningrad_osm_node_1829851724",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 4.0",
+      "reason": null,
+      "commonsFile": "20160723 Konevets 271.jpg"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_relation_14454789",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Казанский кремль. Панорама с колеса обозрения.jpg"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_way_91769591",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Church of Image of Edessa, Kazan (2025-08-15) 49.jpg"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_way_277633796",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Гл здание ГМИИ РТ.JPG"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_node_427832829",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q16692273&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_node_1185938872",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Памятник Г.Тукаю (г. Казань, ул. Пушкина) - 3.JPG"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_node_1348003477",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Национальный музей Республики Татарстан.JPG"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_node_2494989015",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Дом Шамиля 02.jpg"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_node_2951266146",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Ттарстан. Казань. Дом, в котором в 1886 - 1887 гг. жил и работал пекарем Горький Алексей Максимович.jpg"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_node_5252474255",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Музей чак-чака.png"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_node_8111682370",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q86001753&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_way_69921955",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "All Religions Kazan Temple 111.jpeg"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_way_90251771",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Дворец Земледельцев (Казань).JPG"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_way_91856623",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": "FAL",
+      "reason": "license not allowed: FAL"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_way_222787130",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Центр семьи \"Казан\"(HDR).jpg"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_way_230132591",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": "FAL",
+      "reason": "license not allowed: FAL"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_relation_20451615",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q2034194&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_relation_3374482",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Западный фасад церкви.jpg"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_node_2289638621",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Tukay monument, Teatralnaya street, Kazan (2019-11-05) 02.jpg"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_node_3292801557",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Памятник Казанскому коту Алабрысу. Казань. Январь 2014 - panoramio.jpg"
+    },
+    {
+      "id": "lm_ru_tatarstan_osm_way_1177567734",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Nikola Kiprian.jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_656228306",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Salavat Yulaev Panorama.jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_13981113308",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4306182&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_2042182518",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 4.0",
+      "reason": null,
+      "commonsFile": "Ufa train disaster 09.jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_2925699007",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Вход в Лаклинскую пещеру.jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_11934927700",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 3.0",
+      "reason": null,
+      "commonsFile": "IlshatS pond2.JPG"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_409684591",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Ледяная Аскынская пещера.jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_1587417264",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 3.0",
+      "reason": null,
+      "commonsFile": "Mausoleum of Huseynbek.jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_1587417441",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q16673121&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_1748403299",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_way_184084450",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Zavod.jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_392831092",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Озеро Красный Ключ.JPG"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_1333674537",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 3.0",
+      "reason": null,
+      "commonsFile": "Atysh waterfall (2008).jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_1366528692",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Шихан Торатау и коровы.jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_2041826536",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3A%D0%A8%D0%B8%D1%85%D0%B0%D0%BD%20%D0%9A%D1%83%D1%88%D1%82%D0%B0%D1%83.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_6424213344",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Водопад Куперля (Башкортостан).jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_way_222450911",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Крестовоздвиженская церковь, вид с жд перехода.JPG"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_node_11148564609",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Monument of Friendship in Ufa (March 2025) -0 3.jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_way_95809562",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Музей Мажита Гафури.jpg"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_way_117754444",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_bashkortostan_osm_way_122001820",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3AVolnovaia21Ufa.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_relation_19337633",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Главный вход в цитадель Нарын-Кала.jpg"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_node_4625467289",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Akhty Fortress.jpg"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_way_582526126",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Гамсутль.jpg"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_way_1022608490",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Lun-class ekranoplan 1.jpg"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_node_1256546269",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_way_84867675",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3ABaryatinsky-Vanetsov%20House%20in%20Makhachkala%20(March%202026)%20-%200%203.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_node_10912837188",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_way_470255209",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 2.0",
+      "reason": null,
+      "commonsFile": "Домик Петра І в Дербенте.jpg"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_node_1218763680",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_node_8717754882",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "8 цех вид.jpg"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_node_8809377377",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_way_801848963",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_way_84529539",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Парк культуры и отдыха Ленинского Комсомола (Махачкала).jpg"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_way_486288678",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_way_1250769478",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q137948430&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_way_168599794",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Дербент, Пассаж, 2021-03-22 01.jpg"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_way_178083534",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": "Attribution",
+      "reason": "license not allowed: Attribution"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_node_9006194617",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_node_11131670205",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_dagestan_osm_way_121703046",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_635250420",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 2.5",
+      "reason": null,
+      "commonsFile": "Parus rock.jpg"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_124053423",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "2023-10-22. Краснодар DSC 7515.jpg"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_260885969",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0 de",
+      "reason": null,
+      "commonsFile": "Sochi adler aerial view 2018 14.jpg"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_872382483",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4141155&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_129013628",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Ataman museum Lob 153.JPG"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_173742179",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Крейсер «Михаил Кутузов».JPG"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_node_6634101634",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "На 33 водопадах (02).JPG"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_221585727",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Esto-Sadok, A. H. Tammsaare museum.jpg"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_231553057",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Hermonassa 2.JPG"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_252890892",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q17333518&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_relation_8166435",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 4.0",
+      "reason": null,
+      "commonsFile": "Парк Краснодар (003).jpg"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_node_915444967",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Akhun Sochi.JPG"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_node_12046914278",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "MiG-23-red12.jpg"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_node_12046914279",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 2.0",
+      "reason": null,
+      "commonsFile": "Su-17 (12387980854).jpg"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_node_12047306947",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "T-34-85 góra RB.jpg"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_35475822",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q16536963&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_35475836",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 2.0",
+      "reason": null,
+      "commonsFile": "Краснодарский художественный музей им. Коваленко (33737861298).jpg"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_35476211",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 2.0",
+      "reason": null,
+      "commonsFile": "Краснодарский художественный музей им. Коваленко (33737861298).jpg"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_way_99668099",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Краснодар. Кафедральный собор Екатерины.jpg"
+    },
+    {
+      "id": "lm_ru_krasnodar_osm_relation_5901877",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Морской котик.jpg"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_relation_16826553",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Третье Бадукское озеро.jpg"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_3905998617",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3A(e)%D0%AD%D0%B9%D1%87%D0%BA%D0%B8%D0%B1%D0%B0%D1%88%20(%D0%93%D0%BE%D0%BB%D0%BE%D0%B2%D0%B0%20%D0%9A%D0%BE%D0%B7%D1%8B).jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_4302897594",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_7774215986",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_7804733785",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_9233412517",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_3008522214",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_9893556018",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_way_154193075",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_way_639005655",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_way_1528171169",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_843201870",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_900627823",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_1250785682",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_4705770389",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_5115974522",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_5729938924",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_6504597598",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_7721110585",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_karachay_cherkess_osm_node_8992547222",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_way_675065921",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_4355233319",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Elbrus 76 (10) Приют 11.jpg"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_623506249",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 3.0",
+      "reason": null,
+      "commonsFile": "Devichiy kosy waterfall. July 2007. - Водопад Девичьи косы. Июль 2007. - panoramio.jpg"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_relation_9283129",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Atagukin garden.jpg"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_relation_13824246",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_relation_11285433",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_way_333946429",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_relation_10792967",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_12106193369",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_4558270591",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_5778339154",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_6505420441",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_11503702169",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_5981789385",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_6330355704",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_relation_9603474",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_2403611546",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_5032841842",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_5107194230",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kabardino_balkaria_osm_node_6603394585",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_node_1821181139",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Чечня (50).jpg"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_way_950068633",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Чечня (50).jpg"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_way_631236371",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4506045&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_node_4919501217",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_way_401645022",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Flower park. Grozny 57.jpg"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_node_1825848704",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_way_540051954",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_way_540074759",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_way_540074761",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_way_540074762",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Nikar.jpg"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_way_137822798",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_node_4945509324",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_node_10673877052",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_way_401651500",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_node_12871797801",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_node_4989747624",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_node_8058298285",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_node_1311723493",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_node_4611408547",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_chechnya_osm_node_4961439955",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_1792277533",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3A%D0%93%D1%80%D0%BE%D1%82%20%D0%9C.%D0%AE.%D0%9B%D0%B5%D1%80%D0%BC%D0%BE%D0%BD%D1%82%D0%BE%D0%B2%D0%B0%2002.JPG&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_way_233408492",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Lermontov Gallery in Pyatigorsk (October 2023) - 1.jpg"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_2258343739",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Mount Scabby Гора Шелудивая 3640.jpg"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_2258344157",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Поход на гору Острую (03).jpg"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_2258344277",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Гора Кабанка (Тупая).jpg"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_2258353007",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Поход на гору Золотой Курган (02).jpg"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_2258353407",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4160667&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_2258354642",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Поход на гору Юца (04).jpg"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_2258355541",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Гора Кинжал 01.jpg"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_2414675623",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Pyatigorsk Local Museum (October 2023) - 5.jpg"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_way_167880147",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Академическая галерея - panoramio.jpg"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_way_315646779",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Нарзанная галерея (Кисловодск).JPG"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_993519020",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4439027&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_11085292613",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_way_98868976",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_way_569709253",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Park Tsvetnik in Pyatigorsk (October 2023) - 14.jpg"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_relation_6299575",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Памятник Мэри в Емануелевском парке. Пятигорск (2).jpg"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_13511473155",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_10872781736",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_stavropol_osm_node_10872781737",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_rostov_osm_node_6142928109",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_rostov_osm_way_129406488",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Cossacks museum.JPG"
+    },
+    {
+      "id": "lm_ru_rostov_osm_node_1127814214",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 2.5",
+      "reason": null,
+      "commonsFile": "Museum 02.jpg"
+    },
+    {
+      "id": "lm_ru_rostov_osm_way_271345487",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q24933295&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_rostov_osm_relation_1949854",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_rostov_osm_relation_2026097",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 2.5",
+      "reason": null,
+      "commonsFile": "Rostov regional museum of study of local lore.jpg"
+    },
+    {
+      "id": "lm_ru_rostov_osm_way_99404616",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": "Attribution",
+      "reason": "license not allowed: Attribution"
+    },
+    {
+      "id": "lm_ru_rostov_osm_way_99407522",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Alferaki Palace 2024.jpg"
+    },
+    {
+      "id": "lm_ru_rostov_osm_way_119928898",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Moiseev's house (Taganrog) - S corner.jpg"
+    },
+    {
+      "id": "lm_ru_rostov_osm_way_335592516",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3AChekhov%20Birthhouse.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_rostov_osm_node_835246488",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_rostov_osm_node_929063537",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Танаис, археологический музей-заповедник-6.jpg"
+    },
+    {
+      "id": "lm_ru_rostov_osm_node_1042879243",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Chelovek v futlare.JPG"
+    },
+    {
+      "id": "lm_ru_rostov_osm_node_1042879340",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_rostov_osm_node_1232659150",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Композиция Мирный атом.jpg"
+    },
+    {
+      "id": "lm_ru_rostov_osm_node_2049630291",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Slowo o polku Igorewe 1800.png"
+    },
+    {
+      "id": "lm_ru_rostov_osm_node_5109225725",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q16645542&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_rostov_osm_node_5109750121",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Особняк Н Г Врангеля - Газетный 8.JPG"
+    },
+    {
+      "id": "lm_ru_rostov_osm_way_83824546",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Армянская Апостольская церковь Сурб Хач (Святой Крест) (1792г.) в городе Ростове-на-Дону.jpg"
+    },
+    {
+      "id": "lm_ru_rostov_osm_node_6507576444",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Музей русско-армянской дружбы.JPG"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_way_947205778",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Hotel Madrid (Yekaterinburg)-2021-5.jpg"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_457304363",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Yekaterinburg (Dec '21) - 3.jpg"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_2474529847",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q53240141&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_4869079921",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Dyatlov Pass incident 02.jpg"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_way_69841318",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": "FAL",
+      "reason": "license not allowed: FAL"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_1381879982",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Local History Museum of Verkhnyaya Pyshma (January 2023) - 3.jpg"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_474949599",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Дом Поклевских-Козелл.jpg"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_474949912",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": "FAL",
+      "reason": "license not allowed: FAL"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_1133656925",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4343173&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_3656636651",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Aerial photos of Yekaterinburg-20.jpeg"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_4065212240",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Dyatlov Pass incident 02.jpg"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_way_55235295",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Екатеринбург 0021 Дом Бажова.jpg"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_way_93308387",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "NevyanskTower 005 5742.jpg"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_964623543",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Уральский геологический музей 01.JPG"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_1524322768",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3AVerkh-Neyvinsky%20Monument%20005%205252.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_way_18071101",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Views from Vysotsky skyscraper-2021-39.JPG"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_way_47570505",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_4851621709",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Dyatlov Pass incident 02.jpg"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_node_4869329021",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "AKUR SHP0 2.JPG"
+    },
+    {
+      "id": "lm_ru_sverdlovsk_osm_way_375641109",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Keyboard monument.jpg"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_2372928440",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 2.0",
+      "reason": null,
+      "commonsFile": "Memorial to the lab animals (14604111622).jpg"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_282892314",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4343586&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_898497809",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_way_1264334473",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Novichenko stela (cropped).jpg"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_5291479220",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_way_188010579",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_697224276",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_676312584",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_676312585",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_6170786385",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_9733115883",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_6549111542",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_way_166316859",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_way_315434011",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_652425125",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_6405590185",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_11369186469",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_way_48175103",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_3421123604",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_novosibirsk_osm_node_3674401086",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_node_4840460669",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Tunguska Ereignis-1.jpg"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_way_216929863",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Udin GV.jpg"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_node_3012316102",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": "Attribution",
+      "reason": "license not allowed: Attribution"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_way_121259938",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3A%D0%97%D0%BE%D0%BE%D0%BF%D0%B0%D1%80%D0%BA%20%22%D0%A0%D0%BE%D0%B5%D0%B2%20%D1%80%D1%83%D1%87%D0%B5%D0%B9%22%20(011).JPG&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_way_172600583",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Krasnoyarsk museum of local lore.JPG"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_way_257587739",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Пароход-музей Святитель Николай.JPG"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_way_24572872",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_node_4840350442",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Tunguska Ereignis-1.jpg"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_node_344079977",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_way_60219534",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Музейный центр Площадь Мира 2020.jpg"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_way_93800250",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "First house of Norilsk in autumn.JPG"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_way_148885482",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q740423&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_way_378321671",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_relation_3301398",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Вид на остров Татышев с левого берега.jpg"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_node_806298370",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Караульная гора и часовня - вид из центра города.jpg"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_node_1535371956",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Черная сопка.jpg"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_node_3279680269",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Красноярский Биг-Бен.jpg"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_node_6543248693",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_node_10912753477",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_krasnoyarsk_osm_way_437314853",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4507615&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_node_2523954116",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 4.0",
+      "reason": null,
+      "commonsFile": "Patomsky crater.jpg"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_node_1455670092",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Хобой1.jpg"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_way_102235281",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Бывш шк Кладищевой. Иркутск 01.jpg"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_way_127494805",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Irkutsk Cинагога (дом еврейского общества).JPG"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_way_192900603",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY 3.0"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_way_136275391",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Иркутск. Дом Волконского.JPG"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_way_161547484",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4203298&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_way_492024632",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 4.0",
+      "reason": null,
+      "commonsFile": "Patomsky crater.jpg"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_node_275654924",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Olchon1.jpg"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_way_146079278",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Башня-касса музея.JPG"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_node_957145955",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_node_1249894844",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Памятник Ленину, г. Иркутск.jpg"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_node_12765714713",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Deer stone from Ivolginsk.jpg"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_way_103528507",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4203315&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_node_920058001",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Памятник Вампилову в Иркутске.jpg"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_node_3776650727",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_way_489740420",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Aleksandrovskiy Tsentral (Old Russian Prison).jpg"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_relation_15966824",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Art museum.JPG"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_way_156753648",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Иркутск. Московские ворота.JPG"
+    },
+    {
+      "id": "lm_ru_irkutsk_osm_way_161547515",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3A%D0%98%D1%80%D0%BA%D1%83%D1%82%D1%81%D0%BA.%20%D0%98%D0%B5%D1%80%D1%83%D1%81%D0%B0%D0%BB%D0%B8%D0%BC%D1%81%D0%BA%D0%B0%D1%8F%20%D1%86%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C%206.JPG&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_way_30281940",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "S-56 Submarine Monument in Vladivostok (October 2024)-0 2.jpg"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_way_170639233",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY 2.5",
+      "reason": null,
+      "commonsFile": "Krasnyj vympel.jpg"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_706901840",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Sestra Mountain.JPG"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_1210401190",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC0",
+      "reason": null,
+      "commonsFile": "Voroshilov battery.jpg"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_3268251761",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Battle of Lake Khasan-Red Army soldiers setting the flag on the Zaozernaya Hill.jpg"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_258844585",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q4094835&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_333777116",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "No-nb bldsa 1c030 Stepan Osipovitsj Makarov (cropped).jpg"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_601373596",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Cyril and Methodius.jpg"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_11635460669",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 3.0"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_way_74551780",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Океанариум Владивосток.jpg"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_10845587831",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_way_30284904",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Konstantin Makovsky Nikolay-Muravyov-Amursky 1863.jpg"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_296115500",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3ANikcas.jpg&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_way_29106133",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_way_492719941",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Gate into the park of Partizansk.JPG"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_302270181",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "9288km to Moscow - panoramio.jpg"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_way_102653595",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Novosiltsevskaya battery (October 2024)-0.jpg"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_9010643803",
+      "linked": true,
+      "source": "existing",
+      "license": "CC BY-SA 4.0"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_12044811469",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Доходный дом Общества изучения Амурского края.JPG"
+    },
+    {
+      "id": "lm_ru_primorsky_osm_node_12044811483",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "meta: HTTP 429 https://commons.wikimedia.org/w/api.php?action=query&titles=File%3A%D0%A8%D1%82%D0%B0%D0%B1%20%D0%BC%D0%BE%D1%80%D1%81%D0%BA%D0%BE%D0%B9%20(%20%D0%B3.%20%D0%92%D0%BB%D0%B0%D0%B4%D0%B8%D0%B2%D0%BE%D1%81%D1%82%D0%BE%D0%BA%2C%20%D0%A1%D0%B2%D0%B5%D1%82%D0%BB%D0%B0%D0%BD%D1%81%D0%BA%D0%B0%D1%8F%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%2C%2047%20).JPG&prop=imageinfo&iiprop=extmetadata|url|size|mime&format=json"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_282067675",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "D0807I14-HarbourTour.jpg"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_4376672193",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Василий Степанович Завойко.jpg"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_10577048476",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "Vladimir Lenin in July 1920 by Pavel Zhukov.jpg"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_533612846",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 2.0",
+      "reason": null,
+      "commonsFile": "Valley of the Geysers.jpg"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_relation_2638024",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "Public domain",
+      "reason": null,
+      "commonsFile": "TriBrataKamchatka.jpg"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_way_446744661",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q172233&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_6654033185",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_6654033585",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_5824613653",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Памятник Витусу Берингу в Петропавлоаске-Камчатском.jpg"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_13610178351",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 3.0",
+      "reason": null,
+      "commonsFile": "Lakihegyi adotorony.jpg"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_4383006994",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_3784933380",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Бухта Командор.jpg"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_way_144941702",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_way_843317511",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_4464759473",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_7799436685",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_8940154517",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_node_9657931703",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_way_128672859",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_kamchatka_osm_way_128672867",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_3471851491",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_way_172658630",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_way_1518775654",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "wikidata: HTTP 429 https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q65156643&property=P18&format=json"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_6435478785",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_relation_3538056",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Белые ночи на территории ЛС.jpg"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_13347424563",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_5976457044",
+      "linked": true,
+      "source": "wikidata_p18",
+      "license": "CC BY-SA 4.0",
+      "reason": null,
+      "commonsFile": "Мемориал «Победа». Памятная стела.jpg"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_6425690786",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_way_1081927625",
+      "linked": false,
+      "source": "wikidata_p18",
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_8569636075",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_way_822517785",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_4908906186",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_6425672785",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_9811228678",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_2059122989",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_6425719086",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_7835351285",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_9779420744",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_relation_5904286",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    },
+    {
+      "id": "lm_ru_sakha_osm_node_5928491188",
+      "linked": false,
+      "source": null,
+      "license": null,
+      "reason": "no wikidata image"
+    }
+  ]
+}

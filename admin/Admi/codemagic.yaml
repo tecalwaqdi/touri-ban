@@ -1,0 +1,73 @@
+# Codemagic iOS build — https://codemagic.io
+# 1) Sign up and connect this GitHub repo
+# 2) Apple Developer Program -> add iOS app id: com.mycompany.tutorialmultilanguageapp
+# 3) Codemagic -> Team settings -> Apple Developer Portal (API key or Apple ID)
+# 4) Register tester iPhone UDIDs for ad-hoc, or use app-store for TestFlight
+# 5) Start build -> download IPA from Artifacts
+
+workflows:
+  ios-adhoc-ipa:
+    name: iOS Ad-Hoc IPA (install on registered iPhones)
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: ad_hoc
+        bundle_identifier: com.mycompany.tutorialmultilanguageapp
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Install pods
+        script: |
+          cd ios
+          pod install
+      - name: Build IPA
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=ios/ExportOptionsAdHoc.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+        notify:
+          success: true
+          failure: true
+
+  ios-testflight:
+    name: iOS TestFlight (App Store Connect)
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.mycompany.tutorialmultilanguageapp
+    integrations:
+      app_store_connect: codemagic
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Install pods
+        script: |
+          cd ios
+          pod install
+      - name: Build IPA
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=ios/ExportOptionsAppStore.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        beta_groups:
+          - Internal Testers

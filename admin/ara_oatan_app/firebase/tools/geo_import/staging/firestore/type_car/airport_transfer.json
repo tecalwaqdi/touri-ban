@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/airport_transfer",
+  "__writtenAt": "2026-07-22T11:29:02.689Z",
+  "__target": "local-staging",
+  "naim": "نقل مطار",
+  "names_i18n": {
+    "ar": "نقل مطار",
+    "en": "Airport Transfer",
+    "ru": "Трансфер в аэропорт",
+    "ky": "Аэропорт трансфери",
+    "uz": "Aeroport transferi"
+  },
+  "codeCar": "airport_transfer",
+  "sr": 220,
+  "agl_saat": 3,
+  "actev": true,
+  "ishafelh": false,
+  "not": "Airport Transfer",
+  "geo_import_id": "vehcat_airport_transfer",
+  "geo_import_source": "touri_geo_import"
+}

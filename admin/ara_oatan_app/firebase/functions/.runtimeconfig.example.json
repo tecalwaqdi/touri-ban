@@ -1,0 +1,16 @@
+{
+  "ngenius": {
+    "api_key": "YOUR_NGENIUS_API_KEY_BASE64",
+    "outlet_ref": "YOUR_NGENIUS_OUTLET_REFERENCE",
+    "production": "true",
+    "realm": "networkinternational"
+  },
+  "braintree": {
+    "prod_merchant_id": "YOUR_BRAINTREE_PROD_MERCHANT_ID",
+    "prod_public_key": "YOUR_BRAINTREE_PROD_PUBLIC_KEY",
+    "prod_private_key": "YOUR_BRAINTREE_PROD_PRIVATE_KEY",
+    "test_merchant_id": "YOUR_BRAINTREE_SANDBOX_MERCHANT_ID",
+    "test_public_key": "YOUR_BRAINTREE_SANDBOX_PUBLIC_KEY",
+    "test_private_key": "YOUR_BRAINTREE_SANDBOX_PRIVATE_KEY"
+  }
+}

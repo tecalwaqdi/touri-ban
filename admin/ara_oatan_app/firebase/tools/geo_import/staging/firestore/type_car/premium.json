@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/premium",
+  "__writtenAt": "2026-07-22T11:29:02.562Z",
+  "__target": "local-staging",
+  "naim": "ممتازة",
+  "names_i18n": {
+    "ar": "ممتازة",
+    "en": "Premium",
+    "ru": "Премиум",
+    "ky": "Премиум",
+    "uz": "Premium"
+  },
+  "codeCar": "premium",
+  "sr": 320,
+  "agl_saat": 4,
+  "actev": true,
+  "ishafelh": false,
+  "not": "Premium",
+  "geo_import_id": "vehcat_premium",
+  "geo_import_source": "touri_geo_import"
+}

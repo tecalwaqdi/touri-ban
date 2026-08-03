@@ -1,0 +1,35 @@
+{
+  "phase": 4,
+  "name": "verify",
+  "collected": {
+    "SA": {
+      "regions": 13,
+      "landmarks": 260,
+      "regionsMeetingQuota": 13,
+      "regionsShort": 0
+    },
+    "KG": {
+      "regions": 9,
+      "landmarks": 180,
+      "regionsMeetingQuota": 9,
+      "regionsShort": 0
+    },
+    "UZ": {
+      "regions": 14,
+      "landmarks": 280,
+      "regionsMeetingQuota": 14,
+      "regionsShort": 0
+    },
+    "RU": {
+      "regions": 20,
+      "landmarks": 400,
+      "regionsMeetingQuota": 20,
+      "regionsShort": 0
+    }
+  },
+  "reportsPresent": {
+    "phase1": true,
+    "phase2": true
+  },
+  "finishedAt": "2026-07-22T22:00:01.246Z"
+}

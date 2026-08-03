@@ -1,0 +1,6 @@
+NSCameraUsageDescription = "Take a photo to set your profile picture using the camera directly.";
+NSPhotoLibraryUsageDescription = "Upload images to set your account profile picture.
+";
+NSLocationWhenInUseUsageDescription = "\"Allow the Arra Watan app to access your current location for the purpose of conducting sightseeing tours.\"";
+PermissionGroupNotification = "نستخدم الإشعارات لإبقاء المستخدم على اطلاع فوري بحالة الطلبات، التحديثات المهمة، العروض، والتنبيهات التشغيلية داخل التطبيق.
+";

@@ -1,0 +1,305 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+
+import '/backend/api_requests/api_calls.dart';
+import '/backend/schema/enums/enums.dart';
+import '/core/app_design_system.dart';
+import '/core/toury_brand_widgets.dart';
+import '/core/toury_ngenius_service.dart';
+import '/core/toury_payment_flags.dart';
+import '/core/toury_payment_labels.dart';
+import '/design_system/colors/ds_color_scales.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/index.dart';
+
+/// نتيجة محاولة الدفع بالبطاقة عبر Network International (N-Genius).
+class TouryCardPaymentResult {
+  const TouryCardPaymentResult({
+    required this.success,
+    this.response,
+    this.paymentId,
+    this.threeDsUrl,
+    this.errorMessage,
+  });
+
+  final bool success;
+  final ApiCallResponse? response;
+  final String? paymentId;
+  final String? threeDsUrl;
+  final String? errorMessage;
+
+  bool get needsThreeDs =>
+      threeDsUrl != null &&
+      threeDsUrl!.isNotEmpty &&
+      !TouryNGeniusService.isPaid(response?.jsonBody);
+
+  bool get isPaid => TouryNGeniusService.isPaid(response?.jsonBody);
+}
+
+/// تنفيذ دفع بطاقة عبر Cloud Function → N-Genius فقط (لا نجاح وهمي).
+Future<TouryCardPaymentResult> touryExecuteCardPayment({
+  required String description,
+  required int amountHalalas,
+  required String carPath,
+  required String countryPath,
+  required int bookingHours,
+  required int additionalHours,
+}) async {
+  if (!TouryPaymentFlags.enableOnlinePayment) {
+    return TouryCardPaymentResult(
+      success: false,
+      errorMessage: 'checkout_online_payment_disabled'.tr(),
+    );
+  }
+  if (amountHalalas <= 0) {
+    return TouryCardPaymentResult(
+      success: false,
+      errorMessage: 'checkout_payment_card_error'.tr(),
+    );
+  }
+
+  final response = await NGeniusPaymentCall.call(
+    description: description,
+    amount: amountHalalas,
+    paymentPurpose: 'booking',
+    carPath: carPath,
+    countryPath: countryPath,
+    bookingHours: bookingHours,
+    additionalHours: additionalHours,
+  );
+
+  if (!TouryNGeniusService.createReady(response)) {
+    final err = response.jsonBody is Map
+        ? (response.jsonBody as Map)['error']?.toString()
+        : null;
+    return TouryCardPaymentResult(
+      success: false,
+      response: response,
+      errorMessage: err ?? 'checkout_payment_card_error'.tr(),
+    );
+  }
+
+  final body = response.jsonBody;
+  return TouryCardPaymentResult(
+    success: true,
+    response: response,
+    paymentId: TouryNGeniusService.paymentId(body),
+    threeDsUrl: NGeniusPaymentCall.url(body),
+  );
+}
+
+/// يوجّه بعد الدفع: صفحة 3DS للبوابة أو التحقق المباشر من N-Genius.
+Future<void> touryNavigateAfterCardPayment(
+  BuildContext context, {
+  required TouryCardPaymentResult result,
+  required TypeHgz paymentFlowType,
+  VoidCallback? onPaidWithoutWebView,
+}) async {
+  if (!result.success || result.paymentId == null) return;
+
+  FFAppState().update(() {
+    FFAppState().paymentOrderId = result.paymentId!;
+    FFAppState().paymentInProgress = true;
+    FFAppState().DonePay = false;
+    FFAppState().paymentFlowKind = paymentFlowType;
+  });
+
+  final paidDirectly =
+      result.isPaid || result.threeDsUrl == null || result.threeDsUrl!.isEmpty;
+
+  if (paidDirectly) {
+    if (onPaidWithoutWebView != null) {
+      onPaidWithoutWebView();
+      return;
+    }
+    if (!context.mounted) return;
+    // fromWebView:false → PaymentConfirm يتحقق من البوابة ثم ينشئ الطلب.
+    context.pushNamed(
+      PaymentConfirmWidget.routeName,
+      queryParameters: {
+        'fromWebView': serializeParam(false, ParamType.bool),
+      }.withoutNulls,
+    );
+    return;
+  }
+
+  if (!context.mounted) return;
+  context.pushNamed(
+    WebviewWidget.routeName,
+    queryParameters: {
+      'url': serializeParam(result.threeDsUrl, ParamType.String),
+    }.withoutNulls,
+  );
+}
+
+/// بطاقة طريقة الدفع المختارة.
+class TouryPaymentMethodCard extends StatelessWidget {
+  const TouryPaymentMethodCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+    this.accentColor,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+  final Color? accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = accentColor ?? TouryBrand.tealDark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Material(
+      color: selected
+          ? accent.withValues(alpha: isDark ? 0.18 : 0.08)
+          : TouryBrand.cardFor(context),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: selected ? accent : TouryBrand.borderFor(context),
+              width: selected ? 2 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: accent, size: 26),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontFamily: 'cairo',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        color: TouryBrand.textPrimaryFor(context),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontFamily: 'cairo',
+                        fontSize: 12,
+                        color: TouryBrand.textSecondaryFor(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                selected ? Icons.check_circle_rounded : Icons.radio_button_off,
+                color: selected ? accent : TouryBrand.borderFor(context),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// شريط ملخص الدفع في صفحة الحجز.
+class TouryPaymentSummaryBar extends StatelessWidget {
+  const TouryPaymentSummaryBar({
+    super.key,
+    required this.methodLabel,
+    required this.totalLabel,
+    required this.onChangeMethod,
+  });
+
+  final String methodLabel;
+  final String totalLabel;
+  final VoidCallback onChangeMethod;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark
+            ? TouryBrand.teal.withValues(alpha: 0.12)
+            : DsPrimaryScale.shade100,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: TouryBrand.teal.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.payments_rounded,
+            color: isDark ? DsPrimaryScale.shade400 : DsPrimaryScale.shade600,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  methodLabel,
+                  style: TextStyle(
+                    fontFamily: 'cairo',
+                    fontWeight: FontWeight.w700,
+                    color: TouryBrand.textPrimaryFor(context),
+                  ),
+                ),
+                Text(
+                  totalLabel,
+                  style: TextStyle(
+                    fontFamily: 'cairo',
+                    fontSize: 13,
+                    color: isDark
+                        ? const Color(0xFFAAC0BD)
+                        : const Color(0xFF004D40),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: onChangeMethod,
+            child: Text('ux_change'.tr()),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+bool touryHasElectronicPaymentSelected() {
+  if (!TouryPaymentFlags.enableOnlinePayment) return false;
+  return FFAppState().ElectronicPayment;
+}
+
+String tourySelectedPaymentSubtitle(String payth) {
+  if (TouryPaymentFlags.cashOnlyMode || touryIsCashPaymentValue(payth)) {
+    return 'ux_cash_on_delivery'.tr();
+  }
+  if (touryIsUnsetPaymentValue(payth)) {
+    return 'ux_choose_payment_method'.tr();
+  }
+  return 'ux_card_payment_network'.tr();
+}

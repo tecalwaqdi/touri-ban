@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_ru_novosibirsk",
+  "__writtenAt": "2026-07-22T11:29:02.130Z",
+  "__target": "local-staging",
+  "naim": "نوفوسيبيرسك",
+  "names_i18n": {
+    "ar": "نوفوسيبيرسك",
+    "en": "Novosibirsk",
+    "ru": "Новосибирск",
+    "ky": "Новосибирск",
+    "uz": "Novosibirsk"
+  },
+  "cities": "cities/region_ru_novosibirsk",
+  "dolh": "countries/russia",
+  "lat_ling": {
+    "latitude": 55.0084,
+    "longitude": 82.9357
+  },
+  "acctev": true,
+  "country_iso": "RU",
+  "geo_import_id": "city_ru_novosibirsk",
+  "geo_import_source": "touri_geo_import"
+}

@@ -1,0 +1,470 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "cities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "dolh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "acctev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sorting",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "countries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "acctev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "num_trteb",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "chat",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "date",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "user1",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "USER",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_order",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "mndob_user",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_order",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "mndob_user",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ActiveOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_order",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "mndob_user",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status_code",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_order",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status_code",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ALLNOW",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "carRev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Rev_dolh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_order",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status_code",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ALLNOW",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "carRev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_order",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status_code",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ALLNOW",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_order",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "chat",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "idorder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "user1",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "ExtraHours",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "RevOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dateAdd",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "countries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "acctev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "saudi",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "num_trteb",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "ADRESSUSER",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "USER",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "acctev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "VILL",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_add",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "support",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "RefUser",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "villages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "acctev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "naim",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "villages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "acctev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "cities",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "naim",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "cities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "dolh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "naim",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "chat",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "idorder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "PaymentMethods",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userRev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "acctev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dataAdd",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "Paymenthistory",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "RevUser",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "DateAdd",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "mkan",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "acctev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "id_vill",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "naim",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "mkan",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "acctev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "id_cit",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "villages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "dolh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "acctev",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "villages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "cities",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "acctev",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "transactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userRef",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+      "collectionGroup": "user",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "mndob_vill",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "actev_mndob",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ismndom",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ismndob",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "mndob_type_car",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ngl",
+          "order": "ASCENDING"
+                                       }
+                                   ]
+                    }
+                ],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "fcm_tokens",
+      "fieldPath": "fcm_token",
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
+                                               }
+                                           ]
+                           }
+                       ]
+}

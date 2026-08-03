@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_sa_jouf",
+  "__writtenAt": "2026-07-22T11:28:59.316Z",
+  "__target": "local-staging",
+  "naim": "منطقة الجوف",
+  "names_i18n": {
+    "ar": "منطقة الجوف",
+    "en": "Al Jouf Region",
+    "ru": "Провинция Эль-Джауф",
+    "ky": "Жауф аймагы",
+    "uz": "Al-Jauf viloyati"
+  },
+  "dolh": "countries/saudi_arabia",
+  "acctev": true,
+  "iso_code": "SA-12",
+  "country_iso": "SA",
+  "geo_import_id": "region_sa_jouf",
+  "geo_import_source": "touri_geo_import"
+}

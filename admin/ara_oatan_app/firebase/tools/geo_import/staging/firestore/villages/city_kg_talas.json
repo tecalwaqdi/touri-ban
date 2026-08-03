@@ -1,0 +1,23 @@
+{
+  "__path": "villages/city_kg_talas",
+  "__writtenAt": "2026-07-22T11:28:59.695Z",
+  "__target": "local-staging",
+  "naim": "تالاس",
+  "names_i18n": {
+    "ar": "تالاس",
+    "en": "Talas",
+    "ru": "Талас",
+    "ky": "Талас",
+    "uz": "Talas"
+  },
+  "cities": "cities/region_kg_talas",
+  "dolh": "countries/kyrgyzstan",
+  "lat_ling": {
+    "latitude": 42.5228,
+    "longitude": 72.2427
+  },
+  "acctev": true,
+  "country_iso": "KG",
+  "geo_import_id": "city_kg_talas",
+  "geo_import_source": "touri_geo_import"
+}

@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_kg_bishkek",
+  "__writtenAt": "2026-07-22T11:28:59.433Z",
+  "__target": "local-staging",
+  "naim": "بيشكيك",
+  "names_i18n": {
+    "ar": "بيشكيك",
+    "en": "Bishkek",
+    "ru": "Бишкек",
+    "ky": "Бишкек",
+    "uz": "Bishkek"
+  },
+  "dolh": "countries/kyrgyzstan",
+  "acctev": true,
+  "iso_code": "KG-GB",
+  "country_iso": "KG",
+  "geo_import_id": "region_kg_bishkek",
+  "geo_import_source": "touri_geo_import"
+}

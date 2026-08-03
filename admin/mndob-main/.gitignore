@@ -1,0 +1,52 @@
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+*.iml
+.idea/
+.vscode/
+
+# Android
+**/android/.gradle/
+**/android/.kotlin/
+**/android/app/.cxx/
+**/android/captures/
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/key.properties
+**/android/keystore.properties
+**/*.jks
+**/*.keystore
+
+# iOS
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_assets/
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# Firebase / Node
+**/node_modules/
+.firebase/
+*.log
+
+# Secrets
+.env
+.env.*
+*.pem
+**/serviceAccount*.json
+**/credentials.json
+
+# Build outputs
+*.apk
+*.aab
+*.ipa
+
+# OS
+.DS_Store
+Thumbs.db

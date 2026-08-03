@@ -1,0 +1,507 @@
+{
+  "generatedAt": "2026-07-22T23:32:51.289Z",
+  "totals": {
+    "landmarks": 1120,
+    "withImg": 1120,
+    "badCoord": 0,
+    "outBounds": 0,
+    "dups": 2
+  },
+  "countries": [
+    {
+      "country": "SA",
+      "total": 260,
+      "fullyOk": 260,
+      "needsWork": 0,
+      "withImg": 260,
+      "withLicense": 260,
+      "withWd": 76,
+      "withOsm": 260,
+      "badCoord": 0,
+      "outBounds": 0,
+      "missingName": 0,
+      "dups": 0,
+      "imgCoveragePct": 100,
+      "regionStats": [
+        {
+          "slug": "riyadh",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "makkah",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "madinah",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "eastern",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "qassim",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "hail",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "tabuk",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "northern_borders",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "jazan",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "najran",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "baha",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "jouf",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "asir",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        }
+      ],
+      "issueSample": [],
+      "issueCount": 0
+    },
+    {
+      "country": "KG",
+      "total": 180,
+      "fullyOk": 178,
+      "needsWork": 2,
+      "withImg": 180,
+      "withLicense": 180,
+      "withWd": 0,
+      "withOsm": 0,
+      "badCoord": 0,
+      "outBounds": 0,
+      "missingName": 0,
+      "dups": 2,
+      "imgCoveragePct": 100,
+      "regionStats": [
+        {
+          "slug": "bishkek",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "chuy",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "issyk_kul",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "naryn",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "talas",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "jalal_abad",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "osh",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "osh_city",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 18
+        },
+        {
+          "slug": "batken",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        }
+      ],
+      "issueSample": [
+        {
+          "id": "lm_kg_osh_city_jayma-city",
+          "region": "osh_city",
+          "errs": [
+            "duplicate_nearby"
+          ],
+          "lat": 40.531,
+          "lng": 72.789,
+          "name": "Jayma Bazaar"
+        },
+        {
+          "id": "lm_kg_osh_city_osh-museum-city",
+          "region": "osh_city",
+          "errs": [
+            "duplicate_nearby"
+          ],
+          "lat": 40.5296,
+          "lng": 72.7825,
+          "name": "Sulaiman-Too Museum"
+        }
+      ],
+      "issueCount": 2
+    },
+    {
+      "country": "UZ",
+      "total": 280,
+      "fullyOk": 280,
+      "needsWork": 0,
+      "withImg": 280,
+      "withLicense": 280,
+      "withWd": 80,
+      "withOsm": 280,
+      "badCoord": 0,
+      "outBounds": 0,
+      "missingName": 0,
+      "dups": 0,
+      "imgCoveragePct": 100,
+      "regionStats": [
+        {
+          "slug": "tashkent_city",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "tashkent_region",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "samarkand",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "bukhara",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "xorazm",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "fergana",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "namangan",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "andijan",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "qashqadaryo",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "surxondaryo",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "navoiy",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "jizzax",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "sirdaryo",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "karakalpakstan",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        }
+      ],
+      "issueSample": [],
+      "issueCount": 0
+    },
+    {
+      "country": "RU",
+      "total": 400,
+      "fullyOk": 400,
+      "needsWork": 0,
+      "withImg": 400,
+      "withLicense": 400,
+      "withWd": 307,
+      "withOsm": 400,
+      "badCoord": 0,
+      "outBounds": 0,
+      "missingName": 0,
+      "dups": 0,
+      "imgCoveragePct": 100,
+      "regionStats": [
+        {
+          "slug": "moscow",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "saint_petersburg",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "moscow_oblast",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "leningrad",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "tatarstan",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "bashkortostan",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "dagestan",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "krasnodar",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "karachay_cherkess",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "kabardino_balkaria",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "chechnya",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "stavropol",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "rostov",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "sverdlovsk",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "novosibirsk",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "krasnoyarsk",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "irkutsk",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "primorsky",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "kamchatka",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        },
+        {
+          "slug": "sakha",
+          "count": 20,
+          "quotaOk": true,
+          "withImg": 20,
+          "fullyOk": 20
+        }
+      ],
+      "issueSample": [],
+      "issueCount": 0
+    }
+  ],
+  "verdict": {
+    "coordsOk": true,
+    "imagesReady": true,
+    "imgCoveragePct": 100,
+    "message": "Coordinates OK; images coverage good."
+  }
+}

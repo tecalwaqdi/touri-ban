@@ -1,0 +1,62 @@
+{
+  "summary": [
+    {
+      "country": "SA",
+      "fromOsm": {
+        "candidates": 26,
+        "linked": 0
+      },
+      "resolved": {
+        "linked": 21,
+        "skipped": 5,
+        "processed": 26
+      },
+      "linked": {
+        "linked": 51,
+        "skipped": 209
+      },
+      "patched": {
+        "patched": 51
+      }
+    },
+    {
+      "country": "UZ",
+      "fromOsm": {
+        "candidates": 48,
+        "linked": 0
+      },
+      "resolved": {
+        "linked": 1,
+        "skipped": 47,
+        "processed": 48
+      },
+      "linked": {
+        "linked": 57,
+        "skipped": 223
+      },
+      "patched": {
+        "patched": 57
+      }
+    },
+    {
+      "country": "RU",
+      "fromOsm": {
+        "candidates": 36,
+        "linked": 0
+      },
+      "resolved": {
+        "linked": 12,
+        "skipped": 24,
+        "processed": 36
+      },
+      "linked": {
+        "linked": 219,
+        "skipped": 181
+      },
+      "patched": {
+        "patched": 219
+      }
+    }
+  ],
+  "at": "2026-07-22T23:32:19.905Z"
+}

@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_kg_issyk_kul",
+  "__writtenAt": "2026-07-22T11:28:59.577Z",
+  "__target": "local-staging",
+  "naim": "إقليم إيسيك كول",
+  "names_i18n": {
+    "ar": "إقليم إيسيك كول",
+    "en": "Issyk-Kul Region",
+    "ru": "Иссык-Кульская область",
+    "ky": "Ысык-Көл облусу",
+    "uz": "Issiqkoʻl viloyati"
+  },
+  "dolh": "countries/kyrgyzstan",
+  "acctev": true,
+  "iso_code": "KG-Y",
+  "country_iso": "KG",
+  "geo_import_id": "region_kg_issyk_kul",
+  "geo_import_source": "touri_geo_import"
+}

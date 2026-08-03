@@ -1,0 +1,24 @@
+{
+  "__path": "countries/saudi_arabia",
+  "__writtenAt": "2026-07-22T11:28:57.885Z",
+  "__target": "local-staging",
+  "naim": "المملكة العربية السعودية",
+  "naimEnglesh": "Saudi Arabia",
+  "names_i18n": {
+    "ar": "المملكة العربية السعودية",
+    "en": "Saudi Arabia",
+    "ru": "Саудовская Аравия",
+    "ky": "Сауд Арабиясы",
+    "uz": "Saudiya Arabistoni"
+  },
+  "iso_code": "SA",
+  "iso3": "SAU",
+  "CurrencySymbol": "ر.س",
+  "currency_code": "SAR",
+  "phone_code": "+966",
+  "timezone": "Asia/Riyadh",
+  "acctev": true,
+  "saudi": true,
+  "geo_import_id": "country_sa",
+  "geo_import_source": "touri_geo_import"
+}

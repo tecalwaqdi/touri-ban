@@ -1,0 +1,54 @@
+# FlutterFlow legacy project — suppress style noise in Problems panel.
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - build/**
+    - .dart_tool/**
+  errors:
+    invalid_annotation_target: ignore
+    unused_import: ignore
+    unused_local_variable: ignore
+    unused_field: ignore
+    unused_element: ignore
+    duplicate_import: ignore
+    unnecessary_import: ignore
+    unnecessary_null_comparison: ignore
+    unnecessary_non_null_assertion: ignore
+    dead_null_aware_expression: ignore
+    unreachable_switch_default: ignore
+    non_constant_identifier_names: ignore
+    unnecessary_getters_setters: ignore
+    library_private_types_in_public_api: ignore
+    depend_on_referenced_packages: ignore
+    invalid_use_of_visible_for_testing_member: ignore
+    deprecated_member_use: ignore
+    avoid_print: ignore
+    use_build_context_synchronously: ignore
+    prefer_const_constructors: ignore
+    prefer_const_literals_to_create_immutables: ignore
+    avoid_unnecessary_containers: ignore
+    sort_child_properties_last: ignore
+    prefer_const_declarations: ignore
+    avoid_types_as_parameter_names: ignore
+    unnecessary_string_escapes: ignore
+    constant_identifier_names: ignore
+    type_literal_in_constant_pattern: ignore
+    avoid_function_literals_in_foreach_calls: ignore
+    prefer_typing_uninitialized_variables: ignore
+
+linter:
+  rules:
+    unnecessary_string_escapes: false
+    prefer_const_constructors: false
+    prefer_const_literals_to_create_immutables: false
+    use_build_context_synchronously: false
+    avoid_print: false
+    avoid_unnecessary_containers: false
+    sort_child_properties_last: false
+    prefer_const_declarations: false
+    avoid_types_as_parameter_names: false
+    constant_identifier_names: false
+    type_literal_in_constant_pattern: false
+    avoid_function_literals_in_foreach_calls: false
+    prefer_typing_uninitialized_variables: false

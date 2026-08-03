@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_sa_baha",
+  "__writtenAt": "2026-07-22T11:28:59.016Z",
+  "__target": "local-staging",
+  "naim": "منطقة الباحة",
+  "names_i18n": {
+    "ar": "منطقة الباحة",
+    "en": "Al Bahah Region",
+    "ru": "Провинция Эль-Баха",
+    "ky": "Баха аймагы",
+    "uz": "Al-Baho viloyati"
+  },
+  "dolh": "countries/saudi_arabia",
+  "acctev": true,
+  "iso_code": "SA-11",
+  "country_iso": "SA",
+  "geo_import_id": "region_sa_baha",
+  "geo_import_source": "touri_geo_import"
+}

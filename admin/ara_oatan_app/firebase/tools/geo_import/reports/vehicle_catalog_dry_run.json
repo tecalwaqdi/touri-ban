@@ -1,0 +1,1471 @@
+{
+  "generatedAt": "2026-07-22T09:44:58.969Z",
+  "wouldWriteToFirestore": false,
+  "categories": 24,
+  "models": [
+    {
+      "make": "Toyota",
+      "model": "Camry",
+      "categoryIds": [
+        "sedan_standard",
+        "comfort",
+        "business"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2018,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Toyota",
+      "model": "Corolla",
+      "categoryIds": [
+        "economy",
+        "compact",
+        "sedan_standard"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Toyota",
+      "model": "Yaris",
+      "categoryIds": [
+        "economy",
+        "compact"
+      ],
+      "seats": 5,
+      "luggage": 1,
+      "years": [
+        2016,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Toyota",
+      "model": "Land Cruiser",
+      "categoryIds": [
+        "suv_large",
+        "offroad_4x4",
+        "luxury"
+      ],
+      "seats": 7,
+      "luggage": 5,
+      "years": [
+        2010,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Toyota",
+      "model": "Prado",
+      "categoryIds": [
+        "suv_standard",
+        "offroad_4x4",
+        "suv_family"
+      ],
+      "seats": 7,
+      "luggage": 4,
+      "years": [
+        2010,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Toyota",
+      "model": "RAV4",
+      "categoryIds": [
+        "suv_compact",
+        "suv_standard",
+        "hybrid"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Toyota",
+      "model": "Hiace",
+      "categoryIds": [
+        "van_family",
+        "minivan",
+        "airport_transfer"
+      ],
+      "seats": 12,
+      "luggage": 6,
+      "years": [
+        2010,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Toyota",
+      "model": "Coaster",
+      "categoryIds": [
+        "coach_mini",
+        "tourist_vehicle"
+      ],
+      "seats": 22,
+      "luggage": 10,
+      "years": [
+        2010,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Hyundai",
+      "model": "Elantra",
+      "categoryIds": [
+        "economy",
+        "sedan_standard",
+        "comfort"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2016,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Hyundai",
+      "model": "Sonata",
+      "categoryIds": [
+        "comfort",
+        "business"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Hyundai",
+      "model": "Tucson",
+      "categoryIds": [
+        "suv_compact",
+        "suv_standard"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2016,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Hyundai",
+      "model": "Santa Fe",
+      "categoryIds": [
+        "suv_family",
+        "suv_standard"
+      ],
+      "seats": 7,
+      "luggage": 4,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Hyundai",
+      "model": "Staria",
+      "categoryIds": [
+        "van_family",
+        "minivan",
+        "van_vip"
+      ],
+      "seats": 9,
+      "luggage": 5,
+      "years": [
+        2021,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Hyundai",
+      "model": "H-1 / Starex",
+      "categoryIds": [
+        "van_family",
+        "airport_transfer"
+      ],
+      "seats": 9,
+      "luggage": 5,
+      "years": [
+        2010,
+        2024
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Kia",
+      "model": "K5 / Optima",
+      "categoryIds": [
+        "comfort",
+        "business"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2016,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Kia",
+      "model": "Sportage",
+      "categoryIds": [
+        "suv_compact",
+        "suv_standard"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2016,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Kia",
+      "model": "Sorento",
+      "categoryIds": [
+        "suv_family",
+        "suv_large"
+      ],
+      "seats": 7,
+      "luggage": 4,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Kia",
+      "model": "Carnival",
+      "categoryIds": [
+        "van_family",
+        "minivan",
+        "van_vip"
+      ],
+      "seats": 8,
+      "luggage": 5,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Nissan",
+      "model": "Sunny / Almera",
+      "categoryIds": [
+        "economy",
+        "sedan_standard"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Nissan",
+      "model": "Patrol",
+      "categoryIds": [
+        "suv_large",
+        "offroad_4x4",
+        "luxury"
+      ],
+      "seats": 7,
+      "luggage": 5,
+      "years": [
+        2010,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Nissan",
+      "model": "X-Trail",
+      "categoryIds": [
+        "suv_standard",
+        "suv_family"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Lexus",
+      "model": "ES",
+      "categoryIds": [
+        "premium",
+        "business",
+        "luxury"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "RU"
+      ]
+    },
+    {
+      "make": "Lexus",
+      "model": "LX",
+      "categoryIds": [
+        "luxury",
+        "suv_large"
+      ],
+      "seats": 7,
+      "luggage": 5,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "RU"
+      ]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Tahoe",
+      "categoryIds": [
+        "suv_standard",
+        "suv_family"
+      ],
+      "seats": 7,
+      "luggage": 4,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Tahoe Tracker",
+      "categoryIds": [
+        "suv_compact"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2019,
+        2026
+      ],
+      "countries": [
+        "UZ"
+      ]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Cobalt",
+      "categoryIds": [
+        "economy",
+        "sedan_standard"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2013,
+        2026
+      ],
+      "countries": [
+        "UZ"
+      ]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Damas",
+      "categoryIds": [
+        "minivan",
+        "economy"
+      ],
+      "seats": 7,
+      "luggage": 2,
+      "years": [
+        2010,
+        2026
+      ],
+      "countries": [
+        "UZ"
+      ]
+    },
+    {
+      "make": "GMC",
+      "model": "Yukon",
+      "categoryIds": [
+        "suv_large",
+        "luxury"
+      ],
+      "seats": 7,
+      "luggage": 5,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA"
+      ]
+    },
+    {
+      "make": "Ford",
+      "model": "Explorer",
+      "categoryIds": [
+        "suv_family",
+        "suv_large"
+      ],
+      "seats": 7,
+      "luggage": 4,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "RU"
+      ]
+    },
+    {
+      "make": "Mercedes-Benz",
+      "model": "E-Class",
+      "categoryIds": [
+        "business",
+        "premium",
+        "luxury"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "RU"
+      ]
+    },
+    {
+      "make": "Mercedes-Benz",
+      "model": "S-Class",
+      "categoryIds": [
+        "luxury"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "RU"
+      ]
+    },
+    {
+      "make": "Mercedes-Benz",
+      "model": "V-Class / Vito",
+      "categoryIds": [
+        "van_vip",
+        "van_family",
+        "airport_transfer"
+      ],
+      "seats": 7,
+      "luggage": 4,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "RU",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Mercedes-Benz",
+      "model": "Sprinter",
+      "categoryIds": [
+        "coach_mini",
+        "tourist_vehicle"
+      ],
+      "seats": 16,
+      "luggage": 8,
+      "years": [
+        2010,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "RU",
+        "UZ"
+      ]
+    },
+    {
+      "make": "BMW",
+      "model": "5 Series",
+      "categoryIds": [
+        "business",
+        "premium"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "RU"
+      ]
+    },
+    {
+      "make": "BMW",
+      "model": "X5",
+      "categoryIds": [
+        "suv_standard",
+        "premium",
+        "luxury"
+      ],
+      "seats": 5,
+      "luggage": 4,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "KG",
+        "RU"
+      ]
+    },
+    {
+      "make": "Audi",
+      "model": "A6",
+      "categoryIds": [
+        "business",
+        "premium"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "RU"
+      ]
+    },
+    {
+      "make": "Volkswagen",
+      "model": "Polo",
+      "categoryIds": [
+        "economy",
+        "compact"
+      ],
+      "seats": 5,
+      "luggage": 1,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "RU",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Volkswagen",
+      "model": "Tiguan",
+      "categoryIds": [
+        "suv_compact",
+        "suv_standard"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2016,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "RU"
+      ]
+    },
+    {
+      "make": "Volkswagen",
+      "model": "Caravelle / Multivan",
+      "categoryIds": [
+        "van_family",
+        "van_vip"
+      ],
+      "seats": 7,
+      "luggage": 4,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "RU"
+      ]
+    },
+    {
+      "make": "Skoda",
+      "model": "Octavia",
+      "categoryIds": [
+        "comfort",
+        "sedan_standard"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "RU",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Renault",
+      "model": "Duster",
+      "categoryIds": [
+        "suv_compact",
+        "offroad_4x4"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "RU",
+        "UZ"
+      ]
+    },
+    {
+      "make": "Lada",
+      "model": "Vesta",
+      "categoryIds": [
+        "economy",
+        "sedan_standard"
+      ],
+      "seats": 5,
+      "luggage": 2,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "RU",
+        "KG"
+      ]
+    },
+    {
+      "make": "Lada",
+      "model": "Niva / Niva Travel",
+      "categoryIds": [
+        "offroad_4x4",
+        "economy"
+      ],
+      "seats": 4,
+      "luggage": 2,
+      "years": [
+        2010,
+        2026
+      ],
+      "countries": [
+        "RU",
+        "KG"
+      ]
+    },
+    {
+      "make": "UAZ",
+      "model": "Patriot",
+      "categoryIds": [
+        "offroad_4x4",
+        "suv_standard"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2010,
+        2026
+      ],
+      "countries": [
+        "RU",
+        "KG"
+      ]
+    },
+    {
+      "make": "GAZ",
+      "model": "Gazelle Next",
+      "categoryIds": [
+        "coach_mini",
+        "tourist_vehicle"
+      ],
+      "seats": 14,
+      "luggage": 6,
+      "years": [
+        2015,
+        2026
+      ],
+      "countries": [
+        "RU",
+        "KG",
+        "UZ"
+      ]
+    },
+    {
+      "make": "BYD",
+      "model": "Song / Seal family",
+      "categoryIds": [
+        "electric",
+        "hybrid",
+        "suv_compact"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2022,
+        2026
+      ],
+      "countries": [
+        "UZ",
+        "RU"
+      ]
+    },
+    {
+      "make": "Geely",
+      "model": "Coolray / Monjaro",
+      "categoryIds": [
+        "suv_compact",
+        "suv_standard"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2020,
+        2026
+      ],
+      "countries": [
+        "UZ",
+        "RU",
+        "KG"
+      ]
+    },
+    {
+      "make": "Chery",
+      "model": "Tiggo 7/8",
+      "categoryIds": [
+        "suv_compact",
+        "suv_family"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2019,
+        2026
+      ],
+      "countries": [
+        "UZ",
+        "RU",
+        "KG",
+        "SA"
+      ]
+    },
+    {
+      "make": "Haval",
+      "model": "Jolion / H6",
+      "categoryIds": [
+        "suv_compact",
+        "suv_standard"
+      ],
+      "seats": 5,
+      "luggage": 3,
+      "years": [
+        2020,
+        2026
+      ],
+      "countries": [
+        "RU",
+        "UZ",
+        "SA"
+      ]
+    },
+    {
+      "make": "Jetour",
+      "model": "X70 / Dashing",
+      "categoryIds": [
+        "suv_family",
+        "suv_standard"
+      ],
+      "seats": 7,
+      "luggage": 4,
+      "years": [
+        2021,
+        2026
+      ],
+      "countries": [
+        "SA",
+        "UZ"
+      ]
+    }
+  ],
+  "modelsByCountry": {
+    "SA": 38,
+    "KG": 28,
+    "UZ": 36,
+    "RU": 36
+  },
+  "typeCarPreview": [
+    {
+      "path": "type_car/economy",
+      "data": {
+        "naim": "اقتصادية",
+        "names_i18n": {
+          "ar": "اقتصادية",
+          "en": "Economy",
+          "ru": "Эконом",
+          "ky": "Эконом",
+          "uz": "Ekonom"
+        },
+        "codeCar": "economy",
+        "sr": 160,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Economy",
+        "geo_import_id": "vehcat_economy"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/compact",
+      "data": {
+        "naim": "مدمجة",
+        "names_i18n": {
+          "ar": "مدمجة",
+          "en": "Compact",
+          "ru": "Компакт",
+          "ky": "Компакт",
+          "uz": "Kompakt"
+        },
+        "codeCar": "compact",
+        "sr": 170,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Compact",
+        "geo_import_id": "vehcat_compact"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/sedan_standard",
+      "data": {
+        "naim": "سيدان قياسية",
+        "names_i18n": {
+          "ar": "سيدان قياسية",
+          "en": "Standard Sedan",
+          "ru": "Стандартный седан",
+          "ky": "Стандарт седан",
+          "uz": "Standart sedan"
+        },
+        "codeCar": "sedan_standard",
+        "sr": 180,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Standard Sedan",
+        "geo_import_id": "vehcat_sedan_standard"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/comfort",
+      "data": {
+        "naim": "مريحة",
+        "names_i18n": {
+          "ar": "مريحة",
+          "en": "Comfort",
+          "ru": "Комфорт",
+          "ky": "Комфорт",
+          "uz": "Komfort"
+        },
+        "codeCar": "comfort",
+        "sr": 210,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Comfort",
+        "geo_import_id": "vehcat_comfort"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/premium",
+      "data": {
+        "naim": "ممتازة",
+        "names_i18n": {
+          "ar": "ممتازة",
+          "en": "Premium",
+          "ru": "Премиум",
+          "ky": "Премиум",
+          "uz": "Premium"
+        },
+        "codeCar": "premium",
+        "sr": 320,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Premium",
+        "geo_import_id": "vehcat_premium"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/business",
+      "data": {
+        "naim": "أعمال",
+        "names_i18n": {
+          "ar": "أعمال",
+          "en": "Business",
+          "ru": "Бизнес",
+          "ky": "Бизнес",
+          "uz": "Biznes"
+        },
+        "codeCar": "business",
+        "sr": 280,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Business",
+        "geo_import_id": "vehcat_business"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/luxury",
+      "data": {
+        "naim": "فاخرة",
+        "names_i18n": {
+          "ar": "فاخرة",
+          "en": "Luxury",
+          "ru": "Люкс",
+          "ky": "Люкс",
+          "uz": "Lyuks"
+        },
+        "codeCar": "luxury",
+        "sr": 480,
+        "agl_saat": 5,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Luxury",
+        "geo_import_id": "vehcat_luxury"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/suv_compact",
+      "data": {
+        "naim": "SUV مدمجة",
+        "names_i18n": {
+          "ar": "SUV مدمجة",
+          "en": "SUV Compact",
+          "ru": "Компактный SUV",
+          "ky": "Ыкчам SUV",
+          "uz": "Kompakt SUV"
+        },
+        "codeCar": "suv_compact",
+        "sr": 260,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "SUV Compact",
+        "geo_import_id": "vehcat_suv_compact"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/suv_standard",
+      "data": {
+        "naim": "SUV قياسية",
+        "names_i18n": {
+          "ar": "SUV قياسية",
+          "en": "SUV Standard",
+          "ru": "Стандартный SUV",
+          "ky": "Стандарт SUV",
+          "uz": "Standart SUV"
+        },
+        "codeCar": "suv_standard",
+        "sr": 300,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "SUV Standard",
+        "geo_import_id": "vehcat_suv_standard"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/suv_large",
+      "data": {
+        "naim": "SUV كبيرة",
+        "names_i18n": {
+          "ar": "SUV كبيرة",
+          "en": "SUV Large",
+          "ru": "Большой SUV",
+          "ky": "Чоң SUV",
+          "uz": "Katta SUV"
+        },
+        "codeCar": "suv_large",
+        "sr": 380,
+        "agl_saat": 5,
+        "actev": true,
+        "ishafelh": false,
+        "not": "SUV Large",
+        "geo_import_id": "vehcat_suv_large"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/suv_family",
+      "data": {
+        "naim": "SUV عائلية",
+        "names_i18n": {
+          "ar": "SUV عائلية",
+          "en": "Family SUV",
+          "ru": "Семейный SUV",
+          "ky": "Үй-бүлөлүк SUV",
+          "uz": "Oilaviy SUV"
+        },
+        "codeCar": "suv_family",
+        "sr": 320,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Family SUV",
+        "geo_import_id": "vehcat_suv_family"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/offroad_4x4",
+      "data": {
+        "naim": "دفع رباعي",
+        "names_i18n": {
+          "ar": "دفع رباعي",
+          "en": "4x4",
+          "ru": "Полный привод 4x4",
+          "ky": "4x4",
+          "uz": "4x4"
+        },
+        "codeCar": "offroad_4x4",
+        "sr": 340,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "4x4",
+        "geo_import_id": "vehcat_offroad_4x4"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/pickup_4x4",
+      "data": {
+        "naim": "بيك أب 4x4",
+        "names_i18n": {
+          "ar": "بيك أب 4x4",
+          "en": "4x4 Pickup",
+          "ru": "Пикап 4x4",
+          "ky": "4x4 пикап",
+          "uz": "4x4 pikap"
+        },
+        "codeCar": "pickup_4x4",
+        "sr": 300,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "4x4 Pickup",
+        "geo_import_id": "vehcat_pickup_4x4"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/minivan",
+      "data": {
+        "naim": "ميني فان",
+        "names_i18n": {
+          "ar": "ميني فان",
+          "en": "Minivan",
+          "ru": "Минивэн",
+          "ky": "Минивэн",
+          "uz": "Miniven"
+        },
+        "codeCar": "minivan",
+        "sr": 340,
+        "agl_saat": 5,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Minivan",
+        "geo_import_id": "vehcat_minivan"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/van_family",
+      "data": {
+        "naim": "فان عائلي",
+        "names_i18n": {
+          "ar": "فان عائلي",
+          "en": "Family Van",
+          "ru": "Семейный минивэн",
+          "ky": "Үй-бүлөлүк минивэн",
+          "uz": "Oilaviy miniven"
+        },
+        "codeCar": "van_family",
+        "sr": 360,
+        "agl_saat": 5,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Family Van",
+        "geo_import_id": "vehcat_van_family"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/van_vip",
+      "data": {
+        "naim": "فان VIP",
+        "names_i18n": {
+          "ar": "فان VIP",
+          "en": "VIP Van",
+          "ru": "VIP минивэн",
+          "ky": "VIP минивэн",
+          "uz": "VIP miniven"
+        },
+        "codeCar": "van_vip",
+        "sr": 450,
+        "agl_saat": 5,
+        "actev": true,
+        "ishafelh": false,
+        "not": "VIP Van",
+        "geo_import_id": "vehcat_van_vip"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/coach_mini",
+      "data": {
+        "naim": "ميني باص",
+        "names_i18n": {
+          "ar": "ميني باص",
+          "en": "Minibus",
+          "ru": "Мини-автобус",
+          "ky": "Кичи автобус",
+          "uz": "Miniavtobus"
+        },
+        "codeCar": "coach_mini",
+        "sr": 600,
+        "agl_saat": 6,
+        "actev": true,
+        "ishafelh": true,
+        "not": "Minibus",
+        "geo_import_id": "vehcat_coach_mini"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/coach_tour",
+      "data": {
+        "naim": "باص سياحي",
+        "names_i18n": {
+          "ar": "باص سياحي",
+          "en": "Tour Bus",
+          "ru": "Туристический автобус",
+          "ky": "Туристтик автобус",
+          "uz": "Turistik avtobus"
+        },
+        "codeCar": "coach_tour",
+        "sr": 900,
+        "agl_saat": 6,
+        "actev": true,
+        "ishafelh": true,
+        "not": "Tour Bus",
+        "geo_import_id": "vehcat_coach_tour"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/executive_shuttle",
+      "data": {
+        "naim": "شاتل تنفيذي",
+        "names_i18n": {
+          "ar": "شاتل تنفيذي",
+          "en": "Executive Shuttle",
+          "ru": "Представительский шаттл",
+          "ky": "Аткаруучу шаттл",
+          "uz": "Ijro shattli"
+        },
+        "codeCar": "executive_shuttle",
+        "sr": 700,
+        "agl_saat": 6,
+        "actev": true,
+        "ishafelh": true,
+        "not": "Executive Shuttle",
+        "geo_import_id": "vehcat_executive_shuttle"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/electric",
+      "data": {
+        "naim": "كهربائية",
+        "names_i18n": {
+          "ar": "كهربائية",
+          "en": "Electric",
+          "ru": "Электромобиль",
+          "ky": "Электромобиль",
+          "uz": "Elektromobil"
+        },
+        "codeCar": "electric",
+        "sr": 250,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Electric",
+        "geo_import_id": "vehcat_electric"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/hybrid",
+      "data": {
+        "naim": "هجينة",
+        "names_i18n": {
+          "ar": "هجينة",
+          "en": "Hybrid",
+          "ru": "Гибрид",
+          "ky": "Гибрид",
+          "uz": "Gibrid"
+        },
+        "codeCar": "hybrid",
+        "sr": 230,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Hybrid",
+        "geo_import_id": "vehcat_hybrid"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/wheelchair",
+      "data": {
+        "naim": "مجهزة لكرسي متحرك",
+        "names_i18n": {
+          "ar": "مجهزة لكرسي متحرك",
+          "en": "Wheelchair Accessible",
+          "ru": "Для инвалидных колясок",
+          "ky": "Майыптар үчүн",
+          "uz": "Nogironlar aravachasi uchun"
+        },
+        "codeCar": "wheelchair",
+        "sr": 280,
+        "agl_saat": 4,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Wheelchair Accessible",
+        "geo_import_id": "vehcat_wheelchair"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/airport_transfer",
+      "data": {
+        "naim": "نقل مطار",
+        "names_i18n": {
+          "ar": "نقل مطار",
+          "en": "Airport Transfer",
+          "ru": "Трансфер в аэропорт",
+          "ky": "Аэропорт трансфери",
+          "uz": "Aeroport transferi"
+        },
+        "codeCar": "airport_transfer",
+        "sr": 220,
+        "agl_saat": 3,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Airport Transfer",
+        "geo_import_id": "vehcat_airport_transfer"
+      },
+      "wouldWrite": false
+    },
+    {
+      "path": "type_car/tourist_vehicle",
+      "data": {
+        "naim": "مركبة سياحية",
+        "names_i18n": {
+          "ar": "مركبة سياحية",
+          "en": "Tourist Vehicle",
+          "ru": "Туристический транспорт",
+          "ky": "Туристтик унаа",
+          "uz": "Turistik transport"
+        },
+        "codeCar": "tourist_vehicle",
+        "sr": 350,
+        "agl_saat": 5,
+        "actev": true,
+        "ishafelh": false,
+        "not": "Tourist Vehicle",
+        "geo_import_id": "vehcat_tourist_vehicle"
+      },
+      "wouldWrite": false
+    }
+  ],
+  "note": "Categories map to type_car. Make/model catalog is reference data for Admin linking; no logos included."
+}

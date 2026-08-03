@@ -1,0 +1,24 @@
+{
+  "__path": "countries/kyrgyzstan",
+  "__writtenAt": "2026-07-22T11:28:59.433Z",
+  "__target": "local-staging",
+  "naim": "قيرغيزستان",
+  "naimEnglesh": "Kyrgyzstan",
+  "names_i18n": {
+    "ar": "قيرغيزستان",
+    "en": "Kyrgyzstan",
+    "ru": "Кыргызстан",
+    "ky": "Кыргызстан",
+    "uz": "Qirgʻiziston"
+  },
+  "iso_code": "KG",
+  "iso3": "KGZ",
+  "CurrencySymbol": "с",
+  "currency_code": "KGS",
+  "phone_code": "+996",
+  "timezone": "Asia/Bishkek",
+  "acctev": true,
+  "saudi": false,
+  "geo_import_id": "country_kg",
+  "geo_import_source": "touri_geo_import"
+}

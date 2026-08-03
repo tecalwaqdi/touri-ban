@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_uz_xorazm",
+  "__writtenAt": "2026-07-22T11:29:00.673Z",
+  "__target": "local-staging",
+  "naim": "ولاية خوارزم",
+  "names_i18n": {
+    "ar": "ولاية خوارزم",
+    "en": "Xorazm Region",
+    "ru": "Хорезмская область",
+    "ky": "Хорезм облусу",
+    "uz": "Xorazm viloyati"
+  },
+  "dolh": "countries/uzbekistan",
+  "acctev": true,
+  "iso_code": "UZ-XO",
+  "country_iso": "UZ",
+  "geo_import_id": "region_uz_xorazm",
+  "geo_import_source": "touri_geo_import"
+}

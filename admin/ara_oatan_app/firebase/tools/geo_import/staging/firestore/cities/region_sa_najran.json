@@ -1,0 +1,19 @@
+{
+  "__path": "cities/region_sa_najran",
+  "__writtenAt": "2026-07-22T11:28:59.007Z",
+  "__target": "local-staging",
+  "naim": "منطقة نجران",
+  "names_i18n": {
+    "ar": "منطقة نجران",
+    "en": "Najran Region",
+    "ru": "Провинция Наджран",
+    "ky": "Нажран аймагы",
+    "uz": "Najron viloyati"
+  },
+  "dolh": "countries/saudi_arabia",
+  "acctev": true,
+  "iso_code": "SA-10",
+  "country_iso": "SA",
+  "geo_import_id": "region_sa_najran",
+  "geo_import_source": "touri_geo_import"
+}

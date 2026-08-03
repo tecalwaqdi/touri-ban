@@ -1,0 +1,21 @@
+{
+  "__path": "type_car/electric",
+  "__writtenAt": "2026-07-22T11:29:02.687Z",
+  "__target": "local-staging",
+  "naim": "كهربائية",
+  "names_i18n": {
+    "ar": "كهربائية",
+    "en": "Electric",
+    "ru": "Электромобиль",
+    "ky": "Электромобиль",
+    "uz": "Elektromobil"
+  },
+  "codeCar": "electric",
+  "sr": 250,
+  "agl_saat": 4,
+  "actev": true,
+  "ishafelh": false,
+  "not": "Electric",
+  "geo_import_id": "vehcat_electric",
+  "geo_import_source": "touri_geo_import"
+}

@@ -1,0 +1,23 @@
+{
+  "canonicalFirebaseRoot": "ara_oatan_app/firebase",
+  "productionWriteBlocked": true,
+  "defaultEnvironment": "dry-run",
+  "hierarchyMapping": {
+    "Country": "countries",
+    "Region": "cities (semantic: region/area)",
+    "City": "villages (semantic: city/district)",
+    "Landmark": "mkan",
+    "VehicleCategory": "type_car"
+  },
+  "conflicts": [
+    "Collection names inverted vs English hierarchy (cities=regions, villages=cities).",
+    "Customer MkanRecord missing Rev_dolh parser; Admin schema includes it.",
+    "Existing seed_saudi_osm_landmarks.js embeds a Google Maps API key — do not reuse; rotate/remove.",
+    "No Firestore emulator block in firebase.json yet."
+  ],
+  "secretsPolicy": [
+    "Never commit serviceAccount JSON.",
+    "Never put Google API keys in client apps or git.",
+    "Use env vars / Firebase Secrets for Places/Routes."
+  ]
+}
