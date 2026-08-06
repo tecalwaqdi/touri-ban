@@ -1,10 +1,15 @@
-/// Unified payment feature flags for cash-only release wave.
+/// Unified payment feature flags for cash-only release wave + Vercel migration.
 ///
 /// Re-enable online later with:
 /// ```
 /// flutter run --dart-define=ENABLE_ONLINE_PAYMENT=true
 /// ```
-/// or flip [enableOnlinePayment] default after Billing + Secrets + Sandbox E2E.
+///
+/// Select payment backend:
+/// ```
+/// --dart-define=PAYMENT_BACKEND=vercel_api
+/// --dart-define=PAYMENT_API_BASE_URL=https://your-deployment.vercel.app
+/// ```
 ///
 /// Does **not** delete N-Genius code, payment_sessions, webhooks, or CFs.
 abstract final class TouryPaymentFlags {
@@ -21,7 +26,30 @@ abstract final class TouryPaymentFlags {
     defaultValue: false,
   );
 
-  static bool get cashOnlyMode => !enableOnlinePayment;
+  /// `firebase_functions` | `vercel_api` | `cash_only`
+  static const String paymentBackend = String.fromEnvironment(
+    'PAYMENT_BACKEND',
+    defaultValue: 'firebase_functions',
+  );
+
+  /// Public Vercel (or local) payment API base URL — no trailing slash.
+  static const String paymentApiBaseUrl = String.fromEnvironment(
+    'PAYMENT_API_BASE_URL',
+    defaultValue: '',
+  );
+
+  static bool get cashOnlyMode =>
+      !enableOnlinePayment || paymentBackend == 'cash_only';
+
+  static bool get useVercelPaymentApi =>
+      enableOnlinePayment &&
+      paymentBackend == 'vercel_api' &&
+      paymentApiBaseUrl.isNotEmpty;
+
+  static bool get useFirebasePaymentFunctions =>
+      enableOnlinePayment &&
+      !useVercelPaymentApi &&
+      paymentBackend != 'cash_only';
 
   /// When online is disabled, cash must remain selectable even if remote
   /// `Settings.OKcash` is unset/false (local cash-only wave).
@@ -30,5 +58,5 @@ abstract final class TouryPaymentFlags {
     return remoteOkCash;
   }
 
-  static bool onlineOptionVisible() => enableOnlinePayment;
+  static bool onlineOptionVisible() => enableOnlinePayment && !cashOnlyMode;
 }

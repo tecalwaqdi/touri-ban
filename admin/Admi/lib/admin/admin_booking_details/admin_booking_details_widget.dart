@@ -1,4 +1,5 @@
 import '/backend/admin_resource_guard.dart';
+import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/backend/schema/enums/enums.dart';
 import '/components/admin_location_service.dart';
@@ -6,6 +7,7 @@ import '/components/admin_ui.dart';
 import '/components/profile_photo_image.dart';
 import '/core/admin_booking_status_label.dart';
 import '/core/finance/financial_engine.dart';
+import '/core/payments/admin_payment_api_client.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -33,6 +35,7 @@ class AdminBookingDetailsWidget extends StatefulWidget {
 
 class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
   late AdminBookingDetailsModel _model;
+  bool _refundSubmitting = false;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -92,6 +95,96 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
     final label = AdminBookingStatusLabel.of(order);
     if (label.isEmpty) return uiTr(context, 'غير محدد');
     return uiTr(context, label);
+  }
+
+  Future<void> _confirmRefund(OrderRecord order) async {
+    final reasonController = TextEditingController();
+    final paidMinor = (order.snapshotData['amount_halalas'] as num?)?.toInt() ??
+        (order.total * 100).round();
+    final alreadyMinor =
+        (order.snapshotData['refund_amount_halalas'] as num?)?.toInt() ?? 0;
+    final remainingMinor = (paidMinor - alreadyMinor).clamp(0, paidMinor);
+    final currency = (order.snapshotData['currency'] as String?) ?? 'SAR';
+    final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(uiTr(context, 'استرداد')),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  '${uiTr(context, 'المبلغ المدفوع')}: '
+                  '${(paidMinor / 100).toStringAsFixed(2)} $currency',
+                ),
+                Text(
+                  '${uiTr(context, 'تم الاسترداد')}: '
+                  '${(alreadyMinor / 100).toStringAsFixed(2)} $currency',
+                ),
+                Text(
+                  '${uiTr(context, 'المتبقي')}: '
+                  '${(remainingMinor / 100).toStringAsFixed(2)} $currency',
+                ),
+                const SizedBox(height: 12),
+                Text(uiTr(context, 'تأكيد استرداد المبلغ المدفوع؟')),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: reasonController,
+                  decoration: InputDecoration(
+                    labelText: uiTr(context, 'الوصف'),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(uiTr(context, 'إلغاء')),
+              ),
+              FilledButton(
+                onPressed: remainingMinor <= 0
+                    ? null
+                    : () => Navigator.pop(ctx, true),
+                child: Text(uiTr(context, 'تأكيد')),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+    if (!confirmed || !mounted || remainingMinor <= 0) return;
+
+    setState(() => _refundSubmitting = true);
+    try {
+      final sessionId = (order.snapshotData['payment_session_id'] ??
+              order.reference.id)
+          .toString();
+      await AdminPaymentApiClient().refund(
+        sessionId: sessionId,
+        idempotencyKey:
+            'admin_refund_${order.reference.id}_${DateTime.now().millisecondsSinceEpoch}',
+        reason: reasonController.text.trim(),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(uiTr(context, 'تم بنجاح'))),
+      );
+      // Force stream rebuild by popping/relying on Firestore listener refresh.
+      safeSetState(() {});
+    } catch (e) {
+      if (!mounted) return;
+      final code = e is StateError ? e.message : 'UNKNOWN_ERROR';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            code == 'REFUND_NOT_CONFIGURED'
+                ? uiTr(context, 'الاسترداد غير مهيأ')
+                : uiTr(context, 'فشل'),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _refundSubmitting = false);
+    }
   }
 
   @override
@@ -682,6 +775,33 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                       ),
                                     ),
                                   ],
+                                ),
+                              if (AdminRoleService.isFinance &&
+                                  AdminPaymentApiClient.baseUrl.isNotEmpty &&
+                                  OrderStatusHelper.statusOf(
+                                        adminBookingDetailsOrderRecord,
+                                      ) ==
+                                      OrderPaymentStatus.paid &&
+                                  adminBookingDetailsOrderRecord
+                                      .paymentMethod ==
+                                      PaymentMethod.OnlinePayment)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: FilledButton.tonal(
+                                      onPressed: _refundSubmitting
+                                          ? null
+                                          : () => _confirmRefund(
+                                                adminBookingDetailsOrderRecord,
+                                              ),
+                                      child: Text(
+                                        _refundSubmitting
+                                            ? uiTr(context, 'جاري التحميل')
+                                            : uiTr(context, 'استرداد'),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               Row(
                                 mainAxisSize: MainAxisSize.max,

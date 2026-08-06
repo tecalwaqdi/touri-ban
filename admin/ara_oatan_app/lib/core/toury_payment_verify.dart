@@ -1,5 +1,7 @@
 import '/backend/api_requests/api_manager.dart';
 import '/core/toury_ngenius_service.dart';
+import '/core/toury_payment_flags.dart';
+import '/core/payments/payment_api_client.dart';
 
 /// نتيجة التحقق من الدفع عبر Network International.
 enum TouryPaymentVerifyResult { paid, pending, failed, error }
@@ -31,6 +33,42 @@ Future<TouryPaymentVerification> touryVerifyGatewayPayment(
     return const TouryPaymentVerification(
       result: TouryPaymentVerifyResult.error,
     );
+  }
+
+  if (TouryPaymentFlags.useVercelPaymentApi) {
+    try {
+      final body = await PaymentApiClient().getStatus(trimmed);
+      final status = body['status']?.toString() ?? '';
+      final response = ApiCallResponse(body, const {}, 200);
+      if (status == 'paid' || status == 'captured') {
+        return TouryPaymentVerification(
+          result: TouryPaymentVerifyResult.paid,
+          response: response,
+          orderId: body['id']?.toString() ?? trimmed,
+          status: status,
+        );
+      }
+      if (status == 'failed' ||
+          status == 'cancelled' ||
+          status == 'expired') {
+        return TouryPaymentVerification(
+          result: TouryPaymentVerifyResult.failed,
+          response: response,
+          orderId: trimmed,
+          status: status,
+        );
+      }
+      return TouryPaymentVerification(
+        result: TouryPaymentVerifyResult.pending,
+        response: response,
+        orderId: trimmed,
+        status: status,
+      );
+    } on PaymentApiException {
+      return const TouryPaymentVerification(
+        result: TouryPaymentVerifyResult.error,
+      );
+    }
   }
 
   final response = await TouryNGeniusService.getPayment(orderId: trimmed);

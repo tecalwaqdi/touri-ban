@@ -4,11 +4,13 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/core/toury_dialogs.dart';
 import '/core/toury_firestore_cache.dart';
+import '/core/toury_payment_flags.dart';
 import '/core/toury_payment_notifications.dart';
 import '/core/toury_payment_verify.dart';
 import '/core/toury_ngenius_service.dart';
 import '/core/toury_order_integration.dart';
 import '/core/toury_wallet_ngenius.dart';
+import '/core/payments/payment_api_client.dart';
 import 'dart:async';
 import '/backend/schema/enums/enums.dart';
 import '/design_system/design_system.dart';
@@ -116,17 +118,31 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
         safeSetState(() {});
 
         final gatewayId = verify.orderId ?? FFAppState().paymentOrderId;
-        final finalized = await TouryNGeniusService.finalizeBooking(
-          sessionId: gatewayId,
-          booking: TouryOrderIntegration.cloudBookingPayload(),
-        );
-        if (!TouryNGeniusService.httpOk(finalized)) {
+        final Map<String, dynamic> finalized;
+        if (TouryPaymentFlags.useVercelPaymentApi) {
+          finalized = await PaymentApiClient().finalizeBooking(
+            sessionId: gatewayId,
+            booking: TouryOrderIntegration.cloudBookingPayload(),
+          );
+        } else {
+          final cf = await TouryNGeniusService.finalizeBooking(
+            sessionId: gatewayId,
+            booking: TouryOrderIntegration.cloudBookingPayload(),
+          );
+          finalized = cf.jsonBody is Map
+              ? Map<String, dynamic>.from(cf.jsonBody as Map)
+              : <String, dynamic>{};
+          if (cf.jsonBody is Map && (cf.jsonBody as Map).containsKey('error')) {
+            throw Exception((cf.jsonBody as Map)['error']);
+          }
+        }
+        final orderId = finalized['orderId']?.toString() ??
+            finalized['id']?.toString() ??
+            gatewayId;
+        if (finalized.containsKey('error')) {
           throw StateError('Server booking finalization failed.');
         }
-        final orderNumber = castToType<String>(
-              getJsonField(finalized.jsonBody, r'''$.orderId'''),
-            ) ??
-            gatewayId;
+        final orderNumber = orderId;
 
         final settingsRows = await TouryFirestoreCache.settingsOnce(
           singleRecord: true,
