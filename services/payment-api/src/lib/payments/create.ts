@@ -8,6 +8,8 @@ import { getEnv } from "@/lib/security/env";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import { PaymentStatus, toLegacyStatus } from "@/lib/payments/status";
 import { logger } from "@/lib/logging/logger";
+import { parseBookingDraft } from "@/lib/bookings/build-order";
+import { assertBookingPurposeOnly } from "@/lib/payments/guards";
 
 const createSchema = z.object({
   paymentMethod: z.literal("card"),
@@ -26,6 +28,8 @@ const createSchema = z.object({
   email: z.string().email().optional(),
   description: z.string().max(120).optional(),
   bookingDraftId: z.string().max(128).optional(),
+  /** Required for booking purpose — trip details for webhook/finalize */
+  booking: z.unknown().optional(),
 });
 
 function documentPath(value: string, collectionName: string): string {
@@ -83,18 +87,17 @@ async function quoteBooking(data: z.infer<typeof createSchema>) {
 
 export async function handleCreatePayment(req: Request) {
   const user = await verifyBearerToken(req.headers.get("authorization"));
-  const body = createSchema.parse(await req.json());
+  let body: z.infer<typeof createSchema>;
+  try {
+    body = createSchema.parse(await req.json());
+  } catch {
+    throw new ApiError(PaymentErrorCode.INVALID_REQUEST, 400);
+  }
   const env = getEnv();
 
-  if (body.paymentPurpose !== "booking") {
-    // Wallet / extra_hours: scaffold rejects until ported fully — use Firebase path via flag.
-    throw new ApiError(
-      PaymentErrorCode.INVALID_REQUEST,
-      400,
-      "Only booking card payments are enabled on Vercel in this phase; use firebase_functions for wallet/extra_hours",
-    );
-  }
+  assertBookingPurposeOnly(body.paymentPurpose);
 
+  const bookingDraft = parseBookingDraft(body.booking);
   const verifiedQuote = await quoteBooking(body);
   const sessionId = sessionIdFor(user.uid, body.idempotencyKey);
   const sessionRef = db().collection(COLLECTIONS.paymentSessions).doc(sessionId);
@@ -119,6 +122,7 @@ export async function handleCreatePayment(req: Request) {
       status: PaymentStatus.created,
       normalized_status: PaymentStatus.created,
       booking_draft_id: body.bookingDraftId || null,
+      booking_draft: bookingDraft,
       booking_created: false,
       carPath: verifiedQuote.carPath,
       countryPath: verifiedQuote.countryPath,

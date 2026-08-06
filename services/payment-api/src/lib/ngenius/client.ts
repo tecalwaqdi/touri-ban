@@ -148,3 +148,76 @@ export function extractGatewayAmount(orderData: unknown): {
     value: obj.amount?.value,
   };
 }
+
+function assertGatewayUrl(url: string, envBase: string): string {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new ApiError(PaymentErrorCode.REFUND_NOT_ALLOWED, 400);
+  }
+  if (!parsed.hostname.endsWith("ngenius-payments.com")) {
+    throw new ApiError(PaymentErrorCode.REFUND_NOT_ALLOWED, 400);
+  }
+  return parsed.toString();
+}
+
+/** Locate cnp:refund link from N-Genius order payload (same as CF). */
+export function refundLinkFromOrder(orderData: unknown): string | null {
+  const obj = orderData as {
+    _embedded?: {
+      payment?: Array<{
+        _links?: Record<string, { href?: string }>;
+        _embedded?: {
+          "cnp:capture"?: Array<{
+            _links?: Record<string, { href?: string }>;
+          }>;
+        };
+      }>;
+    };
+  };
+  const payment = obj._embedded?.payment?.[0];
+  const direct = payment?._links?.["cnp:refund"]?.href;
+  if (direct) return direct;
+  const captures = payment?._embedded?.["cnp:capture"] || [];
+  for (const capture of captures) {
+    const link = capture._links?.["cnp:refund"]?.href;
+    if (link) return link;
+  }
+  return null;
+}
+
+export async function refundNGeniusOrder(input: {
+  providerOrderRef: string;
+  amountMinor: number;
+  currency: string;
+}): Promise<{ state: string }> {
+  const env = getEnv();
+  const orderData = await fetchNGeniusOrder(input.providerOrderRef);
+  const refundUrl = refundLinkFromOrder(orderData);
+  if (!refundUrl) {
+    throw new ApiError(PaymentErrorCode.REFUND_NOT_ALLOWED, 409);
+  }
+  const token = await getNGeniusAccessToken();
+  const res = await fetch(assertGatewayUrl(refundUrl, env.ngeniusBaseUrl), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/vnd.ni-payment.v2+json",
+      Accept: "application/vnd.ni-payment.v2+json",
+    },
+    body: JSON.stringify({
+      amount: {
+        currencyCode: input.currency,
+        value: input.amountMinor,
+      },
+    }),
+    signal: AbortSignal.timeout(12_000),
+  });
+  if (!res.ok) {
+    logger.error("ngenius_refund_failed", { status: res.status });
+    throw new ApiError(PaymentErrorCode.PROVIDER_UNAVAILABLE, 502);
+  }
+  const body = (await res.json()) as { state?: string };
+  return { state: String(body.state || "") };
+}

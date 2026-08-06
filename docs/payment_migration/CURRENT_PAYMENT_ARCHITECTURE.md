@@ -33,10 +33,12 @@ Authoritative pricing for card (and CF cash) is computed server-side in `verifie
 
 | Event | Document | Timing |
 |-------|----------|--------|
-| Card session | `payment_sessions/{hash}` | On `createNGeniusPayment` |
-| Card booking | `order/{sessionId}` | Only after paid + `finalizeNGeniusBooking` |
+| Card session | `payment_sessions/{hash}` | On create (CF or Vercel); Vercel stores `booking_draft` + `backend_source` |
+| Card booking (CF) | `order/{sessionId}` | After paid + `finalizeNGeniusBooking` |
+| Card booking (Vercel) | `order/{sessionId}` | After paid + webhook **or** `/api/payments/finalize` — full field parity with CF finalize |
 | Cash booking | `order/{sha256(uid:cash:key)}` | On `createCashBooking` or client fallback |
-| Webhook | Updates `payment_sessions`; writes `webhook_events` | **Does not** create bookings today |
+| Webhook (CF) | Updates `payment_sessions`; `webhook_events` | Does not create bookings |
+| Webhook (Vercel) | Updates session + creates booking once if purpose=booking and paid | Idempotent |
 
 ## Driver visibility
 
@@ -47,26 +49,28 @@ Authoritative pricing for card (and CF cash) is computed server-side in `verifie
 ## Admin
 
 - Shows payment status labels via finance helpers.
-- **No admin refund UI** today; CF `refundNGeniusPayment` requires finance/super-admin role claims or Firestore admin flags.
+- **Vercel path:** finance-gated refund action on booking details → `PAYMENT_API_BASE_URL` `/api/payments/refund` (server enforces role).
+- CF `refundNGeniusPayment` remains for Firebase rollback.
 
 ## Currencies / country
 
-- Pricing currently uses country + vehicle docs; gateway amounts historically use SAR minor units (halalas) in CF.
-- Multi-currency must be hardened in the Vercel pricing module (validate country currency + minor units).
+- Pricing uses country + vehicle docs; amount in integer minor units.
+- Unsupported currency rejected server-side (`UNSUPPORTED_CURRENCY`).
 
 ## Feature flags (customer)
 
 | Flag | Dart-define | Default |
 |------|-------------|---------|
 | Online card | `ENABLE_ONLINE_PAYMENT` | `false` |
+| Backend | `PAYMENT_BACKEND` | `firebase_functions` (`cash_only` \| `firebase_functions` \| `vercel_api`) |
+| Vercel base URL | `PAYMENT_API_BASE_URL` | empty (required for `vercel_api`) |
 | Client cash fallback | `TOURY_CLIENT_CASH_FALLBACK` | `true` |
 
-## Side effects after successful card payment
+## Side effects after successful card payment (Vercel)
 
-1. `payment_sessions.status` → `paid` (verify/webhook sync).
-2. `finalizeNGeniusBooking` writes `order` with OnlinePayment + paid fields + `pending_driver`.
-3. Push / matching side effects follow existing order creation paths (not webhook).
-4. Wallet / extra-hours have separate finalize callables.
+1. `payment_sessions` → `paid` (verify/webhook).
+2. Complete `order` written once (`pending_driver`, paid OnlinePayment, trip + pricing fields).
+3. Wallet / extra-hours remain on Firebase Functions (not Vercel in this wave).
 
 ## Legacy / unused
 

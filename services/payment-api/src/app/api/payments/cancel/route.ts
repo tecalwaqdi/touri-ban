@@ -4,6 +4,7 @@ import { verifyBearerToken } from "@/lib/auth/verify";
 import { COLLECTIONS, db } from "@/lib/firebase/admin";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import { PaymentStatus, toLegacyStatus, transitionStatus } from "@/lib/payments/status";
+import { assertCancellable } from "@/lib/payments/guards";
 import { jsonError, jsonOk } from "@/lib/validation/http";
 
 export const runtime = "nodejs";
@@ -23,13 +24,7 @@ export async function POST(req: Request) {
     }
     const data = snap.data() || {};
     const current = (data.normalized_status || data.status) as PaymentStatus;
-    if (
-      current === PaymentStatus.paid ||
-      current === PaymentStatus.refunded ||
-      current === PaymentStatus.partially_refunded
-    ) {
-      throw new ApiError(PaymentErrorCode.PAYMENT_CANCELLED, 409);
-    }
+    assertCancellable(String(current));
     const next = transitionStatus(current, PaymentStatus.cancelled);
     await ref.set(
       {

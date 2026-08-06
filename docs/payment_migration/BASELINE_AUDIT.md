@@ -5,6 +5,14 @@
 **Base commit:** `e8826bad3c90c43c4013d930592e970c6df7ae99`  
 **Parent branch:** `main` (clean working tree at branch creation)
 
+## Gap-closure checkpoint (2026-08-06)
+
+| Item | Value |
+|------|--------|
+| Status | `READY_FOR_SANDBOX_CONFIGURATION` |
+| Detail | `IMPLEMENTATION_GAP_CLOSURE.md`, `FLUTTER_REGRESSION_RESULTS.md`, `SANDBOX_READINESS_CHECKLIST.md` |
+| Commits on branch (high level) | Audit docs → payment-api + Flutter switch → gap-closure (booking/refund/tests/docs; may be uncommitted — check `git status`) |
+
 ## Git checkpoint
 
 | Item | Value |

@@ -36,3 +36,15 @@
 ## Firebase Admin credentials on Vercel
 
 Use a **restricted** service account with Firestore + Auth verify access only. Paste `FIREBASE_PRIVATE_KEY` with `\n` escapes in Vercel UI.
+
+## Post-deploy smoke (sandbox)
+
+1. `GET /api/health` — credentials present as booleans only.
+2. Authenticated `POST /api/payments/create` with booking draft → payment URL.
+3. Simulate or receive webhook with valid secret → one `order` with full trip fields.
+4. Repeat webhook → duplicate ignored.
+5. Finance `POST /api/payments/refund` — succeeds only with sandbox keys + refundable link; else `REFUND_NOT_CONFIGURED`.
+
+## Gap-closure note
+
+Booking creation after paid is no longer a shell: see `IMPLEMENTATION_GAP_CLOSURE.md`. Wallet/extra-hours stay on Firebase until a dedicated Vercel port.

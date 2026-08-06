@@ -8,6 +8,7 @@ import '/core/toury_brand_widgets.dart';
 import '/core/toury_ngenius_service.dart';
 import '/core/toury_payment_flags.dart';
 import '/core/toury_payment_labels.dart';
+import '/core/toury_order_integration.dart';
 import '/core/payments/payment_api_client.dart';
 import '/design_system/colors/ds_color_scales.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -73,6 +74,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
         countryPath: countryPath,
         bookingHours: bookingHours,
         additionalHours: additionalHours,
+        booking: TouryOrderIntegration.cloudBookingPayload(),
         description: description,
       );
       final paymentId = body['id']?.toString();

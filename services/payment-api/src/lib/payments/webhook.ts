@@ -17,6 +17,12 @@ import {
   transitionStatus,
 } from "@/lib/payments/status";
 import { createBookingFromPaidSession } from "@/lib/bookings/create-from-session";
+import {
+  assertAmountMatch,
+  assertCurrencyMatch,
+  assertOutletMatch,
+  assertWebhookSecret,
+} from "@/lib/payments/guards";
 
 function eventDocId(eventId: string, payloadHash: string): string {
   return createHash("sha256").update(`${eventId}:${payloadHash}`).digest("hex");
@@ -33,9 +39,7 @@ export async function handleNGeniusWebhook(req: Request) {
     req.headers.get(headerName) ||
     req.headers.get("x-toury-webhook-token") ||
     "";
-  if (!env.NGENIUS_WEBHOOK_SECRET || provided !== env.NGENIUS_WEBHOOK_SECRET) {
-    throw new ApiError(PaymentErrorCode.WEBHOOK_INVALID, 401);
-  }
+  assertWebhookSecret(provided, env.NGENIUS_WEBHOOK_SECRET);
 
   const body = await req.json();
   const hash = payloadHash(body);
@@ -101,24 +105,15 @@ export async function handleNGeniusWebhook(req: Request) {
     const next = transitionStatus(current, mapped);
 
     const amount = extractGatewayAmount(orderData);
-    if (
-      amount.value != null &&
-      Number(session.amount_minor ?? session.amount_halalas) !== Number(amount.value)
-    ) {
-      throw new ApiError(PaymentErrorCode.PAYMENT_AMOUNT_MISMATCH, 409);
-    }
-    if (
-      amount.currency &&
-      String(session.currency).toUpperCase() !== String(amount.currency).toUpperCase()
-    ) {
-      throw new ApiError(PaymentErrorCode.PAYMENT_CURRENCY_MISMATCH, 409);
-    }
-    if (
-      session.outlet_reference &&
-      session.outlet_reference !== env.NGENIUS_OUTLET_REF
-    ) {
-      throw new ApiError(PaymentErrorCode.WEBHOOK_INVALID, 400);
-    }
+    assertAmountMatch(
+      Number(session.amount_minor ?? session.amount_halalas),
+      amount.value,
+    );
+    assertCurrencyMatch(String(session.currency || ""), amount.currency);
+    assertOutletMatch(
+      session.outlet_reference as string | undefined,
+      env.NGENIUS_OUTLET_REF,
+    );
 
     await sessionDoc.ref.set(
       {
@@ -132,7 +127,13 @@ export async function handleNGeniusWebhook(req: Request) {
     );
 
     if (next === PaymentStatus.paid && session.purpose === "booking") {
-      await createBookingFromPaidSession(sessionDoc.id, session);
+      // Pass paid status so booking builder sees recoverable paid session even
+      // if transaction re-read races (status already written above).
+      await createBookingFromPaidSession(sessionDoc.id, {
+        ...session,
+        status: toLegacyStatus(next),
+        normalized_status: next,
+      });
     }
 
     await eventRef.set(

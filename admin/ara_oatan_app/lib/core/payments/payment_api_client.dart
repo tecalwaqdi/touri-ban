@@ -18,7 +18,24 @@ class PaymentApiClient {
   final Duration timeout;
 
   Uri _uri(String path) {
-    final base = TouryPaymentFlags.paymentApiBaseUrl.replaceAll(RegExp(r'/$'), '');
+    final base =
+        TouryPaymentFlags.paymentApiBaseUrl.replaceAll(RegExp(r'/$'), '');
+    if (base.isEmpty) {
+      throw PaymentApiException('CONFIG_ERROR');
+    }
+    if (!base.startsWith('https://') &&
+        !base.startsWith('http://127.0.0.1') &&
+        !base.startsWith('http://localhost')) {
+      throw PaymentApiException('CONFIG_ERROR');
+    }
+    // Release builds must not silently use localhost.
+    assert(() {
+      return true;
+    }());
+    if (kReleaseMode &&
+        (base.contains('localhost') || base.contains('127.0.0.1'))) {
+      throw PaymentApiException('CONFIG_ERROR');
+    }
     return Uri.parse('$base$path');
   }
 
@@ -40,6 +57,7 @@ class PaymentApiClient {
     required String countryPath,
     required int bookingHours,
     required int additionalHours,
+    required Map<String, dynamic> booking,
     String? email,
     String? description,
     String locale = 'ar',
@@ -61,6 +79,7 @@ class PaymentApiClient {
             'countryPath': countryPath,
             'bookingHours': bookingHours,
             'additionalHours': additionalHours,
+            'booking': booking,
             if (email != null && email.isNotEmpty) 'email': email,
             if (description != null) 'description': description,
             'locale': locale,
@@ -84,6 +103,54 @@ class PaymentApiClient {
     return _decode(response);
   }
 
+  Future<Map<String, dynamic>> finalizeBooking({
+    required String sessionId,
+    Map<String, dynamic>? booking,
+  }) async {
+    final token = await _idToken();
+    final response = await _http
+        .post(
+          _uri('/api/payments/finalize'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: jsonEncode({
+            'sessionId': sessionId,
+            if (booking != null) 'booking': booking,
+          }),
+        )
+        .timeout(timeout);
+    return _decode(response);
+  }
+
+  Future<Map<String, dynamic>> refund({
+    required String sessionId,
+    required String idempotencyKey,
+    int? amountMinor,
+    String? reason,
+  }) async {
+    final token = await _idToken();
+    final response = await _http
+        .post(
+          _uri('/api/payments/refund'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: jsonEncode({
+            'sessionId': sessionId,
+            'idempotencyKey': idempotencyKey,
+            if (amountMinor != null) 'amountMinor': amountMinor,
+            if (reason != null) 'reason': reason,
+          }),
+        )
+        .timeout(timeout);
+    return _decode(response);
+  }
+
   Map<String, dynamic> _decode(http.Response response) {
     Map<String, dynamic> body;
     try {
@@ -100,7 +167,9 @@ class PaymentApiClient {
     final err = body['error'];
     final code = err is Map && err['code'] is String
         ? err['code'] as String
-        : 'UNKNOWN_ERROR';
+        : (err is Map && err['message'] is String
+            ? err['message'] as String
+            : 'UNKNOWN_ERROR');
     if (kDebugMode) {
       debugPrint('PaymentApiClient HTTP ${response.statusCode} code=$code');
     }
