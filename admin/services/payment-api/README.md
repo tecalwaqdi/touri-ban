@@ -25,7 +25,7 @@ Firebase remains the system of record for Auth, Firestore, Storage, FCM, booking
 ## Local development
 
 ```bash
-cd services/payment-api
+cd admin/services/payment-api
 cp .env.example .env.local   # fill sandbox values locally; never commit
 npm ci
 npm run typecheck

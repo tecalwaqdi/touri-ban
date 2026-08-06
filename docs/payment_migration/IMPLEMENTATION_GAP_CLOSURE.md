@@ -14,7 +14,7 @@ This document closes the gaps that remained after the initial Vercel payment-api
 Earlier scaffold could leave a paid session without a production-shaped `order` document (“shell”).
 
 ### Resolution
-Authoritative builder: `services/payment-api/src/lib/bookings/build-order.ts`
+Authoritative builder: `admin/services/payment-api/src/lib/bookings/build-order.ts`
 
 | Source | Role |
 |--------|------|

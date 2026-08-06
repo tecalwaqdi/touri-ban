@@ -9,8 +9,8 @@
 ## Steps
 
 1. Create/import a Vercel project linked to this monorepo.
-2. Set **Root Directory** to `services/payment-api`.
-3. Add environment variables from `services/payment-api/.env.example` (names only in git).
+2. Set **Root Directory** to `admin/services/payment-api`.
+3. Add environment variables from `admin/services/payment-api/.env.example` (names only in git).
 4. Deploy **sandbox** (`NGENIUS_ENV=sandbox`).
 5. Note the public URL, e.g. `https://touri-payment-api.vercel.app`.
 6. Configure N-Genius sandbox return/cancel URLs and webhook:

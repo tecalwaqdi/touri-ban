@@ -20,7 +20,7 @@ Gap closure complete for code paths required before sandbox configuration. Webho
 ## 3. Backend tests (executed)
 
 ```bash
-cd services/payment-api
+cd admin/services/payment-api
 npm ci
 npm run lint        # No ESLint warnings or errors
 npm run typecheck   # passed

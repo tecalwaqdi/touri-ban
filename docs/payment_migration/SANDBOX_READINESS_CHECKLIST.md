@@ -9,7 +9,7 @@ Do **not** mark `SANDBOX_TESTED_NOT_PRODUCTION_READY` until real sandbox device 
 ## Code readiness (done)
 
 - [x] Audit docs exist under `docs/payment_migration/`
-- [x] `services/payment-api` create / status / cancel / finalize / refund / webhook
+- [x] `admin/services/payment-api` create / status / cancel / finalize / refund / webhook
 - [x] Server-side booking pricing (minor units)
 - [x] Booking draft stored on session; complete order builder matching CF finalize
 - [x] Idempotent booking (webhook ↔ finalize race-safe)
@@ -25,7 +25,7 @@ Do **not** mark `SANDBOX_TESTED_NOT_PRODUCTION_READY` until real sandbox device 
 
 ## External configuration (manual — not done in this environment)
 
-- [ ] Create Vercel project with root `services/payment-api`
+- [ ] Create Vercel project with root `admin/services/payment-api`
 - [ ] Set env from `.env.example` (names only in git):
   - [ ] `NGENIUS_ENV=sandbox`
   - [ ] `NGENIUS_API_KEY` (sandbox)
