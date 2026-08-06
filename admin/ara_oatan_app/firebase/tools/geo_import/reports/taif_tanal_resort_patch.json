@@ -1,0 +1,15 @@
+{
+  "at": "2026-08-05T10:17:07.570Z",
+  "apply": true,
+  "id": "lm_sa_taif_tilal-resort",
+  "ar": "منتجع تنال",
+  "names_i18n": {
+    "ar": "منتجع تنال",
+    "en": "Tanal Resort",
+    "ru": "Курорт Танал",
+    "ky": "Танал курорту"
+  },
+  "asset": "assets/images/landmarks/taif_tanal_resort.png",
+  "compressedBytes": 337907,
+  "status": "patched"
+}

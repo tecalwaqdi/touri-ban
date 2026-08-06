@@ -1,0 +1,24 @@
+{
+  "at": "2026-08-05T09:02:15.613Z",
+  "apply": true,
+  "mapped": [
+    {
+      "id": "lm_sa_madinah_uthman-farm",
+      "ar": "مزرعة عثمان بن عفان رضي الله عنه",
+      "source": "user_farm_photo",
+      "asset": "assets/images/landmarks/madinah_uthman_farm.png",
+      "compressedBytes": 513005,
+      "renamed": false,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_madinah_qatrah-cafe",
+      "ar": "مقهى عطرة",
+      "source": "user_atrah_cafe_photo",
+      "asset": "assets/images/landmarks/madinah_atrah_cafe.png",
+      "compressedBytes": 394079,
+      "renamed": true,
+      "status": "patched"
+    }
+  ]
+}

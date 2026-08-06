@@ -54,7 +54,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
   String _locationLabel(LatLng? location) {
     if (location == null ||
         !AdminLocationService.isValidLocation(location)) {
-      return 'لا يوجد موقع محدد حالياً';
+      return uiTr(context, 'لا يوجد موقع محدد حالياً');
     }
     return AdminLocationService.formatCoordinates(location);
   }
@@ -62,18 +62,18 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
   String _paymentMethodLabel(OrderRecord order) {
     switch (order.paymentMethod) {
       case PaymentMethod.Cash:
-        return 'نقداً';
+        return uiTr(context, 'نقداً');
       case PaymentMethod.OnlinePayment:
-        return 'دفع إلكتروني';
+        return uiTr(context, 'دفع إلكتروني');
       default:
         return order.paymentGatewayOrderId.isNotEmpty
-            ? 'دفع إلكتروني'
-            : 'غير محدد';
+            ? uiTr(context, 'دفع إلكتروني')
+            : uiTr(context, 'غير محدد');
     }
   }
 
   String _paymentStatusLabel(OrderRecord order) =>
-      OrderStatusHelper.paymentStatusArabicLabel(order);
+      uiTr(context, OrderStatusHelper.paymentStatusArabicLabel(order));
 
   Color _paymentStatusColor(BuildContext context, OrderRecord order) {
     switch (OrderStatusHelper.statusOf(order)) {
@@ -90,7 +90,8 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
 
   String _bookingStatusLabel(OrderRecord order) {
     final label = AdminBookingStatusLabel.of(order);
-    return label.isNotEmpty ? label : 'غير محدد';
+    if (label.isEmpty) return uiTr(context, 'غير محدد');
+    return uiTr(context, label);
   }
 
   @override
@@ -138,7 +139,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  'تعذر تحميل بيانات الحجز. تحقق من الاتصال وحاول مرة أخرى.',
+                  uiTr(context, 'تعذر تحميل بيانات الحجز. تحقق من الاتصال وحاول مرة أخرى.'),
                   textAlign: TextAlign.center,
                   style: FlutterFlowTheme.of(context).bodyMedium,
                 ),
@@ -645,7 +646,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'مرجع الدفع',
+                                      uiTr(context, 'مرجع الدفع'),
                                       style: FlutterFlowTheme.of(context)
                                           .bodyMedium
                                           .override(
@@ -710,7 +711,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                       adminBookingDetailsOrderRecord.total,
                                       formatType: FormatType.decimal,
                                       decimalType: DecimalType.automatic,
-                                      currency: 'ريال ',
+                                      currency: uiTr(context, 'ريال '),
                                     ),
                                     style: FlutterFlowTheme.of(context)
                                         .bodyMedium
@@ -755,7 +756,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                           .totalMndob2,
                                       formatType: FormatType.decimal,
                                       decimalType: DecimalType.automatic,
-                                      currency: 'ريال ',
+                                      currency: uiTr(context, 'ريال '),
                                     ),
                                     style: FlutterFlowTheme.of(context)
                                         .bodyMedium
@@ -799,7 +800,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                       adminBookingDetailsOrderRecord.totalApp,
                                       formatType: FormatType.decimal,
                                       decimalType: DecimalType.automatic,
-                                      currency: 'ريال ',
+                                      currency: uiTr(context, 'ريال '),
                                     ),
                                     style: FlutterFlowTheme.of(context)
                                         .bodyMedium
@@ -886,7 +887,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                       adminBookingDetailsOrderRecord.total,
                                       formatType: FormatType.decimal,
                                       decimalType: DecimalType.automatic,
-                                      currency: 'ر.س',
+                                      currency: uiTr(context, 'ر.س'),
                                     ),
                                     style: FlutterFlowTheme.of(context)
                                         .headlineSmall
@@ -973,7 +974,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                           valueOrDefault<String>(
                                             adminBookingDetailsOrderRecord
                                                 .naimMndobText,
-                                            'لم يتم الربط مع المندوب',
+                                            uiTr(context, 'لم يتم الربط مع المندوب'),
                                           ),
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
@@ -1077,7 +1078,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        'موقع الحجز غير متوفر',
+                                        uiTr(context, 'موقع الحجز غير متوفر'),
                                         style: FlutterFlowTheme.of(context)
                                             .bodyMedium,
                                       ),

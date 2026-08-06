@@ -69,8 +69,8 @@ class _AdminSuperAdminsWidgetState extends State<AdminSuperAdminsWidget> {
           builder: (ctx) => AlertDialog(
             title: Text(appTr(context, 'adm_delete_confirm_title')),
             content: Text(
-              'هل أنت متأكد من حذف السوبر أدمن "${admin.displayName}"؟\n'
-              'سيتم حذف بياناته من قاعدة البيانات فقط.',
+              '${uiTr(context, 'هل أنت متأكد من حذف السوبر أدمن')} "${admin.displayName}"؟\n' +
+              uiTr(context, 'سيتم حذف بياناته من قاعدة البيانات فقط.'),
             ),
             actions: [
               TextButton(
@@ -196,8 +196,8 @@ class _AdminSuperAdminsWidgetState extends State<AdminSuperAdminsWidget> {
                           const SizedBox(height: 12),
                           Text(
                             _searchQuery.isEmpty
-                                ? 'لا يوجد سوبر أدمن مسجل'
-                                : 'لا توجد نتائج للبحث',
+                                ? uiTr(context, 'لا يوجد سوبر أدمن مسجل')
+                                : uiTr(context, 'لا توجد نتائج للبحث'),
                             style: theme.titleMedium,
                           ),
                         ],
@@ -213,8 +213,8 @@ class _AdminSuperAdminsWidgetState extends State<AdminSuperAdminsWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
                           child: Text(
-                            'العدد: ${admins.length}'
-                            '${admins.length != allAdmins.length ? ' من ${allAdmins.length}' : ''}'
+                            '${uiTr(context, 'العدد')}: ${admins.length}'
+                            '${admins.length != allAdmins.length ? ' ${uiTr(context, 'من')} ${allAdmins.length}' : ''}'
                             '${listState.hasMore ? '+' : ''}',
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
@@ -275,7 +275,7 @@ class _AdminSuperAdminsWidgetState extends State<AdminSuperAdminsWidget> {
       decoration: AdminUi.inputDecoration(
         context,
         label: uiTr(context, 'بحث'),
-        hint: 'الاسم، البريد، أو الجوال',
+        hint: uiTr(context, 'الاسم، البريد، أو الجوال'),
         prefixIcon: Icons.search_rounded,
       ),
     );
@@ -333,12 +333,12 @@ class _SuperAdminsTable extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      tooltip: 'تعديل',
+                      tooltip: uiTr(context, 'تعديل'),
                       icon: const Icon(Icons.edit_outlined, size: 20),
                       onPressed: () => onEdit(admin),
                     ),
                     IconButton(
-                      tooltip: isSelf ? 'لا يمكن حذف حسابك' : 'حذف',
+                      tooltip: isSelf ? uiTr(context, 'لا يمكن حذف حسابك') : uiTr(context, 'حذف'),
                       icon: Icon(
                         Icons.delete_outline_rounded,
                         size: 20,
@@ -405,7 +405,7 @@ class _SuperAdminCard extends StatelessWidget {
                     ),
                     if (isSelf)
                       Text(
-                        'حسابك الحالي',
+                        uiTr(context, 'حسابك الحالي'),
                         style: theme.labelSmall.override(
                           fontFamily: theme.labelSmallFamily,
                           color: AdminUi.brandTeal,
@@ -458,7 +458,7 @@ class _SuperAdminCard extends StatelessWidget {
                     color: isSelf ? theme.secondaryText : Colors.red,
                   ),
                   label: Text(
-                    'حذف',
+                    uiTr(context, 'حذف'),
                     style: TextStyle(
                       color: isSelf ? theme.secondaryText : Colors.red,
                     ),
@@ -487,7 +487,7 @@ class _StatusChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        active ? 'مفعّل' : 'موقوف',
+        active ? uiTr(context, 'مفعّل') : uiTr(context, 'موقوف'),
         style: TextStyle(
           color: active ? Colors.green.shade700 : Colors.grey.shade700,
           fontSize: 12,

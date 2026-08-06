@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_issyk_kul_issyk_kul-issyk-kul-lake",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "بحيرة إيسيك كول",
+  "osf": "بحيرة إيسيك كول — معلم في إقليم إيسيك كول.",
+  "names_i18n": {
+    "ar": "بحيرة إيسيك كول",
+    "en": "Issyk-Kul Lake",
+    "ru": "Озеро Иссык-Куль",
+    "ky": "Ысык-Көл"
+  },
+  "osf_i18n": {
+    "ar": "بحيرة إيسيك كول — معلم في إقليم إيسيك كول.",
+    "en": "Issyk-Kul Lake — landmark in Issyk-Kul Region.",
+    "ru": "Озеро Иссык-Куль — достопримечательность в регионе Иссык-Кульская область.",
+    "ky": "Ысык-Көл — Ысык-Көл облусу аймагындагы жай."
+  },
+  "address": "بحيرة إيسيك كول، كاراكول، إقليم إيسيك كول، قيرغيزستان",
+  "address_i18n": {
+    "ar": "بحيرة إيسيك كول، كاراكول، إقليم إيسيك كول، قيرغيزستان",
+    "en": "Issyk-Kul Lake, Karakol, Issyk-Kul Region, Kyrgyzstan",
+    "ru": "Озеро Иссык-Куль, Каракол, Иссык-Кульская область, Кыргызстан",
+    "ky": "Ысык-Көл, Каракол, Ысык-Көл облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 42.453,
+    "longitude": 77.276
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/5/58/Lake_Issyk-Kul%2C_Kyrgyzstan.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC0",
+  "img_attribution": "Bgag",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_issyk_kul",
+  "id_vill": "villages/city_kg_karakol",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_issyk_kul_issyk_kul-issyk-kul-lake",
+  "geo_import_slug": "issyk_kul-issyk-kul-lake",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_batken_batken-kan-i-gut",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "كهف كان إي غوت",
+  "osf": "كهف كان إي غوت — معلم في إقليم باتكين.",
+  "names_i18n": {
+    "ar": "كهف كان إي غوت",
+    "en": "Kan-i-Gut Cave",
+    "ru": "Пещера Кан-и-Гут",
+    "ky": "Кан-и-Гут"
+  },
+  "osf_i18n": {
+    "ar": "كهف كان إي غوت — معلم في إقليم باتكين.",
+    "en": "Kan-i-Gut Cave — landmark in Batken Region.",
+    "ru": "Пещера Кан-и-Гут — достопримечательность в регионе Баткенская область.",
+    "ky": "Кан-и-Гут — Баткен облусу аймагындагы жай."
+  },
+  "address": "كهف كان إي غوت، باتكين، إقليم باتكين، قيرغيزستان",
+  "address_i18n": {
+    "ar": "كهف كان إي غوت، باتكين، إقليم باتكين، قيرغيزستان",
+    "en": "Kan-i-Gut Cave, Batken, Batken Region, Kyrgyzstan",
+    "ru": "Пещера Кан-и-Гут, Баткен, Баткенская область, Кыргызстан",
+    "ky": "Кан-и-Гут, Баткен, Баткен облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 39.9,
+    "longitude": 70.08
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_batken",
+  "id_vill": "villages/city_kg_batken",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_batken_batken-kan-i-gut",
+  "geo_import_slug": "batken-kan-i-gut",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

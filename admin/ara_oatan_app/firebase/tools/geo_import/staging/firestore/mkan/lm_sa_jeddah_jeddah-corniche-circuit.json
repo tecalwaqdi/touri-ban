@@ -1,0 +1,56 @@
+{
+  "__path": "mkan/lm_sa_jeddah_jeddah-corniche-circuit",
+  "__writtenAt": "2026-08-05T03:27:12.735Z",
+  "naim": "حلبة كورنيش جدة (فورمولا 1)",
+  "osf": "حلبة سباق فورمولا 1 على كورنيش جدة، من أسرع الحلبات الشوارعية في العالم.",
+  "names_i18n": {
+    "ar": "حلبة كورنيش جدة (فورمولا 1)",
+    "en": "Jeddah Corniche Circuit (Formula 1)",
+    "ru": "Трасса Корниш Джидды (Формула-1)",
+    "ky": "Жидда Корниш трассасы (Формула-1)"
+  },
+  "osf_i18n": {
+    "ar": "حلبة سباق فورمولا 1 على كورنيش جدة، من أسرع الحلبات الشوارعية في العالم.",
+    "en": "Formula 1 street circuit on Jeddah’s corniche — among the world’s fastest street tracks.",
+    "ru": "Уличная трасса Формулы-1 на корнише Джидды — одна из самых быстрых в мире.",
+    "ky": "Жидда набережнаясындагы Формула-1 трассасы — дүйнөдөгү эң ылдам көчө трассаларынын бири."
+  },
+  "address": "طريق الكورنيش الشمالي، جدة، المملكة العربية السعودية",
+  "address_i18n": {
+    "ar": "طريق الكورنيش الشمالي، جدة، المملكة العربية السعودية",
+    "en": "Northern Corniche Road, Jeddah, Saudi Arabia",
+    "ru": "Северный корниш, Джидда, Саудовская Аравия",
+    "ky": "Түндүк Корниш жолу, Жидда, Сауд Арабиясы"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 21.6490721,
+    "longitude": 39.1018262
+  },
+  "img1": "assets/images/landmarks/jeddah_corniche_circuit.png",
+  "img2": "",
+  "img3": "",
+  "images_license_verified": true,
+  "img_source": "user_photo_IMG_6961",
+  "sr": 6,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.8,
+  "add_saat": 2,
+  "id_cit": "cities/region_sa_jeddah",
+  "id_vill": "villages/city_sa_jeddah",
+  "Rev_dolh": "countries/saudi_arabia",
+  "country_iso": "SA",
+  "verification_status": "verified",
+  "verification_confidence": 0.95,
+  "geo_import_id": "lm_sa_jeddah_jeddah-corniche-circuit",
+  "geo_import_slug": "jeddah-corniche-circuit",
+  "geo_import_source": "sa_five_provinces_2026",
+  "img1_firebase": "data-url"
+}

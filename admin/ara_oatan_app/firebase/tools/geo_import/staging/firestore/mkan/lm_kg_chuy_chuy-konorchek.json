@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_chuy_chuy-konorchek",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "أخاديد كونورتشيك",
+  "osf": "أخاديد كونورتشيك — معلم في إقليم تشوي.",
+  "names_i18n": {
+    "ar": "أخاديد كونورتشيك",
+    "en": "Konorchek Canyons",
+    "ru": "Каньоны Конорчек",
+    "ky": "Коңорчок каньондору"
+  },
+  "osf_i18n": {
+    "ar": "أخاديد كونورتشيك — معلم في إقليم تشوي.",
+    "en": "Konorchek Canyons — landmark in Chuy Region.",
+    "ru": "Каньоны Конорчек — достопримечательность в регионе Чуйская область.",
+    "ky": "Коңорчок каньондору — Чүй облусу аймагындагы жай."
+  },
+  "address": "أخاديد كونورتشيك، توكموك، إقليم تشوي، قيرغيزستان",
+  "address_i18n": {
+    "ar": "أخاديد كونورتشيك، توكموك، إقليم تشوي، قيرغيزستان",
+    "en": "Konorchek Canyons, Tokmok, Chuy Region, Kyrgyzstan",
+    "ru": "Каньоны Конорчек, Токмок, Чуйская область, Кыргызстан",
+    "ky": "Коңорчок каньондору, Токмок, Чүй облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 42.541,
+    "longitude": 75.954
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Soviet_Il-28_bomber_monument_in_Tokmok_20080830.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_chuy",
+  "id_vill": "villages/city_kg_tokmok",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_chuy_chuy-konorchek",
+  "geo_import_slug": "chuy-konorchek",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

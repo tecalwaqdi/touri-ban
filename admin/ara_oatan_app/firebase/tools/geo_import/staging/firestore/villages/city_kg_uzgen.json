@@ -1,15 +1,22 @@
 {
   "__path": "villages/city_kg_uzgen",
-  "__writtenAt": "2026-07-22T11:28:59.730Z",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
   "__target": "local-staging",
   "naim": "أوزجن",
   "names_i18n": {
     "ar": "أوزجن",
     "en": "Uzgen",
     "ru": "Узген",
-    "ky": "Өзгөн",
-    "uz": "Oʻzgan"
+    "ky": "Өзгөн"
   },
+  "osf": "أوزجن — إقليم أوش",
+  "osf_i18n": {
+    "ar": "أوزجن — المركز الإداري لـ إقليم أوش",
+    "en": "Uzgen — administrative hub of Osh Region",
+    "ru": "Узген — административный центр региона Ошская область",
+    "ky": "Өзгөн — Ош облусу административдик борбору"
+  },
+  "img": "https://flagcdn.com/w320/kg.png",
   "cities": "cities/region_kg_osh",
   "dolh": "countries/kyrgyzstan",
   "lat_ling": {
@@ -19,5 +26,5 @@
   "acctev": true,
   "country_iso": "KG",
   "geo_import_id": "city_kg_uzgen",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "sa_kg_rebuild_2026"
 }

@@ -121,11 +121,11 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
 
   String? _percentValidator(String? value, {required String label}) {
     if (value == null || value.trim().isEmpty) {
-      return 'يرجى إدخال $label';
+      return '${uiTr(context, 'يرجى إدخال')} $label';
     }
     final parsed = double.tryParse(value.trim());
     if (parsed == null || parsed < 0 || parsed > 100) {
-      return 'أدخل نسبة صحيحة بين 0 و 100';
+      return uiTr(context, 'أدخل نسبة صحيحة بين 0 و 100');
     }
     return null;
   }
@@ -149,7 +149,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
         filled: true,
         fillColor: readOnly ? const Color(0xFFF5F5F5) : Colors.white,
         suffixIcon: const Icon(Icons.percent),
-        helperText: readOnly ? 'نسبة ثابتة' : null,
+        helperText: readOnly ? uiTr(context, 'نسبة ثابتة') : null,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
@@ -174,9 +174,9 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
       initialDate: initial,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
-      helpText: isStart ? 'تاريخ بداية التسجيل' : 'تاريخ انتهاء التسجيل',
-      cancelText: 'إلغاء',
-      confirmText: 'تأكيد',
+      helpText: isStart ? uiTr(context, 'تاريخ بداية التسجيل') : uiTr(context, 'تاريخ انتهاء التسجيل'),
+      cancelText: uiTr(context, 'إلغاء'),
+      confirmText: uiTr(context, 'تأكيد'),
     );
 
     if (picked != null && mounted) {
@@ -195,7 +195,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
   }
 
   String _formatDate(DateTime? date) {
-    if (date == null) return 'اضغط لاختيار التاريخ';
+    if (date == null) return uiTr(context, 'اضغط لاختيار التاريخ');
     return dateTimeFormat(
       'yMMMd',
       date,
@@ -255,7 +255,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
             content: Text(
               uiTr(
                 context,
-                'تعذّر قراءة الموقع — فعّل GPS واسمح للتطبيق بالوصول إلى الموقع',
+                uiTr(context, 'تعذّر قراءة الموقع — فعّل GPS واسمح للتطبيق بالوصول إلى الموقع'),
               ),
             ),
           ),
@@ -275,7 +275,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
             content: Text(
               uiTr(
                 context,
-                'لم نتمكن من تحديد الدولة من موقعك. تأكد أن الدولة مسجّلة بحدود جغرافية في قسم الدول',
+                uiTr(context, 'لم نتمكن من تحديد الدولة من موقعك. تأكد أن الدولة مسجّلة بحدود جغرافية في قسم الدول'),
               ),
             ),
           ),
@@ -314,8 +314,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
     }
 
     if (_model.countries.isEmpty) {
-      return const Text(
-        'لا توجد دول مسجلة. أضف دولاً من قسم الدول أولاً.',
+      return Text(uiTr(context, 'لا توجد دول مسجلة. أضف دولاً من قسم الدول أولاً.'),
         style: TextStyle(color: Colors.red),
       );
     }
@@ -342,7 +341,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
               )
               .toList(),
           onChanged: (value) => setState(() => _model.selectedCountry = value),
-          validator: (value) => value == null ? 'اختر البلد' : null,
+          validator: (value) => value == null ? uiTr(context, 'اختر البلد') : null,
         ),
         const SizedBox(height: 10),
         OutlinedButton.icon(
@@ -510,7 +509,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
     return AdminEditScaffold(
       title: appTr(context, 'scr_edit_agent'),
       subtitle: _agent!.dolhAgent.isNotEmpty
-          ? 'الدولة: ${_agent!.dolhAgent}'
+          ? '${uiTr(context, 'الدولة')}: ${_agent!.dolhAgent}'
           : null,
       isLoading: _model.isSubmitting,
       floatingAction: AdminPrimaryButton(
@@ -532,7 +531,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
                   focusNode: _model.nameFocusNode,
                   decoration: InputDecoration(labelText: uiTr(context, 'الاسم الكامل')),
                   validator: (v) =>
-                      v == null || v.trim().isEmpty ? 'مطلوب' : null,
+                      v == null || v.trim().isEmpty ? uiTr(context, 'مطلوب') : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -585,7 +584,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
                   controller: _model.appCommissionTextController!,
                   focusNode: _model.appCommissionFocusNode,
                   label: uiTr(context, 'نسبة التطبيق'),
-                  hint: 'مثال: 10',
+                  hint: uiTr(context, 'مثال: 10'),
                   validator: (v) =>
                       _percentValidator(v, label: uiTr(context, 'نسبة التطبيق')),
                 ),
@@ -594,7 +593,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
                   controller: _model.agentCommissionTextController!,
                   focusNode: _model.agentCommissionFocusNode,
                   label: uiTr(context, 'نسبة الوكيل'),
-                  hint: 'مثال: 5',
+                  hint: uiTr(context, 'مثال: 5'),
                   validator: (v) => _percentValidator(v, label: uiTr(context, 'نسبة الوكيل')),
                 ),
                 const SizedBox(height: 12),
@@ -619,8 +618,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
             OutlinedButton.icon(
               onPressed: _model.isSubmitting ? null : _delete,
               icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
-              label: const Text(
-                'حذف الوكيل',
+              label: Text(uiTr(context, 'حذف الوكيل'),
                 style: TextStyle(color: Colors.red),
               ),
             ),

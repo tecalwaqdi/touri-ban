@@ -16,8 +16,8 @@ import 'home_pag_model.dart';
 export 'home_pag_model.dart';
 
 /// Brand mark footprint inside the auth header.
-const double _kLogoWidth = DsConstants.logoWidth;
-const double _kLogoHeight = DsConstants.logoHeight;
+const double _kLogoWidth = DsConstants.authLogoWidth;
+const double _kLogoHeight = DsConstants.authLogoHeight;
 
 /// Compact language dropdown sitting opposite the brand mark.
 const double _kLanguageSelectorWidth = DsConstants.languageSelectorWidth;
@@ -278,79 +278,104 @@ class _HomePagWidgetState extends State<HomePagWidget>
               child: Scaffold(
                 key: scaffoldKey,
                 backgroundColor: colors.scaffold,
-                body: SafeArea(
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: DsConstants.maxContentWidth,
-                      ),
-                      child: Column(
-                        children: [
-                          _AuthHeader(
-                            onLanguageChanged: (lang) =>
-                                setAppLanguage(context, lang),
+                body: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              colors.primarySoft.withValues(alpha: 0.72),
+                              colors.scaffold,
+                              colors.scaffold,
+                            ],
+                            stops: const [0.0, 0.32, 1.0],
                           ),
-                          const Padding(
-                            padding: EdgeInsets.fromLTRB(
-                              DsSpacing.lg,
-                              DsSpacing.xs,
-                              DsSpacing.lg,
-                              DsSpacing.md,
-                            ),
-                            child: DsFadeSlide(child: _WelcomeHeader()),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: DsSpacing.lg,
-                            ),
-                            child: _AuthTabBar(
-                              controller: _model.tabBarController,
-                            ),
-                          ),
-                          Expanded(
-                            child: TabBarView(
-                              controller: _model.tabBarController,
-                              children: [
-                                _LoginTabView(
-                                  model: _model,
-                                  loading: _emailLoginLoading,
-                                  googleLoading: _googleSignInLoading,
-                                  onLogin: _handleEmailLogin,
-                                  onGoogleSignIn: _handleGoogleSignIn,
-                                  onForgotPassword: _openForgotPassword,
-                                  onTogglePasswordVisibility: () =>
-                                      safeSetState(() =>
-                                          _model.passwordLoginVisibility =
-                                              !_model.passwordLoginVisibility),
-                                ),
-                                _SignUpTabView(
-                                  model: _model,
-                                  loading: _signUpLoading,
-                                  googleLoading: _googleSignInLoading,
-                                  onGoogleSignIn: _handleGoogleSignIn,
-                                  onSubmit: _handleSignUp,
-                                  onOpenTerms: _openTerms,
-                                  onSignIn: _openSignIn,
-                                  onTermsChanged: (value) => safeSetState(
-                                      () => _model.switchValue = value),
-                                  onTogglePassVisibility: () => safeSetState(
-                                      () => _model.passVisibility =
-                                          !_model.passVisibility),
-                                  onToggleConfPassVisibility: () =>
-                                      safeSetState(() =>
-                                          _model.confpassVisibility =
-                                              !_model.confpassVisibility),
-                                ),
-                                _PartnerTabView(
-                                  onRegister: _openPartnerRegistration,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                    SafeArea(
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxWidth: DsConstants.maxContentWidth,
+                          ),
+                          child: Column(
+                            children: [
+                              _AuthHeader(
+                                onLanguageChanged: (lang) =>
+                                    setAppLanguage(context, lang),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.fromLTRB(
+                                  DsSpacing.lg,
+                                  DsSpacing.xs,
+                                  DsSpacing.lg,
+                                  DsSpacing.md,
+                                ),
+                                child: DsFadeSlide(child: _WelcomeHeader()),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: DsSpacing.lg,
+                                ),
+                                child: DsFadeSlide(
+                                  delay: DsDurations.fast,
+                                  child: _AuthTabBar(
+                                    controller: _model.tabBarController,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: TabBarView(
+                                  controller: _model.tabBarController,
+                                  children: [
+                                    _LoginTabView(
+                                      model: _model,
+                                      loading: _emailLoginLoading,
+                                      googleLoading: _googleSignInLoading,
+                                      onLogin: _handleEmailLogin,
+                                      onGoogleSignIn: _handleGoogleSignIn,
+                                      onForgotPassword: _openForgotPassword,
+                                      onTogglePasswordVisibility: () =>
+                                          safeSetState(() =>
+                                              _model.passwordLoginVisibility =
+                                                  !_model
+                                                      .passwordLoginVisibility),
+                                    ),
+                                    _SignUpTabView(
+                                      model: _model,
+                                      loading: _signUpLoading,
+                                      googleLoading: _googleSignInLoading,
+                                      onGoogleSignIn: _handleGoogleSignIn,
+                                      onSubmit: _handleSignUp,
+                                      onOpenTerms: _openTerms,
+                                      onSignIn: _openSignIn,
+                                      onTermsChanged: (value) => safeSetState(
+                                          () => _model.switchValue = value),
+                                      onTogglePassVisibility: () =>
+                                          safeSetState(() =>
+                                              _model.passVisibility =
+                                                  !_model.passVisibility),
+                                      onToggleConfPassVisibility: () =>
+                                          safeSetState(() =>
+                                              _model.confpassVisibility =
+                                                  !_model.confpassVisibility),
+                                    ),
+                                    _PartnerTabView(
+                                      onRegister: _openPartnerRegistration,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -361,7 +386,7 @@ class _HomePagWidgetState extends State<HomePagWidget>
   }
 }
 
-/// Brand mark opposite a compact language switcher.
+/// Brand mark centered under a compact language switcher, with Vision 2030.
 class _AuthHeader extends StatelessWidget {
   const _AuthHeader({required this.onLanguageChanged});
 
@@ -371,42 +396,61 @@ class _AuthHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.dsColors;
     final typography = context.dsTypography;
+    final shortest = MediaQuery.sizeOf(context).shortestSide;
+    final shortScreen = MediaQuery.sizeOf(context).height < 700;
+    final logoW = shortest < 360 ? 132.0 : _kLogoWidth;
+    final logoH = shortest < 360 ? 58.0 : _kLogoHeight;
+    final visionH =
+        shortest < 360 ? 34.0 : DsConstants.vision2030Height.toDouble();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         DsSpacing.lg,
         DsSpacing.sm,
         DsSpacing.lg,
-        0,
+        DsSpacing.xs,
       ),
-      child: Row(
+      child: Column(
         children: [
-          const TouryLogo(
-            width: _kLogoWidth,
-            height: _kLogoHeight,
-            withBackground: false,
-          ),
-          const Spacer(),
-          Tooltip(
-            message: FFLocalizations.of(context).getText(
-              'y9quj14n' /* Select the app language */,
-            ),
-            child: FlutterFlowLanguageSelector(
-              width: _kLanguageSelectorWidth,
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              dropdownColor: colors.surface,
-              dropdownIconColor: colors.primary,
-              borderRadius: DsRadius.sm,
-              textStyle: typography.labelMedium.copyWith(
-                color: colors.textPrimary,
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: Tooltip(
+              message: FFLocalizations.of(context).getText(
+                'y9quj14n' /* Select the app language */,
               ),
-              hideFlags: false,
-              flagSize: DsSpacing.sm,
-              flagTextGap: DsSpacing.xs,
-              currentLanguage: FFLocalizations.of(context).languageCode,
-              languages: FFLocalizations.languages(),
-              onChanged: onLanguageChanged,
+              child: FlutterFlowLanguageSelector(
+                width: _kLanguageSelectorWidth,
+                backgroundColor: colors.surface.withValues(alpha: 0.92),
+                borderColor: colors.border.withValues(alpha: 0.7),
+                dropdownColor: colors.surface,
+                dropdownIconColor: colors.primary,
+                borderRadius: DsRadius.sm,
+                textStyle: typography.labelMedium.copyWith(
+                  color: colors.textPrimary,
+                ),
+                hideFlags: false,
+                flagSize: DsSpacing.sm,
+                flagTextGap: DsSpacing.xs,
+                currentLanguage: FFLocalizations.of(context).languageCode,
+                languages: FFLocalizations.languages(),
+                onChanged: onLanguageChanged,
+              ),
+            ),
+          ),
+          SizedBox(height: shortScreen ? DsSpacing.xs : DsSpacing.sm),
+          DsScaleFade(
+            child: TouryLogo(
+              width: logoW,
+              height: logoH,
+              withBackground: false,
+            ),
+          ),
+          SizedBox(height: shortScreen ? DsSpacing.sm : DsSpacing.md),
+          DsFadeSlide(
+            delay: DsDurations.instant,
+            child: Vision2030Mark(
+              height: visionH,
+              maxWidth: shortest < 360 ? 140 : 168,
             ),
           ),
         ],
@@ -415,7 +459,7 @@ class _AuthHeader extends StatelessWidget {
   }
 }
 
-/// Editorial welcome block — accent rule plus title and supporting copy.
+/// Editorial welcome block — refined title and supporting copy.
 class _WelcomeHeader extends StatelessWidget {
   const _WelcomeHeader();
 
@@ -423,59 +467,58 @@ class _WelcomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.dsColors;
     final typography = context.dsTypography;
+    final shortScreen = MediaQuery.sizeOf(context).height < 700;
 
     return Container(
       width: double.infinity,
-      padding: DsSpacing.cardPadding,
+      padding: EdgeInsets.symmetric(
+        horizontal: DsSpacing.lg,
+        vertical: shortScreen ? DsSpacing.sm : DsSpacing.md,
+      ),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: AlignmentDirectional.topStart,
-          end: AlignmentDirectional.bottomEnd,
-          colors: [colors.primarySoft, colors.surface],
-        ),
+        color: colors.surface.withValues(alpha: 0.88),
         borderRadius: DsRadius.large,
-        border: Border.all(color: colors.primary.withValues(alpha: 0.18)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.55)),
         boxShadow: DsShadows.soft(dark: context.dsIsDark),
       ),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: DsSpacing.xxs,
-              decoration: BoxDecoration(
-                color: colors.primary,
-                borderRadius: DsRadius.pill,
-              ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 36,
+            height: 3,
+            decoration: BoxDecoration(
+              color: colors.primary,
+              borderRadius: DsRadius.pill,
             ),
-            const SizedBox(width: DsSpacing.sm),
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'ux_welcome_login'.tr(),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: typography.titleMedium.copyWith(
-                      color: colors.primaryStrong,
-                    ),
-                  ),
-                  const SizedBox(height: DsSpacing.xxs),
-                  Text(
-                    'ux_welcome_login_sub'.tr(),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: typography.bodySmall.copyWith(
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ],
+          ),
+          SizedBox(height: shortScreen ? DsSpacing.xs : DsSpacing.sm),
+          Text(
+            'ux_welcome_login'.tr(),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: (shortScreen ? typography.titleMedium : typography.titleLarge)
+                .copyWith(
+              color: colors.primaryStrong,
+              fontWeight: FontWeight.w700,
+              height: 1.25,
+            ),
+          ),
+          if (!shortScreen) ...[
+            const SizedBox(height: DsSpacing.xxs),
+            Text(
+              'ux_welcome_login_sub'.tr(),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: typography.bodySmall.copyWith(
+                color: colors.textSecondary,
+                height: 1.4,
               ),
             ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -496,9 +539,10 @@ class _AuthTabBar extends StatelessWidget {
       height: _kTabBarHeight,
       padding: const EdgeInsets.all(DsSpacing.xxs),
       decoration: BoxDecoration(
-        color: colors.primarySoft,
+        color: colors.surface.withValues(alpha: 0.9),
         borderRadius: DsRadius.large,
-        border: Border.all(color: colors.border.withValues(alpha: 0.6)),
+        border: Border.all(color: colors.border.withValues(alpha: 0.55)),
+        boxShadow: DsShadows.soft(dark: context.dsIsDark),
       ),
       child: TabBar(
         controller: controller,
@@ -610,38 +654,49 @@ class _LoginTabView extends StatelessWidget {
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(
         DsSpacing.lg,
-        DsSpacing.xl,
         DsSpacing.lg,
-        DsSpacing.massive,
+        DsSpacing.lg,
+        DsSpacing.huge,
       ),
       child: DsFadeSlide(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            DsTextField.email(
-              controller: model.emailAddressLoginTextController,
-              focusNode: model.emailAddressLoginFocusNode,
-              label: 'Email Address'.tr(),
-              hint: 'Enter your email...'.tr(),
-            ),
-            const SizedBox(height: DsSpacing.md),
-            DsTextField.password(
-              controller: model.passwordLoginTextController,
-              focusNode: model.passwordLoginFocusNode,
-              label: 'Password'.tr(),
-              obscureText: !model.passwordLoginVisibility,
-              suffixIcon: _VisibilityToggle(
-                visible: model.passwordLoginVisibility,
-                onPressed: onTogglePasswordVisibility,
+            DsCard(
+              elevated: true,
+              bordered: false,
+              padding: const EdgeInsets.all(DsSpacing.xl),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DsTextField.email(
+                    controller: model.emailAddressLoginTextController,
+                    focusNode: model.emailAddressLoginFocusNode,
+                    label: 'Email Address'.tr(),
+                    hint: 'Enter your email...'.tr(),
+                  ),
+                  const SizedBox(height: DsSpacing.md),
+                  DsTextField.password(
+                    controller: model.passwordLoginTextController,
+                    focusNode: model.passwordLoginFocusNode,
+                    label: 'Password'.tr(),
+                    obscureText: !model.passwordLoginVisibility,
+                    suffixIcon: _VisibilityToggle(
+                      visible: model.passwordLoginVisibility,
+                      onPressed: onTogglePasswordVisibility,
+                    ),
+                  ),
+                  const SizedBox(height: DsSpacing.xl),
+                  DsButton.primary(
+                    label: 'Login'.tr(),
+                    size: DsButtonSize.lg,
+                    expanded: true,
+                    loading: loading,
+                    icon: Icons.login_rounded,
+                    onPressed: onLogin,
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: DsSpacing.xl),
-            DsButton.primary(
-              label: 'Login'.tr(),
-              size: DsButtonSize.lg,
-              expanded: true,
-              loading: loading,
-              onPressed: onLogin,
             ),
             const SizedBox(height: DsSpacing.lg),
             const _OrDivider(),
@@ -649,7 +704,7 @@ class _LoginTabView extends StatelessWidget {
               loading: googleLoading,
               onPressed: onGoogleSignIn,
             ),
-            const SizedBox(height: DsSpacing.lg),
+            const SizedBox(height: DsSpacing.md),
             DsButton.text(
               label: FFLocalizations.of(context).getText(
                 'h9t30wk4' /* Forgot Password ? */,
@@ -700,7 +755,7 @@ class _SignUpTabView extends StatelessWidget {
         DsSpacing.lg,
         DsSpacing.lg,
         DsSpacing.lg,
-        DsSpacing.massive,
+        DsSpacing.huge,
       ),
       child: DsFadeSlide(
         child: Column(
@@ -718,126 +773,139 @@ class _SignUpTabView extends StatelessWidget {
               FFLocalizations.of(context).getText(
                 'tjrl68rw' /* Please fill in all fields to r... */,
               ),
+              textAlign: TextAlign.center,
               style: typography.bodyMedium.copyWith(
                 color: colors.textSecondary,
+                height: 1.35,
               ),
             ),
             const SizedBox(height: DsSpacing.lg),
-            Form(
-              key: model.formKey,
-              autovalidateMode: AutovalidateMode.disabled,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _DsFormField(
-                    controller: model.naimTextController,
-                    focusNode: model.naimFocusNode,
-                    label: FFLocalizations.of(context).getText(
-                      'jkt2g0im' /* Full Name */,
+            DsCard(
+              elevated: true,
+              bordered: false,
+              padding: const EdgeInsets.all(DsSpacing.xl),
+              child: Form(
+                key: model.formKey,
+                autovalidateMode: AutovalidateMode.disabled,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _DsFormField(
+                      controller: model.naimTextController,
+                      focusNode: model.naimFocusNode,
+                      label: FFLocalizations.of(context).getText(
+                        'jkt2g0im' /* Full Name */,
+                      ),
+                      prefixIcon: Icons.person_outline_rounded,
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.name],
+                      validator: model.naimTextControllerValidator
+                          .asValidator(context),
                     ),
-                    prefixIcon: Icons.person_outline_rounded,
-                    textInputAction: TextInputAction.next,
-                    autofillHints: const [AutofillHints.name],
-                    validator:
-                        model.naimTextControllerValidator.asValidator(context),
-                  ),
-                  const SizedBox(height: DsSpacing.md),
-                  _DsFormField(
-                    controller: model.emailTextController,
-                    focusNode: model.emailFocusNode,
-                    label: FFLocalizations.of(context).getText(
-                      'olr4d7yy' /* Email Address */,
+                    const SizedBox(height: DsSpacing.md),
+                    _DsFormField(
+                      controller: model.emailTextController,
+                      focusNode: model.emailFocusNode,
+                      label: FFLocalizations.of(context).getText(
+                        'olr4d7yy' /* Email Address */,
+                      ),
+                      prefixIcon: Icons.mail_outline_rounded,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.email],
+                      validator: model.emailTextControllerValidator
+                          .asValidator(context),
                     ),
-                    prefixIcon: Icons.mail_outline_rounded,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    autofillHints: const [AutofillHints.email],
-                    validator:
-                        model.emailTextControllerValidator.asValidator(context),
-                  ),
-                  const SizedBox(height: DsSpacing.md),
-                  _DsFormField(
-                    controller: model.passTextController,
-                    focusNode: model.passFocusNode,
-                    label: FFLocalizations.of(context).getText(
-                      'd0nu9j5x' /* Password */,
+                    const SizedBox(height: DsSpacing.md),
+                    _DsFormField(
+                      controller: model.passTextController,
+                      focusNode: model.passFocusNode,
+                      label: FFLocalizations.of(context).getText(
+                        'd0nu9j5x' /* Password */,
+                      ),
+                      prefixIcon: Icons.lock_outline_rounded,
+                      obscureText: !model.passVisibility,
+                      keyboardType: TextInputType.visiblePassword,
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.newPassword],
+                      suffixIcon: _VisibilityToggle(
+                        visible: model.passVisibility,
+                        onPressed: onTogglePassVisibility,
+                      ),
+                      validator: model.passTextControllerValidator
+                          .asValidator(context),
                     ),
-                    prefixIcon: Icons.lock_outline_rounded,
-                    obscureText: !model.passVisibility,
-                    keyboardType: TextInputType.visiblePassword,
-                    textInputAction: TextInputAction.next,
-                    autofillHints: const [AutofillHints.newPassword],
-                    suffixIcon: _VisibilityToggle(
-                      visible: model.passVisibility,
-                      onPressed: onTogglePassVisibility,
+                    const SizedBox(height: DsSpacing.md),
+                    _DsFormField(
+                      controller: model.confpassTextController,
+                      focusNode: model.confpassFocusNode,
+                      label: FFLocalizations.of(context).getText(
+                        '558w2xwl' /* Confirm Password */,
+                      ),
+                      prefixIcon: Icons.lock_reset_rounded,
+                      obscureText: !model.confpassVisibility,
+                      keyboardType: TextInputType.visiblePassword,
+                      textInputAction: TextInputAction.done,
+                      autofillHints: const [AutofillHints.newPassword],
+                      suffixIcon: _VisibilityToggle(
+                        visible: model.confpassVisibility,
+                        onPressed: onToggleConfPassVisibility,
+                      ),
+                      validator: model.confpassTextControllerValidator
+                          .asValidator(context),
                     ),
-                    validator:
-                        model.passTextControllerValidator.asValidator(context),
-                  ),
-                  const SizedBox(height: DsSpacing.md),
-                  _DsFormField(
-                    controller: model.confpassTextController,
-                    focusNode: model.confpassFocusNode,
-                    label: FFLocalizations.of(context).getText(
-                      '558w2xwl' /* Confirm Password */,
+                    const SizedBox(height: DsSpacing.md),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: DsPressable(
+                        onTap: onOpenTerms,
+                        child: Text(
+                          FFLocalizations.of(context).getText(
+                            'g2im5b8x' /* Read the Terms of Service and ... */,
+                          ),
+                          style: typography.bodySmall.copyWith(
+                            color: colors.primary,
+                            decoration: TextDecoration.underline,
+                            decorationColor: colors.primary,
+                          ),
+                        ),
+                      ),
                     ),
-                    prefixIcon: Icons.lock_reset_rounded,
-                    obscureText: !model.confpassVisibility,
-                    keyboardType: TextInputType.visiblePassword,
-                    textInputAction: TextInputAction.done,
-                    autofillHints: const [AutofillHints.newPassword],
-                    suffixIcon: _VisibilityToggle(
-                      visible: model.confpassVisibility,
-                      onPressed: onToggleConfPassVisibility,
+                    const SizedBox(height: DsSpacing.md),
+                    _TermsAgreementCard(
+                      value: model.switchValue!,
+                      onChanged: onTermsChanged,
                     ),
-                    validator: model.confpassTextControllerValidator
-                        .asValidator(context),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: DsSpacing.md),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: DsPressable(
-                onTap: onOpenTerms,
-                child: Text(
-                  FFLocalizations.of(context).getText(
-                    'g2im5b8x' /* Read the Terms of Service and ... */,
-                  ),
-                  style: typography.bodySmall.copyWith(
-                    color: colors.primary,
-                    decoration: TextDecoration.underline,
-                    decorationColor: colors.primary,
-                  ),
+                    const SizedBox(height: DsSpacing.xl),
+                    DsButton.primary(
+                      label: FFLocalizations.of(context).getText(
+                        'y6zcycni' /* Register */,
+                      ),
+                      size: DsButtonSize.lg,
+                      expanded: true,
+                      loading: loading,
+                      icon: Icons.person_add_alt_1_rounded,
+                      onPressed: onSubmit,
+                    ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: DsSpacing.md),
-            _TermsAgreementCard(
-              value: model.switchValue!,
-              onChanged: onTermsChanged,
-            ),
-            const SizedBox(height: DsSpacing.xl),
-            DsButton.primary(
-              label: FFLocalizations.of(context).getText(
-                'y6zcycni' /* Register */,
-              ),
-              size: DsButtonSize.lg,
-              expanded: true,
-              loading: loading,
-              onPressed: onSubmit,
             ),
             const SizedBox(height: DsSpacing.lg),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  FFLocalizations.of(context).getText(
-                    't58lgmpo' /* Already have an account? */,
-                  ),
-                  style: typography.bodyMedium.copyWith(
-                    color: colors.textSecondary,
+                Flexible(
+                  child: Text(
+                    FFLocalizations.of(context).getText(
+                      't58lgmpo' /* Already have an account? */,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: typography.bodyMedium.copyWith(
+                      color: colors.textSecondary,
+                    ),
                   ),
                 ),
                 const SizedBox(width: DsSpacing.xs),

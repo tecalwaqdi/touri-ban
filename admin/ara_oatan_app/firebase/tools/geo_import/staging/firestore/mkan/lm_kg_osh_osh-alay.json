@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_osh_osh-alay",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "وادي ألاي",
+  "osf": "وادي ألاي — معلم في إقليم أوش.",
+  "names_i18n": {
+    "ar": "وادي ألاي",
+    "en": "Alay Valley",
+    "ru": "Алайская долина",
+    "ky": "Алай өрөөнү"
+  },
+  "osf_i18n": {
+    "ar": "وادي ألاي — معلم في إقليم أوش.",
+    "en": "Alay Valley — landmark in Osh Region.",
+    "ru": "Алайская долина — достопримечательность в регионе Ошская область.",
+    "ky": "Алай өрөөнү — Ош облусу аймагындагы жай."
+  },
+  "address": "وادي ألاي، أوزجن، إقليم أوش، قيرغيزستان",
+  "address_i18n": {
+    "ar": "وادي ألاي، أوزجن، إقليم أوش، قيرغيزستان",
+    "en": "Alay Valley, Uzgen, Osh Region, Kyrgyzstan",
+    "ru": "Алайская долина, Узген, Ошская область, Кыргызстан",
+    "ky": "Алай өрөөнү, Өзгөн, Ош облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 39.65,
+    "longitude": 72.88
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_osh",
+  "id_vill": "villages/city_kg_uzgen",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_osh_osh-alay",
+  "geo_import_slug": "osh-alay",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

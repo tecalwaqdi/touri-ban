@@ -1,21 +1,25 @@
 {
   "__path": "type_car/coach_mini",
-  "__writtenAt": "2026-07-22T11:29:02.682Z",
+  "__writtenAt": "2026-08-05T11:10:56.043Z",
   "__target": "local-staging",
-  "naim": "ميني باص",
+  "naim": "حافلة صغيرة عادية",
   "names_i18n": {
-    "ar": "ميني باص",
-    "en": "Minibus",
+    "ar": "حافلة صغيرة عادية",
+    "en": "Small Bus",
     "ru": "Мини-автобус",
     "ky": "Кичи автобус",
     "uz": "Miniavtobus"
   },
   "codeCar": "coach_mini",
-  "sr": 600,
-  "agl_saat": 6,
+  "sr": 100,
+  "agl_saat": 5,
   "actev": true,
   "ishafelh": true,
   "not": "Minibus",
   "geo_import_id": "vehcat_coach_mini",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "touri_geo_import",
+  "img": "assets/images/vehicles/mini_bus.jpg",
+  "__note": "Production img field was updated to embedded JPEG data-url via upload_vehicle_images_to_firebase.js",
+  "sort_order": 5,
+  "num_trteb": 5
 }

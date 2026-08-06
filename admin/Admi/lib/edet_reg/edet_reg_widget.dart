@@ -151,8 +151,7 @@ class _EdetRegWidgetState extends State<EdetRegWidget> {
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text(appTr(context, 'adm_delete_confirm_title')),
-            content: const Text(
-              'عند حذف المنطقة سيتم حذف كل المدن والمعالم المرتبطة. هل أنت متأكد؟',
+            content: Text(uiTr(context, 'عند حذف المنطقة سيتم حذف كل المدن والمعالم المرتبطة. هل أنت متأكد؟'),
             ),
             actions: [
               TextButton(
@@ -265,7 +264,7 @@ class _EdetRegWidgetState extends State<EdetRegWidget> {
                 imageUrl: _model.uploadedFileUrl_uploadDataO6s,
                 localBytes: _model.uploadedLocalFile_uploadDataO6s.bytes,
                 isUploading: _model.isDataUploading_uploadDataO6s,
-                hint: 'اختر صورة المنطقة من المعرض أو الكاميرا',
+                hint: uiTr(context, 'اختر صورة المنطقة من المعرض أو الكاميرا'),
                 onPick: _pickRegionImage,
               ),
             ],
@@ -279,8 +278,7 @@ class _EdetRegWidgetState extends State<EdetRegWidget> {
                     : () => _delete(record),
                 icon: const Icon(Icons.delete_outline_rounded,
                     color: Colors.red),
-                label: const Text(
-                  'حذف المنطقة',
+                label: Text(uiTr(context, 'حذف المنطقة'),
                   style: TextStyle(color: Colors.red),
                 ),
               ),

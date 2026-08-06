@@ -42,13 +42,13 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
   String _actionLabel(String action) {
     switch (action) {
       case 'delete':
-        return 'حذف';
+        return uiTr(context, 'حذف');
       case 'activate':
-        return 'تفعيل';
+        return uiTr(context, 'تفعيل');
       case 'deactivate':
-        return 'إيقاف';
+        return uiTr(context, 'إيقاف');
       case 'cancel':
-        return 'إلغاء';
+        return uiTr(context, 'إلغاء');
       default:
         return action;
     }
@@ -107,7 +107,7 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 32),
                       child: Text(
-                        'لا توجد عمليات مسجّلة بعد',
+                        uiTr(context, 'لا توجد عمليات مسجّلة بعد'),
                         textAlign: TextAlign.center,
                         style: theme.titleMedium,
                       ),

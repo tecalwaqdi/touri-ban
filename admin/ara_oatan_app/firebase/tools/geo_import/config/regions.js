@@ -107,6 +107,10 @@ const COUNTRIES = {
     regions: KG_REGIONS,
     curatedLandmarksFile: 'kyrgyzstan_landmarks_20.json',
   },
+};
+
+/** Archived catalogs (not active in product catalog — SA + KG only). */
+const ARCHIVED_COUNTRIES = {
   UZ: {
     id: 'country_uz',
     iso2: 'UZ',
@@ -132,7 +136,7 @@ const COUNTRIES = {
     firestoreDocId: 'russia',
     names: { ar: 'روسيا', en: 'Russia', ru: 'Россия', ky: 'Россия', uz: 'Rossiya' },
     regions: RU_REGIONS,
-    note: 'Wave-1 tourist priority subjects (20). Full federal list can be added later.',
+    note: 'Archived wave-1 tourist subjects. Not part of active SA+KG catalog.',
     overpassIsoPrefix: '',
     overpassIsoField: 'code',
   },
@@ -141,6 +145,7 @@ const COUNTRIES = {
 module.exports = {
   LANGS,
   COUNTRIES,
+  ARCHIVED_COUNTRIES,
   SA_REGIONS,
   KG_REGIONS,
   UZ_REGIONS,

@@ -84,6 +84,10 @@ void _pushFlutterFlowVariants(String trimmed, Set<String> seen, List<String> out
   }
   for (final project in kFlutterFlowProjects) {
     if (trimmed.startsWith('assets/')) {
+      // Local bundled assets (e.g. assets/images/landmarks/…) stay as-is.
+      if (trimmed.startsWith('assets/images/')) {
+        continue;
+      }
       _pushUrl('$kFlutterFlowGcsBase/projects/$project/$trimmed', seen, out);
     }
     if (trimmed.startsWith('projects/$project/')) {
@@ -109,6 +113,10 @@ List<String> touryExpandImageUrlCandidates(String? raw) {
   final trimmed = raw.trim();
   if (trimmed.isEmpty) return const [];
   if (touryIsEmbeddedImageDataUrl(trimmed)) {
+    return [trimmed];
+  }
+  // App-bundled landmark / vehicle images.
+  if (trimmed.startsWith('assets/images/')) {
     return [trimmed];
   }
 
@@ -696,6 +704,14 @@ class _TouryNetworkImageState extends State<TouryNetworkImage> {
                   _failureWidget(imageWidth, imageHeight),
             )
           : _failureWidget(imageWidth, imageHeight);
+    } else if (activeUrl.startsWith('assets/images/')) {
+      child = Image.asset(
+        activeUrl,
+        width: imageWidth,
+        height: imageHeight,
+        fit: widget.fit,
+        errorBuilder: (_, __, ___) => _failureWidget(imageWidth, imageHeight),
+      );
     } else {
       final screenW = MediaQuery.sizeOf(context).width;
       final memW = _memCacheDim(

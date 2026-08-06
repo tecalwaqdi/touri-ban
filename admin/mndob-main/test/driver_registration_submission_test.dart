@@ -87,5 +87,73 @@ void main() {
       expect(reasons, isNotEmpty);
       expect(reasons.first, 'Please sign in first.');
     });
+
+    test('tour guide requires permit url', () {
+      const model = DriverRegistrationReviewModel(
+        uid: '',
+        displayName: 'Ali',
+        email: 'a@b.com',
+        phoneE164: '+966512345678',
+        idNumber: '1234567890',
+        birthDate: null,
+        countryRef: null,
+        regionRef: null,
+        villageRef: null,
+        regionName: '',
+        villageName: '',
+        vehicleTypeRef: null,
+        vehicleTypeText: '',
+        vehicleName: '',
+        modelYear: '',
+        plate: '',
+        color: '',
+        seats: null,
+        photoUrl: '',
+        idImageUrl: '',
+        carImageUrl: '',
+        location: null,
+        isResubmit: false,
+        uploadInFlight: false,
+        isTourGuide: true,
+        guidePermitUrl: '',
+      );
+      final reasons =
+          DriverRegistrationCompletenessService.blockingReasons(model);
+      expect(reasons, contains('Tour guide permit'));
+    });
+
+    test('company affiliation requires company path', () {
+      const model = DriverRegistrationReviewModel(
+        uid: '',
+        displayName: 'Ali',
+        email: 'a@b.com',
+        phoneE164: '+966512345678',
+        idNumber: '1234567890',
+        birthDate: null,
+        countryRef: null,
+        regionRef: null,
+        villageRef: null,
+        regionName: '',
+        villageName: '',
+        vehicleTypeRef: null,
+        vehicleTypeText: '',
+        vehicleName: '',
+        modelYear: '',
+        plate: '',
+        color: '',
+        seats: null,
+        photoUrl: '',
+        idImageUrl: '',
+        carImageUrl: '',
+        location: null,
+        isResubmit: false,
+        uploadInFlight: false,
+        affiliationType: 'company',
+        companyPath: '',
+      );
+      final reasons =
+          DriverRegistrationCompletenessService.blockingReasons(model);
+      expect(reasons, contains('Transport company'));
+    });
   });
 }

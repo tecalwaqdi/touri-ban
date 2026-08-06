@@ -569,6 +569,18 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => AdmindreverWidget(),
         ),
         FFRoute(
+          name: AdminTourGuidesWidget.routeName,
+          path: AdminTourGuidesWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminTourGuidesWidget(),
+        ),
+        FFRoute(
+          name: AdminFinanceHubWidget.routeName,
+          path: AdminFinanceHubWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminFinanceHubWidget(),
+        ),
+        FFRoute(
           name: AddUserWidget.routeName,
           path: AddUserWidget.routePath,
           requireAuth: true,

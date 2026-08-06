@@ -1,0 +1,42 @@
+{
+  "at": "2026-08-05T10:34:10.984Z",
+  "apply": true,
+  "items": [
+    {
+      "col": "cities",
+      "id": "region_sa_taif",
+      "ar": "الطائف",
+      "source": "IMG_6981",
+      "imgBytes": 178621,
+      "iconBytes": 24792,
+      "status": "patched"
+    },
+    {
+      "col": "villages",
+      "id": "city_sa_taif",
+      "ar": "الطائف",
+      "source": "IMG_6981",
+      "imgBytes": 178621,
+      "iconBytes": 24792,
+      "status": "patched"
+    },
+    {
+      "col": "cities",
+      "id": "region_sa_jeddah",
+      "ar": "جدة",
+      "source": "IMG_6980",
+      "imgBytes": 254168,
+      "iconBytes": 35958,
+      "status": "patched"
+    },
+    {
+      "col": "villages",
+      "id": "city_sa_jeddah",
+      "ar": "جدة",
+      "source": "IMG_6980",
+      "imgBytes": 254168,
+      "iconBytes": 35958,
+      "status": "patched"
+    }
+  ]
+}

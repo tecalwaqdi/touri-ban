@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_jalal_abad_jalal_abad-sary-chelek",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "بحيرة ساري تشيليك",
+  "osf": "بحيرة ساري تشيليك — معلم في إقليم جلال آباد.",
+  "names_i18n": {
+    "ar": "بحيرة ساري تشيليك",
+    "en": "Sary-Chelek Lake",
+    "ru": "Озеро Сары-Челек",
+    "ky": "Сары-Челек"
+  },
+  "osf_i18n": {
+    "ar": "بحيرة ساري تشيليك — معلم في إقليم جلال آباد.",
+    "en": "Sary-Chelek Lake — landmark in Jalal-Abad Region.",
+    "ru": "Озеро Сары-Челек — достопримечательность в регионе Джалал-Абадская область.",
+    "ky": "Сары-Челек — Жалал-Абад облусу аймагындагы жай."
+  },
+  "address": "بحيرة ساري تشيليك، جلال آباد، إقليم جلال آباد، قيرغيزستان",
+  "address_i18n": {
+    "ar": "بحيرة ساري تشيليك، جلال آباد، إقليم جلال آباد، قيرغيزستان",
+    "en": "Sary-Chelek Lake, Jalal-Abad, Jalal-Abad Region, Kyrgyzstan",
+    "ru": "Озеро Сары-Челек, Джалал-Абад, Джалал-Абадская область, Кыргызстан",
+    "ky": "Сары-Челек, Жалал-Абад, Жалал-Абад облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 41.88,
+    "longitude": 71.95
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_jalal_abad",
+  "id_vill": "villages/city_kg_jalal_abad",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_jalal_abad_jalal_abad-sary-chelek",
+  "geo_import_slug": "jalal_abad-sary-chelek",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

@@ -71,7 +71,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
   Future<void> _persistPhotoUrl(String photoUrl) async {
     final userRef = currentUserReference;
     if (userRef == null) {
-      throw Exception('لا يوجد مستخدم مسجل الدخول');
+      throw Exception(uiTr(context, 'لا يوجد مستخدم مسجل الدخول'));
     }
 
     await userRef.set(
@@ -132,8 +132,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         SnackBar(
           content: Text(
             usedFallback
-                ? 'تم حفظ الصورة في حسابك (وضع احتياطي — فعّل فوترة Firebase Storage للرفع السحابي)'
-                : 'تم تحديث الصورة الشخصية بنجاح',
+                ? uiTr(context, 'تم حفظ الصورة في حسابك (وضع احتياطي — فعّل فوترة Firebase Storage للرفع السحابي)')
+                : uiTr(context, 'تم تحديث الصورة الشخصية بنجاح'),
           ),
         ),
       );
@@ -274,7 +274,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       localBytes: _model.uploadedLocalPhoto.bytes,
       isUploading: _model.isUploadingPhoto,
       height: 160,
-      hint: 'اضغط لاختيار صورة من المعرض أو الكاميرا (تُحفظ تلقائياً)',
+      hint: uiTr(context, 'اضغط لاختيار صورة من المعرض أو الكاميرا (تُحفظ تلقائياً)'),
       onPick: _pickProfilePhoto,
     );
   }
@@ -299,7 +299,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
 
       final userRef = currentUserReference;
       if (userRef == null) {
-        throw Exception('لا يوجد مستخدم مسجل الدخول');
+        throw Exception(uiTr(context, 'لا يوجد مستخدم مسجل الدخول'));
       }
 
       await userRef.set(
@@ -409,7 +409,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                             icon: Icons.badge_outlined,
                             validator: (v) =>
                                 (v == null || v.trim().isEmpty)
-                                    ? 'أدخل الاسم'
+                                    ? uiTr(context, 'أدخل الاسم')
                                     : null,
                           ),
                           const SizedBox(height: AdminUi.fieldGap),
@@ -421,10 +421,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                             keyboardType: TextInputType.emailAddress,
                             validator: (v) {
                               if (v == null || v.trim().isEmpty) {
-                                return 'أدخل البريد الإلكتروني';
+                                return uiTr(context, 'أدخل البريد الإلكتروني');
                               }
                               if (!v.contains('@')) {
-                                return 'بريد إلكتروني غير صالح';
+                                return uiTr(context, 'بريد إلكتروني غير صالح');
                               }
                               return null;
                             },
@@ -468,7 +468,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                             ),
                             validator: (v) {
                               if (v == null || v.length < 6) {
-                                return '6 أحرف على الأقل';
+                                return uiTr(context, '6 أحرف على الأقل');
                               }
                               return null;
                             },
@@ -489,7 +489,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                             validator: (v) {
                               if (v !=
                                   _model.newPasswordTextController!.text) {
-                                return 'كلمتا المرور غير متطابقتين';
+                                return uiTr(context, 'كلمتا المرور غير متطابقتين');
                               }
                               return null;
                             },
@@ -511,10 +511,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          'باستخدامك لوحة التحكم، فإنك توافق على معالجة بيانات '
-                          'المستخدمين والحجوزات والمواقع الجغرافية لأغراض تشغيل '
-                          'الخدمة فقط. لا تُشارك البيانات مع أطراف ثالثة إلا بموافقة '
-                          'قانونية أو بموجب القانون.',
+                          uiTr(context, 'باستخدامك لوحة التحكم، فإنك توافق على معالجة بيانات ') +
+                          uiTr(context, 'المستخدمين والحجوزات والمواقع الجغرافية لأغراض تشغيل ') +
+                          uiTr(context, 'الخدمة فقط. لا تُشارك البيانات مع أطراف ثالثة إلا بموافقة ') +
+                          uiTr(context, 'قانونية أو بموجب القانون.'),
                           style: theme.bodySmall.override(
                             fontFamily: theme.bodySmallFamily,
                             color: theme.secondaryText,
@@ -523,9 +523,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'يحق للمستخدمين طلب تصحيح أو حذف بياناتهم عبر الدعم الفني. '
-                          'يُحظر استخدام النظام لأغراض غير مشروعة أو انتهاك خصوصية '
-                          'العملاء أو المناديب.',
+                          uiTr(context, 'يحق للمستخدمين طلب تصحيح أو حذف بياناتهم عبر الدعم الفني. ') +
+                          uiTr(context, 'يُحظر استخدام النظام لأغراض غير مشروعة أو انتهاك خصوصية ') +
+                          uiTr(context, 'العملاء أو المناديب.'),
                           style: theme.bodySmall.override(
                             fontFamily: theme.bodySmallFamily,
                             color: theme.secondaryText,
@@ -534,7 +534,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'آخر تحديث: يونيو 2026',
+                          uiTr(context, 'آخر تحديث: يونيو 2026'),
                           style: theme.labelSmall.override(
                             fontFamily: theme.labelSmallFamily,
                             color: theme.secondaryText,
@@ -553,7 +553,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           Text(
                             uiTr(
                               context,
-                              'يملأ حقول names_i18n للمعالم والمدن والدول القديمة من الأسماء العربية/الإنجليزية المخزنة.',
+                              uiTr(context, 'يملأ حقول names_i18n للمعالم والمدن والدول القديمة من الأسماء العربية/الإنجليزية المخزنة.'),
                             ),
                             style: theme.bodySmall.override(
                               fontFamily: theme.bodySmallFamily,
@@ -572,7 +572,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           AdminPrimaryButton(
                             label: uiTr(
                               context,
-                              'تعبئة ترجمات البيانات القديمة',
+                              uiTr(context, 'تعبئة ترجمات البيانات القديمة'),
                             ),
                             icon: Icons.translate_rounded,
                             isLoading: _i18nBackfillRunning,
@@ -583,7 +583,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           Text(
                             uiTr(
                               context,
-                              'ترجم تلقائياً حتى 15 معلم في كل مرة عبر Gemini (يتطلب GEMINI_API_KEY في Cloud Functions).',
+                              uiTr(context, 'ترجم تلقائياً حتى 15 معلم في كل مرة عبر Gemini (يتطلب GEMINI_API_KEY في Cloud Functions).'),
                             ),
                             style: theme.bodySmall.override(
                               fontFamily: theme.bodySmallFamily,
@@ -595,7 +595,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           AdminPrimaryButton(
                             label: uiTr(
                               context,
-                              'ترجم المعالم بGemini (دفعة)',
+                              uiTr(context, 'ترجم المعالم بGemini (دفعة)'),
                             ),
                             icon: Icons.auto_awesome_rounded,
                             isLoading: _i18nGeminiRunning,
@@ -607,7 +607,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           Text(
                             uiTr(
                               context,
-                              'يجلب الحدود الجغرافية للدول الناقصة (مطلوب لتحديد دولة الوكيل من GPS).',
+                              uiTr(context, 'يجلب الحدود الجغرافية للدول الناقصة (مطلوب لتحديد دولة الوكيل من GPS).'),
                             ),
                             style: theme.bodySmall.override(
                               fontFamily: theme.bodySmallFamily,
@@ -619,7 +619,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           AdminPrimaryButton(
                             label: uiTr(
                               context,
-                              'تعبئة حدود الدول الجغرافية',
+                              uiTr(context, 'تعبئة حدود الدول الجغرافية'),
                             ),
                             icon: Icons.map_rounded,
                             isLoading: _boundsBackfillRunning,

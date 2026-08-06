@@ -445,7 +445,7 @@ class _ListViWidgetState extends State<ListViWidget>
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 33.0, 0.0, 0.0),
+                                    0.0, 12.0, 0.0, 0.0),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -1621,7 +1621,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                 'textOnPageLoadAnimation1']),
                                                       ),
                                                     ),
-                                                    FFButtonWidget(
+                                                    Flexible(
+                                                      child: FFButtonWidget(
                                                       onPressed: () async {
                                                         if (FFAppState().addcart < 1) {
                                                           TouryDialogs.showSnackBar(
@@ -1696,6 +1697,7 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                   11.0),
                                                         ),
                                                       ),
+                                                    ),
                                                     ),
                                                   ],
                                                 ),
@@ -2423,8 +2425,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                 MainAxisAlignment
                                                                     .center,
                                                             children: [
-                                                              Container(
-                                                                width: 345.55,
+                                                              Expanded(
+                                                                child: Container(
                                                                 height: 41.1,
                                                                 decoration:
                                                                     BoxDecoration(
@@ -2459,14 +2461,13 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                       MainAxisSize
                                                                           .max,
                                                                   children: [
-                                                                    Row(
+                                                                    Expanded(
+                                                                      child: Row(
                                                                       mainAxisSize:
                                                                           MainAxisSize
                                                                               .max,
                                                                       children: [
-                                                                        SizedBox(
-                                                                          width:
-                                                                              280.0,
+                                                                        Expanded(
                                                                           child:
                                                                               TextFormField(
                                                                             controller:
@@ -2565,7 +2566,7 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                 });
                                                                               },
                                                                               child: Row(
-                                                                                mainAxisSize: MainAxisSize.max,
+                                                                                mainAxisSize: MainAxisSize.min,
                                                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                                                 children: [
                                                                                   Padding(
@@ -2576,10 +2577,13 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                       size: 11.0,
                                                                                     ),
                                                                                   ),
-                                                                                  Text(
+                                                                                  Flexible(
+                                                                                    child: Text(
                                                                                     FFLocalizations.of(context).getText(
                                                                                       'vmf8goz5' /* Cancel Search */,
                                                                                     ),
+                                                                                    maxLines: 1,
+                                                                                    overflow: TextOverflow.ellipsis,
                                                                                     style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                           fontFamily: FlutterFlowTheme.of(context).bodyMediumFamily,
                                                                                           color: FlutterFlowTheme.of(context).error,
@@ -2588,14 +2592,17 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                           useGoogleFonts: !FlutterFlowTheme.of(context).bodyMediumIsCustom,
                                                                                         ),
                                                                                   ),
+                                                                                  ),
                                                                                 ],
                                                                               ),
                                                                             ),
                                                                           ),
                                                                       ],
                                                                     ),
+                                                                    ),
                                                                   ],
                                                                 ),
+                                                              ),
                                                               ),
                                                             ],
                                                           ),
@@ -2661,6 +2668,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                       children: [
                                                                         Text(
                                                                           'landmarks_custom_list_title'.tr(),
+                                                                          maxLines: 1,
+                                                                          overflow: TextOverflow.ellipsis,
                                                                           style: FlutterFlowTheme.of(context)
                                                                               .labelLarge
                                                                               .override(
@@ -2671,6 +2680,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                         ),
                                                                         Text(
                                                                           'custom_place_list_hint'.tr(),
+                                                                          maxLines: 2,
+                                                                          overflow: TextOverflow.ellipsis,
                                                                           style: FlutterFlowTheme.of(context)
                                                                               .bodySmall
                                                                               .override(
@@ -2973,8 +2984,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                     }
                                                                                   },
                                                                                   child: Container(
-                                                                                    width: 83.9,
                                                                                     height: 35.0,
+                                                                                    constraints: const BoxConstraints(minWidth: 72, maxWidth: 110),
                                                                                     decoration: BoxDecoration(
                                                                                       color: FlutterFlowTheme.of(context).error,
                                                                                       borderRadius: BorderRadius.circular(12.0),
@@ -3051,12 +3062,15 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                               }
                                                                                             },
                                                                                           ),
-                                                                                          Padding(
+                                                                                          Flexible(
+                                                                                            child: Padding(
                                                                                             padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 2.0, 0.0),
                                                                                             child: Text(
                                                                                               FFLocalizations.of(context).getText(
                                                                                                 'y1rt0m4k' /* Add */,
                                                                                               ),
+                                                                                              maxLines: 1,
+                                                                                              overflow: TextOverflow.ellipsis,
                                                                                               style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                     fontFamily: FlutterFlowTheme.of(context).bodyMediumFamily,
                                                                                                     color: FlutterFlowTheme.of(context).info,
@@ -3065,6 +3079,7 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                                     useGoogleFonts: !FlutterFlowTheme.of(context).bodyMediumIsCustom,
                                                                                                   ),
                                                                                             ),
+                                                                                          ),
                                                                                           ),
                                                                                         ],
                                                                                       ),
@@ -3367,8 +3382,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                     }
                                                                                   },
                                                                                   child: Container(
-                                                                                    width: 83.9,
                                                                                     height: 35.0,
+                                                                                    constraints: const BoxConstraints(minWidth: 72, maxWidth: 110),
                                                                                     decoration: BoxDecoration(
                                                                                       color: FlutterFlowTheme.of(context).error,
                                                                                       borderRadius: BorderRadius.circular(12.0),
@@ -3424,12 +3439,15 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                               );
                                                                                             },
                                                                                           ),
-                                                                                          Padding(
+                                                                                          Flexible(
+                                                                                            child: Padding(
                                                                                             padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 2.0, 0.0),
                                                                                             child: Text(
                                                                                               FFLocalizations.of(context).getText(
                                                                                                 '3xvjxer6' /* Add */,
                                                                                               ),
+                                                                                              maxLines: 1,
+                                                                                              overflow: TextOverflow.ellipsis,
                                                                                               style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                     fontFamily: FlutterFlowTheme.of(context).bodyMediumFamily,
                                                                                                     color: FlutterFlowTheme.of(context).info,
@@ -3438,6 +3456,7 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                                     useGoogleFonts: !FlutterFlowTheme.of(context).bodyMediumIsCustom,
                                                                                                   ),
                                                                                             ),
+                                                                                          ),
                                                                                           ),
                                                                                         ],
                                                                                       ),
@@ -3706,8 +3725,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                     }
                                                                                   },
                                                                                   child: Container(
-                                                                                    width: 83.9,
                                                                                     height: 35.0,
+                                                                                    constraints: const BoxConstraints(minWidth: 72, maxWidth: 110),
                                                                                     decoration: BoxDecoration(
                                                                                       color: FlutterFlowTheme.of(context).error,
                                                                                       borderRadius: BorderRadius.circular(12.0),
@@ -3763,12 +3782,15 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                               );
                                                                                             },
                                                                                           ),
-                                                                                          Padding(
+                                                                                          Flexible(
+                                                                                            child: Padding(
                                                                                             padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 2.0, 0.0),
                                                                                             child: Text(
                                                                                               FFLocalizations.of(context).getText(
                                                                                                 'lpknsr86' /* Add */,
                                                                                               ),
+                                                                                              maxLines: 1,
+                                                                                              overflow: TextOverflow.ellipsis,
                                                                                               style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                     fontFamily: FlutterFlowTheme.of(context).bodyMediumFamily,
                                                                                                     color: FlutterFlowTheme.of(context).info,
@@ -3777,6 +3799,7 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                                     useGoogleFonts: !FlutterFlowTheme.of(context).bodyMediumIsCustom,
                                                                                                   ),
                                                                                             ),
+                                                                                          ),
                                                                                           ),
                                                                                         ],
                                                                                       ),

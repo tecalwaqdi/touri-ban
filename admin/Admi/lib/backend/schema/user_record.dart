@@ -219,6 +219,19 @@ class UserRecord extends FirestoreRecord {
   String get transportCompanyText => _transportCompanyText ?? '';
   bool hasTransportCompanyText() => _transportCompanyText != null;
 
+  // Tour guide fields.
+  bool? _isTourGuide;
+  bool get isTourGuide => _isTourGuide ?? false;
+  bool hasIsTourGuide() => _isTourGuide != null;
+
+  String? _tourGuideStatus;
+  String get tourGuideStatus => _tourGuideStatus ?? 'none';
+  bool hasTourGuideStatus() => _tourGuideStatus != null;
+
+  String? _tourGuidePermitUrl;
+  String get tourGuidePermitUrl => _tourGuidePermitUrl ?? '';
+  bool hasTourGuidePermitUrl() => _tourGuidePermitUrl != null;
+
   // "Rev_dolh" field — country scope for app users / reps / support linkage.
   DocumentReference? _revDolh;
   DocumentReference? get revDolh => _revDolh;
@@ -278,6 +291,9 @@ class UserRecord extends FirestoreRecord {
     _transportCompany =
         snapshotData['transport_company'] as DocumentReference?;
     _transportCompanyText = snapshotData['transport_company_text'] as String?;
+    _isTourGuide = snapshotData['is_tour_guide'] as bool?;
+    _tourGuideStatus = snapshotData['tour_guide_status'] as String?;
+    _tourGuidePermitUrl = snapshotData['tour_guide_permit_url'] as String?;
     _revDolh = snapshotData['Rev_dolh'] as DocumentReference?;
   }
 

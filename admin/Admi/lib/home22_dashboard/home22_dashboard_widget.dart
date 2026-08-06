@@ -9,6 +9,7 @@ import '/components/profile_photo_image.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
+import '/l10n/nav_translations.dart';
 import 'package:flutter/material.dart';
 import 'home22_dashboard_model.dart';
 export 'home22_dashboard_model.dart';
@@ -49,9 +50,9 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
 
   String _greeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'صباح الخير';
-    if (hour < 17) return 'مساء الخير';
-    return 'مساء النور';
+    if (hour < 12) return uiTr(context, 'صباح الخير');
+    if (hour < 17) return uiTr(context, 'مساء الخير');
+    return uiTr(context, 'مساء النور');
   }
 
   Future<void> _onRefresh() async {
@@ -60,7 +61,7 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
 
   void _navigate(String routeName) {
     closeDrawerIfOpen(context);
-    context.pushNamed(routeName);
+    context.goNamed(routeName);
   }
 
   @override
@@ -73,13 +74,13 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
 
     final role = AdminRoleService.currentRole;
     final statsTitle = role == AdminRole.countryAgent
-        ? 'إحصائيات دولتك'
-        : 'إحصائيات المنصة';
+        ? uiTr(context, 'إحصائيات دولتك')
+        : uiTr(context, 'إحصائيات المنصة');
     final statsSubtitle = role == AdminRole.countryAgent
         ? (AdminRoleService.scopedCountryName.isNotEmpty
-            ? 'أرقام ${AdminRoleService.scopedCountryName} فقط'
-            : 'أرقام دولتك فقط')
-        : 'أرقام متزامنة مع صفحات الإدارة';
+            ? '${uiTr(context, 'أرقام')} ${AdminRoleService.scopedCountryName} ${uiTr(context, 'فقط')}'
+            : uiTr(context, 'أرقام دولتك فقط'))
+        : uiTr(context, 'أرقام متزامنة مع صفحات الإدارة');
 
     return GestureDetector(
       onTap: () {
@@ -118,7 +119,7 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
                   subtitle: statsSubtitle,
                   compact: true,
                   trailing: IconButton(
-                    tooltip: 'تحديث',
+                    tooltip: uiTr(context, 'تحديث'),
                     onPressed: _onRefresh,
                     icon: Icon(Icons.refresh_rounded, color: theme.primary),
                   ),
@@ -235,7 +236,7 @@ class _DashboardHeroBanner extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'لوحة تحكم أرى وطن',
+                        uiTr(context, 'لوحة تحكم أرى وطن'),
                         style: theme.bodySmall.override(
                           fontFamily: theme.bodySmallFamily,
                           color: Colors.white.withValues(alpha: 0.88),
@@ -276,7 +277,7 @@ class _DashboardHeroBanner extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'تحديث البيانات',
+                  tooltip: uiTr(context, 'تحديث البيانات'),
                   onPressed: onRefresh,
                   icon: Icon(
                     Icons.sync_rounded,
@@ -327,10 +328,22 @@ class _DashboardQuickActionsGrid extends StatelessWidget {
         colors: const [Color(0xFF5C6BC0), Color(0xFF3F51B5)],
       ),
       (
+        route: AdminFinanceHubWidget.routeName,
+        icon: Icons.account_balance_rounded,
+        label: navLabel(context, AdminFinanceHubWidget.routeName),
+        colors: const [Color(0xFF1F7372), Color(0xFF39D2C0)],
+      ),
+      (
         route: AdminProfitsWidget.routeName,
         icon: Icons.account_balance_wallet_rounded,
         label: l10n.getText('nn2n9yup'),
-        colors: const [Color(0xFF1F7372), Color(0xFF39D2C0)],
+        colors: const [Color(0xFF2A9D8A), Color(0xFF1F7372)],
+      ),
+      (
+        route: AdminTourGuidesWidget.routeName,
+        icon: Icons.tour_rounded,
+        label: navLabel(context, AdminTourGuidesWidget.routeName),
+        colors: const [Color(0xFF5C6BC0), Color(0xFF3949AB)],
       ),
       (
         route: AdminSuportWidget.routeName,

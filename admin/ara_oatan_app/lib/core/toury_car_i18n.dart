@@ -7,224 +7,238 @@ import '/core/toury_i18n_text.dart';
 /// Built-in vehicle labels when Firestore `names_i18n` is incomplete.
 const Map<String, Map<String, String>> kTouryVehicleNameCatalog = {
   'economy': {
-    'ar': 'اقتصادية',
+    'ar': 'سيارة اقتصادية',
     'en': 'Economy',
     'ru': 'Эконом',
     'ky': 'Эконом',
     'uz': 'Ekonom',
   },
   'compact': {
-    'ar': 'مدمجة',
+    'ar': 'سيارة اقتصادية',
     'en': 'Compact',
     'ru': 'Компакт',
     'ky': 'Компакт',
     'uz': 'Kompakt',
   },
   'sedan': {
-    'ar': 'سيدان',
+    'ar': 'سيارة اقتصادية',
     'en': 'Sedan',
     'ru': 'Седан',
     'ky': 'Седан',
     'uz': 'Sedan',
   },
   'sedan_standard': {
-    'ar': 'سيدان قياسية',
+    'ar': 'سيارة اقتصادية',
     'en': 'Standard Sedan',
     'ru': 'Стандартный седан',
     'ky': 'Стандарт седан',
     'uz': 'Standart sedan',
   },
   'comfort': {
-    'ar': 'مريحة',
+    'ar': 'سيارة اقتصادية',
     'en': 'Comfort',
     'ru': 'Комфорт',
     'ky': 'Комфорт',
     'uz': 'Komfort',
   },
   'sedan_business': {
-    'ar': 'سيدان أعمال',
+    'ar': 'سيارة فارهة',
     'en': 'Business Sedan',
     'ru': 'Бизнес седан',
     'ky': 'Бизнес седан',
     'uz': 'Biznes sedan',
   },
   'business': {
-    'ar': 'أعمال',
+    'ar': 'سيارة فارهة',
     'en': 'Business',
     'ru': 'Бизнес',
     'ky': 'Бизнес',
     'uz': 'Biznes',
   },
   'premium': {
-    'ar': 'ممتازة',
+    'ar': 'سيارة فارهة',
     'en': 'Premium',
     'ru': 'Премиум',
     'ky': 'Премиум',
     'uz': 'Premium',
   },
   'premium_sedan': {
-    'ar': 'سيدان فاخرة',
+    'ar': 'سيارة فارهة',
     'en': 'Premium Sedan',
     'ru': 'Премиум седан',
     'ky': 'Премиум седан',
     'uz': 'Premium sedan',
   },
   'luxury': {
-    'ar': 'فاخرة',
+    'ar': 'سيارة فارهة',
     'en': 'Luxury',
     'ru': 'Люкс',
     'ky': 'Люкс',
     'uz': 'Lyuks',
   },
   'suv': {
-    'ar': 'SUV عائلية',
+    'ar': 'سيارة عائلية',
     'en': 'Family SUV',
     'ru': 'Семейный SUV',
     'ky': 'Үй-бүлөлүк SUV',
     'uz': 'Oilaviy SUV',
   },
   'suv_compact': {
-    'ar': 'SUV مدمجة',
+    'ar': 'سيارة عائلية',
     'en': 'Compact SUV',
     'ru': 'Компактный SUV',
     'ky': 'Ыкчам SUV',
     'uz': 'Kompakt SUV',
   },
   'suv_standard': {
-    'ar': 'SUV قياسية',
+    'ar': 'سيارة عائلية',
     'en': 'SUV Standard',
     'ru': 'Стандартный SUV',
     'ky': 'Стандарт SUV',
     'uz': 'Standart SUV',
   },
   'suv_family': {
-    'ar': 'SUV عائلية',
+    'ar': 'سيارة عائلية',
     'en': 'Family SUV',
     'ru': 'Семейный SUV',
     'ky': 'Үй-бүлөлүк SUV',
     'uz': 'Oilaviy SUV',
   },
   'suv_large': {
-    'ar': 'SUV كبيرة',
+    'ar': 'سيارة دفع رباعي',
     'en': 'SUV Large',
     'ru': 'Большой SUV',
     'ky': 'Чоң SUV',
     'uz': 'Katta SUV',
   },
   'luxury_suv': {
-    'ar': 'SUV فاخرة',
+    'ar': 'سيارة فارهة',
     'en': 'Luxury SUV',
     'ru': 'Премиум SUV',
     'ky': 'Люкс SUV',
     'uz': 'Lyuks SUV',
   },
   'offroad_4x4': {
-    'ar': 'دفع رباعي',
+    'ar': 'سيارة دفع رباعي',
     'en': '4x4',
     'ru': 'Полный привод 4x4',
     'ky': '4x4',
     'uz': '4x4',
   },
   'pickup_4x4': {
-    'ar': 'بيك أب 4x4',
+    'ar': 'سيارة دفع رباعي',
     'en': '4x4 Pickup',
     'ru': 'Пикап 4x4',
     'ky': '4x4 пикап',
     'uz': '4x4 pikap',
   },
   'van': {
-    'ar': 'فان سياحي',
+    'ar': 'حافلة صغيرة عادية',
     'en': 'Tour Van',
     'ru': 'Туристический минивэн',
     'ky': 'Туристтик минивэн',
     'uz': 'Turistik miniven',
   },
   'tour_van': {
-    'ar': 'فان سياحي',
+    'ar': 'حافلة صغيرة عادية',
     'en': 'Tour Van',
     'ru': 'Туристический минивэн',
     'ky': 'Туристтик минивэн',
     'uz': 'Turistik miniven',
   },
   'minivan': {
-    'ar': 'ميني فان',
+    'ar': 'حافلة صغيرة عادية',
     'en': 'Minivan',
     'ru': 'Минивэн',
     'ky': 'Минивэн',
     'uz': 'Miniven',
   },
   'van_family': {
-    'ar': 'فان عائلي',
+    'ar': 'سيارة عائلية',
     'en': 'Family Van',
     'ru': 'Семейный минивэн',
     'ky': 'Үй-бүлөлүк минивэн',
     'uz': 'Oilaviy miniven',
   },
   'van_vip': {
-    'ar': 'فان VIP',
+    'ar': 'حافلة VIP فاخرة',
     'en': 'VIP Van',
     'ru': 'VIP минивэн',
     'ky': 'VIP минивэн',
     'uz': 'VIP miniven',
   },
   'bus': {
-    'ar': 'باص سياحي',
+    'ar': 'حافلة كبيرة تتسع لـ 49 راكبًا',
     'en': 'Tour Bus',
     'ru': 'Туристический автобус',
     'ky': 'Туристтик автобус',
     'uz': 'Turistik avtobus',
   },
   'coach_mini': {
-    'ar': 'ميني باص',
+    'ar': 'حافلة صغيرة عادية',
     'en': 'Minibus',
     'ru': 'Мини-автобус',
     'ky': 'Кичи автобус',
     'uz': 'Miniavtobus',
   },
   'coach_tour': {
-    'ar': 'باص سياحي',
+    'ar': 'حافلة كبيرة تتسع لـ 49 راكبًا',
     'en': 'Tour Coach',
     'ru': 'Туристический автобус',
     'ky': 'Туристтик автобус',
     'uz': 'Turistik avtobus',
   },
+  'coach_medium': {
+    'ar': 'حافلة متوسطة تتسع لـ 25 راكبًا',
+    'en': 'Medium Bus',
+    'ru': 'Средний автобус',
+    'ky': 'Орто автобус',
+    'uz': 'Ortacha avtobus',
+  },
+  'medium_bus': {
+    'ar': 'حافلة متوسطة تتسع لـ 25 راكبًا',
+    'en': 'Medium Bus',
+    'ru': 'Средний автобус',
+    'ky': 'Орто автобус',
+    'uz': 'Ortacha avtobus',
+  },
   'executive_shuttle': {
-    'ar': 'شاتل تنفيذي',
+    'ar': 'حافلة صغيرة عادية',
     'en': 'Executive Shuttle',
     'ru': 'Представительский шаттл',
     'ky': 'Аткаруучу шаттл',
     'uz': 'Ijro shattli',
   },
   'electric': {
-    'ar': 'كهربائية',
+    'ar': 'سيارة اقتصادية',
     'en': 'Electric',
     'ru': 'Электромобиль',
     'ky': 'Электромобиль',
     'uz': 'Elektromobil',
   },
   'hybrid': {
-    'ar': 'هجينة',
+    'ar': 'سيارة اقتصادية',
     'en': 'Hybrid',
     'ru': 'Гибрид',
     'ky': 'Гибрид',
     'uz': 'Gibrid',
   },
   'wheelchair': {
-    'ar': 'مجهزة لكرسي متحرك',
+    'ar': 'حافلة مخصصة لذوي الاحتياجات الخاصة',
     'en': 'Wheelchair Accessible',
     'ru': 'Для инвалидных колясок',
     'ky': 'Майыптар үчүн',
     'uz': 'Nogironlar aravachasi uchun',
   },
   'airport_transfer': {
-    'ar': 'نقل مطار',
+    'ar': 'سيارة اقتصادية',
     'en': 'Airport Transfer',
     'ru': 'Трансфер в аэропорт',
     'ky': 'Аэропорт трансфери',
     'uz': 'Aeroport transferi',
   },
   'tourist_vehicle': {
-    'ar': 'مركبة سياحية',
+    'ar': 'حافلة صغيرة عادية',
     'en': 'Tourist Vehicle',
     'ru': 'Туристический транспорт',
     'ky': 'Туристтик унаа',
@@ -312,13 +326,16 @@ String? _catalogKeyForCar(TypeCarRecord record) {
 }
 
 Map<String, String> _mergedCarNames(TypeCarRecord record) {
-  final merged = Map<String, String>.from(record.namesI18n);
+  final merged = <String, String>{};
   final catalogKey = _catalogKeyForCar(record);
+  // الكتالوج المحلي له الأولوية لأسماء المركبات المعتمدة في الواجهة.
   if (catalogKey != null) {
-    final catalog = kTouryVehicleNameCatalog[catalogKey]!;
-    for (final entry in catalog.entries) {
-      merged.putIfAbsent(entry.key, () => entry.value);
-    }
+    merged.addAll(kTouryVehicleNameCatalog[catalogKey]!);
+  }
+  for (final entry in record.namesI18n.entries) {
+    final value = entry.value.trim();
+    if (value.isEmpty) continue;
+    merged.putIfAbsent(entry.key, () => value);
   }
   return merged;
 }

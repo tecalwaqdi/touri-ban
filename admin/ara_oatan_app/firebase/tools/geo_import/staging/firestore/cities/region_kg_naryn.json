@@ -1,19 +1,32 @@
 {
   "__path": "cities/region_kg_naryn",
-  "__writtenAt": "2026-07-22T11:28:59.595Z",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
   "__target": "local-staging",
   "naim": "إقليم نارين",
   "names_i18n": {
     "ar": "إقليم نارين",
     "en": "Naryn Region",
     "ru": "Нарынская область",
-    "ky": "Нарын облусу",
-    "uz": "Norin viloyati"
+    "ky": "Нарын облусу"
   },
+  "osf": "إقليم نارين الجبلي على طريق الحرير، مع سونغ كول وتاش رباط.",
+  "osf_i18n": {
+    "ar": "إقليم نارين الجبلي على طريق الحرير، مع سونغ كول وتاش رباط.",
+    "en": "Mountainous Naryn on the Silk Road — Song-Kol and Tash Rabat.",
+    "ru": "Горный Нарын на Шёлковом пути: Сон-Куль и Таш-Рабат.",
+    "ky": "Жибек Жолундагы тоолуу Нарын — Соң-Көл жана Таш-Рабат."
+  },
+  "img": "https://flagcdn.com/w320/kg.png",
+  "icon": "https://flagcdn.com/w320/kg.png",
   "dolh": "countries/kyrgyzstan",
   "acctev": true,
+  "sorting": 4,
   "iso_code": "KG-N",
   "country_iso": "KG",
+  "geo_center": {
+    "latitude": 41.4287,
+    "longitude": 75.9911
+  },
   "geo_import_id": "region_kg_naryn",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "sa_kg_rebuild_2026"
 }

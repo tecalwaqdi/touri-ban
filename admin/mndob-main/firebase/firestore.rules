@@ -395,8 +395,8 @@ service cloud.firestore {
         && d.get('is_partner', prev.get('is_partner', false)) == prev.get('is_partner', false)
         && d.get('actev_mndob', prev.get('actev_mndob', false)) == prev.get('actev_mndob', false)
         && d.get('Rev_dloh_agent', prev.get('Rev_dloh_agent', null)) == prev.get('Rev_dloh_agent', null)
-        && d.get('partner_mkan', prev.get('partner_mkan', null)) == prev.get('partner_mkan', null)
-        && d.get('transport_company', prev.get('transport_company', null)) == prev.get('transport_company', null);
+        && d.get('partner_mkan', prev.get('partner_mkan', null)) == prev.get('partner_mkan', null);
+      // transport_company is settable by the driver during registration affiliation.
     }
 
     // Driver app self-registration: non-driver → pending driver (cannot self-activate).
@@ -419,7 +419,7 @@ service cloud.firestore {
         && d.get('is_partner', false) == false
         && !('Rev_dloh_agent' in d)
         && !('partner_mkan' in d)
-        && !('transport_company' in d)
+        // transport_company may be set during driver self-registration affiliation.
         // First claim OR refresh of an already-pending (inactive) driver profile.
         && (prev.get('ismndob', false) == false
             || prev.get('ismndob', false) == true);
@@ -448,7 +448,7 @@ service cloud.firestore {
         && d.get('is_partner', false) == false
         && d.get('Rev_dloh_agent', null) == prev.get('Rev_dloh_agent', null)
         && d.get('partner_mkan', null) == prev.get('partner_mkan', null)
-        && d.get('transport_company', null) == prev.get('transport_company', null)
+        // Affiliation may be chosen/cleared at self-activate time.
         && d.get('registration_status', '') in
           ['approved', 'pending_review', 'submitted', ''];
     }
@@ -571,7 +571,7 @@ service cloud.firestore {
           && !('isPartner' in request.resource.data)
           && !('Rev_dloh_agent' in request.resource.data)
           && !('partner_mkan' in request.resource.data)
-          && !('transport_company' in request.resource.data)
+          // transport_company allowed on self-create for company-affiliated drivers.
         )
         || panelCanProvisionUser()
       );
@@ -603,11 +603,8 @@ service cloud.firestore {
     }
 
     match /transport_company/{document} {
-      allow read: if request.auth != null && (
-        isSuperAdmin()
-        || isCountryAdmin()
-        || (isTransportManager() && resource.path == claimTransportCompanyPath())
-      );
+      // Signed-in drivers need catalog read during registration affiliation.
+      allow read: if request.auth != null;
       allow create: if isSuperAdmin() || isCountryAdmin();
       allow update, delete: if isSuperAdmin()
         || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dolh))

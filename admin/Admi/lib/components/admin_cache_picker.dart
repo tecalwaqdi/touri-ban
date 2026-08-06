@@ -94,7 +94,7 @@ class _AdminCacheRecordListState<T> extends State<AdminCacheRecordList<T>> {
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
           child: TextField(
             decoration: InputDecoration(
-              hintText: widget.searchHint,
+              hintText: uiTr(context, widget.searchHint),
               prefixIcon: const Icon(Icons.search_rounded, size: 22),
               isDense: true,
               border: OutlineInputBorder(
@@ -121,7 +121,7 @@ class _AdminCacheRecordListState<T> extends State<AdminCacheRecordList<T>> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'تعذر تحميل القائمة',
+                              uiTr(context, 'تعذر تحميل القائمة'),
                               textAlign: TextAlign.center,
                               style: theme.bodyMedium,
                             ),
@@ -140,7 +140,7 @@ class _AdminCacheRecordListState<T> extends State<AdminCacheRecordList<T>> {
                       child: Padding(
                         padding: const EdgeInsets.all(24),
                         child: Text(
-                          widget.emptyMessage,
+                          uiTr(context, widget.emptyMessage),
                           textAlign: TextAlign.center,
                           style: theme.bodyMedium,
                         ),

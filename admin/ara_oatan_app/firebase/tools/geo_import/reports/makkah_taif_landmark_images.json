@@ -1,0 +1,61 @@
+{
+  "at": "2026-08-04T09:59:49.953Z",
+  "mapped": [
+    {
+      "docId": "lm_sa_makkah_masjid-al-tanim",
+      "assetPath": "assets/images/landmarks/makkah_masjid_al_tanim.png",
+      "bytes": 41675
+    },
+    {
+      "docId": "lm_sa_makkah_makkah-mall",
+      "assetPath": "assets/images/landmarks/makkah_makkah_mall.png",
+      "bytes": 60115
+    },
+    {
+      "docId": "lm_sa_makkah_usaylah-inscriptions",
+      "assetPath": "assets/images/landmarks/makkah_usaylah_inscriptions.png",
+      "bytes": 272068
+    },
+    {
+      "docId": "lm_sa_taif_masjid-al-abbas",
+      "assetPath": "assets/images/landmarks/taif_masjid_al_abbas.png",
+      "bytes": 142129
+    },
+    {
+      "docId": "lm_sa_taif_masjid-al-kaw",
+      "assetPath": "assets/images/landmarks/taif_masjid_al_kaw.png",
+      "bytes": 181451
+    },
+    {
+      "docId": "lm_sa_taif_shubra-palace",
+      "assetPath": "assets/images/landmarks/taif_shubra_palace.png",
+      "bytes": 191646
+    },
+    {
+      "docId": "lm_sa_taif_historic-palace-museum",
+      "assetPath": "assets/images/landmarks/taif_historic_palace_museum.png",
+      "bytes": 59237
+    },
+    {
+      "docId": "lm_sa_taif_othaim-mall-taif",
+      "assetPath": "assets/images/landmarks/taif_othaim_mall.png",
+      "bytes": 68335
+    },
+    {
+      "docId": "lm_sa_taif_ar-ruddaf-park",
+      "assetPath": "assets/images/landmarks/taif_ar_ruddaf_park.png",
+      "bytes": 154654
+    },
+    {
+      "docId": "lm_sa_taif_hotel-loreef",
+      "assetPath": "assets/images/landmarks/taif_hotel_loreef.png",
+      "bytes": 95978
+    }
+  ],
+  "skipped": [
+    "IMG_6932 Quba Mosque (Madinah) — out of Makkah/Taif scope",
+    "IMG_6937 Historic Jeddah / Nassif House — Jeddah, not Makkah/Taif",
+    "IMG_6930 Miqat Qarn al-Manazil — no matching curated landmark",
+    "IMG_6943 Ji'ranah Mosque — no matching curated landmark (not Addas)"
+  ]
+}

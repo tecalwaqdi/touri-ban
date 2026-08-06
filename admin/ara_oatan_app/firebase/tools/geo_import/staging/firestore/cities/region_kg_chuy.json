@@ -1,19 +1,32 @@
 {
   "__path": "cities/region_kg_chuy",
-  "__writtenAt": "2026-07-22T11:28:59.558Z",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
   "__target": "local-staging",
   "naim": "إقليم تشوي",
   "names_i18n": {
     "ar": "إقليم تشوي",
     "en": "Chuy Region",
     "ru": "Чуйская область",
-    "ky": "Чүй облусу",
-    "uz": "Chuy viloyati"
+    "ky": "Чүй облусу"
   },
+  "osf": "إقليم تشوي حول بيشكيك، يضم منتزه ألا أرتشا وبرج بورانا التاريخي.",
+  "osf_i18n": {
+    "ar": "إقليم تشوي حول بيشكيك، يضم منتزه ألا أرتشا وبرج بورانا التاريخي.",
+    "en": "Chuy Region around Bishkek — Ala-Archa park and the Burana Tower.",
+    "ru": "Чуйская область у Бишкека: Ала-Арча и башня Бурана.",
+    "ky": "Бишкек айланасындагы Чүй облусу — Ала-Арча жана Бурана мунарасы."
+  },
+  "img": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Soviet_Il-28_bomber_monument_in_Tokmok_20080830.jpg",
+  "icon": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Soviet_Il-28_bomber_monument_in_Tokmok_20080830.jpg",
   "dolh": "countries/kyrgyzstan",
   "acctev": true,
+  "sorting": 2,
   "iso_code": "KG-C",
   "country_iso": "KG",
+  "geo_center": {
+    "latitude": 42.841,
+    "longitude": 75.301
+  },
   "geo_import_id": "region_kg_chuy",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "sa_kg_rebuild_2026"
 }

@@ -1,0 +1,56 @@
+{
+  "__path": "mkan/lm_sa_jeddah_red-sea-mall",
+  "__writtenAt": "2026-08-05T08:43:31.528Z",
+  "naim": "رد سي مول",
+  "osf": "أحد أكبر مراكز التسوق في جدة على طريق الكورنيش الشمالي.",
+  "names_i18n": {
+    "ar": "رد سي مول",
+    "en": "Red Sea Mall",
+    "ru": "Red Sea Mall",
+    "ky": "Red Sea Mall"
+  },
+  "osf_i18n": {
+    "ar": "أحد أكبر مراكز التسوق في جدة على طريق الكورنيش الشمالي.",
+    "en": "One of Jeddah’s largest shopping malls on the northern corniche corridor.",
+    "ru": "Один из крупнейших ТЦ Джидды у северного корниша.",
+    "ky": "Жидданын түндүк набережнаясындагы эң чоң соода борборлорунун бири."
+  },
+  "address": "طريق الملك عبدالعزيز، الشاطئ، جدة، المملكة العربية السعودية",
+  "address_i18n": {
+    "ar": "طريق الملك عبدالعزيز، الشاطئ، جدة، المملكة العربية السعودية",
+    "en": "King Abdulaziz Road, Al-Shati, Jeddah, Saudi Arabia",
+    "ru": "Дорога короля Абдул-Азиза, Аш-Шати, Джидда, Саудовская Аравия",
+    "ky": "Король Абдулазиз жолу, Аш-Шати, Жидда, Сауд Арабиясы"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 21.6277503,
+    "longitude": 39.1113299
+  },
+  "img1": "assets/images/landmarks/jeddah_red_sea_mall.png",
+  "img2": "",
+  "img3": "",
+  "images_license_verified": true,
+  "img_source": "user_photo_IMG_6962",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.8,
+  "add_saat": 2,
+  "id_cit": "cities/region_sa_jeddah",
+  "id_vill": "villages/city_sa_jeddah",
+  "Rev_dolh": "countries/saudi_arabia",
+  "country_iso": "SA",
+  "verification_status": "verified",
+  "verification_confidence": 0.95,
+  "geo_import_id": "lm_sa_jeddah_red-sea-mall",
+  "geo_import_slug": "red-sea-mall",
+  "geo_import_source": "sa_five_provinces_2026",
+  "img1_firebase": "data-url"
+}

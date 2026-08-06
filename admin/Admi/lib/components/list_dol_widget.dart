@@ -110,7 +110,7 @@ class _ListDolWidgetState extends State<ListDolWidget> {
                       if (snapshot.hasError) {
                         return Center(
                           child: Text(
-                            'تعذر تحميل الدول',
+                            uiTr(context, 'تعذر تحميل الدول'),
                             style: FlutterFlowTheme.of(context).bodyMedium,
                           ),
                         );

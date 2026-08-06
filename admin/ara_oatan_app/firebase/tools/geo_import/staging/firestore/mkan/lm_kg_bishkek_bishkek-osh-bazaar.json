@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_bishkek_bishkek-osh-bazaar",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "سوق أوش",
+  "osf": "سوق أوش — معلم في بيشكيك.",
+  "names_i18n": {
+    "ar": "سوق أوش",
+    "en": "Osh Bazaar",
+    "ru": "Ошский базар",
+    "ky": "Ош базары"
+  },
+  "osf_i18n": {
+    "ar": "سوق أوش — معلم في بيشكيك.",
+    "en": "Osh Bazaar — landmark in Bishkek.",
+    "ru": "Ошский базар — достопримечательность в регионе Бишкек.",
+    "ky": "Ош базары — Бишкек аймагындагы жай."
+  },
+  "address": "سوق أوش، بيشكيك، بيشكيك، قيرغيزستان",
+  "address_i18n": {
+    "ar": "سوق أوش، بيشكيك، بيشكيك، قيرغيزستان",
+    "en": "Osh Bazaar, Bishkek, Bishkek, Kyrgyzstan",
+    "ru": "Ошский базар, Бишкек, Бишкек, Кыргызстан",
+    "ky": "Ош базары, Бишкек, Бишкек, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 42.874,
+    "longitude": 74.5696
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Jayma_Bazaar%2C_Osh.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC0",
+  "img_attribution": "Bgag",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أسواق",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_bishkek",
+  "id_vill": "villages/city_kg_bishkek",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_bishkek_bishkek-osh-bazaar",
+  "geo_import_slug": "bishkek-osh-bazaar",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

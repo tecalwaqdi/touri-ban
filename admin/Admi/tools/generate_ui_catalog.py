@@ -6,6 +6,8 @@ import pathlib
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 STRINGS_FILE = ROOT / 'tools' / 'arabic_ui_strings.txt'
 EN_MAP_FILE = ROOT / 'tools' / 'ui_en_map.json'
+RU_MAP_FILE = ROOT / 'tools' / 'ui_ru_map.json'
+KY_MAP_FILE = ROOT / 'tools' / 'ui_ky_map.json'
 OUT = ROOT / 'lib' / 'l10n' / 'ui_catalog.dart'
 
 
@@ -20,6 +22,8 @@ def main():
         if l.strip()
     ]
     en_map = json.loads(EN_MAP_FILE.read_text(encoding='utf-8'))
+    ru_map = json.loads(RU_MAP_FILE.read_text(encoding='utf-8')) if RU_MAP_FILE.exists() else {}
+    ky_map = json.loads(KY_MAP_FILE.read_text(encoding='utf-8')) if KY_MAP_FILE.exists() else {}
 
     catalog = {}
     lookup = {}
@@ -27,13 +31,16 @@ def main():
         key = slug(ar)
         en = en_map.get(ar, ar).replace("'", "\\'")
         esc_ar = ar.replace("'", "\\'")
+        ru = ru_map.get(ar, en).replace("'", "\\'")
+        ky = ky_map.get(ar, ru if ru else en).replace("'", "\\'")
         catalog[key] = {
             'en': en,
             'ar': esc_ar,
             'zh_Hans': en,
             'tr': en,
             'ur': en,
-            'ru': en,
+            'ru': ru,
+            'ky': ky,
             'az': en,
             'ka': en,
         }

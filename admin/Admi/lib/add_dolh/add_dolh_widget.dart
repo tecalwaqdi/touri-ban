@@ -87,7 +87,7 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
             SnackBar(
               content: Text(
                 uiTr(context,
-                    'تعذر تحميل خريطة الدولة. أدخل رمز ISO الصحيح ثم حاول مرة أخرى.'),
+                    uiTr(context, 'تعذر تحميل خريطة الدولة. أدخل رمز ISO الصحيح ثم حاول مرة أخرى.')),
               ),
             ),
           );
@@ -213,7 +213,7 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
                   imageUrl: _model.uploadedFileUrl_uploadDataX8mc,
                   localBytes: _model.uploadedLocalFile_uploadDataX8mc.bytes,
                   isUploading: _model.isDataUploading_uploadDataX8mc,
-                  hint: 'اضغط لاختيار صورة الدولة',
+                  hint: uiTr(context, 'اضغط لاختيار صورة الدولة'),
                   onPick: _pickCountryImage,
                 ),
               ],

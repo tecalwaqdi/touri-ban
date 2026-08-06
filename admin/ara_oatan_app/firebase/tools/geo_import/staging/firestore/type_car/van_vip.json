@@ -1,21 +1,25 @@
 {
   "__path": "type_car/van_vip",
-  "__writtenAt": "2026-07-22T11:29:02.682Z",
+  "__writtenAt": "2026-08-05T11:10:56.044Z",
   "__target": "local-staging",
-  "naim": "فان VIP",
+  "naim": "حافلة VIP فاخرة",
   "names_i18n": {
-    "ar": "فان VIP",
-    "en": "VIP Van",
+    "ar": "حافلة VIP فاخرة",
+    "en": "VIP Luxury Bus",
     "ru": "VIP минивэн",
     "ky": "VIP минивэн",
     "uz": "VIP miniven"
   },
   "codeCar": "van_vip",
-  "sr": 450,
+  "sr": 300,
   "agl_saat": 5,
   "actev": true,
   "ishafelh": false,
   "not": "VIP Van",
   "geo_import_id": "vehcat_van_vip",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "touri_geo_import",
+  "img": "assets/images/vehicles/vip_bus.jpg",
+  "__note": "Production img field was updated to embedded JPEG data-url via upload_vehicle_images_to_firebase.js",
+  "sort_order": 9,
+  "num_trteb": 9
 }

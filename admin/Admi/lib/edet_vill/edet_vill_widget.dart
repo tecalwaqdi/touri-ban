@@ -257,7 +257,7 @@ class _EdetVillWidgetState extends State<EdetVillWidget> {
                     imageUrl: _model.uploadedFileUrl_uploadDataWt5,
                     localBytes: _model.uploadedLocalFile_uploadDataWt5.bytes,
                     isUploading: _model.isDataUploading_uploadDataWt5,
-                    hint: 'اختر صورة المدينة من المعرض أو الكاميرا',
+                    hint: uiTr(context, 'اختر صورة المدينة من المعرض أو الكاميرا'),
                     onPick: _pickCityImage,
                   ),
                 ],
@@ -291,8 +291,8 @@ class _EdetVillWidgetState extends State<EdetVillWidget> {
                     label: uiTr(context, 'المنطقة'),
                     value: regionLabel,
                     placeholder: countryLabel.isEmpty
-                        ? 'اختر الدولة أولاً'
-                        : 'اختر المنطقة',
+                        ? uiTr(context, 'اختر الدولة أولاً')
+                        : uiTr(context, 'اختر المنطقة'),
                     onTap: () async {
                       if (countryLabel.isEmpty &&
                           FFAppState().RevDolh == null) {
@@ -359,8 +359,7 @@ class _EdetVillWidgetState extends State<EdetVillWidget> {
                     : () => _delete(record),
                 icon: const Icon(Icons.delete_outline_rounded,
                     color: Colors.red),
-                label: const Text(
-                  'حذف المدينة',
+                label: Text(uiTr(context, 'حذف المدينة'),
                   style: TextStyle(color: Colors.red),
                 ),
               ),

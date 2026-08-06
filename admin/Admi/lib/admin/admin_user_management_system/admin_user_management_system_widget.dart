@@ -63,9 +63,9 @@ class _AdminUserManagementSystemWidgetState
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text(activate ? 'تفعيل المستخدم' : 'إيقاف المستخدم'),
+            title: Text(activate ? uiTr(context, 'تفعيل المستخدم') : uiTr(context, 'إيقاف المستخدم')),
             content: Text(
-              'هل تريد ${activate ? 'تفعيل' : 'إيقاف'} "${user.displayName}"؟',
+              '${uiTr(context, 'هل تريد')} ${activate ? uiTr(context, 'تفعيل') : uiTr(context, 'إيقاف')} "${user.displayName}"؟',
             ),
             actions: [
               TextButton(
@@ -97,7 +97,7 @@ class _AdminUserManagementSystemWidgetState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            activate ? 'تم تفعيل المستخدم' : 'تم إيقاف المستخدم',
+            activate ? uiTr(context, 'تم تفعيل المستخدم') : uiTr(context, 'تم إيقاف المستخدم'),
           ),
         ),
       );
@@ -257,8 +257,8 @@ class _AdminUserManagementSystemWidgetState
                           Padding(
                             padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                             child: Text(
-                              'العدد: ${users.length}'
-                              '${users.length != allUsers.length ? ' من ${allUsers.length}' : ''}'
+                              '${uiTr(context, 'العدد')}: ${users.length}'
+                              '${users.length != allUsers.length ? ' ${uiTr(context, 'من')} ${allUsers.length}' : ''}'
                               '${listState.hasMore ? '+' : ''}',
                               style: theme.labelLarge.override(
                                 fontFamily: theme.labelLargeFamily,
@@ -272,8 +272,8 @@ class _AdminUserManagementSystemWidgetState
                             padding: const EdgeInsets.symmetric(vertical: 32),
                             child: Text(
                               _searchQuery.isEmpty
-                                  ? 'لا يوجد مستخدمون'
-                                  : 'لا توجد نتائج للبحث',
+                                  ? uiTr(context, 'لا يوجد مستخدمون')
+                                  : uiTr(context, 'لا توجد نتائج للبحث'),
                               textAlign: TextAlign.center,
                               style: theme.titleMedium,
                             ),
@@ -452,7 +452,7 @@ class _UserRow extends StatelessWidget {
         Expanded(
           flex: 2,
           child: Text(
-            active ? 'مفعّل' : 'موقوف',
+            active ? uiTr(context, 'مفعّل') : uiTr(context, 'موقوف'),
             style: theme.labelMedium.override(
               fontFamily: theme.labelMediumFamily,
               color: active ? theme.success : theme.error,

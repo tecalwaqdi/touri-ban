@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_talas_talas-besh-tash",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "منتزه بيش تاش",
+  "osf": "منتزه بيش تاش — معلم في إقليم تالاس.",
+  "names_i18n": {
+    "ar": "منتزه بيش تاش",
+    "en": "Besh-Tash National Park",
+    "ru": "Нацпарк Беш-Таш",
+    "ky": "Беш-Таш"
+  },
+  "osf_i18n": {
+    "ar": "منتزه بيش تاش — معلم في إقليم تالاس.",
+    "en": "Besh-Tash National Park — landmark in Talas Region.",
+    "ru": "Нацпарк Беш-Таш — достопримечательность в регионе Таласская область.",
+    "ky": "Беш-Таш — Талас облусу аймагындагы жай."
+  },
+  "address": "منتزه بيش تاش، تالاس، إقليم تالاس، قيرغيزستان",
+  "address_i18n": {
+    "ar": "منتزه بيش تاش، تالاس، إقليم تالاس، قيرغيزستان",
+    "en": "Besh-Tash National Park, Talas, Talas Region, Kyrgyzstan",
+    "ru": "Нацпарк Беш-Таш, Талас, Таласская область, Кыргызстан",
+    "ky": "Беш-Таш, Талас, Талас облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 42.28,
+    "longitude": 72.33
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 2,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_talas",
+  "id_vill": "villages/city_kg_talas",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_talas_talas-besh-tash",
+  "geo_import_slug": "talas-besh-tash",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

@@ -1,0 +1,62 @@
+{
+  "at": "2026-08-05T09:35:24.205Z",
+  "apply": true,
+  "mapped": [
+    {
+      "id": "lm_sa_riyadh_faisaliyah-tower",
+      "ar": "برج الفيصلية",
+      "source": "IMG_6971",
+      "asset": "assets/images/landmarks/riyadh_faisaliyah.png",
+      "compressedBytes": 231081,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_kkia",
+      "ar": "مطار الملك خالد الدولي",
+      "source": "IMG_6976",
+      "asset": "assets/images/landmarks/riyadh_kkia.png",
+      "compressedBytes": 371398,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_kingdom-centre",
+      "ar": "برج المملكة",
+      "source": "IMG_6973",
+      "asset": "assets/images/landmarks/riyadh_kingdom_centre.png",
+      "compressedBytes": 252552,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_ibn-qasim-souq",
+      "ar": "سوق ابن قاسم",
+      "source": "IMG_6974",
+      "asset": "assets/images/landmarks/riyadh_ibn_qasim_souq.png",
+      "compressedBytes": 322776,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_souq-al-zal",
+      "ar": "سوق الزل التاريخي",
+      "source": "IMG_6975",
+      "asset": "assets/images/landmarks/riyadh_souq_al_zal.png",
+      "compressedBytes": 320492,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_al-batha",
+      "ar": "البطحاء",
+      "source": "IMG_6970",
+      "asset": "assets/images/landmarks/riyadh_al_batha.png",
+      "compressedBytes": 341218,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_king-fahd-stadium",
+      "ar": "استاد الملك فهد الدولي",
+      "source": "IMG_6969",
+      "asset": "assets/images/landmarks/riyadh_king_fahd_stadium.png",
+      "compressedBytes": 312779,
+      "status": "patched"
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '/l10n/admin_translations.dart';
+import '/l10n/enterprise_translations.dart';
 import '/l10n/nav_translations.dart';
 import '/l10n/ui_catalog.dart';
 
@@ -78,6 +79,7 @@ class FFLocalizations {
   String getText(String key) {
     final map = kTranslationsMap[key] ??
         kAdminTranslations[key] ??
+        kEnterpriseTranslations[key] ??
         kNavTranslations[key] ??
         kUiCatalog[key] ??
         {};

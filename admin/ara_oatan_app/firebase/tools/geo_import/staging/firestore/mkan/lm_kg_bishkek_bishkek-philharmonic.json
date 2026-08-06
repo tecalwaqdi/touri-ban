@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_bishkek_bishkek-philharmonic",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "قاعة الفيلهارمونيك",
+  "osf": "قاعة الفيلهارمونيك — معلم في بيشكيك.",
+  "names_i18n": {
+    "ar": "قاعة الفيلهارمونيك",
+    "en": "Toktogul Philharmonic Hall",
+    "ru": "Филармония Токтогула",
+    "ky": "Токтогул атындагы филармония"
+  },
+  "osf_i18n": {
+    "ar": "قاعة الفيلهارمونيك — معلم في بيشكيك.",
+    "en": "Toktogul Philharmonic Hall — landmark in Bishkek.",
+    "ru": "Филармония Токтогула — достопримечательность в регионе Бишкек.",
+    "ky": "Токтогул атындагы филармония — Бишкек аймагындагы жай."
+  },
+  "address": "قاعة الفيلهارمونيك، بيشكيك، بيشكيك، قيرغيزستان",
+  "address_i18n": {
+    "ar": "قاعة الفيلهارمونيك، بيشكيك، بيشكيك، قيرغيزستان",
+    "en": "Toktogul Philharmonic Hall, Bishkek, Bishkek, Kyrgyzstan",
+    "ru": "Филармония Токтогула, Бишкек, Бишкек, Кыргызстан",
+    "ky": "Токтогул атындагы филармония, Бишкек, Бишкек, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 42.8785,
+    "longitude": 74.6065
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_bishkek",
+  "id_vill": "villages/city_kg_bishkek",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_bishkek_bishkek-philharmonic",
+  "geo_import_slug": "bishkek-philharmonic",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

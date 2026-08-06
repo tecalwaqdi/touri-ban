@@ -102,7 +102,7 @@ class _AdminAgentWidgetState extends State<AdminAgentWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      AdminCrudFeedback.error(context, 'تعذر حذف الوكيل: $e');
+      AdminCrudFeedback.error(context, '${uiTr(context, 'تعذر حذف الوكيل')}: $e');
     }
   }
 
@@ -223,8 +223,8 @@ class _AdminAgentWidgetState extends State<AdminAgentWidget> {
                           const SizedBox(height: 12),
                           Text(
                             _searchQuery.isEmpty
-                                ? 'لا يوجد وكلاء مسجلون'
-                                : 'لا توجد نتائج للبحث',
+                                ? uiTr(context, 'لا يوجد وكلاء مسجلون')
+                                : uiTr(context, 'لا توجد نتائج للبحث'),
                             style: theme.titleMedium,
                           ),
                         ],
@@ -240,8 +240,8 @@ class _AdminAgentWidgetState extends State<AdminAgentWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
                           child: Text(
-                            'العدد: ${agents.length}'
-                            '${agents.length != allAgents.length ? ' من ${allAgents.length}' : ''}'
+                            '${uiTr(context, 'العدد')}: ${agents.length}'
+                            '${agents.length != allAgents.length ? ' ${uiTr(context, 'من')} ${allAgents.length}' : ''}'
                             '${listState.hasMore ? '+' : ''}',
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,

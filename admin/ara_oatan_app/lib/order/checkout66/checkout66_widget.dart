@@ -389,7 +389,8 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Column(
+                        Expanded(
+                          child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -399,6 +400,8 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                 FFLocalizations.of(context).getText(
                                   'mq4294hr' /* YOU ARE BROWSING NOW */,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: FlutterFlowTheme.of(context)
                                     .bodyMedium
                                     .override(
@@ -415,6 +418,8 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                             ),
                             Text(
                               FFAppState().naimdolh,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: FlutterFlowTheme.of(context)
                                   .labelSmall
                                   .override(
@@ -470,6 +475,7 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                           ]
                               .divide(const SizedBox(height: 4.0))
                               .around(const SizedBox(height: 4.0)),
+                        ),
                         ),
                         Align(
                           alignment: const AlignmentDirectional(0.0, 0.0),
@@ -982,29 +988,32 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                             .secondaryBackground,
                                         size: 18.0,
                                       ),
-                                      Text(
-                                        FFLocalizations.of(context)
-                                            .getText('2n28fqm2'),
-                                        textAlign: TextAlign.center,
-                                        overflow:
-                                            TextOverflow.ellipsis, // ✅ Add ...
-                                        softWrap: true, // ✅ Allow wrapping
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMediumFamily,
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryBackground,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(context)
-                                                      .bodyMediumIsCustom,
-                                              fontSize: 9.0,
-                                            ),
-                                      )
-                                    ].divide(const SizedBox(width: 0.0)),
+                                      Flexible(
+                                        child: Text(
+                                          FFLocalizations.of(context)
+                                              .getText('2n28fqm2'),
+                                          textAlign: TextAlign.center,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: true,
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyMedium
+                                              .override(
+                                                fontFamily:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMediumFamily,
+                                                color: FlutterFlowTheme.of(
+                                                        context)
+                                                    .secondaryBackground,
+                                                useGoogleFonts:
+                                                    !FlutterFlowTheme.of(
+                                                            context)
+                                                        .bodyMediumIsCustom,
+                                                fontSize: 9.0,
+                                              ),
+                                        ),
+                                      ),
+                                    ].divide(const SizedBox(width: 4.0)),
                                   ),
                                 ),
                                 Row(
@@ -1096,11 +1105,14 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                     Row(
                                       children: [
                                         const Icon(Icons.route, size: 8),
-                                        //   const SizedBox(width: 6),
-                                        Text(
-                                          _formatTripDistance(),
-                                          style: FlutterFlowTheme.of(context)
-                                              .headlineSmall,
+                                        Flexible(
+                                          child: Text(
+                                            _formatTripDistance(),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: FlutterFlowTheme.of(context)
+                                                .headlineSmall,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -1109,10 +1121,14 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                       children: [
                                         const Icon(Icons.schedule, size: 18),
                                         const SizedBox(width: 6),
-                                        Text(
-                                          _formatTripTime(),
-                                          style: FlutterFlowTheme.of(context)
-                                              .headlineSmall,
+                                        Flexible(
+                                          child: Text(
+                                            _formatTripTime(),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: FlutterFlowTheme.of(context)
+                                                .headlineSmall,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -1790,11 +1806,14 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
+                                Expanded(
+                                  child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'checkout_base_booking_duration'.tr(),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
                                       style: FlutterFlowTheme.of(context)
                                           .bodySmall
                                           .override(
@@ -1814,6 +1833,8 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                       NumberFormat.decimalPattern(
                                         context.locale.toString(),
                                       ).format(FFAppState().saatcar),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                       style: FlutterFlowTheme.of(context)
                                           .bodyLarge
                                           .override(
@@ -1832,16 +1853,20 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                     ),
                                   ],
                                 ),
-                                Column(
+                                ),
+                                Flexible(
+                                  child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Padding(
                                       padding:
                                           const EdgeInsetsDirectional.fromSTEB(
-                                              22.0, 0.0, 22.0, 0.0),
+                                              8.0, 0.0, 8.0, 0.0),
                                       child: Text(
                                         'checkout_extra_booking_duration'.tr(),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                         style: FlutterFlowTheme.of(context)
                                             .bodySmall
                                             .override(
@@ -1955,6 +1980,7 @@ stepSize: 1,
                                       ].divide(const SizedBox(width: 8.0)),
                                     ),
                                   ],
+                                ),
                                 ),
                               ].divide(const SizedBox(width: 12.0)),
                             ),
@@ -2114,7 +2140,8 @@ stepSize: 1,
                     children: [
                       Expanded(
                         child: Container(
-                          height: 77.84,
+                          constraints: const BoxConstraints(minHeight: 64),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context).primary,
                             borderRadius: const BorderRadius.only(
@@ -2123,26 +2150,22 @@ stepSize: 1,
                             ),
                           ),
                           child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const SizedBox(width: 12),
-                              Padding(
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 33.0, 0.0, 0.0),
-                                child: Icon(
+                              Icon(
                                   Icons.drive_eta_sharp,
                                   color: FlutterFlowTheme.of(context)
                                       .secondaryBackground,
                                   size: 22.0,
                                 ),
-                              ),
                               const SizedBox(width: 8),
                               if (FFAppState().addcart <= 0)
                                 Expanded(
                                   child: Padding(
                                     padding:
                                         const EdgeInsetsDirectional.fromSTEB(
-                                            0.0, 11.0, 18.0, 0.0),
+                                            0.0, 0.0, 18.0, 0.0),
                                     child: Text(
                                       FFLocalizations.of(context)
                                           .getText('un9qx6mz'),
@@ -2741,7 +2764,7 @@ stepSize: 1,
                                     size: 22.0,
                                   ),
                                   options: FFButtonOptions(
-                                    height: 25.3,
+                                    height: 44.0,
                                     padding:
                                         const EdgeInsetsDirectional.fromSTEB(
                                             24.0, 0.0, 24.0, 0.0),
@@ -2973,7 +2996,7 @@ stepSize: 1,
                                     size: 22.0,
                                   ),
                                   options: FFButtonOptions(
-                                    height: 25.3,
+                                    height: 44.0,
                                     padding:
                                         const EdgeInsetsDirectional.fromSTEB(
                                             24.0, 0.0, 24.0, 0.0),

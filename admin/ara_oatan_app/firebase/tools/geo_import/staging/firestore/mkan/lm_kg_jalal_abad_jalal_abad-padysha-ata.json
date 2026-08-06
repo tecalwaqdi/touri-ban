@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_jalal_abad_jalal_abad-padysha-ata",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "محمية باديشا آتا",
+  "osf": "محمية باديشا آتا — معلم في إقليم جلال آباد.",
+  "names_i18n": {
+    "ar": "محمية باديشا آتا",
+    "en": "Padysha-Ata Reserve",
+    "ru": "Заповедник Падыша-Ата",
+    "ky": "Падыша-Ата"
+  },
+  "osf_i18n": {
+    "ar": "محمية باديشا آتا — معلم في إقليم جلال آباد.",
+    "en": "Padysha-Ata Reserve — landmark in Jalal-Abad Region.",
+    "ru": "Заповедник Падыша-Ата — достопримечательность в регионе Джалал-Абадская область.",
+    "ky": "Падыша-Ата — Жалал-Абад облусу аймагындагы жай."
+  },
+  "address": "محمية باديشا آتا، جلال آباد، إقليم جلال آباد، قيرغيزستان",
+  "address_i18n": {
+    "ar": "محمية باديشا آتا، جلال آباد، إقليم جلال آباد، قيرغيزستان",
+    "en": "Padysha-Ata Reserve, Jalal-Abad, Jalal-Abad Region, Kyrgyzstan",
+    "ru": "Заповедник Падыша-Ата, Джалал-Абад, Джалал-Абадская область, Кыргызстан",
+    "ky": "Падыша-Ата, Жалал-Абад, Жалал-Абад облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 41.61,
+    "longitude": 71.75
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_jalal_abad",
+  "id_vill": "villages/city_kg_jalal_abad",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_jalal_abad_jalal_abad-padysha-ata",
+  "geo_import_slug": "jalal_abad-padysha-ata",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

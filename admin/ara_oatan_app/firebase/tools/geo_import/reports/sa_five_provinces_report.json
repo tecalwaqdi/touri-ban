@@ -1,0 +1,15 @@
+{
+  "at": "2026-08-04T08:33:38.372Z",
+  "counts": {
+    "countries": 1,
+    "cities": 5,
+    "villages": 5,
+    "mkan": 48
+  },
+  "stats": {
+    "deleted": 83,
+    "upserted": 59,
+    "deleteFailed": 0
+  },
+  "expected": 48
+}

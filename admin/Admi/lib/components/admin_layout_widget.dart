@@ -31,9 +31,16 @@ class AdminLayoutWidget extends StatelessWidget {
     );
   }
 
+  double _sidebarWidth(BuildContext context) {
+    final w = MediaQuery.sizeOf(context).width;
+    if (w >= 1400) return 280;
+    if (w >= 1100) return 270;
+    return 252;
+  }
+
   Widget _buildSidebar(BuildContext context) {
     return Container(
-      width: 270.0,
+      width: _sidebarWidth(context),
       height: double.infinity,
       decoration: AdminUi.sidebarGradient(),
       child: _buildMenu(context),
@@ -44,10 +51,12 @@ class AdminLayoutWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final inlineSidebar = showAdminInlineSidebar(context);
+    final width = MediaQuery.sizeOf(context).width;
     final pageTitle = title ??
         FFLocalizations.of(context).getText(
           'hrrt489c' /* Admin */,
         );
+    final contentMax = width >= 1600 ? 1520.0 : 1370.0;
 
     return Scaffold(
       key: scaffoldKey,
@@ -77,7 +86,7 @@ class AdminLayoutWidget extends StatelessWidget {
       drawer: inlineSidebar
           ? null
           : Drawer(
-              width: 270.0,
+              width: _sidebarWidth(context),
               elevation: 8,
               child: _buildSidebar(context),
             ),
@@ -96,7 +105,7 @@ class AdminLayoutWidget extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1370),
+                    constraints: BoxConstraints(maxWidth: contentMax),
                     child: RepaintBoundary(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -1,6 +1,6 @@
 {
   "__path": "countries/kyrgyzstan",
-  "__writtenAt": "2026-07-22T11:28:59.433Z",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
   "__target": "local-staging",
   "naim": "قيرغيزستان",
   "naimEnglesh": "Kyrgyzstan",
@@ -8,9 +8,17 @@
     "ar": "قيرغيزستان",
     "en": "Kyrgyzstan",
     "ru": "Кыргызстан",
-    "ky": "Кыргызстан",
-    "uz": "Qirgʻiziston"
+    "ky": "Кыргызстан"
   },
+  "osf": "قيرغيزستان — جبال تيان شان وبحيرة إيسيك كول والتراث البدوي.",
+  "osf_i18n": {
+    "ar": "قيرغيزستان — جبال تيان شان وبحيرة إيسيك كول والتراث البدوي.",
+    "en": "Kyrgyzstan — Tian Shan mountains, Issyk-Kul, and nomadic heritage.",
+    "ru": "Кыргызстан — Тянь-Шань, Иссык-Куль и кочевое наследие.",
+    "ky": "Кыргызстан — Тянь-Шань, Ысык-Көл жана көчмөн мурасы."
+  },
+  "img": "https://flagcdn.com/w320/kg.png",
+  "hederImg": "https://flagcdn.com/w1280/kg.png",
   "iso_code": "KG",
   "iso3": "KGZ",
   "CurrencySymbol": "с",
@@ -19,6 +27,19 @@
   "timezone": "Asia/Bishkek",
   "acctev": true,
   "saudi": false,
+  "num_trteb": 2,
+  "geo_center": {
+    "lat": 41.2044,
+    "lng": 74.7661
+  },
+  "bounds_sw": {
+    "lat": 39.1,
+    "lng": 69.2
+  },
+  "bounds_ne": {
+    "lat": 43.3,
+    "lng": 80.3
+  },
   "geo_import_id": "country_kg",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "sa_kg_rebuild_2026"
 }

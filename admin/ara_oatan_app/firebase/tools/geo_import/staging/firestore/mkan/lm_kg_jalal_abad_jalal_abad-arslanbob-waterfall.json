@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_jalal_abad_jalal_abad-arslanbob-waterfall",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "شلال أرسلانبوب",
+  "osf": "شلال أرسلانبوب — معلم في إقليم جلال آباد.",
+  "names_i18n": {
+    "ar": "شلال أرسلانبوب",
+    "en": "Arslanbob Waterfall",
+    "ru": "Водопад Арсланбоб",
+    "ky": "Арстанбап шаркыратмасы"
+  },
+  "osf_i18n": {
+    "ar": "شلال أرسلانبوب — معلم في إقليم جلال آباد.",
+    "en": "Arslanbob Waterfall — landmark in Jalal-Abad Region.",
+    "ru": "Водопад Арсланбоб — достопримечательность в регионе Джалал-Абадская область.",
+    "ky": "Арстанбап шаркыратмасы — Жалал-Абад облусу аймагындагы жай."
+  },
+  "address": "شلال أرسلانبوب، جلال آباد، إقليم جلال آباد، قيرغيزستان",
+  "address_i18n": {
+    "ar": "شلال أرسلانبوب، جلال آباد، إقليم جلال آباد، قيرغيزستان",
+    "en": "Arslanbob Waterfall, Jalal-Abad, Jalal-Abad Region, Kyrgyzstan",
+    "ru": "Водопад Арсланбоб, Джалал-Абад, Джалал-Абадская область, Кыргызстан",
+    "ky": "Арстанбап шаркыратмасы, Жалал-Абад, Жалал-Абад облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 41.333,
+    "longitude": 72.949
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_jalal_abad",
+  "id_vill": "villages/city_kg_jalal_abad",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_jalal_abad_jalal_abad-arslanbob-waterfall",
+  "geo_import_slug": "jalal_abad-arslanbob-waterfall",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

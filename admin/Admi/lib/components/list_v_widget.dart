@@ -53,7 +53,7 @@ class _ListVWidgetState extends State<ListVWidget> {
         if (snapshot.hasError) {
           return Center(
             child: Text(
-              'تعذر تحميل المدن',
+              uiTr(context, 'تعذر تحميل المدن'),
               style: FlutterFlowTheme.of(context).bodyMedium,
             ),
           );

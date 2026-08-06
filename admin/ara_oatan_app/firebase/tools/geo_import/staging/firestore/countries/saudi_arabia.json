@@ -1,16 +1,23 @@
 {
   "__path": "countries/saudi_arabia",
-  "__writtenAt": "2026-07-22T11:28:57.885Z",
-  "__target": "local-staging",
+  "__writtenAt": "2026-08-04T08:33:38.372Z",
   "naim": "المملكة العربية السعودية",
   "naimEnglesh": "Saudi Arabia",
   "names_i18n": {
     "ar": "المملكة العربية السعودية",
     "en": "Saudi Arabia",
     "ru": "Саудовская Аравия",
-    "ky": "Сауд Арабиясы",
-    "uz": "Saudiya Arabistoni"
+    "ky": "Сауд Арабиясы"
   },
+  "osf": "المملكة العربية السعودية — وجهة الحج والعمرة والسياحة في مدنها الرئيسية.",
+  "osf_i18n": {
+    "ar": "المملكة العربية السعودية — وجهة الحج والعمرة والسياحة في مدنها الرئيسية.",
+    "en": "Saudi Arabia — pilgrimage and tourism across its main cities.",
+    "ru": "Саудовская Аравия — паломничество и туризм в главных городах.",
+    "ky": "Сауд Арабиясы — негизги шаарларындагы ажылык жана туризм."
+  },
+  "img": "https://flagcdn.com/w320/sa.png",
+  "hederImg": "https://flagcdn.com/w1280/sa.png",
   "iso_code": "SA",
   "iso3": "SAU",
   "CurrencySymbol": "ر.س",
@@ -19,6 +26,18 @@
   "timezone": "Asia/Riyadh",
   "acctev": true,
   "saudi": true,
-  "geo_import_id": "country_sa",
-  "geo_import_source": "touri_geo_import"
+  "num_trteb": 1,
+  "geo_center": {
+    "lat": 24.7136,
+    "lng": 46.6753
+  },
+  "bounds_sw": {
+    "lat": 16,
+    "lng": 34.5
+  },
+  "bounds_ne": {
+    "lat": 32.2,
+    "lng": 55.7
+  },
+  "geo_import_source": "sa_five_provinces_2026"
 }

@@ -9,6 +9,7 @@ import '/backend/gemini/gemini.dart';
 import '/core/toury_car_i18n.dart';
 import '/core/toury_firestore_cache.dart';
 import '/core/toury_image.dart';
+import '/core/toury_vehicle_catalog.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/flutter_flow/flutter_flow_util.dart';
@@ -48,13 +49,13 @@ class _CarWidgetState extends State<CarWidget> {
   }
 
   String _minHoursLabel(int hours) {
-    if (hours == 1) return 'ساعة واحدة';
-    if (hours == 2) return 'ساعتان';
-    return '$hours ساعات';
+    if (hours == 1) return 'ux_one_hour'.tr();
+    if (hours == 2) return 'ux_two_hours'.tr();
+    return 'ux_hours_count'.tr(namedArgs: {'count': '$hours'});
   }
 
   Future<void> _selectCar(TypeCarRecord record) async {
-    final localizedName = touryTypeCarName(context, record);
+    final localizedName = touryVehicleCategoryDisplayName(record, context);
     if (record.ishafelh == true) {
       FFAppState().tebycar = localizedName;
       FFAppState().typecarRev = record.reference;
@@ -150,9 +151,7 @@ class _CarWidgetState extends State<CarWidget> {
                 key: scaffoldKey,
                 backgroundColor: colors.scaffold,
                 appBar: DsAppBar(
-                  title: FFLocalizations.of(context).getText(
-                    '3ve8qodr' /* Choose the type of car. */,
-                  ),
+                  title: 'ux_choose_car_type'.tr(),
                   automaticallyImplyLeading: false,
                   leading: DsIconButton(
                     icon: DsIcons.back,
@@ -184,7 +183,7 @@ class _CarWidgetState extends State<CarWidget> {
                         return const DsLoading();
                       }
 
-                      final cars = snapshot.data!;
+                      final cars = touryDeduplicateTypeCars(snapshot.data!);
                       if (cars.isEmpty) {
                         return DsEmptyState(
                           title: 'ux_car_list_empty_title'.tr(),
@@ -212,9 +211,7 @@ class _CarWidgetState extends State<CarWidget> {
                           if (index == 0) {
                             return DsFadeSlide(
                               child: DsInformationCard(
-                                title: FFLocalizations.of(context).getText(
-                                  '3ve8qodr' /* Choose the type of car. */,
-                                ),
+                                title: 'ux_choose_car_type'.tr(),
                                 message: 'ux_car_list_hint'.tr(),
                                 icon: DsIcons.car,
                               ),
@@ -226,7 +223,7 @@ class _CarWidgetState extends State<CarWidget> {
                             car.sr,
                             formatType: FormatType.decimal,
                             decimalType: DecimalType.automatic,
-                            currency: 'ر.س ',
+                            currency: '${FFAppState().RMZCurrency} ',
                           );
 
                           return DsFadeSlide(
@@ -234,7 +231,9 @@ class _CarWidgetState extends State<CarWidget> {
                               milliseconds: 40 * (index - 1).clamp(0, 8),
                             ),
                             child: _CarOptionCard(
-                              title: touryTypeCarName(context, car),
+                              title:
+                                  touryVehicleCategoryDisplayName(car, context),
+                              localAsset: touryVehicleCategoryImage(car),
                               imageUrl: car.img,
                               documentId: car.reference.id,
                               priceLabel: price,
@@ -261,6 +260,7 @@ class _CarWidgetState extends State<CarWidget> {
 class _CarOptionCard extends StatelessWidget {
   const _CarOptionCard({
     required this.title,
+    required this.localAsset,
     required this.imageUrl,
     required this.documentId,
     required this.priceLabel,
@@ -270,6 +270,7 @@ class _CarOptionCard extends StatelessWidget {
   });
 
   final String title;
+  final String? localAsset;
   final String? imageUrl;
   final String documentId;
   final String priceLabel;
@@ -301,16 +302,27 @@ class _CarOptionCard extends StatelessWidget {
                 ),
               ),
               clipBehavior: Clip.antiAlias,
-              child: TouryNetworkImage(
-                url: imageUrl,
-                documentId: documentId,
-                placeName: title,
-                width: _kCarThumbWidth,
-                height: _kCarThumbHeight,
-                fit: BoxFit.cover,
-                fallbackAsset: kTouryImageFallback,
-                useBrandedFallback: true,
-              ),
+              child: localAsset != null
+                  ? ColoredBox(
+                      color: colors.surface,
+                      child: Image.asset(
+                        localAsset!,
+                        width: _kCarThumbWidth,
+                        height: _kCarThumbHeight,
+                        fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
+                      ),
+                    )
+                  : TouryNetworkImage(
+                      url: imageUrl,
+                      documentId: documentId,
+                      placeName: title,
+                      width: _kCarThumbWidth,
+                      height: _kCarThumbHeight,
+                      fit: BoxFit.cover,
+                      fallbackAsset: kTouryImageFallback,
+                      useBrandedFallback: true,
+                    ),
             ),
             const SizedBox(width: DsSpacing.sm),
             Expanded(
@@ -335,17 +347,25 @@ class _CarOptionCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          priceLabel,
-                          style: typography.labelLarge.copyWith(
-                            color: colors.primaryStrong,
+                        Flexible(
+                          child: Text(
+                            priceLabel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: typography.labelLarge.copyWith(
+                              color: colors.primaryStrong,
+                            ),
                           ),
                         ),
                         const SizedBox(width: DsSpacing.xxs),
-                        Text(
-                          '/ $perHourLabel',
-                          style: typography.labelSmall.copyWith(
-                            color: colors.primary,
+                        Flexible(
+                          child: Text(
+                            '/ $perHourLabel',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: typography.labelSmall.copyWith(
+                              color: colors.primary,
+                            ),
                           ),
                         ),
                       ],

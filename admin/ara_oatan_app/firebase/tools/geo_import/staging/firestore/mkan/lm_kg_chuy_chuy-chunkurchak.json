@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_chuy_chuy-chunkurchak",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "وادي تشونكورشاك",
+  "osf": "وادي تشونكورشاك — معلم في إقليم تشوي.",
+  "names_i18n": {
+    "ar": "وادي تشونكورشاك",
+    "en": "Chunkurchak Gorge",
+    "ru": "Ущелье Чункурчак",
+    "ky": "Чуңкурчак капчыгайы"
+  },
+  "osf_i18n": {
+    "ar": "وادي تشونكورشاك — معلم في إقليم تشوي.",
+    "en": "Chunkurchak Gorge — landmark in Chuy Region.",
+    "ru": "Ущелье Чункурчак — достопримечательность в регионе Чуйская область.",
+    "ky": "Чуңкурчак капчыгайы — Чүй облусу аймагындагы жай."
+  },
+  "address": "وادي تشونكورشاك، توكموك، إقليم تشوي، قيرغيزستان",
+  "address_i18n": {
+    "ar": "وادي تشونكورشاك، توكموك، إقليم تشوي، قيرغيزستان",
+    "en": "Chunkurchak Gorge, Tokmok, Chuy Region, Kyrgyzstan",
+    "ru": "Ущелье Чункурчак, Токмок, Чуйская область, Кыргызстан",
+    "ky": "Чуңкурчак капчыгайы, Токмок, Чүй облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 42.636,
+    "longitude": 74.844
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Soviet_Il-28_bomber_monument_in_Tokmok_20080830.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_chuy",
+  "id_vill": "villages/city_kg_tokmok",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_chuy_chuy-chunkurchak",
+  "geo_import_slug": "chuy-chunkurchak",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

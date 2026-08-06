@@ -6,6 +6,7 @@ import 'package:webviewx_plus/webviewx_plus.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/core/toury_auth_navigation.dart';
+import '/core/toury_brand_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -248,13 +249,29 @@ class _CreateAccount1ShrekWidgetState extends State<CreateAccount1ShrekWidget>
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        DsScaleFade(
+          child: Center(
+            child: TouryLogo(
+              width: DsConstants.authLogoWidth,
+              height: DsConstants.authLogoHeight,
+              withBackground: false,
+            ),
+          ),
+        ),
+        const SizedBox(height: DsSpacing.md),
+        const Center(
+          child: Vision2030Mark(height: 38, maxWidth: 156),
+        ),
+        const SizedBox(height: DsSpacing.xl),
         DsFadeSlide(
           child: Text(
             FFLocalizations.of(context).getText(
               'ufwudlm6' /* Create an account */,
             ),
+            textAlign: TextAlign.center,
             style: typography.headlineLarge.copyWith(
               color: colors.textPrimary,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -265,8 +282,10 @@ class _CreateAccount1ShrekWidgetState extends State<CreateAccount1ShrekWidget>
             FFLocalizations.of(context).getText(
               'li05az6c' /* Let's get started by filling o... */,
             ),
+            textAlign: TextAlign.center,
             style: typography.bodyMedium.copyWith(
               color: colors.textSecondary,
+              height: 1.4,
             ),
           ),
         ),
@@ -275,7 +294,8 @@ class _CreateAccount1ShrekWidgetState extends State<CreateAccount1ShrekWidget>
           delay: DsDurations.fast,
           child: DsCard(
             elevated: true,
-            padding: const EdgeInsets.all(DsSpacing.lg),
+            bordered: false,
+            padding: const EdgeInsets.all(DsSpacing.xl),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,

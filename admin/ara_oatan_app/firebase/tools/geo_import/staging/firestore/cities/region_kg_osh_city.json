@@ -1,19 +1,32 @@
 {
   "__path": "cities/region_kg_osh_city",
-  "__writtenAt": "2026-07-22T11:28:59.893Z",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
   "__target": "local-staging",
   "naim": "مدينة أوش",
   "names_i18n": {
     "ar": "مدينة أوش",
     "en": "Osh City",
     "ru": "город Ош",
-    "ky": "Ош шаары",
-    "uz": "Oʻsh shahri"
+    "ky": "Ош шаары"
   },
+  "osf": "مدينة أوش التاريخية، من أقدم مدن آسيا الوسطى عند جبل سليمان توو.",
+  "osf_i18n": {
+    "ar": "مدينة أوش التاريخية، من أقدم مدن آسيا الوسطى عند جبل سليمان توو.",
+    "en": "Historic Osh City — one of Central Asia’s oldest cities at Sulaiman-Too.",
+    "ru": "Исторический город Ош — один из древнейших городов Центральной Азии у Сулайман-Тоо.",
+    "ky": "Тарыхый Ош шаары — Борбордук Азиянын эң байыркы шаарларынан, Сулайман-Тоо."
+  },
+  "img": "https://flagcdn.com/w320/kg.png",
+  "icon": "https://flagcdn.com/w320/kg.png",
   "dolh": "countries/kyrgyzstan",
   "acctev": true,
+  "sorting": 8,
   "iso_code": "KG-GO",
   "country_iso": "KG",
+  "geo_center": {
+    "latitude": 40.5283,
+    "longitude": 72.7985
+  },
   "geo_import_id": "region_kg_osh_city",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "sa_kg_rebuild_2026"
 }

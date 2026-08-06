@@ -68,7 +68,8 @@ class _PayMethWidgetState extends State<PayMethWidget> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                Expanded(
+                  child: Row(
                   children: [
                     Icon(
                       Icons.payments_outlined,
@@ -76,15 +77,20 @@ class _PayMethWidgetState extends State<PayMethWidget> {
                       size: DsIcons.lg,
                     ),
                     const SizedBox(width: DsSpacing.sm),
-                    Text(
+                    Flexible(
+                      child: Text(
                       FFLocalizations.of(context).getText(
                         'shd52l15' /* Cash */,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: typography.bodyMedium.copyWith(
                         color: colors.textPrimary,
                       ),
                     ),
+                    ),
                   ],
+                ),
                 ),
                 Icon(
                   Icons.done_sharp,

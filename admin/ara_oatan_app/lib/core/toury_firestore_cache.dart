@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '/app_state.dart';
 import '/backend/backend.dart';
 import '/core/toury_country_registry.dart';
+import '/core/toury_vehicle_catalog.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 class _CacheEntry<T> {
@@ -171,9 +172,8 @@ class TouryFirestoreCache {
         countryRef: countryRef,
         iso2: iso,
       );
-    }).toList()
-      ..sort((a, b) => a.nesbahkKsm.compareTo(b.nesbahkKsm));
-    return filtered;
+    }).toList();
+    return tourySortTypeCars(filtered);
   }
 
   static void invalidateTypeCar() {

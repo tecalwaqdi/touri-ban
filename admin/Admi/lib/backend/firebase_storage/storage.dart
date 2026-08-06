@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
@@ -22,33 +20,25 @@ String contentTypeForStoragePath(String path) {
   }
 }
 
-/// Upload bytes (or local file on mobile) to Firebase Storage.
+/// Upload bytes to Firebase Storage (web + mobile safe — no dart:io).
 Future<String?> uploadData(
   String path,
   Uint8List data, {
   String? filePath,
 }) async {
   final storageRef = FirebaseStorage.instance.ref().child(path);
-  final metadata = SettableMetadata(contentType: contentTypeForStoragePath(path));
+  final metadata =
+      SettableMetadata(contentType: contentTypeForStoragePath(path));
 
   try {
-    final TaskSnapshot snapshot;
-
-    if (!kIsWeb &&
-        filePath != null &&
-        filePath.isNotEmpty &&
-        await File(filePath).exists()) {
-      snapshot = await storageRef.putFile(File(filePath), metadata);
-    } else {
-      if (data.isEmpty) {
-        throw FirebaseException(
-          plugin: 'firebase_storage',
-          code: 'empty-file',
-          message: 'ملف الصورة فارغ أو لم يُقرأ من المعرض',
-        );
-      }
-      snapshot = await storageRef.putData(data, metadata);
+    if (data.isEmpty) {
+      throw FirebaseException(
+        plugin: 'firebase_storage',
+        code: 'empty-file',
+        message: 'ملف الصورة فارغ أو لم يُقرأ من المعرض',
+      );
     }
+    final snapshot = await storageRef.putData(data, metadata);
 
     if (snapshot.state != TaskState.success) {
       throw FirebaseException(

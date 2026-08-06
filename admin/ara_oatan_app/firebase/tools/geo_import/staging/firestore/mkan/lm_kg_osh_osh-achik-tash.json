@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_osh_osh-achik-tash",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "مخيم أشيك تاش",
+  "osf": "مخيم أشيك تاش — معلم في إقليم أوش.",
+  "names_i18n": {
+    "ar": "مخيم أشيك تاش",
+    "en": "Achik-Tash Base Camp",
+    "ru": "Лагерь Ачик-Таш",
+    "ky": "Ачык-Таш"
+  },
+  "osf_i18n": {
+    "ar": "مخيم أشيك تاش — معلم في إقليم أوش.",
+    "en": "Achik-Tash Base Camp — landmark in Osh Region.",
+    "ru": "Лагерь Ачик-Таш — достопримечательность в регионе Ошская область.",
+    "ky": "Ачык-Таш — Ош облусу аймагындагы жай."
+  },
+  "address": "مخيم أشيك تاش، أوزجن، إقليم أوش، قيرغيزستان",
+  "address_i18n": {
+    "ar": "مخيم أشيك تاش، أوزجن، إقليم أوش، قيرغيزستان",
+    "en": "Achik-Tash Base Camp, Uzgen, Osh Region, Kyrgyzstan",
+    "ru": "Лагерь Ачик-Таш, Узген, Ошская область, Кыргызстан",
+    "ky": "Ачык-Таш, Өзгөн, Ош облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 39.48,
+    "longitude": 72.9
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_osh",
+  "id_vill": "villages/city_kg_uzgen",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_osh_osh-achik-tash",
+  "geo_import_slug": "osh-achik-tash",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

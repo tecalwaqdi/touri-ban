@@ -174,8 +174,8 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
                                     Padding(
                             padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                             child: Text(
-                              'العدد: ${drivers.length}'
-                              '${drivers.length != allDrivers.length ? ' من ${allDrivers.length}' : ''}'
+                              '${uiTr(context, 'العدد')}: ${drivers.length}'
+                              '${drivers.length != allDrivers.length ? ' ${uiTr(context, 'من')} ${allDrivers.length}' : ''}'
                               '${listState.hasMore ? '+' : ''}',
                               style: theme.labelLarge.override(
                                 fontFamily: theme.labelLargeFamily,
@@ -197,8 +197,8 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
                                 const SizedBox(height: 12),
                                               Text(
                                   _searchQuery.isEmpty
-                                      ? 'لا يوجد مناديب بانتظار التفعيل'
-                                      : 'لا توجد نتائج للبحث',
+                                      ? uiTr(context, 'لا يوجد مناديب بانتظار التفعيل')
+                                      : uiTr(context, 'لا توجد نتائج للبحث'),
                                   style: theme.titleMedium,
                                   textAlign: TextAlign.center,
                                               ),
@@ -322,7 +322,7 @@ class _PendingDriverCard extends StatelessWidget {
                     ),
                   ),
                 Text(
-                  isActive ? 'نشط' : 'غير مفعّل',
+                  isActive ? uiTr(context, 'نشط') : uiTr(context, 'غير مفعّل'),
                   style: theme.labelSmall.override(
                     fontFamily: theme.labelSmallFamily,
                     color: isActive ? theme.success : theme.error,

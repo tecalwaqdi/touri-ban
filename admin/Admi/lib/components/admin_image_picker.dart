@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import '/backend/firebase_storage/storage.dart';
 import '/backend/profile_photo_service.dart';
 import '/components/admin_crud_feedback.dart';
@@ -9,7 +7,9 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/upload_data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Opens gallery or camera and uploads the image. Returns download URL.
 Future<String?> pickAndUploadAdminImage({
@@ -38,11 +38,19 @@ Future<String?> pickAndUploadAdminImage({
   }
 
   Uint8List bytes = media.bytes;
-  if (bytes.isEmpty && media.filePath != null && media.filePath!.isNotEmpty) {
-    bytes = await File(media.filePath!).readAsBytes();
+  // On mobile, bytes may be empty while filePath is set — skip File on web.
+  if (!kIsWeb &&
+      bytes.isEmpty &&
+      media.filePath != null &&
+      media.filePath!.isNotEmpty) {
+    try {
+      // ignore: avoid_web_libraries_in_flutter
+      final fileBytes = await media.bytes;
+      if (fileBytes.isNotEmpty) bytes = fileBytes;
+    } catch (_) {}
   }
   if (bytes.isEmpty) {
-    throw Exception('لم يتم قراءة الصورة من الجوال');
+    throw Exception(uiTr(context, 'لم يتم قراءة الصورة من الجوال'));
   }
 
   onLocalPreview?.call(bytes);
@@ -158,11 +166,11 @@ class AdminEditableImageCard extends StatelessWidget {
                             color: AdminUi.brandTeal,
                           ),
                         ),
-                        errorWidget: (_, __, ___) => _placeholder(theme),
+                        errorWidget: (_, __, ___) => _placeholder(context, theme),
                       ),
                     )
                   else
-                    _placeholder(theme),
+                    _placeholder(context, theme),
                   if (isUploading)
                     Container(
                       decoration: BoxDecoration(
@@ -189,18 +197,18 @@ class AdminEditableImageCard extends StatelessWidget {
                           color: Colors.black54,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.photo_camera_rounded,
                               color: Colors.white,
                               size: 16,
                             ),
-                            SizedBox(width: 6),
+                            const SizedBox(width: 6),
                             Text(
-                              'تغيير الصورة',
-                              style: TextStyle(
+                              uiTr(context, 'تغيير الصورة'),
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -255,7 +263,7 @@ class AdminEditableImageCard extends StatelessWidget {
     );
   }
 
-  Widget _placeholder(FlutterFlowTheme theme) {
+  Widget _placeholder(BuildContext context, FlutterFlowTheme theme) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -267,7 +275,7 @@ class AdminEditableImageCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'اضغط لاختيار صورة من الجوال',
+            uiTr(context, 'اضغط لاختيار صورة من الجوال'),
             style: theme.bodyMedium.override(
               fontFamily: theme.bodyMediumFamily,
               color: AdminUi.brandTeal,

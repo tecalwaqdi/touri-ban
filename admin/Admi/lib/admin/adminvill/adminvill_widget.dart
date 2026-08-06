@@ -76,7 +76,7 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
           builder: (ctx) => AlertDialog(
             title: Text(appTr(context, 'adm_delete_confirm_title')),
             content: Text(
-              'هل أنت متأكد من حذف "${record.naim}"؟',
+              '${uiTr(context, 'هل أنت متأكد من حذف')} "${record.naim}"؟',
             ),
             actions: [
               TextButton(
@@ -119,11 +119,11 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text(activate ? 'تأكيد التنشيط' : 'تأكيد إيقاف التنشيط'),
+            title: Text(activate ? uiTr(context, 'تأكيد التنشيط') : uiTr(context, 'تأكيد إيقاف التنشيط')),
             content: Text(
               activate
-                  ? 'هل أنت متأكد من تنشيط "${record.naim}"؟'
-                  : 'هل أنت متأكد من إيقاف تنشيط "${record.naim}"؟',
+                  ? '${uiTr(context, 'هل أنت متأكد من تنشيط')} "${record.naim}"؟'
+                  : '${uiTr(context, 'هل أنت متأكد من إيقاف تنشيط')} "${record.naim}"؟',
             ),
             actions: [
               TextButton(
@@ -132,7 +132,7 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: Text(activate ? 'نعم، فعّل' : 'نعم، أوقف'),
+                child: Text(activate ? uiTr(context, 'نعم، فعّل') : uiTr(context, 'نعم، أوقف')),
               ),
             ],
           ),
@@ -150,7 +150,7 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              activate ? 'تم تنشيط المدينة' : 'تم إيقاف تنشيط المدينة'),
+              activate ? uiTr(context, 'تم تنشيط المدينة') : uiTr(context, 'تم إيقاف تنشيط المدينة')),
         ),
       );
     } catch (e) {
@@ -222,8 +222,8 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
                                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                           child: Text(
-                            'العدد: ${cities.length}'
-                            '${allCities.length != cities.length ? ' من ${allCities.length}' : ''}'
+                            '${uiTr(context, 'العدد')}: ${cities.length}'
+                            '${allCities.length != cities.length ? ' ${uiTr(context, 'من')} ${allCities.length}' : ''}'
                             '${listState.hasMore ? '+' : ''}',
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
@@ -245,8 +245,8 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
                                 const SizedBox(height: 12),
                                                 Text(
                                   _searchQuery.isEmpty
-                                      ? 'لا توجد مدن مسجلة'
-                                      : 'لا توجد نتائج للبحث',
+                                      ? uiTr(context, 'لا توجد مدن مسجلة')
+                                      : uiTr(context, 'لا توجد نتائج للبحث'),
                                   style: theme.titleMedium,
                                                 ),
                                               ],
@@ -305,7 +305,7 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
       decoration: AdminUi.inputDecoration(
         context,
         label: uiTr(context, 'بحث'),
-        hint: 'ابحث باسم المدينة أو الوصف...',
+        hint: uiTr(context, 'ابحث باسم المدينة أو الوصف...'),
         prefixIcon: Icons.search_rounded,
       ),
       validator: _model.textControllerValidator.asValidator(context),
@@ -546,7 +546,7 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        active ? 'نشطة' : 'غير نشطة',
+        active ? uiTr(context, 'نشطة') : uiTr(context, 'غير نشطة'),
         style: theme.labelSmall.override(
           fontFamily: theme.labelSmallFamily,
           color: active ? const Color(0xFF2E7D32) : const Color(0xFFE65100),

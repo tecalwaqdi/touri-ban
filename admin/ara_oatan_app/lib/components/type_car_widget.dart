@@ -1,6 +1,7 @@
 import '/backend/backend.dart';
 import '/core/app_ux_widgets.dart';
 import '/core/toury_car_i18n.dart';
+import '/core/toury_vehicle_catalog.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
@@ -53,9 +54,11 @@ class _TypeCarWidgetState extends State<TypeCarWidget> {
             if (!snapshot.hasData) {
               return const DsLoading();
             }
-            final cars = snapshot.data!
-                .where((car) => car.isAvailableForListing)
-                .toList();
+            final cars = touryDeduplicateTypeCars(
+              snapshot.data!
+                  .where((car) => car.isAvailableForListing)
+                  .toList(),
+            );
 
             return ListView.builder(
               padding: EdgeInsets.zero,
@@ -90,8 +93,12 @@ class _TypeCarWidgetState extends State<TypeCarWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                touryTypeCarName(
-                                    context, listViewTypeCarRecord),
+                                touryVehicleCategoryDisplayName(
+                                  listViewTypeCarRecord,
+                                  context,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: typography.titleLarge.copyWith(
                                   color: colors.textPrimary,
                                 ),
@@ -100,6 +107,8 @@ class _TypeCarWidgetState extends State<TypeCarWidget> {
                                 FFLocalizations.of(context).getText(
                                   'fkqe7gw6' /* تحديد */,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: typography.labelMedium.copyWith(
                                   color: colors.textSecondary,
                                 ),

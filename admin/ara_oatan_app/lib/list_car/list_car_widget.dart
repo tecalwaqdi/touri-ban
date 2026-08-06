@@ -9,6 +9,7 @@ import '/core/toury_dialogs.dart';
 import '/core/toury_firestore_cache.dart';
 import '/core/toury_image.dart';
 import '/core/toury_navigation.dart';
+import '/core/toury_vehicle_catalog.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/flutter_flow/flutter_flow_util.dart';
@@ -77,7 +78,7 @@ class _ListCarWidgetState extends State<ListCarWidget> {
       final serviceVat = lineVat(appVatPercent, hoursTotal);
       final countryVat = lineVat(countryVatPercent, hoursTotal);
 
-      FFAppState().tebycar = touryTypeCarName(context, record);
+      FFAppState().tebycar = touryVehicleCategoryDisplayName(record, context);
       FFAppState().typecarRev = record.reference;
       FFAppState().srtypecar = record.sr;
       FFAppState().totalsaatandcar = lineTotal(sr, 8.0);
@@ -151,8 +152,7 @@ class _ListCarWidgetState extends State<ListCarWidget> {
               key: scaffoldKey,
               backgroundColor: colors.scaffold,
               appBar: DsAppBar(
-                title: FFLocalizations.of(context)
-                    .getText('xkofy828' /* List of cars */),
+                title: 'ux_list_of_cars'.tr(),
                 automaticallyImplyLeading: false,
                 leading: DsIconButton(
                   icon: DsIcons.back,
@@ -185,7 +185,7 @@ class _ListCarWidgetState extends State<ListCarWidget> {
                       return const _CarListSkeleton();
                     }
 
-                    final sortedList = snapshot.data!;
+                    final sortedList = touryDeduplicateTypeCars(snapshot.data!);
 
                     if (sortedList.isEmpty) {
                       return DsEmptyState(
@@ -217,14 +217,17 @@ class _ListCarWidgetState extends State<ListCarWidget> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 DsInformationCard(
-                                  title: FFLocalizations.of(context)
-                                      .getText('xkofy828' /* List of cars */),
+                                  title: 'ux_list_of_cars'.tr(),
                                   message: 'ux_car_list_hint'.tr(),
                                   icon: DsIcons.car,
                                 ),
                                 const SizedBox(height: DsSpacing.xs),
                                 Text(
-                                  '${sortedList.length} ${'ux_car_available'.tr()}',
+                                  'ux_cars_available_count'.tr(
+                                    namedArgs: {
+                                      'count': '${sortedList.length}',
+                                    },
+                                  ),
                                   textAlign: TextAlign.center,
                                   style: context.dsTypography.labelMedium
                                       .copyWith(color: colors.textSecondary),
@@ -247,7 +250,8 @@ class _ListCarWidgetState extends State<ListCarWidget> {
                             milliseconds: 40 * (index - 1).clamp(0, 8),
                           ),
                           child: _CarOptionCard(
-                            title: touryTypeCarName(context, car),
+                            title: touryVehicleCategoryDisplayName(car, context),
+                            localAsset: touryVehicleCategoryImage(car),
                             imageUrl: car.img,
                             documentId: car.reference.id,
                             priceLabel: price,
@@ -273,6 +277,7 @@ class _ListCarWidgetState extends State<ListCarWidget> {
 class _CarOptionCard extends StatelessWidget {
   const _CarOptionCard({
     required this.title,
+    required this.localAsset,
     required this.imageUrl,
     required this.documentId,
     required this.priceLabel,
@@ -282,6 +287,7 @@ class _CarOptionCard extends StatelessWidget {
   });
 
   final String title;
+  final String? localAsset;
   final String? imageUrl;
   final String documentId;
   final String priceLabel;
@@ -313,16 +319,27 @@ class _CarOptionCard extends StatelessWidget {
                 ),
               ),
               clipBehavior: Clip.antiAlias,
-              child: TouryNetworkImage(
-                url: imageUrl,
-                documentId: documentId,
-                placeName: title,
-                width: _kCarThumbWidth,
-                height: _kCarThumbHeight,
-                fit: BoxFit.cover,
-                fallbackAsset: kTouryImageFallback,
-                useBrandedFallback: true,
-              ),
+              child: localAsset != null
+                  ? ColoredBox(
+                      color: colors.surface,
+                      child: Image.asset(
+                        localAsset!,
+                        width: _kCarThumbWidth,
+                        height: _kCarThumbHeight,
+                        fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
+                      ),
+                    )
+                  : TouryNetworkImage(
+                      url: imageUrl,
+                      documentId: documentId,
+                      placeName: title,
+                      width: _kCarThumbWidth,
+                      height: _kCarThumbHeight,
+                      fit: BoxFit.cover,
+                      fallbackAsset: kTouryImageFallback,
+                      useBrandedFallback: true,
+                    ),
             ),
             const SizedBox(width: DsSpacing.sm),
             Expanded(
@@ -360,6 +377,8 @@ class _CarOptionCard extends StatelessWidget {
                         const SizedBox(width: DsSpacing.xxs),
                         Text(
                           '/ $perHourLabel',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: typography.labelSmall.copyWith(
                             color: colors.primary,
                           ),

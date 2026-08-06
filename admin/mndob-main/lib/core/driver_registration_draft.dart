@@ -29,6 +29,11 @@ class DriverRegistrationDraft {
     this.seats = '',
     this.birthDateIso = '',
     this.uid = '',
+    this.affiliationType = 'independent',
+    this.companyPath = '',
+    this.companyName = '',
+    this.isTourGuide = false,
+    this.guidePermitUrl = '',
   });
 
   final int step;
@@ -55,6 +60,13 @@ class DriverRegistrationDraft {
   final String birthDateIso;
   final String uid;
 
+  /// `'independent'` | `'company'`
+  final String affiliationType;
+  final String companyPath;
+  final String companyName;
+  final bool isTourGuide;
+  final String guidePermitUrl;
+
   static const _guestKey = 'driver_registration_draft_v1_guest';
   static String _uidKey(String uid) => 'driver_registration_draft_v1_u_$uid';
 
@@ -69,6 +81,10 @@ class DriverRegistrationDraft {
       birthDateIso.trim().isNotEmpty ||
       regionPath.trim().isNotEmpty ||
       villagePath.trim().isNotEmpty ||
+      companyPath.trim().isNotEmpty ||
+      guidePermitUrl.trim().isNotEmpty ||
+      isTourGuide ||
+      affiliationType == 'company' ||
       (lat != null && lng != null);
 
   Map<String, dynamic> toJson() => {
@@ -95,9 +111,17 @@ class DriverRegistrationDraft {
         'seats': seats,
         'birthDateIso': birthDateIso,
         'uid': uid,
+        'affiliationType': affiliationType,
+        'companyPath': companyPath,
+        'companyName': companyName,
+        'isTourGuide': isTourGuide,
+        'guidePermitUrl': guidePermitUrl,
       };
 
   factory DriverRegistrationDraft.fromJson(Map<String, dynamic> json) {
+    final rawAffiliation = (json['affiliationType'] as String?) ?? 'independent';
+    final affiliation =
+        rawAffiliation == 'company' ? 'company' : 'independent';
     return DriverRegistrationDraft(
       step: (json['step'] as num?)?.toInt() ?? 0,
       name: (json['name'] as String?) ?? '',
@@ -122,6 +146,11 @@ class DriverRegistrationDraft {
       seats: (json['seats'] as String?) ?? '',
       birthDateIso: (json['birthDateIso'] as String?) ?? '',
       uid: (json['uid'] as String?) ?? '',
+      affiliationType: affiliation,
+      companyPath: (json['companyPath'] as String?) ?? '',
+      companyName: (json['companyName'] as String?) ?? '',
+      isTourGuide: json['isTourGuide'] == true,
+      guidePermitUrl: (json['guidePermitUrl'] as String?) ?? '',
     );
   }
 
@@ -149,7 +178,13 @@ class DriverRegistrationDraft {
     String? seats,
     String? birthDateIso,
     String? uid,
+    String? affiliationType,
+    String? companyPath,
+    String? companyName,
+    bool? isTourGuide,
+    String? guidePermitUrl,
     bool clearLocation = false,
+    bool clearCompany = false,
   }) {
     return DriverRegistrationDraft(
       step: step ?? this.step,
@@ -175,6 +210,11 @@ class DriverRegistrationDraft {
       seats: seats ?? this.seats,
       birthDateIso: birthDateIso ?? this.birthDateIso,
       uid: uid ?? this.uid,
+      affiliationType: affiliationType ?? this.affiliationType,
+      companyPath: clearCompany ? '' : (companyPath ?? this.companyPath),
+      companyName: clearCompany ? '' : (companyName ?? this.companyName),
+      isTourGuide: isTourGuide ?? this.isTourGuide,
+      guidePermitUrl: guidePermitUrl ?? this.guidePermitUrl,
     );
   }
 

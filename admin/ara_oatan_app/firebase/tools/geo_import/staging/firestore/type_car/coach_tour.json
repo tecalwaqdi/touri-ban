@@ -1,21 +1,25 @@
 {
   "__path": "type_car/coach_tour",
-  "__writtenAt": "2026-07-22T11:29:02.683Z",
+  "__writtenAt": "2026-08-05T11:10:56.044Z",
   "__target": "local-staging",
-  "naim": "باص سياحي",
+  "naim": "حافلة كبيرة تتسع لـ 49 راكبًا",
   "names_i18n": {
-    "ar": "باص سياحي",
-    "en": "Tour Bus",
+    "ar": "حافلة كبيرة تتسع لـ 49 راكبًا",
+    "en": "Large Bus (49 seats)",
     "ru": "Туристический автобус",
     "ky": "Туристтик автобус",
     "uz": "Turistik avtobus"
   },
   "codeCar": "coach_tour",
-  "sr": 900,
-  "agl_saat": 6,
+  "sr": 180,
+  "agl_saat": 5,
   "actev": true,
   "ishafelh": true,
   "not": "Tour Bus",
   "geo_import_id": "vehcat_coach_tour",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "touri_geo_import",
+  "img": "assets/images/vehicles/large_bus.jpg",
+  "__note": "Production img field was updated to embedded JPEG data-url via upload_vehicle_images_to_firebase.js",
+  "sort_order": 7,
+  "num_trteb": 7
 }

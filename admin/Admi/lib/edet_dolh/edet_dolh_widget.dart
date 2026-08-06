@@ -137,8 +137,8 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
           builder: (ctx) => AlertDialog(
             title: Text(appTr(context, 'adm_delete_confirm_title')),
             content: Text(
-              'هل أنت متأكد من حذف "${record.naim}"؟\n'
-              'سيتم حذف كل المناطق والمدن والمعالم المرتبطة.',
+              '${uiTr(context, 'هل أنت متأكد من حذف')} "${record.naim}"؟\n' +
+              uiTr(context, 'سيتم حذف كل المناطق والمدن والمعالم المرتبطة.'),
             ),
             actions: [
               TextButton(
@@ -206,7 +206,7 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
                 imageUrl: _model.uploadedFileUrl_uploadDataX8m,
                 localBytes: _model.uploadedLocalFile_uploadDataX8m.bytes,
                 isUploading: _model.isDataUploading_uploadDataX8m,
-                hint: 'اضغط لاختيار صورة العلم من المعرض أو الكاميرا',
+                hint: uiTr(context, 'اضغط لاختيار صورة العلم من المعرض أو الكاميرا'),
                 onPick: _pickCountryImage,
               ),
               const SizedBox(height: AdminUi.fieldGap),
@@ -230,7 +230,7 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
                 label: uiTr(context, 'نسبة الضريبة (%)'),
                 icon: Icons.percent_rounded,
                 keyboardType: TextInputType.number,
-                hint: 'مثال: 15',
+                hint: uiTr(context, 'مثال: 15'),
               ),
               const SizedBox(height: AdminUi.fieldGap),
               AdminTextField(
@@ -239,7 +239,7 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
                 label: uiTr(context, 'نسبة أرباح التطبيق (%)'),
                 icon: Icons.account_balance_wallet_outlined,
                 keyboardType: TextInputType.number,
-                hint: 'مثال: 10',
+                hint: uiTr(context, 'مثال: 10'),
               ),
               const SizedBox(height: AdminUi.fieldGap),
               AdminEditSwitchRow(
@@ -260,8 +260,7 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
                       : () => _delete(record),
                   icon: const Icon(Icons.delete_outline_rounded,
                       color: Colors.red),
-                  label: const Text(
-                    'حذف الدولة',
+                  label: Text(uiTr(context, 'حذف الدولة'),
                     style: TextStyle(color: Colors.red),
                   ),
                 ),

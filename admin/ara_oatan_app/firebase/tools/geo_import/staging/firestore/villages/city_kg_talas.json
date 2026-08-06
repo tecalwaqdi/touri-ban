@@ -1,15 +1,22 @@
 {
   "__path": "villages/city_kg_talas",
-  "__writtenAt": "2026-07-22T11:28:59.695Z",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
   "__target": "local-staging",
   "naim": "تالاس",
   "names_i18n": {
     "ar": "تالاس",
     "en": "Talas",
     "ru": "Талас",
-    "ky": "Талас",
-    "uz": "Talas"
+    "ky": "Талас"
   },
+  "osf": "تالاس — إقليم تالاس",
+  "osf_i18n": {
+    "ar": "تالاس — المركز الإداري لـ إقليم تالاس",
+    "en": "Talas — administrative hub of Talas Region",
+    "ru": "Талас — административный центр региона Таласская область",
+    "ky": "Талас — Талас облусу административдик борбору"
+  },
+  "img": "https://flagcdn.com/w320/kg.png",
   "cities": "cities/region_kg_talas",
   "dolh": "countries/kyrgyzstan",
   "lat_ling": {
@@ -19,5 +26,5 @@
   "acctev": true,
   "country_iso": "KG",
   "geo_import_id": "city_kg_talas",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "sa_kg_rebuild_2026"
 }

@@ -1,0 +1,23 @@
+{
+  "__path": "type_car/medium_bus",
+  "__target": "local-staging",
+  "naim": "حافلة متوسطة تتسع لـ 25 راكبًا",
+  "names_i18n": {
+    "ar": "حافلة متوسطة تتسع لـ 25 راكبًا",
+    "en": "Medium Bus (25 seats)",
+    "ru": "Средний автобус (25)",
+    "ky": "Орто автобус (25)",
+    "uz": "Ortacha avtobus (25)"
+  },
+  "codeCar": "medium_bus",
+  "sr": 120,
+  "agl_saat": 5,
+  "actev": true,
+  "ishafelh": true,
+  "not": "Medium Bus (25 seats)",
+  "img": "assets/images/vehicles/medium_bus.jpg",
+  "geo_import_source": "touri_vehicle_images_upload",
+  "__writtenAt": "2026-08-05T11:10:56.043Z",
+  "sort_order": 6,
+  "num_trteb": 6
+}

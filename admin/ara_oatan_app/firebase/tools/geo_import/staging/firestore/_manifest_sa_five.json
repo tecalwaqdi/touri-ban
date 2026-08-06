@@ -1,0 +1,97 @@
+{
+  "rebuiltAt": "2026-08-04T08:33:38.372Z",
+  "provinces": [
+    {
+      "slug": "makkah",
+      "landmarks": 9
+    },
+    {
+      "slug": "taif",
+      "landmarks": 13
+    },
+    {
+      "slug": "jeddah",
+      "landmarks": 9
+    },
+    {
+      "slug": "madinah",
+      "landmarks": 7
+    },
+    {
+      "slug": "riyadh",
+      "landmarks": 10
+    }
+  ],
+  "keep": {
+    "regions": [
+      "region_sa_makkah",
+      "region_sa_taif",
+      "region_sa_jeddah",
+      "region_sa_madinah",
+      "region_sa_riyadh"
+    ],
+    "villages": [
+      "city_sa_makkah",
+      "city_sa_taif",
+      "city_sa_jeddah",
+      "city_sa_madinah",
+      "city_sa_riyadh"
+    ],
+    "mkan": [
+      "lm_sa_makkah_masjid-al-haram",
+      "lm_sa_makkah_masjid-al-tanim",
+      "lm_sa_makkah_jabal-al-nour",
+      "lm_sa_makkah_jabal-thawr",
+      "lm_sa_makkah_masjid-al-ijabah",
+      "lm_sa_makkah_masjid-king-abdulaziz",
+      "lm_sa_makkah_usaylah-inscriptions",
+      "lm_sa_makkah_hudaybiyyah-museum",
+      "lm_sa_makkah_makkah-mall",
+      "lm_sa_taif_masjid-al-abbas",
+      "lm_sa_taif_masjid-al-kaw",
+      "lm_sa_taif_masjid-al-madhun",
+      "lm_sa_taif_masjid-addas",
+      "lm_sa_taif_historic-palace-museum",
+      "lm_sa_taif_al-shifa-rose-terraces",
+      "lm_sa_taif_hotel-loreef",
+      "lm_sa_taif_tilal-resort",
+      "lm_sa_taif_historic-balad-souq",
+      "lm_sa_taif_souk-okaz",
+      "lm_sa_taif_shubra-palace",
+      "lm_sa_taif_ar-ruddaf-park",
+      "lm_sa_taif_othaim-mall-taif",
+      "lm_sa_jeddah_jeddah-new-corniche",
+      "lm_sa_jeddah_historic-jeddah",
+      "lm_sa_jeddah_kaia",
+      "lm_sa_jeddah_haramain-jeddah-station",
+      "lm_sa_jeddah_red-sea-mall",
+      "lm_sa_jeddah_jeddah-corniche-circuit",
+      "lm_sa_jeddah_horse-stables",
+      "lm_sa_jeddah_salam-mall",
+      "lm_sa_jeddah_north-obhur",
+      "lm_sa_madinah_masjid-an-nabawi",
+      "lm_sa_madinah_quba-mosque",
+      "lm_sa_madinah_qiblatain-mosque",
+      "lm_sa_madinah_mount-uhud",
+      "lm_sa_madinah_uthman-farm",
+      "lm_sa_madinah_qatrah-cafe",
+      "lm_sa_madinah_masjid-hamza",
+      "lm_sa_riyadh_kkia",
+      "lm_sa_riyadh_thumamah",
+      "lm_sa_riyadh_ibn-qasim-souq",
+      "lm_sa_riyadh_suspension-bridge",
+      "lm_sa_riyadh_wadi-laban",
+      "lm_sa_riyadh_kingdom-centre",
+      "lm_sa_riyadh_faisaliyah-tower",
+      "lm_sa_riyadh_al-batha",
+      "lm_sa_riyadh_souq-al-zal",
+      "lm_sa_riyadh_king-fahd-stadium"
+    ]
+  },
+  "counts": {
+    "countries": 1,
+    "cities": 5,
+    "villages": 5,
+    "mkan": 48
+  }
+}

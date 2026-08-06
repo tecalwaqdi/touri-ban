@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_osh_city_osh_city-osh-museum-city",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "متحف سليمان توو",
+  "osf": "متحف سليمان توو — معلم في مدينة أوش.",
+  "names_i18n": {
+    "ar": "متحف سليمان توو",
+    "en": "Sulaiman-Too Museum",
+    "ru": "Музей Сулайман-Тоо",
+    "ky": "Сулайман-Тоо музейи"
+  },
+  "osf_i18n": {
+    "ar": "متحف سليمان توو — معلم في مدينة أوش.",
+    "en": "Sulaiman-Too Museum — landmark in Osh City.",
+    "ru": "Музей Сулайман-Тоо — достопримечательность в регионе город Ош.",
+    "ky": "Сулайман-Тоо музейи — Ош шаары аймагындагы жай."
+  },
+  "address": "متحف سليمان توو، أوش، مدينة أوش، قيرغيزستان",
+  "address_i18n": {
+    "ar": "متحف سليمان توو، أوش، مدينة أوش، قيرغيزستان",
+    "en": "Sulaiman-Too Museum, Osh, Osh City, Kyrgyzstan",
+    "ru": "Музей Сулайман-Тоо, Ош, город Ош, Кыргызстан",
+    "ky": "Сулайман-Тоо музейи, Ош, Ош шаары, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 40.5296,
+    "longitude": 72.7825
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_osh_city",
+  "id_vill": "villages/city_kg_osh",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_osh_city_osh_city-osh-museum-city",
+  "geo_import_slug": "osh_city-osh-museum-city",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

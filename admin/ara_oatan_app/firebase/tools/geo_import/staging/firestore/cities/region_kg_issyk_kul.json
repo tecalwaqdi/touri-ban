@@ -1,19 +1,32 @@
 {
   "__path": "cities/region_kg_issyk_kul",
-  "__writtenAt": "2026-07-22T11:28:59.577Z",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
   "__target": "local-staging",
   "naim": "إقليم إيسيك كول",
   "names_i18n": {
     "ar": "إقليم إيسيك كول",
     "en": "Issyk-Kul Region",
     "ru": "Иссык-Кульская область",
-    "ky": "Ысык-Көл облусу",
-    "uz": "Issiqkoʻl viloyati"
+    "ky": "Ысык-Көл облусу"
   },
+  "osf": "إقليم بحيرة إيسيك كول الشهيرة، منتجعات الشواطئ والجبال المحيطة.",
+  "osf_i18n": {
+    "ar": "إقليم بحيرة إيسيك كول الشهيرة، منتجعات الشواطئ والجبال المحيطة.",
+    "en": "Issyk-Kul Region — the great alpine lake, beaches, and surrounding peaks.",
+    "ru": "Иссык-Кульская область — великое высокогорное озеро и курорты.",
+    "ky": "Ысык-Көл облусу — улуу тоо көлү, пляждар жана курчаган чокулар."
+  },
+  "img": "https://flagcdn.com/w320/kg.png",
+  "icon": "https://flagcdn.com/w320/kg.png",
   "dolh": "countries/kyrgyzstan",
   "acctev": true,
+  "sorting": 3,
   "iso_code": "KG-Y",
   "country_iso": "KG",
+  "geo_center": {
+    "latitude": 42.4907,
+    "longitude": 78.3936
+  },
   "geo_import_id": "region_kg_issyk_kul",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "sa_kg_rebuild_2026"
 }

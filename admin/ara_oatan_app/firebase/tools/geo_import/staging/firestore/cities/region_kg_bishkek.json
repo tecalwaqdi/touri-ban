@@ -1,19 +1,32 @@
 {
   "__path": "cities/region_kg_bishkek",
-  "__writtenAt": "2026-07-22T11:28:59.433Z",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
   "__target": "local-staging",
   "naim": "بيشكيك",
   "names_i18n": {
     "ar": "بيشكيك",
     "en": "Bishkek",
     "ru": "Бишкек",
-    "ky": "Бишкек",
-    "uz": "Bishkek"
+    "ky": "Бишкек"
   },
+  "osf": "عاصمة قيرغيزستان ومركزها الثقافي والسياسي في سفوح تيان شان.",
+  "osf_i18n": {
+    "ar": "عاصمة قيرغيزستان ومركزها الثقافي والسياسي في سفوح تيان شان.",
+    "en": "Capital of Kyrgyzstan — cultural and political hub at the Tian Shan foothills.",
+    "ru": "Столица Кыргызстана — культурный и политический центр у Тянь-Шаня.",
+    "ky": "Кыргызстандын борбору — Тянь-Шань этегиндеги маданий жана саясий борбор."
+  },
+  "img": "https://flagcdn.com/w320/kg.png",
+  "icon": "https://flagcdn.com/w320/kg.png",
   "dolh": "countries/kyrgyzstan",
   "acctev": true,
+  "sorting": 1,
   "iso_code": "KG-GB",
   "country_iso": "KG",
+  "geo_center": {
+    "latitude": 42.8746,
+    "longitude": 74.5698
+  },
   "geo_import_id": "region_kg_bishkek",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "sa_kg_rebuild_2026"
 }

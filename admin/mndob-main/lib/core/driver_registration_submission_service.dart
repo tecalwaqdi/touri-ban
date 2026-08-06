@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '/backend/backend.dart';
 import '/core/driver_registration_validators.dart';
+import '/core/tour_guide_status.dart';
 import '/core/toury_country_registry.dart';
 import '/core/toury_maps_config.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -103,6 +104,11 @@ class DriverRegistrationReviewModel {
     required this.location,
     required this.isResubmit,
     required this.uploadInFlight,
+    this.affiliationType = 'independent',
+    this.companyPath = '',
+    this.companyName = '',
+    this.isTourGuide = false,
+    this.guidePermitUrl = '',
   });
 
   final String uid;
@@ -129,6 +135,13 @@ class DriverRegistrationReviewModel {
   final LatLng? location;
   final bool isResubmit;
   final bool uploadInFlight;
+
+  /// `'independent'` | `'company'`
+  final String affiliationType;
+  final String companyPath;
+  final String companyName;
+  final bool isTourGuide;
+  final String guidePermitUrl;
 }
 
 /// Pre-submit completeness (Auth + location refs + docs).
@@ -182,6 +195,12 @@ abstract final class DriverRegistrationCompletenessService {
     );
     if (m.villageRef == null) {
       if (!reasons.contains('City')) reasons.add('City');
+    }
+    if (m.affiliationType == 'company' && m.companyPath.trim().isEmpty) {
+      reasons.add('Transport company');
+    }
+    if (m.isTourGuide && m.guidePermitUrl.trim().isEmpty) {
+      reasons.add('Tour guide permit');
     }
     return reasons.toSet().toList();
   }
@@ -340,6 +359,30 @@ abstract final class DriverRegistrationSubmissionService {
         'auto_activated': true,
         'auto_activated_at': FieldValue.serverTimestamp(),
       };
+
+      final isCompany = model.affiliationType == 'company' &&
+          model.companyPath.trim().isNotEmpty;
+      if (isCompany) {
+        payload['transport_company'] =
+            FirebaseFirestore.instance.doc(model.companyPath.trim());
+        payload['transport_company_text'] = model.companyName.trim();
+      } else if (snap.exists) {
+        // Clear company link when switching to independent on update.
+        payload['transport_company'] = FieldValue.delete();
+        payload['transport_company_text'] = FieldValue.delete();
+      } else {
+        payload.remove('transport_company');
+        payload.remove('transport_company_text');
+      }
+
+      if (model.isTourGuide) {
+        payload[TourGuideStatus.fieldIsTourGuide] = true;
+        payload[TourGuideStatus.fieldStatus] = TourGuideStatus.pending;
+        payload[TourGuideStatus.fieldPermitUrl] = model.guidePermitUrl.trim();
+      } else {
+        payload[TourGuideStatus.fieldIsTourGuide] = false;
+        payload[TourGuideStatus.fieldStatus] = TourGuideStatus.none;
+      }
 
       // Firestore create rules forbid `ismndob` on first write. Create the
       // profile without it, then claim driver + auto-activate via update.

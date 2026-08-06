@@ -81,7 +81,7 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'صيغة غير صحيحة — استخدم: 24.713600, 46.675300 أو إحداثيات DMS من Google Earth',
+            uiTr(context, 'صيغة غير صحيحة — استخدم: 24.713600, 46.675300 أو إحداثيات DMS من Google Earth'),
           ),
         ),
       );
@@ -204,7 +204,7 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
                     ),
                   )
                 : IconButton(
-                    tooltip: 'بحث',
+                    tooltip: uiTr(context, 'بحث'),
                     icon: Icon(
                       Icons.search,
                       color: theme.secondaryText,
@@ -262,7 +262,7 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
         ),
         const SizedBox(height: 8),
         Text(
-          'حرّك الخريطة لوضع الدبوس على الموقع المطلوب',
+          uiTr(context, 'حرّك الخريطة لوضع الدبوس على الموقع المطلوب'),
           style: theme.bodySmall.override(
             fontFamily: theme.bodySmallFamily,
             color: theme.secondaryText,
@@ -332,7 +332,7 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
           ),
           const SizedBox(height: 4),
           Text(
-            'الإحداثيات: ${AdminLocationService.formatCoordinates(widget.place.latLng)}',
+            '${uiTr(context, 'الإحداثيات')}: ${AdminLocationService.formatCoordinates(widget.place.latLng)}',
             style: theme.bodySmall.override(
               fontFamily: theme.bodySmallFamily,
               color: theme.secondaryText,

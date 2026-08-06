@@ -1,0 +1,297 @@
+{
+  "at": "2026-08-04T10:52:40.438Z",
+  "apply": true,
+  "storageBucket": "tutorial-multi-language-70gx4j.firebasestorage.app",
+  "assets": [
+    {
+      "id": "lm_sa_jeddah_historic-jeddah",
+      "file": "jeddah_historic_balad_spa.png",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_jeddah-new-corniche",
+      "file": "jeddah_new_corniche.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_kaia",
+      "file": "jeddah_kaia.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_madinah_masjid-hamza",
+      "file": "madinah_masjid_hamza.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_madinah_mount-uhud",
+      "file": "madinah_mount_uhud.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_madinah_qiblatain-mosque",
+      "file": "madinah_qiblatain.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_madinah_quba-mosque",
+      "file": "madinah_quba_mosque.png",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_makkah_makkah-mall",
+      "file": "makkah_makkah_mall.png",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_makkah_masjid-al-ijabah",
+      "file": "makkah_masjid_al_ijabah.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_makkah_masjid-al-tanim",
+      "file": "makkah_masjid_al_tanim.png",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_makkah_masjid-king-abdulaziz",
+      "file": "makkah_masjid_king_abdulaziz.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_makkah_usaylah-inscriptions",
+      "file": "makkah_usaylah_inscriptions.png",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_faisaliyah-tower",
+      "file": "riyadh_faisaliyah.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_king-fahd-stadium",
+      "file": "riyadh_king_fahd_stadium.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_kingdom-centre",
+      "file": "riyadh_kingdom_centre.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_kkia",
+      "file": "riyadh_kkia.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_souq-al-zal",
+      "file": "riyadh_souq_al_zal.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_suspension-bridge",
+      "file": "riyadh_suspension_bridge.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_wadi-laban",
+      "file": "riyadh_wadi_laban_pylon.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_taif_ar-ruddaf-park",
+      "file": "taif_ar_ruddaf_park.png",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_taif_historic-palace-museum",
+      "file": "taif_historic_palace_museum.png",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_taif_hotel-loreef",
+      "file": "taif_hotel_loreef.png",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_taif_masjid-addas",
+      "file": "taif_masjid_addas.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_taif_masjid-al-abbas",
+      "file": "taif_masjid_al_abbas.png",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_taif_masjid-al-kaw",
+      "file": "taif_masjid_al_kaw.png",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_taif_masjid-al-madhun",
+      "file": "taif_masjid_al_madhun.jpg",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_taif_othaim-mall-taif",
+      "file": "taif_othaim_mall.png",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_taif_shubra-palace",
+      "file": "taif_shubra_palace.png",
+      "kind": "data-url",
+      "status": "patched"
+    }
+  ],
+  "remotes": [
+    {
+      "collection": "mkan",
+      "id": "lm_sa_jeddah_haramain-jeddah-station",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_jeddah_horse-stables",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_jeddah_jeddah-corniche-circuit",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_jeddah_north-obhur",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_jeddah_red-sea-mall",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_jeddah_salam-mall",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_madinah_masjid-an-nabawi",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_madinah_qatrah-cafe",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_madinah_uthman-farm",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_makkah_hudaybiyyah-museum",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_makkah_jabal-al-nour",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_makkah_jabal-thawr",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_makkah_masjid-al-haram",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_riyadh_thumamah",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_taif_al-shifa-rose-terraces",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_taif_historic-balad-souq",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_taif_souk-okaz",
+      "kind": "data-url",
+      "status": "patched"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_taif_tilal-resort",
+      "kind": "data-url",
+      "status": "patched"
+    }
+  ],
+  "errors": [
+    {
+      "collection": "mkan",
+      "id": "lm_sa_riyadh_al-batha",
+      "error": "download 404"
+    },
+    {
+      "collection": "mkan",
+      "id": "lm_sa_riyadh_ibn-qasim-souq",
+      "error": "download 404"
+    }
+  ]
+}

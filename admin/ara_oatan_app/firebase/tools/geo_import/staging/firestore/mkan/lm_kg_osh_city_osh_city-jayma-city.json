@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_osh_city_osh_city-jayma-city",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "سوق جايما",
+  "osf": "سوق جايما — معلم في مدينة أوش.",
+  "names_i18n": {
+    "ar": "سوق جايما",
+    "en": "Jayma Bazaar",
+    "ru": "Базар Жайма",
+    "ky": "Жайма базары"
+  },
+  "osf_i18n": {
+    "ar": "سوق جايما — معلم في مدينة أوش.",
+    "en": "Jayma Bazaar — landmark in Osh City.",
+    "ru": "Базар Жайма — достопримечательность в регионе город Ош.",
+    "ky": "Жайма базары — Ош шаары аймагындагы жай."
+  },
+  "address": "سوق جايما، أوش، مدينة أوش، قيرغيزستان",
+  "address_i18n": {
+    "ar": "سوق جايما، أوش، مدينة أوش، قيرغيزستان",
+    "en": "Jayma Bazaar, Osh, Osh City, Kyrgyzstan",
+    "ru": "Базар Жайма, Ош, город Ош, Кыргызстан",
+    "ky": "Жайма базары, Ош, Ош шаары, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 40.531,
+    "longitude": 72.789
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 2,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أسواق",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_osh_city",
+  "id_vill": "villages/city_kg_osh",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_osh_city_osh_city-jayma-city",
+  "geo_import_slug": "osh_city-jayma-city",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

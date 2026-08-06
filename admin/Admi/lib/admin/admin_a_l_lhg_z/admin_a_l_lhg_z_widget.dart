@@ -73,7 +73,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
           builder: (ctx) => AlertDialog(
             title: Text(uiTr(context, 'تأكيد الإلغاء')),
             content: Text(
-              'هل أنت متأكد من إلغاء الحجز #${order.iDorder}؟',
+              '${uiTr(context, 'هل أنت متأكد من إلغاء الحجز')} #${order.iDorder}؟',
             ),
             actions: [
               TextButton(
@@ -117,7 +117,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      AdminCrudFeedback.error(context, 'تعذر إلغاء الحجز: $e');
+      AdminCrudFeedback.error(context, '${uiTr(context, 'تعذر إلغاء الحجز')}: $e');
     }
   }
 
@@ -181,8 +181,8 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                           child: Text(
-                            'العدد: ${bookings.length}'
-                            '${bookings.length != allBookings.length ? ' من ${allBookings.length}' : ''}'
+                            '${uiTr(context, 'العدد')}: ${bookings.length}'
+                            '${bookings.length != allBookings.length ? ' ${uiTr(context, 'من')} ${allBookings.length}' : ''}'
                             '${listState.hasMore ? '+' : ''}',
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
@@ -204,8 +204,8 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                                 const SizedBox(height: 12),
                                 Text(
                                   _searchQuery.isEmpty
-                                      ? 'لا توجد حجوزات حالية'
-                                      : 'لا توجد نتائج للبحث',
+                                      ? uiTr(context, 'لا توجد حجوزات حالية')
+                                      : uiTr(context, 'لا توجد نتائج للبحث'),
                                   style: theme.titleMedium,
                                 ),
                               ],
@@ -302,12 +302,12 @@ class _BookingsTable extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               child: Row(
                 children: [
-                  _HeaderCell('رقم الحجز', flex: 2, theme: theme),
-                  _HeaderCell('العميل', flex: 3, theme: theme),
-                  _HeaderCell('المندوب', flex: 2, theme: theme),
-                  _HeaderCell('المبلغ', flex: 2, theme: theme),
-                  _HeaderCell('الحالة', flex: 2, theme: theme),
-                  _HeaderCell('إجراءات', flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'رقم الحجز'), flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'العميل'), flex: 3, theme: theme),
+                  _HeaderCell(uiTr(context, 'المندوب'), flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'المبلغ'), flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'الحالة'), flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'إجراءات'), flex: 2, theme: theme),
                 ],
               ),
             ),
@@ -404,7 +404,7 @@ class _BookingTableRow extends StatelessWidget {
             child: Text(
               order.naimMndobText.isNotEmpty
                   ? order.naimMndobText
-                  : 'لم يُربط',
+                  : uiTr(context, 'لم يُربط'),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.bodySmall,
@@ -417,7 +417,7 @@ class _BookingTableRow extends StatelessWidget {
                 order.total,
                 formatType: FormatType.decimal,
                 decimalType: DecimalType.automatic,
-                currency: 'ريال ',
+                currency: uiTr(context, 'ريال '),
               ),
               style: theme.bodyMedium.override(
                 fontFamily: theme.bodyMediumFamily,
@@ -490,7 +490,7 @@ class _BookingCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'حجز #${order.iDorder.isNotEmpty ? order.iDorder : '—'}',
+                      '${uiTr(context, 'حجز')} #${order.iDorder.isNotEmpty ? order.iDorder : '—'}',
                       style: theme.titleSmall.override(
                         fontFamily: theme.titleSmallFamily,
                         fontWeight: FontWeight.w700,
@@ -520,7 +520,7 @@ class _BookingCard extends StatelessWidget {
             label: l10n.getText('x3zd9pqx'),
             value: order.naimMndobText.isNotEmpty
                 ? order.naimMndobText
-                : 'لم يتم الربط مع مندوب',
+                : uiTr(context, 'لم يتم الربط مع مندوب'),
           ),
           const SizedBox(height: 8),
           Row(
@@ -533,7 +533,7 @@ class _BookingCard extends StatelessWidget {
                     order.total,
                     formatType: FormatType.decimal,
                     decimalType: DecimalType.automatic,
-                    currency: 'ريال ',
+                    currency: uiTr(context, 'ريال '),
                   ),
                   highlight: true,
                 ),
@@ -547,7 +547,7 @@ class _BookingCard extends StatelessWidget {
                     order.totalApp,
                     formatType: FormatType.decimal,
                     decimalType: DecimalType.automatic,
-                    currency: 'ريال ',
+                    currency: uiTr(context, 'ريال '),
                   ),
                 ),
               ),
@@ -670,7 +670,7 @@ class _BookingStatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        status.isNotEmpty ? status : 'غير محدد',
+        status.isNotEmpty ? uiTr(context, status) : uiTr(context, 'غير محدد'),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         style: theme.labelSmall.override(

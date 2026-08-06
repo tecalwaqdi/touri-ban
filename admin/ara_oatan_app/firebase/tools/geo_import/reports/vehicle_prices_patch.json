@@ -1,0 +1,179 @@
+{
+  "at": "2026-08-05T09:45:46.959Z",
+  "apply": true,
+  "prices": {
+    "economy": {
+      "sr": 100,
+      "agl_saat": 3,
+      "ar": "سيارة اقتصادية"
+    },
+    "suv_family": {
+      "sr": 150,
+      "agl_saat": 3,
+      "ar": "سيارة عائلية"
+    },
+    "offroad_4x4": {
+      "sr": 150,
+      "agl_saat": 3,
+      "ar": "سيارة دفع رباعي"
+    },
+    "luxury": {
+      "sr": 250,
+      "agl_saat": 3,
+      "ar": "سيارة فارهة"
+    },
+    "coach_mini": {
+      "sr": 100,
+      "agl_saat": 5,
+      "ar": "حافلة صغيرة"
+    },
+    "medium_bus": {
+      "sr": 120,
+      "agl_saat": 5,
+      "ar": "حافلة متوسطة (25 راكب)"
+    },
+    "coach_tour": {
+      "sr": 180,
+      "agl_saat": 5,
+      "ar": "حافلة كبيرة (49 راكب)"
+    },
+    "wheelchair": {
+      "sr": 150,
+      "agl_saat": 5,
+      "ar": "حافلة ذوي الاحتياجات الخاصة"
+    },
+    "van_vip": {
+      "sr": 300,
+      "agl_saat": 5,
+      "ar": "حافلة VIP"
+    }
+  },
+  "results": [
+    {
+      "id": "economy",
+      "prev": {
+        "sr": 160,
+        "agl_saat": 4
+      },
+      "next": {
+        "sr": 100,
+        "agl_saat": 3
+      },
+      "status": "staging-ok",
+      "ar": "سيارة اقتصادية",
+      "firestore": "patched"
+    },
+    {
+      "id": "suv_family",
+      "prev": {
+        "sr": 320,
+        "agl_saat": 4
+      },
+      "next": {
+        "sr": 150,
+        "agl_saat": 3
+      },
+      "status": "staging-ok",
+      "ar": "سيارة عائلية",
+      "firestore": "patched"
+    },
+    {
+      "id": "offroad_4x4",
+      "prev": {
+        "sr": 340,
+        "agl_saat": 4
+      },
+      "next": {
+        "sr": 150,
+        "agl_saat": 3
+      },
+      "status": "staging-ok",
+      "ar": "سيارة دفع رباعي",
+      "firestore": "patched"
+    },
+    {
+      "id": "luxury",
+      "prev": {
+        "sr": 480,
+        "agl_saat": 5
+      },
+      "next": {
+        "sr": 250,
+        "agl_saat": 3
+      },
+      "status": "staging-ok",
+      "ar": "سيارة فارهة",
+      "firestore": "patched"
+    },
+    {
+      "id": "coach_mini",
+      "prev": {
+        "sr": 600,
+        "agl_saat": 6
+      },
+      "next": {
+        "sr": 100,
+        "agl_saat": 5
+      },
+      "status": "staging-ok",
+      "ar": "حافلة صغيرة",
+      "firestore": "patched"
+    },
+    {
+      "id": "medium_bus",
+      "prev": {
+        "sr": 750,
+        "agl_saat": 6
+      },
+      "next": {
+        "sr": 120,
+        "agl_saat": 5
+      },
+      "status": "staging-ok",
+      "ar": "حافلة متوسطة (25 راكب)",
+      "firestore": "patched"
+    },
+    {
+      "id": "coach_tour",
+      "prev": {
+        "sr": 900,
+        "agl_saat": 6
+      },
+      "next": {
+        "sr": 180,
+        "agl_saat": 5
+      },
+      "status": "staging-ok",
+      "ar": "حافلة كبيرة (49 راكب)",
+      "firestore": "patched"
+    },
+    {
+      "id": "wheelchair",
+      "prev": {
+        "sr": 280,
+        "agl_saat": 4
+      },
+      "next": {
+        "sr": 150,
+        "agl_saat": 5
+      },
+      "status": "staging-ok",
+      "ar": "حافلة ذوي الاحتياجات الخاصة",
+      "firestore": "patched"
+    },
+    {
+      "id": "van_vip",
+      "prev": {
+        "sr": 450,
+        "agl_saat": 5
+      },
+      "next": {
+        "sr": 300,
+        "agl_saat": 5
+      },
+      "status": "staging-ok",
+      "ar": "حافلة VIP",
+      "firestore": "patched"
+    }
+  ]
+}

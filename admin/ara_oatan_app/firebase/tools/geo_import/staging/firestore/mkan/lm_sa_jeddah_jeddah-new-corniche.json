@@ -1,0 +1,56 @@
+{
+  "__path": "mkan/lm_sa_jeddah_jeddah-new-corniche",
+  "__writtenAt": "2026-08-05T03:27:21.015Z",
+  "naim": "كورنيش جدة الجديد",
+  "osf": "واجهة بحرية حديثة على البحر الأحمر للنزهة والمشي والمناظر الساحلية.",
+  "names_i18n": {
+    "ar": "كورنيش جدة الجديد",
+    "en": "Jeddah New Corniche",
+    "ru": "Новая набережная Джидды",
+    "ky": "Жидданын жаңы набережнаясы"
+  },
+  "osf_i18n": {
+    "ar": "واجهة بحرية حديثة على البحر الأحمر للنزهة والمشي والمناظر الساحلية.",
+    "en": "Modern Red Sea waterfront for walking, leisure, and coastal views.",
+    "ru": "Современная набережная Красного моря для прогулок и отдыха.",
+    "ky": "Кызыл деңиздин заманбап жээги — сейилдөө жана деңиз көрүнүштөрү."
+  },
+  "address": "كورنيش جدة، جدة، المملكة العربية السعودية",
+  "address_i18n": {
+    "ar": "كورنيش جدة، جدة، المملكة العربية السعودية",
+    "en": "Jeddah Corniche, Jeddah, Saudi Arabia",
+    "ru": "Набережная Джидды, Джидда, Саудовская Аравия",
+    "ky": "Жидда набережнаясы, Жидда, Сауд Арабиясы"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 21.589,
+    "longitude": 39.108
+  },
+  "img1": "assets/images/landmarks/jeddah_new_corniche.png",
+  "img2": "",
+  "img3": "",
+  "images_license_verified": true,
+  "img_source": "user_photo_IMG_6958",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.8,
+  "add_saat": 2,
+  "id_cit": "cities/region_sa_jeddah",
+  "id_vill": "villages/city_sa_jeddah",
+  "Rev_dolh": "countries/saudi_arabia",
+  "country_iso": "SA",
+  "verification_status": "verified",
+  "verification_confidence": 0.95,
+  "geo_import_id": "lm_sa_jeddah_jeddah-new-corniche",
+  "geo_import_slug": "jeddah-new-corniche",
+  "geo_import_source": "sa_five_provinces_2026",
+  "img1_firebase": "data-url"
+}

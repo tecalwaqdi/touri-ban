@@ -1,0 +1,15 @@
+{
+  "at": "2026-08-05T10:08:41.349Z",
+  "apply": true,
+  "id": "lm_sa_taif_othaim-mall-taif",
+  "ar": "العثيم هليز",
+  "names_i18n": {
+    "ar": "العثيم هليز",
+    "en": "Othaim Hills",
+    "ru": "Отайм Хиллз",
+    "ky": "Отайм Хиллз"
+  },
+  "asset": "assets/images/landmarks/taif_othaim_hills.png",
+  "compressedBytes": 318585,
+  "status": "patched"
+}

@@ -1,21 +1,25 @@
 {
   "__path": "type_car/offroad_4x4",
-  "__writtenAt": "2026-07-22T11:29:02.573Z",
+  "__writtenAt": "2026-08-05T11:10:56.043Z",
   "__target": "local-staging",
-  "naim": "دفع رباعي",
+  "naim": "سيارة دفع رباعي",
   "names_i18n": {
-    "ar": "دفع رباعي",
-    "en": "4x4",
+    "ar": "سيارة دفع رباعي",
+    "en": "4x4 SUV",
     "ru": "Полный привод 4x4",
     "ky": "4x4",
     "uz": "4x4"
   },
   "codeCar": "offroad_4x4",
-  "sr": 340,
-  "agl_saat": 4,
+  "sr": 150,
+  "agl_saat": 3,
   "actev": true,
   "ishafelh": false,
   "not": "4x4",
   "geo_import_id": "vehcat_offroad_4x4",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "touri_geo_import",
+  "img": "assets/images/vehicles/suv_car.jpg",
+  "__note": "Production img field was updated to embedded JPEG data-url via upload_vehicle_images_to_firebase.js",
+  "sort_order": 3,
+  "num_trteb": 3
 }

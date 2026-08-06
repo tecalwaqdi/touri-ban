@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_bishkek_bishkek-panfilov",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "منتزه بانفيلوف",
+  "osf": "منتزه بانفيلوف — معلم في بيشكيك.",
+  "names_i18n": {
+    "ar": "منتزه بانفيلوف",
+    "en": "Panfilov Park",
+    "ru": "Парк Панфилова",
+    "ky": "Панфилов паркы"
+  },
+  "osf_i18n": {
+    "ar": "منتزه بانفيلوف — معلم في بيشكيك.",
+    "en": "Panfilov Park — landmark in Bishkek.",
+    "ru": "Парк Панфилова — достопримечательность в регионе Бишкек.",
+    "ky": "Панфилов паркы — Бишкек аймагындагы жай."
+  },
+  "address": "منتزه بانفيلوف، بيشكيك، بيشكيك، قيرغيزستان",
+  "address_i18n": {
+    "ar": "منتزه بانفيلوف، بيشكيك، بيشكيك، قيرغيزستان",
+    "en": "Panfilov Park, Bishkek, Bishkek, Kyrgyzstan",
+    "ru": "Парк Панфилова, Бишкек, Бишкек, Кыргызстан",
+    "ky": "Панфилов паркы, Бишкек, Бишкек, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 42.8798,
+    "longitude": 74.6032
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Panfilov_park.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Davide Mauro",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_bishkek",
+  "id_vill": "villages/city_kg_bishkek",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_bishkek_bishkek-panfilov",
+  "geo_import_slug": "bishkek-panfilov",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

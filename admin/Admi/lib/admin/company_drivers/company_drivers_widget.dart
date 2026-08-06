@@ -73,10 +73,10 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
     UserRecord driver, {
     required bool activate,
   }) async {
-    final title = activate ? 'تأكيد التفعيل' : 'تأكيد الإيقاف';
+    final title = activate ? uiTr(context, 'تأكيد التفعيل') : uiTr(context, 'تأكيد الإيقاف');
     final content = activate
-        ? 'هل أنت متأكد من تفعيل السائق؟'
-        : 'هل أنت متأكد من إيقاف السائق؟';
+        ? uiTr(context, 'هل أنت متأكد من تفعيل السائق؟')
+        : uiTr(context, 'هل أنت متأكد من إيقاف السائق؟');
 
     final confirmed = await showDialog<bool>(
           context: context,
@@ -106,7 +106,7 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(activate ? 'تم تفعيل السائق' : 'تم إيقاف السائق'),
+          content: Text(activate ? uiTr(context, 'تم تفعيل السائق') : uiTr(context, 'تم إيقاف السائق')),
         ),
       );
       safeSetState(() {});
@@ -123,7 +123,7 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
     final theme = FlutterFlowTheme.of(context);
     final companyRef = _companyRef;
     final companyName =
-        currentUserDocument?.transportCompanyText ?? 'شركة النقل';
+        currentUserDocument?.transportCompanyText ?? uiTr(context, 'شركة النقل');
 
     return AdminLayoutWidget(
       scaffoldKey: scaffoldKey,
@@ -143,7 +143,7 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
                         size: 48, color: theme.secondaryText),
                     const SizedBox(height: 12),
                     Text(
-                      'حسابك غير مربوط بشركة نقل',
+                      uiTr(context, 'حسابك غير مربوط بشركة نقل'),
                       style: theme.titleMedium,
                       textAlign: TextAlign.center,
                     ),
@@ -183,7 +183,7 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Text(
-                                  'عدد السائقين: ${totalDrivers > 0 ? totalDrivers : drivers.length}',
+                                  '${uiTr(context, 'عدد السائقين')}: ${totalDrivers > 0 ? totalDrivers : drivers.length}',
                               style: theme.labelLarge.override(
                                 fontFamily: theme.labelLargeFamily,
                                 color: theme.secondaryText,
@@ -196,7 +196,7 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 32),
                                 child: Text(
-                                  'لا يوجد سائقون مسجّلون بعد',
+                                  uiTr(context, 'لا يوجد سائقون مسجّلون بعد'),
                                   textAlign: TextAlign.center,
                                   style: theme.titleMedium,
                                 ),
@@ -231,8 +231,8 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
                                     ),
                                     trailing: IconButton(
                                       tooltip: driver.actevMndob
-                                          ? 'إيقاف السائق'
-                                          : 'تفعيل السائق',
+                                          ? uiTr(context, 'إيقاف السائق')
+                                          : uiTr(context, 'تفعيل السائق'),
                                       icon: Icon(
                                         driver.actevMndob
                                             ? Icons.check_circle_rounded

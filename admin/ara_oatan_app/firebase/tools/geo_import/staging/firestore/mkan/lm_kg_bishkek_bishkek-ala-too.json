@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_bishkek_bishkek-ala-too",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "ساحة ألا توو",
+  "osf": "ساحة ألا توو — معلم في بيشكيك.",
+  "names_i18n": {
+    "ar": "ساحة ألا توو",
+    "en": "Ala-Too Square",
+    "ru": "Площадь Ала-Тоо",
+    "ky": "Ала-Тоо аянты"
+  },
+  "osf_i18n": {
+    "ar": "ساحة ألا توو — معلم في بيشكيك.",
+    "en": "Ala-Too Square — landmark in Bishkek.",
+    "ru": "Площадь Ала-Тоо — достопримечательность в регионе Бишкек.",
+    "ky": "Ала-Тоо аянты — Бишкек аймагындагы жай."
+  },
+  "address": "ساحة ألا توو، بيشكيك، بيشكيك، قيرغيزستان",
+  "address_i18n": {
+    "ar": "ساحة ألا توو، بيشكيك، بيشكيك، قيرغيزستان",
+    "en": "Ala-Too Square, Bishkek, Bishkek, Kyrgyzstan",
+    "ru": "Площадь Ала-Тоо, Бишкек, Бишкек, Кыргызстан",
+    "ky": "Ала-Тоо аянты, Бишкек, Бишкек, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 42.8746,
+    "longitude": 74.6122
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/5/54/Changing_of_the_guard_Ala-Too_Square%2C_Bishkek%2C_Kyrgyzstan.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Petar Milošević",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_bishkek",
+  "id_vill": "villages/city_kg_bishkek",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_bishkek_bishkek-ala-too",
+  "geo_import_slug": "bishkek-ala-too",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

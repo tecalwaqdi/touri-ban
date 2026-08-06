@@ -565,8 +565,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                                                   onPressed: () =>
                                                                       Navigator.pop(
                                                                           alertDialogContext),
-                                                                  child: const Text(
-                                                                      'حسناً'),
+                                                                  child: Text(uiTr(context, 'حسناً')),
                                                                 ),
                                                               ],
                                                             );

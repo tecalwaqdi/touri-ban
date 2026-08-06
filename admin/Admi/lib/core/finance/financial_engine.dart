@@ -99,7 +99,7 @@ abstract final class OrderStatusHelper {
 
   static bool countsTowardRevenue(OrderRecord order) => isPaid(order);
 
-  /// Arabic payment chip label for admin booking details.
+  /// Canonical Arabic payment chip label (localize at display with [uiTr]).
   static String paymentStatusArabicLabel(OrderRecord order) {
     switch (statusOf(order)) {
       case OrderPaymentStatus.paid:

@@ -127,7 +127,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
       context,
       action: AdminCrudAction.add,
       message:
-          'تمت إضافة/تحديث ${_vehicleTypePresets.length} نوع مركبة جاهز',
+          '${uiTr(context, 'تمت إضافة/تحديث')} ${_vehicleTypePresets.length} ${uiTr(context, 'نوع مركبة جاهز')}',
       refreshScope: AdminListScope.typeCars,
       invalidateStats: false,
     );
@@ -225,25 +225,24 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                   await showDialog<bool>(
                                                 context: context,
                                                 builder: (ctx) => AlertDialog(
-                                                  title: const Text(
-                                                      'تأكيد باقة المركبات'),
+                                                  title: Text(uiTr(context, 'تأكيد باقة المركبات')),
                                                   content: Text(
-                                                    'سيتم إضافة/تحديث ${_vehicleTypePresets.length} نوع مركبة '
-                                                    'بترجمات (عربي/إنجليزي/روسي/قيرغيزي/أوزبكي).\n'
-                                                    'العملية آمنة (merge) ولن تحذف الأنواع الحالية.',
+                                                    '${uiTr(context, 'سيتم إضافة/تحديث')} ${_vehicleTypePresets.length} ${uiTr(context, 'نوع مركبة')} ' +
+                                                    uiTr(context, 'بترجمات (عربي/إنجليزي/روسي/قيرغيزي/أوزبكي).\\n') +
+                                                    uiTr(context, 'العملية آمنة (merge) ولن تحذف الأنواع الحالية.'),
                                                   ),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () =>
                                                           Navigator.pop(
                                                               ctx, false),
-                                                      child: const Text('إلغاء'),
+                                                      child: Text(uiTr(context, 'إلغاء')),
                                                     ),
                                                     FilledButton(
                                                       onPressed: () =>
                                                           Navigator.pop(
                                                               ctx, true),
-                                                      child: const Text('تأكيد'),
+                                                      child: Text(uiTr(context, 'تأكيد')),
                                                     ),
                                                   ],
                                                 ),
@@ -263,7 +262,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                               }
                                             },
                                             text:
-                                                'إضافة باقة مركبات (${_vehicleTypePresets.length})',
+                                                '${uiTr(context, 'إضافة باقة مركبات')} (${_vehicleTypePresets.length})',
                                             icon: const Icon(
                                               Icons.library_add_rounded,
                                               size: 15.0,
@@ -398,7 +397,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                               if (snapshot.hasError) {
                                                 return Center(
                                                   child: Text(
-                                                    'تعذر تحميل أنواع السيارات',
+                                                    uiTr(context, 'تعذر تحميل أنواع السيارات'),
                                                     style: FlutterFlowTheme.of(
                                                             context)
                                                         .bodyMedium,
@@ -552,9 +551,9 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                         decimalType:
                                                                             DecimalType.automatic,
                                                                         currency:
-                                                                            'ريال ',
+                                                                            uiTr(context, 'ريال '),
                                                                       ),
-                                                                      'غير معرفة',
+                                                                      uiTr(context, 'غير معرفة'),
                                                                     )}  للساعة الواحدة',
                                                                     style: FlutterFlowTheme.of(
                                                                             context)
@@ -585,7 +584,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                         .start,
                                                                 children: [
                                                                   Text(
-                                                                    '${listViewTypeCarRecord.aglSaat.toString()} ساعات  هو الحد الأدنى للطلب',
+                                                                    '${listViewTypeCarRecord.aglSaat.toString()} ${uiTr(context, 'ساعات')}  ${uiTr(context, 'هو الحد الأدنى للطلب')}',
                                                                     style: FlutterFlowTheme.of(
                                                                             context)
                                                                         .bodySmall
@@ -651,8 +650,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                       builder:
                                                                           (ctx) {
                                                                         return AlertDialog(
-                                                                          title: const Text(
-                                                                              'تعديل نوع السيارة'),
+                                                                          title: Text(uiTr(context, 'تعديل نوع السيارة')),
                                                                           content:
                                                                               SingleChildScrollView(
                                                                             child: Column(
@@ -699,7 +697,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                                 decoration:
                                                                                     InputDecoration(
                                                                                   labelText:
-                                                                                      'السعر للساعة',
+                                                                                      uiTr(context, 'السعر للساعة'),
                                                                                 ),
                                                                               ),
                                                                             ],
@@ -712,8 +710,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                                       ctx,
                                                                                       false),
                                                                               child:
-                                                                                  const Text(
-                                                                                      'إلغاء'),
+                                                                                  Text(uiTr(context, 'إلغاء')),
                                                                             ),
                                                                             TextButton(
                                                                               onPressed: () =>
@@ -721,8 +718,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                                       ctx,
                                                                                       true),
                                                                               child:
-                                                                                  const Text(
-                                                                                      'حفظ'),
+                                                                                  Text(uiTr(context, 'حفظ')),
                                                                             ),
                                                                           ],
                                                                         );
@@ -866,10 +862,8 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                       builder:
                                                                           (ctx) {
                                                                         return AlertDialog(
-                                                                          title: const Text(
-                                                                              'حذف نوع السيارة'),
-                                                                          content: const Text(
-                                                                              'هل أنت متأكد من حذف هذا النوع؟ لا يمكن التراجع.'),
+                                                                          title: Text(uiTr(context, 'حذف نوع السيارة')),
+                                                                          content: Text(uiTr(context, 'هل أنت متأكد من حذف هذا النوع؟ لا يمكن التراجع.')),
                                                                           actions: [
                                                                             TextButton(
                                                                               onPressed: () =>
@@ -877,8 +871,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                                       ctx,
                                                                                       false),
                                                                               child:
-                                                                                  const Text(
-                                                                                      'إلغاء'),
+                                                                                  Text(uiTr(context, 'إلغاء')),
                                                                             ),
                                                                             TextButton(
                                                                               onPressed: () =>
@@ -919,7 +912,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                             AdminCrudAction
                                                                                 .delete,
                                                                         message:
-                                                                            'تم حذف نوع السيارة بنجاح',
+                                                                            uiTr(context, 'تم حذف نوع السيارة بنجاح'),
                                                                         refreshScope:
                                                                             AdminListScope
                                                                                 .typeCars,
@@ -940,7 +933,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                       );
                                                                     }
                                                                   },
-                                                                  text: 'حذف',
+                                                                  text: uiTr(context, 'حذف'),
                                                                   icon: const Icon(
                                                                     Icons
                                                                         .delete_outline,

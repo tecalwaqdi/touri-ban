@@ -73,14 +73,14 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
         FFAppState().RevciteTEXT.trim().isNotEmpty) {
       return FFAppState().RevciteTEXT;
     }
-    return 'اختر المدينة';
+    return uiTr(context, 'اختر المدينة');
   }
 
   Widget _buildCountryField(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final countryLabel = valueOrDefault<String>(
       FFAppState().RevdolhTEXT,
-      'يرجى تحديد الدولة',
+      uiTr(context, 'يرجى تحديد الدولة'),
     );
     final lockedForAgent = AdminRoleService.isCountryAgent;
 
@@ -943,7 +943,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                         Text(
                                           valueOrDefault<String>(
                                             FFAppState().RevRegTEXT,
-                                            'يرجى تحديد المنطقة / المحافظة',
+                                            uiTr(context, 'يرجى تحديد المنطقة / المحافظة'),
                                           ),
                                           style: FlutterFlowTheme.of(context)
                                               .bodyLarge
@@ -1297,7 +1297,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                       }
                     },
                     text: _isSaving
-                        ? 'جاري الحفظ...'
+                        ? uiTr(context, 'جاري الحفظ...')
                         : FFLocalizations.of(context).getText(
                       'yi8yug3m' /* Add Landmark */,
                     ),

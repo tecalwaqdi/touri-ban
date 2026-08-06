@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
 import '/core/toury_auth_navigation.dart';
+import '/core/toury_brand_widgets.dart';
 import '/core/toury_google_sign_in.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
@@ -195,23 +196,33 @@ class _LogenWidgetState extends State<LogenWidget>
     final colors = context.dsColors;
     final typography = context.dsTypography;
 
+    final logoW =
+        compact ? 132.0 : DsConstants.authLogoWidth.toDouble();
+    final logoH =
+        compact ? 58.0 : DsConstants.authLogoHeight.toDouble();
+
     return [
       Center(
-        child: ClipRRect(
-          borderRadius: DsRadius.small,
-          child: Image.asset(
-            'assets/images/torytaxi.png',
-            width: compact ? 120.0 : DsConstants.logoWidth,
-            height: compact ? 76.0 : DsConstants.heroHeight / 2,
-            fit: BoxFit.contain,
+        child: DsScaleFade(
+          child: TouryLogo(
+            width: logoW,
+            height: logoH,
+            withBackground: false,
           ),
         ),
       ),
-      const SizedBox(height: DsSpacing.lg),
+      const SizedBox(height: DsSpacing.md),
+      const Center(
+        child: Vision2030Mark(height: 38, maxWidth: 156),
+      ),
+      const SizedBox(height: DsSpacing.xl),
       Text(
         'Login'.tr(),
         textAlign: TextAlign.center,
-        style: typography.headlineMedium.copyWith(color: colors.textPrimary),
+        style: typography.headlineMedium.copyWith(
+          color: colors.textPrimary,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       const SizedBox(height: DsSpacing.xl),
       DsTextField.email(

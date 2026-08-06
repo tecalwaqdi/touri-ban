@@ -164,7 +164,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
           l10n: l10n,
           theme: theme,
           landmarks: landmarks,
-          totalLabel: 'العدد',
+          totalLabel: uiTr(context, 'العدد'),
           listState: listState,
           partnerTotal: partnerTotal,
           filteredFromTotal: allLandmarks.length != landmarks.length,
@@ -339,16 +339,16 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
                   const SizedBox(height: 14),
                   Text(
                     isSearching
-                        ? 'لا توجد نتائج للبحث'
+                        ? uiTr(context, 'لا توجد نتائج للبحث')
                         : (widget.partnersOnly
-                            ? 'لا يوجد شركاء مسجلون'
-                            : 'لا توجد معالم مسجلة'),
+                            ? uiTr(context, 'لا يوجد شركاء مسجلون')
+                            : uiTr(context, 'لا توجد معالم مسجلة')),
                     style: theme.titleMedium,
                   ),
                   if (isSearching) ...[
                     const SizedBox(height: 6),
                     Text(
-                      'جرّب البحث باسم آخر أو جزء من العنوان',
+                      uiTr(context, 'جرّب البحث باسم آخر أو جزء من العنوان'),
                       style: theme.bodySmall.override(
                         fontFamily: theme.bodySmallFamily,
                         color: theme.secondaryText,
@@ -444,11 +444,11 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
             : l10n.getText('95vv0eea'),
         child: AdminPageBody(
           title: widget.partnersOnly
-              ? 'الشركاء السياحيون'
+              ? uiTr(context, 'الشركاء السياحيون')
               : l10n.getText('7lduezp8'),
           subtitle: widget.partnersOnly
-              ? 'معالم الشركاء المعتمدة فقط'
-              : 'إدارة وعرض المعالم السياحية',
+              ? uiTr(context, 'معالم الشركاء المعتمدة فقط')
+              : uiTr(context, 'إدارة وعرض المعالم السياحية'),
           scrollable: true,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -499,7 +499,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
                       l10n: l10n,
                       theme: theme,
                       landmarks: landmarks,
-                      totalLabel: 'نتائج البحث',
+                      totalLabel: uiTr(context, 'نتائج البحث'),
                       listState: null,
                     );
                   },
@@ -608,7 +608,7 @@ class _LandmarksSummaryBar extends StatelessWidget {
               Expanded(
                 child: Text(
                   '$totalLabel: $count${hasMore ? '+' : ''}'
-                  '${filteredFromTotal && partnerTotal != null ? ' من $partnerTotal' : ''}',
+                  '${filteredFromTotal && partnerTotal != null ? ' ${uiTr(context, 'من')} ${partnerTotal}' : ''}',
                   style: theme.titleSmall.override(
                     fontFamily: theme.titleSmallFamily,
                     fontWeight: FontWeight.w700,
@@ -728,12 +728,12 @@ class _LandmarksTable extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               child: Row(
                 children: [
-                  _TableHeaderCell('المعلم', flex: 4, theme: theme),
-                  _TableHeaderCell('الموقع', flex: 3, theme: theme),
-                  _TableHeaderCell('التصنيف', flex: 2, theme: theme),
-                  _TableHeaderCell('الحالة', flex: 2, theme: theme),
-                  _TableHeaderCell('الخدمات', flex: 2, theme: theme),
-                  _TableHeaderCell('إجراءات', flex: 2, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'المعلم'), flex: 4, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'الموقع'), flex: 3, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'التصنيف'), flex: 2, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'الحالة'), flex: 2, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'الخدمات'), flex: 2, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'إجراءات'), flex: 2, theme: theme),
                 ],
               ),
             ),
@@ -1411,7 +1411,7 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        active ? 'نشط' : 'غير نشط',
+        active ? uiTr(context, 'نشط') : uiTr(context, 'غير نشط'),
         style: theme.labelSmall.override(
           fontFamily: theme.labelSmallFamily,
           color: active ? const Color(0xFF2E7D32) : const Color(0xFFE65100),
@@ -1437,7 +1437,7 @@ class _PartnerBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        'شريك',
+        uiTr(context, 'شريك'),
         style: theme.labelSmall.override(
           fontFamily: theme.labelSmallFamily,
           color: AdminUi.brandTeal,
@@ -1463,7 +1463,7 @@ class _AdsBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        'إعلان',
+        uiTr(context, 'إعلان'),
         style: theme.labelSmall.override(
           fontFamily: theme.labelSmallFamily,
           color: const Color(0xFF1565C0),

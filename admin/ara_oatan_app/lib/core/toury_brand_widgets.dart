@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '/core/app_design_system.dart';
 import '/core/toury_image.dart';
+import '/design_system/design_system.dart';
 
-/// شعار الشريك «توري تاكسي» بألوانه الأصلية (فيروزي + أحمر).
+/// شعار الشريك «توري تاكسي» بألوانه الأصلية (فيروزي + أحمر) وخلفية شفافة.
 class TouryLogo extends StatelessWidget {
   const TouryLogo({
     super.key,
@@ -18,11 +19,11 @@ class TouryLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final image = TouryAssetImage(
-      asset: 'assets/images/torytaxi.png',
+      asset: 'assets/images/torytaxi_transparent.png',
       width: width,
       height: height,
       fit: BoxFit.contain,
-      fallbackAsset: 'assets/images/logoarawatan.png',
+      fallbackAsset: 'assets/images/torytaxi.png',
     );
 
     if (!withBackground) return image;
@@ -41,6 +42,53 @@ class TouryLogo extends StatelessWidget {
         ],
       ),
       child: image,
+    );
+  }
+}
+
+/// الشعار الرسمي لرؤية السعودية 2030 — عرض أنيق وغير مزعج.
+class Vision2030Mark extends StatelessWidget {
+  const Vision2030Mark({
+    super.key,
+    this.height = 40,
+    this.maxWidth = 168,
+    this.opacity = 0.94,
+  });
+
+  final double height;
+  final double maxWidth;
+  final double opacity;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final mark = Opacity(
+      opacity: opacity,
+      child: Image.asset(
+        'assets/images/brand/vision_2030.png',
+        height: height,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+        semanticLabel: 'Saudi Vision 2030',
+      ),
+    );
+
+    // النص الداكن مُعدّ للخلفيات الفاتحة؛ على الوضع الداكن نضعه على سطح فاتح خفيف.
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: height + 8),
+      child: isDark
+          ? Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: DsSpacing.sm,
+                vertical: DsSpacing.xxs,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.94),
+                borderRadius: DsRadius.medium,
+              ),
+              child: mark,
+            )
+          : mark,
     );
   }
 }

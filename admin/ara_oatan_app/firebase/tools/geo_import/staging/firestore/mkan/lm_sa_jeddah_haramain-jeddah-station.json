@@ -1,0 +1,56 @@
+{
+  "__path": "mkan/lm_sa_jeddah_haramain-jeddah-station",
+  "__writtenAt": "2026-08-05T03:27:17.557Z",
+  "naim": "محطة قطار الحرمين بجدة",
+  "osf": "محطة قطار الحرمين السريع التي تربط جدة بمكة المكرمة والمدينة المنورة.",
+  "names_i18n": {
+    "ar": "محطة قطار الحرمين بجدة",
+    "en": "Jeddah Haramain Train Station",
+    "ru": "Станция Харамайн в Джидде",
+    "ky": "Жиддадагы Харамайн станциясы"
+  },
+  "osf_i18n": {
+    "ar": "محطة قطار الحرمين السريع التي تربط جدة بمكة المكرمة والمدينة المنورة.",
+    "en": "Haramain High Speed Rail station linking Jeddah with Makkah and Madinah.",
+    "ru": "Станция высокоскоростной линии Харамайн, связывающая Джидду с Меккой и Мединой.",
+    "ky": "Жидданы Мекке жана Мадина менен туташтырган Харамайн ылдам поезд станциясы."
+  },
+  "address": "محطة مطار الملك عبدالعزيز، جدة، المملكة العربية السعودية",
+  "address_i18n": {
+    "ar": "محطة مطار الملك عبدالعزيز، جدة، المملكة العربية السعودية",
+    "en": "King Abdulaziz Airport Station, Jeddah, Saudi Arabia",
+    "ru": "Станция аэропорта короля Абдул-Азиза, Джидда, Саудовская Аравия",
+    "ky": "Король Абдулазиз аэропорт станциясы, Жидда, Сауд Арабиясы"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 21.6585156,
+    "longitude": 39.1746303
+  },
+  "img1": "assets/images/landmarks/jeddah_haramain_station.png",
+  "img2": "",
+  "img3": "",
+  "images_license_verified": true,
+  "img_source": "user_photo_IMG_6963",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.8,
+  "add_saat": 2,
+  "id_cit": "cities/region_sa_jeddah",
+  "id_vill": "villages/city_sa_jeddah",
+  "Rev_dolh": "countries/saudi_arabia",
+  "country_iso": "SA",
+  "verification_status": "verified",
+  "verification_confidence": 0.95,
+  "geo_import_id": "lm_sa_jeddah_haramain-jeddah-station",
+  "geo_import_slug": "haramain-jeddah-station",
+  "geo_import_source": "sa_five_provinces_2026",
+  "img1_firebase": "data-url"
+}

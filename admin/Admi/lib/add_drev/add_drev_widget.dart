@@ -78,22 +78,22 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _bootstrapForm();
       _model.nameTextControllerValidator = (context, val) {
-        if (val == null || val.trim().isEmpty) return 'يرجى إدخال الاسم الكامل';
-        if (val.trim().length < 3) return 'الاسم قصير جداً';
+        if (val == null || val.trim().isEmpty) return uiTr(context, 'يرجى إدخال الاسم الكامل');
+        if (val.trim().length < 3) return uiTr(context, 'الاسم قصير جداً');
         return null;
       };
       _model.emailTextControllerValidator = (context, val) {
         if (widget.isEditMode) return null;
-        if (val == null || val.trim().isEmpty) return 'يرجى إدخال البريد الإلكتروني';
+        if (val == null || val.trim().isEmpty) return uiTr(context, 'يرجى إدخال البريد الإلكتروني');
         if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(val.trim())) {
-          return 'صيغة البريد غير صحيحة';
+          return uiTr(context, 'صيغة البريد غير صحيحة');
         }
         return null;
       };
       _model.mobilTextControllerValidator = (context, val) {
-        if (val == null || val.trim().isEmpty) return 'يرجى إدخال رقم الجوال';
+        if (val == null || val.trim().isEmpty) return uiTr(context, 'يرجى إدخال رقم الجوال');
         if (val.replaceAll(RegExp(r'\D'), '').length < 9) {
-          return 'رقم الجوال غير مكتمل';
+          return uiTr(context, 'رقم الجوال غير مكتمل');
         }
         return null;
       };
@@ -425,10 +425,10 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       final message = switch (e.code) {
-        'email-already-in-use' => 'البريد الإلكتروني مستخدم مسبقاً',
-        'invalid-email' => 'البريد الإلكتروني غير صالح',
-        'weak-password' => 'كلمة المرور ضعيفة جداً',
-        _ => 'تعذر إضافة المندوب: ${e.message ?? e.code}',
+        'email-already-in-use' => uiTr(context, 'البريد الإلكتروني مستخدم مسبقاً'),
+        'invalid-email' => uiTr(context, 'البريد الإلكتروني غير صالح'),
+        'weak-password' => uiTr(context, 'كلمة المرور ضعيفة جداً'),
+        _ => '${uiTr(context, 'تعذر إضافة المندوب')}: ${e.message ?? e.code}',
       };
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message)),
@@ -439,8 +439,8 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         SnackBar(
           content: Text(
             widget.isEditMode
-                ? 'تعذر تحديث المندوب: $e'
-                : 'تعذر إضافة المندوب: $e',
+                ? '${uiTr(context, 'تعذر تحديث المندوب')}: $e'
+                : '${uiTr(context, 'تعذر إضافة المندوب')}: $e',
           ),
         ),
       );
@@ -457,17 +457,17 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     final theme = FlutterFlowTheme.of(context);
 
     return AdminEditScaffold(
-      title: isEdit ? 'تعديل بيانات المندوب' : 'إضافة مندوب جديد',
+      title: isEdit ? uiTr(context, 'تعديل بيانات المندوب') : uiTr(context, 'إضافة مندوب جديد'),
       subtitle: isEdit
-          ? 'عدّل البيانات المطلوبة ثم اضغط «حفظ التعديلات»'
-          : 'املأ الحقول المميزة بـ (*) ثم اضغط «إضافة المندوب»',
+          ? uiTr(context, 'عدّل البيانات المطلوبة ثم اضغط «حفظ التعديلات»')
+          : uiTr(context, 'املأ الحقول المميزة بـ (*) ثم اضغط «إضافة المندوب»'),
       isLoading: _model.isLoadingEdit,
       floatingAction: AdminPrimaryButton(
         label: _model.isSubmitting
-            ? 'جاري الحفظ...'
+            ? uiTr(context, 'جاري الحفظ...')
             : isEdit
-                ? 'حفظ التعديلات'
-                : 'إضافة المندوب',
+                ? uiTr(context, 'حفظ التعديلات')
+                : uiTr(context, 'إضافة المندوب'),
         icon: isEdit ? Icons.save_rounded : Icons.person_add_rounded,
         isLoading: _model.isSubmitting,
         onPressed: _model.isSubmitting ? null : _submitRepresentative,
@@ -483,7 +483,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
               sectionTitle: uiTr(context, '١ — البيانات الشخصية'),
               children: [
                 _buildFieldHint(
-                  'أدخل بيانات التواصل الأساسية للمندوب. سيستخدم البريد وكلمة المرور لتسجيل الدخول في تطبيق المناديب.',
+                  uiTr(context, 'أدخل بيانات التواصل الأساسية للمندوب. سيستخدم البريد وكلمة المرور لتسجيل الدخول في تطبيق المناديب.'),
                 ),
                 const SizedBox(height: 12),
                 _buildTextField(
@@ -491,8 +491,8 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                   controller: _model.nameTextController!,
                   focusNode: _model.nameFocusNode,
                   label: uiTr(context, 'الاسم الكامل *'),
-                  hint: 'مثال: محمد أحمد العتيبي',
-                  helper: 'اكتب الاسم الثلاثي كما يظهر في الهوية',
+                  hint: uiTr(context, 'مثال: محمد أحمد العتيبي'),
+                  helper: uiTr(context, 'اكتب الاسم الثلاثي كما يظهر في الهوية'),
                   icon: Icons.person_outline_rounded,
                   validator: _model.nameTextControllerValidator,
                   textInputAction: TextInputAction.next,
@@ -505,8 +505,8 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                   label: uiTr(context, 'البريد الإلكتروني *'),
                   hint: 'example@email.com',
                   helper: isEdit
-                      ? 'لا يمكن تغيير البريد من هنا'
-                      : 'سيُستخدم كاسم مستخدم لتسجيل دخول المندوب',
+                      ? uiTr(context, 'لا يمكن تغيير البريد من هنا')
+                      : uiTr(context, 'سيُستخدم كاسم مستخدم لتسجيل دخول المندوب'),
                   icon: Icons.alternate_email_rounded,
                   readOnly: isEdit,
                   keyboardType: TextInputType.emailAddress,
@@ -520,7 +520,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                   focusNode: _model.mobilFocusNode,
                   label: uiTr(context, 'رقم الجوال *'),
                   hint: '05xxxxxxxx',
-                  helper: 'أدخل رقم سعودي يبدأ بـ 05 ويتكون من 10 أرقام',
+                  helper: uiTr(context, 'أدخل رقم سعودي يبدأ بـ 05 ويتكون من 10 أرقام'),
                   icon: Icons.phone_android_rounded,
                   keyboardType: TextInputType.phone,
                   validator: _model.mobilTextControllerValidator,
@@ -529,7 +529,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                 if (!isEdit) ...[
                   const SizedBox(height: 14),
                   _buildFieldHint(
-                    'كلمة المرور: 6 أحرف على الأقل. شاركها مع المندوب بشكل آمن بعد الإضافة.',
+                    uiTr(context, 'كلمة المرور: 6 أحرف على الأقل. شاركها مع المندوب بشكل آمن بعد الإضافة.'),
                     icon: Icons.lock_outline_rounded,
                   ),
                   const SizedBox(height: 10),
@@ -539,7 +539,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                     focusNode: _model.passFocusNode,
                     label: uiTr(context, 'كلمة المرور *'),
                     hint: '••••••••',
-                    helper: '6 أحرف على الأقل — أحرف وأرقام',
+                    helper: uiTr(context, '6 أحرف على الأقل — أحرف وأرقام'),
                     icon: Icons.lock_rounded,
                     obscureText: !_model.passVisibility,
                     suffix: _visibilityToggle(
@@ -556,8 +556,8 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                     controller: _model.cpassTextController!,
                     focusNode: _model.cpassFocusNode,
                     label: uiTr(context, 'تأكيد كلمة المرور *'),
-                    hint: 'أعد إدخال كلمة المرور',
-                    helper: 'يجب أن تطابق كلمة المرور أعلاه',
+                    hint: uiTr(context, 'أعد إدخال كلمة المرور'),
+                    helper: uiTr(context, 'يجب أن تطابق كلمة المرور أعلاه'),
                     icon: Icons.verified_user_outlined,
                     obscureText: !_model.cpassVisibility,
                     suffix: _visibilityToggle(
@@ -577,7 +577,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
               sectionTitle: uiTr(context, '٢ — بيانات المركبة والعمل'),
               children: [
                 _buildFieldHint(
-                  'اختر شركة النقل (إن وُجدت) ثم نوع السيارة ومدينة العمل.',
+                  uiTr(context, 'اختر شركة النقل (إن وُجدت) ثم نوع السيارة ومدينة العمل.'),
                 ),
                 const SizedBox(height: 12),
                 if (_companiesLoading)
@@ -647,7 +647,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                 const SizedBox(height: 6),
                 _buildHelperText(
                   context,
-                  'مثال: سيدان، دفع رباعي، فان — حسب أنواع السيارات المفعّلة في النظام',
+                  uiTr(context, 'مثال: سيدان، دفع رباعي، فان — حسب أنواع السيارات المفعّلة في النظام'),
                 ),
                 const SizedBox(height: 14),
                 _buildTextField(
@@ -655,8 +655,8 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                   controller: _model.platTextController!,
                   focusNode: _model.platFocusNode,
                   label: uiTr(context, 'رقم اللوحة'),
-                  hint: 'مثال: أ ب ج 1234',
-                  helper: 'اختياري — أدخل رقم لوحة المركبة إن وُجد',
+                  hint: uiTr(context, 'مثال: أ ب ج 1234'),
+                  helper: uiTr(context, 'اختياري — أدخل رقم لوحة المركبة إن وُجد'),
                   icon: Icons.confirmation_number_outlined,
                   textInputAction: TextInputAction.next,
                 ),
@@ -683,7 +683,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                 const SizedBox(height: 6),
                 _buildHelperText(
                   context,
-                  'المدينة التي سيعمل فيها المندوب ويستقبل منها طلبات الحجز',
+                  uiTr(context, 'المدينة التي سيعمل فيها المندوب ويستقبل منها طلبات الحجز'),
                 ),
               ],
             ),
@@ -692,7 +692,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
               sectionTitle: uiTr(context, '٣ — الصورة الشخصية'),
               children: [
                 _buildFieldHint(
-                  'صورة واضحة لوجه المندوب تظهر في التطبيق وفي قائمة المناديب.',
+                  uiTr(context, 'صورة واضحة لوجه المندوب تظهر في التطبيق وفي قائمة المناديب.'),
                   icon: Icons.photo_camera_outlined,
                 ),
                 const SizedBox(height: 12),
@@ -719,7 +719,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'بعد الإضافة يُفعَّل المندوب تلقائياً ويمكنه استقبال الطلبات بعد تسجيل الدخول.',
+                        uiTr(context, 'بعد الإضافة يُفعَّل المندوب تلقائياً ويمكنه استقبال الطلبات بعد تسجيل الدخول.'),
                         style: theme.bodySmall.override(
                           fontFamily: theme.bodySmallFamily,
                           color: const Color(0xFF1B5E20),
@@ -759,7 +759,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
               Icon(Icons.route_rounded, color: AdminUi.brandTeal, size: 22),
               const SizedBox(width: 8),
               Text(
-                isEdit ? 'خطوات التعديل' : 'خطوات الإضافة',
+                isEdit ? uiTr(context, 'خطوات التعديل') : uiTr(context, 'خطوات الإضافة'),
                 style: theme.titleSmall.override(
                   fontFamily: theme.titleSmallFamily,
                   fontWeight: FontWeight.w700,
@@ -770,11 +770,11 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
             ],
           ),
           const SizedBox(height: 10),
-          _guideStep('١', 'أدخل البيانات الشخصية ورقم الجوال'),
-          _guideStep('٢', 'اختر نوع السيارة ومدينة العمل'),
-          _guideStep('٣', 'أضف صورة شخصية (اختياري)'),
+          _guideStep(uiTr(context, '١'), uiTr(context, 'أدخل البيانات الشخصية ورقم الجوال')),
+          _guideStep(uiTr(context, '٢'), uiTr(context, 'اختر نوع السيارة ومدينة العمل')),
+          _guideStep(uiTr(context, '٣'), uiTr(context, 'أضف صورة شخصية (اختياري)')),
           if (!isEdit)
-            _guideStep('٤', 'اضغط «إضافة المندوب» — يُفعَّل تلقائياً'),
+            _guideStep(uiTr(context, '٤'), uiTr(context, 'اضغط «إضافة المندوب» — يُفعَّل تلقائياً')),
         ],
       ),
     );
@@ -1004,7 +1004,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      hasPhoto ? 'تغيير الصورة' : 'رفع صورة شخصية',
+                      hasPhoto ? uiTr(context, 'تغيير الصورة') : uiTr(context, 'رفع صورة شخصية'),
                       style: theme.titleSmall.override(
                         fontFamily: theme.titleSmallFamily,
                         fontWeight: FontWeight.w700,
@@ -1014,7 +1014,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'اضغط لاختيار صورة من المعرض أو الكاميرا',
+                      uiTr(context, 'اضغط لاختيار صورة من المعرض أو الكاميرا'),
                       style: theme.bodySmall.override(
                         fontFamily: theme.bodySmallFamily,
                         color: theme.secondaryText,
@@ -1023,7 +1023,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'يفضّل صورة مربعة واضحة للوجه',
+                      uiTr(context, 'يفضّل صورة مربعة واضحة للوجه'),
                       style: theme.labelSmall.override(
                         fontFamily: theme.labelSmallFamily,
                         color: theme.secondaryText,

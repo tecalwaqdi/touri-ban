@@ -152,8 +152,8 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                           child: Text(
-                            'العدد: ${tickets.length}'
-                            '${tickets.length != allTickets.length ? ' من ${allTickets.length}' : ''}'
+                            '${uiTr(context, 'العدد')}: ${tickets.length}'
+                            '${tickets.length != allTickets.length ? ' ${uiTr(context, 'من')} ${allTickets.length}' : ''}'
                             '${listState.hasMore ? '+' : ''}',
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
@@ -175,8 +175,8 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
                                 const SizedBox(height: 12),
                                 Text(
                                   _searchQuery.isEmpty
-                                      ? 'لا توجد تذاكر دعم'
-                                      : 'لا توجد نتائج للبحث',
+                                      ? uiTr(context, 'لا توجد تذاكر دعم')
+                                      : uiTr(context, 'لا توجد نتائج للبحث'),
                                   style: theme.titleMedium,
                                 ),
                               ],
@@ -190,15 +190,15 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
                               t,
                               HalhSupport.Resolved,
                               confirmMessage:
-                                  'هل أنت متأكد أنه تم حل هذه التذكرة؟',
-                              successMessage: 'تم وضع التذكرة كمحلولة',
+                                  uiTr(context, 'هل أنت متأكد أنه تم حل هذه التذكرة؟'),
+                              successMessage: uiTr(context, 'تم وضع التذكرة كمحلولة'),
                             ),
                             onClose: (t) => _updateTicketStatus(
                               t,
                               HalhSupport.Closed,
                               confirmMessage:
-                                  'هل أنت متأكد من إغلاق هذه التذكرة؟',
-                              successMessage: 'تم إغلاق التذكرة',
+                                  uiTr(context, 'هل أنت متأكد من إغلاق هذه التذكرة؟'),
+                              successMessage: uiTr(context, 'تم إغلاق التذكرة'),
                             ),
                           )
                         else
@@ -215,15 +215,15 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
                                 tickets[index],
                                 HalhSupport.Resolved,
                                 confirmMessage:
-                                    'هل أنت متأكد أنه تم حل هذه التذكرة؟',
-                                successMessage: 'تم وضع التذكرة كمحلولة',
+                                    uiTr(context, 'هل أنت متأكد أنه تم حل هذه التذكرة؟'),
+                                successMessage: uiTr(context, 'تم وضع التذكرة كمحلولة'),
                               ),
                               onClose: () => _updateTicketStatus(
                                 tickets[index],
                                 HalhSupport.Closed,
                                 confirmMessage:
-                                    'هل أنت متأكد من إغلاق هذه التذكرة؟',
-                                successMessage: 'تم إغلاق التذكرة',
+                                    uiTr(context, 'هل أنت متأكد من إغلاق هذه التذكرة؟'),
+                                successMessage: uiTr(context, 'تم إغلاق التذكرة'),
                               ),
                             ),
                           ),
@@ -297,11 +297,11 @@ class _TicketsTable extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               child: Row(
                 children: [
-                  _HeaderCell('العميل', flex: 2, theme: theme),
-                  _HeaderCell('التصنيف', flex: 2, theme: theme),
-                  _HeaderCell('الوصف', flex: 3, theme: theme),
-                  _HeaderCell('الحالة', flex: 2, theme: theme),
-                  _HeaderCell('إجراءات', flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'العميل'), flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'التصنيف'), flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'الوصف'), flex: 3, theme: theme),
+                  _HeaderCell(uiTr(context, 'الحالة'), flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'إجراءات'), flex: 2, theme: theme),
                 ],
               ),
             ),
@@ -496,7 +496,7 @@ class _TicketCard extends StatelessWidget {
                     if (ticket.id > 0) ...[
                       const SizedBox(height: 2),
                       Text(
-                        'تذكرة #${ticket.id}',
+                        '${uiTr(context, 'تذكرة')} #${ticket.id}',
                         style: theme.labelSmall.override(
                           fontFamily: theme.labelSmallFamily,
                           color: theme.secondaryText,
@@ -621,7 +621,7 @@ class _TicketStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
-    final label = _statusLabel(status);
+    final label = _statusLabel(context, status);
     final colors = _statusColors(status, theme);
 
     return Container(
@@ -643,16 +643,16 @@ class _TicketStatusBadge extends StatelessWidget {
   }
 }
 
-String _statusLabel(HalhSupport? status) {
+String _statusLabel(BuildContext context, HalhSupport? status) {
   switch (status) {
     case HalhSupport.Open:
-      return 'مفتوحة';
+      return uiTr(context, 'مفتوحة');
     case HalhSupport.Resolved:
-      return 'تم الحل';
+      return uiTr(context, 'تم الحل');
     case HalhSupport.Closed:
-      return 'مغلقة';
+      return uiTr(context, 'مغلقة');
     case null:
-      return 'غير معرفة';
+      return uiTr(context, 'غير معرفة');
   }
 }
 
@@ -709,7 +709,7 @@ class _TicketActions extends StatelessWidget {
       return Align(
         alignment: AlignmentDirectional.centerStart,
         child: Text(
-          'تمت المعالجة',
+          uiTr(context, 'تمت المعالجة'),
           style: FlutterFlowTheme.of(context).labelMedium.override(
                 fontFamily: FlutterFlowTheme.of(context).labelMediumFamily,
                 color: FlutterFlowTheme.of(context).secondaryText,

@@ -54,7 +54,7 @@ class _ListtypecarWidgetState extends State<ListtypecarWidget> {
         if (snapshot.hasError) {
           return Center(
             child: Text(
-              'تعذر تحميل أنواع السيارات',
+              uiTr(context, 'تعذر تحميل أنواع السيارات'),
               style: FlutterFlowTheme.of(context).bodyMedium,
             ),
           );
@@ -110,7 +110,7 @@ class _ListtypecarWidgetState extends State<ListtypecarWidget> {
                       listViewTypeCarRecord.sr,
                       formatType: FormatType.decimal,
                       decimalType: DecimalType.automatic,
-                      currency: 'ريال ',
+                      currency: uiTr(context, 'ريال '),
                     ),
                     style: FlutterFlowTheme.of(context).labelMedium.override(
                           fontFamily:

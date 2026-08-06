@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_issyk_kul_issyk_kul-jeti-oguz",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "صخور جيتي أوغوز",
+  "osf": "صخور جيتي أوغوز — معلم في إقليم إيسيك كول.",
+  "names_i18n": {
+    "ar": "صخور جيتي أوغوز",
+    "en": "Jeti-Oguz Rocks",
+    "ru": "Скалы Джеты-Огуз",
+    "ky": "Жети-Өгүз аскалары"
+  },
+  "osf_i18n": {
+    "ar": "صخور جيتي أوغوز — معلم في إقليم إيسيك كول.",
+    "en": "Jeti-Oguz Rocks — landmark in Issyk-Kul Region.",
+    "ru": "Скалы Джеты-Огуз — достопримечательность в регионе Иссык-Кульская область.",
+    "ky": "Жети-Өгүз аскалары — Ысык-Көл облусу аймагындагы жай."
+  },
+  "address": "صخور جيتي أوغوز، كاراكول، إقليم إيسيك كول، قيرغيزستان",
+  "address_i18n": {
+    "ar": "صخور جيتي أوغوز، كاراكول، إقليم إيسيك كول، قيرغيزستان",
+    "en": "Jeti-Oguz Rocks, Karakol, Issyk-Kul Region, Kyrgyzstan",
+    "ru": "Скалы Джеты-Огуз, Каракол, Иссык-Кульская область, Кыргызстан",
+    "ky": "Жети-Өгүз аскалары, Каракол, Ысык-Көл облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 42.334,
+    "longitude": 78.245
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Jeti-%C3%96g%C3%BCz_Rocks_-_Issyk-Kul_Region%2C_Jeti-Oguz_District.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Jiří Komárek",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_issyk_kul",
+  "id_vill": "villages/city_kg_karakol",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_issyk_kul_issyk_kul-jeti-oguz",
+  "geo_import_slug": "issyk_kul-jeti-oguz",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

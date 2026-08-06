@@ -898,7 +898,7 @@ class _DashboardSyncNote extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         Text(
-          'آخر تحديث $label',
+          '${uiTr(context, 'آخر تحديث')} $label',
           style: theme.labelSmall.override(
             fontFamily: theme.labelSmallFamily,
             color: theme.secondaryText,

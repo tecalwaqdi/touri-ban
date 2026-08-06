@@ -1,0 +1,56 @@
+{
+  "__path": "mkan/lm_sa_jeddah_kaia",
+  "__writtenAt": "2026-08-05T03:27:09.608Z",
+  "naim": "مطار الملك عبدالعزيز الدولي",
+  "osf": "المطار الدولي الرئيسي لجدة وبوابة جوية رئيسة لزوار الحرمين.",
+  "names_i18n": {
+    "ar": "مطار الملك عبدالعزيز الدولي",
+    "en": "King Abdulaziz International Airport",
+    "ru": "Международный аэропорт имени короля Абдул-Азиза",
+    "ky": "Король Абдулазиз эл аралык аэропорту"
+  },
+  "osf_i18n": {
+    "ar": "المطار الدولي الرئيسي لجدة وبوابة جوية رئيسة لزوار الحرمين.",
+    "en": "Jeddah’s main international airport and a primary air gateway for pilgrims.",
+    "ru": "Главный международный аэропорт Джидды и воздушные ворота для паломников.",
+    "ky": "Жидданын негизги эл аралык аэропорту жана ажылар үчүн аба дарбазасы."
+  },
+  "address": "مطار الملك عبدالعزيز الدولي، جدة، المملكة العربية السعودية",
+  "address_i18n": {
+    "ar": "مطار الملك عبدالعزيز الدولي، جدة، المملكة العربية السعودية",
+    "en": "King Abdulaziz International Airport, Jeddah, Saudi Arabia",
+    "ru": "Международный аэропорт короля Абдул-Азиза, Джидда, Саудовская Аравия",
+    "ky": "Король Абдулазиз эл аралык аэропорту, Жидда, Сауд Арабиясы"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 21.6839754,
+    "longitude": 39.1634852
+  },
+  "img1": "assets/images/landmarks/jeddah_kaia.png",
+  "img2": "",
+  "img3": "",
+  "images_license_verified": true,
+  "img_source": "user_photo_IMG_6964",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.8,
+  "add_saat": 2,
+  "id_cit": "cities/region_sa_jeddah",
+  "id_vill": "villages/city_sa_jeddah",
+  "Rev_dolh": "countries/saudi_arabia",
+  "country_iso": "SA",
+  "verification_status": "verified",
+  "verification_confidence": 0.95,
+  "geo_import_id": "lm_sa_jeddah_kaia",
+  "geo_import_slug": "kaia",
+  "geo_import_source": "sa_five_provinces_2026",
+  "img1_firebase": "data-url"
+}

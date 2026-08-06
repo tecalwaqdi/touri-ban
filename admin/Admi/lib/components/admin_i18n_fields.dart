@@ -213,7 +213,7 @@ class _AdminI18nFieldsSectionState extends State<AdminI18nFieldsSection> {
             padding: const EdgeInsets.only(top: 8),
             child: Text(
               uiTr(context,
-                  'اضغط «ترجم تلقائياً» أو أيقونة اللغات لإدخال/مراجعة كل اللغات'),
+                  uiTr(context, 'اضغط «ترجم تلقائياً» أو أيقونة اللغات لإدخال/مراجعة كل اللغات')),
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),

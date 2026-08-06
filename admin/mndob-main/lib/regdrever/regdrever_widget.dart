@@ -61,11 +61,18 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
   bool _uploadingPhoto = false;
   bool _uploadingId = false;
   bool _uploadingCar = false;
+  bool _uploadingGuide = false;
   DateTime? _birthDate;
   String _carImageUrl = '';
+  String _affiliationType = 'independent';
+  String _companyPath = '';
+  String _companyName = '';
+  bool _isTourGuide = false;
+  String _guidePermitUrl = '';
   SelectedFile? _pendingPhoto;
   SelectedFile? _pendingIdDoc;
   SelectedFile? _pendingCarPhoto;
+  SelectedFile? _pendingGuidePermit;
 
   late TextEditingController nameController;
   late FocusNode nameFocusNode;
@@ -180,6 +187,12 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       _model.uploadedFileUrl_uploadData1k33 = draft.idImageUrl;
     }
     _carImageUrl = draft.carImageUrl;
+    _affiliationType =
+        draft.affiliationType == 'company' ? 'company' : 'independent';
+    _companyPath = draft.companyPath;
+    _companyName = draft.companyName;
+    _isTourGuide = draft.isTourGuide;
+    _guidePermitUrl = draft.guidePermitUrl;
     if (draft.lat != null && draft.lng != null) {
       _regLocation = LatLng(draft.lat!, draft.lng!);
     }
@@ -261,6 +274,11 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       seats: seatsController.text.trim(),
       birthDateIso: _birthDate?.toIso8601String() ?? '',
       uid: forUid,
+      affiliationType: _affiliationType,
+      companyPath: _companyPath,
+      companyName: _companyName,
+      isTourGuide: _isTourGuide,
+      guidePermitUrl: _guidePermitUrl,
     );
     await draft.save(forUid: forUid.isEmpty ? null : forUid);
   }
@@ -463,6 +481,26 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
           context,
           title: t('Error'),
           message: t(vehicle.errorKey!),
+          type: DriverMessageType.warning,
+        );
+        return;
+      }
+      if (_affiliationType == 'company' && _companyPath.trim().isEmpty) {
+        await DriverDialogs.showAlert(
+          context,
+          title: t('Error'),
+          message: t('Please select a transport company'),
+          type: DriverMessageType.warning,
+        );
+        return;
+      }
+      if (_isTourGuide &&
+          _guidePermitUrl.trim().isEmpty &&
+          _pendingGuidePermit == null) {
+        await DriverDialogs.showAlert(
+          context,
+          title: t('Error'),
+          message: t('Tour guide permit is required'),
           type: DriverMessageType.warning,
         );
         return;
@@ -684,7 +722,15 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         carImageUrl: _carImageUrl,
         location: _regLocation,
         isResubmit: isResubmit,
-        uploadInFlight: _uploadingPhoto || _uploadingId || _uploadingCar,
+        uploadInFlight: _uploadingPhoto ||
+            _uploadingId ||
+            _uploadingCar ||
+            _uploadingGuide,
+        affiliationType: _affiliationType,
+        companyPath: _companyPath,
+        companyName: _companyName,
+        isTourGuide: _isTourGuide,
+        guidePermitUrl: _guidePermitUrl,
       );
 
       final profileFields = {
@@ -743,6 +789,12 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         if (FFAppState().mdenh != null) 'region_ref': FFAppState().mdenh,
         if (FFAppState().naimmdenh.isNotEmpty)
           'region_display': FFAppState().naimmdenh,
+        if (reviewModel.affiliationType == 'company' &&
+            reviewModel.companyPath.trim().isNotEmpty) ...{
+          'transport_company':
+              FirebaseFirestore.instance.doc(reviewModel.companyPath.trim()),
+          'transport_company_text': reviewModel.companyName.trim(),
+        },
       };
 
       final submit = await DriverRegistrationSubmissionService.submit(
@@ -839,7 +891,12 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
   }
 
   Future<void> _uploadDoc({required String kind}) async {
-    if (_uploadingPhoto || _uploadingId || _uploadingCar) return;
+    if (_uploadingPhoto ||
+        _uploadingId ||
+        _uploadingCar ||
+        _uploadingGuide) {
+      return;
+    }
     final uid = FirebaseAuth.instance.currentUser?.uid;
     final isRealUser = uid != null &&
         uid.isNotEmpty &&
@@ -848,6 +905,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
       if (kind == 'photo') _uploadingPhoto = true;
       if (kind == 'id') _uploadingId = true;
       if (kind == 'car') _uploadingCar = true;
+      if (kind == 'guide') _uploadingGuide = true;
     });
     try {
       final selectedMedia = await selectMediaWithSourceBottomSheet(
@@ -915,6 +973,9 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
           } else if (kind == 'id') {
             _model.uploadedFileUrl_uploadData1k33 = url;
             _pendingIdDoc = null;
+          } else if (kind == 'guide') {
+            _guidePermitUrl = url;
+            _pendingGuidePermit = null;
           } else {
             _carImageUrl = url;
             _pendingCarPhoto = null;
@@ -929,6 +990,9 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
           } else if (kind == 'id') {
             _pendingIdDoc = file;
             _model.uploadedFileUrl_uploadData1k33 = 'pending://id';
+          } else if (kind == 'guide') {
+            _pendingGuidePermit = file;
+            _guidePermitUrl = 'pending://guide';
           } else {
             _pendingCarPhoto = file;
             _carImageUrl = 'pending://car';
@@ -964,6 +1028,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
           _uploadingPhoto = false;
           _uploadingId = false;
           _uploadingCar = false;
+          _uploadingGuide = false;
         });
       }
     }
@@ -1004,6 +1069,14 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
       if (url != null) {
         _carImageUrl = url;
         _pendingCarPhoto = null;
+      }
+    }
+    if (_pendingGuidePermit != null ||
+        _guidePermitUrl.startsWith('pending://')) {
+      final url = await up(_pendingGuidePermit);
+      if (url != null) {
+        _guidePermitUrl = url;
+        _pendingGuidePermit = null;
       }
     }
   }
@@ -1162,6 +1235,40 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                         validateModel: _validateModel,
                         validatePlate: _validatePlate,
                         req: _req,
+                        affiliationType: _affiliationType,
+                        companyPath: _companyPath,
+                        companyName: _companyName,
+                        isTourGuide: _isTourGuide,
+                        guidePermitUrl: _guidePermitUrl,
+                        uploadingGuide: _uploadingGuide,
+                        onAffiliationChanged: (type) {
+                          setState(() {
+                            _affiliationType = type;
+                            if (type != 'company') {
+                              _companyPath = '';
+                              _companyName = '';
+                            }
+                          });
+                          _persistDraft();
+                        },
+                        onCompanySelected: (path, name) {
+                          setState(() {
+                            _companyPath = path;
+                            _companyName = name;
+                          });
+                          _persistDraft();
+                        },
+                        onTourGuideChanged: (value) {
+                          setState(() {
+                            _isTourGuide = value;
+                            if (!value) {
+                              _guidePermitUrl = '';
+                              _pendingGuidePermit = null;
+                            }
+                          });
+                          _persistDraft();
+                        },
+                        onUploadGuidePermit: () => _uploadDoc(kind: 'guide'),
                       ),
                       _ReviewStep(
                         t: t,
@@ -1189,6 +1296,11 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                         idOk:
                             _model.uploadedFileUrl_uploadData1k33.isNotEmpty ||
                                 _pendingIdDoc != null,
+                        affiliationType: _affiliationType,
+                        companyName: _companyName,
+                        isTourGuide: _isTourGuide,
+                        guidePermitOk: _guidePermitUrl.isNotEmpty ||
+                            _pendingGuidePermit != null,
                         onEditAccount: () => _goTo(0),
                         onEditLocation: () => _goTo(1),
                         onEditVehicle: () => _goTo(2),
@@ -1505,6 +1617,196 @@ class _AccountStep extends StatelessWidget {
   }
 }
 
+Widget _affiliationChoiceChip({
+  required BuildContext context,
+  required String label,
+  required bool selected,
+  required VoidCallback onTap,
+}) {
+  return Expanded(
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: DriverBrand.borderRadiusMd,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        decoration: BoxDecoration(
+          color: selected
+              ? DriverBrand.teal.withValues(alpha: 0.12)
+              : DriverBrand.cardColor(context),
+          borderRadius: DriverBrand.borderRadiusMd,
+          border: Border.all(
+            color: selected ? DriverBrand.teal : DriverBrand.border,
+            width: selected ? 2 : 1,
+          ),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'cairo',
+            fontWeight: FontWeight.w700,
+            color: selected ? DriverBrand.tealDark : Colors.black87,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _TransportCompanyDropdown extends StatefulWidget {
+  const _TransportCompanyDropdown({
+    required this.t,
+    required this.selectedPath,
+    required this.selectedName,
+    required this.onSelected,
+  });
+
+  final String Function(String) t;
+  final String selectedPath;
+  final String selectedName;
+  final void Function(String path, String name) onSelected;
+
+  @override
+  State<_TransportCompanyDropdown> createState() =>
+      _TransportCompanyDropdownState();
+}
+
+class _TransportCompanyDropdownState extends State<_TransportCompanyDropdown> {
+  late Future<List<_CompanyOption>> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _loadCompanies();
+  }
+
+  static String _companyDisplayName(Map<String, dynamic> data, String id) {
+    final naim = (data['naim'] as String?)?.trim() ?? '';
+    if (naim.isNotEmpty) return naim;
+    final name = (data['name'] as String?)?.trim() ?? '';
+    if (name.isNotEmpty) return name;
+    final companyName = (data['company_name'] as String?)?.trim() ?? '';
+    if (companyName.isNotEmpty) return companyName;
+    return id;
+  }
+
+  static bool _isActiveCompany(Map<String, dynamic> data) {
+    if (data.containsKey('is_active')) {
+      return data['is_active'] == true;
+    }
+    if (data.containsKey('actev')) {
+      return data['actev'] == true;
+    }
+    if (data.containsKey('active')) {
+      return data['active'] == true;
+    }
+    return true;
+  }
+
+  Future<List<_CompanyOption>> _loadCompanies() async {
+    final snap =
+        await FirebaseFirestore.instance.collection('transport_company').get();
+    final options = <_CompanyOption>[];
+    for (final doc in snap.docs) {
+      final data = doc.data();
+      if (!_isActiveCompany(data)) continue;
+      options.add(
+        _CompanyOption(
+          path: doc.reference.path,
+          name: _companyDisplayName(data, doc.id),
+        ),
+      );
+    }
+    options.sort(
+      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+    );
+    return options;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<_CompanyOption>>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Center(
+              child: SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
+        if (snapshot.hasError) {
+          return Text(
+            widget.t('Could not load transport companies'),
+            style: TextStyle(
+              fontFamily: 'cairo',
+              color: Colors.red.shade700,
+            ),
+          );
+        }
+        final options = snapshot.data ?? const <_CompanyOption>[];
+        if (options.isEmpty) {
+          return Text(
+            widget.t('No active transport companies found'),
+            style: TextStyle(
+              fontFamily: 'cairo',
+              color: DriverBrand.textSecondaryColor(context),
+            ),
+          );
+        }
+        final paths = options.map((e) => e.path).toSet();
+        final value =
+            paths.contains(widget.selectedPath) ? widget.selectedPath : null;
+        return DropdownButtonFormField<String>(
+          key: ValueKey(value ?? 'company-none'),
+          initialValue: value,
+          decoration: InputDecoration(
+            labelText: widget.t('Transport company'),
+            prefixIcon: const Icon(
+              Icons.business_outlined,
+              color: DriverBrand.tealDark,
+            ),
+            filled: true,
+            fillColor: DriverBrand.cardColor(context),
+            border: OutlineInputBorder(
+              borderRadius: DriverBrand.borderRadiusMd,
+            ),
+          ),
+          items: options
+              .map(
+                (c) => DropdownMenuItem(
+                  value: c.path,
+                  child: Text(
+                    c.name,
+                    style: const TextStyle(fontFamily: 'cairo'),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              )
+              .toList(),
+          onChanged: (path) {
+            if (path == null) return;
+            final match = options.firstWhere((e) => e.path == path);
+            widget.onSelected(match.path, match.name);
+          },
+        );
+      },
+    );
+  }
+}
+
+class _CompanyOption {
+  const _CompanyOption({required this.path, required this.name});
+
+  final String path;
+  final String name;
+}
+
 class _LocationStep extends StatelessWidget {
   const _LocationStep({
     required this.t,
@@ -1588,6 +1890,16 @@ class _VehicleStep extends StatelessWidget {
     required this.validateModel,
     required this.validatePlate,
     required this.req,
+    required this.affiliationType,
+    required this.companyPath,
+    required this.companyName,
+    required this.isTourGuide,
+    required this.guidePermitUrl,
+    required this.uploadingGuide,
+    required this.onAffiliationChanged,
+    required this.onCompanySelected,
+    required this.onTourGuideChanged,
+    required this.onUploadGuidePermit,
   });
 
   final String Function(String) t;
@@ -1615,6 +1927,16 @@ class _VehicleStep extends StatelessWidget {
   final String? Function(String?) validateModel;
   final String? Function(String?) validatePlate;
   final String? Function(String?, String) req;
+  final String affiliationType;
+  final String companyPath;
+  final String companyName;
+  final bool isTourGuide;
+  final String guidePermitUrl;
+  final bool uploadingGuide;
+  final ValueChanged<String> onAffiliationChanged;
+  final void Function(String path, String name) onCompanySelected;
+  final ValueChanged<bool> onTourGuideChanged;
+  final VoidCallback onUploadGuidePermit;
 
   Widget _docBtn(BuildContext context,
       {required String label,
@@ -1728,6 +2050,79 @@ class _VehicleStep extends StatelessWidget {
             ]),
           ),
         ),
+        const SizedBox(height: 20),
+        Text(
+          t('Affiliation'),
+          style: const TextStyle(
+            fontFamily: 'cairo',
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            _affiliationChoiceChip(
+              context: context,
+              label: t('تابع لشركة نقل'),
+              selected: affiliationType == 'company',
+              onTap: () => onAffiliationChanged('company'),
+            ),
+            const SizedBox(width: 10),
+            _affiliationChoiceChip(
+              context: context,
+              label: t('سائق مستقل'),
+              selected: affiliationType != 'company',
+              onTap: () => onAffiliationChanged('independent'),
+            ),
+          ],
+        ),
+        if (affiliationType == 'company') ...[
+          const SizedBox(height: 12),
+          _TransportCompanyDropdown(
+            t: t,
+            selectedPath: companyPath,
+            selectedName: companyName,
+            onSelected: onCompanySelected,
+          ),
+        ],
+        const SizedBox(height: 20),
+        Text(
+          t('Tour guide'),
+          style: const TextStyle(
+            fontFamily: 'cairo',
+            fontWeight: FontWeight.w700,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            _affiliationChoiceChip(
+              context: context,
+              label: t('Yes'),
+              selected: isTourGuide,
+              onTap: () => onTourGuideChanged(true),
+            ),
+            const SizedBox(width: 10),
+            _affiliationChoiceChip(
+              context: context,
+              label: t('No'),
+              selected: !isTourGuide,
+              onTap: () => onTourGuideChanged(false),
+            ),
+          ],
+        ),
+        if (isTourGuide) ...[
+          const SizedBox(height: 12),
+          _docBtn(
+            context,
+            label: t('Tour guide permit'),
+            url: guidePermitUrl,
+            loading: uploadingGuide,
+            onTap: onUploadGuidePermit,
+          ),
+        ],
         const SizedBox(height: 16),
         Text(t('Documents'),
             style: const TextStyle(
@@ -1774,6 +2169,10 @@ class _ReviewStep extends StatelessWidget {
     required this.seats,
     required this.photoOk,
     required this.idOk,
+    required this.affiliationType,
+    required this.companyName,
+    required this.isTourGuide,
+    required this.guidePermitOk,
     required this.onEditAccount,
     required this.onEditLocation,
     required this.onEditVehicle,
@@ -1792,9 +2191,11 @@ class _ReviewStep extends StatelessWidget {
       year,
       plate,
       color,
-      seats;
+      seats,
+      affiliationType,
+      companyName;
   final DateTime? birthDate;
-  final bool photoOk, idOk;
+  final bool photoOk, idOk, isTourGuide, guidePermitOk;
   final VoidCallback onEditAccount, onEditLocation, onEditVehicle;
 
   Widget _row(String k, String v) => Padding(
@@ -1821,6 +2222,9 @@ class _ReviewStep extends StatelessWidget {
         : '${birthDate!.year.toString().padLeft(4, '0')}-'
             '${birthDate!.month.toString().padLeft(2, '0')}-'
             '${birthDate!.day.toString().padLeft(2, '0')}';
+    final affiliationLabel = affiliationType == 'company'
+        ? t('تابع لشركة نقل')
+        : t('سائق مستقل');
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -1848,6 +2252,15 @@ class _ReviewStep extends StatelessWidget {
         _row(t('Plate Number'), plate),
         _row(t('Color'), color),
         _row(t('Seats'), seats),
+        _row(t('Affiliation'), affiliationLabel),
+        if (affiliationType == 'company')
+          _row(t('Transport company'), companyName),
+        _row(t('Tour guide'), isTourGuide ? t('Yes') : t('No')),
+        if (isTourGuide)
+          _row(
+            t('Tour guide permit'),
+            guidePermitOk ? t('Uploaded') : t('Missing'),
+          ),
         _row(
           t('Profile photo'),
           photoOk ? t('Uploaded') : t('Not provided (optional)'),

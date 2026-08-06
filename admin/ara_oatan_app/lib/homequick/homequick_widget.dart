@@ -401,6 +401,8 @@ class _OptionCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: typography.titleMedium.copyWith(
                       color: colors.textPrimary,
                     ),
@@ -408,6 +410,8 @@ class _OptionCard extends StatelessWidget {
                   const SizedBox(height: DsSpacing.xxs),
                   Text(
                     subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: typography.bodyMedium.copyWith(
                       color: colors.textSecondary,
                     ),

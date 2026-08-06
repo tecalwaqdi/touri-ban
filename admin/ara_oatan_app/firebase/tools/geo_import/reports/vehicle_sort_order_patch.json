@@ -1,0 +1,145 @@
+{
+  "at": "2026-08-05T11:10:56.035Z",
+  "apply": true,
+  "order": {
+    "economy": 1,
+    "suv_family": 2,
+    "offroad_4x4": 3,
+    "luxury": 4,
+    "coach_mini": 5,
+    "medium_bus": 6,
+    "coach_tour": 7,
+    "wheelchair": 8,
+    "van_vip": 9
+  },
+  "staging": [
+    {
+      "id": "economy",
+      "prev": {},
+      "next": {
+        "sort_order": 1,
+        "num_trteb": 1
+      },
+      "status": "staging-ok"
+    },
+    {
+      "id": "suv_family",
+      "prev": {},
+      "next": {
+        "sort_order": 2,
+        "num_trteb": 2
+      },
+      "status": "staging-ok"
+    },
+    {
+      "id": "offroad_4x4",
+      "prev": {},
+      "next": {
+        "sort_order": 3,
+        "num_trteb": 3
+      },
+      "status": "staging-ok"
+    },
+    {
+      "id": "luxury",
+      "prev": {},
+      "next": {
+        "sort_order": 4,
+        "num_trteb": 4
+      },
+      "status": "staging-ok"
+    },
+    {
+      "id": "coach_mini",
+      "prev": {},
+      "next": {
+        "sort_order": 5,
+        "num_trteb": 5
+      },
+      "status": "staging-ok"
+    },
+    {
+      "id": "medium_bus",
+      "prev": {},
+      "next": {
+        "sort_order": 6,
+        "num_trteb": 6
+      },
+      "status": "staging-ok"
+    },
+    {
+      "id": "coach_tour",
+      "prev": {},
+      "next": {
+        "sort_order": 7,
+        "num_trteb": 7
+      },
+      "status": "staging-ok"
+    },
+    {
+      "id": "wheelchair",
+      "prev": {},
+      "next": {
+        "sort_order": 8,
+        "num_trteb": 8
+      },
+      "status": "staging-ok"
+    },
+    {
+      "id": "van_vip",
+      "prev": {},
+      "next": {
+        "sort_order": 9,
+        "num_trteb": 9
+      },
+      "status": "staging-ok"
+    }
+  ],
+  "firestore": [
+    {
+      "id": "economy",
+      "sort_order": 1,
+      "status": "ok"
+    },
+    {
+      "id": "suv_family",
+      "sort_order": 2,
+      "status": "ok"
+    },
+    {
+      "id": "offroad_4x4",
+      "sort_order": 3,
+      "status": "ok"
+    },
+    {
+      "id": "luxury",
+      "sort_order": 4,
+      "status": "ok"
+    },
+    {
+      "id": "coach_mini",
+      "sort_order": 5,
+      "status": "ok"
+    },
+    {
+      "id": "medium_bus",
+      "sort_order": 6,
+      "status": "ok"
+    },
+    {
+      "id": "coach_tour",
+      "sort_order": 7,
+      "status": "ok"
+    },
+    {
+      "id": "wheelchair",
+      "sort_order": 8,
+      "status": "ok"
+    },
+    {
+      "id": "van_vip",
+      "sort_order": 9,
+      "status": "ok"
+    }
+  ]
+}

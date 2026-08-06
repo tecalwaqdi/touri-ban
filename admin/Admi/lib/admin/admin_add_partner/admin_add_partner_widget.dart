@@ -190,7 +190,7 @@ class _AdminAddPartnerWidgetState extends State<AdminAddPartnerWidget> {
           isShrek: true,
           rate: _model.ratingValue,
           mdh: phone,
-          tsnef: 'شريك سياحي',
+          tsnef: uiTr(context, 'شريك سياحي'),
         ),
         if (email.isNotEmpty) 'EmailUser': email,
         'dataAdd': FieldValue.serverTimestamp(),
@@ -222,8 +222,8 @@ class _AdminAddPartnerWidgetState extends State<AdminAddPartnerWidget> {
         context,
         action: AdminCrudAction.add,
         message: email.isNotEmpty
-            ? 'تم إضافة الشريك وحسابه بنجاح'
-            : 'تم إضافة الشريك بنجاح',
+            ? uiTr(context, 'تم إضافة الشريك وحسابه بنجاح')
+            : uiTr(context, 'تم إضافة الشريك بنجاح'),
         refreshScopes: [
           AdminListScope.partners,
           AdminListScope.landmarks,
@@ -386,7 +386,7 @@ class _AdminAddPartnerWidgetState extends State<AdminAddPartnerWidget> {
                   imageUrl: _model.uploadedFileUrl_mainImage,
                   localBytes: _model.uploadedLocalFile_mainImage.bytes,
                   isUploading: _model.isDataUploading_mainImage,
-                  hint: 'الصورة الرئيسية للشريك',
+                  hint: uiTr(context, 'الصورة الرئيسية للشريك'),
                   onPick: _pickMainImage,
                 ),
                 const SizedBox(height: 12),
@@ -394,7 +394,7 @@ class _AdminAddPartnerWidgetState extends State<AdminAddPartnerWidget> {
                   imageUrl: _model.uploadedFileUrl_secondImage,
                   localBytes: _model.uploadedLocalFile_secondImage.bytes,
                   isUploading: _model.isDataUploading_secondImage,
-                  hint: 'صورة إضافية (اختياري)',
+                  hint: uiTr(context, 'صورة إضافية (اختياري)'),
                   height: 160,
                   onPick: _pickSecondImage,
                 ),
@@ -477,10 +477,10 @@ class _AdminAddPartnerWidgetState extends State<AdminAddPartnerWidget> {
               children: [
                 Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'التقييم',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        uiTr(context, 'التقييم'),
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
                     _buildStarRating(),

@@ -75,8 +75,7 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text(appTr(context, 'adm_delete_confirm_title')),
-            content: const Text(
-              'عند حذف المنطقة سيتم حذف كل المعالم المرتبطة. هل أنت متأكد من الحذف؟',
+            content: Text(uiTr(context, 'عند حذف المنطقة سيتم حذف كل المعالم المرتبطة. هل أنت متأكد من الحذف؟'),
             ),
             actions: [
               TextButton(
@@ -120,11 +119,11 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text(activate ? 'تأكيد التنشيط' : 'تأكيد إخفاء المنطقة'),
+            title: Text(activate ? uiTr(context, 'تأكيد التنشيط') : uiTr(context, 'تأكيد إخفاء المنطقة')),
             content: Text(
               activate
-                  ? 'عند تنشيط هذه المنطقة سيتم إظهار كل المعالم المرتبطة. هل أنت متأكد؟'
-                  : 'عند إخفاء هذه المنطقة سيتم إخفاء كل المعالم المرتبطة. هل أنت متأكد؟',
+                  ? uiTr(context, 'عند تنشيط هذه المنطقة سيتم إظهار كل المعالم المرتبطة. هل أنت متأكد؟')
+                  : uiTr(context, 'عند إخفاء هذه المنطقة سيتم إخفاء كل المعالم المرتبطة. هل أنت متأكد؟'),
             ),
             actions: [
               TextButton(
@@ -133,7 +132,7 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: Text(activate ? 'نعم، فعّل' : 'نعم، أخفِ'),
+                child: Text(activate ? uiTr(context, 'نعم، فعّل') : uiTr(context, 'نعم، أخفِ')),
               ),
             ],
           ),
@@ -151,7 +150,7 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(activate ? 'تم تنشيط المنطقة والمعالم' : 'تم إخفاء المنطقة والمعالم'),
+          content: Text(activate ? uiTr(context, 'تم تنشيط المنطقة والمعالم') : uiTr(context, 'تم إخفاء المنطقة والمعالم')),
         ),
       );
     } catch (e) {
@@ -223,8 +222,8 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
                                 Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                           child: Text(
-                            'العدد: ${regions.length}'
-                            '${allRegions.length != regions.length ? ' من ${allRegions.length}' : ''}'
+                            '${uiTr(context, 'العدد')}: ${regions.length}'
+                            '${allRegions.length != regions.length ? ' ${uiTr(context, 'من')} ${allRegions.length}' : ''}'
                             '${listState.hasMore ? '+' : ''}',
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
@@ -246,8 +245,8 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
                                 const SizedBox(height: 12),
                                                                   Text(
                                   _searchQuery.isEmpty
-                                      ? 'لا توجد مناطق مسجلة'
-                                      : 'لا توجد نتائج للبحث',
+                                      ? uiTr(context, 'لا توجد مناطق مسجلة')
+                                      : uiTr(context, 'لا توجد نتائج للبحث'),
                                   style: theme.titleMedium,
                                                                     ),
                                                                 ],
@@ -306,7 +305,7 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
       decoration: AdminUi.inputDecoration(
                                                                                 context,
         label: uiTr(context, 'بحث'),
-        hint: 'ابحث باسم المنطقة أو الوصف...',
+        hint: uiTr(context, 'ابحث باسم المنطقة أو الوصف...'),
         prefixIcon: Icons.search_rounded,
       ),
       validator: _model.textControllerValidator.asValidator(context),
@@ -547,7 +546,7 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        active ? 'نشطة' : 'غير نشطة',
+        active ? uiTr(context, 'نشطة') : uiTr(context, 'غير نشطة'),
         style: theme.labelSmall.override(
           fontFamily: theme.labelSmallFamily,
           color: active ? const Color(0xFF2E7D32) : const Color(0xFFE65100),

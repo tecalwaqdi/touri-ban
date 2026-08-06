@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_issyk_kul_issyk_kul-cholpon-petroglyphs",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "نقوش تشولبون آتا",
+  "osf": "نقوش تشولبون آتا — معلم في إقليم إيسيك كول.",
+  "names_i18n": {
+    "ar": "نقوش تشولبون آتا",
+    "en": "Cholpon-Ata Petroglyphs",
+    "ru": "Петроглифы Чолпон-Аты",
+    "ky": "Чолпон-Ата петроглифтери"
+  },
+  "osf_i18n": {
+    "ar": "نقوش تشولبون آتا — معلم في إقليم إيسيك كول.",
+    "en": "Cholpon-Ata Petroglyphs — landmark in Issyk-Kul Region.",
+    "ru": "Петроглифы Чолпон-Аты — достопримечательность в регионе Иссык-Кульская область.",
+    "ky": "Чолпон-Ата петроглифтери — Ысык-Көл облусу аймагындагы жай."
+  },
+  "address": "نقوش تشولبون آتا، كاراكول، إقليم إيسيك كول، قيرغيزستان",
+  "address_i18n": {
+    "ar": "نقوش تشولبون آتا، كاراكول، إقليم إيسيك كول، قيرغيزستان",
+    "en": "Cholpon-Ata Petroglyphs, Karakol, Issyk-Kul Region, Kyrgyzstan",
+    "ru": "Петроглифы Чолпон-Аты, Каракол, Иссык-Кульская область, Кыргызстан",
+    "ky": "Чолпон-Ата петроглифтери, Каракол, Ысык-Көл облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 42.6604,
+    "longitude": 77.057
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Petroglyph_Museum_of_Cholpon-Ata_10.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC0",
+  "img_attribution": "Bgag",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 2,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_issyk_kul",
+  "id_vill": "villages/city_kg_karakol",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_issyk_kul_issyk_kul-cholpon-petroglyphs",
+  "geo_import_slug": "issyk_kul-cholpon-petroglyphs",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

@@ -2330,6 +2330,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'tr': 'Araba tipini seçin.',
       'ur': 'کار کی قسم کا انتخاب کریں۔',
       'zh_Hans': '选择汽车类型。',
+      'ky': 'Унаа түрүн тандаңыз',
     },
     '2z7xqg4w': {
       'en': 'Home',
@@ -6515,6 +6516,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'tr': 'Arabaların listesi',
       'ur': 'کاروں کی فہرست',
       'zh_Hans': '车辆列表',
+      'ky': 'Унаалар тизмеси',
     },
     '8vpral2t': {
       'en': 'Home',

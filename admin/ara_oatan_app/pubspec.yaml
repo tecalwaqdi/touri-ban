@@ -227,6 +227,9 @@ flutter:
     - assets/fonts/Cairo-Black.ttf
     - assets/langs/
     - assets/images/
+    - assets/images/brand/
+    - assets/images/vehicles/
+    - assets/images/landmarks/
 
   fonts:
     - family: 'cairo'

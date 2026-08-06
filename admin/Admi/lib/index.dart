@@ -21,6 +21,10 @@ export '/admin/admin_agent_report/admin_agent_report_widget.dart'
     show AdminAgentReportWidget;
 export '/admin/admin_profits/admin_profits_widget.dart'
     show AdminProfitsWidget;
+export '/admin/admin_finance_hub/admin_finance_hub_widget.dart'
+    show AdminFinanceHubWidget;
+export '/admin/admin_tour_guides/admin_tour_guides_widget.dart'
+    show AdminTourGuidesWidget;
 export '/admin/admin_audit_log/admin_audit_log_widget.dart'
     show AdminAuditLogWidget;
 export '/admin/admin_reports_hub/admin_reports_hub_widget.dart'

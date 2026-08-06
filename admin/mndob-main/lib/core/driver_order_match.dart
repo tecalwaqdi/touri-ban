@@ -4,6 +4,7 @@ import '/app_state.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/core/driver_country_service.dart';
+import '/core/tour_guide_status.dart';
 import '/core/toury_country_registry.dart';
 import '/core/toury_maps_config.dart';
 import '/core/toury_system_status_codes.dart';
@@ -202,10 +203,16 @@ abstract final class DriverOrderMatch {
     final car = driverTypeCarRef();
     final country = driverCountryRef();
 
+    final driverData = currentUserDocument?.snapshotData;
+    final isApprovedGuide = TourGuideStatus.isApproved(driverData);
+
     for (final order in orders) {
       // Pool UI: hide already-assigned rows (rules allow browse without
       // proving mndob_user==null on the list query).
       if (order.mndobUser != null) continue;
+      // Guide-help orders only for approved tour guides.
+      final isGuideOrder = order.snapshotData['DriverGuide'] == true;
+      if (isGuideOrder && !isApprovedGuide) continue;
       if (car != null &&
           order.carRev != null &&
           order.carRev!.path != car.path) {

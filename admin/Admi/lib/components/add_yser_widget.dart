@@ -505,7 +505,7 @@ class _AddYserWidgetState extends State<AddYserWidget> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'تم إنشاء الحساب',
+                                  uiTr(context, 'تم إنشاء الحساب'),
                                   style: TextStyle(
                                     color: FlutterFlowTheme.of(context)
                                         .secondaryBackground,

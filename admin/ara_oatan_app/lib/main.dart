@@ -248,7 +248,11 @@ class _MyAppState extends State<MyApp> {
       _assetsWarmed = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         precacheImage(
-          const AssetImage('assets/images/torytaxi.png'),
+          const AssetImage('assets/images/torytaxi_transparent.png'),
+          context,
+        );
+        precacheImage(
+          const AssetImage('assets/images/brand/vision_2030.png'),
           context,
         );
         // كاش الموقع والبيانات الثابتة بعد ظهور الشاشة الأولى.

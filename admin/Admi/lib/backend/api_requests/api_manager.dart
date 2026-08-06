@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 import 'dart:core';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';

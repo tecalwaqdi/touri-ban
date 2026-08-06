@@ -145,7 +145,7 @@ class _AdminAgentReportWidgetState extends State<AdminAgentReportWidget> {
                 onPressed: () => context.safePop(),
               ),
               title: Text(
-                'تقرير الوكيل',
+                uiTr(context, 'تقرير الوكيل'),
                 style: FlutterFlowTheme.of(context).titleLarge.override(
                       fontFamily:
                           FlutterFlowTheme.of(context).titleLargeFamily,
@@ -385,7 +385,7 @@ class _AgentFirestoreStatsSectionState
                           ),
                           const SizedBox(height: 10),
                       Text(
-                        'لا توجد حجوزات في دولة هذا الوكيل',
+                        uiTr(context, 'لا توجد حجوزات في دولة هذا الوكيل'),
                         textAlign: TextAlign.center,
                         style: theme.bodyMedium.override(
                           fontFamily: theme.bodyMediumFamily,
@@ -623,8 +623,8 @@ class _AgentReportHero extends StatelessWidget {
                   ),
                   child: Text(
                     agent.dolhAgent.isNotEmpty
-                        ? 'وكيل — ${agent.dolhAgent}'
-                        : 'وكيل دولة',
+                        ? '${uiTr(context, 'وكيل')} — ${agent.dolhAgent}'
+                        : uiTr(context, 'وكيل دولة'),
                     style: theme.labelSmall.override(
                       fontFamily: theme.labelSmallFamily,
                       color: Colors.white.withValues(alpha: 0.95),

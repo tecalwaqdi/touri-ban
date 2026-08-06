@@ -4,7 +4,6 @@ import '/backend/admin_country_scope.dart';
 import '/backend/admin_performance.dart';
 import '/backend/backend.dart';
 import '/backend/dashboard_stats_loader.dart';
-import '/core/cloud_functions/cloud_functions_client.dart';
 import '/core/finance/financial_engine.dart';
 
 /// Country-scoped admin report for super-admin dashboard.
@@ -214,31 +213,32 @@ List<AdminReportAgentRow> _agentRows(
 Future<List<OrderRecord>> _loadAllOrders(DocumentReference? countryRef) async {
   final results = <OrderRecord>[];
   DocumentSnapshot? last;
+  final pageLimit = kAdminPageSize;
+  const maxDocs = 400;
 
-  while (true) {
+  while (results.length < maxDocs) {
+    var query = AdminCountryScope.applyOrderQuery(OrderRecord.collection)
+        .orderBy('data_order', descending: true);
+    if (countryRef != null) {
+      query = query.where('Rev_dolh', isEqualTo: countryRef);
+    }
+    if (last != null) {
+      query = query.startAfterDocument(last);
+    }
+
+    final snap = await getQuerySnapshotFast(query.limit(pageLimit));
+    if (snap.docs.isEmpty) break;
+
     final batch = AdminCountryScope.filterOrders(
-      await queryOrderRecordOnce(
-        queryBuilder: (q) {
-          var query = AdminCountryScope.applyOrderQuery(q)
-              .orderBy('data_order', descending: true);
-          if (countryRef != null) {
-            query = query.where('Rev_dolh', isEqualTo: countryRef);
-          }
-          if (last != null) {
-            query = query.startAfterDocument(last);
-          }
-          return query;
-        },
-        limit: kAdminPageSize,
-      ),
+      mapQuerySnapshot(snap, OrderRecord.fromSnapshot),
     );
     if (batch.isEmpty) break;
     results.addAll(batch);
-    last = await batch.last.reference.get();
-    if (batch.length < kAdminPageSize) break;
-    if (results.length >= kAdminMaxPages * kAdminPageSize) break;
+    last = snap.docs.last;
+    if (snap.docs.length < pageLimit) break;
   }
-  return results;
+
+  return results.length > maxDocs ? results.sublist(0, maxDocs) : results;
 }
 
 Future<({List<UserRecord> agents, List<OrderRecord> orders})> _loadCoreData(

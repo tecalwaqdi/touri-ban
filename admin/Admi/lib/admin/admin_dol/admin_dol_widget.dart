@@ -185,8 +185,8 @@ class _AdminDolWidgetState extends State<AdminDolWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                           child: Text(
-                            'العدد: ${countries.length}'
-                            '${countries.length != allCountries.length ? ' من ${allCountries.length}' : ''}'
+                            '${uiTr(context, 'العدد')}: ${countries.length}'
+                            '${countries.length != allCountries.length ? ' ${uiTr(context, 'من')} ${allCountries.length}' : ''}'
                             '${listState.hasMore ? '+' : ''}',
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
@@ -208,8 +208,8 @@ class _AdminDolWidgetState extends State<AdminDolWidget> {
                                 const SizedBox(height: 12),
                                 Text(
                                   _searchQuery.isEmpty
-                                      ? 'لا توجد دول مسجلة'
-                                      : 'لا توجد نتائج للبحث',
+                                      ? uiTr(context, 'لا توجد دول مسجلة')
+                                      : uiTr(context, 'لا توجد نتائج للبحث'),
                                   style: theme.titleMedium,
                                 ),
                               ],
@@ -266,7 +266,7 @@ class _AdminDolWidgetState extends State<AdminDolWidget> {
       decoration: AdminUi.inputDecoration(
         context,
         label: uiTr(context, 'بحث'),
-        hint: 'ابحث باسم الدولة أو الوصف...',
+        hint: uiTr(context, 'ابحث باسم الدولة أو الوصف...'),
         prefixIcon: Icons.search_rounded,
       ),
       validator: _model.textControllerValidator.asValidator(context),
@@ -496,7 +496,7 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        active ? 'نشطة' : 'غير نشطة',
+        active ? uiTr(context, 'نشطة') : uiTr(context, 'غير نشطة'),
         style: theme.labelSmall.override(
           fontFamily: theme.labelSmallFamily,
           color: active ? const Color(0xFF2E7D32) : const Color(0xFFE65100),
@@ -523,7 +523,7 @@ class _SaudiBadge extends StatelessWidget {
         border: Border.all(color: const Color(0xFF2E7D32).withValues(alpha: 0.3)),
       ),
       child: Text(
-        '🇸🇦 السعودية',
+        uiTr(context, '🇸🇦 السعودية'),
         style: theme.labelSmall.override(
           fontFamily: theme.labelSmallFamily,
           color: const Color(0xFF1B5E20),

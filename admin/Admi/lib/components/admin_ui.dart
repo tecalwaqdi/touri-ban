@@ -181,7 +181,10 @@ class AdminUi {
           backgroundColor: primary,
           foregroundColor: Colors.white,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          minimumSize: const Size(0, 40),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity.compact,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusSm),
           ),
@@ -587,9 +590,9 @@ class AdminLoginCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Expanded(
+                  Expanded(
                   child: Text(
-                    'لوحة التحكم',
+                    appTr(context, 'ent_login_card_title'),
                     style: theme.headlineSmall.override(
                       fontFamily: theme.headlineSmallFamily,
                       color: theme.primaryText,
@@ -746,7 +749,7 @@ class AdminContentCard extends StatelessWidget {
         width: double.infinity,
         decoration: AdminUi.cardDecoration(context),
         child: Padding(
-          padding: padding ?? const EdgeInsets.all(16),
+          padding: padding ?? const EdgeInsets.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
@@ -773,7 +776,7 @@ class AdminContentCard extends StatelessWidget {
   }
 }
 
-/// Primary action button for admin forms.
+/// Primary action button for admin forms (compact, content-sized).
 class AdminPrimaryButton extends StatelessWidget {
   const AdminPrimaryButton({
     super.key,
@@ -782,6 +785,7 @@ class AdminPrimaryButton extends StatelessWidget {
     this.icon,
     this.isLoading = false,
     this.outlined = false,
+    this.compact = true,
   });
 
   final String label;
@@ -789,14 +793,18 @@ class AdminPrimaryButton extends StatelessWidget {
   final IconData? icon;
   final bool isLoading;
   final bool outlined;
+  /// Prefer intrinsic width — avoid stretched full-width bars.
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
+    final hPad = compact ? 14.0 : 20.0;
+    final vPad = compact ? 10.0 : 14.0;
     final child = isLoading
         ? SizedBox(
-            width: 22,
-            height: 22,
+            width: 18,
+            height: 18,
             child: CircularProgressIndicator(
               strokeWidth: 2,
               color: outlined ? theme.primary : Colors.white,
@@ -807,52 +815,63 @@ class AdminPrimaryButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 20),
-                const SizedBox(width: 8),
+                Icon(icon, size: 18),
+                const SizedBox(width: 6),
               ],
-              Flexible(
-                child: Text(
-                  label,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.titleSmall.override(
-                    fontFamily: theme.titleSmallFamily,
-                    color: outlined ? theme.primary : Colors.white,
-                    fontWeight: FontWeight.w600,
-                    useGoogleFonts: !theme.titleSmallIsCustom,
-                  ),
+              Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: theme.labelLarge.override(
+                  fontFamily: theme.labelLargeFamily,
+                  color: outlined ? theme.primary : Colors.white,
+                  fontWeight: FontWeight.w600,
+                  useGoogleFonts: !theme.labelLargeIsCustom,
                 ),
               ),
             ],
           );
 
-    if (outlined) {
-      return OutlinedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: theme.primary,
-          side: BorderSide(color: theme.primary),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AdminUi.radiusSm),
-          ),
-        ),
-        child: child,
-      );
-    }
-
-    return ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: theme.primary,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        shape: RoundedRectangleBorder(
+    final styleBase = ButtonStyle(
+      elevation: const WidgetStatePropertyAll(0),
+      padding: WidgetStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
+      ),
+      minimumSize: const WidgetStatePropertyAll(Size(0, 36)),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      visualDensity: VisualDensity.compact,
+      shape: WidgetStatePropertyAll(
+        RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AdminUi.radiusSm),
         ),
       ),
-      child: child,
     );
+
+    final button = outlined
+        ? OutlinedButton(
+            onPressed: isLoading ? null : onPressed,
+            style: styleBase.copyWith(
+              foregroundColor: WidgetStatePropertyAll(theme.primary),
+              side: WidgetStatePropertyAll(BorderSide(color: theme.primary)),
+            ),
+            child: child,
+          )
+        : ElevatedButton(
+            onPressed: isLoading ? null : onPressed,
+            style: styleBase.copyWith(
+              backgroundColor: WidgetStatePropertyAll(theme.primary),
+              foregroundColor: const WidgetStatePropertyAll(Colors.white),
+            ),
+            child: child,
+          );
+
+    if (compact) {
+      return Align(
+        alignment: AlignmentDirectional.centerStart,
+        widthFactor: 1,
+        child: button,
+      );
+    }
+    return SizedBox(width: double.infinity, child: button);
   }
 }
 
@@ -1021,7 +1040,7 @@ class AdminReportsCountryBanner extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'عرض بيانات: $label فقط',
+                  '${uiTr(context, 'عرض بيانات')}: $label ${uiTr(context, 'فقط')}',
                   style: theme.labelLarge.override(
                     fontFamily: theme.labelLargeFamily,
                     color: AdminUi.brandTeal,

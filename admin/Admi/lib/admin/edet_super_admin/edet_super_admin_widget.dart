@@ -152,8 +152,8 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
       builder: (ctx) => AlertDialog(
         title: Text(uiTr(context, 'حذف السوبر أدمن')),
         content: Text(
-          'هل أنت متأكد من حذف "${_admin!.displayName}"؟\n'
-          'سيتم حذف بياناته من قاعدة البيانات فقط.',
+          '${uiTr(context, 'هل أنت متأكد من حذف')} "${_admin!.displayName}"؟\n' +
+          uiTr(context, 'سيتم حذف بياناته من قاعدة البيانات فقط.'),
         ),
         actions: [
           TextButton(
@@ -222,7 +222,7 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
         title: appTr(context, 'scr_edit_super_admin'),
         child: AdminContentCard(
           child: Text(
-            'تعذر تحميل بيانات السوبر أدمن',
+            uiTr(context, 'تعذر تحميل بيانات السوبر أدمن'),
             textAlign: TextAlign.center,
           ),
         ),
@@ -231,7 +231,7 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
 
     return AdminEditScaffold(
       title: appTr(context, 'scr_edit_super_admin'),
-      subtitle: _isSelf ? 'حسابك الحالي' : null,
+      subtitle: _isSelf ? uiTr(context, 'حسابك الحالي') : null,
       isLoading: _model.isSubmitting,
       floatingAction: AdminPrimaryButton(
         label: uiTr(context, 'حفظ التعديلات'),
@@ -252,7 +252,7 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
                   focusNode: _model.nameFocusNode,
                   decoration: InputDecoration(labelText: uiTr(context, 'الاسم الكامل')),
                   validator: (v) =>
-                      v == null || v.trim().isEmpty ? 'مطلوب' : null,
+                      v == null || v.trim().isEmpty ? uiTr(context, 'مطلوب') : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -297,8 +297,7 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
               OutlinedButton.icon(
                 onPressed: _model.isSubmitting ? null : _delete,
                 icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
-                label: const Text(
-                  'حذف السوبر أدمن',
+                label: Text(uiTr(context, 'حذف السوبر أدمن'),
                   style: TextStyle(color: Colors.red),
                 ),
               ),

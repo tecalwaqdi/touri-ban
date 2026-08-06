@@ -67,7 +67,7 @@ class AdminSuperAdminGate {
         subtitle: uiTr(context, 'متاح لسوبر الأدمن فقط'),
         child: AdminContentCard(
           child: Text(
-            'لا تملك صلاحية الوصول إلى $feature.',
+            '${uiTr(context, 'لا تملك صلاحية الوصول إلى')} ${uiTr(context, feature)}.',
             style: theme.bodyMedium,
             textAlign: TextAlign.center,
           ),
@@ -87,7 +87,7 @@ class AdminSuperAdminGate {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
-            'لا تملك صلاحية الوصول. هذه الميزة متاحة لسوبر الأدمن فقط.',
+            uiTr(context, 'لا تملك صلاحية الوصول. هذه الميزة متاحة لسوبر الأدمن فقط.'),
             style: theme.bodyMedium,
             textAlign: TextAlign.center,
           ),

@@ -143,6 +143,7 @@ class AdminRoleService {
 
   static const _financeRoutes = {
     'AdminProfits',
+    'AdminFinanceHub',
     'AdminReportsHub',
   };
 
@@ -159,6 +160,15 @@ class AdminRoleService {
           if (_claims.isFinance && _financeRoutes.contains(routeName)) {
             return true;
           }
+          return false;
+        }
+        // Hard deny cross-country admin surfaces even if allowlist drifts.
+        if (routeName == 'AdminDol' ||
+            routeName == 'AdminAgent' ||
+            routeName == 'AdminSuperAdmins' ||
+            routeName == 'AdminAuditLog' ||
+            routeName == 'AdminReportsHub' ||
+            routeName == 'AdminAgentReport') {
           return false;
         }
         return _agentRoutes.contains(routeName);
@@ -193,6 +203,8 @@ class AdminRoleService {
     'AdminALLhgZ',
     'AdminBookingDetails',
     'AdminProfits',
+    'AdminFinanceHub',
+    'AdminTourGuides',
     'AdminSuport',
     'Settings',
     'DriverProfile',

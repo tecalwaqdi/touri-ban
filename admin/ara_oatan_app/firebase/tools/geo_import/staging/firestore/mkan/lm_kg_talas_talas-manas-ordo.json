@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_talas_talas-manas-ordo",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "مجمع ماناس أوردو",
+  "osf": "مجمع ماناس أوردو — معلم في إقليم تالاس.",
+  "names_i18n": {
+    "ar": "مجمع ماناس أوردو",
+    "en": "Manas Ordo",
+    "ru": "Манас Ордо",
+    "ky": "Манас Ордо"
+  },
+  "osf_i18n": {
+    "ar": "مجمع ماناس أوردو — معلم في إقليم تالاس.",
+    "en": "Manas Ordo — landmark in Talas Region.",
+    "ru": "Манас Ордо — достопримечательность в регионе Таласская область.",
+    "ky": "Манас Ордо — Талас облусу аймагындагы жай."
+  },
+  "address": "مجمع ماناس أوردو، تالاس، إقليم تالاس، قيرغيزستان",
+  "address_i18n": {
+    "ar": "مجمع ماناس أوردو، تالاس، إقليم تالاس، قيرغيزستان",
+    "en": "Manas Ordo, Talas, Talas Region, Kyrgyzstan",
+    "ru": "Манас Ордо, Талас, Таласская область, Кыргызстан",
+    "ky": "Манас Ордо, Талас, Талас облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 42.513,
+    "longitude": 72.236
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_talas",
+  "id_vill": "villages/city_kg_talas",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_talas_talas-manas-ordo",
+  "geo_import_slug": "talas-manas-ordo",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

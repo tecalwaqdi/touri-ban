@@ -1,0 +1,19 @@
+{
+  "at": "2026-08-04T07:07:28.724Z",
+  "mode": "apply",
+  "note": "Storage upload returned 403 (needs super_admin). Images stored as data:image/jpeg in Firestore img field. App already supports embedded data URLs.",
+  "patched": 14,
+  "deactivated": 27,
+  "created": 1,
+  "uploadedKinds": {
+    "economy": "data-url",
+    "family": "data-url",
+    "suv": "data-url",
+    "luxury": "data-url",
+    "mini_bus": "data-url",
+    "medium_bus": "data-url",
+    "large_bus": "data-url",
+    "accessible_bus": "data-url",
+    "vip_bus": "data-url"
+  }
+}

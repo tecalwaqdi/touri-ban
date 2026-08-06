@@ -348,7 +348,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
             appBar: AppBar(
               title: Text(uiTr(context, 'تعديل معلم')),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back_rounded),
+                icon: Icon(Icons.arrow_back_rounded),
                 onPressed: () => context.safePop(),
               ),
             ),
@@ -363,7 +363,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
 
         final cityLabel = FFAppState().RevciteTEXT.isNotEmpty
             ? FFAppState().RevciteTEXT
-            : 'اختر المدينة';
+            : uiTr(context, 'اختر المدينة');
 
         return GestureDetector(
           onTap: () {
@@ -624,7 +624,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Text(
-                                  'الصورة الرئيسية',
+                                  uiTr(context, 'الصورة الرئيسية'),
                                   style: FlutterFlowTheme.of(context)
                                       .titleMedium
                                       .override(
@@ -647,7 +647,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                   isUploading:
                                       _model.isDataUploading_uploadDataCni,
                                   hint:
-                                      'اختر الصورة الرئيسية من المعرض أو الكاميرا',
+                                      uiTr(context, 'اختر الصورة الرئيسية من المعرض أو الكاميرا'),
                                   onPick: _pickMainImage,
                                   onDelete: _confirmDeleteMainImage,
                                   height: 220,
@@ -677,7 +677,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                               mainAxisSize: MainAxisSize.max,
                               children: [
                                 Text(
-                                  'الموقع',
+                                  uiTr(context, 'الموقع'),
                                   style: FlutterFlowTheme.of(context)
                                       .headlineSmall
                                       .override(
@@ -1078,7 +1078,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                             ? null
                             : () => _saveMkan(adminaddMkanCopyMkanRecord),
                         text: _isSaving
-                            ? 'جاري الحفظ...'
+                            ? uiTr(context, 'جاري الحفظ...')
                             : FFLocalizations.of(context).getText(
                                 'tsww06ru' /* Edit location  */,
                               ),
@@ -1110,8 +1110,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                             : () => _deleteLandmark(adminaddMkanCopyMkanRecord),
                         icon: const Icon(Icons.delete_outline_rounded,
                             color: Colors.red),
-                        label: const Text(
-                          'حذف المعلم من قاعدة البيانات',
+                        label: Text(uiTr(context, 'حذف المعلم من قاعدة البيانات'),
                           style: TextStyle(color: Colors.red),
                         ),
                         style: OutlinedButton.styleFrom(

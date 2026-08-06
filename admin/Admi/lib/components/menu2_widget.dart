@@ -1,5 +1,6 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_role_service.dart';
+import '/components/admin_enterprise_kit.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -10,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'menu2_model.dart';
 export 'menu2_model.dart';
 
-/// قائمة اللوحة
+/// قائمة اللوحة — مجموعات Enterprise
 class Menu2Widget extends StatefulWidget {
   const Menu2Widget({super.key});
 
@@ -31,8 +32,6 @@ class _Menu2WidgetState extends State<Menu2Widget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => Menu2Model());
-
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -44,8 +43,9 @@ class _Menu2WidgetState extends State<Menu2Widget> {
 
   void _navigate(BuildContext context, String routeName) {
     closeDrawerIfOpen(context);
+    // Replace stack (don't push) so prior pages/listeners are disposed.
     if (routeName == AdminM3almWidget.routeName) {
-      context.pushNamed(
+      context.goNamed(
         AdminM3almWidget.routeName,
         queryParameters: {
           'partnersOnly': serializeParam(false, ParamType.bool),
@@ -53,7 +53,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
       );
       return;
     }
-    context.pushNamed(routeName);
+    context.goNamed(routeName);
   }
 
   bool _isActive(BuildContext context, String routeName) {
@@ -63,6 +63,38 @@ class _Menu2WidgetState extends State<Menu2Widget> {
   String _menuLabel(BuildContext context, String routeName) =>
       navLabel(context, routeName);
 
+  String _sectionLabel(BuildContext context, String key) {
+    const map = {
+      'overview': 'ent_section_overview',
+      'operations': 'ent_section_operations',
+      'geography': 'ent_section_geography',
+      'finance': 'ent_section_finance',
+      'system': 'ent_section_system',
+    };
+    final trKey = map[key];
+    if (trKey == null) return key;
+    return appTr(context, trKey);
+  }
+
+  bool _canShow(String route) {
+    if (route == CompanyDriversWidget.routeName) {
+      return AdminRoleService.isTransportCompany;
+    }
+    if (route == PartnerBookingsWidget.routeName) {
+      return AdminRoleService.isPartner;
+    }
+    if (route == AdminAuditLogWidget.routeName) {
+      return AdminRoleService.isSuperAdmin;
+    }
+    if (route == AdminReportsHubWidget.routeName) {
+      return AdminRoleService.isSuperAdmin;
+    }
+    if (route == AdminSuperAdminsWidget.routeName) {
+      return AdminRoleService.isSuperAdmin;
+    }
+    return AdminRoleService.canAccessRoute(route);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = FFLocalizations.of(context);
@@ -70,49 +102,65 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     final role = AdminRoleService.currentRole;
     final countryLabel = AdminRoleService.scopedCountryName;
 
-    final allMenuItems = <({String route, IconData icon})>[
-      (route: Home22DashboardWidget.routeName, icon: Icons.dashboard_rounded),
-      (route: AdminM3almWidget.routeName, icon: Icons.place_rounded),
-      (route: AdminPartnersWidget.routeName, icon: Icons.handshake_rounded),
-      (route: AdminDolWidget.routeName, icon: Icons.flag_rounded),
-      (route: AdminregionWidget.routeName, icon: Icons.filter_hdr_rounded),
-      (route: AdminvillWidget.routeName, icon: Icons.location_city_rounded),
-      (route: AdminuserWidget.routeName, icon: Icons.groups_rounded),
-      (route: AdminAgentWidget.routeName, icon: Icons.real_estate_agent_rounded),
-      (route: AdminSuperAdminsWidget.routeName, icon: Icons.admin_panel_settings_rounded),
-      (route: AdminTransportCompaniesWidget.routeName, icon: Icons.local_shipping_rounded),
-      (route: AdmindreverWidget.routeName, icon: Icons.directions_car_rounded),
-      (route: AdminALLhgZWidget.routeName, icon: Icons.bookmark_added_rounded),
-      (route: AdminProfitsWidget.routeName, icon: Icons.account_balance_wallet_rounded),
-      (route: AdminReportsHubWidget.routeName, icon: Icons.assessment_rounded),
-      (route: AdminAuditLogWidget.routeName, icon: Icons.history_rounded),
-      (route: CompanyDriversWidget.routeName, icon: Icons.directions_car_filled_rounded),
-      (route: PartnerBookingsWidget.routeName, icon: Icons.receipt_long_rounded),
-      (route: AdminSuportWidget.routeName, icon: Icons.support_agent_rounded),
-      (route: SettingsWidget.routeName, icon: Icons.settings_rounded),
+    final sections = <({String key, List<({String route, IconData icon})> items})>[
+      (
+        key: 'overview',
+        items: [
+          (route: Home22DashboardWidget.routeName, icon: Icons.dashboard_rounded),
+        ],
+      ),
+      (
+        key: 'operations',
+        items: [
+          (route: AdminuserWidget.routeName, icon: Icons.groups_rounded),
+          (route: AdmindreverWidget.routeName, icon: Icons.directions_car_rounded),
+          (route: AdminTourGuidesWidget.routeName, icon: Icons.tour_rounded),
+          (route: AdminTransportCompaniesWidget.routeName, icon: Icons.local_shipping_rounded),
+          (route: CompanyDriversWidget.routeName, icon: Icons.directions_car_filled_rounded),
+          (route: AdminALLhgZWidget.routeName, icon: Icons.bookmark_added_rounded),
+          (route: PartnerBookingsWidget.routeName, icon: Icons.receipt_long_rounded),
+          (route: AdminPartnersWidget.routeName, icon: Icons.handshake_rounded),
+          (route: AdminM3almWidget.routeName, icon: Icons.place_rounded),
+          (route: AdminSuportWidget.routeName, icon: Icons.support_agent_rounded),
+        ],
+      ),
+      (
+        key: 'geography',
+        items: [
+          (route: AdminDolWidget.routeName, icon: Icons.flag_rounded),
+          (route: AdminregionWidget.routeName, icon: Icons.filter_hdr_rounded),
+          (route: AdminvillWidget.routeName, icon: Icons.location_city_rounded),
+        ],
+      ),
+      (
+        key: 'finance',
+        items: [
+          (route: AdminFinanceHubWidget.routeName, icon: Icons.account_balance_rounded),
+          (route: AdminProfitsWidget.routeName, icon: Icons.account_balance_wallet_rounded),
+          (route: AdminReportsHubWidget.routeName, icon: Icons.assessment_rounded),
+        ],
+      ),
+      (
+        key: 'system',
+        items: [
+          (route: AdminAgentWidget.routeName, icon: Icons.real_estate_agent_rounded),
+          (route: AdminSuperAdminsWidget.routeName, icon: Icons.admin_panel_settings_rounded),
+          (route: AdminAuditLogWidget.routeName, icon: Icons.history_rounded),
+          (route: SettingsWidget.routeName, icon: Icons.settings_rounded),
+        ],
+      ),
     ];
 
-    final menuItems = allMenuItems.where((item) {
-      if (item.route == CompanyDriversWidget.routeName) {
-        return AdminRoleService.isTransportCompany;
-      }
-      if (item.route == PartnerBookingsWidget.routeName) {
-        return AdminRoleService.isPartner;
-      }
-      if (item.route == AdminAuditLogWidget.routeName) {
-        return AdminRoleService.isSuperAdmin;
-      }
-      if (item.route == AdminReportsHubWidget.routeName) {
-        return AdminRoleService.isSuperAdmin;
-      }
-      if (item.route == AdminSuperAdminsWidget.routeName) {
-        return AdminRoleService.isSuperAdmin;
-      }
-      return AdminRoleService.canAccessRoute(item.route);
-    }).toList();
+    final visibleSections = sections
+        .map((s) => (
+              key: s.key,
+              items: s.items.where((i) => _canShow(i.route)).toList(),
+            ))
+        .where((s) => s.items.isNotEmpty)
+        .toList();
 
     return Container(
-      width: 270.0,
+      width: double.infinity,
       height: double.infinity,
       decoration: AdminUi.sidebarGradient(),
       child: Column(
@@ -211,7 +259,8 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                               child: Text(
                                 countryLabel.isNotEmpty
                                     ? '${AdminRoleService.roleLabelL10n(context, role)} · $countryLabel'
-                                    : AdminRoleService.roleLabelL10n(context, role),
+                                    : AdminRoleService.roleLabelL10n(
+                                        context, role),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: theme.labelSmall.override(
@@ -279,15 +328,20 @@ class _Menu2WidgetState extends State<Menu2Widget> {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.only(bottom: 20),
               children: [
-                for (final item in menuItems)
-                  AdminMenuTile(
-                    icon: item.icon,
-                    label: _menuLabel(context, item.route),
-                    isActive: _isActive(context, item.route),
-                    onTap: () => _navigate(context, item.route),
+                for (final section in visibleSections) ...[
+                  AdminMenuSectionHeader(
+                    label: _sectionLabel(context, section.key),
                   ),
+                  for (final item in section.items)
+                    AdminMenuTile(
+                      icon: item.icon,
+                      label: _menuLabel(context, item.route),
+                      isActive: _isActive(context, item.route),
+                      onTap: () => _navigate(context, item.route),
+                    ),
+                ],
               ],
             ),
           ),

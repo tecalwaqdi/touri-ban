@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_osh_osh-abshir-ata",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "شلال أبشير آتا",
+  "osf": "شلال أبشير آتا — معلم في إقليم أوش.",
+  "names_i18n": {
+    "ar": "شلال أبشير آتا",
+    "en": "Abshir-Ata Waterfall",
+    "ru": "Водопад Абшир-Ата",
+    "ky": "Абшыр-Ата"
+  },
+  "osf_i18n": {
+    "ar": "شلال أبشير آتا — معلم في إقليم أوش.",
+    "en": "Abshir-Ata Waterfall — landmark in Osh Region.",
+    "ru": "Водопад Абшир-Ата — достопримечательность в регионе Ошская область.",
+    "ky": "Абшыр-Ата — Ош облусу аймагындагы жай."
+  },
+  "address": "شلال أبشير آتا، أوزجن، إقليم أوش، قيرغيزستان",
+  "address_i18n": {
+    "ar": "شلال أبشير آتا، أوزجن، إقليم أوش، قيرغيزستان",
+    "en": "Abshir-Ata Waterfall, Uzgen, Osh Region, Kyrgyzstan",
+    "ru": "Водопад Абшир-Ата, Узген, Ошская область, Кыргызстан",
+    "ky": "Абшыр-Ата, Өзгөн, Ош облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 40.08,
+    "longitude": 72.12
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_osh",
+  "id_vill": "villages/city_kg_uzgen",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_osh_osh-abshir-ata",
+  "geo_import_slug": "osh-abshir-ata",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

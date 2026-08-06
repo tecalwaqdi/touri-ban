@@ -1,15 +1,22 @@
 {
   "__path": "villages/city_kg_naryn",
-  "__writtenAt": "2026-07-22T11:28:59.596Z",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
   "__target": "local-staging",
   "naim": "نارين",
   "names_i18n": {
     "ar": "نارين",
     "en": "Naryn",
     "ru": "Нарын",
-    "ky": "Нарын",
-    "uz": "Norin"
+    "ky": "Нарын"
   },
+  "osf": "نارين — إقليم نارين",
+  "osf_i18n": {
+    "ar": "نارين — المركز الإداري لـ إقليم نارين",
+    "en": "Naryn — administrative hub of Naryn Region",
+    "ru": "Нарын — административный центр региона Нарынская область",
+    "ky": "Нарын — Нарын облусу административдик борбору"
+  },
+  "img": "https://flagcdn.com/w320/kg.png",
   "cities": "cities/region_kg_naryn",
   "dolh": "countries/kyrgyzstan",
   "lat_ling": {
@@ -19,5 +26,5 @@
   "acctev": true,
   "country_iso": "KG",
   "geo_import_id": "city_kg_naryn",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "sa_kg_rebuild_2026"
 }

@@ -69,8 +69,8 @@ class _PartnerBookingsWidgetState extends State<PartnerBookingsWidget> {
       child: AdminPageBody(
         title: appTr(context, 'scr_partner_bookings_title'),
         subtitle: partnerMkan != null
-            ? 'الحجوزات المرتبطة بمعالمك السياحية'
-            : 'لم يُربط حسابك بمعالم بعد — تواصل مع الإدارة',
+            ? uiTr(context, 'الحجوزات المرتبطة بمعالمك السياحية')
+            : uiTr(context, 'لم يُربط حسابك بمعالم بعد — تواصل مع الإدارة'),
         scrollable: true,
         child: partnerMkan == null
             ? AdminContentCard(
@@ -83,7 +83,7 @@ class _PartnerBookingsWidgetState extends State<PartnerBookingsWidget> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'حساب الشريك غير مربوط بمعالم',
+                      uiTr(context, 'حساب الشريك غير مربوط بمعالم'),
                       style: theme.titleMedium,
                       textAlign: TextAlign.center,
                     ),
@@ -113,7 +113,7 @@ class _PartnerBookingsWidgetState extends State<PartnerBookingsWidget> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Text(
-                                  'عدد الحجوزات: $totalBookings',
+                                  '${uiTr(context, 'عدد الحجوزات')}: $totalBookings',
                                   style: theme.labelLarge.override(
                                     fontFamily: theme.labelLargeFamily,
                                     color: theme.secondaryText,
@@ -127,7 +127,7 @@ class _PartnerBookingsWidgetState extends State<PartnerBookingsWidget> {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 32),
                                     child: Text(
-                                      'لا توجد حجوزات مرتبطة بمعالمك حالياً',
+                                      uiTr(context, 'لا توجد حجوزات مرتبطة بمعالمك حالياً'),
                                       textAlign: TextAlign.center,
                                       style: theme.bodyLarge,
                                     ),
@@ -159,7 +159,7 @@ class _PartnerBookingsWidgetState extends State<PartnerBookingsWidget> {
                                           ),
                                         ),
                                         title: Text(
-                                          'حجز #${order.iDorder}',
+                                          '${uiTr(context, 'حجز')} #${order.iDorder}',
                                           style: theme.titleSmall,
                                         ),
                                         subtitle: Text(
@@ -168,7 +168,7 @@ class _PartnerBookingsWidgetState extends State<PartnerBookingsWidget> {
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         trailing: Text(
-                                          '${order.total} ر.س',
+                                          '${order.total} ${uiTr(context, 'ر.س')}',
                                           style: theme.titleSmall.override(
                                             fontFamily: theme.titleSmallFamily,
                                             fontWeight: FontWeight.w700,

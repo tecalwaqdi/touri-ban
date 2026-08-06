@@ -1,0 +1,56 @@
+{
+  "__path": "mkan/lm_sa_jeddah_horse-stables",
+  "__writtenAt": "2026-08-05T03:27:05.533Z",
+  "naim": "إسطبل الخيول",
+  "osf": "مرفق لرياضات الفروسية وركوب الخيل ضمن الوجهات الترفيهية في جدة.",
+  "names_i18n": {
+    "ar": "إسطبل الخيول",
+    "en": "Horse Stables",
+    "ru": "Конюшни",
+    "ky": "Ат сарайы"
+  },
+  "osf_i18n": {
+    "ar": "مرفق لرياضات الفروسية وركوب الخيل ضمن الوجهات الترفيهية في جدة.",
+    "en": "Equestrian facility for horse riding among Jeddah’s leisure destinations.",
+    "ru": "Конноспортивный объект для верховой езды в Джидде.",
+    "ky": "Жиддадагы ат минип эс алуучу жай."
+  },
+  "address": "جدة، المملكة العربية السعودية",
+  "address_i18n": {
+    "ar": "جدة، المملكة العربية السعودية",
+    "en": "Jeddah, Saudi Arabia",
+    "ru": "Джидда, Саудовская Аравия",
+    "ky": "Жидда, Сауд Арабиясы"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 21.72,
+    "longitude": 39.1
+  },
+  "img1": "assets/images/landmarks/jeddah_horse_stables.png",
+  "img2": "",
+  "img3": "",
+  "images_license_verified": true,
+  "img_source": "user_photo_IMG_6959",
+  "sr": 7,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.8,
+  "add_saat": 2,
+  "id_cit": "cities/region_sa_jeddah",
+  "id_vill": "villages/city_sa_jeddah",
+  "Rev_dolh": "countries/saudi_arabia",
+  "country_iso": "SA",
+  "verification_status": "verified",
+  "verification_confidence": 0.95,
+  "geo_import_id": "lm_sa_jeddah_horse-stables",
+  "geo_import_slug": "horse-stables",
+  "geo_import_source": "sa_five_provinces_2026",
+  "img1_firebase": "data-url"
+}

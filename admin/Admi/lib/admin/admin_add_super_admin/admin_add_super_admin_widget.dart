@@ -104,7 +104,7 @@ class _AdminAddSuperAdminWidgetState extends State<AdminAddSuperAdminWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      AdminCrudFeedback.error(context, 'تعذر الإضافة: $e');
+      AdminCrudFeedback.error(context, '${uiTr(context, 'تعذر الإضافة')}: $e');
     } finally {
       if (mounted) setState(() => _model.isSubmitting = false);
     }
@@ -142,7 +142,7 @@ class _AdminAddSuperAdminWidgetState extends State<AdminAddSuperAdminWidget> {
                   focusNode: _model.nameFocusNode,
                   decoration: InputDecoration(labelText: uiTr(context, 'الاسم الكامل')),
                   validator: (v) =>
-                      v == null || v.trim().isEmpty ? 'مطلوب' : null,
+                      v == null || v.trim().isEmpty ? uiTr(context, 'مطلوب') : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -160,8 +160,8 @@ class _AdminAddSuperAdminWidgetState extends State<AdminAddSuperAdminWidget> {
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'مطلوب';
-                    if (!v.contains('@')) return 'بريد غير صالح';
+                    if (v == null || v.trim().isEmpty) return uiTr(context, 'مطلوب');
+                    if (!v.contains('@')) return uiTr(context, 'بريد غير صالح');
                     return null;
                   },
                 ),
@@ -178,7 +178,7 @@ class _AdminAddSuperAdminWidgetState extends State<AdminAddSuperAdminWidget> {
                   obscureText: true,
                   validator: (v) {
                     if (v == null || v.length < 6) {
-                      return '6 أحرف على الأقل';
+                      return uiTr(context, '6 أحرف على الأقل');
                     }
                     return null;
                   },
@@ -192,7 +192,7 @@ class _AdminAddSuperAdminWidgetState extends State<AdminAddSuperAdminWidget> {
                   ),
                   obscureText: true,
                   validator: (v) {
-                    if (v == null || v.isEmpty) return 'مطلوب';
+                    if (v == null || v.isEmpty) return uiTr(context, 'مطلوب');
                     return null;
                   },
                 ),

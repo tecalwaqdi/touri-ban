@@ -1,0 +1,56 @@
+{
+  "__path": "mkan/lm_sa_jeddah_north-obhur",
+  "__writtenAt": "2026-08-05T08:43:27.672Z",
+  "naim": "أبحر الشمالية",
+  "osf": "حي ساحلي شمال جدة معروف بالشواطئ والمراسي والمرافق البحرية.",
+  "names_i18n": {
+    "ar": "أبحر الشمالية",
+    "en": "North Obhur",
+    "ru": "Северный Обхур",
+    "ky": "Түндүк Обхур"
+  },
+  "osf_i18n": {
+    "ar": "حي ساحلي شمال جدة معروف بالشواطئ والمراسي والمرافق البحرية.",
+    "en": "Coastal district north of Jeddah known for beaches, marinas, and waterfront leisure.",
+    "ru": "Прибрежный район к северу от Джидды: пляжи, марины и морской отдых.",
+    "ky": "Жидданын түндүгүндөгү жээк району — пляждар жана деңиз эс алуусу."
+  },
+  "address": "أبحر الشمالية، جدة، المملكة العربية السعودية",
+  "address_i18n": {
+    "ar": "أبحر الشمالية، جدة، المملكة العربية السعودية",
+    "en": "North Obhur, Jeddah, Saudi Arabia",
+    "ru": "Северный Обхур, Джидда, Саудовская Аравия",
+    "ky": "Түндүк Обхур, Жидда, Сауд Арабиясы"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 21.7343081,
+    "longitude": 39.0829041
+  },
+  "img1": "assets/images/landmarks/jeddah_north_obhur.png",
+  "img2": "",
+  "img3": "",
+  "images_license_verified": true,
+  "img_source": "user_photo_IMG_6965",
+  "sr": 9,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.8,
+  "add_saat": 2,
+  "id_cit": "cities/region_sa_jeddah",
+  "id_vill": "villages/city_sa_jeddah",
+  "Rev_dolh": "countries/saudi_arabia",
+  "country_iso": "SA",
+  "verification_status": "verified",
+  "verification_confidence": 0.95,
+  "geo_import_id": "lm_sa_jeddah_north-obhur",
+  "geo_import_slug": "north-obhur",
+  "geo_import_source": "sa_five_provinces_2026",
+  "img1_firebase": "data-url"
+}

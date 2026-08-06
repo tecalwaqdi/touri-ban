@@ -150,39 +150,39 @@ List<ProfitsMonthlyPoint> _buildMonthlyTrend(List<OrderRecord> orders) {
   }).toList();
 }
 
-Future<List<OrderRecord>> _loadAllOrders({
+Future<List<OrderRecord>> _loadOrdersPage({
   DateTime? start,
+  int maxDocs = 300,
 }) async {
   final results = <OrderRecord>[];
   DocumentSnapshot? last;
+  final pageLimit = kAdminPageSize;
 
-  while (true) {
+  while (results.length < maxDocs) {
+    var query = AdminCountryScope.applyOrderQuery(OrderRecord.collection)
+        .orderBy('data_order', descending: true);
+    if (start != null) {
+      query = query.where('data_order', isGreaterThanOrEqualTo: start);
+    }
+    if (last != null) {
+      query = query.startAfterDocument(last);
+    }
+
+    final snap = await getQuerySnapshotFast(query.limit(pageLimit));
+    if (snap.docs.isEmpty) break;
+
     final batch = AdminCountryScope.filterOrders(
-      await queryListCacheFirst<OrderRecord>(
-        OrderRecord.collection,
-        OrderRecord.fromSnapshot,
-        queryBuilder: (q) {
-          var query = AdminCountryScope.applyOrderQuery(q)
-              .orderBy('data_order', descending: true);
-          if (start != null) {
-            query = query.where('data_order', isGreaterThanOrEqualTo: start);
-          }
-          if (last != null) {
-            query = query.startAfterDocument(last);
-          }
-          return query;
-        },
-        limit: kAdminPageSize,
-      ),
+      mapQuerySnapshot(snap, OrderRecord.fromSnapshot),
     );
-
     if (batch.isEmpty) break;
     results.addAll(batch);
-    last = await batch.last.reference.get();
-    if (batch.length < kAdminPageSize) break;
-    if (results.length >= kAdminMaxPages * kAdminPageSize) break;
+    last = snap.docs.last;
+    if (snap.docs.length < pageLimit) break;
   }
 
+  if (results.length > maxDocs) {
+    return results.sublist(0, maxDocs);
+  }
   return results;
 }
 
@@ -198,8 +198,9 @@ Future<ProfitsSummary> loadProfitsStats({
       countryPath: countryRef?.path,
       periodStart: start,
     );
-    final orders = await _loadAllOrders(start: start);
-    final totals = FinancialEngine.aggregate(orders);
+    // Remote totals are authoritative — only fetch a slim sample for charts/rows.
+    final sample = await _loadOrdersPage(start: start, maxDocs: 80);
+    final totals = FinancialEngine.aggregate(sample);
 
     return ProfitsSummary(
       totalSales: (remote['totalSales'] as num?)?.toDouble() ?? totals.totalSales,
@@ -213,8 +214,8 @@ Future<ProfitsSummary> loadProfitsStats({
       paidCount: (remote['paidCount'] as int?) ?? totals.paidCount,
       pendingCount: (remote['pendingCount'] as int?) ?? totals.pendingCount,
       canceledCount: (remote['canceledCount'] as int?) ?? totals.canceledCount,
-      monthlyTrend: _buildMonthlyTrend(orders),
-      recentOrders: orders
+      monthlyTrend: _buildMonthlyTrend(sample),
+      recentOrders: sample
           .where(OrderStatusHelper.countsTowardRevenue)
           .take(12)
           .map((o) => ProfitsOrderRow(order: o))
@@ -223,7 +224,7 @@ Future<ProfitsSummary> loadProfitsStats({
       loadedAt: DateTime.now(),
     );
   } catch (_) {
-    final orders = await _loadAllOrders(start: start);
+    final orders = await _loadOrdersPage(start: start, maxDocs: 400);
     final totals = FinancialEngine.aggregate(orders);
 
     return ProfitsSummary(

@@ -73,7 +73,7 @@ class _AdminReportsHubWidgetState extends State<AdminReportsHubWidget> {
     if (!AdminReportsCountryScope.isActive && _selectedCountry != null) {
       setState(() {
         _selectedCountry = null;
-        _countryLabel = 'جميع الدول';
+        _countryLabel = uiTr(context, 'جميع الدول');
       });
       _reloadReport();
     }
@@ -138,7 +138,7 @@ class _AdminReportsHubWidgetState extends State<AdminReportsHubWidget> {
     _countryDebounce?.cancel();
     setState(() {
       _selectedCountry = country?.reference;
-      _countryLabel = country?.naim ?? 'جميع الدول';
+      _countryLabel = country?.naim ?? uiTr(context, 'جميع الدول');
     });
     _countryDebounce = Timer(const Duration(milliseconds: 450), () {
       if (!mounted) return;
@@ -194,7 +194,7 @@ class _AdminReportsHubWidgetState extends State<AdminReportsHubWidget> {
         value,
         formatType: FormatType.decimal,
         decimalType: DecimalType.automatic,
-        currency: 'ر.س ',
+        currency: uiTr(context, 'ر.س '),
       );
 
   void _openAgentReport(UserRecord agent) {
@@ -323,14 +323,14 @@ class _ReportsContent extends StatelessWidget {
         icon: Icons.place_rounded,
         items: [
           _ReportStatItem(
-            'معالم سياحية',
+            uiTr(context, 'معالم سياحية'),
             report.landmarks,
             Icons.landscape_rounded,
             const Color(0xFF1F7372),
             onTap: () => openLandmarks(partnersOnly: false),
           ),
           _ReportStatItem(
-            'شركاء',
+            uiTr(context, 'شركاء'),
             report.partners,
             Icons.handshake_rounded,
             const Color(0xFF39D2C0),
@@ -343,14 +343,14 @@ class _ReportsContent extends StatelessWidget {
         icon: Icons.map_rounded,
         items: [
           _ReportStatItem(
-            'مناطق',
+            uiTr(context, 'مناطق'),
             report.regions,
             Icons.filter_hdr_rounded,
             const Color(0xFF3A9E99),
             onTap: () => openRoute(AdminregionWidget.routeName),
           ),
           _ReportStatItem(
-            'مدن',
+            uiTr(context, 'مدن'),
             report.cities,
             Icons.location_city_rounded,
             const Color(0xFF2A8580),
@@ -363,28 +363,28 @@ class _ReportsContent extends StatelessWidget {
         icon: Icons.groups_rounded,
         items: [
           _ReportStatItem(
-            'مستخدمو التطبيق',
+            uiTr(context, 'مستخدمو التطبيق'),
             report.appUsers,
             Icons.people_rounded,
             const Color(0xFF5C6BC0),
             onTap: () => openRoute(AdminuserWidget.routeName),
           ),
           _ReportStatItem(
-            'وكلاء',
+            uiTr(context, 'وكلاء'),
             report.agents,
             Icons.real_estate_agent_rounded,
             const Color(0xFF1F9A8A),
             onTap: () => openRoute(AdminAgentWidget.routeName),
           ),
           _ReportStatItem(
-            'مناديب',
+            uiTr(context, 'مناديب'),
             report.representatives,
             Icons.directions_car_rounded,
             const Color(0xFF4DB6AC),
             onTap: () => openRoute(AdmindreverWidget.routeName),
           ),
           _ReportStatItem(
-            'شركات نقل',
+            uiTr(context, 'شركات نقل'),
             report.transportCompanies,
             Icons.local_shipping_rounded,
             const Color(0xFF6D4C41),
@@ -397,28 +397,28 @@ class _ReportsContent extends StatelessWidget {
         icon: Icons.receipt_long_rounded,
         items: [
           _ReportStatItem(
-            'حجوزات نشطة',
+            uiTr(context, 'حجوزات نشطة'),
             report.activeBookings,
             Icons.event_available_rounded,
             const Color(0xFF3F51B5),
             onTap: () => openRoute(AdminALLhgZWidget.routeName),
           ),
           _ReportStatItem(
-            'إجمالي الحجوزات',
+            uiTr(context, 'إجمالي الحجوزات'),
             report.totalBookings,
             Icons.bookmark_added_rounded,
             const Color(0xFF5C6BC0),
             onTap: () => openRoute(AdminALLhgZWidget.routeName),
           ),
           _ReportStatItem(
-            'حجوزات مدفوعة',
+            uiTr(context, 'حجوزات مدفوعة'),
             report.paidBookings,
             Icons.payments_rounded,
             const Color(0xFF2E7D32),
             onTap: onProfits,
           ),
           _ReportStatItem(
-            'تذاكر الدعم',
+            uiTr(context, 'تذاكر الدعم'),
             report.supportTickets,
             Icons.support_agent_rounded,
             const Color(0xFFE64A19),
@@ -521,7 +521,7 @@ class _ReportsFilterBar extends StatelessWidget {
       decoration: AdminUi.inputDecoration(
         context,
         label: uiTr(context, 'دولة الوكيل'),
-        hint: 'اختر دولة للفلترة',
+        hint: uiTr(context, 'اختر دولة للفلترة'),
         prefixIcon: Icons.public_rounded,
       ),
       items: [
@@ -630,7 +630,7 @@ class _ReportsScopeBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'ملخص التقرير',
+                  uiTr(context, 'ملخص التقرير'),
                   style: theme.labelMedium.override(
                     fontFamily: theme.labelMediumFamily,
                     color: Colors.white.withValues(alpha: 0.85),
@@ -872,7 +872,7 @@ class _SalesHighlightCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'إجمالي المبيعات المدفوعة',
+                  uiTr(context, 'إجمالي المبيعات المدفوعة'),
                   style: theme.labelMedium.override(
                     fontFamily: theme.labelMediumFamily,
                     color: const Color(0xFF1B5E20),
@@ -910,7 +910,7 @@ class _SalesHighlightCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'حجز مدفوع',
+                  uiTr(context, 'حجز مدفوع'),
                   style: theme.labelSmall.override(
                     fontFamily: theme.labelSmallFamily,
                     color: theme.secondaryText,
@@ -1119,13 +1119,13 @@ class _QuickAccessSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final links = [
-      _QuickLink('المعالم', Icons.place_rounded, onLandmarks),
-      _QuickLink('الشركاء', Icons.handshake_rounded, onPartners),
-      _QuickLink('الحجوزات', Icons.bookmark_added_rounded, onBookings),
-      _QuickLink('الأرباح', Icons.account_balance_wallet_rounded, onProfits),
-      _QuickLink('الوكلاء', Icons.real_estate_agent_rounded, onAgents),
-      _QuickLink('المستخدمون', Icons.groups_rounded, onUsers),
-      _QuickLink('الدعم', Icons.support_agent_rounded, onSupport),
+      _QuickLink(uiTr(context, 'المعالم'), Icons.place_rounded, onLandmarks),
+      _QuickLink(uiTr(context, 'الشركاء'), Icons.handshake_rounded, onPartners),
+      _QuickLink(uiTr(context, 'الحجوزات'), Icons.bookmark_added_rounded, onBookings),
+      _QuickLink(uiTr(context, 'الأرباح'), Icons.account_balance_wallet_rounded, onProfits),
+      _QuickLink(uiTr(context, 'الوكلاء'), Icons.real_estate_agent_rounded, onAgents),
+      _QuickLink(uiTr(context, 'المستخدمون'), Icons.groups_rounded, onUsers),
+      _QuickLink(uiTr(context, 'الدعم'), Icons.support_agent_rounded, onSupport),
       _QuickLink(appTr(context, 'nav_audit_log'), Icons.history_rounded, onAudit),
     ];
 
@@ -1138,7 +1138,7 @@ class _QuickAccessSection extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'وصول سريع',
+                uiTr(context, 'وصول سريع'),
                 style: theme.titleSmall.override(
                   fontFamily: theme.titleSmallFamily,
                   fontWeight: FontWeight.w700,
@@ -1152,7 +1152,7 @@ class _QuickAccessSection extends StatelessWidget {
         if (hasCountryFilter) ...[
           const SizedBox(height: 6),
           Text(
-            'الأزرار تعرض بيانات الدولة المحددة فقط',
+            uiTr(context, 'الأزرار تعرض بيانات الدولة المحددة فقط'),
             style: theme.labelSmall.override(
               fontFamily: theme.labelSmallFamily,
               color: theme.secondaryText,
@@ -1255,7 +1255,7 @@ class _AgentsReportSection extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'تقارير الوكلاء',
+                    uiTr(context, 'تقارير الوكلاء'),
                     style: theme.titleSmall.override(
                       fontFamily: theme.titleSmallFamily,
                       fontWeight: FontWeight.w700,
@@ -1272,7 +1272,7 @@ class _AgentsReportSection extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '${rows.length} وكيل',
+                    '${rows.length} ${uiTr(context, 'وكيل')}',
                     style: theme.labelSmall.override(
                       fontFamily: theme.labelSmallFamily,
                       color: AdminUi.brandTeal,
@@ -1296,7 +1296,7 @@ class _AgentsReportSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'لا يوجد وكلاء في النطاق المحدد',
+                    uiTr(context, 'لا يوجد وكلاء في النطاق المحدد'),
                     style: theme.bodyMedium.override(
                       fontFamily: theme.bodyMediumFamily,
                       color: theme.secondaryText,
@@ -1405,7 +1405,7 @@ class _AgentCard extends StatelessWidget {
             children: [
               _AgentMetricChip(
                 icon: Icons.receipt_long_rounded,
-                label: '${row.bookings} حجز',
+                label: '${row.bookings} ${uiTr(context, 'حجز')}',
               ),
               const SizedBox(width: 8),
               _AgentMetricChip(

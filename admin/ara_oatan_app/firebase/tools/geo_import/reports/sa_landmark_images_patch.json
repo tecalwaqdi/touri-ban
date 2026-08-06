@@ -1,0 +1,319 @@
+{
+  "at": "2026-08-04T10:42:09.536Z",
+  "apply": true,
+  "count": 25,
+  "map": {
+    "lm_sa_jeddah_jeddah-new-corniche": "assets/images/landmarks/jeddah_new_corniche.jpg",
+    "lm_sa_jeddah_historic-jeddah": "assets/images/landmarks/jeddah_historic_balad_spa.png",
+    "lm_sa_jeddah_kaia": "assets/images/landmarks/jeddah_kaia.jpg",
+    "lm_sa_jeddah_haramain-jeddah-station": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%D9%82%D8%B7%D8%A7%D8%B1_%D8%A7%D9%84%D8%AD%D8%B1%D9%85%D9%8A%D9%86_%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81%D9%8A%D9%86.jpg/1920px-%D9%82%D8%B7%D8%A7%D8%B1_%D8%A7%D9%84%D8%AD%D8%B1%D9%85%D9%8A%D9%86_%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81%D9%8A%D9%86.jpg",
+    "lm_sa_jeddah_red-sea-mall": "https://upload.wikimedia.org/wikipedia/commons/3/33/Red_Sea_Mall_1_Jeddah.jpg",
+    "lm_sa_jeddah_north-obhur": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Obhur_Jeddah_3.jpg",
+    "lm_sa_madinah_masjid-an-nabawi": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Masjid_Nabawi_The_Prophet%27s_Mosque%2C_Madina.jpg",
+    "lm_sa_madinah_quba-mosque": "assets/images/landmarks/madinah_quba_mosque.png",
+    "lm_sa_madinah_qiblatain-mosque": "assets/images/landmarks/madinah_qiblatain.jpg",
+    "lm_sa_madinah_mount-uhud": "assets/images/landmarks/madinah_mount_uhud.jpg",
+    "lm_sa_madinah_masjid-hamza": "assets/images/landmarks/madinah_masjid_hamza.jpg",
+    "lm_sa_riyadh_kkia": "assets/images/landmarks/riyadh_kkia.jpg",
+    "lm_sa_riyadh_thumamah": "https://upload.wikimedia.org/wikipedia/commons/b/be/Thumamah_Nature_Park.jpg",
+    "lm_sa_riyadh_ibn-qasim-souq": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Al_Batha_Street_Riyadh_from_Amal.jpg",
+    "lm_sa_riyadh_suspension-bridge": "assets/images/landmarks/riyadh_suspension_bridge.jpg",
+    "lm_sa_riyadh_wadi-laban": "assets/images/landmarks/riyadh_wadi_laban_pylon.jpg",
+    "lm_sa_riyadh_kingdom-centre": "assets/images/landmarks/riyadh_kingdom_centre.jpg",
+    "lm_sa_riyadh_faisaliyah-tower": "assets/images/landmarks/riyadh_faisaliyah.jpg",
+    "lm_sa_riyadh_al-batha": "https://upload.wikimedia.org/wikipedia/commons/8/82/Al_Batha_Street_Riyadh,_2023.jpg",
+    "lm_sa_riyadh_souq-al-zal": "assets/images/landmarks/riyadh_souq_al_zal.jpg",
+    "lm_sa_riyadh_king-fahd-stadium": "assets/images/landmarks/riyadh_king_fahd_stadium.jpg",
+    "lm_sa_makkah_masjid-al-ijabah": "assets/images/landmarks/makkah_masjid_al_ijabah.jpg",
+    "lm_sa_makkah_masjid-king-abdulaziz": "assets/images/landmarks/makkah_masjid_king_abdulaziz.jpg",
+    "lm_sa_taif_masjid-al-madhun": "assets/images/landmarks/taif_masjid_al_madhun.jpg",
+    "lm_sa_taif_masjid-addas": "assets/images/landmarks/taif_masjid_addas.jpg"
+  },
+  "staging": [
+    {
+      "id": "lm_sa_jeddah_jeddah-new-corniche",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/1/15/Jeddah_Corniche_36.jpg",
+      "next": "assets/images/landmarks/jeddah_new_corniche.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_jeddah_historic-jeddah",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/d/db/Old_Jeddah_%28Al_Balad%29_ar",
+      "next": "assets/images/landmarks/jeddah_historic_balad_spa.png",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_jeddah_kaia",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/%D8%A7%D9%84%D9%88%D8%",
+      "next": "assets/images/landmarks/jeddah_kaia.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_jeddah_haramain-jeddah-station",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%D9%82%D8%B7%D8%A7%D8%",
+      "next": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%D9%82%D8%B7%D8%A7%D8%B1_%D8%A7%D9%84%D8%AD%D8%B1%D9%85%D9%8A%D9%86_%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81%D9%8A%D9%86.jpg/1920px-%D9%82%D8%B7%D8%A7%D8%B1_%D8%A7%D9%84%D8%AD%D8%B1%D9%85%D9%8A%D9%86_%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81%D9%8A%D9%86.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_jeddah_red-sea-mall",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/%D8%A7%D9%84%D9%88%D8%",
+      "next": "https://upload.wikimedia.org/wikipedia/commons/3/33/Red_Sea_Mall_1_Jeddah.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_jeddah_north-obhur",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/%D8%A7%D9%84%D9%88%D8%",
+      "next": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Obhur_Jeddah_3.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_madinah_masjid-an-nabawi",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Masjid_Nabawi_The_Prophet%27",
+      "next": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Masjid_Nabawi_The_Prophet%27s_Mosque%2C_Madina.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_madinah_quba-mosque",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Quba_Mosque_Full_Pictu",
+      "next": "assets/images/landmarks/madinah_quba_mosque.png",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_madinah_qiblatain-mosque",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Al-Masjid_An-Nabawi_%2",
+      "next": "assets/images/landmarks/madinah_qiblatain.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_madinah_mount-uhud",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Al-Masjid_An-Nabawi_%2",
+      "next": "assets/images/landmarks/madinah_mount_uhud.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_madinah_masjid-hamza",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Al-Masjid_An-Nabawi_%2",
+      "next": "assets/images/landmarks/madinah_masjid_hamza.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_riyadh_kkia",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Riyadh_Skyline.jpg/384",
+      "next": "assets/images/landmarks/riyadh_kkia.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_riyadh_thumamah",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Riyadh_Skyline.jpg/384",
+      "next": "https://upload.wikimedia.org/wikipedia/commons/b/be/Thumamah_Nature_Park.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_riyadh_ibn-qasim-souq",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Riyadh_Skyline.jpg/384",
+      "next": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Al_Batha_Street_Riyadh_from_Amal.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_riyadh_suspension-bridge",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Riyadh_Skyline.jpg/384",
+      "next": "assets/images/landmarks/riyadh_suspension_bridge.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_riyadh_wadi-laban",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Riyadh_Skyline.jpg/384",
+      "next": "assets/images/landmarks/riyadh_wadi_laban_pylon.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_riyadh_kingdom-centre",
+      "prev": "https://upload.wikimedia.org/wikipedia/en/b/b2/Kingdom_Centre_Riyadh_2024.jpeg",
+      "next": "assets/images/landmarks/riyadh_kingdom_centre.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_riyadh_faisaliyah-tower",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Riyadh_Skyline.jpg/384",
+      "next": "assets/images/landmarks/riyadh_faisaliyah.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_riyadh_al-batha",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Riyadh_Skyline.jpg/384",
+      "next": "https://upload.wikimedia.org/wikipedia/commons/8/82/Al_Batha_Street_Riyadh,_2023.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_riyadh_souq-al-zal",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Riyadh_Skyline.jpg/384",
+      "next": "assets/images/landmarks/riyadh_souq_al_zal.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_riyadh_king-fahd-stadium",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Riyadh_Skyline.jpg/384",
+      "next": "assets/images/landmarks/riyadh_king_fahd_stadium.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_makkah_masjid-al-ijabah",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Great_Mosque_of_Mecca1",
+      "next": "assets/images/landmarks/makkah_masjid_al_ijabah.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_makkah_masjid-king-abdulaziz",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Great_Mosque_of_Mecca1",
+      "next": "assets/images/landmarks/makkah_masjid_king_abdulaziz.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_taif_masjid-al-madhun",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/%D8%A7%D9%84%D8%B7%D8%",
+      "next": "assets/images/landmarks/taif_masjid_al_madhun.jpg",
+      "status": "staging-ok"
+    },
+    {
+      "id": "lm_sa_taif_masjid-addas",
+      "prev": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/%D8%A7%D9%84%D8%B7%D8%",
+      "next": "assets/images/landmarks/taif_masjid_addas.jpg",
+      "status": "staging-ok"
+    }
+  ],
+  "production": [
+    {
+      "id": "lm_sa_jeddah_jeddah-new-corniche",
+      "img": "assets/images/landmarks/jeddah_new_corniche.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_historic-jeddah",
+      "img": "assets/images/landmarks/jeddah_historic_balad_spa.png",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_kaia",
+      "img": "assets/images/landmarks/jeddah_kaia.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_haramain-jeddah-station",
+      "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%D9%82%D8%B7%D8%A7%D8%B1_%D8%A7%D9%84%D8%AD%D8%B1%D9%85%D9%8A%D9%86_%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81%D9%8A%D9%86.jpg/1920px-%D9%82%D8%B7%D8%A7%D8%B1_%D8%A7%D9%84%D8%AD%D8%B1%D9%85%D9%8A%D9%86_%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81%D9%8A%D9%86.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_red-sea-mall",
+      "img": "https://upload.wikimedia.org/wikipedia/commons/3/33/Red_Sea_Mall_1_Jeddah.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_north-obhur",
+      "img": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Obhur_Jeddah_3.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_madinah_masjid-an-nabawi",
+      "img": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Masjid_Nabawi_The_Prophet%27s_Mosque%2C_Madina.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_madinah_quba-mosque",
+      "img": "assets/images/landmarks/madinah_quba_mosque.png",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_madinah_qiblatain-mosque",
+      "img": "assets/images/landmarks/madinah_qiblatain.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_madinah_mount-uhud",
+      "img": "assets/images/landmarks/madinah_mount_uhud.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_madinah_masjid-hamza",
+      "img": "assets/images/landmarks/madinah_masjid_hamza.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_kkia",
+      "img": "assets/images/landmarks/riyadh_kkia.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_thumamah",
+      "img": "https://upload.wikimedia.org/wikipedia/commons/b/be/Thumamah_Nature_Park.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_ibn-qasim-souq",
+      "img": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Al_Batha_Street_Riyadh_from_Amal.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_suspension-bridge",
+      "img": "assets/images/landmarks/riyadh_suspension_bridge.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_wadi-laban",
+      "img": "assets/images/landmarks/riyadh_wadi_laban_pylon.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_kingdom-centre",
+      "img": "assets/images/landmarks/riyadh_kingdom_centre.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_faisaliyah-tower",
+      "img": "assets/images/landmarks/riyadh_faisaliyah.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_al-batha",
+      "img": "https://upload.wikimedia.org/wikipedia/commons/8/82/Al_Batha_Street_Riyadh,_2023.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_souq-al-zal",
+      "img": "assets/images/landmarks/riyadh_souq_al_zal.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_riyadh_king-fahd-stadium",
+      "img": "assets/images/landmarks/riyadh_king_fahd_stadium.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_makkah_masjid-al-ijabah",
+      "img": "assets/images/landmarks/makkah_masjid_al_ijabah.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_makkah_masjid-king-abdulaziz",
+      "img": "assets/images/landmarks/makkah_masjid_king_abdulaziz.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_taif_masjid-al-madhun",
+      "img": "assets/images/landmarks/taif_masjid_al_madhun.jpg",
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_taif_masjid-addas",
+      "img": "assets/images/landmarks/taif_masjid_addas.jpg",
+      "status": "patched"
+    }
+  ],
+  "skippedNeedsPhoto": [
+    "lm_sa_jeddah_jeddah-corniche-circuit",
+    "lm_sa_jeddah_horse-stables",
+    "lm_sa_jeddah_salam-mall",
+    "lm_sa_madinah_uthman-farm",
+    "lm_sa_madinah_qatrah-cafe",
+    "lm_sa_taif_historic-balad-souq"
+  ]
+}

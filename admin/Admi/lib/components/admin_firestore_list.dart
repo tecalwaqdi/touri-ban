@@ -169,8 +169,10 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   @override
   void didUpdateWidget(covariant AdminFirestoreList<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // Parents recreate queryBuilder lambdas on every setState — ignore identity.
+    // Reload only when the underlying collection / page size actually changes.
     if (oldWidget.query != widget.query ||
-        oldWidget.queryBuilder != widget.queryBuilder) {
+        oldWidget.pageSize != widget.pageSize) {
       _resetAndLoad();
     }
   }

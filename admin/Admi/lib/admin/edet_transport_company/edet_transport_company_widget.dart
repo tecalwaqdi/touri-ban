@@ -116,8 +116,7 @@ class _EdetTransportCompanyWidgetState
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(uiTr(context, 'حذف شركة النقل')),
-        content: const Text(
-          'هل أنت متأكد من حذف هذه الشركة؟ لن يُحذف حساب المدير تلقائياً.',
+        content: Text(uiTr(context, 'هل أنت متأكد من حذف هذه الشركة؟ لن يُحذف حساب المدير تلقائياً.'),
         ),
         actions: [
           TextButton(
@@ -172,7 +171,7 @@ class _EdetTransportCompanyWidgetState
         title: appTr(context, 'scr_edit_transport'),
         child: AdminContentCard(
           child: Text(
-            'تعذر تحميل بيانات الشركة',
+            uiTr(context, 'تعذر تحميل بيانات الشركة'),
             textAlign: TextAlign.center,
           ),
         ),
@@ -182,7 +181,7 @@ class _EdetTransportCompanyWidgetState
     return AdminEditScaffold(
       title: appTr(context, 'scr_edit_transport'),
       subtitle: _company!.dolhText.isNotEmpty
-          ? 'الدولة: ${_company!.dolhText}'
+          ? '${uiTr(context, 'الدولة')}: ${_company!.dolhText}'
           : null,
       isLoading: _model.isSubmitting,
       floatingAction: AdminPrimaryButton(
@@ -206,7 +205,7 @@ class _EdetTransportCompanyWidgetState
                       labelText: uiTr(context, 'اسم الشركة'),
                     ),
                     validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'مطلوب' : null,
+                        v == null || v.trim().isEmpty ? uiTr(context, 'مطلوب') : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -216,7 +215,7 @@ class _EdetTransportCompanyWidgetState
                       labelText: uiTr(context, 'رقم ترخيص هيئة النقل'),
                     ),
                     validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'مطلوب' : null,
+                        v == null || v.trim().isEmpty ? uiTr(context, 'مطلوب') : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -250,8 +249,7 @@ class _EdetTransportCompanyWidgetState
             OutlinedButton.icon(
               onPressed: _model.isSubmitting ? null : _delete,
               icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
-              label: const Text(
-                'حذف الشركة',
+              label: Text(uiTr(context, 'حذف الشركة'),
                 style: TextStyle(color: Colors.red),
               ),
             ),

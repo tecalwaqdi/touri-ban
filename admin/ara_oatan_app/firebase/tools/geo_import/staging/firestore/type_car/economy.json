@@ -1,21 +1,25 @@
 {
   "__path": "type_car/economy",
-  "__writtenAt": "2026-07-22T11:29:02.560Z",
+  "__writtenAt": "2026-08-05T11:10:56.042Z",
   "__target": "local-staging",
-  "naim": "اقتصادية",
+  "naim": "سيارة اقتصادية",
   "names_i18n": {
-    "ar": "اقتصادية",
-    "en": "Economy",
+    "ar": "سيارة اقتصادية",
+    "en": "Economy Car",
     "ru": "Эконом",
     "ky": "Эконом",
     "uz": "Ekonom"
   },
   "codeCar": "economy",
-  "sr": 160,
-  "agl_saat": 4,
+  "sr": 100,
+  "agl_saat": 3,
   "actev": true,
   "ishafelh": false,
   "not": "Economy",
   "geo_import_id": "vehcat_economy",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "touri_geo_import",
+  "img": "assets/images/vehicles/economy_car.jpg",
+  "__note": "Production img field was updated to embedded JPEG data-url via upload_vehicle_images_to_firebase.js",
+  "sort_order": 1,
+  "num_trteb": 1
 }

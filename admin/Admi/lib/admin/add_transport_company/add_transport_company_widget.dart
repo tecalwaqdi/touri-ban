@@ -184,7 +184,7 @@ class _AddTransportCompanyWidgetState extends State<AddTransportCompanyWidget> {
     return AdminEditScaffold(
       title: appTr(context, 'scr_register_transport'),
       subtitle:
-          'شركة مرخّصة من هيئة النقل — أدخل بيانات الشركة ثم أضف سائقيها لاحقاً',
+          uiTr(context, 'شركة مرخّصة من هيئة النقل — أدخل بيانات الشركة ثم أضف سائقيها لاحقاً'),
       isLoading: _model.isSubmitting,
       floatingAction: AdminPrimaryButton(
         label: uiTr(context, 'حفظ الشركة'),
@@ -205,7 +205,7 @@ class _AddTransportCompanyWidgetState extends State<AddTransportCompanyWidget> {
                 hintText: uiTr(context, 'مثال: شركة النقل الوطنية'),
               ),
               validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'أدخل اسم الشركة' : null,
+                  v == null || v.trim().isEmpty ? uiTr(context, 'أدخل اسم الشركة') : null,
             ),
             const SizedBox(height: 14),
             TextFormField(
@@ -324,7 +324,7 @@ class _AddTransportCompanyWidgetState extends State<AddTransportCompanyWidget> {
           )
           .toList(),
       onChanged: (v) => setState(() => _model.selectedCountry = v),
-      validator: (v) => v == null ? 'اختر الدولة' : null,
+      validator: (v) => v == null ? uiTr(context, 'اختر الدولة') : null,
     );
   }
 }

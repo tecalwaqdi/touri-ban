@@ -1,0 +1,65 @@
+{
+  "at": "2026-08-05T03:27:21.135Z",
+  "mapped": [
+    {
+      "id": "lm_sa_jeddah_horse-stables",
+      "ar": "إسطبل الخيول",
+      "source": "IMG_6959",
+      "asset": "assets/images/landmarks/jeddah_horse_stables.png",
+      "compressedBytes": 203033,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_kaia",
+      "ar": "مطار الملك عبدالعزيز الدولي",
+      "source": "IMG_6964",
+      "asset": "assets/images/landmarks/jeddah_kaia.png",
+      "compressedBytes": 404194,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_jeddah-corniche-circuit",
+      "ar": "حلبة كورنيش جدة (فورمولا 1)",
+      "source": "IMG_6961",
+      "asset": "assets/images/landmarks/jeddah_corniche_circuit.png",
+      "compressedBytes": 276301,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_salam-mall",
+      "ar": "السلام مول",
+      "source": "IMG_6960",
+      "asset": "assets/images/landmarks/jeddah_salam_mall.png",
+      "compressedBytes": 183340,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_haramain-jeddah-station",
+      "ar": "محطة قطار الحرمين بجدة",
+      "source": "IMG_6963",
+      "asset": "assets/images/landmarks/jeddah_haramain_station.png",
+      "compressedBytes": 238925,
+      "status": "patched"
+    },
+    {
+      "id": "lm_sa_jeddah_jeddah-new-corniche",
+      "ar": "كورنيش جدة الجديد",
+      "source": "IMG_6958",
+      "asset": "assets/images/landmarks/jeddah_new_corniche.png",
+      "compressedBytes": 340974,
+      "status": "patched"
+    }
+  ],
+  "unused": [
+    {
+      "file": "IMG_6962",
+      "asset": "assets/images/landmarks/_unused_jeddah_superdome.png",
+      "reason": "Identified as Jeddah Superdome (قوس زجاجي وإضاءة قوس قزح) — not in curated Jeddah landmark list. Not assigned to avoid wrong mapping."
+    }
+  ],
+  "unchanged": [
+    "lm_sa_jeddah_historic-jeddah",
+    "lm_sa_jeddah_red-sea-mall",
+    "lm_sa_jeddah_north-obhur"
+  ]
+}

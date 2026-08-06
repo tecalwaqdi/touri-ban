@@ -1,4 +1,5 @@
 import 'dart:async';
+import '/flutter_flow/flutter_flow_util.dart';
 
 import 'package:flutter/material.dart';
 
@@ -183,7 +184,7 @@ class _AdminAgentLandmarkListState extends State<AdminAgentLandmarkList> {
           setState(() {
             _loading = false;
             _hasError = true;
-            _errorMessage = 'تعذر تحديث قائمة المعالم';
+            _errorMessage = uiTr(context, 'تعذر تحديث قائمة المعالم');
           });
         }
         return;
@@ -191,7 +192,7 @@ class _AdminAgentLandmarkListState extends State<AdminAgentLandmarkList> {
       setState(() {
         _loading = false;
         _hasError = true;
-        _errorMessage = 'تعذر تحميل المعالم. تحقق من الاتصال وحاول مرة أخرى.';
+        _errorMessage = uiTr(context, 'تعذر تحميل المعالم. تحقق من الاتصال وحاول مرة أخرى.');
       });
     }
   }
@@ -226,7 +227,7 @@ class _AdminAgentLandmarkListState extends State<AdminAgentLandmarkList> {
       if (!mounted || _allItems.isNotEmpty) return;
       setState(() {
         _hasError = true;
-        _errorMessage = 'تعذر تحديث قائمة المعالم';
+        _errorMessage = uiTr(context, 'تعذر تحديث قائمة المعالم');
       });
     }
   }
@@ -277,7 +278,7 @@ class _AdminAgentLandmarkListState extends State<AdminAgentLandmarkList> {
 
     if (_hasError && _allItems.isEmpty) {
       return AdminListErrorState(
-        message: _errorMessage ?? 'تعذر تحميل البيانات',
+        message: _errorMessage ?? uiTr(context, 'تعذر تحميل البيانات'),
         onRetry: refresh,
       );
     }
@@ -290,7 +291,7 @@ class _AdminAgentLandmarkListState extends State<AdminAgentLandmarkList> {
       children: [
         if (_hasError && _allItems.isNotEmpty)
           AdminListErrorBanner(
-            message: _errorMessage ?? 'تعذر تحديث البيانات',
+            message: _errorMessage ?? uiTr(context, 'تعذر تحديث البيانات'),
             onRetry: refresh,
           ),
         widget.builder(context, visible, _meta()),

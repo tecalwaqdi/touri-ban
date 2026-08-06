@@ -421,7 +421,7 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
                                               .showSnackBar(
                                             SnackBar(
                                               content: Text(
-                                                'تم تحديث مدينة العمل',
+                                                uiTr(context, 'تم تحديث مدينة العمل'),
                                               ),
                                             ),
                                           );
@@ -431,7 +431,7 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
                                               .showSnackBar(
                                             SnackBar(
                                               content: Text(
-                                                'تعذر التحديث: $e',
+                                                '${uiTr(context, 'تعذر التحديث')}: $e',
                                               ),
                                             ),
                                           );
@@ -919,7 +919,7 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
                                                                         0.0,
                                                                         0.0),
                                                             child: Text(
-                                                              '${listViewOrderRecord.totalTaim.toString()} /  ساعات',
+                                                              '${listViewOrderRecord.totalTaim.toString()} /  ${uiTr(context, 'ساعات')}',
                                                               style: FlutterFlowTheme
                                                                       .of(context)
                                                                   .bodySmall
@@ -1009,7 +1009,7 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
                                                                     DecimalType
                                                                         .automatic,
                                                                 currency:
-                                                                    'ر.س ',
+                                                                    uiTr(context, 'ر.س '),
                                                               ),
                                                               style: FlutterFlowTheme
                                                                       .of(context)

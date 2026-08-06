@@ -5,6 +5,7 @@ import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
+import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -66,10 +67,10 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
   }
 
   Future<void> _toggleActivation(UserRecord user, {required bool activate}) async {
-    final title = activate ? 'تأكيد التفعيل' : 'تأكيد الإيقاف';
+    final title = activate ? uiTr(context, 'تأكيد التفعيل') : uiTr(context, 'تأكيد الإيقاف');
     final content = activate
-        ? 'هل أنت متأكد من تفعيل المندوب؟'
-        : 'هل أنت متأكد من إيقاف المندوب؟';
+        ? uiTr(context, 'هل أنت متأكد من تفعيل المندوب؟')
+        : uiTr(context, 'هل أنت متأكد من إيقاف المندوب؟');
 
     final confirmed = await showDialog<bool>(
           context: context,
@@ -100,7 +101,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            activate ? 'تم تفعيل المندوب بنجاح' : 'تم إيقاف المندوب بنجاح',
+            activate ? uiTr(context, 'تم تفعيل المندوب بنجاح') : uiTr(context, 'تم إيقاف المندوب بنجاح'),
           ),
         ),
       );
@@ -176,8 +177,8 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                             child: Text(
-                              'العدد: ${reps.length}'
-                              '${reps.length != allReps.length ? ' من ${allReps.length}' : ''}'
+                              '${uiTr(context, 'العدد')}: ${reps.length}'
+                              '${reps.length != allReps.length ? ' ${uiTr(context, 'من')} ${allReps.length}' : ''}'
                               '${listState.hasMore ? '+' : ''}',
                               style: theme.labelLarge.override(
                                 fontFamily: theme.labelLargeFamily,
@@ -187,24 +188,14 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                             ),
                           ),
                         if (reps.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 32),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.directions_car_outlined,
-                                  size: 48,
-                                  color: AdminUi.brandTeal.withValues(alpha: 0.45),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  _searchQuery.isEmpty
-                                      ? 'لا يوجد مناديب مسجلون'
-                                      : 'لا توجد نتائج للبحث',
-                                  style: theme.titleMedium,
-                                ),
-                              ],
-                            ),
+                          AdminEmptyState(
+                            title: _searchQuery.isEmpty
+                                ? uiTr(context, 'لا يوجد مناديب مسجلون')
+                                : uiTr(context, 'لا توجد نتائج للبحث'),
+                            message: _searchQuery.isEmpty
+                                ? uiTr(context, 'أضف مندوبًا جديدًا أو راجع فلتر الدولة')
+                                : uiTr(context, 'جرّب كلمة بحث أخرى'),
+                            icon: Icons.directions_car_outlined,
                           )
                         else if (isWide)
                           _RepresentativesTable(
@@ -258,7 +249,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
       decoration: AdminUi.inputDecoration(
         context,
         label: l10n.getText('wvm3crco'),
-        hint: 'ابحث بالاسم أو الجوال أو المدينة...',
+        hint: uiTr(context, 'ابحث بالاسم أو الجوال أو المدينة...'),
         prefixIcon: Icons.search_rounded,
       ),
       validator: _model.textControllerValidator.asValidator(context),
@@ -333,7 +324,7 @@ class _TableHeaderRow extends StatelessWidget {
           _HeaderCell(l10n.getText('py60u4hw'), flex: 2, theme: theme),
           _HeaderCell(l10n.getText('u207wx5e'), flex: 2, theme: theme),
           _HeaderCell(l10n.getText('qrv84p3x'), flex: 2, theme: theme),
-          _HeaderCell('الحالة', flex: 2, theme: theme),
+          _HeaderCell(uiTr(context, 'الحالة'), flex: 2, theme: theme),
           _HeaderCell(l10n.getText('a4euyls3'), flex: 2, theme: theme),
         ],
       ),
@@ -696,7 +687,7 @@ class _StatusBadge extends StatelessWidget {
     final theme = FlutterFlowTheme.of(context);
     final color = active ? const Color(0xFF2E7D32) : theme.error;
     final bg = active ? const Color(0xFFE8F5E9) : const Color(0xFFFFEBEE);
-    final label = active ? 'نشط' : 'موقوف';
+    final label = active ? uiTr(context, 'نشط') : uiTr(context, 'موقوف');
 
     return Align(
       alignment: AlignmentDirectional.centerStart,

@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_osh_osh-uzgen-complex",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "مجمع أوزغن التاريخي",
+  "osf": "مجمع أوزغن التاريخي — معلم في إقليم أوش.",
+  "names_i18n": {
+    "ar": "مجمع أوزغن التاريخي",
+    "en": "Uzgen historical complex",
+    "ru": "Исторический комплекс Узгена",
+    "ky": "Өзгөн тарыхый комплекс"
+  },
+  "osf_i18n": {
+    "ar": "مجمع أوزغن التاريخي — معلم في إقليم أوش.",
+    "en": "Uzgen historical complex — landmark in Osh Region.",
+    "ru": "Исторический комплекс Узгена — достопримечательность в регионе Ошская область.",
+    "ky": "Өзгөн тарыхый комплекс — Ош облусу аймагындагы жай."
+  },
+  "address": "مجمع أوزغن التاريخي، أوزجن، إقليم أوش، قيرغيزستان",
+  "address_i18n": {
+    "ar": "مجمع أوزغن التاريخي، أوزجن، إقليم أوش، قيرغيزستان",
+    "en": "Uzgen historical complex, Uzgen, Osh Region, Kyrgyzstan",
+    "ru": "Исторический комплекс Узгена, Узген, Ошская область, Кыргызстан",
+    "ky": "Өзгөн тарыхый комплекс, Өзгөн, Ош облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 40.77,
+    "longitude": 73.3
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 2,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_osh",
+  "id_vill": "villages/city_kg_uzgen",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_osh_osh-uzgen-complex",
+  "geo_import_slug": "osh-uzgen-complex",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}

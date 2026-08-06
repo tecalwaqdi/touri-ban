@@ -1,21 +1,25 @@
 {
   "__path": "type_car/suv_family",
-  "__writtenAt": "2026-07-22T11:29:02.572Z",
+  "__writtenAt": "2026-08-05T11:10:56.042Z",
   "__target": "local-staging",
-  "naim": "SUV عائلية",
+  "naim": "سيارة عائلية",
   "names_i18n": {
-    "ar": "SUV عائلية",
-    "en": "Family SUV",
+    "ar": "سيارة عائلية",
+    "en": "Family Car",
     "ru": "Семейный SUV",
     "ky": "Үй-бүлөлүк SUV",
     "uz": "Oilaviy SUV"
   },
   "codeCar": "suv_family",
-  "sr": 320,
-  "agl_saat": 4,
+  "sr": 150,
+  "agl_saat": 3,
   "actev": true,
   "ishafelh": false,
   "not": "Family SUV",
   "geo_import_id": "vehcat_suv_family",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "touri_geo_import",
+  "img": "assets/images/vehicles/family_car.jpg",
+  "__note": "Production img field was updated to embedded JPEG data-url via upload_vehicle_images_to_firebase.js",
+  "sort_order": 2,
+  "num_trteb": 2
 }

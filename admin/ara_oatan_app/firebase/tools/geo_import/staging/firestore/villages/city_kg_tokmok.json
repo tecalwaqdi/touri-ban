@@ -1,15 +1,22 @@
 {
   "__path": "villages/city_kg_tokmok",
-  "__writtenAt": "2026-07-22T11:28:59.559Z",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
   "__target": "local-staging",
   "naim": "توكموك",
   "names_i18n": {
     "ar": "توكموك",
     "en": "Tokmok",
     "ru": "Токмок",
-    "ky": "Токмок",
-    "uz": "Toqmoq"
+    "ky": "Токмок"
   },
+  "osf": "توكموك — إقليم تشوي",
+  "osf_i18n": {
+    "ar": "توكموك — المركز الإداري لـ إقليم تشوي",
+    "en": "Tokmok — administrative hub of Chuy Region",
+    "ru": "Токмок — административный центр региона Чуйская область",
+    "ky": "Токмок — Чүй облусу административдик борбору"
+  },
+  "img": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Soviet_Il-28_bomber_monument_in_Tokmok_20080830.jpg",
   "cities": "cities/region_kg_chuy",
   "dolh": "countries/kyrgyzstan",
   "lat_ling": {
@@ -19,5 +26,5 @@
   "acctev": true,
   "country_iso": "KG",
   "geo_import_id": "city_kg_tokmok",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "sa_kg_rebuild_2026"
 }

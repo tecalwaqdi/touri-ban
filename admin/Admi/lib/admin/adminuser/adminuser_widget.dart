@@ -68,11 +68,11 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text(activate ? 'تأكيد تنشيط الحساب' : 'تأكيد إيقاف الحساب'),
+            title: Text(activate ? uiTr(context, 'تأكيد تنشيط الحساب') : uiTr(context, 'تأكيد إيقاف الحساب')),
             content: Text(
               activate
-                  ? 'هل أنت متأكد من تنشيط حساب "${user.displayName}"؟'
-                  : 'هل أنت متأكد من إيقاف حساب "${user.displayName}"؟',
+                  ? '${uiTr(context, 'هل أنت متأكد من تنشيط حساب')} "${user.displayName}"؟'
+                  : '${uiTr(context, 'هل أنت متأكد من إيقاف حساب')} "${user.displayName}"؟',
             ),
             actions: [
               TextButton(
@@ -81,7 +81,7 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: Text(activate ? 'نعم، فعّل' : 'نعم، أوقف'),
+                child: Text(activate ? uiTr(context, 'نعم، فعّل') : uiTr(context, 'نعم، أوقف')),
               ),
             ],
           ),
@@ -104,7 +104,7 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            activate ? 'تم تنشيط الحساب بنجاح' : 'تم إيقاف الحساب بنجاح',
+            activate ? uiTr(context, 'تم تنشيط الحساب بنجاح') : uiTr(context, 'تم إيقاف الحساب بنجاح'),
           ),
         ),
       );
@@ -210,8 +210,8 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
                           const SizedBox(height: 12),
                           Text(
                             _searchQuery.isEmpty
-                                ? 'لا يوجد مستخدمون مسجلون'
-                                : 'لا توجد نتائج للبحث',
+                                ? uiTr(context, 'لا يوجد مستخدمون مسجلون')
+                                : uiTr(context, 'لا توجد نتائج للبحث'),
                             style: theme.titleMedium,
                           ),
                         ],
@@ -227,8 +227,8 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
                           child: Text(
-                            'العدد: ${users.length}'
-                            '${users.length != allUsers.length ? ' من ${allUsers.length}' : ''}'
+                            '${uiTr(context, 'العدد')}: ${users.length}'
+                            '${users.length != allUsers.length ? ' ${uiTr(context, 'من')} ${allUsers.length}' : ''}'
                             '${listState.hasMore ? '+' : ''}',
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
@@ -287,7 +287,7 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
       decoration: AdminUi.inputDecoration(
         context,
         label: uiTr(context, 'بحث'),
-        hint: 'ابحث بالاسم أو البريد أو الجوال...',
+        hint: uiTr(context, 'ابحث بالاسم أو البريد أو الجوال...'),
         prefixIcon: Icons.search_rounded,
       ),
       validator: _model.textControllerValidator.asValidator(context),
@@ -331,11 +331,11 @@ class _UsersTable extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                                           child: Row(
                                             children: [
-                  _HeaderCell('المستخدم', flex: 3, theme: theme),
-                  _HeaderCell('البريد', flex: 3, theme: theme),
-                  _HeaderCell('الجوال', flex: 2, theme: theme),
-                  _HeaderCell('الحالة', flex: 2, theme: theme),
-                  _HeaderCell('إجراءات', flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'المستخدم'), flex: 3, theme: theme),
+                  _HeaderCell(uiTr(context, 'البريد'), flex: 3, theme: theme),
+                  _HeaderCell(uiTr(context, 'الجوال'), flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'الحالة'), flex: 2, theme: theme),
+                  _HeaderCell(uiTr(context, 'إجراءات'), flex: 2, theme: theme),
                 ],
               ),
             ),
@@ -623,7 +623,7 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        active ? 'نشط' : 'موقوف',
+        active ? uiTr(context, 'نشط') : uiTr(context, 'موقوف'),
         style: theme.labelSmall.override(
           fontFamily: theme.labelSmallFamily,
           color: active ? const Color(0xFF2E7D32) : theme.error,

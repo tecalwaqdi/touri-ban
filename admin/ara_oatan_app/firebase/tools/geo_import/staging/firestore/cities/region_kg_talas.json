@@ -1,19 +1,32 @@
 {
   "__path": "cities/region_kg_talas",
-  "__writtenAt": "2026-07-22T11:28:59.694Z",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
   "__target": "local-staging",
   "naim": "إقليم تالاس",
   "names_i18n": {
     "ar": "إقليم تالاس",
     "en": "Talas Region",
     "ru": "Таласская область",
-    "ky": "Талас облусу",
-    "uz": "Talas viloyati"
+    "ky": "Талас облусу"
   },
+  "osf": "إقليم تالاس، مرتبط بملحمة ماناس ومجمع ماناس أوردو.",
+  "osf_i18n": {
+    "ar": "إقليم تالاس، مرتبط بملحمة ماناس ومجمع ماناس أوردو.",
+    "en": "Talas Region — linked to the Manas epic and Manas Ordo complex.",
+    "ru": "Таласская область, связанная с эпосом Манас и комплексом Манас Ордо.",
+    "ky": "Талас облусу — Манас эпосу жана Манас Ордо комплекси."
+  },
+  "img": "https://flagcdn.com/w320/kg.png",
+  "icon": "https://flagcdn.com/w320/kg.png",
   "dolh": "countries/kyrgyzstan",
   "acctev": true,
+  "sorting": 5,
   "iso_code": "KG-T",
   "country_iso": "KG",
+  "geo_center": {
+    "latitude": 42.5228,
+    "longitude": 72.2427
+  },
   "geo_import_id": "region_kg_talas",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "sa_kg_rebuild_2026"
 }

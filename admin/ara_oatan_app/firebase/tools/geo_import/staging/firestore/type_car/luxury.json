@@ -1,21 +1,25 @@
 {
   "__path": "type_car/luxury",
-  "__writtenAt": "2026-07-22T11:29:02.562Z",
+  "__writtenAt": "2026-08-05T11:10:56.043Z",
   "__target": "local-staging",
-  "naim": "فاخرة",
+  "naim": "سيارة فارهة",
   "names_i18n": {
-    "ar": "فاخرة",
-    "en": "Luxury",
+    "ar": "سيارة فارهة",
+    "en": "Luxury Car",
     "ru": "Люкс",
     "ky": "Люкс",
     "uz": "Lyuks"
   },
   "codeCar": "luxury",
-  "sr": 480,
-  "agl_saat": 5,
+  "sr": 250,
+  "agl_saat": 3,
   "actev": true,
   "ishafelh": false,
   "not": "Luxury",
   "geo_import_id": "vehcat_luxury",
-  "geo_import_source": "touri_geo_import"
+  "geo_import_source": "touri_geo_import",
+  "img": "assets/images/vehicles/luxury_car.jpg",
+  "__note": "Production img field was updated to embedded JPEG data-url via upload_vehicle_images_to_firebase.js",
+  "sort_order": 4,
+  "num_trteb": 4
 }

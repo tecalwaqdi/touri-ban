@@ -1,6 +1,7 @@
 import '/backend/admin_country_scope.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
+import '/components/admin_enterprise_kit.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
@@ -84,41 +85,26 @@ class _AdminTransportCompaniesWidgetState
       child: AdminPageBody(
         title: appTr(context, 'scr_transport_companies'),
         subtitle:
-            'الشركات المرخّصة من هيئة النقل — أضف الشركة ثم سجّل سائقيها ومركباتهم',
+            uiTr(context, 'الشركات المرخّصة من هيئة النقل — أضف الشركة ثم سجّل سائقيها ومركباتهم'),
         scrollable: true,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AdminContentCard(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: _model.textController,
-                    focusNode: _model.textFieldFocusNode,
-                    onChanged: (_) => EasyDebounce.debounce(
-                      '_search_transport_co',
-                      const Duration(milliseconds: 300),
-                      () => safeSetState(
-                        () => _searchQuery = _model.textController!.text,
-                      ),
-                    ),
-                    decoration: InputDecoration(
-                      hintText: uiTr(context, 'بحث باسم الشركة أو رقم الترخيص...'),
-                      prefixIcon: const Icon(Icons.search_rounded),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  AdminPrimaryButton(
-                    label: uiTr(context, 'إضافة شركة نقل'),
-                    icon: Icons.local_shipping_rounded,
-                    onPressed: () =>
-                        context.pushNamed(AddTransportCompanyWidget.routeName),
-                  ),
-                ],
+            AdminFilterBar(
+              controller: _model.textController,
+              hint: uiTr(context, 'بحث باسم الشركة أو رقم الترخيص...'),
+              onChanged: (_) => EasyDebounce.debounce(
+                '_search_transport_co',
+                const Duration(milliseconds: 300),
+                () => safeSetState(
+                  () => _searchQuery = _model.textController!.text,
+                ),
+              ),
+              trailing: AdminPrimaryButton(
+                label: uiTr(context, 'إضافة شركة نقل'),
+                icon: Icons.local_shipping_rounded,
+                onPressed: () =>
+                    context.pushNamed(AddTransportCompanyWidget.routeName),
               ),
             ),
             const SizedBox(height: 16),
@@ -137,7 +123,7 @@ class _AdminTransportCompaniesWidgetState
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'عدد الشركات: ${companies.length}',
+                        '${uiTr(context, 'عدد الشركات')}: ${companies.length}',
                         style: theme.labelLarge.override(
                           fontFamily: theme.labelLargeFamily,
                           color: theme.secondaryText,
@@ -149,7 +135,7 @@ class _AdminTransportCompaniesWidgetState
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 32),
                           child: Text(
-                            'لا توجد شركات نقل مسجّلة',
+                            uiTr(context, 'لا توجد شركات نقل مسجّلة'),
                             textAlign: TextAlign.center,
                             style: theme.titleMedium,
                           ),
@@ -187,8 +173,8 @@ class _AdminTransportCompaniesWidgetState
                                     SnackBar(
                                       content: Text(
                                         company.actev
-                                            ? 'تم إيقاف الشركة'
-                                            : 'تم تفعيل الشركة',
+                                            ? uiTr(context, 'تم إيقاف الشركة')
+                                            : uiTr(context, 'تم تفعيل الشركة'),
                                       ),
                                     ),
                                   );
@@ -269,7 +255,7 @@ class _CompanyCard extends StatelessWidget {
                     ),
                     if (company.licenseNumber.isNotEmpty)
                       Text(
-                        'ترخيص: ${company.licenseNumber}',
+                        '${uiTr(context, 'ترخيص')}: ${company.licenseNumber}',
                         style: theme.labelMedium.override(
                           fontFamily: theme.labelMediumFamily,
                           color: theme.secondaryText,
@@ -285,7 +271,7 @@ class _CompanyCard extends StatelessWidget {
           const SizedBox(height: 10),
           if (company.dolhText.isNotEmpty)
             Text(
-              'الدولة: ${company.dolhText}',
+              '${uiTr(context, 'الدولة')}: ${company.dolhText}',
               style: theme.bodySmall,
             ),
           if (company.phone.isNotEmpty)
@@ -302,7 +288,7 @@ class _CompanyCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               IconButton(
-                tooltip: company.actev ? 'إيقاف الشركة' : 'تفعيل الشركة',
+                tooltip: company.actev ? uiTr(context, 'إيقاف الشركة') : uiTr(context, 'تفعيل الشركة'),
                 onPressed: onToggleActive,
                 icon: Icon(
                   company.actev
@@ -311,7 +297,7 @@ class _CompanyCard extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'تعديل',
+                tooltip: uiTr(context, 'تعديل'),
                 onPressed: onEdit,
                 icon: const Icon(Icons.edit_rounded),
               ),
@@ -337,7 +323,7 @@ class _StatusChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        active ? 'مفعّلة' : 'موقوفة',
+        active ? uiTr(context, 'مفعّلة') : uiTr(context, 'موقوفة'),
         style: TextStyle(
           color: active ? Colors.green.shade700 : Colors.grey.shade700,
           fontSize: 12,

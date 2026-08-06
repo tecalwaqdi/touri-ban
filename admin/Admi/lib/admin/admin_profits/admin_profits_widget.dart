@@ -107,7 +107,7 @@ class _AdminProfitsWidgetState extends State<AdminProfitsWidget>
         value,
         formatType: FormatType.decimal,
         decimalType: DecimalType.automatic,
-        currency: 'ر.س ',
+        currency: uiTr(context, 'ر.س '),
       );
 
   void _openOrder(ProfitsOrderRow row) {
@@ -160,7 +160,7 @@ class _AdminProfitsWidgetState extends State<AdminProfitsWidget>
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'تعذر تحميل بيانات الأرباح',
+                            uiTr(context, 'تعذر تحميل بيانات الأرباح'),
                             style: theme.titleMedium,
                           ),
                           const SizedBox(height: 8),
@@ -382,7 +382,7 @@ class _ProfitsHeroBanner extends StatelessWidget {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              'حساب الأرباح · $periodLabel',
+                              '${uiTr(context, 'حساب الأرباح')} · $periodLabel',
                               style: theme.labelSmall.override(
                                 fontFamily: theme.labelSmallFamily,
                                 color: Colors.white,
@@ -395,7 +395,7 @@ class _ProfitsHeroBanner extends StatelessWidget {
                       ),
                       const SizedBox(height: 14),
                       Text(
-                        'صافي أرباح التطبيق',
+                        uiTr(context, 'صافي أرباح التطبيق'),
                         style: theme.bodyMedium.override(
                           fontFamily: theme.bodyMediumFamily,
                           color: Colors.white.withValues(alpha: 0.88),
@@ -431,11 +431,11 @@ class _ProfitsHeroBanner extends StatelessWidget {
                         children: [
                           _HeroChip(
                             icon: Icons.payments_rounded,
-                            label: 'مبيعات ${formatMoney(totalSales)}',
+                            label: '${uiTr(context, 'مبيعات')} ${formatMoney(totalSales)}',
                           ),
                           _HeroChip(
                             icon: Icons.receipt_long_rounded,
-                            label: '$orderCount حجز',
+                            label: '$orderCount ${uiTr(context, 'حجز')}',
                           ),
                         ],
                       ),
@@ -443,7 +443,7 @@ class _ProfitsHeroBanner extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'تحديث',
+                  tooltip: uiTr(context, 'تحديث'),
                   onPressed: onRefresh,
                   icon: Icon(
                     Icons.sync_rounded,
@@ -795,7 +795,7 @@ class _MonthlyBarChartCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'اتجاه الأرباح — آخر 6 أشهر',
+                  uiTr(context, 'اتجاه الأرباح — آخر 6 أشهر'),
                   style: theme.titleSmall.override(
                     fontFamily: theme.titleSmallFamily,
                     fontWeight: FontWeight.w700,
@@ -807,7 +807,7 @@ class _MonthlyBarChartCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'اضغط على العمود لعرض التفاصيل',
+            uiTr(context, 'اضغط على العمود لعرض التفاصيل'),
             style: theme.bodySmall.override(
               fontFamily: theme.bodySmallFamily,
               color: theme.secondaryText,
@@ -959,7 +959,7 @@ class _ProfitBreakdownCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'توزيع الإيرادات',
+            uiTr(context, 'توزيع الإيرادات'),
             style: theme.titleSmall.override(
               fontFamily: theme.titleSmallFamily,
               fontWeight: FontWeight.w700,
@@ -981,7 +981,7 @@ class _ProfitBreakdownCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'الإجمالي',
+                        uiTr(context, 'الإجمالي'),
                         style: theme.labelSmall.override(
                           fontFamily: theme.labelSmallFamily,
                           color: theme.secondaryText,
@@ -1174,7 +1174,7 @@ class _RecentTransactionsCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'لا توجد عمليات في هذه الفترة',
+                      uiTr(context, 'لا توجد عمليات في هذه الفترة'),
                       style: theme.bodyMedium.override(
                         fontFamily: theme.bodyMediumFamily,
                         color: theme.secondaryText,
@@ -1191,8 +1191,8 @@ class _RecentTransactionsCard extends StatelessWidget {
               final title = order.naimUserText.isNotEmpty
                   ? order.naimUserText
                   : (order.iDorder.isNotEmpty
-                      ? 'حجز #${order.iDorder}'
-                      : 'حجز');
+                      ? '${uiTr(context, 'حجز')} #${order.iDorder}'
+                      : uiTr(context, 'حجز'));
               final date = order.dataOrder;
               final dateLabel = date != null
                   ? dateTimeFormat(
@@ -1269,7 +1269,7 @@ class _RecentTransactionsCard extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'ربح ${formatMoney(order.totalApp.toDouble())}',
+                              '${uiTr(context, 'ربح')} ${formatMoney(order.totalApp.toDouble())}',
                               style: theme.labelSmall.override(
                                 fontFamily: theme.labelSmallFamily,
                                 color: theme.secondaryText,

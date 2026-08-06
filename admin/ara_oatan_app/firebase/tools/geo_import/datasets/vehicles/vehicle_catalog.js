@@ -7,28 +7,31 @@
  */
 
 const CATEGORIES = [
-  { code: 'economy', seats: 4, luggage: 2, names: { ar: 'اقتصادية', en: 'Economy', ru: 'Эконом', ky: 'Эконом', uz: 'Ekonom' }, hourlyRate: 160, minHours: 4 },
+  // Canonical Toury list order (small → large) — used by the customer app.
+  { code: 'economy', seats: 4, luggage: 2, sortOrder: 1, names: { ar: 'سيارة اقتصادية', en: 'Economy Car', ru: 'Эконом', ky: 'Эконом', uz: 'Ekonom' }, hourlyRate: 100, minHours: 3 },
+  { code: 'suv_family', seats: 7, luggage: 5, sortOrder: 2, names: { ar: 'سيارة عائلية', en: 'Family Car', ru: 'Семейный SUV', ky: 'Үй-бүлөлүк SUV', uz: 'Oilaviy SUV' }, hourlyRate: 150, minHours: 3 },
+  { code: 'offroad_4x4', seats: 5, luggage: 3, sortOrder: 3, names: { ar: 'سيارة دفع رباعي', en: '4x4 SUV', ru: 'Полный привод 4x4', ky: '4x4', uz: '4x4' }, hourlyRate: 150, minHours: 3 },
+  { code: 'luxury', seats: 4, luggage: 2, sortOrder: 4, names: { ar: 'سيارة فارهة', en: 'Luxury Car', ru: 'Люкс', ky: 'Люкс', uz: 'Lyuks' }, hourlyRate: 250, minHours: 3 },
+  { code: 'coach_mini', seats: 14, luggage: 8, sortOrder: 5, names: { ar: 'حافلة صغيرة', en: 'Minibus', ru: 'Мини-автобус', ky: 'Кичи автобус', uz: 'Miniavtobus' }, hourlyRate: 100, minHours: 5, isBusLike: true },
+  { code: 'medium_bus', seats: 25, luggage: 12, sortOrder: 6, names: { ar: 'حافلة متوسطة', en: 'Medium Bus', ru: 'Средний автобус', ky: 'Орто автобус', uz: 'Ortacha avtobus' }, hourlyRate: 120, minHours: 5, isBusLike: true },
+  { code: 'coach_tour', seats: 45, luggage: 20, sortOrder: 7, names: { ar: 'حافلة كبيرة', en: 'Large Bus', ru: 'Большой автобус', ky: 'Чоң автобус', uz: 'Katta avtobus' }, hourlyRate: 180, minHours: 5, isBusLike: true },
+  { code: 'wheelchair', seats: 4, luggage: 2, sortOrder: 8, names: { ar: 'حافلة ذوي الاحتياجات الخاصة', en: 'Accessible Bus', ru: 'Для инвалидных колясок', ky: 'Майыптар үчүн', uz: 'Nogironlar aravachasi uchun' }, hourlyRate: 150, minHours: 5, isBusLike: true },
+  { code: 'van_vip', seats: 7, luggage: 4, sortOrder: 9, names: { ar: 'حافلة VIP', en: 'VIP Coach', ru: 'VIP минивэн', ky: 'VIP минивэн', uz: 'VIP miniven' }, hourlyRate: 300, minHours: 5, isBusLike: true },
+  // Extra catalog categories (inactive / reference — not in the primary 9-list).
   { code: 'compact', seats: 4, luggage: 2, names: { ar: 'مدمجة', en: 'Compact', ru: 'Компакт', ky: 'Компакт', uz: 'Kompakt' }, hourlyRate: 170, minHours: 4 },
   { code: 'sedan_standard', seats: 4, luggage: 2, names: { ar: 'سيدان قياسية', en: 'Standard Sedan', ru: 'Стандартный седан', ky: 'Стандарт седан', uz: 'Standart sedan' }, hourlyRate: 180, minHours: 4 },
   { code: 'comfort', seats: 4, luggage: 2, names: { ar: 'مريحة', en: 'Comfort', ru: 'Комфорт', ky: 'Комфорт', uz: 'Komfort' }, hourlyRate: 210, minHours: 4 },
   { code: 'premium', seats: 4, luggage: 2, names: { ar: 'ممتازة', en: 'Premium', ru: 'Премиум', ky: 'Премиум', uz: 'Premium' }, hourlyRate: 320, minHours: 4 },
   { code: 'business', seats: 4, luggage: 2, names: { ar: 'أعمال', en: 'Business', ru: 'Бизнес', ky: 'Бизнес', uz: 'Biznes' }, hourlyRate: 280, minHours: 4 },
-  { code: 'luxury', seats: 4, luggage: 2, names: { ar: 'فاخرة', en: 'Luxury', ru: 'Люкс', ky: 'Люкс', uz: 'Lyuks' }, hourlyRate: 480, minHours: 5 },
   { code: 'suv_compact', seats: 5, luggage: 3, names: { ar: 'SUV مدمجة', en: 'SUV Compact', ru: 'Компактный SUV', ky: 'Ыкчам SUV', uz: 'Kompakt SUV' }, hourlyRate: 260, minHours: 4 },
   { code: 'suv_standard', seats: 5, luggage: 4, names: { ar: 'SUV قياسية', en: 'SUV Standard', ru: 'Стандартный SUV', ky: 'Стандарт SUV', uz: 'Standart SUV' }, hourlyRate: 300, minHours: 4 },
   { code: 'suv_large', seats: 7, luggage: 5, names: { ar: 'SUV كبيرة', en: 'SUV Large', ru: 'Большой SUV', ky: 'Чоң SUV', uz: 'Katta SUV' }, hourlyRate: 380, minHours: 5 },
-  { code: 'suv_family', seats: 7, luggage: 5, names: { ar: 'SUV عائلية', en: 'Family SUV', ru: 'Семейный SUV', ky: 'Үй-бүлөлүк SUV', uz: 'Oilaviy SUV' }, hourlyRate: 320, minHours: 4 },
-  { code: 'offroad_4x4', seats: 5, luggage: 3, names: { ar: 'دفع رباعي', en: '4x4', ru: 'Полный привод 4x4', ky: '4x4', uz: '4x4' }, hourlyRate: 340, minHours: 4 },
   { code: 'pickup_4x4', seats: 5, luggage: 4, names: { ar: 'بيك أب 4x4', en: '4x4 Pickup', ru: 'Пикап 4x4', ky: '4x4 пикап', uz: '4x4 pikap' }, hourlyRate: 300, minHours: 4 },
   { code: 'minivan', seats: 7, luggage: 4, names: { ar: 'ميني فان', en: 'Minivan', ru: 'Минивэн', ky: 'Минивэн', uz: 'Miniven' }, hourlyRate: 340, minHours: 5 },
   { code: 'van_family', seats: 8, luggage: 5, names: { ar: 'فان عائلي', en: 'Family Van', ru: 'Семейный минивэн', ky: 'Үй-бүлөлүк минивэн', uz: 'Oilaviy miniven' }, hourlyRate: 360, minHours: 5 },
-  { code: 'van_vip', seats: 7, luggage: 4, names: { ar: 'فان VIP', en: 'VIP Van', ru: 'VIP минивэн', ky: 'VIP минивэн', uz: 'VIP miniven' }, hourlyRate: 450, minHours: 5 },
-  { code: 'coach_mini', seats: 14, luggage: 8, names: { ar: 'ميني باص', en: 'Minibus', ru: 'Мини-автобус', ky: 'Кичи автобус', uz: 'Miniavtobus' }, hourlyRate: 600, minHours: 6, isBusLike: true },
-  { code: 'coach_tour', seats: 45, luggage: 20, names: { ar: 'باص سياحي', en: 'Tour Bus', ru: 'Туристический автобус', ky: 'Туристтик автобус', uz: 'Turistik avtobus' }, hourlyRate: 900, minHours: 6, isBusLike: true },
   { code: 'executive_shuttle', seats: 12, luggage: 8, names: { ar: 'شاتل تنفيذي', en: 'Executive Shuttle', ru: 'Представительский шаттл', ky: 'Аткаруучу шаттл', uz: 'Ijro shattli' }, hourlyRate: 700, minHours: 6, isBusLike: true },
   { code: 'electric', seats: 5, luggage: 2, names: { ar: 'كهربائية', en: 'Electric', ru: 'Электромобиль', ky: 'Электромобиль', uz: 'Elektromobil' }, hourlyRate: 250, minHours: 4 },
   { code: 'hybrid', seats: 5, luggage: 2, names: { ar: 'هجينة', en: 'Hybrid', ru: 'Гибрид', ky: 'Гибрид', uz: 'Gibrid' }, hourlyRate: 230, minHours: 4 },
-  { code: 'wheelchair', seats: 4, luggage: 2, names: { ar: 'مجهزة لكرسي متحرك', en: 'Wheelchair Accessible', ru: 'Для инвалидных колясок', ky: 'Майыптар үчүн', uz: 'Nogironlar aravachasi uchun' }, hourlyRate: 280, minHours: 4 },
   { code: 'airport_transfer', seats: 4, luggage: 3, names: { ar: 'نقل مطار', en: 'Airport Transfer', ru: 'Трансфер в аэропорт', ky: 'Аэропорт трансфери', uz: 'Aeroport transferi' }, hourlyRate: 220, minHours: 3 },
   { code: 'tourist_vehicle', seats: 7, luggage: 4, names: { ar: 'مركبة سياحية', en: 'Tourist Vehicle', ru: 'Туристический транспорт', ky: 'Туристтик унаа', uz: 'Turistik transport' }, hourlyRate: 350, minHours: 5 },
 ];
@@ -99,6 +102,9 @@ function toTypeCarPreview(cat) {
       actev: true,
       ishafelh: !!cat.isBusLike,
       not: cat.names.en,
+      ...(cat.sortOrder != null
+        ? { sort_order: cat.sortOrder, num_trteb: cat.sortOrder }
+        : {}),
       geo_import_id: `vehcat_${cat.code}`,
     },
     wouldWrite: false,

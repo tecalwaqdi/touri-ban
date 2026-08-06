@@ -1,0 +1,61 @@
+{
+  "__path": "mkan/lm_kg_naryn_naryn-kel-suu",
+  "__writtenAt": "2026-08-04T07:50:30.460Z",
+  "__target": "local-staging",
+  "naim": "بحيرة كيل سو",
+  "osf": "بحيرة كيل سو — معلم في إقليم نارين.",
+  "names_i18n": {
+    "ar": "بحيرة كيل سو",
+    "en": "Kel-Suu Lake",
+    "ru": "Озеро Кель-Суу",
+    "ky": "Көл-Суу"
+  },
+  "osf_i18n": {
+    "ar": "بحيرة كيل سو — معلم في إقليم نارين.",
+    "en": "Kel-Suu Lake — landmark in Naryn Region.",
+    "ru": "Озеро Кель-Суу — достопримечательность в регионе Нарынская область.",
+    "ky": "Көл-Суу — Нарын облусу аймагындагы жай."
+  },
+  "address": "بحيرة كيل سو، نارين، إقليم نارين، قيرغيزستان",
+  "address_i18n": {
+    "ar": "بحيرة كيل سو، نارين، إقليم نارين، قيرغيزستان",
+    "en": "Kel-Suu Lake, Naryn, Naryn Region, Kyrgyzstan",
+    "ru": "Озеро Кель-Суу, Нарын, Нарынская область, Кыргызстан",
+    "ky": "Көл-Суу, Нарын, Нарын облусу, Кыргызстан"
+  },
+  "content_locale": "ar",
+  "Location": {
+    "latitude": 40.64,
+    "longitude": 76.397
+  },
+  "img1": "https://flagcdn.com/w320/kg.png",
+  "img2": "",
+  "img3": "",
+  "img_license": "",
+  "img_attribution": "",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.7,
+  "add_saat": 2,
+  "id_cit": "cities/region_kg_naryn",
+  "id_vill": "villages/city_kg_naryn",
+  "Rev_dolh": "countries/kyrgyzstan",
+  "country_iso": "KG",
+  "wikidata_id": null,
+  "source_provider": "collected_top5_rebuild",
+  "source_osm_id": "",
+  "verification_status": "verified",
+  "verification_confidence": 0.9,
+  "geo_import_id": "lm_kg_naryn_naryn-kel-suu",
+  "geo_import_slug": "naryn-kel-suu",
+  "geo_import_source": "sa_kg_rebuild_2026"
+}
