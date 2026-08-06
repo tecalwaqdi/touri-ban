@@ -8,6 +8,7 @@ import '/core/toury_brand_widgets.dart';
 import '/core/toury_ngenius_service.dart';
 import '/core/toury_payment_flags.dart';
 import '/core/toury_payment_labels.dart';
+import '/core/payments/payment_api_client.dart';
 import '/design_system/colors/ds_color_scales.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -36,7 +37,7 @@ class TouryCardPaymentResult {
   bool get isPaid => TouryNGeniusService.isPaid(response?.jsonBody);
 }
 
-/// تنفيذ دفع بطاقة عبر Cloud Function → N-Genius فقط (لا نجاح وهمي).
+/// تنفيذ دفع بطاقة عبر Cloud Function أو Vercel payment-api → N-Genius فقط.
 Future<TouryCardPaymentResult> touryExecuteCardPayment({
   required String description,
   required int amountHalalas,
@@ -45,7 +46,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
   required int bookingHours,
   required int additionalHours,
 }) async {
-  if (!TouryPaymentFlags.enableOnlinePayment) {
+  if (!TouryPaymentFlags.enableOnlinePayment || TouryPaymentFlags.cashOnlyMode) {
     return TouryCardPaymentResult(
       success: false,
       errorMessage: 'checkout_online_payment_disabled'.tr(),
@@ -56,6 +57,49 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
       success: false,
       errorMessage: 'checkout_payment_card_error'.tr(),
     );
+  }
+
+  if (TouryPaymentFlags.useVercelPaymentApi) {
+    try {
+      final app = FFAppState();
+      if (app.paymentIdempotencyKey.isEmpty) {
+        app.paymentIdempotencyKey =
+            'booking_${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}';
+      }
+      final client = PaymentApiClient();
+      final body = await client.createCardBookingPayment(
+        idempotencyKey: app.paymentIdempotencyKey,
+        carPath: carPath,
+        countryPath: countryPath,
+        bookingHours: bookingHours,
+        additionalHours: additionalHours,
+        description: description,
+      );
+      final paymentId = body['id']?.toString();
+      final threeDsUrl = body['paymentUrl']?.toString();
+      if (paymentId == null || paymentId.isEmpty) {
+        return TouryCardPaymentResult(
+          success: false,
+          errorMessage: 'checkout_payment_card_error'.tr(),
+        );
+      }
+      return TouryCardPaymentResult(
+        success: true,
+        paymentId: paymentId,
+        threeDsUrl: threeDsUrl,
+        response: ApiCallResponse(body, const {}, 200),
+      );
+    } on PaymentApiException catch (e) {
+      return TouryCardPaymentResult(
+        success: false,
+        errorMessage: e.code.tr(),
+      );
+    } catch (_) {
+      return TouryCardPaymentResult(
+        success: false,
+        errorMessage: 'checkout_payment_card_error'.tr(),
+      );
+    }
   }
 
   final response = await NGeniusPaymentCall.call(
