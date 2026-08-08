@@ -34,19 +34,21 @@ npm run dev
 # listens on PORT (default 3010)
 ```
 
-## Flutter (customer app)
+## Flutter (customer app) — sandbox card test
 
-Cash stays the default until you opt in:
+Cash stays default until you opt in. Use dart-defines (do **not** hardcode the Render URL in source):
 
 ```bash
+cd admin/ara_oatan_app
 flutter run \
   --dart-define=ENABLE_ONLINE_PAYMENT=true \
   --dart-define=PAYMENT_BACKEND=external_api \
-  --dart-define=PAYMENT_API_BASE_URL=https://YOUR-SERVICE.onrender.com
+  --dart-define=PAYMENT_API_BASE_URL=https://touri-ban.onrender.com
 ```
 
-`PAYMENT_BACKEND=vercel_api` is accepted as an alias of `external_api`.
+`PAYMENT_BACKEND=vercel_api` is accepted as a legacy alias of `external_api`.
 
+N-Genius production is **only** controlled by Render `NGENIUS_ENV` — Flutter cannot flip it.
 ## Deploy (Render)
 
 See [`docs/payment_migration/RENDER_DEPLOYMENT.md`](../../../docs/payment_migration/RENDER_DEPLOYMENT.md).

@@ -5,6 +5,7 @@ import '/backend/api_requests/api_calls.dart';
 import '/backend/schema/enums/enums.dart';
 import '/core/app_design_system.dart';
 import '/core/toury_brand_widgets.dart';
+import '/core/toury_dialogs.dart';
 import '/core/toury_ngenius_service.dart';
 import '/core/toury_payment_flags.dart';
 import '/core/toury_payment_labels.dart';
@@ -22,6 +23,7 @@ class TouryCardPaymentResult {
     this.paymentId,
     this.threeDsUrl,
     this.errorMessage,
+    this.status,
   });
 
   final bool success;
@@ -29,13 +31,19 @@ class TouryCardPaymentResult {
   final String? paymentId;
   final String? threeDsUrl;
   final String? errorMessage;
+  final String? status;
 
   bool get needsThreeDs =>
       threeDsUrl != null &&
       threeDsUrl!.isNotEmpty &&
-      !TouryNGeniusService.isPaid(response?.jsonBody);
+      !isPaid;
 
-  bool get isPaid => TouryNGeniusService.isPaid(response?.jsonBody);
+  /// Only server-normalized paid/captured — never treat return URL as paid.
+  bool get isPaid {
+    final s = (status ?? TouryNGeniusService.status(response?.jsonBody) ?? '')
+        .toLowerCase();
+    return s == 'paid' || s == 'captured';
+  }
 }
 
 /// تنفيذ دفع بطاقة عبر Cloud Function أو Payment API الخارجي → N-Genius فقط.
@@ -90,6 +98,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
         success: true,
         paymentId: paymentId,
         threeDsUrl: threeDsUrl,
+        status: body['status']?.toString(),
         response: ApiCallResponse(body, const {}, 200),
       );
     } on PaymentApiException catch (e) {
@@ -132,6 +141,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
     response: response,
     paymentId: TouryNGeniusService.paymentId(body),
     threeDsUrl: NGeniusPaymentCall.url(body),
+    status: TouryNGeniusService.status(body),
   );
 }
 
@@ -151,16 +161,13 @@ Future<void> touryNavigateAfterCardPayment(
     FFAppState().paymentFlowKind = paymentFlowType;
   });
 
-  final paidDirectly =
-      result.isPaid || result.threeDsUrl == null || result.threeDsUrl!.isEmpty;
-
-  if (paidDirectly) {
+  // Never treat a missing return/3DS URL as paid — only explicit paid/captured.
+  if (result.isPaid) {
     if (onPaidWithoutWebView != null) {
       onPaidWithoutWebView();
       return;
     }
     if (!context.mounted) return;
-    // fromWebView:false → PaymentConfirm يتحقق من البوابة ثم ينشئ الطلب.
     context.pushNamed(
       PaymentConfirmWidget.routeName,
       queryParameters: {
@@ -170,11 +177,22 @@ Future<void> touryNavigateAfterCardPayment(
     return;
   }
 
+  final threeDs = result.threeDsUrl?.trim() ?? '';
+  if (threeDs.isEmpty) {
+    if (!context.mounted) return;
+    TouryDialogs.showSnackBar(
+      context,
+      'checkout_payment_card_error'.tr(),
+      type: TouryMessageType.error,
+    );
+    return;
+  }
+
   if (!context.mounted) return;
   context.pushNamed(
     WebviewWidget.routeName,
     queryParameters: {
-      'url': serializeParam(result.threeDsUrl, ParamType.String),
+      'url': serializeParam(threeDs, ParamType.String),
     }.withoutNulls,
   );
 }

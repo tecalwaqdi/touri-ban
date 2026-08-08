@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 
 import '/core/toury_payment_flags.dart';
 
-/// Typed client for the external Express Payment API. Never holds provider secrets.
+/// Typed client for the external Express Payment API on Render.
+/// Never holds provider secrets. Paths match Express (no `/api` prefix).
 class PaymentApiClient {
   PaymentApiClient({
     http.Client? httpClient,
@@ -28,10 +29,6 @@ class PaymentApiClient {
         !base.startsWith('http://localhost')) {
       throw PaymentApiException('CONFIG_ERROR');
     }
-    // Release builds must not silently use localhost.
-    assert(() {
-      return true;
-    }());
     if (kReleaseMode &&
         (base.contains('localhost') || base.contains('127.0.0.1'))) {
       throw PaymentApiException('CONFIG_ERROR');
@@ -74,6 +71,7 @@ class PaymentApiClient {
           body: jsonEncode({
             'paymentMethod': 'card',
             'paymentPurpose': 'booking',
+            // Body field (not HTTP header) — matches Express createSchema.
             'idempotencyKey': idempotencyKey,
             'carPath': carPath,
             'countryPath': countryPath,
@@ -103,10 +101,10 @@ class PaymentApiClient {
     return _decode(response);
   }
 
-  /// Waits until webhook (or status sync) marks the booking created.
+  /// Polls until webhook/status creates the booking, or fails/times out.
   Future<Map<String, dynamic>> waitForPaidBooking({
     required String sessionId,
-    int attempts = 12,
+    int attempts = 15,
     Duration interval = const Duration(seconds: 2),
   }) async {
     Map<String, dynamic> last = {};
@@ -127,22 +125,13 @@ class PaymentApiClient {
         await Future<void>.delayed(interval);
       }
     }
-    // Paid without booking yet — still return last status for caller UX.
-    if ((last['status']?.toString() == 'paid' ||
-            last['status']?.toString() == 'captured') &&
-        last['bookingId'] != null) {
-      return last;
-    }
-    if (last['status']?.toString() == 'paid' ||
-        last['status']?.toString() == 'captured') {
-      // Order may still be creating; surface session id as fallback.
-      return {
-        ...last,
-        'bookingId': last['bookingId'] ?? sessionId,
-        'orderId': last['bookingId'] ?? sessionId,
-      };
-    }
-    throw PaymentApiException('PAYMENT_PENDING');
+    // Do not invent a booking id — require server bookingCreated.
+    throw PaymentApiException(
+      (last['status']?.toString() == 'paid' ||
+              last['status']?.toString() == 'captured')
+          ? 'BOOKING_PENDING'
+          : 'PAYMENT_PENDING',
+    );
   }
 
   Map<String, dynamic> _decode(http.Response response) {

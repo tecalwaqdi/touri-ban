@@ -37,6 +37,11 @@ class _WebviewWidgetState extends State<WebviewWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   Timer? _verifyTimer;
   bool _finalizingPayment = false;
+  int _pollAttempts = 0;
+
+  /// Cap polling so a stuck 3DS session cannot run forever (~3 minutes).
+  static const int _maxPollAttempts = 60;
+  static const Duration _pollInterval = Duration(seconds: 3);
 
   @override
   void initState() {
@@ -49,8 +54,31 @@ class _WebviewWidgetState extends State<WebviewWidget> {
 
   void _startThreeDsPolling() {
     _verifyTimer?.cancel();
-    _verifyTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
+    _pollAttempts = 0;
+    _verifyTimer = Timer.periodic(_pollInterval, (_) async {
       if (_finalizingPayment || !mounted) return;
+
+      _pollAttempts += 1;
+      if (_pollAttempts > _maxPollAttempts) {
+        _verifyTimer?.cancel();
+        if (!mounted) return;
+        FFAppState().update(() {
+          FFAppState().DonePay = false;
+          FFAppState().paymentInProgress = false;
+        });
+        DsSnackBar.show(
+          context,
+          message: 'payment_pending_message'.tr(),
+          tone: DsSnackTone.warning,
+        );
+        context.pushReplacementNamed(
+          PaymentConfirmWidget.routeName,
+          queryParameters: {
+            'fromWebView': serializeParam(true, ParamType.bool),
+          }.withoutNulls,
+        );
+        return;
+      }
 
       final orderId = FFAppState().paymentOrderId.trim();
       if (orderId.isEmpty) return;
@@ -102,6 +130,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
       }
 
       if (!mounted) return;
+      // fromWebView:false → PaymentConfirm re-queries Render status (never trusts HPP return).
       context.pushReplacementNamed(
         PaymentConfirmWidget.routeName,
         queryParameters: {

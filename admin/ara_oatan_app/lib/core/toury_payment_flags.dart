@@ -1,17 +1,17 @@
 /// Unified payment feature flags for cash-only release + external Payment API.
 ///
-/// Re-enable online later with:
+/// Sandbox card test (Render Express — do **not** hardcode URL in source):
 /// ```
-/// flutter run --dart-define=ENABLE_ONLINE_PAYMENT=true
-/// ```
-///
-/// Select payment backend (Render Express API):
-/// ```
-/// --dart-define=PAYMENT_BACKEND=external_api
-/// --dart-define=PAYMENT_API_BASE_URL=https://your-service.onrender.com
+/// flutter run \
+///   --dart-define=ENABLE_ONLINE_PAYMENT=true \
+///   --dart-define=PAYMENT_BACKEND=external_api \
+///   --dart-define=PAYMENT_API_BASE_URL=https://touri-ban.onrender.com
 /// ```
 ///
-/// `vercel_api` remains accepted as an alias of `external_api`.
+/// `vercel_api` remains accepted as a legacy alias of `external_api`.
+///
+/// N-Genius **production** cannot be enabled from Flutter. Only the Render
+/// service `NGENIUS_ENV` controls sandbox vs production.
 ///
 /// Does **not** delete N-Genius code, payment_sessions, webhooks, or CFs.
 abstract final class TouryPaymentFlags {
@@ -28,13 +28,14 @@ abstract final class TouryPaymentFlags {
     defaultValue: false,
   );
 
-  /// `firebase_functions` | `external_api` | `vercel_api` | `cash_only`
+  /// `firebase_functions` | `external_api` | `vercel_api` (alias) | `cash_only`
   static const String paymentBackend = String.fromEnvironment(
     'PAYMENT_BACKEND',
     defaultValue: 'firebase_functions',
   );
 
   /// Public Render (or local) payment API base URL — no trailing slash.
+  /// Set only via `--dart-define=PAYMENT_API_BASE_URL=...` (never commit secrets).
   static const String paymentApiBaseUrl = String.fromEnvironment(
     'PAYMENT_API_BASE_URL',
     defaultValue: '',
@@ -43,13 +44,13 @@ abstract final class TouryPaymentFlags {
   static bool get cashOnlyMode =>
       !enableOnlinePayment || paymentBackend == 'cash_only';
 
-  /// External Express Payment API on Render (or local).
+  /// External Express Payment API (Render). Preferred identifier: `external_api`.
   static bool get useExternalPaymentApi {
     if (!enableOnlinePayment || paymentApiBaseUrl.isEmpty) return false;
     return paymentBackend == 'external_api' || paymentBackend == 'vercel_api';
   }
 
-  /// Alias kept for older call sites / tests.
+  /// Legacy alias — prefer [useExternalPaymentApi].
   static bool get useVercelPaymentApi => useExternalPaymentApi;
 
   static bool get useFirebasePaymentFunctions =>
