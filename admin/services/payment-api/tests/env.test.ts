@@ -32,6 +32,6 @@ describe("env", () => {
     process.env.NGENIUS_ENV = "production";
     const env = getEnv();
     expect(env.isProductionNGenius).toBe(true);
-    expect(env.ngeniusBaseUrl).toContain("api-gateway.ngenius-payments.com");
+    expect(env.ngeniusBaseUrl).toContain("api-gateway.ksa.ngenius-payments.com");
   });
 });

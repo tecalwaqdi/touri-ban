@@ -34,6 +34,9 @@ Copy names from `admin/services/payment-api/.env.example`. Minimum for sandbox:
 | `NGENIUS_WEBHOOK_HEADER` | Default `x-toury-webhook-token` |
 | `FIREBASE_SERVICE_ACCOUNT_BASE64` | Preferred: base64 of **existing** project service-account JSON |
 | or `FIREBASE_PROJECT_ID` + `FIREBASE_CLIENT_EMAIL` + `FIREBASE_PRIVATE_KEY` | Same existing project |
+| `NGENIUS_SANDBOX_BASE_URL` | Default `https://api-gateway.sandbox.ksa.ngenius-payments.com` |
+| `NGENIUS_PRODUCTION_BASE_URL` | Default `https://api-gateway.ksa.ngenius-payments.com` (keep sandbox until approved) |
+| `NGENIUS_REALM` | KSA docs: sandbox `ni`, production `networkinternational` |
 | `PAYMENT_RETURN_BASE_URL` | 3DS / hosted-page return URL |
 | `PAYMENT_CANCEL_BASE_URL` | Cancel URL (optional; defaults to return) |
 | `ALLOWED_APP_ORIGINS` | Comma-separated CORS origins (optional) |

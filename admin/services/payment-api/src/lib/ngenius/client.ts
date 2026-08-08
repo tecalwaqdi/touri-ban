@@ -22,9 +22,8 @@ export function normalizeNGeniusApiKeyForBasicAuth(raw: string): string {
 }
 
 /**
- * Sandbox/Pay Page identity body per N-Genius docs:
- * POST /identity/auth/access-token  →  {"realmName":"ni"}
- * (Not OAuth grant_type/client_credentials — that returns HTTP 400.)
+ * N-Genius KSA identity body per docs.ksa.ngenius-payments.com:
+ * POST /identity/auth/access-token  →  {"realmName":"<UAT:ni|PROD:networkinternational>"}
  */
 export function buildNGeniusIdentityBody(realmName: string): {
   realmName: string;
