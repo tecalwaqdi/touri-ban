@@ -8,13 +8,14 @@ import {
 import {
   getEnv,
   resetEnvCacheForTests,
+  NGENIUS_GLOBAL_SANDBOX_BASE_URL,
   NGENIUS_KSA_SANDBOX_BASE_URL,
   NGENIUS_KSA_PRODUCTION_BASE_URL,
   NGENIUS_KSA_SANDBOX_REALM,
   NGENIUS_KSA_PRODUCTION_REALM,
 } from "@/lib/security/env";
 
-describe("N-Genius KSA sandbox identity request", () => {
+describe("N-Genius sandbox identity request", () => {
   beforeEach(() => {
     resetEnvCacheForTests();
     process.env.NGENIUS_ENV = "sandbox";
@@ -30,13 +31,20 @@ describe("N-Genius KSA sandbox identity request", () => {
       "-----BEGIN PRIVATE KEY-----\\nABC\\n-----END PRIVATE KEY-----\\n";
   });
 
-  it("defaults to KSA sandbox base URL", () => {
+  it("defaults to global sandbox base URL (verified for current MSA)", () => {
     const env = getEnv();
-    expect(env.ngeniusBaseUrl).toBe(NGENIUS_KSA_SANDBOX_BASE_URL);
+    expect(env.ngeniusBaseUrl).toBe(NGENIUS_GLOBAL_SANDBOX_BASE_URL);
     expect(env.ngeniusIdentityUrl).toBe(
-      `${NGENIUS_KSA_SANDBOX_BASE_URL}/identity/auth/access-token`,
+      `${NGENIUS_GLOBAL_SANDBOX_BASE_URL}/identity/auth/access-token`,
     );
     expect(env.ngeniusRealm).toBe(NGENIUS_KSA_SANDBOX_REALM);
+  });
+
+  it("allows optional KSA sandbox override via env", () => {
+    resetEnvCacheForTests();
+    process.env.NGENIUS_SANDBOX_BASE_URL = NGENIUS_KSA_SANDBOX_BASE_URL;
+    const env = getEnv();
+    expect(env.ngeniusBaseUrl).toBe(NGENIUS_KSA_SANDBOX_BASE_URL);
   });
 
   it("uses official realmName body (not grant_type/client_credentials)", () => {
@@ -45,22 +53,22 @@ describe("N-Genius KSA sandbox identity request", () => {
     expect(buildNGeniusIdentityBody("ni")).not.toHaveProperty("realm");
   });
 
-  it("builds KSA sandbox identity URL /identity/auth/access-token", () => {
+  it("builds sandbox identity URL /identity/auth/access-token", () => {
     const env = getEnv();
     const req = buildNGeniusIdentityRequest(env);
     expect(req.url).toBe(
-      "https://api-gateway.sandbox.ksa.ngenius-payments.com/identity/auth/access-token",
+      "https://api-gateway.sandbox.ngenius-payments.com/identity/auth/access-token",
     );
     expect(req.method).toBe("POST");
     expect(req.bodyJson).toEqual({ realmName: "ni" });
     expect(JSON.parse(req.body)).toEqual({ realmName: "ni" });
   });
 
-  it("order/create base uses the same KSA sandbox host", () => {
+  it("order/create base uses the same sandbox host", () => {
     const env = getEnv();
     const ordersUrl = `${env.ngeniusBaseUrl}/transactions/outlets/${env.NGENIUS_OUTLET_REF}/orders`;
     expect(ordersUrl).toBe(
-      "https://api-gateway.sandbox.ksa.ngenius-payments.com/transactions/outlets/outlet/orders",
+      "https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets/outlet/orders",
     );
   });
 

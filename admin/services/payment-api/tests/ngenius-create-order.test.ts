@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   buildNGeniusCreateOrderBody,
+  classifyNGeniusCreateOrderFailure,
   sanitizeMerchantOrderReference,
 } from "@/lib/ngenius/client";
-import { ApiError } from "@/lib/errors/codes";
+import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 
-describe("N-Genius KSA create-order payload", () => {
+describe("N-Genius create-order payload", () => {
   const base = {
     amountMinor: 30000,
     currency: "SAR",
@@ -86,5 +87,39 @@ describe("N-Genius KSA create-order payload", () => {
       buildNGeniusCreateOrderBody({ ...base, currency: "sar" }).amount
         .currencyCode,
     ).toBe("SAR");
+  });
+});
+
+describe("classifyNGeniusCreateOrderFailure", () => {
+  it("classifies configFetchError as PROVIDER_OUTLET_NOT_CONFIGURED", () => {
+    const body = JSON.stringify({
+      message: "Unprocessable Entity",
+      code: 422,
+      errors: [
+        {
+          message:
+            "Failed to get configuration of type: ae.network.transaction.domain.config.Outlet",
+          localizedMessage: "{error.processing.configFetchError}",
+          errorCode: "configFetchError",
+          domain: "processing",
+        },
+      ],
+    });
+    expect(classifyNGeniusCreateOrderFailure(422, body)).toBe(
+      PaymentErrorCode.PROVIDER_OUTLET_NOT_CONFIGURED,
+    );
+  });
+
+  it("does not treat generic 422 as card decline", () => {
+    const body = JSON.stringify({
+      message: "Unprocessable Entity",
+      code: 422,
+    });
+    expect(classifyNGeniusCreateOrderFailure(422, body)).toBe(
+      PaymentErrorCode.PROVIDER_UNAVAILABLE,
+    );
+    expect(classifyNGeniusCreateOrderFailure(422, body)).not.toBe(
+      "PAYMENT_FAILED" as never,
+    );
   });
 });

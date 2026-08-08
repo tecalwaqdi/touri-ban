@@ -862,7 +862,9 @@
   "FORBIDDEN": "You are not allowed to perform this payment action.",
   "PAYMENT_AMOUNT_MISMATCH": "Payment amount did not match the booking quote.",
   "INVALID_REQUEST": "Invalid payment request. Check booking details and try again.",
-  "PROVIDER_UNAVAILABLE": "Payment provider is temporarily unavailable.",
+  "PROVIDER_UNAVAILABLE": "Online payment is temporarily unavailable. Please try again later.",
   "REFUND_NOT_CONFIGURED": "Refunds are not configured yet.",
-  "REFUND_FAILURE": "Refund failed. Try again or contact support."
+  "REFUND_FAILURE": "Refund failed. Try again or contact support.",
+  "checkout_payment_temporarily_unavailable": "Online payment is temporarily unavailable. Please try again later.",
+  "PROVIDER_OUTLET_NOT_CONFIGURED": "Online payment is temporarily unavailable. Please try again later."
 }

@@ -240,6 +240,7 @@ function safeCreateOrderErrorSnippet(rawText: string): {
   providerCode?: string;
   providerMessage?: string;
   providerDetails?: string;
+  providerErrorCode?: string;
 } {
   try {
     const parsed = JSON.parse(rawText) as Record<string, unknown>;
@@ -254,6 +255,7 @@ function safeCreateOrderErrorSnippet(rawText: string): {
       parsed.error ??
       firstError?.code ??
       firstError?.errorCode;
+    const nestedErrorCode = firstError?.errorCode ?? parsed.errorCode;
     const message =
       parsed.message ??
       parsed.errorMessage ??
@@ -264,14 +266,19 @@ function safeCreateOrderErrorSnippet(rawText: string): {
       parsed.details ??
       parsed.description ??
       firstError?.details ??
-      firstError?.field;
+      firstError?.field ??
+      firstError?.localizedMessage;
     const out: {
       providerCode?: string;
       providerMessage?: string;
       providerDetails?: string;
+      providerErrorCode?: string;
     } = {};
     if (typeof code === "string" || typeof code === "number") {
       out.providerCode = String(code).slice(0, 80);
+    }
+    if (typeof nestedErrorCode === "string" || typeof nestedErrorCode === "number") {
+      out.providerErrorCode = String(nestedErrorCode).slice(0, 80);
     }
     if (typeof message === "string") {
       out.providerMessage = message.slice(0, 160);
@@ -285,6 +292,42 @@ function safeCreateOrderErrorSnippet(rawText: string): {
   } catch {
     return {};
   }
+}
+
+/**
+ * Map N-Genius create-order HTTP failures to stable app codes.
+ * Never treat outlet/config failures as card-entry or decline errors.
+ */
+export function classifyNGeniusCreateOrderFailure(
+  status: number,
+  rawText: string,
+): PaymentErrorCode {
+  const snippet = safeCreateOrderErrorSnippet(rawText);
+  const haystack = [
+    snippet.providerErrorCode,
+    snippet.providerCode,
+    snippet.providerMessage,
+    snippet.providerDetails,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  if (
+    haystack.includes("configfetcherror") ||
+    haystack.includes("failed to get configuration") ||
+    (haystack.includes("outlet") && haystack.includes("config"))
+  ) {
+    return PaymentErrorCode.PROVIDER_OUTLET_NOT_CONFIGURED;
+  }
+
+  if (status === 401 || status === 403) {
+    return PaymentErrorCode.PROVIDER_UNAVAILABLE;
+  }
+  if (status === 422 || status >= 500 || status === 404) {
+    return PaymentErrorCode.PROVIDER_UNAVAILABLE;
+  }
+  return PaymentErrorCode.PROVIDER_UNAVAILABLE;
 }
 
 export async function createNGeniusOrder(input: {
@@ -323,6 +366,7 @@ export async function createNGeniusOrder(input: {
   if (!res.ok) {
     const rawText = await res.text().catch(() => "");
     const snippet = safeCreateOrderErrorSnippet(rawText);
+    const appCode = classifyNGeniusCreateOrderFailure(res.status, rawText);
     logger.error("ngenius_create_order_failed", {
       status: res.status,
       environment: env.NGENIUS_ENV,
@@ -334,9 +378,11 @@ export async function createNGeniusOrder(input: {
       hasEmail: Boolean(orderBody.emailAddress),
       merchantOrderReferenceLength: orderBody.merchantOrderReference.length,
       outletRefMasked: maskOutletRef(env.NGENIUS_OUTLET_REF),
+      appCode,
       ...snippet,
     });
-    throw new ApiError(PaymentErrorCode.PROVIDER_UNAVAILABLE, 502);
+    // 502 Bad Gateway — provider rejected create-order (not a card error).
+    throw new ApiError(appCode, 502);
   }
   const body = await res.json();
   const providerOrderRef = extractOrderReference(body);

@@ -43,7 +43,6 @@ import '/index.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
@@ -92,6 +91,8 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
   bool isCalculating = false;
   bool _isPaying = false;
   int _rejectedRoutePoints = 0;
+  /// Set in [dispose] so in-flight OSRM / preview callbacks skip setState.
+  bool _routeCalcCancelled = false;
 
   double? get _tripDistanceKm {
     final raw = osrmDistance > 0 ? osrmDistance : previewDistance;
@@ -149,11 +150,13 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
 
 // Function to calculate OSRM directly
   Future<void> _calculateOsrm() async {
+    if (!mounted || _routeCalcCancelled) return;
     setState(() => isCalculating = true);
 
     try {
       final currentLocation =
           await TouryLocationService.getUserPositionOrNull();
+      if (!mounted || _routeCalcCancelled) return;
       if (currentLocation == null) {
         setState(() => isCalculating = false);
         return;
@@ -164,6 +167,7 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
         destinations: FFAppState().cartmkss.map((e) => e.loceshn),
         selectedAreaCenter: FFAppState().latlngvill,
       );
+      if (!mounted || _routeCalcCancelled) return;
       if (!validation.canRoute) {
         setState(() {
           isCalculating = false;
@@ -187,6 +191,7 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
           'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full&geometries=polyline&steps=false';
 
       final response = await http.get(Uri.parse(url));
+      if (!mounted || _routeCalcCancelled) return;
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -202,31 +207,40 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
             durationSeconds: durationSeconds,
             points: validation.points,
           )) {
+            if (!mounted || _routeCalcCancelled) return;
             setState(() {
               isCalculating = false;
               _rejectedRoutePoints = validation.rejectedCount + 1;
             });
             return;
           }
+          if (!mounted || _routeCalcCancelled) return;
           setState(() {
             osrmTime = durationSeconds / 60;
             osrmDistance = distanceKm;
             _rejectedRoutePoints = validation.rejectedCount;
             isCalculating = false;
           });
-          FFAppState().update(() {
-            FFAppState().osrmTotalTime = osrmTime;
-            FFAppState().osrmTotalDistance = distanceKm;
-            FFAppState().osrmCalculationTime = DateTime.now();
+          // Defer app-state notify so it never runs synchronously during build.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted || _routeCalcCancelled) return;
+            FFAppState().update(() {
+              FFAppState().osrmTotalTime = osrmTime;
+              FFAppState().osrmTotalDistance = distanceKm;
+              FFAppState().osrmCalculationTime = DateTime.now();
+            });
           });
-        } else if (mounted) {
+        } else {
           setState(() => isCalculating = false);
         }
-      } else if (mounted) {
+      } else {
         setState(() => isCalculating = false);
       }
     } catch (e) {
-      print('OSRM error: $e');
+      if (kDebugMode) {
+        debugPrint('OSRM error: $e');
+      }
+      if (!mounted || _routeCalcCancelled) return;
       setState(() => isCalculating = false);
     }
   }
@@ -239,26 +253,26 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
     _model.textController ??= TextEditingController(
         text: FFAppState().saatcar.toString());
     _model.textFieldFocusNode ??= FocusNode();
-    // Extra hours must start at 0 — never reuse last booking's addhors/totalsaat.
-    FFAppState().addhors = 0;
-    if (FFAppState().saatcar > 0) {
-      FFAppState().totalsaat = FFAppState().saatcar;
-    }
     _model.countControllerValue = 0;
 
-    touryPurgeBannedCartItems();
-    touryPrepareCheckoutState(resetExtraHours: true);
-    // Refresh geo labels + country VAT (Admin vat_percent), then totals.
-    unawaited(() async {
-      await TouryLocationService.refreshStoredGeoLabels();
-      if (!mounted) return;
-      touryRecalculateCheckoutPrice();
-      safeSetState(() {});
-    }());
+    // Defer FFAppState mutations / geo refresh off the build path.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _calculateOsrm();
-      calculateMinDistanceAndTime().then((result) {
-        if (!mounted) return;
+      if (!mounted || _routeCalcCancelled) return;
+      FFAppState().addhors = 0;
+      if (FFAppState().saatcar > 0) {
+        FFAppState().totalsaat = FFAppState().saatcar;
+      }
+      touryPurgeBannedCartItems();
+      touryPrepareCheckoutState(resetExtraHours: true);
+      unawaited(() async {
+        await TouryLocationService.refreshStoredGeoLabels();
+        if (!mounted || _routeCalcCancelled) return;
+        touryRecalculateCheckoutPrice();
+        safeSetState(() {});
+      }());
+      unawaited(_calculateOsrm());
+      unawaited(calculateMinDistanceAndTime().then((result) {
+        if (!mounted || _routeCalcCancelled) return;
         setState(() {
           if (result != null) {
             previewDistance = result['distance'];
@@ -266,22 +280,17 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
             _rejectedRoutePoints = result['rejected']?.round() ?? 0;
           }
         });
-      });
-    });
-
-    // On page load action.
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      }));
       if (FFAppState().DriverGuideState == false) {
         FFAppState().aiRow = false;
         FFAppState().Minimumhours = touryMinimumBookingHours(
           landmarkCount: FFAppState().cartmkss.length,
           driverGuide: false,
         );
-        safeSetState(() {});
       } else {
         FFAppState().Minimumhours = 0;
-        safeSetState(() {});
       }
+      safeSetState(() {});
     });
 
     animationsMap.addAll({
@@ -329,12 +338,11 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
         ],
       ),
     });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
   void dispose() {
+    _routeCalcCancelled = true;
     _model.dispose();
 
     super.dispose();
@@ -642,7 +650,11 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
-                                context.pushNamed(Checkout66Widget.routeName);
+                                // Already on checkout — close drawer instead of stacking.
+                                if (scaffoldKey.currentState?.isDrawerOpen ??
+                                    false) {
+                                  scaffoldKey.currentState!.closeDrawer();
+                                }
                               },
                               child: Material(
                                 color: Colors.transparent,
@@ -921,9 +933,9 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
             ),
             onPressed: () async {
               if (FFAppState().typeHgz == 1) {
-                context.pushNamed(
-                  ListViWidget.routeName,
-                  queryParameters: {
+                context.safePopOrBookingHome(
+                  fallbackRouteName: ListViWidget.routeName,
+                  fallbackQueryParameters: {
                     'cite': serializeParam(
                       FFAppState().villa,
                       ParamType.DocumentReference,
@@ -931,7 +943,9 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                   }.withoutNulls,
                 );
               } else {
-                context.pushNamed(DemoDWidget.routeName);
+                context.safePopOrBookingHome(
+                  fallbackRouteName: DemoDWidget.routeName,
+                );
               }
             },
           ),
@@ -1732,7 +1746,7 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                   ),
                             ),
                             Text(
-                              'Planning for a longer trip? Add more hours and enjoy the ride!'
+                              'planning_for_a_longer_trip_Add_more_hours_and_enjoy_the_ride'
                                   .tr(),
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
@@ -2570,6 +2584,8 @@ stepSize: 1,
                                                   FFAppState().addhors,
                                             );
 
+                                            if (!mounted) return;
+
                                             _model.apiResultr5n =
                                                 payResult.response;
 
@@ -2577,7 +2593,7 @@ stepSize: 1,
                                               TouryDialogs.showSnackBar(
                                                 context,
                                                 payResult.errorMessage ??
-                                                    'checkout_payment_card_error'
+                                                    'checkout_payment_temporarily_unavailable'
                                                         .tr(),
                                                 type: TouryMessageType.error,
                                               );
@@ -2587,6 +2603,7 @@ stepSize: 1,
                                                 result: payResult,
                                                 paymentFlowType: TypeHgz.Rhlh,
                                                 onPaidWithoutWebView: () {
+                                                  if (!context.mounted) return;
                                                   context.pushNamed(
                                                     PaymentConfirmWidget
                                                         .routeName,

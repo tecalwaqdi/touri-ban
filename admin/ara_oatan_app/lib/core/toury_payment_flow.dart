@@ -7,6 +7,7 @@ import '/core/app_design_system.dart';
 import '/core/toury_brand_widgets.dart';
 import '/core/toury_dialogs.dart';
 import '/core/toury_ngenius_service.dart';
+import '/core/toury_payment_error_messages.dart';
 import '/core/toury_payment_flags.dart';
 import '/core/toury_payment_labels.dart';
 import '/core/toury_order_integration.dart';
@@ -64,7 +65,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
   if (amountHalalas <= 0) {
     return TouryCardPaymentResult(
       success: false,
-      errorMessage: 'checkout_payment_card_error'.tr(),
+      errorMessage: 'checkout_payment_temporarily_unavailable'.tr(),
     );
   }
 
@@ -91,7 +92,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
       if (paymentId == null || paymentId.isEmpty) {
         return TouryCardPaymentResult(
           success: false,
-          errorMessage: 'checkout_payment_card_error'.tr(),
+          errorMessage: 'checkout_payment_temporarily_unavailable'.tr(),
         );
       }
       return TouryCardPaymentResult(
@@ -104,12 +105,12 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
     } on PaymentApiException catch (e) {
       return TouryCardPaymentResult(
         success: false,
-        errorMessage: e.code.tr(),
+        errorMessage: touryPaymentApiErrorMessage(e.code),
       );
     } catch (_) {
       return TouryCardPaymentResult(
         success: false,
-        errorMessage: 'checkout_payment_card_error'.tr(),
+        errorMessage: 'checkout_payment_temporarily_unavailable'.tr(),
       );
     }
   }
@@ -131,7 +132,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
     return TouryCardPaymentResult(
       success: false,
       response: response,
-      errorMessage: err ?? 'checkout_payment_card_error'.tr(),
+      errorMessage: touryPaymentApiErrorMessage(err),
     );
   }
 
@@ -182,7 +183,7 @@ Future<void> touryNavigateAfterCardPayment(
     if (!context.mounted) return;
     TouryDialogs.showSnackBar(
       context,
-      'checkout_payment_card_error'.tr(),
+      'checkout_payment_temporarily_unavailable'.tr(),
       type: TouryMessageType.error,
     );
     return;

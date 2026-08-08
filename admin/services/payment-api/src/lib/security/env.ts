@@ -1,15 +1,20 @@
 import { z } from "zod";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 
-/** Official N-Genius KSA gateways (docs.ksa.ngenius-payments.com). */
+/**
+ * Global N-Genius sandbox (verified for current Merchant Service Account).
+ * KSA hostname returns 404 for this sandbox account — do not default to it.
+ */
+export const NGENIUS_GLOBAL_SANDBOX_BASE_URL =
+  "https://api-gateway.sandbox.ngenius-payments.com";
+/** Optional KSA sandbox — only when portal/account confirms it. */
 export const NGENIUS_KSA_SANDBOX_BASE_URL =
   "https://api-gateway.sandbox.ksa.ngenius-payments.com";
 export const NGENIUS_KSA_PRODUCTION_BASE_URL =
   "https://api-gateway.ksa.ngenius-payments.com";
 
 /**
- * KSA Creating Orders docs: UAT realm `ni`, Production `networkinternational`.
- * Also matches repo CF defaults + deployment guide for production.
+ * Sandbox realm `ni`; Production `networkinternational` (confirm in portal).
  */
 export const NGENIUS_KSA_SANDBOX_REALM = "ni";
 export const NGENIUS_KSA_PRODUCTION_REALM = "networkinternational";
@@ -19,7 +24,10 @@ const envSchema = z.object({
   NGENIUS_API_KEY: z.string().min(1, "NGENIUS_API_KEY is required"),
   NGENIUS_OUTLET_REF: z.string().min(1, "NGENIUS_OUTLET_REF is required"),
   NGENIUS_WEBHOOK_SECRET: z.string().min(16, "NGENIUS_WEBHOOK_SECRET required"),
-  NGENIUS_SANDBOX_BASE_URL: z.string().url().default(NGENIUS_KSA_SANDBOX_BASE_URL),
+  NGENIUS_SANDBOX_BASE_URL: z
+    .string()
+    .url()
+    .default(NGENIUS_GLOBAL_SANDBOX_BASE_URL),
   NGENIUS_PRODUCTION_BASE_URL: z
     .string()
     .url()
@@ -103,7 +111,7 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
       const data = soft.success ? soft.data : {};
       const isProd = data.NGENIUS_ENV === "production";
       const sandboxBase =
-        data.NGENIUS_SANDBOX_BASE_URL || NGENIUS_KSA_SANDBOX_BASE_URL;
+        data.NGENIUS_SANDBOX_BASE_URL || NGENIUS_GLOBAL_SANDBOX_BASE_URL;
       const prodBase =
         data.NGENIUS_PRODUCTION_BASE_URL || NGENIUS_KSA_PRODUCTION_BASE_URL;
       const base = isProd ? prodBase : sandboxBase;

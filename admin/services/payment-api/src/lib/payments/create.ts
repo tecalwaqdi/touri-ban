@@ -59,7 +59,15 @@ async function quoteBooking(data: z.infer<typeof createSchema>) {
     throw new ApiError(PaymentErrorCode.BOOKING_NOT_PAYABLE, 400);
   }
 
-  const currency = String(country.currency || country.Currency || "SAR").toUpperCase();
+  const currency = String(
+    country.currency_code ||
+      country.currencyCode ||
+      country.currency ||
+      country.Currency ||
+      "SAR",
+  )
+    .trim()
+    .toUpperCase() || "SAR";
   const quote = calculateBookingQuote({
     hourlyRateMajor: Number(car.sr),
     bookingHours: data.bookingHours,
@@ -190,17 +198,23 @@ export async function handleCreatePayment(req: Request) {
       environment: env.NGENIUS_ENV,
     };
   } catch (error) {
+    const failureCode =
+      error instanceof ApiError
+        ? error.code
+        : PaymentErrorCode.PROVIDER_UNAVAILABLE;
     await sessionRef.set(
       {
         status: toLegacyStatus(PaymentStatus.failed),
         normalized_status: PaymentStatus.failed,
-        failure_code: PaymentErrorCode.PROVIDER_UNAVAILABLE,
+        failure_code: failureCode,
+        booking_created: false,
         updated_at: FieldValue.serverTimestamp(),
       },
       { merge: true },
     );
     logger.error("create_payment_failed", {
       sessionIdPrefix: sessionId.slice(0, 8),
+      failureCode,
     });
     throw error;
   }

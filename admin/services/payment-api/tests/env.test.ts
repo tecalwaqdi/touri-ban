@@ -27,6 +27,19 @@ describe("env", () => {
     expect(p.firebase).toBe(true);
   });
 
+  it("defaults sandbox base URL to global gateway", () => {
+    delete process.env.NGENIUS_SANDBOX_BASE_URL;
+    resetEnvCacheForTests();
+    const env = getEnv();
+    expect(env.ngeniusBaseUrl).toBe(
+      "https://api-gateway.sandbox.ngenius-payments.com",
+    );
+    expect(env.ngeniusIdentityUrl).toBe(
+      "https://api-gateway.sandbox.ngenius-payments.com/identity/auth/access-token",
+    );
+    expect(env.ngeniusRealm).toBe("ni");
+  });
+
   it("requires explicit production env", () => {
     resetEnvCacheForTests();
     process.env.NGENIUS_ENV = "production";
