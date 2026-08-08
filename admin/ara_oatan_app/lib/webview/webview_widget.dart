@@ -197,7 +197,13 @@ class _WebviewWidgetState extends State<WebviewWidget> {
           final colors = context.dsColors;
           final typography = context.dsTypography;
 
-          return GestureDetector(
+          return PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, _) {
+              if (didPop) return;
+              _closePage(context);
+            },
+            child: GestureDetector(
             onTap: () {
               FocusScope.of(context).unfocus();
               FocusManager.instance.primaryFocus?.unfocus();
@@ -206,8 +212,13 @@ class _WebviewWidgetState extends State<WebviewWidget> {
               key: scaffoldKey,
               backgroundColor: colors.scaffold,
               appBar: DsAppBar(
+                automaticallyImplyLeading: false,
                 title: FFLocalizations.of(context).getText(
                   'xnttfo6b' /* Pay the reservation fee */,
+                ),
+                leading: DsIconButton(
+                  icon: DsIcons.back,
+                  onPressed: () => _closePage(context),
                 ),
               ),
               body: SafeArea(
@@ -278,6 +289,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
                 ),
               ),
             ),
+          ),
           );
         },
       ),

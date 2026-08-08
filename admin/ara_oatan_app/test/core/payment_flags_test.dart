@@ -6,6 +6,7 @@ void main() {
     expect(TouryPaymentFlags.enableOnlinePayment, isFalse);
     expect(TouryPaymentFlags.cashOnlyMode, isTrue);
     expect(TouryPaymentFlags.useVercelPaymentApi, isFalse);
+    expect(TouryPaymentFlags.useExternalPaymentApi, isFalse);
     expect(TouryPaymentFlags.paymentBackend, 'firebase_functions');
   });
 

@@ -23,11 +23,14 @@ export function initFirebase(): typeof admin {
 
 export function firebaseReady(): boolean {
   try {
-    const presence =
+    if (Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64?.trim())) {
+      return true;
+    }
+    return (
       Boolean(process.env.FIREBASE_PROJECT_ID) &&
       Boolean(process.env.FIREBASE_CLIENT_EMAIL) &&
-      Boolean(process.env.FIREBASE_PRIVATE_KEY);
-    return presence;
+      Boolean(process.env.FIREBASE_PRIVATE_KEY)
+    );
   } catch {
     return false;
   }

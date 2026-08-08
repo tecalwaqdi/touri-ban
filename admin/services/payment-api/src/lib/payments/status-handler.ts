@@ -14,6 +14,7 @@ import {
   toLegacyStatus,
   transitionStatus,
 } from "@/lib/payments/status";
+import { createBookingFromPaidSession } from "@/lib/bookings/create-from-session";
 
 async function loadOwnedSession(sessionId: string, uid: string, asAdmin: boolean) {
   if (!/^[a-f0-9]{64}$/.test(sessionId)) {
@@ -52,7 +53,7 @@ export async function handlePaymentStatus(req: Request, sessionId: string) {
       bookingId: data.booking_id || null,
       providerStatus: data.gateway_state || null,
       environment: data.environment || getEnv().NGENIUS_ENV,
-      backendSource: data.backend_source || "vercel_api",
+      backendSource: data.backend_source || "external_api",
     };
   }
 
@@ -96,15 +97,31 @@ export async function handlePaymentStatus(req: Request, sessionId: string) {
     { merge: true },
   );
 
+  let bookingCreated = Boolean(data.booking_created);
+  let bookingId = (data.booking_id as string) || null;
+  if (
+    (next === PaymentStatus.paid || next === PaymentStatus.captured) &&
+    data.purpose === "booking" &&
+    !bookingCreated
+  ) {
+    const created = await createBookingFromPaidSession(sessionId, {
+      ...data,
+      status: toLegacyStatus(next),
+      normalized_status: next,
+    });
+    bookingCreated = true;
+    bookingId = created.bookingId;
+  }
+
   return {
     id: sessionId,
     status: next,
     amountMinor: data.amount_minor ?? data.amount_halalas,
     currency: data.currency,
-    bookingCreated: Boolean(data.booking_created),
-    bookingId: data.booking_id || null,
+    bookingCreated,
+    bookingId,
     providerStatus: gatewayState,
     environment: data.environment || getEnv().NGENIUS_ENV,
-    backendSource: data.backend_source || "vercel_api",
+    backendSource: data.backend_source || "external_api",
   };
 }

@@ -113,7 +113,7 @@ export async function handleCreatePayment(req: Request) {
       user_id: user.uid,
       purpose: body.paymentPurpose,
       provider: "ngenius",
-      backend_source: "vercel_api",
+      backend_source: "external_api",
       environment: env.NGENIUS_ENV,
       idempotency_key_hash: sessionId,
       amount_halalas: verifiedQuote.amountMinor,
@@ -147,7 +147,11 @@ export async function handleCreatePayment(req: Request) {
       amountMinor: Number(existingData.amount_minor ?? existingData.amount_halalas),
       currency: String(existingData.currency),
       paymentUrl: (existingData.payment_url as string) || null,
-      backendSource: String(existingData.backend_source || "vercel_api"),
+      threeDsUrl:
+        (existingData.three_ds_url as string) ||
+        (existingData.payment_url as string) ||
+        null,
+      backendSource: String(existingData.backend_source || "external_api"),
       environment: String(existingData.environment || env.NGENIUS_ENV),
     };
   }
@@ -165,6 +169,8 @@ export async function handleCreatePayment(req: Request) {
         payment_url: order.paymentUrl,
         status: toLegacyStatus(PaymentStatus.pending),
         normalized_status: PaymentStatus.pending,
+        // 3DS / hosted payment page URL for Flutter WebView
+        three_ds_url: order.paymentUrl,
         gateway_state: order.rawState,
         outlet_reference: env.NGENIUS_OUTLET_REF,
         updated_at: FieldValue.serverTimestamp(),
@@ -173,11 +179,14 @@ export async function handleCreatePayment(req: Request) {
     );
     return {
       id: sessionId,
-      status: PaymentStatus.pending,
+      status: order.rawState?.toUpperCase().includes("3DS")
+        ? PaymentStatus.authentication_required
+        : PaymentStatus.pending,
       amountMinor: verifiedQuote.amountMinor,
       currency: verifiedQuote.currency,
       paymentUrl: order.paymentUrl,
-      backendSource: "vercel_api",
+      threeDsUrl: order.paymentUrl,
+      backendSource: "external_api",
       environment: env.NGENIUS_ENV,
     };
   } catch (error) {

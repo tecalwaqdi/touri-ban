@@ -5,7 +5,7 @@ const envSchema = z.object({
   NGENIUS_ENV: z.enum(["sandbox", "production"]).default("sandbox"),
   NGENIUS_API_KEY: z.string().min(1, "NGENIUS_API_KEY is required"),
   NGENIUS_OUTLET_REF: z.string().min(1, "NGENIUS_OUTLET_REF is required"),
-  NGENIUS_WEBHOOK_SECRET: z.string().optional().default(""),
+  NGENIUS_WEBHOOK_SECRET: z.string().min(16, "NGENIUS_WEBHOOK_SECRET required"),
   NGENIUS_SANDBOX_BASE_URL: z
     .string()
     .url()
@@ -39,6 +39,37 @@ function normalizePrivateKey(raw: string): string {
   return raw.replace(/\\n/g, "\n").trim();
 }
 
+/**
+ * Optional base64-encoded full service-account JSON (preferred on Render).
+ * When set, overrides FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY pair.
+ */
+function serviceAccountFromBase64(): {
+  projectId?: string;
+  clientEmail?: string;
+  privateKey?: string;
+} {
+  const b64 = (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64 || "").trim();
+  if (!b64) return {};
+  try {
+    const json = JSON.parse(Buffer.from(b64, "base64").toString("utf8")) as {
+      project_id?: string;
+      client_email?: string;
+      private_key?: string;
+    };
+    return {
+      projectId: json.project_id,
+      clientEmail: json.client_email,
+      privateKey: json.private_key,
+    };
+  } catch {
+    throw new ApiError(
+      PaymentErrorCode.CONFIG_ERROR,
+      500,
+      "FIREBASE_SERVICE_ACCOUNT_BASE64 is not valid base64 JSON",
+    );
+  }
+}
+
 let cached: AppEnv | null = null;
 
 /** Lazy env load — health may call with partial=true for presence checks. */
@@ -46,6 +77,11 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
   if (cached) return cached;
 
   const requireSecrets = options?.requireSecrets !== false;
+  const fromSa = serviceAccountFromBase64();
+  if (fromSa.projectId) process.env.FIREBASE_PROJECT_ID ||= fromSa.projectId;
+  if (fromSa.clientEmail) process.env.FIREBASE_CLIENT_EMAIL ||= fromSa.clientEmail;
+  if (fromSa.privateKey) process.env.FIREBASE_PRIVATE_KEY ||= fromSa.privateKey;
+
   const parsed = envSchema.safeParse(process.env);
   if (!parsed.success) {
     if (!requireSecrets) {
@@ -140,14 +176,17 @@ export function envPresence(): {
   ngeniusWebhookSecret: boolean;
   firebase: boolean;
 } {
+  const fromSa = Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64);
   return {
     ngeniusApiKey: Boolean(process.env.NGENIUS_API_KEY),
     ngeniusOutlet: Boolean(process.env.NGENIUS_OUTLET_REF),
     ngeniusWebhookSecret: Boolean(process.env.NGENIUS_WEBHOOK_SECRET),
-    firebase: Boolean(
-      process.env.FIREBASE_PROJECT_ID &&
-        process.env.FIREBASE_CLIENT_EMAIL &&
-        process.env.FIREBASE_PRIVATE_KEY,
-    ),
+    firebase:
+      fromSa ||
+      Boolean(
+        process.env.FIREBASE_PROJECT_ID &&
+          process.env.FIREBASE_CLIENT_EMAIL &&
+          process.env.FIREBASE_PRIVATE_KEY,
+      ),
   };
 }

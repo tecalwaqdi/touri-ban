@@ -86,7 +86,8 @@ describe("pricing mismatch guards", () => {
 
 describe("backend mode constants", () => {
   it("documents supported modes", () => {
-    const modes = ["cash_only", "firebase_functions", "vercel_api"] as const;
+    const modes = ["cash_only", "firebase_functions", "external_api", "vercel_api"] as const;
+    expect(modes).toContain("external_api");
     expect(modes).toContain("vercel_api");
   });
 });

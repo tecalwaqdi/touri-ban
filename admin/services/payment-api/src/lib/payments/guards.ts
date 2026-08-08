@@ -1,12 +1,18 @@
+import { timingSafeEqual } from "crypto";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import { PaymentStatus } from "@/lib/payments/status";
 
-/** Pure webhook secret check (no I/O). */
+/** Pure webhook secret check (no I/O). Timing-safe when lengths match. */
 export function assertWebhookSecret(
   provided: string | null | undefined,
   expected: string | null | undefined,
 ): void {
-  if (!expected || !provided || provided !== expected) {
+  if (!expected || !provided) {
+    throw new ApiError(PaymentErrorCode.WEBHOOK_INVALID, 401);
+  }
+  const a = Buffer.from(provided, "utf8");
+  const b = Buffer.from(expected, "utf8");
+  if (a.length !== b.length || !timingSafeEqual(a, b)) {
     throw new ApiError(PaymentErrorCode.WEBHOOK_INVALID, 401);
   }
 }

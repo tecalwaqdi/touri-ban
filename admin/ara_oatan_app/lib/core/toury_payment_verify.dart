@@ -35,7 +35,7 @@ Future<TouryPaymentVerification> touryVerifyGatewayPayment(
     );
   }
 
-  if (TouryPaymentFlags.useVercelPaymentApi) {
+  if (TouryPaymentFlags.useExternalPaymentApi) {
     try {
       final body = await PaymentApiClient().getStatus(trimmed);
       final status = body['status']?.toString() ?? '';

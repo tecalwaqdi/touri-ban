@@ -7,6 +7,7 @@ describe("env", () => {
     process.env.NGENIUS_ENV = "sandbox";
     process.env.NGENIUS_API_KEY = "test-key";
     process.env.NGENIUS_OUTLET_REF = "outlet";
+    process.env.NGENIUS_WEBHOOK_SECRET = "webhook-secret-16chars";
     process.env.FIREBASE_PROJECT_ID = "demo";
     process.env.FIREBASE_CLIENT_EMAIL = "demo@demo.iam.gserviceaccount.com";
     process.env.FIREBASE_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\\nABC\\n-----END PRIVATE KEY-----\\n";

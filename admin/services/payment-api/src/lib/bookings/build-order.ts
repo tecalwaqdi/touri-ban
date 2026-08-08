@@ -254,7 +254,7 @@ export async function buildPaidOnlineOrderData(
     ALLNOW: true,
     ActiveOrder: false,
     ReviewMndonsend: false,
-    backend_source: "vercel_api",
+    backend_source: "external_api",
     pricing_authority: "server",
     created_by_function: true,
   };

@@ -32,6 +32,19 @@ describe("status mapping", () => {
   });
 });
 
+describe("webhook order reference extraction", () => {
+  it("reads nested N-Genius event.order.reference", async () => {
+    const { extractOrderReference } = await import("@/lib/ngenius/client");
+    expect(
+      extractOrderReference({
+        eventName: "PURCHASED",
+        order: { reference: "abc-order-ref" },
+      }),
+    ).toBe("abc-order-ref");
+    expect(extractOrderReference({ reference: "flat-ref" })).toBe("flat-ref");
+  });
+});
+
 describe("pricing", () => {
   it("calculates booking quote in minor units without float drift", () => {
     const quote = calculateBookingQuote({

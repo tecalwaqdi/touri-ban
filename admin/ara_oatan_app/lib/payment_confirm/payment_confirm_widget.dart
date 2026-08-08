@@ -119,11 +119,18 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
 
         final gatewayId = verify.orderId ?? FFAppState().paymentOrderId;
         final Map<String, dynamic> finalized;
-        if (TouryPaymentFlags.useVercelPaymentApi) {
-          finalized = await PaymentApiClient().finalizeBooking(
+        if (TouryPaymentFlags.useExternalPaymentApi) {
+          // Webhook creates the order; poll status until bookingId appears.
+          final statusBody = await PaymentApiClient().waitForPaidBooking(
             sessionId: gatewayId,
-            booking: TouryOrderIntegration.cloudBookingPayload(),
           );
+          finalized = {
+            'orderId': statusBody['bookingId'] ??
+                statusBody['orderId'] ??
+                gatewayId,
+            'id': statusBody['id'] ?? gatewayId,
+            'bookingCreated': statusBody['bookingCreated'],
+          };
         } else {
           final cf = await TouryNGeniusService.finalizeBooking(
             sessionId: gatewayId,
@@ -243,7 +250,13 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
         builder: (context) {
           final colors = context.dsColors;
 
-          return Scaffold(
+          return PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, _) {
+              if (didPop) return;
+              context.goNamed(List22TaskOverviewResponsiveWidget.routeName);
+            },
+            child: Scaffold(
             key: scaffoldKey,
             backgroundColor: colors.scaffold,
             body: SafeArea(
@@ -270,6 +283,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
                 ),
               ),
             ),
+          ),
           );
         },
       ),

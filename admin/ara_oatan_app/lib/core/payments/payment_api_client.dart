@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 import '/core/toury_payment_flags.dart';
 
-/// Typed client for the Vercel payment-api. Never holds provider secrets.
+/// Typed client for the external Express Payment API. Never holds provider secrets.
 class PaymentApiClient {
   PaymentApiClient({
     http.Client? httpClient,
@@ -17,7 +17,7 @@ class PaymentApiClient {
   final http.Client _http;
   final Duration timeout;
 
-  Uri _uri(String path) {
+  Uri _uri(String path, [Map<String, String>? query]) {
     final base =
         TouryPaymentFlags.paymentApiBaseUrl.replaceAll(RegExp(r'/$'), '');
     if (base.isEmpty) {
@@ -36,7 +36,7 @@ class PaymentApiClient {
         (base.contains('localhost') || base.contains('127.0.0.1'))) {
       throw PaymentApiException('CONFIG_ERROR');
     }
-    return Uri.parse('$base$path');
+    return Uri.parse('$base$path').replace(queryParameters: query);
   }
 
   Future<String> _idToken() async {
@@ -65,7 +65,7 @@ class PaymentApiClient {
     final token = await _idToken();
     final response = await _http
         .post(
-          _uri('/api/payments/create'),
+          _uri('/payments/create'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ class PaymentApiClient {
     final token = await _idToken();
     final response = await _http
         .get(
-          _uri('/api/payments/status/$sessionId'),
+          _uri('/payments/status', {'sessionId': sessionId}),
           headers: {
             'Authorization': 'Bearer $token',
             'Accept': 'application/json',
@@ -103,52 +103,46 @@ class PaymentApiClient {
     return _decode(response);
   }
 
-  Future<Map<String, dynamic>> finalizeBooking({
+  /// Waits until webhook (or status sync) marks the booking created.
+  Future<Map<String, dynamic>> waitForPaidBooking({
     required String sessionId,
-    Map<String, dynamic>? booking,
+    int attempts = 12,
+    Duration interval = const Duration(seconds: 2),
   }) async {
-    final token = await _idToken();
-    final response = await _http
-        .post(
-          _uri('/api/payments/finalize'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: jsonEncode({
-            'sessionId': sessionId,
-            if (booking != null) 'booking': booking,
-          }),
-        )
-        .timeout(timeout);
-    return _decode(response);
-  }
-
-  Future<Map<String, dynamic>> refund({
-    required String sessionId,
-    required String idempotencyKey,
-    int? amountMinor,
-    String? reason,
-  }) async {
-    final token = await _idToken();
-    final response = await _http
-        .post(
-          _uri('/api/payments/refund'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: jsonEncode({
-            'sessionId': sessionId,
-            'idempotencyKey': idempotencyKey,
-            if (amountMinor != null) 'amountMinor': amountMinor,
-            if (reason != null) 'reason': reason,
-          }),
-        )
-        .timeout(timeout);
-    return _decode(response);
+    Map<String, dynamic> last = {};
+    for (var i = 0; i < attempts; i++) {
+      last = await getStatus(sessionId);
+      final status = last['status']?.toString() ?? '';
+      final bookingCreated = last['bookingCreated'] == true;
+      final bookingId = last['bookingId']?.toString();
+      if (bookingCreated && bookingId != null && bookingId.isNotEmpty) {
+        return last;
+      }
+      if (status == 'failed' ||
+          status == 'cancelled' ||
+          status == 'expired') {
+        throw PaymentApiException(status.toUpperCase());
+      }
+      if (i < attempts - 1) {
+        await Future<void>.delayed(interval);
+      }
+    }
+    // Paid without booking yet — still return last status for caller UX.
+    if ((last['status']?.toString() == 'paid' ||
+            last['status']?.toString() == 'captured') &&
+        last['bookingId'] != null) {
+      return last;
+    }
+    if (last['status']?.toString() == 'paid' ||
+        last['status']?.toString() == 'captured') {
+      // Order may still be creating; surface session id as fallback.
+      return {
+        ...last,
+        'bookingId': last['bookingId'] ?? sessionId,
+        'orderId': last['bookingId'] ?? sessionId,
+      };
+    }
+    throw PaymentApiException('PAYMENT_PENDING');
   }
 
   Map<String, dynamic> _decode(http.Response response) {

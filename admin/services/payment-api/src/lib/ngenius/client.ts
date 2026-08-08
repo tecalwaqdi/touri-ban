@@ -56,8 +56,21 @@ export function extractPaymentUrl(data: unknown): string | null {
 }
 
 export function extractOrderReference(data: unknown): string | null {
-  const obj = data as { reference?: string; _id?: string };
-  return obj.reference || obj._id || null;
+  const obj = data as {
+    reference?: string;
+    _id?: string;
+    order?: { reference?: string; _id?: string };
+    orderReference?: string;
+  };
+  // Hosted-order create response OR nested webhook event.order
+  return (
+    obj.reference ||
+    obj._id ||
+    obj.order?.reference ||
+    obj.order?._id ||
+    obj.orderReference ||
+    null
+  );
 }
 
 export async function createNGeniusOrder(input: {

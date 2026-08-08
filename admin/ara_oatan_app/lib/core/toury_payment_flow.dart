@@ -38,7 +38,7 @@ class TouryCardPaymentResult {
   bool get isPaid => TouryNGeniusService.isPaid(response?.jsonBody);
 }
 
-/// تنفيذ دفع بطاقة عبر Cloud Function أو Vercel payment-api → N-Genius فقط.
+/// تنفيذ دفع بطاقة عبر Cloud Function أو Payment API الخارجي → N-Genius فقط.
 Future<TouryCardPaymentResult> touryExecuteCardPayment({
   required String description,
   required int amountHalalas,
@@ -60,7 +60,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
     );
   }
 
-  if (TouryPaymentFlags.useVercelPaymentApi) {
+  if (TouryPaymentFlags.useExternalPaymentApi) {
     try {
       final app = FFAppState();
       if (app.paymentIdempotencyKey.isEmpty) {
@@ -78,7 +78,8 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
         description: description,
       );
       final paymentId = body['id']?.toString();
-      final threeDsUrl = body['paymentUrl']?.toString();
+      final threeDsUrl = body['threeDsUrl']?.toString() ??
+          body['paymentUrl']?.toString();
       if (paymentId == null || paymentId.isEmpty) {
         return TouryCardPaymentResult(
           success: false,
