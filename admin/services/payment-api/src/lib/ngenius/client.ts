@@ -164,6 +164,129 @@ export function extractOrderReference(data: unknown): string | null {
   );
 }
 
+/** N-Genius: alphanumeric + hyphen only (docs.ksa list-of-order-input-attributes). */
+export function sanitizeMerchantOrderReference(value: string): string {
+  const cleaned = String(value || "")
+    .trim()
+    .slice(0, 50)
+    .replace(/[^a-zA-Z0-9-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return cleaned.slice(0, 37) || "TouryBooking";
+}
+
+function isValidEmailAddress(value: string | undefined): value is string {
+  if (!value) return false;
+  const email = value.trim();
+  if (email.length < 5 || email.length > 128) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function maskOutletRef(outletRef: string): string {
+  const v = String(outletRef || "");
+  if (v.length <= 8) return "****";
+  return `${v.slice(0, 4)}…${v.slice(-4)}`;
+}
+
+export type NGeniusCreateOrderBody = {
+  action: "PURCHASE" | "AUTH";
+  amount: { currencyCode: string; value: number };
+  merchantAttributes: { redirectUrl: string; cancelUrl: string };
+  merchantOrderReference: string;
+  emailAddress?: string;
+};
+
+/**
+ * Build the exact KSA Pay Page create-order JSON (no unsupported fields).
+ * amount.value must be a positive integer in minor units (halalas for SAR).
+ */
+export function buildNGeniusCreateOrderBody(input: {
+  amountMinor: number;
+  currency: string;
+  email?: string;
+  merchantOrderReference: string;
+  redirectUrl: string;
+  cancelUrl: string;
+}): NGeniusCreateOrderBody {
+  const currencyCode = String(input.currency || "SAR").trim().toUpperCase();
+  if (!Number.isInteger(input.amountMinor) || input.amountMinor < 1) {
+    throw new ApiError(PaymentErrorCode.INVALID_REQUEST, 400, "Invalid amount");
+  }
+  if (!/^https:\/\//i.test(input.redirectUrl) || !/^https:\/\//i.test(input.cancelUrl)) {
+    throw new ApiError(PaymentErrorCode.CONFIG_ERROR, 500, "Invalid payment return URL");
+  }
+
+  const body: NGeniusCreateOrderBody = {
+    action: "PURCHASE",
+    amount: {
+      currencyCode,
+      value: input.amountMinor,
+    },
+    merchantAttributes: {
+      redirectUrl: input.redirectUrl,
+      cancelUrl: input.cancelUrl,
+    },
+    merchantOrderReference: sanitizeMerchantOrderReference(
+      input.merchantOrderReference,
+    ),
+  };
+  if (isValidEmailAddress(input.email)) {
+    body.emailAddress = input.email.trim();
+  }
+  return body;
+}
+
+function safeCreateOrderErrorSnippet(rawText: string): {
+  providerCode?: string;
+  providerMessage?: string;
+  providerDetails?: string;
+} {
+  try {
+    const parsed = JSON.parse(rawText) as Record<string, unknown>;
+    const errors = parsed.errors;
+    const firstError =
+      Array.isArray(errors) && errors.length > 0
+        ? (errors[0] as Record<string, unknown>)
+        : null;
+    const code =
+      parsed.code ??
+      parsed.errorCode ??
+      parsed.error ??
+      firstError?.code ??
+      firstError?.errorCode;
+    const message =
+      parsed.message ??
+      parsed.errorMessage ??
+      parsed.error_description ??
+      firstError?.message ??
+      firstError?.description;
+    const details =
+      parsed.details ??
+      parsed.description ??
+      firstError?.details ??
+      firstError?.field;
+    const out: {
+      providerCode?: string;
+      providerMessage?: string;
+      providerDetails?: string;
+    } = {};
+    if (typeof code === "string" || typeof code === "number") {
+      out.providerCode = String(code).slice(0, 80);
+    }
+    if (typeof message === "string") {
+      out.providerMessage = message.slice(0, 160);
+    }
+    if (typeof details === "string") {
+      out.providerDetails = details.slice(0, 160);
+    } else if (Array.isArray(details)) {
+      out.providerDetails = JSON.stringify(details).slice(0, 160);
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 export async function createNGeniusOrder(input: {
   amountMinor: number;
   currency: string;
@@ -177,6 +300,15 @@ export async function createNGeniusOrder(input: {
     "https://tutorial-multi-language-70gx4j.web.app/payment-return.html";
   const cancelUrl = env.PAYMENT_CANCEL_BASE_URL || redirectUrl;
 
+  const orderBody = buildNGeniusCreateOrderBody({
+    amountMinor: input.amountMinor,
+    currency: input.currency,
+    email: input.email,
+    merchantOrderReference: input.merchantOrderReference,
+    redirectUrl,
+    cancelUrl,
+  });
+
   const res = await fetch(outletOrdersUrl(), {
     method: "POST",
     headers: {
@@ -184,21 +316,26 @@ export async function createNGeniusOrder(input: {
       "Content-Type": "application/vnd.ni-payment.v2+json",
       Accept: "application/vnd.ni-payment.v2+json",
     },
-    body: JSON.stringify({
-      action: "PURCHASE",
-      amount: {
-        currencyCode: input.currency,
-        value: input.amountMinor,
-      },
-      emailAddress: input.email || undefined,
-      merchantAttributes: { redirectUrl, cancelUrl },
-      merchantOrderReference: input.merchantOrderReference.slice(0, 50),
-    }),
+    body: JSON.stringify(orderBody),
     signal: AbortSignal.timeout(15_000),
   });
 
   if (!res.ok) {
-    logger.error("ngenius_create_order_failed", { status: res.status });
+    const rawText = await res.text().catch(() => "");
+    const snippet = safeCreateOrderErrorSnippet(rawText);
+    logger.error("ngenius_create_order_failed", {
+      status: res.status,
+      environment: env.NGENIUS_ENV,
+      action: orderBody.action,
+      currencyCode: orderBody.amount.currencyCode,
+      amountValue: orderBody.amount.value,
+      hasRedirectUrl: Boolean(orderBody.merchantAttributes.redirectUrl),
+      hasCancelUrl: Boolean(orderBody.merchantAttributes.cancelUrl),
+      hasEmail: Boolean(orderBody.emailAddress),
+      merchantOrderReferenceLength: orderBody.merchantOrderReference.length,
+      outletRefMasked: maskOutletRef(env.NGENIUS_OUTLET_REF),
+      ...snippet,
+    });
     throw new ApiError(PaymentErrorCode.PROVIDER_UNAVAILABLE, 502);
   }
   const body = await res.json();
