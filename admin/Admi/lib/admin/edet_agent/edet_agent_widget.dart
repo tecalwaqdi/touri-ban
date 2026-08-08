@@ -8,6 +8,7 @@ import '/components/admin_crud_feedback.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_super_admin_gate.dart';
 import '/components/admin_ui.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'edet_agent_model.dart';
@@ -147,7 +148,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
         labelText: label,
         hintText: hint,
         filled: true,
-        fillColor: readOnly ? const Color(0xFFF5F5F5) : Colors.white,
+        fillColor: AdminUi.fieldFill(context, muted: readOnly),
         suffixIcon: const Icon(Icons.percent),
         helperText: readOnly ? uiTr(context, 'نسبة ثابتة') : null,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -208,24 +209,31 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
     required DateTime? date,
     required VoidCallback onTap,
   }) {
+    final theme = FlutterFlowTheme.of(context);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AdminUi.fieldFill(context),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFFE0E0E0)),
+          border: Border.all(color: theme.alternate),
         ),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today, size: 20),
+            Icon(Icons.calendar_today, size: 20, color: theme.secondaryText),
             const SizedBox(width: 8),
-            Expanded(child: Text(label, style: const TextStyle(fontSize: 13))),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(fontSize: 13, color: theme.primaryText),
+              ),
+            ),
             Text(
               _formatDate(date),
               style: TextStyle(
+                color: theme.primaryText,
                 fontWeight: date == null ? FontWeight.normal : FontWeight.w600,
               ),
             ),
@@ -297,7 +305,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            uiTr(context, 'تم تحديد الدولة: ${selected.naim}'),
+            '${uiTr(context, 'تم تحديد الدولة')}: ${selected.naim}',
           ),
         ),
       );
@@ -328,7 +336,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
           decoration: InputDecoration(
             labelText: uiTr(context, 'البلد'),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: AdminUi.fieldFill(context),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
           hint: Text(uiTr(context, 'اختر البلد')),

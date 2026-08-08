@@ -205,7 +205,7 @@ class AdminEditPickerRow extends StatelessWidget {
             child: Ink(
               decoration: BoxDecoration(
                 color: locked
-                    ? const Color(0xFFF5F5F5)
+                    ? AdminUi.fieldFill(context, muted: true)
                     : theme.secondaryBackground,
                 borderRadius: BorderRadius.circular(AdminUi.radiusSm),
                 border: Border.all(color: theme.alternate),

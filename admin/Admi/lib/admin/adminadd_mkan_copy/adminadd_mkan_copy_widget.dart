@@ -6,7 +6,6 @@ import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_landmark_search.dart';
 import '/backend/admin_resource_guard.dart';
 import '/components/admin_crud_feedback.dart';
-import '/backend/firebase_storage/storage.dart';
 import '/backend/backend.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_image_picker.dart';
@@ -194,7 +193,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, uploadErrorMessage(e)))),
+        SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, e))),
       );
     } finally {
       if (mounted) {
@@ -504,7 +503,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     filled: true,
-                                    fillColor: Colors.white,
+                                    fillColor: AdminUi.fieldFill(context),
                                   ),
                                   style: FlutterFlowTheme.of(context)
                                       .bodyLarge
@@ -581,7 +580,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     filled: true,
-                                    fillColor: Colors.white,
+                                    fillColor: AdminUi.fieldFill(context),
                                   ),
                                   style: FlutterFlowTheme.of(context)
                                       .bodyLarge

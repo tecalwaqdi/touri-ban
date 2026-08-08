@@ -16,6 +16,8 @@ class AdminMenuSectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 6),
       child: Text(
         label.toUpperCase(),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           color: Colors.white.withValues(alpha: 0.55),
           fontFamily: 'cairo',
@@ -111,17 +113,6 @@ class AdminFilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     return FilterChip(
-      label: Text(
-        label,
-        style: theme.labelMedium.override(
-          fontFamily: theme.labelMediumFamily,
-          color: selected ? Colors.white : theme.primaryText,
-          fontWeight: FontWeight.w600,
-          useGoogleFonts: !theme.labelMediumIsCustom,
-        ),
-      ),
-      selected: selected,
-      onSelected: onSelected,
       selectedColor: AdminUi.brandTeal,
       checkmarkColor: Colors.white,
       backgroundColor: theme.secondaryBackground,
@@ -133,6 +124,17 @@ class AdminFilterChip extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AdminUi.radiusSm),
       ),
+      label: Text(
+        label,
+        style: theme.labelMedium.override(
+          fontFamily: theme.labelMediumFamily,
+          color: selected ? Colors.white : theme.primaryText,
+          fontWeight: FontWeight.w600,
+          useGoogleFonts: !theme.labelMediumIsCustom,
+        ),
+      ),
+      selected: selected,
+      onSelected: onSelected,
     );
   }
 }
@@ -172,6 +174,7 @@ class AdminEmptyState extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             title,
+            softWrap: true,
             textAlign: TextAlign.center,
             style: theme.titleMedium.override(
               fontFamily: theme.titleMediumFamily,
@@ -184,6 +187,7 @@ class AdminEmptyState extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               message!,
+              softWrap: true,
               textAlign: TextAlign.center,
               style: theme.bodyMedium.override(
                 fontFamily: theme.bodyMediumFamily,
@@ -356,7 +360,11 @@ class AdminDataTable extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: AdminUi.brandTeal.withValues(alpha: 0.06),
+                  color: AdminUi.brandTeal.withValues(
+                    alpha: Theme.of(context).brightness == Brightness.dark
+                        ? 0.18
+                        : 0.06,
+                  ),
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(AdminUi.radiusMd),
                   ),

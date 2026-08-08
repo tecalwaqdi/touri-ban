@@ -4,12 +4,13 @@ import '/backend/admin_panel_setup.dart';
 import '/backend/admin_role_service.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
-import '/backend/firebase_storage/storage.dart';
 import '/backend/profile_photo_service.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_image_picker.dart';
 import '/components/admin_layout_widget.dart';
+import '/components/admin_theme_toggle.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_language_selector.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -132,7 +133,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         SnackBar(
           content: Text(
             usedFallback
-                ? uiTr(context, 'تم حفظ الصورة في حسابك (وضع احتياطي — فعّل فوترة Firebase Storage للرفع السحابي)')
+                ? uiTr(context,
+                    'تم حفظ الصورة في حسابك (وضع احتياطي — فعّل فوترة Firebase Storage للرفع السحابي)')
                 : uiTr(context, 'تم تحديث الصورة الشخصية بنجاح'),
           ),
         ),
@@ -140,7 +142,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, uploadErrorMessage(e)))),
+        SnackBar(
+            content: Text(AdminCrudFeedback.uploadFailed(context, e))),
       );
     } finally {
       if (mounted) {
@@ -169,8 +172,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         return;
       }
 
-      final msg =
-          '${uiTr(context, 'تمت تعبئة الترجمات')}: '
+      final msg = '${uiTr(context, 'تمت تعبئة الترجمات')}: '
           '${result.landmarks} ${uiTr(context, 'معلم')}، '
           '${result.cities} ${uiTr(context, 'منطقة')}، '
           '${result.villages} ${uiTr(context, 'مدينة')}، '
@@ -181,9 +183,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      setState(() => _i18nBackfillStatus = e.toString());
+      final msg = AdminUserFacingErrors.from(context, e);
+      setState(() => _i18nBackfillStatus = msg);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
+        SnackBar(content: Text(msg)),
       );
     } finally {
       if (mounted) setState(() => _i18nBackfillRunning = false);
@@ -210,8 +213,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         return;
       }
 
-      final msg =
-          '${uiTr(context, 'تمت ترجمة المعالم')}: ${result.landmarks} '
+      final msg = '${uiTr(context, 'تمت ترجمة المعالم')}: ${result.landmarks} '
           '(${uiTr(context, 'أعد الضغط لترجمة المزيد')})';
       setState(() => _i18nBackfillStatus = msg);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -219,9 +221,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      setState(() => _i18nBackfillStatus = e.toString());
+      final msg = AdminUserFacingErrors.from(context, e);
+      setState(() => _i18nBackfillStatus = msg);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
+        SnackBar(content: Text(msg)),
       );
     } finally {
       if (mounted) setState(() => _i18nGeminiRunning = false);
@@ -248,8 +251,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         return;
       }
 
-      final msg =
-          '${uiTr(context, 'تم تحديث حدود')}: ${result.updated} '
+      final msg = '${uiTr(context, 'تم تحديث حدود')}: ${result.updated} '
           '(${uiTr(context, 'تخطّي')}: ${result.skipped})';
       setState(() => _i18nBackfillStatus = msg);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -257,9 +259,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      setState(() => _i18nBackfillStatus = e.toString());
+      final msg = AdminUserFacingErrors.from(context, e);
+      setState(() => _i18nBackfillStatus = msg);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
+        SnackBar(content: Text(msg)),
       );
     } finally {
       if (mounted) setState(() => _boundsBackfillRunning = false);
@@ -274,7 +277,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       localBytes: _model.uploadedLocalPhoto.bytes,
       isUploading: _model.isUploadingPhoto,
       height: 160,
-      hint: uiTr(context, 'اضغط لاختيار صورة من المعرض أو الكاميرا (تُحفظ تلقائياً)'),
+      hint: uiTr(
+          context, 'اضغط لاختيار صورة من المعرض أو الكاميرا (تُحفظ تلقائياً)'),
       onPick: _pickProfilePhoto,
     );
   }
@@ -328,7 +332,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${appTr(context, 'adm_save_data_failed')}: $e')),
+        SnackBar(
+            content: Text(
+                '${appTr(context, 'adm_save_data_failed')}: ${AdminUserFacingErrors.from(context, e)}')),
       );
     } finally {
       if (mounted) {
@@ -359,7 +365,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${appTr(context, 'adm_password_update_failed')}: $e')),
+        SnackBar(
+            content: Text(
+                '${appTr(context, 'adm_password_update_failed')}: ${AdminUserFacingErrors.from(context, e)}')),
       );
     } finally {
       if (mounted) {
@@ -389,299 +397,307 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           title: l10n.getText('003x6weg' /* Settings */),
           subtitle: uiTr(context, 'إدارة بيانات حسابك وتفضيلات التطبيق'),
           child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AdminContentCard(
-                    title: uiTr(context, 'الملف الشخصي'),
-                    child: Form(
-                      key: _model.formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Center(
-                            child: _buildProfilePhotoSection(theme),
-                          ),
-                          const SizedBox(height: AdminUi.fieldGap),
-                          AdminTextField(
-                            controller: _model.nameTextController!,
-                            focusNode: _model.nameFocusNode,
-                            label: uiTr(context, 'الاسم الكامل'),
-                            icon: Icons.badge_outlined,
-                            validator: (v) =>
-                                (v == null || v.trim().isEmpty)
-                                    ? uiTr(context, 'أدخل الاسم')
-                                    : null,
-                          ),
-                          const SizedBox(height: AdminUi.fieldGap),
-                          AdminTextField(
-                            controller: _model.emailTextController!,
-                            focusNode: _model.emailFocusNode,
-                            label: l10n.getText('8gngx8fm' /* Email Address */),
-                            icon: Icons.email_outlined,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (v) {
-                              if (v == null || v.trim().isEmpty) {
-                                return uiTr(context, 'أدخل البريد الإلكتروني');
-                              }
-                              if (!v.contains('@')) {
-                                return uiTr(context, 'بريد إلكتروني غير صالح');
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: AdminUi.fieldGap),
-                          AdminTextField(
-                            controller: _model.phoneTextController!,
-                            focusNode: _model.phoneFocusNode,
-                            label: uiTr(context, 'رقم الهاتف'),
-                            icon: Icons.phone_outlined,
-                            keyboardType: TextInputType.phone,
-                          ),
-                          const SizedBox(height: 16),
-                          AdminPrimaryButton(
-                            label: uiTr(context, 'حفظ بيانات الحساب'),
-                            icon: Icons.save_outlined,
-                            isLoading: _model.isSavingProfile,
-                            onPressed: _saveProfile,
-                          ),
-                        ],
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AdminContentCard(
+                title: uiTr(context, 'الملف الشخصي'),
+                child: Form(
+                  key: _model.formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: _buildProfilePhotoSection(theme),
                       ),
-                    ),
-                  ),
-                  AdminContentCard(
-                    title: l10n.getText('h9szauvt' /* Password */),
-                    child: Form(
-                      key: _model.passwordFormKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          AdminTextField(
-                            controller: _model.newPasswordTextController!,
-                            focusNode: _model.newPasswordFocusNode,
-                            label: uiTr(context, 'كلمة المرور الجديدة'),
-                            icon: Icons.lock_outline,
-                            obscureText: !_model.passwordVisible,
-                            visibilityVisible: _model.passwordVisible,
-                            onToggleVisibility: () => setState(
-                              () => _model.passwordVisible =
-                                  !_model.passwordVisible,
-                            ),
-                            validator: (v) {
-                              if (v == null || v.length < 6) {
-                                return uiTr(context, '6 أحرف على الأقل');
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: AdminUi.fieldGap),
-                          AdminTextField(
-                            controller:
-                                _model.confirmPasswordTextController!,
-                            focusNode: _model.confirmPasswordFocusNode,
-                            label: uiTr(context, 'تأكيد كلمة المرور'),
-                            icon: Icons.lock_outline,
-                            obscureText: !_model.confirmPasswordVisible,
-                            visibilityVisible: _model.confirmPasswordVisible,
-                            onToggleVisibility: () => setState(
-                              () => _model.confirmPasswordVisible =
-                                  !_model.confirmPasswordVisible,
-                            ),
-                            validator: (v) {
-                              if (v !=
-                                  _model.newPasswordTextController!.text) {
-                                return uiTr(context, 'كلمتا المرور غير متطابقتين');
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          AdminPrimaryButton(
-                            label: uiTr(context, 'تحديث كلمة المرور'),
-                            icon: Icons.vpn_key_outlined,
-                            isLoading: _model.isSavingPassword,
-                            onPressed: _savePassword,
-                          ),
-                        ],
+                      const SizedBox(height: AdminUi.fieldGap),
+                      AdminTextField(
+                        controller: _model.nameTextController!,
+                        focusNode: _model.nameFocusNode,
+                        label: uiTr(context, 'الاسم الكامل'),
+                        icon: Icons.badge_outlined,
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? uiTr(context, 'أدخل الاسم')
+                            : null,
                       ),
-                    ),
+                      const SizedBox(height: AdminUi.fieldGap),
+                      AdminTextField(
+                        controller: _model.emailTextController!,
+                        focusNode: _model.emailFocusNode,
+                        label: l10n.getText('8gngx8fm' /* Email Address */),
+                        icon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (v) {
+                          if (v == null || v.trim().isEmpty) {
+                            return uiTr(context, 'أدخل البريد الإلكتروني');
+                          }
+                          if (!v.contains('@')) {
+                            return uiTr(context, 'بريد إلكتروني غير صالح');
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: AdminUi.fieldGap),
+                      AdminTextField(
+                        controller: _model.phoneTextController!,
+                        focusNode: _model.phoneFocusNode,
+                        label: uiTr(context, 'رقم الهاتف'),
+                        icon: Icons.phone_outlined,
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 16),
+                      AdminPrimaryButton(
+                        label: uiTr(context, 'حفظ بيانات الحساب'),
+                        icon: Icons.save_outlined,
+                        isLoading: _model.isSavingProfile,
+                        onPressed: _saveProfile,
+                      ),
+                    ],
                   ),
-                  AdminContentCard(
-                    title: uiTr(context, 'الخصوصية وشروط الاستخدام'),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          uiTr(context, 'باستخدامك لوحة التحكم، فإنك توافق على معالجة بيانات ') +
-                          uiTr(context, 'المستخدمين والحجوزات والمواقع الجغرافية لأغراض تشغيل ') +
-                          uiTr(context, 'الخدمة فقط. لا تُشارك البيانات مع أطراف ثالثة إلا بموافقة ') +
+                ),
+              ),
+              AdminContentCard(
+                title: l10n.getText('h9szauvt' /* Password */),
+                child: Form(
+                  key: _model.passwordFormKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      AdminTextField(
+                        controller: _model.newPasswordTextController!,
+                        focusNode: _model.newPasswordFocusNode,
+                        label: uiTr(context, 'كلمة المرور الجديدة'),
+                        icon: Icons.lock_outline,
+                        obscureText: !_model.passwordVisible,
+                        visibilityVisible: _model.passwordVisible,
+                        onToggleVisibility: () => setState(
+                          () =>
+                              _model.passwordVisible = !_model.passwordVisible,
+                        ),
+                        validator: (v) {
+                          if (v == null || v.length < 6) {
+                            return uiTr(context, '6 أحرف على الأقل');
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: AdminUi.fieldGap),
+                      AdminTextField(
+                        controller: _model.confirmPasswordTextController!,
+                        focusNode: _model.confirmPasswordFocusNode,
+                        label: uiTr(context, 'تأكيد كلمة المرور'),
+                        icon: Icons.lock_outline,
+                        obscureText: !_model.confirmPasswordVisible,
+                        visibilityVisible: _model.confirmPasswordVisible,
+                        onToggleVisibility: () => setState(
+                          () => _model.confirmPasswordVisible =
+                              !_model.confirmPasswordVisible,
+                        ),
+                        validator: (v) {
+                          if (v != _model.newPasswordTextController!.text) {
+                            return uiTr(context, 'كلمتا المرور غير متطابقتين');
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      AdminPrimaryButton(
+                        label: uiTr(context, 'تحديث كلمة المرور'),
+                        icon: Icons.vpn_key_outlined,
+                        isLoading: _model.isSavingPassword,
+                        onPressed: _savePassword,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              AdminContentCard(
+                title: uiTr(context, 'الخصوصية وشروط الاستخدام'),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      uiTr(context,
+                              'باستخدامك لوحة التحكم، فإنك توافق على معالجة بيانات ') +
+                          uiTr(context,
+                              'المستخدمين والحجوزات والمواقع الجغرافية لأغراض تشغيل ') +
+                          uiTr(context,
+                              'الخدمة فقط. لا تُشارك البيانات مع أطراف ثالثة إلا بموافقة ') +
                           uiTr(context, 'قانونية أو بموجب القانون.'),
-                          style: theme.bodySmall.override(
-                            fontFamily: theme.bodySmallFamily,
-                            color: theme.secondaryText,
-                            useGoogleFonts: !theme.bodySmallIsCustom,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          uiTr(context, 'يحق للمستخدمين طلب تصحيح أو حذف بياناتهم عبر الدعم الفني. ') +
-                          uiTr(context, 'يُحظر استخدام النظام لأغراض غير مشروعة أو انتهاك خصوصية ') +
-                          uiTr(context, 'العملاء أو المناديب.'),
-                          style: theme.bodySmall.override(
-                            fontFamily: theme.bodySmallFamily,
-                            color: theme.secondaryText,
-                            useGoogleFonts: !theme.bodySmallIsCustom,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          uiTr(context, 'آخر تحديث: يونيو 2026'),
-                          style: theme.labelSmall.override(
-                            fontFamily: theme.labelSmallFamily,
-                            color: theme.secondaryText,
-                            useGoogleFonts: !theme.labelSmallIsCustom,
-                          ),
-                        ),
-                      ],
+                      style: theme.bodySmall.override(
+                        fontFamily: theme.bodySmallFamily,
+                        color: theme.secondaryText,
+                        useGoogleFonts: !theme.bodySmallIsCustom,
+                      ),
                     ),
-                  ),
-                  if (AdminRoleService.isSuperAdmin) ...[
-                    AdminContentCard(
-                      title: uiTr(context, 'صيانة البيانات'),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            uiTr(
-                              context,
-                              uiTr(context, 'يملأ حقول names_i18n للمعالم والمدن والدول القديمة من الأسماء العربية/الإنجليزية المخزنة.'),
-                            ),
-                            style: theme.bodySmall.override(
-                              fontFamily: theme.bodySmallFamily,
-                              color: theme.secondaryText,
-                              useGoogleFonts: !theme.bodySmallIsCustom,
-                            ),
-                          ),
-                          if (_i18nBackfillStatus != null) ...[
-                            const SizedBox(height: 10),
-                            Text(
-                              _i18nBackfillStatus!,
-                              style: theme.bodySmall,
-                            ),
-                          ],
-                          const SizedBox(height: 12),
-                          AdminPrimaryButton(
-                            label: uiTr(
-                              context,
-                              uiTr(context, 'تعبئة ترجمات البيانات القديمة'),
-                            ),
-                            icon: Icons.translate_rounded,
-                            isLoading: _i18nBackfillRunning,
-                            onPressed:
-                                _i18nBackfillRunning ? null : _runI18nBackfill,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            uiTr(
-                              context,
-                              uiTr(context, 'ترجم تلقائياً حتى 15 معلم في كل مرة عبر Gemini (يتطلب GEMINI_API_KEY في Cloud Functions).'),
-                            ),
-                            style: theme.bodySmall.override(
-                              fontFamily: theme.bodySmallFamily,
-                              color: theme.secondaryText,
-                              useGoogleFonts: !theme.bodySmallIsCustom,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          AdminPrimaryButton(
-                            label: uiTr(
-                              context,
-                              uiTr(context, 'ترجم المعالم بGemini (دفعة)'),
-                            ),
-                            icon: Icons.auto_awesome_rounded,
-                            isLoading: _i18nGeminiRunning,
-                            onPressed: (_i18nGeminiRunning || _i18nBackfillRunning)
-                                ? null
-                                : _runI18nGeminiBatch,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            uiTr(
-                              context,
-                              uiTr(context, 'يجلب الحدود الجغرافية للدول الناقصة (مطلوب لتحديد دولة الوكيل من GPS).'),
-                            ),
-                            style: theme.bodySmall.override(
-                              fontFamily: theme.bodySmallFamily,
-                              color: theme.secondaryText,
-                              useGoogleFonts: !theme.bodySmallIsCustom,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          AdminPrimaryButton(
-                            label: uiTr(
-                              context,
-                              uiTr(context, 'تعبئة حدود الدول الجغرافية'),
-                            ),
-                            icon: Icons.map_rounded,
-                            isLoading: _boundsBackfillRunning,
-                            onPressed: _boundsBackfillRunning
-                                ? null
-                                : _runCountryBoundsBackfill,
-                          ),
-                        ],
+                    const SizedBox(height: 8),
+                    Text(
+                      uiTr(context,
+                              'يحق للمستخدمين طلب تصحيح أو حذف بياناتهم عبر الدعم الفني. ') +
+                          uiTr(context,
+                              'يُحظر استخدام النظام لأغراض غير مشروعة أو انتهاك خصوصية ') +
+                          uiTr(context, 'العملاء أو المناديب.'),
+                      style: theme.bodySmall.override(
+                        fontFamily: theme.bodySmallFamily,
+                        color: theme.secondaryText,
+                        useGoogleFonts: !theme.bodySmallIsCustom,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      uiTr(context, 'آخر تحديث: يونيو 2026'),
+                      style: theme.labelSmall.override(
+                        fontFamily: theme.labelSmallFamily,
+                        color: theme.secondaryText,
+                        useGoogleFonts: !theme.labelSmallIsCustom,
                       ),
                     ),
                   ],
-                  const SizedBox(height: 16),
-                  AdminContentCard(
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: FlutterFlowLanguageSelector(
-                        width: double.infinity,
-                        backgroundColor: theme.primary,
-                        borderColor: Colors.transparent,
-                        dropdownIconColor: Colors.white,
-                        borderRadius: AdminUi.radiusSm,
-                        textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14.0,
-                        ),
-                        hideFlags: true,
-                        flagSize: 24.0,
-                        flagTextGap: 8.0,
-                        currentLanguage: l10n.languageCode,
-                        languages: FFLocalizations.languages(),
-                        onChanged: (lang) => setAppLanguage(context, lang),
-                      ),
-                    ),
-                  ),
-                  AdminContentCard(
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: Icon(Icons.logout_rounded, color: theme.error),
-                      title: Text(
-                        l10n.getText('wj2hxjyt' /* Log out */),
-                        style: theme.bodyMedium.override(
-                          fontFamily: theme.bodyMediumFamily,
-                          color: theme.error,
-                          fontWeight: FontWeight.w600,
-                          useGoogleFonts: !theme.bodyMediumIsCustom,
-                        ),
-                      ),
-                      onTap: () async {
-                        GoRouter.of(context).prepareAuthEvent();
-                        await authManager.signOut();
-                        GoRouter.of(context).clearRedirectLocation();
-                        if (!context.mounted) return;
-                        context.goNamedAuth(
-                          HomePageWidget.routeName,
-                          context.mounted,
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                ),
               ),
+              if (AdminRoleService.isSuperAdmin) ...[
+                AdminContentCard(
+                  title: uiTr(context, 'صيانة البيانات'),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        uiTr(
+                          context,
+                          uiTr(context,
+                              'يملأ حقول names_i18n للمعالم والمدن والدول القديمة من الأسماء العربية/الإنجليزية المخزنة.'),
+                        ),
+                        style: theme.bodySmall.override(
+                          fontFamily: theme.bodySmallFamily,
+                          color: theme.secondaryText,
+                          useGoogleFonts: !theme.bodySmallIsCustom,
+                        ),
+                      ),
+                      if (_i18nBackfillStatus != null) ...[
+                        const SizedBox(height: 10),
+                        Text(
+                          _i18nBackfillStatus!,
+                          style: theme.bodySmall,
+                        ),
+                      ],
+                      const SizedBox(height: 12),
+                      AdminPrimaryButton(
+                        label: uiTr(
+                          context,
+                          uiTr(context, 'تعبئة ترجمات البيانات القديمة'),
+                        ),
+                        icon: Icons.translate_rounded,
+                        isLoading: _i18nBackfillRunning,
+                        onPressed:
+                            _i18nBackfillRunning ? null : _runI18nBackfill,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        uiTr(
+                          context,
+                          uiTr(context,
+                              'ترجم تلقائياً حتى 15 معلم في كل مرة عبر Gemini (يتطلب GEMINI_API_KEY في Cloud Functions).'),
+                        ),
+                        style: theme.bodySmall.override(
+                          fontFamily: theme.bodySmallFamily,
+                          color: theme.secondaryText,
+                          useGoogleFonts: !theme.bodySmallIsCustom,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      AdminPrimaryButton(
+                        label: uiTr(
+                          context,
+                          uiTr(context, 'ترجم المعالم بGemini (دفعة)'),
+                        ),
+                        icon: Icons.auto_awesome_rounded,
+                        isLoading: _i18nGeminiRunning,
+                        onPressed: (_i18nGeminiRunning || _i18nBackfillRunning)
+                            ? null
+                            : _runI18nGeminiBatch,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        uiTr(
+                          context,
+                          uiTr(context,
+                              'يجلب الحدود الجغرافية للدول الناقصة (مطلوب لتحديد دولة الوكيل من GPS).'),
+                        ),
+                        style: theme.bodySmall.override(
+                          fontFamily: theme.bodySmallFamily,
+                          color: theme.secondaryText,
+                          useGoogleFonts: !theme.bodySmallIsCustom,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      AdminPrimaryButton(
+                        label: uiTr(
+                          context,
+                          uiTr(context, 'تعبئة حدود الدول الجغرافية'),
+                        ),
+                        icon: Icons.map_rounded,
+                        isLoading: _boundsBackfillRunning,
+                        onPressed: _boundsBackfillRunning
+                            ? null
+                            : _runCountryBoundsBackfill,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              const SizedBox(height: 16),
+              AdminContentCard(
+                child: const AdminThemeModeCard(),
+              ),
+              AdminContentCard(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: FlutterFlowLanguageSelector(
+                    width: double.infinity,
+                    backgroundColor: theme.primary,
+                    borderColor: Colors.transparent,
+                    dropdownIconColor: Colors.white,
+                    borderRadius: AdminUi.radiusSm,
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14.0,
+                    ),
+                    hideFlags: true,
+                    flagSize: 24.0,
+                    flagTextGap: 8.0,
+                    currentLanguage: l10n.languageCode,
+                    languages: FFLocalizations.languages(),
+                    onChanged: (lang) => setAppLanguage(context, lang),
+                  ),
+                ),
+              ),
+              AdminContentCard(
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.logout_rounded, color: theme.error),
+                  title: Text(
+                    l10n.getText('wj2hxjyt' /* Log out */),
+                    style: theme.bodyMedium.override(
+                      fontFamily: theme.bodyMediumFamily,
+                      color: theme.error,
+                      fontWeight: FontWeight.w600,
+                      useGoogleFonts: !theme.bodyMediumIsCustom,
+                    ),
+                  ),
+                  onTap: () async {
+                    GoRouter.of(context).prepareAuthEvent();
+                    await authManager.signOut();
+                    GoRouter.of(context).clearRedirectLocation();
+                    if (!context.mounted) return;
+                    context.goNamedAuth(
+                      HomePageWidget.routeName,
+                      context.mounted,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import '/components/admin_theme_toggle.dart';
 import '/components/admin_ui.dart';
 import 'menu2_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -70,6 +71,8 @@ class AdminLayoutWidget extends StatelessWidget {
               elevation: 0,
               title: Text(
                 pageTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: theme.titleMedium.override(
                   fontFamily: theme.titleMediumFamily,
                   color: Colors.white,
@@ -82,6 +85,10 @@ class AdminLayoutWidget extends StatelessWidget {
                 icon: const Icon(Icons.menu_rounded),
                 onPressed: () => scaffoldKey.currentState?.openDrawer(),
               ),
+              actions: const [
+                AdminThemeToggle(compact: true, onTealChrome: true),
+                SizedBox(width: 4),
+              ],
             ),
       drawer: inlineSidebar
           ? null
