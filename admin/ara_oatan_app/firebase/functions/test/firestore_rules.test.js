@@ -171,4 +171,93 @@ describe("Firestore P0 authorization boundaries", () => {
       total: 1,
     }));
   });
+
+  it("allows customer to cancel own pending cash order", async () => {
+    const seedDb = testEnv.authenticatedContext("seed-paths").firestore();
+    const customer = doc(seedDb, "user", "customer-1");
+    await seed({
+      "user/customer-1": {
+        isAdminRule: 0,
+      },
+      "order/cash-pending-1": {
+        USER: customer,
+        PaymentMethod: "Cash",
+        payment_status: "pending_cash",
+        status_code: "pending_driver",
+        halh_text: "بانتظار قبول السائق",
+        ALLNOW: true,
+        ActiveOrder: false,
+        total: 100,
+        amount_halalas: 10000,
+        mndob_user: null,
+      },
+    });
+
+    const db = testEnv.authenticatedContext("customer-1").firestore();
+    await assertSucceeds(updateDoc(doc(db, "order", "cash-pending-1"), {
+      status_code: "cancelled",
+      cancelled_by_code: "cancelled_by_customer",
+      ActiveOrder: false,
+      ALLNOW: false,
+      halh_order: "Canceled",
+      halh: "cancelled",
+      halh_text: "ملغي",
+      NotSestem: "customer_cancelled",
+      cancelReason: "customer_cancelled",
+      cancellationReason: "customer_cancelled",
+      cancelledBy: "customer-1",
+    }));
+  });
+
+  it("rejects other customer cancelling someone else's order", async () => {
+    const seedDb = testEnv.authenticatedContext("seed-paths").firestore();
+    const customer = doc(seedDb, "user", "customer-1");
+    await seed({
+      "order/cash-pending-2": {
+        USER: customer,
+        PaymentMethod: "Cash",
+        payment_status: "pending_cash",
+        status_code: "pending_driver",
+        ALLNOW: true,
+        ActiveOrder: false,
+        total: 50,
+        amount_halalas: 5000,
+      },
+    });
+
+    const db = testEnv.authenticatedContext("customer-2").firestore();
+    await assertFails(updateDoc(doc(db, "order", "cash-pending-2"), {
+      status_code: "cancelled",
+      ALLNOW: false,
+      ActiveOrder: false,
+      halh_text: "ملغي",
+      NotSestem: "customer_cancelled",
+    }));
+  });
+
+  it("rejects customer cancel after trip completed", async () => {
+    const seedDb = testEnv.authenticatedContext("seed-paths").firestore();
+    const customer = doc(seedDb, "user", "customer-1");
+    await seed({
+      "order/done-1": {
+        USER: customer,
+        PaymentMethod: "Cash",
+        payment_status: "cash_collected",
+        status_code: "completed",
+        ALLNOW: false,
+        ActiveOrder: false,
+        total: 50,
+        amount_halalas: 5000,
+      },
+    });
+
+    const db = testEnv.authenticatedContext("customer-1").firestore();
+    await assertFails(updateDoc(doc(db, "order", "done-1"), {
+      status_code: "cancelled",
+      ALLNOW: false,
+      ActiveOrder: false,
+      halh_text: "ملغي",
+      NotSestem: "customer_cancelled",
+    }));
+  });
 });

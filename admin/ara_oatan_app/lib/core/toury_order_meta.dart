@@ -1,6 +1,7 @@
 import '/backend/schema/enums/enums.dart';
 import '/backend/schema/order_record.dart';
 import '/core/toury_booking_status_localizer.dart';
+import '/core/toury_customer_cancel_policy.dart';
 import '/core/toury_order_integration.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -126,43 +127,11 @@ extension TouryOrderMeta on OrderRecord {
 
   /// Customer may cancel only if no driver accepted yet, or accepted but
   /// has not started moving toward the customer (`driver_arriving`+).
-  bool get canCancelByCustomer {
-    final code = rawStatusCode;
-    if (code == TouryBookingStatusCodes.cancelled ||
-        code == 'canceled' ||
-        code == 'cancelled_by_driver' ||
-        code == TouryBookingStatusCodes.tripCompleted ||
-        code == 'completed' ||
-        code == TouryBookingStatusCodes.tripInProgress ||
-        code == 'trip_started' ||
-        code == TouryBookingStatusCodes.driverArrived ||
-        code == 'driver_arriving') {
-      return false;
-    }
-    if (BookingStatusLocalizer.isTripCompleted(
-      statusCode: code,
-      halhText: halhText,
-    )) {
-      return false;
-    }
-    final halh = halhText.trim();
-    if (halh == 'ملغي' ||
-        halh == 'ملغى' ||
-        halh == 'مكتمل' ||
-        halh == 'وصل المندوب' ||
-        halh == 'وصل السائق' ||
-        halh == 'تم البدء في الرحلة' ||
-        halh == 'بدأت الرحلة') {
-      return false;
-    }
-    // Pending (no driver).
-    if (isPending) return true;
-    // Accepted but still stationary / not en route yet.
-    if (code == TouryBookingStatusCodes.driverAssigned ||
-        (code.isEmpty &&
-            (halh == 'مقبول' || halhOrderMndob == HalhOrder.Accepted))) {
-      return true;
-    }
-    return false;
-  }
+  bool get canCancelByCustomer =>
+      TouryCustomerCancelPolicy.canCustomerCancelBooking(
+        statusCode: rawStatusCode,
+        halhText: halhText,
+        halhOrderName: halhOrder?.name,
+        driverOrderStatus: halhOrderMndob?.name,
+      );
 }

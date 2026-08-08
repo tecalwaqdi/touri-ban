@@ -164,9 +164,14 @@ service cloud.firestore {
 
     function orderBelongsToConsumer(data) {
       // Own bookings always readable — do NOT gate on !isPanelUser().
-      // Panel flags on a test account would otherwise break "حجوزاتي" list.
+      // Accept DocumentReference, bare uid, or path string (legacy docs).
       return request.auth != null
-        && data.USER == currentUserRef();
+        && (
+          data.USER == currentUserRef()
+          || data.USER == request.auth.uid
+          || data.USER == ('user/' + request.auth.uid)
+          || data.USER == ('/user/' + request.auth.uid)
+        );
     }
 
     // List-only: no get(otherDoc) on resource fields (those break queries).
@@ -261,26 +266,52 @@ service cloud.firestore {
 
     // Customer cancel before driver starts moving toward pickup.
     // Allowed while pending or assigned; blocked once driver_arriving+.
+    // Payload must stay within hasOnly — keeps money/payment/owner immutable.
+    function consumerOrderIsCancellable(data) {
+      return !('status_code' in data)
+        || data.status_code == null
+        || data.status_code == ''
+        || data.status_code in [
+          'pending_driver', 'awaiting_driver', 'pending', 'driver_assigned',
+          'payment_pending'
+        ]
+        || (
+          data.get('halh_text', '') in [
+            'بإنتظار قبول المندوب', 'بانتظار قبول المندوب',
+            'بانتظار قبول السائق', 'مقبول'
+          ]
+          && !(data.get('status_code', '') in [
+            'driver_arriving', 'driver_arrived', 'trip_started',
+            'trip_in_progress', 'completed', 'trip_completed',
+            'cancelled', 'canceled',
+            'cancelled_by_driver', 'cancelled_by_customer', 'cancelled_by_admin'
+          ])
+        );
+    }
+
     function consumerCanCancelOrder() {
       return orderBelongsToConsumer(resource.data)
+        && consumerOrderIsCancellable(resource.data)
         && (
-          resource.data.status_code in [
-            'pending_driver', 'awaiting_driver', 'pending', 'driver_assigned'
-          ]
-          || (
-            !('status_code' in resource.data)
-            && resource.data.halh_text in [
-              'بإنتظار قبول المندوب', 'بانتظار قبول المندوب',
-              'بانتظار قبول السائق', 'مقبول'
-            ]
-          )
+          request.resource.data.status_code == 'cancelled'
+          || request.resource.data.status_code == 'cancelled_by_customer'
         )
-        && request.resource.data.status_code == 'cancelled'
         && request.resource.data.USER == resource.data.USER
-        && request.resource.data.mndob_user == resource.data.mndob_user
+        && request.resource.data.get('PaymentMethod', null)
+          == resource.data.get('PaymentMethod', null)
+        && request.resource.data.get('payment_status', null)
+          == resource.data.get('payment_status', null)
+        && request.resource.data.get('mndob_user', null)
+          == resource.data.get('mndob_user', null)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status_code', 'cancelled_by_code', 'cancelledAt', 'cancelledBy',
+          'cancelReason', 'cancellationReason', 'updatedAt',
+          'ActiveOrder', 'ALLNOW', 'halh_order', 'halh', 'halh_text', 'NotSestem'
+        ])
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
           'USER', 'total', 'amount_halalas', 'currency', 'mndob_user',
-          'PaymentMethod', 'payment_session_id', 'ngeniusOrderId', 'idMoyser'
+          'PaymentMethod', 'payment_session_id', 'ngeniusOrderId', 'idMoyser',
+          'payment_status', 'cash_collection_status'
         ]);
     }
 
