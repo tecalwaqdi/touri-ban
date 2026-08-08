@@ -1,9 +1,87 @@
-import { getEnv } from "@/lib/security/env";
+import { getEnv, type AppEnv } from "@/lib/security/env";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import { logger } from "@/lib/logging/logger";
 
 type TokenCache = { token: string; expiresAt: number };
 let tokenCache: TokenCache | null = null;
+
+/** Official N-Genius identity Content-Type (Pay Page / gateway). */
+export const NGENIUS_IDENTITY_CONTENT_TYPE =
+  "application/vnd.ni-identity.v1+json";
+
+/**
+ * Portal API keys are already Base64 material — use as-is after Basic prefix.
+ * Strip accidental "Basic " paste and whitespace; never re-encode.
+ */
+export function normalizeNGeniusApiKeyForBasicAuth(raw: string): string {
+  let key = String(raw || "").trim();
+  if (/^basic\s+/i.test(key)) {
+    key = key.replace(/^basic\s+/i, "").trim();
+  }
+  return key;
+}
+
+/**
+ * Sandbox/Pay Page identity body per N-Genius docs:
+ * POST /identity/auth/access-token  →  {"realmName":"ni"}
+ * (Not OAuth grant_type/client_credentials — that returns HTTP 400.)
+ */
+export function buildNGeniusIdentityBody(realmName: string): {
+  realmName: string;
+} {
+  return { realmName };
+}
+
+export function buildNGeniusIdentityRequest(env: Pick<
+  AppEnv,
+  "ngeniusIdentityUrl" | "NGENIUS_API_KEY" | "ngeniusRealm" | "NGENIUS_ENV"
+>): {
+  url: string;
+  method: "POST";
+  headers: Record<string, string>;
+  body: string;
+  bodyJson: { realmName: string };
+} {
+  const apiKey = normalizeNGeniusApiKeyForBasicAuth(env.NGENIUS_API_KEY);
+  const bodyJson = buildNGeniusIdentityBody(env.ngeniusRealm);
+  return {
+    url: env.ngeniusIdentityUrl,
+    method: "POST",
+    headers: {
+      Accept: NGENIUS_IDENTITY_CONTENT_TYPE,
+      "Content-Type": NGENIUS_IDENTITY_CONTENT_TYPE,
+      Authorization: `Basic ${apiKey}`,
+    },
+    body: JSON.stringify(bodyJson),
+    bodyJson,
+  };
+}
+
+function safeProviderErrorSnippet(rawText: string): {
+  providerCode?: string;
+  providerMessage?: string;
+} {
+  try {
+    const parsed = JSON.parse(rawText) as Record<string, unknown>;
+    const code = parsed.code ?? parsed.error ?? parsed.errorCode ?? parsed.status;
+    const message =
+      parsed.message ??
+      parsed.error_description ??
+      parsed.errorMessage ??
+      parsed.title;
+    const out: { providerCode?: string; providerMessage?: string } = {};
+    if (typeof code === "string" || typeof code === "number") {
+      out.providerCode = String(code).slice(0, 80);
+    }
+    if (typeof message === "string") {
+      out.providerMessage = message.slice(0, 160);
+    }
+    return out;
+  } catch {
+    // Non-JSON body — do not log raw text (may contain sensitive fragments).
+    return {};
+  }
+}
 
 export async function getNGeniusAccessToken(): Promise<string> {
   const env = getEnv();
@@ -11,25 +89,34 @@ export async function getNGeniusAccessToken(): Promise<string> {
     return tokenCache.token;
   }
 
-  const res = await fetch(env.ngeniusIdentityUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/vnd.ni-identity.v1+json",
-      Authorization: `Basic ${env.NGENIUS_API_KEY}`,
-    },
-    body: JSON.stringify({
-      grant_type: "client_credentials",
-      realm: env.ngeniusRealm,
-    }),
+  const identity = buildNGeniusIdentityRequest(env);
+  const res = await fetch(identity.url, {
+    method: identity.method,
+    headers: identity.headers,
+    body: identity.body,
     signal: AbortSignal.timeout(12_000),
   });
 
   if (!res.ok) {
-    logger.error("ngenius_identity_failed", { status: res.status });
+    const rawText = await res.text().catch(() => "");
+    const snippet = safeProviderErrorSnippet(rawText);
+    logger.error("ngenius_identity_failed", {
+      status: res.status,
+      environment: env.NGENIUS_ENV,
+      identityPath: "/identity/auth/access-token",
+      realmName: env.ngeniusRealm,
+      ...snippet,
+    });
     throw new ApiError(PaymentErrorCode.PROVIDER_UNAVAILABLE, 502);
   }
   const data = (await res.json()) as { access_token?: string; expires_in?: number };
   if (!data.access_token) {
+    logger.error("ngenius_identity_failed", {
+      status: res.status,
+      environment: env.NGENIUS_ENV,
+      identityPath: "/identity/auth/access-token",
+      reason: "missing_access_token",
+    });
     throw new ApiError(PaymentErrorCode.PROVIDER_UNAVAILABLE, 502);
   }
   tokenCache = {
@@ -37,6 +124,11 @@ export async function getNGeniusAccessToken(): Promise<string> {
     expiresAt: Date.now() + (data.expires_in ?? 300) * 1000,
   };
   return data.access_token;
+}
+
+/** Test helper — clears cached bearer token. */
+export function resetNGeniusTokenCacheForTests(): void {
+  tokenCache = null;
 }
 
 function outletOrdersUrl(): string {
