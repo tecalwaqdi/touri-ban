@@ -9,6 +9,7 @@ import {
   getNGeniusAccessToken,
   resetNGeniusTokenCacheForTests,
   buildNGeniusIdentityRequest,
+  isKsaNGeniusHost,
 } from "@/lib/ngenius/client";
 import { envPresence, getEnv } from "@/lib/security/env";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
@@ -89,7 +90,7 @@ app.get(
           ngeniusEnv: env.NGENIUS_ENV,
           baseHost: new URL(env.ngeniusBaseUrl).host,
           realm: env.ngeniusRealm,
-          identityStyle: "realmName" in identity.bodyJson ? "ksa" : "global",
+          identityStyle: isKsaNGeniusHost(env.ngeniusBaseUrl) ? "ksa" : "global",
         });
         return;
       }
@@ -114,7 +115,7 @@ app.get(
         ngeniusEnv: env.NGENIUS_ENV,
         baseHost: new URL(env.ngeniusBaseUrl).host,
         realm: env.ngeniusRealm,
-        identityStyle: "realmName" in identity.bodyJson ? "ksa" : "global",
+        identityStyle: isKsaNGeniusHost(env.ngeniusBaseUrl) ? "ksa" : "global",
       });
     } catch (error) {
       const code =
