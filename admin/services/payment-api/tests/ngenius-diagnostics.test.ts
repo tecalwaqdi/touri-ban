@@ -27,6 +27,8 @@ describe("ngenius diagnostics", () => {
     expect(report.realm).toBe("NIARABIA");
     expect(report.usesProductionBaseUrl).toBe(true);
     expect(report.usesSandboxHost).toBe(false);
+    expect(report.identityHostFamily).toBe("ksa");
+    expect(report.identityBodyStyle).toBe("global_grant_type");
     expect(report.outletRefMasked).toContain("…");
     expect(JSON.stringify(report)).not.toContain(env.NGENIUS_API_KEY);
     expect(JSON.stringify(report)).not.toContain(env.NGENIUS_WEBHOOK_SECRET);

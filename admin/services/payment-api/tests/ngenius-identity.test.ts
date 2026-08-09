@@ -54,12 +54,28 @@ describe("N-Genius sandbox identity request", () => {
     });
   });
 
-  it("uses KSA realmName-only body for ksa hosts", () => {
+  it("uses CF body for NIARABIA even on KSA production host", () => {
     expect(
       buildNGeniusIdentityBody("NIARABIA", {
+        baseUrl: NGENIUS_KSA_PRODUCTION_BASE_URL,
+      }),
+    ).toEqual({
+      grant_type: "client_credentials",
+      realm: "NIARABIA",
+    });
+  });
+
+  it("uses KSA realmName-only body for standard KSA realms", () => {
+    expect(
+      buildNGeniusIdentityBody("networkinternational", {
+        baseUrl: NGENIUS_KSA_PRODUCTION_BASE_URL,
+      }),
+    ).toEqual({ realmName: "networkinternational" });
+    expect(
+      buildNGeniusIdentityBody("ni", {
         baseUrl: NGENIUS_KSA_SANDBOX_BASE_URL,
       }),
-    ).toEqual({ realmName: "NIARABIA" });
+    ).toEqual({ realmName: "ni" });
   });
 
   it("builds sandbox identity URL /identity/auth/access-token", () => {

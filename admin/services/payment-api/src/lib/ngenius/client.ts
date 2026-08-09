@@ -1,4 +1,8 @@
-import { getEnv, type AppEnv } from "@/lib/security/env";
+import {
+  getEnv,
+  isArabiaPortalRealm,
+  type AppEnv,
+} from "@/lib/security/env";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import { logger } from "@/lib/logging/logger";
 
@@ -23,9 +27,10 @@ export function normalizeNGeniusApiKeyForBasicAuth(raw: string): string {
 
 /**
  * Identity request body.
- * - KSA hosts (*.ksa.ngenius-payments.com): docs require `{ "realmName": "..." }`.
- * - Global host (api-gateway.sandbox.ngenius-payments.com): match working Firebase CF
+ * - Standard KSA docs hosts: `{ "realmName": "ni|networkinternational" }`.
+ * - Global hosts + Arabia portal realms (e.g. NIARABIA): match working Firebase CF
  *   `{ "grant_type": "client_credentials", "realm": "<portal realm>" }`.
+ *   NIARABIA on a KSA hostname still uses the CF body — KSA `realmName` returns 400.
  */
 export function isKsaNGeniusHost(baseOrIdentityUrl: string): boolean {
   try {
@@ -35,6 +40,8 @@ export function isKsaNGeniusHost(baseOrIdentityUrl: string): boolean {
   }
 }
 
+export type NGeniusIdentityBodyStyle = "ksa_realmName" | "global_grant_type";
+
 export type NGeniusIdentityBody =
   | { realmName: string }
   | {
@@ -42,13 +49,39 @@ export type NGeniusIdentityBody =
       realm: string;
     };
 
-export function buildNGeniusIdentityBody(
+export function resolveNGeniusIdentityBodyStyle(
   realm: string,
   options?: { identityUrl?: string; baseUrl?: string },
-): NGeniusIdentityBody {
-  const value = String(realm || "ni").trim() || "ni";
+): NGeniusIdentityBodyStyle {
+  // Arabia portal realm must keep CF body even when base URL is KSA production.
+  if (isArabiaPortalRealm(realm)) {
+    return "global_grant_type";
+  }
   const hostHint = options?.identityUrl || options?.baseUrl || "";
   if (isKsaNGeniusHost(hostHint)) {
+    return "ksa_realmName";
+  }
+  return "global_grant_type";
+}
+
+export function alternateNGeniusIdentityBodyStyle(
+  style: NGeniusIdentityBodyStyle,
+): NGeniusIdentityBodyStyle {
+  return style === "ksa_realmName" ? "global_grant_type" : "ksa_realmName";
+}
+
+export function buildNGeniusIdentityBody(
+  realm: string,
+  options?: {
+    identityUrl?: string;
+    baseUrl?: string;
+    style?: NGeniusIdentityBodyStyle;
+  },
+): NGeniusIdentityBody {
+  const value = String(realm || "ni").trim() || "ni";
+  const style =
+    options?.style ?? resolveNGeniusIdentityBodyStyle(value, options);
+  if (style === "ksa_realmName") {
     return { realmName: value };
   }
   return {
@@ -57,27 +90,42 @@ export function buildNGeniusIdentityBody(
   };
 }
 
-export function buildNGeniusIdentityRequest(env: Pick<
-  AppEnv,
-  "ngeniusIdentityUrl" | "NGENIUS_API_KEY" | "ngeniusRealm" | "NGENIUS_ENV" | "ngeniusBaseUrl"
->): {
+export function buildNGeniusIdentityRequest(
+  env: Pick<
+    AppEnv,
+    | "ngeniusIdentityUrl"
+    | "NGENIUS_API_KEY"
+    | "ngeniusRealm"
+    | "NGENIUS_ENV"
+    | "ngeniusBaseUrl"
+  >,
+  options?: { style?: NGeniusIdentityBodyStyle },
+): {
   url: string;
   method: "POST";
   headers: Record<string, string>;
   body: string;
   bodyJson: NGeniusIdentityBody;
+  bodyStyle: NGeniusIdentityBodyStyle;
 } {
   const apiKey = normalizeNGeniusApiKeyForBasicAuth(env.NGENIUS_API_KEY);
+  const bodyStyle =
+    options?.style ??
+    resolveNGeniusIdentityBodyStyle(env.ngeniusRealm, {
+      identityUrl: env.ngeniusIdentityUrl,
+      baseUrl: env.ngeniusBaseUrl,
+    });
   const bodyJson = buildNGeniusIdentityBody(env.ngeniusRealm, {
     identityUrl: env.ngeniusIdentityUrl,
     baseUrl: env.ngeniusBaseUrl,
+    style: bodyStyle,
   });
   const headers: Record<string, string> = {
     "Content-Type": NGENIUS_IDENTITY_CONTENT_TYPE,
     Authorization: `Basic ${apiKey}`,
   };
-  // KSA docs set Accept; global CF path does not.
-  if (isKsaNGeniusHost(env.ngeniusBaseUrl)) {
+  // KSA docs set Accept for realmName style; CF path does not.
+  if (bodyStyle === "ksa_realmName") {
     headers.Accept = NGENIUS_IDENTITY_CONTENT_TYPE;
   }
   return {
@@ -86,6 +134,7 @@ export function buildNGeniusIdentityRequest(env: Pick<
     headers,
     body: JSON.stringify(bodyJson),
     bodyJson,
+    bodyStyle,
   };
 }
 
@@ -115,47 +164,98 @@ export function safeProviderErrorSnippet(rawText: string): {
   }
 }
 
-export async function getNGeniusAccessToken(): Promise<string> {
-  const env = getEnv();
-  if (tokenCache && Date.now() < tokenCache.expiresAt - 30_000) {
-    return tokenCache.token;
-  }
-
-  const identity = buildNGeniusIdentityRequest(env);
+async function fetchNGeniusIdentityToken(
+  identity: ReturnType<typeof buildNGeniusIdentityRequest>,
+): Promise<
+  | { ok: true; accessToken: string; expiresIn: number }
+  | {
+      ok: false;
+      status: number;
+      providerCode?: string;
+      providerMessage?: string;
+    }
+> {
   const res = await fetch(identity.url, {
     method: identity.method,
     headers: identity.headers,
     body: identity.body,
     signal: AbortSignal.timeout(12_000),
   });
-
   if (!res.ok) {
     const rawText = await res.text().catch(() => "");
     const snippet = safeProviderErrorSnippet(rawText);
-    logger.error("ngenius_identity_failed", {
+    return {
+      ok: false,
       status: res.status,
-      environment: env.NGENIUS_ENV,
-      identityPath: "/identity/auth/access-token",
-      realmName: env.ngeniusRealm,
-      ...snippet,
-    });
-    throw new ApiError(PaymentErrorCode.PROVIDER_UNAVAILABLE, 502);
+      providerCode: snippet.providerCode,
+      providerMessage: snippet.providerMessage,
+    };
   }
   const data = (await res.json()) as { access_token?: string; expires_in?: number };
   if (!data.access_token) {
-    logger.error("ngenius_identity_failed", {
+    return {
+      ok: false,
       status: res.status,
+      providerCode: "missing_access_token",
+      providerMessage: "access_token missing in identity response",
+    };
+  }
+  return {
+    ok: true,
+    accessToken: data.access_token,
+    expiresIn: data.expires_in ?? 300,
+  };
+}
+
+export async function getNGeniusAccessToken(): Promise<string> {
+  const env = getEnv();
+  if (tokenCache && Date.now() < tokenCache.expiresAt - 30_000) {
+    return tokenCache.token;
+  }
+
+  const primary = buildNGeniusIdentityRequest(env);
+  let result = await fetchNGeniusIdentityToken(primary);
+  let usedStyle = primary.bodyStyle;
+
+  // One safe alternate-body retry on HTTP 400 (wrong identity schema vs host).
+  if (!result.ok && result.status === 400) {
+    const altStyle = alternateNGeniusIdentityBodyStyle(primary.bodyStyle);
+    const alternate = buildNGeniusIdentityRequest(env, { style: altStyle });
+    logger.warn("ngenius_identity_retry_alternate_body", {
+      environment: env.NGENIUS_ENV,
+      realmName: env.ngeniusRealm,
+      primaryStyle: primary.bodyStyle,
+      alternateStyle: altStyle,
+      primaryStatus: result.status,
+      primaryProviderCode: result.providerCode,
+    });
+    result = await fetchNGeniusIdentityToken(alternate);
+    usedStyle = altStyle;
+  }
+
+  if (!result.ok) {
+    logger.error("ngenius_identity_failed", {
+      status: result.status,
       environment: env.NGENIUS_ENV,
       identityPath: "/identity/auth/access-token",
-      reason: "missing_access_token",
+      realmName: env.ngeniusRealm,
+      identityBodyStyle: usedStyle,
+      providerCode: result.providerCode,
+      providerMessage: result.providerMessage,
     });
     throw new ApiError(PaymentErrorCode.PROVIDER_UNAVAILABLE, 502);
   }
+
+  logger.info("ngenius_identity_ok", {
+    environment: env.NGENIUS_ENV,
+    realmName: env.ngeniusRealm,
+    identityBodyStyle: usedStyle,
+  });
   tokenCache = {
-    token: data.access_token,
-    expiresAt: Date.now() + (data.expires_in ?? 300) * 1000,
+    token: result.accessToken,
+    expiresAt: Date.now() + result.expiresIn * 1000,
   };
-  return data.access_token;
+  return result.accessToken;
 }
 
 /** Test helper — clears cached bearer token. */

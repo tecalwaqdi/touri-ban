@@ -1,13 +1,13 @@
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import {
-  buildNGeniusIdentityRequest,
   createNGeniusOrder,
   getNGeniusAccessToken,
   isKsaNGeniusHost,
   maskOutletRef,
   normalizeNGeniusApiKeyForBasicAuth,
   resetNGeniusTokenCacheForTests,
-  safeProviderErrorSnippet,
+  resolveNGeniusIdentityBodyStyle,
+  type NGeniusIdentityBodyStyle,
 } from "@/lib/ngenius/client";
 import { envPresence, getEnv } from "@/lib/security/env";
 import { logger } from "@/lib/logging/logger";
@@ -24,7 +24,10 @@ export type NGeniusSafeDiagnostics = {
   outletRefMasked: string;
   usesProductionBaseUrl: boolean;
   usesSandboxHost: boolean;
-  identityStyle: "ksa" | "global";
+  /** Host family (ksa vs global), independent of body style. */
+  identityHostFamily: "ksa" | "global";
+  /** Actual identity JSON schema used for this realm/host. */
+  identityBodyStyle: NGeniusIdentityBodyStyle;
   identityStatus: NGeniusIdentityStatus;
   createOrderStatus: NGeniusCreateOrderStatus;
   providerHttpStatus?: number;
@@ -68,6 +71,18 @@ export function buildStaticNGeniusDiagnostics(): Omit<
   if (env.NGENIUS_ENV === "sandbox" && !usesSandboxHost) {
     notes.push("NGENIUS_ENV=sandbox but base host is not a sandbox host");
   }
+  const identityBodyStyle = resolveNGeniusIdentityBodyStyle(env.ngeniusRealm, {
+    identityUrl: env.ngeniusIdentityUrl,
+    baseUrl: env.ngeniusBaseUrl,
+  });
+  if (
+    isArabiaNoteNeeded(env.ngeniusRealm) &&
+    isKsaNGeniusHost(env.ngeniusBaseUrl)
+  ) {
+    notes.push(
+      "Arabia realm on KSA host uses CF identity body (grant_type+realm), not realmName.",
+    );
+  }
   return {
     environment: env.NGENIUS_ENV,
     baseHost,
@@ -76,11 +91,16 @@ export function buildStaticNGeniusDiagnostics(): Omit<
     outletRefMasked: maskOutletRef(env.NGENIUS_OUTLET_REF),
     usesProductionBaseUrl: env.NGENIUS_ENV === "production",
     usesSandboxHost,
-    identityStyle: isKsaNGeniusHost(env.ngeniusBaseUrl) ? "ksa" : "global",
+    identityHostFamily: isKsaNGeniusHost(env.ngeniusBaseUrl) ? "ksa" : "global",
+    identityBodyStyle,
     configured: envPresence(),
     webhookPath: "/webhooks/ngenius",
     notes,
   };
+}
+
+function isArabiaNoteNeeded(realm: string): boolean {
+  return /^niarabia$/i.test(String(realm || "").trim());
 }
 
 /** Identity-only probe — never logs tokens or API keys. */
@@ -88,44 +108,10 @@ export async function probeNGeniusIdentity(): Promise<NGeniusSafeDiagnostics> {
   const env = getEnv();
   const base = buildStaticNGeniusDiagnostics();
   resetNGeniusTokenCacheForTests();
-  const identity = buildNGeniusIdentityRequest(env);
   const apiKeyLen = normalizeNGeniusApiKeyForBasicAuth(env.NGENIUS_API_KEY).length;
 
   try {
-    const upstream = await fetch(identity.url, {
-      method: identity.method,
-      headers: identity.headers,
-      body: identity.body,
-      signal: AbortSignal.timeout(12_000),
-    });
-    if (!upstream.ok) {
-      const rawText = await upstream.text().catch(() => "");
-      const snippet = safeProviderErrorSnippet(rawText);
-      return {
-        ...base,
-        ok: false,
-        identityStatus: "failed",
-        createOrderStatus: "skipped",
-        providerHttpStatus: upstream.status,
-        providerErrorCode: snippet.providerCode,
-        providerMessage: snippet.providerMessage,
-        apiKeyLen,
-        readiness: "NOT_READY",
-      };
-    }
-    const data = (await upstream.json()) as { access_token?: string };
-    if (!data.access_token) {
-      return {
-        ...base,
-        ok: false,
-        identityStatus: "failed",
-        createOrderStatus: "skipped",
-        providerErrorCode: "missing_access_token",
-        apiKeyLen,
-        readiness: "NOT_READY",
-      };
-    }
-    // Warm cache without exposing token.
+    // Uses primary body + one alternate retry on HTTP 400.
     await getNGeniusAccessToken();
     return {
       ...base,
