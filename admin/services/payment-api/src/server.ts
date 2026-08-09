@@ -8,6 +8,7 @@ import { handleNGeniusWebhook } from "@/lib/payments/webhook";
 import {
   getNGeniusAccessToken,
   resetNGeniusTokenCacheForTests,
+  buildNGeniusIdentityRequest,
 } from "@/lib/ngenius/client";
 import { envPresence, getEnv } from "@/lib/security/env";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
@@ -72,6 +73,40 @@ app.get(
     const env = getEnv();
     resetNGeniusTokenCacheForTests();
     try {
+      const identity = buildNGeniusIdentityRequest(env);
+      const upstream = await fetch(identity.url, {
+        method: identity.method,
+        headers: identity.headers,
+        body: identity.body,
+        signal: AbortSignal.timeout(12_000),
+      });
+      if (!upstream.ok) {
+        sendJson(res, 502, {
+          ok: false,
+          identity: "failed",
+          code: PaymentErrorCode.PROVIDER_UNAVAILABLE,
+          providerHttpStatus: upstream.status,
+          ngeniusEnv: env.NGENIUS_ENV,
+          baseHost: new URL(env.ngeniusBaseUrl).host,
+          realm: env.ngeniusRealm,
+          identityStyle: "realmName" in identity.bodyJson ? "ksa" : "global",
+        });
+        return;
+      }
+      const data = (await upstream.json()) as { access_token?: string };
+      if (!data.access_token) {
+        sendJson(res, 502, {
+          ok: false,
+          identity: "failed",
+          code: PaymentErrorCode.PROVIDER_UNAVAILABLE,
+          reason: "missing_access_token",
+          ngeniusEnv: env.NGENIUS_ENV,
+          baseHost: new URL(env.ngeniusBaseUrl).host,
+          realm: env.ngeniusRealm,
+        });
+        return;
+      }
+      // Warm cache for subsequent payment calls on this instance.
       await getNGeniusAccessToken();
       sendJson(res, 200, {
         ok: true,
@@ -79,6 +114,7 @@ app.get(
         ngeniusEnv: env.NGENIUS_ENV,
         baseHost: new URL(env.ngeniusBaseUrl).host,
         realm: env.ngeniusRealm,
+        identityStyle: "realmName" in identity.bodyJson ? "ksa" : "global",
       });
     } catch (error) {
       const code =

@@ -61,6 +61,30 @@ function defaultRealm(isProd: boolean): string {
   return isProd ? NGENIUS_KSA_PRODUCTION_REALM : NGENIUS_KSA_SANDBOX_REALM;
 }
 
+/** Network International Arabia portal realm (custom; not the generic `ni`). */
+export function isArabiaPortalRealm(realm: string | undefined): boolean {
+  return /^niarabia$/i.test(String(realm || "").trim());
+}
+
+/**
+ * Sandbox host selection:
+ * - Explicit `NGENIUS_SANDBOX_BASE_URL` always wins.
+ * - Arabia realm `NIARABIA` defaults to KSA sandbox host.
+ * - Otherwise global sandbox (legacy MSA).
+ */
+export function resolveSandboxBaseUrl(input: {
+  realm?: string;
+  sandboxBaseUrlFromEnv?: string;
+  parsedSandboxBaseUrl: string;
+}): string {
+  const explicit = String(input.sandboxBaseUrlFromEnv || "").trim();
+  if (explicit) return explicit;
+  if (isArabiaPortalRealm(input.realm)) {
+    return NGENIUS_KSA_SANDBOX_BASE_URL;
+  }
+  return input.parsedSandboxBaseUrl || NGENIUS_GLOBAL_SANDBOX_BASE_URL;
+}
+
 /**
  * Optional base64-encoded full service-account JSON (preferred on Render).
  * When set, overrides FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY pair.
@@ -110,8 +134,13 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
       const soft = envSchema.partial().safeParse(process.env);
       const data = soft.success ? soft.data : {};
       const isProd = data.NGENIUS_ENV === "production";
-      const sandboxBase =
-        data.NGENIUS_SANDBOX_BASE_URL || NGENIUS_GLOBAL_SANDBOX_BASE_URL;
+      const realm = data.NGENIUS_REALM || defaultRealm(isProd);
+      const sandboxBase = resolveSandboxBaseUrl({
+        realm,
+        sandboxBaseUrlFromEnv: process.env.NGENIUS_SANDBOX_BASE_URL,
+        parsedSandboxBaseUrl:
+          data.NGENIUS_SANDBOX_BASE_URL || NGENIUS_GLOBAL_SANDBOX_BASE_URL,
+      });
       const prodBase =
         data.NGENIUS_PRODUCTION_BASE_URL || NGENIUS_KSA_PRODUCTION_BASE_URL;
       const base = isProd ? prodBase : sandboxBase;
@@ -136,7 +165,7 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
         isProductionNGenius: isProd,
         ngeniusBaseUrl: base,
         ngeniusIdentityUrl: `${base}/identity/auth/access-token`,
-        ngeniusRealm: data.NGENIUS_REALM || defaultRealm(isProd),
+        ngeniusRealm: realm,
         allowedOrigins: (data.ALLOWED_APP_ORIGINS || "")
           .split(",")
           .map((s) => s.trim())
@@ -155,16 +184,22 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
 
   const data = parsed.data;
   const isProd = data.NGENIUS_ENV === "production";
+  const realm = data.NGENIUS_REALM || defaultRealm(isProd);
   const base = isProd
     ? data.NGENIUS_PRODUCTION_BASE_URL
-    : data.NGENIUS_SANDBOX_BASE_URL;
+    : resolveSandboxBaseUrl({
+        realm,
+        sandboxBaseUrlFromEnv: process.env.NGENIUS_SANDBOX_BASE_URL,
+        parsedSandboxBaseUrl: data.NGENIUS_SANDBOX_BASE_URL,
+      });
 
   cached = {
     ...data,
+    NGENIUS_SANDBOX_BASE_URL: isProd ? data.NGENIUS_SANDBOX_BASE_URL : base,
     isProductionNGenius: isProd,
     ngeniusBaseUrl: base,
     ngeniusIdentityUrl: `${base}/identity/auth/access-token`,
-    ngeniusRealm: data.NGENIUS_REALM || defaultRealm(isProd),
+    ngeniusRealm: realm,
     allowedOrigins: data.ALLOWED_APP_ORIGINS.split(",")
       .map((s) => s.trim())
       .filter(Boolean),

@@ -22,18 +22,36 @@ export function normalizeNGeniusApiKeyForBasicAuth(raw: string): string {
 }
 
 /**
- * Identity body aligned with the working Firebase CF (`ngenius_payments.js`):
- * POST /identity/auth/access-token
- *   { "grant_type": "client_credentials", "realm": "ni" }
- *
- * Also send `realmName` for gateways that follow KSA docs naming.
+ * Identity request body.
+ * - KSA / Arabia hosts (*.ksa.ngenius-payments.com): docs require `{ "realmName": "..." }`
+ *   (portal may issue custom realms such as `NIARABIA`).
+ * - Global hosts: Firebase CF style `{ grant_type, realm }` (+ realmName alias).
  */
-export function buildNGeniusIdentityBody(realm: string): {
-  grant_type: "client_credentials";
-  realm: string;
-  realmName: string;
-} {
+export function isKsaNGeniusHost(baseOrIdentityUrl: string): boolean {
+  try {
+    return new URL(baseOrIdentityUrl).host.toLowerCase().includes("ksa.ngenius-payments.com");
+  } catch {
+    return /ksa\.ngenius-payments\.com/i.test(baseOrIdentityUrl);
+  }
+}
+
+export type NGeniusIdentityBody =
+  | { realmName: string }
+  | {
+      grant_type: "client_credentials";
+      realm: string;
+      realmName: string;
+    };
+
+export function buildNGeniusIdentityBody(
+  realm: string,
+  options?: { identityUrl?: string; baseUrl?: string },
+): NGeniusIdentityBody {
   const value = String(realm || "ni").trim() || "ni";
+  const hostHint = options?.identityUrl || options?.baseUrl || "";
+  if (isKsaNGeniusHost(hostHint)) {
+    return { realmName: value };
+  }
   return {
     grant_type: "client_credentials",
     realm: value,
@@ -43,20 +61,19 @@ export function buildNGeniusIdentityBody(realm: string): {
 
 export function buildNGeniusIdentityRequest(env: Pick<
   AppEnv,
-  "ngeniusIdentityUrl" | "NGENIUS_API_KEY" | "ngeniusRealm" | "NGENIUS_ENV"
+  "ngeniusIdentityUrl" | "NGENIUS_API_KEY" | "ngeniusRealm" | "NGENIUS_ENV" | "ngeniusBaseUrl"
 >): {
   url: string;
   method: "POST";
   headers: Record<string, string>;
   body: string;
-  bodyJson: {
-    grant_type: "client_credentials";
-    realm: string;
-    realmName: string;
-  };
+  bodyJson: NGeniusIdentityBody;
 } {
   const apiKey = normalizeNGeniusApiKeyForBasicAuth(env.NGENIUS_API_KEY);
-  const bodyJson = buildNGeniusIdentityBody(env.ngeniusRealm);
+  const bodyJson = buildNGeniusIdentityBody(env.ngeniusRealm, {
+    identityUrl: env.ngeniusIdentityUrl,
+    baseUrl: env.ngeniusBaseUrl,
+  });
   return {
     url: env.ngeniusIdentityUrl,
     method: "POST",

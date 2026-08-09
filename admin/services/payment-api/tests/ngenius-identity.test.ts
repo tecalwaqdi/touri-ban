@@ -47,12 +47,20 @@ describe("N-Genius sandbox identity request", () => {
     expect(env.ngeniusBaseUrl).toBe(NGENIUS_KSA_SANDBOX_BASE_URL);
   });
 
-  it("uses CF-compatible identity body (grant_type + realm + realmName)", () => {
+  it("uses CF-compatible identity body on global hosts", () => {
     expect(buildNGeniusIdentityBody("ni")).toEqual({
       grant_type: "client_credentials",
       realm: "ni",
       realmName: "ni",
     });
+  });
+
+  it("uses KSA realmName-only body for ksa hosts and NIARABIA", () => {
+    expect(
+      buildNGeniusIdentityBody("NIARABIA", {
+        baseUrl: NGENIUS_KSA_SANDBOX_BASE_URL,
+      }),
+    ).toEqual({ realmName: "NIARABIA" });
   });
 
   it("builds sandbox identity URL /identity/auth/access-token", () => {
@@ -72,6 +80,20 @@ describe("N-Genius sandbox identity request", () => {
       realm: "ni",
       realmName: "ni",
     });
+  });
+
+  it("routes NIARABIA realm to KSA sandbox host + realmName body", () => {
+    resetEnvCacheForTests();
+    process.env.NGENIUS_REALM = "NIARABIA";
+    delete process.env.NGENIUS_SANDBOX_BASE_URL;
+    const env = getEnv();
+    expect(env.ngeniusBaseUrl).toBe(NGENIUS_KSA_SANDBOX_BASE_URL);
+    expect(env.ngeniusRealm).toBe("NIARABIA");
+    const req = buildNGeniusIdentityRequest(env);
+    expect(req.url).toBe(
+      `${NGENIUS_KSA_SANDBOX_BASE_URL}/identity/auth/access-token`,
+    );
+    expect(req.bodyJson).toEqual({ realmName: "NIARABIA" });
   });
 
   it("order/create base uses the same sandbox host", () => {
