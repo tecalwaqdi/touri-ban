@@ -48,14 +48,13 @@ describe("N-Genius sandbox identity request", () => {
   });
 
   it("uses CF-compatible identity body on global hosts", () => {
-    expect(buildNGeniusIdentityBody("ni")).toEqual({
+    expect(buildNGeniusIdentityBody("NIARABIA")).toEqual({
       grant_type: "client_credentials",
-      realm: "ni",
-      realmName: "ni",
+      realm: "NIARABIA",
     });
   });
 
-  it("uses KSA realmName-only body for ksa hosts and NIARABIA", () => {
+  it("uses KSA realmName-only body for ksa hosts", () => {
     expect(
       buildNGeniusIdentityBody("NIARABIA", {
         baseUrl: NGENIUS_KSA_SANDBOX_BASE_URL,
@@ -73,27 +72,29 @@ describe("N-Genius sandbox identity request", () => {
     expect(req.bodyJson).toEqual({
       grant_type: "client_credentials",
       realm: "ni",
-      realmName: "ni",
     });
     expect(JSON.parse(req.body)).toEqual({
       grant_type: "client_credentials",
       realm: "ni",
-      realmName: "ni",
     });
+    expect(req.headers.Accept).toBeUndefined();
   });
 
-  it("routes NIARABIA realm to KSA sandbox host + realmName body", () => {
+  it("keeps NIARABIA on global sandbox host when that is the portal URL", () => {
     resetEnvCacheForTests();
     process.env.NGENIUS_REALM = "NIARABIA";
-    delete process.env.NGENIUS_SANDBOX_BASE_URL;
+    process.env.NGENIUS_SANDBOX_BASE_URL = NGENIUS_GLOBAL_SANDBOX_BASE_URL;
     const env = getEnv();
-    expect(env.ngeniusBaseUrl).toBe(NGENIUS_KSA_SANDBOX_BASE_URL);
+    expect(env.ngeniusBaseUrl).toBe(NGENIUS_GLOBAL_SANDBOX_BASE_URL);
     expect(env.ngeniusRealm).toBe("NIARABIA");
     const req = buildNGeniusIdentityRequest(env);
     expect(req.url).toBe(
-      `${NGENIUS_KSA_SANDBOX_BASE_URL}/identity/auth/access-token`,
+      `${NGENIUS_GLOBAL_SANDBOX_BASE_URL}/identity/auth/access-token`,
     );
-    expect(req.bodyJson).toEqual({ realmName: "NIARABIA" });
+    expect(req.bodyJson).toEqual({
+      grant_type: "client_credentials",
+      realm: "NIARABIA",
+    });
   });
 
   it("order/create base uses the same sandbox host", () => {
@@ -108,7 +109,7 @@ describe("N-Genius sandbox identity request", () => {
     const env = getEnv();
     const req = buildNGeniusIdentityRequest(env);
     expect(req.headers["Content-Type"]).toBe(NGENIUS_IDENTITY_CONTENT_TYPE);
-    expect(req.headers.Accept).toBe(NGENIUS_IDENTITY_CONTENT_TYPE);
+    expect(req.headers.Accept).toBeUndefined();
     expect(req.headers.Authorization).toBe("Basic sandbox-api-key-material");
     expect(req.headers.Authorization).not.toMatch(/^Basic Basic /i);
   });

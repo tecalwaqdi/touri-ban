@@ -23,9 +23,9 @@ export function normalizeNGeniusApiKeyForBasicAuth(raw: string): string {
 
 /**
  * Identity request body.
- * - KSA / Arabia hosts (*.ksa.ngenius-payments.com): docs require `{ "realmName": "..." }`
- *   (portal may issue custom realms such as `NIARABIA`).
- * - Global hosts: Firebase CF style `{ grant_type, realm }` (+ realmName alias).
+ * - KSA hosts (*.ksa.ngenius-payments.com): docs require `{ "realmName": "..." }`.
+ * - Global host (api-gateway.sandbox.ngenius-payments.com): match working Firebase CF
+ *   `{ "grant_type": "client_credentials", "realm": "<portal realm>" }`.
  */
 export function isKsaNGeniusHost(baseOrIdentityUrl: string): boolean {
   try {
@@ -40,7 +40,6 @@ export type NGeniusIdentityBody =
   | {
       grant_type: "client_credentials";
       realm: string;
-      realmName: string;
     };
 
 export function buildNGeniusIdentityBody(
@@ -55,7 +54,6 @@ export function buildNGeniusIdentityBody(
   return {
     grant_type: "client_credentials",
     realm: value,
-    realmName: value,
   };
 }
 
@@ -74,20 +72,24 @@ export function buildNGeniusIdentityRequest(env: Pick<
     identityUrl: env.ngeniusIdentityUrl,
     baseUrl: env.ngeniusBaseUrl,
   });
+  const headers: Record<string, string> = {
+    "Content-Type": NGENIUS_IDENTITY_CONTENT_TYPE,
+    Authorization: `Basic ${apiKey}`,
+  };
+  // KSA docs set Accept; global CF path does not.
+  if (isKsaNGeniusHost(env.ngeniusBaseUrl)) {
+    headers.Accept = NGENIUS_IDENTITY_CONTENT_TYPE;
+  }
   return {
     url: env.ngeniusIdentityUrl,
     method: "POST",
-    headers: {
-      Accept: NGENIUS_IDENTITY_CONTENT_TYPE,
-      "Content-Type": NGENIUS_IDENTITY_CONTENT_TYPE,
-      Authorization: `Basic ${apiKey}`,
-    },
+    headers,
     body: JSON.stringify(bodyJson),
     bodyJson,
   };
 }
 
-function safeProviderErrorSnippet(rawText: string): {
+export function safeProviderErrorSnippet(rawText: string): {
   providerCode?: string;
   providerMessage?: string;
 } {

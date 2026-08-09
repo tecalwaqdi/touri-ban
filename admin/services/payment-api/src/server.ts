@@ -10,6 +10,8 @@ import {
   resetNGeniusTokenCacheForTests,
   buildNGeniusIdentityRequest,
   isKsaNGeniusHost,
+  safeProviderErrorSnippet,
+  normalizeNGeniusApiKeyForBasicAuth,
 } from "@/lib/ngenius/client";
 import { envPresence, getEnv } from "@/lib/security/env";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
@@ -82,11 +84,19 @@ app.get(
         signal: AbortSignal.timeout(12_000),
       });
       if (!upstream.ok) {
+        const rawText = await upstream.text().catch(() => "");
+        const snippet = safeProviderErrorSnippet(rawText);
+        const apiKeyLen = normalizeNGeniusApiKeyForBasicAuth(env.NGENIUS_API_KEY)
+          .length;
         sendJson(res, 502, {
           ok: false,
           identity: "failed",
           code: PaymentErrorCode.PROVIDER_UNAVAILABLE,
           providerHttpStatus: upstream.status,
+          providerCode: snippet.providerCode,
+          providerMessage: snippet.providerMessage,
+          apiKeyLen,
+          identityUrlPath: "/identity/auth/access-token",
           ngeniusEnv: env.NGENIUS_ENV,
           baseHost: new URL(env.ngeniusBaseUrl).host,
           realm: env.ngeniusRealm,

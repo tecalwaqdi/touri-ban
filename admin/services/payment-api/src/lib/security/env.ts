@@ -68,9 +68,9 @@ export function isArabiaPortalRealm(realm: string | undefined): boolean {
 
 /**
  * Sandbox host selection:
- * - Explicit `NGENIUS_SANDBOX_BASE_URL` always wins.
- * - Arabia realm `NIARABIA` defaults to KSA sandbox host.
- * - Otherwise global sandbox (legacy MSA).
+ * - Explicit `NGENIUS_SANDBOX_BASE_URL` always wins (use the portal host).
+ * - Otherwise keep the parsed/default global sandbox URL.
+ * Do not remap NIARABIA to KSA — merchants may be issued the global host.
  */
 export function resolveSandboxBaseUrl(input: {
   realm?: string;
@@ -79,9 +79,6 @@ export function resolveSandboxBaseUrl(input: {
 }): string {
   const explicit = String(input.sandboxBaseUrlFromEnv || "").trim();
   if (explicit) return explicit;
-  if (isArabiaPortalRealm(input.realm)) {
-    return NGENIUS_KSA_SANDBOX_BASE_URL;
-  }
   return input.parsedSandboxBaseUrl || NGENIUS_GLOBAL_SANDBOX_BASE_URL;
 }
 
