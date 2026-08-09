@@ -61,16 +61,51 @@ function defaultRealm(isProd: boolean): string {
   return isProd ? NGENIUS_KSA_PRODUCTION_REALM : NGENIUS_KSA_SANDBOX_REALM;
 }
 
+/**
+ * Use portal realm from env as-is when present (e.g. NIARABIA).
+ * Only fall back to docs defaults when NGENIUS_REALM is unset/blank.
+ */
+export function resolveNGeniusRealm(
+  raw: string | undefined,
+  isProd: boolean,
+): string {
+  const trimmed = String(raw ?? "").trim();
+  if (trimmed) return trimmed;
+  return defaultRealm(isProd);
+}
+
 /** Network International Arabia portal realm (custom; not the generic `ni`). */
 export function isArabiaPortalRealm(realm: string | undefined): boolean {
   return /^niarabia$/i.test(String(realm || "").trim());
 }
 
 /**
+ * Active N-Genius API base URL.
+ * production → NGENIUS_PRODUCTION_BASE_URL only
+ * sandbox → NGENIUS_SANDBOX_BASE_URL (or global default)
+ */
+export function resolveNGeniusBaseUrl(input: {
+  isProduction: boolean;
+  productionBaseUrl: string;
+  sandboxBaseUrlFromEnv?: string;
+  parsedSandboxBaseUrl: string;
+}): string {
+  if (input.isProduction) {
+    return (
+      String(input.productionBaseUrl || "").trim() ||
+      NGENIUS_KSA_PRODUCTION_BASE_URL
+    );
+  }
+  return resolveSandboxBaseUrl({
+    sandboxBaseUrlFromEnv: input.sandboxBaseUrlFromEnv,
+    parsedSandboxBaseUrl: input.parsedSandboxBaseUrl,
+  });
+}
+
+/**
  * Sandbox host selection:
  * - Explicit `NGENIUS_SANDBOX_BASE_URL` always wins (use the portal host).
  * - Otherwise keep the parsed/default global sandbox URL.
- * Do not remap NIARABIA to KSA — merchants may be issued the global host.
  */
 export function resolveSandboxBaseUrl(input: {
   realm?: string;
@@ -131,16 +166,20 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
       const soft = envSchema.partial().safeParse(process.env);
       const data = soft.success ? soft.data : {};
       const isProd = data.NGENIUS_ENV === "production";
-      const realm = data.NGENIUS_REALM || defaultRealm(isProd);
+      const realm = resolveNGeniusRealm(data.NGENIUS_REALM, isProd);
       const sandboxBase = resolveSandboxBaseUrl({
-        realm,
         sandboxBaseUrlFromEnv: process.env.NGENIUS_SANDBOX_BASE_URL,
         parsedSandboxBaseUrl:
           data.NGENIUS_SANDBOX_BASE_URL || NGENIUS_GLOBAL_SANDBOX_BASE_URL,
       });
       const prodBase =
         data.NGENIUS_PRODUCTION_BASE_URL || NGENIUS_KSA_PRODUCTION_BASE_URL;
-      const base = isProd ? prodBase : sandboxBase;
+      const base = resolveNGeniusBaseUrl({
+        isProduction: isProd,
+        productionBaseUrl: prodBase,
+        sandboxBaseUrlFromEnv: process.env.NGENIUS_SANDBOX_BASE_URL,
+        parsedSandboxBaseUrl: sandboxBase,
+      });
       return {
         NGENIUS_ENV: (data.NGENIUS_ENV as "sandbox" | "production") || "sandbox",
         NGENIUS_API_KEY: data.NGENIUS_API_KEY || "",
@@ -181,18 +220,16 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
 
   const data = parsed.data;
   const isProd = data.NGENIUS_ENV === "production";
-  const realm = data.NGENIUS_REALM || defaultRealm(isProd);
-  const base = isProd
-    ? data.NGENIUS_PRODUCTION_BASE_URL
-    : resolveSandboxBaseUrl({
-        realm,
-        sandboxBaseUrlFromEnv: process.env.NGENIUS_SANDBOX_BASE_URL,
-        parsedSandboxBaseUrl: data.NGENIUS_SANDBOX_BASE_URL,
-      });
+  const realm = resolveNGeniusRealm(data.NGENIUS_REALM, isProd);
+  const base = resolveNGeniusBaseUrl({
+    isProduction: isProd,
+    productionBaseUrl: data.NGENIUS_PRODUCTION_BASE_URL,
+    sandboxBaseUrlFromEnv: process.env.NGENIUS_SANDBOX_BASE_URL,
+    parsedSandboxBaseUrl: data.NGENIUS_SANDBOX_BASE_URL,
+  });
 
   cached = {
     ...data,
-    NGENIUS_SANDBOX_BASE_URL: isProd ? data.NGENIUS_SANDBOX_BASE_URL : base,
     isProductionNGenius: isProd,
     ngeniusBaseUrl: base,
     ngeniusIdentityUrl: `${base}/identity/auth/access-token`,

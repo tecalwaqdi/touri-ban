@@ -6,13 +6,9 @@ import { handleCreatePayment } from "@/lib/payments/create";
 import { handlePaymentStatus } from "@/lib/payments/status-handler";
 import { handleNGeniusWebhook } from "@/lib/payments/webhook";
 import {
-  getNGeniusAccessToken,
-  resetNGeniusTokenCacheForTests,
-  buildNGeniusIdentityRequest,
-  isKsaNGeniusHost,
-  safeProviderErrorSnippet,
-  normalizeNGeniusApiKeyForBasicAuth,
-} from "@/lib/ngenius/client";
+  probeNGeniusHostedPaymentPage,
+  probeNGeniusIdentity,
+} from "@/lib/ngenius/diagnostics";
 import { envPresence, getEnv } from "@/lib/security/env";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import { logger } from "@/lib/logging/logger";
@@ -67,78 +63,43 @@ app.get(
 );
 
 /**
- * GET /health/provider — probes N-Genius identity only (no secrets in response).
- * Use after deploy to confirm API key/realm/base URL before Flutter QA.
+ * GET /health/provider — identity probe (legacy path).
+ * Prefer GET /health/ngenius for fuller safe diagnostics.
  */
 app.get(
   "/health/provider",
   asyncRoute(async (_req, res) => {
-    const env = getEnv();
-    resetNGeniusTokenCacheForTests();
-    try {
-      const identity = buildNGeniusIdentityRequest(env);
-      const upstream = await fetch(identity.url, {
-        method: identity.method,
-        headers: identity.headers,
-        body: identity.body,
-        signal: AbortSignal.timeout(12_000),
-      });
-      if (!upstream.ok) {
-        const rawText = await upstream.text().catch(() => "");
-        const snippet = safeProviderErrorSnippet(rawText);
-        const apiKeyLen = normalizeNGeniusApiKeyForBasicAuth(env.NGENIUS_API_KEY)
-          .length;
-        sendJson(res, 502, {
-          ok: false,
-          identity: "failed",
-          code: PaymentErrorCode.PROVIDER_UNAVAILABLE,
-          providerHttpStatus: upstream.status,
-          providerCode: snippet.providerCode,
-          providerMessage: snippet.providerMessage,
-          apiKeyLen,
-          identityUrlPath: "/identity/auth/access-token",
-          ngeniusEnv: env.NGENIUS_ENV,
-          baseHost: new URL(env.ngeniusBaseUrl).host,
-          realm: env.ngeniusRealm,
-          identityStyle: isKsaNGeniusHost(env.ngeniusBaseUrl) ? "ksa" : "global",
-        });
-        return;
-      }
-      const data = (await upstream.json()) as { access_token?: string };
-      if (!data.access_token) {
-        sendJson(res, 502, {
-          ok: false,
-          identity: "failed",
-          code: PaymentErrorCode.PROVIDER_UNAVAILABLE,
-          reason: "missing_access_token",
-          ngeniusEnv: env.NGENIUS_ENV,
-          baseHost: new URL(env.ngeniusBaseUrl).host,
-          realm: env.ngeniusRealm,
-        });
-        return;
-      }
-      // Warm cache for subsequent payment calls on this instance.
-      await getNGeniusAccessToken();
-      sendJson(res, 200, {
-        ok: true,
-        identity: "ok",
-        ngeniusEnv: env.NGENIUS_ENV,
-        baseHost: new URL(env.ngeniusBaseUrl).host,
-        realm: env.ngeniusRealm,
-        identityStyle: isKsaNGeniusHost(env.ngeniusBaseUrl) ? "ksa" : "global",
-      });
-    } catch (error) {
-      const code =
-        error instanceof ApiError ? error.code : PaymentErrorCode.PROVIDER_UNAVAILABLE;
-      sendJson(res, 502, {
-        ok: false,
-        identity: "failed",
-        code,
-        ngeniusEnv: env.NGENIUS_ENV,
-        baseHost: new URL(env.ngeniusBaseUrl).host,
-        realm: env.ngeniusRealm,
-      });
-    }
+    const report = await probeNGeniusIdentity();
+    sendJson(res, report.identityStatus === "ok" ? 200 : 502, report);
+  }),
+);
+
+/**
+ * GET /health/ngenius — safe N-Genius diagnostics (no secrets).
+ * Fields: environment, base host, realm, identity status, masked outlet, provider errors.
+ */
+app.get(
+  "/health/ngenius",
+  asyncRoute(async (_req, res) => {
+    const report = await probeNGeniusIdentity();
+    sendJson(res, report.identityStatus === "ok" ? 200 : 502, report);
+  }),
+);
+
+/**
+ * POST /health/ngenius/hpp-probe — identity + create hosted-payment order only.
+ * Requires ALLOW_HPP_PROBE=true. Does not capture/pay a card.
+ * Success with payment URL → readiness PRODUCTION_HPP_READY (when NGENIUS_ENV=production).
+ */
+app.post(
+  "/health/ngenius/hpp-probe",
+  asyncRoute(async (_req, res) => {
+    const report = await probeNGeniusHostedPaymentPage();
+    const ok =
+      report.createOrderStatus === "ok" &&
+      (report.readiness === "PRODUCTION_HPP_READY" ||
+        report.readiness === "SANDBOX_HPP_READY");
+    sendJson(res, ok ? 200 : 502, report);
   }),
 );
 
@@ -222,7 +183,19 @@ if (require.main === module) {
     process.exit(1);
   }
   app.listen(PORT, () => {
-    logger.info("payment_api_listening", { port: PORT });
+    const env = getEnv({ requireSecrets: false });
+    logger.info("payment_api_listening", {
+      port: PORT,
+      ngeniusEnv: env.NGENIUS_ENV,
+      baseHost: (() => {
+        try {
+          return new URL(env.ngeniusBaseUrl).host;
+        } catch {
+          return "invalid";
+        }
+      })(),
+      realm: env.ngeniusRealm,
+    });
   });
 }
 

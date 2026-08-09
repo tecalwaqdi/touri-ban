@@ -46,5 +46,33 @@ describe("env", () => {
     const env = getEnv();
     expect(env.isProductionNGenius).toBe(true);
     expect(env.ngeniusBaseUrl).toContain("api-gateway.ksa.ngenius-payments.com");
+    expect(env.ngeniusBaseUrl).not.toContain("sandbox");
+  });
+
+  it("production uses PRODUCTION_BASE_URL and keeps NIARABIA realm from env", () => {
+    resetEnvCacheForTests();
+    process.env.NGENIUS_ENV = "production";
+    process.env.NGENIUS_REALM = "NIARABIA";
+    process.env.NGENIUS_PRODUCTION_BASE_URL =
+      "https://api-gateway.ksa.ngenius-payments.com";
+    process.env.NGENIUS_SANDBOX_BASE_URL =
+      "https://api-gateway.sandbox.ngenius-payments.com";
+    const env = getEnv();
+    expect(env.NGENIUS_ENV).toBe("production");
+    expect(env.ngeniusBaseUrl).toBe(
+      "https://api-gateway.ksa.ngenius-payments.com",
+    );
+    expect(env.ngeniusIdentityUrl).toBe(
+      "https://api-gateway.ksa.ngenius-payments.com/identity/auth/access-token",
+    );
+    expect(env.ngeniusRealm).toBe("NIARABIA");
+    expect(env.ngeniusBaseUrl).not.toContain("sandbox");
+  });
+
+  it("does not replace an explicit portal realm with docs defaults", () => {
+    resetEnvCacheForTests();
+    process.env.NGENIUS_ENV = "production";
+    process.env.NGENIUS_REALM = "NIARABIA";
+    expect(getEnv().ngeniusRealm).toBe("NIARABIA");
   });
 });

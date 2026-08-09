@@ -221,6 +221,8 @@ function maskOutletRef(outletRef: string): string {
   return `${v.slice(0, 4)}…${v.slice(-4)}`;
 }
 
+export { maskOutletRef };
+
 export type NGeniusCreateOrderBody = {
   action: "PURCHASE" | "AUTH";
   amount: { currencyCode: string; value: number };
