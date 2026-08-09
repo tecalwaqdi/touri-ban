@@ -5,6 +5,10 @@ import { config as loadEnv } from "dotenv";
 import { handleCreatePayment } from "@/lib/payments/create";
 import { handlePaymentStatus } from "@/lib/payments/status-handler";
 import { handleNGeniusWebhook } from "@/lib/payments/webhook";
+import {
+  getNGeniusAccessToken,
+  resetNGeniusTokenCacheForTests,
+} from "@/lib/ngenius/client";
 import { envPresence, getEnv } from "@/lib/security/env";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import { logger } from "@/lib/logging/logger";
@@ -55,6 +59,39 @@ app.get(
       ngeniusEnv: env.NGENIUS_ENV,
       configured: presence,
     });
+  }),
+);
+
+/**
+ * GET /health/provider — probes N-Genius identity only (no secrets in response).
+ * Use after deploy to confirm API key/realm/base URL before Flutter QA.
+ */
+app.get(
+  "/health/provider",
+  asyncRoute(async (_req, res) => {
+    const env = getEnv();
+    resetNGeniusTokenCacheForTests();
+    try {
+      await getNGeniusAccessToken();
+      sendJson(res, 200, {
+        ok: true,
+        identity: "ok",
+        ngeniusEnv: env.NGENIUS_ENV,
+        baseHost: new URL(env.ngeniusBaseUrl).host,
+        realm: env.ngeniusRealm,
+      });
+    } catch (error) {
+      const code =
+        error instanceof ApiError ? error.code : PaymentErrorCode.PROVIDER_UNAVAILABLE;
+      sendJson(res, 502, {
+        ok: false,
+        identity: "failed",
+        code,
+        ngeniusEnv: env.NGENIUS_ENV,
+        baseHost: new URL(env.ngeniusBaseUrl).host,
+        realm: env.ngeniusRealm,
+      });
+    }
   }),
 );
 

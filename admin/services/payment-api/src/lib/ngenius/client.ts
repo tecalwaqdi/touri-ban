@@ -22,13 +22,23 @@ export function normalizeNGeniusApiKeyForBasicAuth(raw: string): string {
 }
 
 /**
- * N-Genius KSA identity body per docs.ksa.ngenius-payments.com:
- * POST /identity/auth/access-token  →  {"realmName":"<UAT:ni|PROD:networkinternational>"}
+ * Identity body aligned with the working Firebase CF (`ngenius_payments.js`):
+ * POST /identity/auth/access-token
+ *   { "grant_type": "client_credentials", "realm": "ni" }
+ *
+ * Also send `realmName` for gateways that follow KSA docs naming.
  */
-export function buildNGeniusIdentityBody(realmName: string): {
+export function buildNGeniusIdentityBody(realm: string): {
+  grant_type: "client_credentials";
+  realm: string;
   realmName: string;
 } {
-  return { realmName };
+  const value = String(realm || "ni").trim() || "ni";
+  return {
+    grant_type: "client_credentials",
+    realm: value,
+    realmName: value,
+  };
 }
 
 export function buildNGeniusIdentityRequest(env: Pick<
@@ -39,7 +49,11 @@ export function buildNGeniusIdentityRequest(env: Pick<
   method: "POST";
   headers: Record<string, string>;
   body: string;
-  bodyJson: { realmName: string };
+  bodyJson: {
+    grant_type: "client_credentials";
+    realm: string;
+    realmName: string;
+  };
 } {
   const apiKey = normalizeNGeniusApiKeyForBasicAuth(env.NGENIUS_API_KEY);
   const bodyJson = buildNGeniusIdentityBody(env.ngeniusRealm);

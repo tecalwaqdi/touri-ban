@@ -47,10 +47,12 @@ describe("N-Genius sandbox identity request", () => {
     expect(env.ngeniusBaseUrl).toBe(NGENIUS_KSA_SANDBOX_BASE_URL);
   });
 
-  it("uses official realmName body (not grant_type/client_credentials)", () => {
-    expect(buildNGeniusIdentityBody("ni")).toEqual({ realmName: "ni" });
-    expect(buildNGeniusIdentityBody("ni")).not.toHaveProperty("grant_type");
-    expect(buildNGeniusIdentityBody("ni")).not.toHaveProperty("realm");
+  it("uses CF-compatible identity body (grant_type + realm + realmName)", () => {
+    expect(buildNGeniusIdentityBody("ni")).toEqual({
+      grant_type: "client_credentials",
+      realm: "ni",
+      realmName: "ni",
+    });
   });
 
   it("builds sandbox identity URL /identity/auth/access-token", () => {
@@ -60,8 +62,16 @@ describe("N-Genius sandbox identity request", () => {
       "https://api-gateway.sandbox.ngenius-payments.com/identity/auth/access-token",
     );
     expect(req.method).toBe("POST");
-    expect(req.bodyJson).toEqual({ realmName: "ni" });
-    expect(JSON.parse(req.body)).toEqual({ realmName: "ni" });
+    expect(req.bodyJson).toEqual({
+      grant_type: "client_credentials",
+      realm: "ni",
+      realmName: "ni",
+    });
+    expect(JSON.parse(req.body)).toEqual({
+      grant_type: "client_credentials",
+      realm: "ni",
+      realmName: "ni",
+    });
   });
 
   it("order/create base uses the same sandbox host", () => {
