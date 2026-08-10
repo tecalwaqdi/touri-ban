@@ -98,6 +98,8 @@ export async function creditWalletFromPaidSession(
       paymentReference: String(session.provider_order_ref || ""),
       idempotencyKey: `wallet_topup_${sessionId}`,
       description_code: "wallet_top_up",
+      balanceBefore: currentBalance,
+      balanceAfter: nextBalance,
       createdAt: FieldValue.serverTimestamp(),
     });
 

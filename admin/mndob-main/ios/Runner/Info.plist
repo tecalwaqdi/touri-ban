@@ -5,7 +5,7 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
-		<string>توري تأكسي - للمندوب</string>
+		<string>Touri Taxi Driver</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
@@ -53,7 +53,7 @@
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>CFVFV</string>
+		<string>نحتاج للوصول إلى موقعك لتحديد مكانك على الخريطة أثناء استخدام التطبيق وتتبع الرحلة.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>Please allow camera access to update your profile picture.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
@@ -62,14 +62,10 @@
 		<string>نحتاج لموقعك لتتبع الرحلة حتى عند إغلاق التطبيق</string>
 		<key>NSLocationAlwaysUsageDescription</key>
 		<string>نحتاج إلى موقعك لتحديث حالة طلب التوصيل وتتبع السائق حتى عند إغلاق التطبيق. هذا يساعدنا على توفير خدمة دقيقة.</string>
-		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>نحتاج للوصول إلى موقعك لتحديد مكانك على الخريطة أثناء استخدام التطبيق</string>
 		<key>NSMotionUsageDescription</key>
 		<string>نستخدم بيانات الحركة لتقليل استهلاك البطارية وتحديد حالة السائق أثناء التتبع</string>
 		<key>NSFaceIDUsageDescription</key>
-		<string>نستخدم الصلاحيات الأمنية لتأمين حسابك والتأكد من هوية المستخدم.</string>
-		<key>NSFaceIDUsageDescription</key>
-		<string>لتتبع حركة الموقع وذلك للتبع الرحلة</string>
+		<string>نستخدم Face ID لتأمين حسابك والتأكد من هوية المستخدم.</string>
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>fetch</string>
@@ -113,8 +109,8 @@
 		<key>UIStatusBarHidden</key>
 		<false/>
 		<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-</dict>
+		<true/>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
+	</dict>
 </plist>

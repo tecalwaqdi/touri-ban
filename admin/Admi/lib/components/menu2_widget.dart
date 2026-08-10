@@ -137,6 +137,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
         key: 'finance',
         items: [
           (route: AdminFinanceHubWidget.routeName, icon: Icons.account_balance_rounded),
+          (route: AdminDriverWalletsWidget.routeName, icon: Icons.wallet_rounded),
           (route: AdminProfitsWidget.routeName, icon: Icons.account_balance_wallet_rounded),
           (route: AdminReportsHubWidget.routeName, icon: Icons.assessment_rounded),
         ],

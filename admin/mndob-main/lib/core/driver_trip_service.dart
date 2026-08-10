@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/backend/cloud_functions/cloud_functions.dart';
 import '/backend/push_notifications/push_notifications_util.dart';
 import '/backend/schema/enums/enums.dart';
 import '/core/driver_app_lifecycle_coordinator.dart';
@@ -52,8 +53,6 @@ abstract final class DriverTripService {
       return const DriverWalletGateResult(ok: true);
     }
 
-    // Server-side gate is preferred; client enforces eligibility by default.
-    // Set TOURY_REQUIRE_DRIVER_WALLET=false only for emergency cash-wave bypass.
     const requireWallet = bool.fromEnvironment(
       'TOURY_REQUIRE_DRIVER_WALLET',
       defaultValue: true,
@@ -67,19 +66,24 @@ abstract final class DriverTripService {
         ? fromSettings
         : DriverWalletRules.minCashWalletBalance;
 
-    final balance = await DriverWalletService.availableBalance();
+    double balance;
+    try {
+      balance = await DriverWalletService.availableBalance();
+    } catch (_) {
+      balance = 0;
+    }
     if (balance < minimum) {
       return DriverWalletGateResult(
         ok: false,
         code: 'DRIVER_WALLET_INSUFFICIENT',
         message:
-            'يجب أن يكون رصيد محفظتك ${minimum.toStringAsFixed(0)} ريال على الأقل لاستقبال الطلبات النقدية.',
+            'يجب أن يكون رصيد محفظتك ${minimum.toStringAsFixed(0)} ريال على الأقل لقبول الطلبات النقدية.',
       );
     }
     return const DriverWalletGateResult(ok: true);
   }
 
-  /// Accept with Firestore transaction — prevents two drivers claiming one order.
+  /// Accept with server CF when available; falls back to Firestore transaction.
   static Future<DriverWalletGateResult> acceptOrder({
     required OrderRecord order,
     required LatLng? driverLocation,
@@ -109,6 +113,57 @@ abstract final class DriverTripService {
         ok: false,
         code: 'AUTH_REQUIRED',
         message: 'Please sign in first.',
+      );
+    }
+
+    // Prefer Admin SDK callable (wallet re-check + atomic claim).
+    final cf = await makeCloudCall('acceptDriverOrder', {
+      'orderId': order.reference.id,
+      'orderPath': order.reference.path,
+      if (driverLocation != null) ...{
+        'lat': driverLocation.latitude,
+        'lng': driverLocation.longitude,
+      },
+      'displayName': currentUserDisplayName,
+      'phone': valueOrDefault(currentUserDocument?.phoneN, 0),
+      'carLabel':
+          '${valueOrDefault(currentUserDocument?.textTypeCarMndob, '')}- ${valueOrDefault(currentUserDocument?.numberLohhCar, '')}',
+      'NameCar': valueOrDefault(currentUserDocument?.nameCar, ''),
+      'ModelCar': valueOrDefault(currentUserDocument?.modelCar, ''),
+    });
+
+    if (cf['error'] == null && cf['ok'] == true) {
+      FFAppState().revOrder = order.reference;
+      onStateChanged();
+      unawaited(_postAcceptSideEffects(order, driverRef, driverLocation));
+      return const DriverWalletGateResult(ok: true);
+    }
+
+    final cfCode = (cf['code'] ?? '').toString();
+    // not-found / unavailable → local transactional claim (still race-safe).
+    if (cfCode != 'not-found' &&
+        cfCode != 'unavailable' &&
+        cfCode != 'unimplemented' &&
+        (cf['error'] != null || cf['ok'] == false)) {
+      final code = (cf['errorCode'] ?? cfCode).toString();
+      final errText = (cf['error'] ?? '').toString();
+      if (code == 'DRIVER_WALLET_INSUFFICIENT' ||
+          (code == 'failed-precondition' && errText.contains('محفظ'))) {
+        return DriverWalletGateResult(
+          ok: false,
+          code: 'DRIVER_WALLET_INSUFFICIENT',
+          message: errText.isNotEmpty
+              ? errText
+              : 'يجب أن يكون رصيد محفظتك 200 ريال على الأقل لقبول الطلبات النقدية.',
+        );
+      }
+      final mapped = _messageForCode(
+        (cf['errorCode'] ?? 'BOOKING_ASSIGNMENT_FAILED').toString(),
+      );
+      return DriverWalletGateResult(
+        ok: false,
+        code: (cf['errorCode'] ?? cfCode).toString(),
+        message: (cf['error'] ?? mapped).toString(),
       );
     }
 
@@ -142,8 +197,6 @@ abstract final class DriverTripService {
           throw StateError('BOOKING_INVALID_STATE');
         }
 
-        // Server-side 1h acceptance window (do not trust device clock alone —
-        // compare against Firestore deadline / data_order written by backend).
         final deadline = data['acceptanceDeadline'];
         final deadlineMs = data['acceptance_deadline_ms'];
         DateTime? deadlineAt;
@@ -161,7 +214,6 @@ abstract final class DriverTripService {
           throw StateError('BOOKING_EXPIRED');
         }
 
-        // Claim patch — money fields untouched (rules).
         final claim = <String, dynamic>{
           'mndob_user': driverRef,
           'status_code': TourySystemStatusCodes.driverAssigned,
@@ -173,8 +225,7 @@ abstract final class DriverTripService {
           'START': FieldValue.serverTimestamp(),
           'timestamp': FieldValue.serverTimestamp(),
           'naim_mndob_text': currentUserDisplayName,
-          'phone_nu_mndob':
-              valueOrDefault(currentUserDocument?.phoneN, 0),
+          'phone_nu_mndob': valueOrDefault(currentUserDocument?.phoneN, 0),
           'carmndob':
               '${valueOrDefault(currentUserDocument?.textTypeCarMndob, '')}- ${valueOrDefault(currentUserDocument?.numberLohhCar, '')}',
           'NameCar': valueOrDefault(currentUserDocument?.nameCar, ''),
@@ -201,7 +252,6 @@ abstract final class DriverTripService {
         message: _messageForCode(code),
       );
     } on FirebaseException catch (e) {
-      // Do not fall back to a non-transactional claim — that allows double-assign.
       return DriverWalletGateResult(
         ok: false,
         code: e.code,
@@ -219,41 +269,43 @@ abstract final class DriverTripService {
 
     FFAppState().revOrder = order.reference;
     onStateChanged();
-
-    // Defer side-effects so navigation to trip details is not blocked / flickered
-    // by permission dialogs, location streams, or user-doc rebuilds.
-    unawaited(() async {
-      try {
-        await driverRef.update({
-          'mndonNewacc': true,
-          if (driverLocation != null)
-            'loceshnMndobNow': GeoPoint(
-              driverLocation.latitude,
-              driverLocation.longitude,
-            ),
-        });
-      } catch (_) {}
-      try {
-        await actions.trackOrderLocation(order.reference);
-        await actions.startTrackingAndUpdateFirebase(order.reference);
-      } catch (_) {}
-      try {
-        if (order.user != null) {
-          triggerPushNotification(
-            notificationTitle: 'Order accepted',
-            notificationText:
-                'Your Touri Taxi request was accepted by: $currentUserDisplayName',
-            userRefs: [order.user!],
-            initialPageName: 'tfasel_order',
-            parameterData: {
-              'idorder': order.reference,
-            },
-          );
-        }
-      } catch (_) {}
-    }());
-
+    unawaited(_postAcceptSideEffects(order, driverRef, driverLocation));
     return const DriverWalletGateResult(ok: true);
+  }
+
+  static Future<void> _postAcceptSideEffects(
+    OrderRecord order,
+    DocumentReference driverRef,
+    LatLng? driverLocation,
+  ) async {
+    try {
+      await driverRef.update({
+        'mndonNewacc': true,
+        if (driverLocation != null)
+          'loceshnMndobNow': GeoPoint(
+            driverLocation.latitude,
+            driverLocation.longitude,
+          ),
+      });
+    } catch (_) {}
+    try {
+      await actions.trackOrderLocation(order.reference);
+      await actions.startTrackingAndUpdateFirebase(order.reference);
+    } catch (_) {}
+    try {
+      if (order.user != null) {
+        triggerPushNotification(
+          notificationTitle: 'Order accepted',
+          notificationText:
+              'Your Touri Taxi request was accepted by: $currentUserDisplayName',
+          userRefs: [order.user!],
+          initialPageName: 'tfasel_order',
+          parameterData: {
+            'idorder': order.reference,
+          },
+        );
+      }
+    } catch (_) {}
   }
 
   static Future<void> startTrip({
@@ -850,6 +902,8 @@ abstract final class DriverTripService {
         return 'This booking cannot be updated in its current state.';
       case 'BOOKING_EXPIRED':
         return 'انتهت مهلة قبول الطلب. لم يعد بإمكانك قبول هذا الطلب.';
+      case 'DRIVER_WALLET_INSUFFICIENT':
+        return 'يجب أن يكون رصيد محفظتك 200 ريال على الأقل لقبول الطلبات النقدية.';
       case 'BOOKING_TOO_FAR_OR_TOO_EARLY':
         return 'Move closer to the destination or wait a moment before completing.';
       case 'PERMISSION_DENIED':

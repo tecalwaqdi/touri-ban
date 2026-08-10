@@ -2,12 +2,18 @@
 
 Express + TypeScript service under `admin/services/payment-api`.
 
+## Live production (current)
+
+- **URL:** `https://touri-ban.onrender.com`
+- **Status:** deployed and healthy (`GET /health` → `ok: true`, `ngeniusEnv: production`)
+- Store / client apps should keep `PAYMENT_API_BASE_URL=https://touri-ban.onrender.com`
+- **Do not block App Store / Play releases on Firebase Functions migration** — Render remains the payment backend until Firebase is explicitly cut over later.
+
 ## Do not skip
 
 - Do **not** put real secrets in git.
-- Do **not** set `NGENIUS_ENV=production` until explicit approval.
-- Do **not** create a new Firebase project or migrate Firestore data.
-- Do **not** deploy this service until the product owner approves.
+- Do **not** create a new Firebase project or migrate Firestore data as part of this cutover.
+- Changing `NGENIUS_ENV` / production credentials still needs explicit approval if rotating keys.
 
 ## Create the Render service
 

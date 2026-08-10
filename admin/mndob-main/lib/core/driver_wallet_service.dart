@@ -5,12 +5,14 @@ import '/backend/schema/transaction_record.dart';
 import '/backend/schema/wallet_record.dart';
 import '/core/driver_country_service.dart';
 import '/core/driver_payment_status_mapper.dart';
+import '/core/driver_trip_constants.dart';
 import '/core/toury_country_registry.dart';
-import '/flutter_flow/flutter_flow_util.dart';
 
-/// Wallet + ledger — read Backend truth; never invent balance in Flutter.
+/// Wallet + ledger — read Backend truth; never invent or write balance in Flutter.
 abstract final class DriverWalletService {
   DriverWalletService._();
+
+  static const double minCashEligibility = DriverWalletRules.minCashWalletBalance;
 
   static String currencyCode() {
     final iso = DriverCountryService.currentIso2();
@@ -24,31 +26,25 @@ abstract final class DriverWalletService {
     return x == y;
   }
 
-  static Future<WalletRecord> getOrCreateWallet() async {
+  /// Read-only. Never creates wallets from the client (rules forbid it).
+  static Future<WalletRecord?> loadWallet() async {
     final userRef = currentUserReference;
-    if (userRef == null) {
-      throw StateError('Driver not signed in');
-    }
+    if (userRef == null) return null;
 
     final existing = await WalletRecord.collection
         .where('userRef', isEqualTo: userRef)
         .limit(1)
         .get();
+    if (existing.docs.isEmpty) return null;
+    return WalletRecord.fromSnapshot(existing.docs.first);
+  }
 
-    if (existing.docs.isNotEmpty) {
-      return WalletRecord.fromSnapshot(existing.docs.first);
-    }
-
-    final ref = WalletRecord.collection.doc();
-    final data = createWalletRecordData(
-      userRef: userRef,
-      currentBalance: 0,
-      lastUpdated: getCurrentTimestamp,
-      currency: currencyCode(),
-      isActive: true,
-    );
-    await ref.set(data);
-    return WalletRecord.getDocumentOnce(ref);
+  @Deprecated('Use loadWallet — client must not create wallets')
+  static Future<WalletRecord> getOrCreateWallet() async {
+    final wallet = await loadWallet();
+    if (wallet != null) return wallet;
+    // Synthetic zero wallet for UI only — not persisted.
+    throw StateError('WALLET_MISSING');
   }
 
   static Stream<WalletRecord?> walletStream() {
@@ -60,10 +56,8 @@ abstract final class DriverWalletService {
         .where('userRef', isEqualTo: userRef)
         .limit(1)
         .snapshots()
-        .asyncMap((snap) async {
-      if (snap.docs.isEmpty) {
-        return await getOrCreateWallet();
-      }
+        .map((snap) {
+      if (snap.docs.isEmpty) return null;
       return WalletRecord.fromSnapshot(snap.docs.first);
     });
   }
@@ -81,7 +75,6 @@ abstract final class DriverWalletService {
         .map((s) => s.docs.map(TransactionRecord.fromSnapshot).toList());
   }
 
-  /// Paginated ledger page (Backend query). Does not invent entries.
   static Future<DriverWalletLedgerPage> loadLedgerPage({
     int limit = 30,
     DocumentSnapshot? startAfter,
@@ -106,15 +99,24 @@ abstract final class DriverWalletService {
     );
   }
 
+  /// Missing wallet ⇒ 0 (not eligible for cash until server-side top-up).
   static Future<double> availableBalance() async {
-    final wallet = await getOrCreateWallet();
-    return wallet.currentBalance;
+    try {
+      final wallet = await loadWallet();
+      return wallet?.currentBalance ?? 0.0;
+    } catch (_) {
+      return 0.0;
+    }
   }
 
-  /// Rejects mixing trip currency with wallet currency when both known.
+  static Future<bool> meetsCashEligibility() async {
+    final balance = await availableBalance();
+    return balance >= minCashEligibility;
+  }
+
   static Future<bool> acceptsTripCurrency(String? tripCurrency) async {
-    final wallet = await getOrCreateWallet();
-    final wc = wallet.currency.trim().toUpperCase();
+    final wallet = await loadWallet();
+    final wc = (wallet?.currency ?? '').trim().toUpperCase();
     final tc = (tripCurrency ?? '').trim().toUpperCase();
     if (!DriverPaymentStatusMapper.supportedCurrencies.contains(tc) &&
         tc.isNotEmpty) {

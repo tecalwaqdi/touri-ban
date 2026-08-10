@@ -965,6 +965,15 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    match /company_payments/{document} {
+      allow read: if signedIn() && (
+        resource.data.userRef == currentUserRef()
+        || resource.data.driverId == request.auth.uid
+        || isFinance()
+      );
+      allow create, update, delete: if false;
+    }
+
     match /wallet_withdrawals/{document} {
       allow read: if signedIn() && (
         resource.data.userRef == currentUserRef() || isFinance()

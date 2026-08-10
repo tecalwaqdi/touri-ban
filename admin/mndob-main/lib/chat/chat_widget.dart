@@ -2,6 +2,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/backend/push_notifications/push_notifications_util.dart';
+import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -54,11 +55,38 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final orderRef = widget.idorder;
+    final clientRef = widget.iduserclent;
+
     return DsScreenShell(
       child: Builder(
         builder: (context) {
           final colors = context.dsColors;
           final typography = context.dsTypography;
+
+          if (orderRef == null || clientRef == null) {
+            return Scaffold(
+              key: scaffoldKey,
+              backgroundColor: colors.scaffold,
+              appBar: DsAppBar(
+                centerTitle: false,
+                leading: DsIconButton(
+                  icon: Icons.arrow_back_rounded,
+                  onPressed: () async {
+                    context.safePop();
+                  },
+                ),
+                title: FFLocalizations.of(context).getText(
+                  '7h5d8vnk' /* Chat */,
+                ),
+              ),
+              body: const SafeArea(
+                child: Center(
+                  child: Text('تعذر فتح المحادثة: بيانات ناقصة'),
+                ),
+              ),
+            );
+          }
 
           return GestureDetector(
             onTap: () {
@@ -82,16 +110,17 @@ class _ChatWidgetState extends State<ChatWidget> {
               ),
               body: SafeArea(
                 top: true,
-                child: StreamBuilder<OrderRecord>(
-                  stream: OrderRecord.getDocument(widget!.idorder!),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const DsLoading();
-                    }
+                child: DriverContentWidth(
+                  child: StreamBuilder<OrderRecord>(
+                    stream: OrderRecord.getDocument(orderRef),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const DsLoading();
+                      }
 
-                    final columnOrderRecord = snapshot.data!;
+                      final columnOrderRecord = snapshot.data!;
 
-                    return Column(
+                      return Column(
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Container(
@@ -106,45 +135,39 @@ class _ChatWidgetState extends State<ChatWidget> {
                               vertical: DsSpacing.sm,
                             ),
                             child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    ClipOval(
-                                      child: Image.network(
-                                        columnOrderRecord.imgProfileClent,
-                                        width: 48,
-                                        height: 48,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    DsSpacing.gapSm,
-                                    Column(
-                                      mainAxisSize: MainAxisSize.max,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          columnOrderRecord.naimUserText,
-                                          style: typography.titleMedium.copyWith(
-                                            color: colors.primary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                ClipOval(
+                                  child: DriverNetworkImage(
+                                    url: columnOrderRecord.imgProfileClent,
+                                    width: 48,
+                                    height: 48,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
+                                DsSpacing.gapSm,
+                                Expanded(
+                                  child: Text(
+                                    columnOrderRecord.naimUserText,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: typography.titleMedium.copyWith(
+                                      color: colors.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                DsSpacing.gapSm,
                                 DsIconButton(
                                   icon: Icons.call_rounded,
                                   filled: true,
                                   onPressed: () async {
+                                    final phone =
+                                        widget.phoneClent?.toString().trim() ??
+                                            '';
+                                    if (phone.isEmpty) return;
                                     await launchUrl(Uri(
                                       scheme: 'tel',
-                                      path:
-                                          '966${widget!.phoneClent?.toString()}',
+                                      path: '966$phone',
                                     ));
                                   },
                                 ),
@@ -168,7 +191,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                   queryBuilder: (chatRecord) => chatRecord
                                       .where(
                                         'idorder',
-                                        isEqualTo: widget!.idorder,
+                                        isEqualTo: orderRef,
                                       )
                                       .orderBy('date', descending: true),
                                 ),
@@ -303,7 +326,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                       await ChatRecord.collection
                                           .doc()
                                           .set(createChatRecordData(
-                                            idorder: widget!.idorder,
+                                            idorder: orderRef,
                                             user1: currentUserReference,
                                             msg: _model.textController.text,
                                             date: getCurrentTimestamp,
@@ -364,14 +387,14 @@ class _ChatWidgetState extends State<ChatWidget> {
                                     await ChatRecord.collection
                                         .doc()
                                         .set(createChatRecordData(
-                                          idorder: widget!.idorder,
+                                          idorder: orderRef,
                                           user1: currentUserReference,
                                           msg: _model.textController.text,
                                           date: getCurrentTimestamp,
                                           naim: currentUserDisplayName,
                                         ));
                                     await WhatCall.call(
-                                      to: widget!.phoneClent?.toString(),
+                                      to: widget.phoneClent?.toString(),
                                       msg:
                                           '📩 المندوب راسلك داخل التطبيق، ادخل تفاصيل الطلب لقراءة الرسالة.اطرح سؤالك على ',
                                     );
@@ -382,7 +405,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                       notificationText:
                                           _model.textController.text,
                                       notificationSound: 'default',
-                                      userRefs: [widget!.iduserclent!],
+                                      userRefs: [clientRef],
                                       initialPageName: 'Login1',
                                       parameterData: {},
                                     );
@@ -398,6 +421,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                       ],
                     );
                   },
+                ),
                 ),
               ),
             ),
