@@ -376,6 +376,7 @@ class TouryNetworkImage extends StatefulWidget {
     this.borderRadius,
     this.fallbackAsset,
     this.useBrandedFallback = false,
+    this.allowPlacePhotoFallback = true,
   });
 
   /// صور معالم: img1 ثم img2 ثم img3 مع بديل تلقائي عند الروابط المحظورة.
@@ -394,6 +395,7 @@ class TouryNetworkImage extends StatefulWidget {
     BorderRadius? borderRadius,
     String? fallbackAsset,
     bool useBrandedFallback = true,
+    bool allowPlacePhotoFallback = true,
   }) {
     final id = documentId?.trim();
     final resolvedKey = key ??
@@ -414,6 +416,7 @@ class TouryNetworkImage extends StatefulWidget {
       borderRadius: borderRadius,
       fallbackAsset: fallbackAsset ?? kTouryImageFallback,
       useBrandedFallback: useBrandedFallback,
+      allowPlacePhotoFallback: allowPlacePhotoFallback,
     );
   }
 
@@ -429,6 +432,8 @@ class TouryNetworkImage extends StatefulWidget {
   final BorderRadius? borderRadius;
   final String? fallbackAsset;
   final bool useBrandedFallback;
+  /// في القوائم عطّله لتجنّب طلبات ويكيبيديا الثقيلة أثناء التمرير.
+  final bool allowPlacePhotoFallback;
 
   @override
   State<TouryNetworkImage> createState() => _TouryNetworkImageState();
@@ -502,6 +507,7 @@ class _TouryNetworkImageState extends State<TouryNetworkImage> {
   }
 
   bool get _canFetchPlacePhoto {
+    if (!widget.allowPlacePhotoFallback) return false;
     final name = widget.placeName?.trim();
     return name != null && name.isNotEmpty;
   }

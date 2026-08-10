@@ -13,18 +13,13 @@ import '/core/driver_trip_constants.dart';
 import '/driver_pending_approval/driver_pending_approval_widget.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:ui';
 import '/index.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'home_model.dart';
 export 'home_model.dart';
 
@@ -146,7 +141,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                   child: SafeArea(
                     top: false,
                     child: SingleChildScrollView(
-                child: Column(
+                child: DriverContentWidth(
+                  child: DriverPagePadding(
+                    top: DsSpacing.sm,
+                    bottom: DsSpacing.lg,
+                    child: Column(
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     AuthUserStreamWidget(
@@ -164,23 +163,10 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                       ),
                     ),
-                    Material(
-                      color: Colors.transparent,
-                      elevation: 2.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color:
-                              context.dsColors.surface,
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              16.0, 16.0, 16.0, 16.0),
-                          child: Column(
+                    DsCard(
+                      elevated: true,
+                      margin: const EdgeInsets.only(bottom: DsSpacing.sm),
+                      child: Column(
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,36 +175,20 @@ class _HomeWidgetState extends State<HomeWidget> {
                                 AuthUserStreamWidget(
                                   builder: (context) => Text(
                                     '${driverTr(context, 'Account status')}: ${driverTr(context, DriverLegacyFieldCompat.statusMessageKey(DriverOnlineState.lifecycle))}',
-                                    style: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .override(
-                                          fontFamily:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMediumFamily,
-                                          color: context.dsColors.textPrimary,
-                                          letterSpacing: 0.0,
-                                          useGoogleFonts:
-                                              !FlutterFlowTheme.of(context)
-                                                  .bodyMediumIsCustom,
-                                        ),
+                                    style: context.dsTypography.bodyMedium
+                                        .copyWith(
+                                      color: context.dsColors.textPrimary,
+                                    ),
                                   ),
                                 ),
                               if (DriverOnlineState.isApproved)
                                 AuthUserStreamWidget(
                                   builder: (context) => Text(
                                     '${driverTr(context, 'Work location')}: ${driverTr(context, 'Your current location')} - ${valueOrDefault(currentUserDocument?.textTypeCarMndob, '')} - ${valueOrDefault(currentUserDocument?.numberLohhCar, '')}',
-                                    style: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .override(
-                                          fontFamily:
-                                              FlutterFlowTheme.of(context)
-                                                  .bodyMediumFamily,
-                                          color: context.dsColors.success,
-                                          letterSpacing: 0.0,
-                                          useGoogleFonts:
-                                              !FlutterFlowTheme.of(context)
-                                                  .bodyMediumIsCustom,
-                                        ),
+                                    style: context.dsTypography.bodyMedium
+                                        .copyWith(
+                                      color: context.dsColors.success,
+                                    ),
                                   ),
                                 ),
                               if (!DriverOnlineState.isApproved ||
@@ -300,25 +270,13 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                       }(),
                                                       textAlign:
                                                           TextAlign.center,
-                                                      style:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyMedium
-                                                              .override(
-                                                                fontFamily: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyMediumFamily,
-                                                                color: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .error,
-                                                                fontSize: 15.0,
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                useGoogleFonts:
-                                                                    !FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodyMediumIsCustom,
-                                                              ),
+                                                      style: context
+                                                          .dsTypography.bodyMedium
+                                                          .copyWith(
+                                                        color: context
+                                                            .dsColors.error,
+                                                        fontSize: 15.0,
+                                                      ),
                                                     ),
                                                   ),
                                                   Align(
@@ -340,7 +298,18 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                             MainAxisAlignment
                                                                 .center,
                                                         children: [
-                                                          FFButtonWidget(
+                                                          DsButton.primary(
+                                                            label: !DriverOnlineState
+                                                                    .isApproved
+                                                                ? FFLocalizations.of(
+                                                                        context)
+                                                                    .getText(
+                                                                    'md9y2x4q' /* Account Activation */,
+                                                                  )
+                                                                : driverTr(
+                                                                    context,
+                                                                    'Go Online',
+                                                                  ),
                                                             onPressed:
                                                                 () async {
                                                               if (!DriverOnlineState
@@ -375,57 +344,6 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                               safeSetState(
                                                                   () {});
                                                             },
-                                                            text: !DriverOnlineState
-                                                                    .isApproved
-                                                                ? FFLocalizations.of(
-                                                                        context)
-                                                                    .getText(
-                                                                    'md9y2x4q' /* Account Activation */,
-                                                                  )
-                                                                : driverTr(
-                                                                    context,
-                                                                    'Go Online',
-                                                                  ),
-                                                            options:
-                                                                FFButtonOptions(
-                                                              height: 40.0,
-                                                              padding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          16.0,
-                                                                          0.0,
-                                                                          16.0,
-                                                                          0.0),
-                                                              iconPadding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0),
-                                                              color: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .primary,
-                                                              textStyle:
-                                                                  FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .titleSmall
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            FlutterFlowTheme.of(context).titleSmallFamily,
-                                                                        color: Colors
-                                                                            .white,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        useGoogleFonts:
-                                                                            !FlutterFlowTheme.of(context).titleSmallIsCustom,
-                                                                      ),
-                                                              elevation: 0.0,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8.0),
-                                                            ),
                                                           ),
                                                         ],
                                                       ),
@@ -443,7 +361,8 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                           MainAxisAlignment
                                                               .center,
                                                       children: [
-                                                        Padding(
+                                                        Flexible(
+                                                          child: Padding(
                                                           padding:
                                                               EdgeInsetsDirectional
                                                                   .fromSTEB(
@@ -451,63 +370,23 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                       0.0,
                                                                       7.0,
                                                                       0.0),
-                                                          child: FFButtonWidget(
+                                                          child: DsButton.danger(
+                                                            label: FFLocalizations
+                                                                    .of(context)
+                                                                .getText(
+                                                              '9lc03d0o' /* Check your registration */,
+                                                            ),
+                                                            icon: Icons
+                                                                .check_box_sharp,
+                                                            expanded: true,
                                                             onPressed:
                                                                 () async {
                                                               context.pushNamed(
                                                                   DriverPendingApprovalWidget
                                                                       .routeName);
                                                             },
-                                                            text: FFLocalizations
-                                                                    .of(context)
-                                                                .getText(
-                                                              '9lc03d0o' /* Check your registration */,
-                                                            ),
-                                                            icon: Icon(
-                                                              Icons
-                                                                  .check_box_sharp,
-                                                              size: 15.0,
-                                                            ),
-                                                            options:
-                                                                FFButtonOptions(
-                                                              height: 40.0,
-                                                              padding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          16.0,
-                                                                          0.0,
-                                                                          16.0,
-                                                                          0.0),
-                                                              iconPadding:
-                                                                  EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0),
-                                                              color: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .error,
-                                                              textStyle:
-                                                                  FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .titleSmall
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            FlutterFlowTheme.of(context).titleSmallFamily,
-                                                                        color: context.dsColors.info,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        useGoogleFonts:
-                                                                            !FlutterFlowTheme.of(context).titleSmallIsCustom,
-                                                                      ),
-                                                              elevation: 0.0,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8.0),
-                                                            ),
                                                           ),
+                                                        ),
                                                         ),
                                                       ],
                                                     ),
@@ -523,26 +402,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                                 ),
                             ].divide(SizedBox(height: 8.0)),
                           ),
-                        ),
-                      ),
                     ),
-                    Material(
-                      color: Colors.transparent,
-                      elevation: 2.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color:
-                              context.dsColors.surface,
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              16.0, 16.0, 16.0, 16.0),
-                          child: Column(
+                    DsCard(
+                      elevated: true,
+                      margin: const EdgeInsets.only(bottom: DsSpacing.sm),
+                      child: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -550,17 +414,9 @@ class _HomeWidgetState extends State<HomeWidget> {
                                 FFLocalizations.of(context).getText(
                                   'xhprzvoj' /* Orders */,
                                 ),
-                                style: FlutterFlowTheme.of(context)
-                                    .titleLarge
-                                    .override(
-                                      fontFamily: FlutterFlowTheme.of(context)
-                                          .titleLargeFamily,
-                                      color: context.dsColors.textPrimary,
-                                      letterSpacing: 0.0,
-                                      useGoogleFonts:
-                                          !FlutterFlowTheme.of(context)
-                                              .titleLargeIsCustom,
-                                    ),
+                                style: context.dsTypography.titleLarge.copyWith(
+                                  color: context.dsColors.textPrimary,
+                                ),
                               ),
                               Row(
                                 mainAxisSize: MainAxisSize.max,
@@ -693,28 +549,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                               ),
                             ].divide(SizedBox(height: 12.0)),
                           ),
-                        ),
-                      ),
                     ),
-                    Material(
-                      color: Colors.transparent,
-                      elevation: 2.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color:
-                              context.dsColors.surface,
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              16.0, 16.0, 16.0, 16.0),
-                          child: SingleChildScrollView(
-                            primary: false,
-                            child: Column(
+                    DsCard(
+                      elevated: true,
+                      margin: const EdgeInsets.only(bottom: DsSpacing.sm),
+                      child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -722,92 +561,58 @@ class _HomeWidgetState extends State<HomeWidget> {
                                   FFLocalizations.of(context).getText(
                                     'oadi4ucn' /* Financials */,
                                   ),
-                                  style: FlutterFlowTheme.of(context)
-                                      .titleLarge
-                                      .override(
-                                        fontFamily: FlutterFlowTheme.of(context)
-                                            .titleLargeFamily,
-                                        color: context.dsColors.textPrimary,
-                                        fontSize: 17.0,
-                                        letterSpacing: 0.0,
-                                        useGoogleFonts:
-                                            !FlutterFlowTheme.of(context)
-                                                .titleLargeIsCustom,
-                                      ),
+                                  style: context.dsTypography.titleLarge
+                                      .copyWith(
+                                    color: context.dsColors.textPrimary,
+                                    fontSize: 17.0,
+                                  ),
                                 ),
                                 Padding(
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       0.0, 4.0, 0.0, 8.0),
-                                  child: FFButtonWidget(
+                                  child: DriverGradientButton(
+                                    label: driverTr(
+                                        context, 'Wallet and transactions'),
+                                    icon: Icons.account_balance_wallet,
                                     onPressed: () async {
                                       context.pushNamed(
                                           DriverWalletWidget.routeName);
                                     },
-                                    text: driverTr(context, 'Wallet and transactions'),
-                                    icon: Icon(Icons.account_balance_wallet,
-                                        size: 18),
-                                    options: FFButtonOptions(
-                                      width: double.infinity,
-                                      height: 42,
-                                      color:
-                                          context.dsColors.primary,
-                                      textStyle: FlutterFlowTheme.of(context)
-                                          .titleSmall
-                                          .override(
-                                            fontFamily:
-                                                FlutterFlowTheme.of(context)
-                                                    .titleSmallFamily,
-                                            color: Colors.white,
-                                            useGoogleFonts:
-                                                !FlutterFlowTheme.of(context)
-                                                    .titleSmallIsCustom,
-                                          ),
-                                    ),
                                   ),
                                 ),
                                 Row(
                                   mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
-                                          7.0, 0.0, 7.0, 0.0),
-                                      child: Text(
-                                        FFLocalizations.of(context).getText(
-                                          '5w1bmqit' /* Total Earnings */,
+                                    Flexible(
+                                      child: Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            7.0, 0.0, 7.0, 0.0),
+                                        child: Text(
+                                          FFLocalizations.of(context).getText(
+                                            '5w1bmqit' /* Total Earnings */,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: context.dsTypography.bodyLarge,
                                         ),
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyLarge
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyLargeFamily,
-                                              letterSpacing: 0.0,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(context)
-                                                      .bodyLargeIsCustom,
-                                            ),
                                       ),
                                     ),
-                                    AuthUserStreamWidget(
-                                      builder: (context) => Text(
-                                        valueOrDefault(
-                                                currentUserDocument?.totalMndob,
-                                                0)
-                                            .toString(),
-                                        style: FlutterFlowTheme.of(context)
-                                            .titleMedium
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleMediumFamily,
-                                              color:
-                                                  context.dsColors.success,
-                                              letterSpacing: 0.0,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(context)
-                                                      .titleMediumIsCustom,
-                                            ),
+                                    Flexible(
+                                      child: AuthUserStreamWidget(
+                                        builder: (context) => Text(
+                                          valueOrDefault(
+                                                  currentUserDocument?.totalMndob,
+                                                  0)
+                                              .toString(),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: context
+                                              .dsTypography.titleMedium
+                                              .copyWith(
+                                            color: context.dsColors.success,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -834,20 +639,8 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                     .getText(
                                                   '3wrjokzf' /* Electronic payment obligations */,
                                                 ),
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyLarge
-                                                        .override(
-                                                          fontFamily:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodyLargeFamily,
-                                                          letterSpacing: 0.0,
-                                                          useGoogleFonts:
-                                                              !FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .bodyLargeIsCustom,
-                                                        ),
+                                                style: context
+                                                    .dsTypography.bodyLarge,
                                               ),
                                             ),
                                             Text(
@@ -860,23 +653,12 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                 decimalType:
                                                     DecimalType.automatic,
                                               ),
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .titleMedium
-                                                  .override(
-                                                    fontFamily:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .titleMediumFamily,
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .success,
-                                                    letterSpacing: 0.0,
-                                                    useGoogleFonts:
-                                                        !FlutterFlowTheme.of(
-                                                                context)
-                                                            .titleMediumIsCustom,
-                                                  ),
+                                              style: context
+                                                  .dsTypography.titleMedium
+                                                  .copyWith(
+                                                color:
+                                                    context.dsColors.success,
+                                              ),
                                             ),
                                             if ((valueOrDefault(
                                                             currentUserDocument
@@ -902,7 +684,12 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                 padding: EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         0.0, 4.0, 0.0, 4.0),
-                                                child: FFButtonWidget(
+                                                child: DsButton.primary(
+                                                  label: FFLocalizations.of(
+                                                          context)
+                                                      .getText(
+                                                    'hfjkl3wt' /* Request payment now */,
+                                                  ),
                                                   onPressed: () async {
                                                     await EPaymentduerequestsRecord
                                                         .collection
@@ -916,7 +703,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                   ?.outstandingonlinepayment,
                                                               0.0),
                                                           osf:
-                                                              'طلب مستحقات للمدفوعات الإلكترونية',
+                                                              driverTr(context, 'Request electronic payout'),
                                                           dateAdd:
                                                               getCurrentTimestamp,
                                                           okPay: false,
@@ -928,23 +715,23 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                   (alertDialogContext) {
                                                                 return AlertDialog(
                                                                   title: Text(
-                                                                      'تأكيد'),
+                                                                      driverTr(context, 'Confirm')),
                                                                   content: Text(
-                                                                      'هل انت متأكد من إرسال طلبك تحويل المستحقات المالية '),
+                                                                      driverTr(context, 'Are you sure you want to submit a payout transfer request?')),
                                                                   actions: [
                                                                     TextButton(
                                                                       onPressed: () => Navigator.pop(
                                                                           alertDialogContext,
                                                                           false),
                                                                       child: Text(
-                                                                          'لا'),
+                                                                          driverTr(context, 'No')),
                                                                     ),
                                                                     TextButton(
                                                                       onPressed: () => Navigator.pop(
                                                                           alertDialogContext,
                                                                           true),
                                                                       child: Text(
-                                                                          'نعم'),
+                                                                          driverTr(context, 'Yes')),
                                                                     ),
                                                                   ],
                                                                 );
@@ -957,9 +744,9 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                         builder:
                                                             (alertDialogContext) {
                                                           return AlertDialog(
-                                                            title: Text('تم'),
+                                                            title: Text(driverTr(context, 'Done')),
                                                             content: Text(
-                                                                'تم إرسال طلبك بنجاح وسيتم تحويل المبلغ في أقرب وقت'),
+                                                                driverTr(context, 'Your payout request was submitted successfully.')),
                                                             actions: [
                                                               TextButton(
                                                                 onPressed: () =>
@@ -974,44 +761,6 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                       );
                                                     }
                                                   },
-                                                  text: FFLocalizations.of(
-                                                          context)
-                                                      .getText(
-                                                    'hfjkl3wt' /* Request payment now */,
-                                                  ),
-                                                  options: FFButtonOptions(
-                                                    height: 40.0,
-                                                    padding:
-                                                        EdgeInsetsDirectional
-                                                            .fromSTEB(16.0, 0.0,
-                                                                16.0, 0.0),
-                                                    iconPadding:
-                                                        EdgeInsetsDirectional
-                                                            .fromSTEB(0.0, 0.0,
-                                                                0.0, 0.0),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primary,
-                                                    textStyle: FlutterFlowTheme
-                                                            .of(context)
-                                                        .titleSmall
-                                                        .override(
-                                                          fontFamily:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .titleSmallFamily,
-                                                          color: Colors.white,
-                                                          letterSpacing: 0.0,
-                                                          useGoogleFonts:
-                                                              !FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .titleSmallIsCustom,
-                                                        ),
-                                                    elevation: 0.0,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8.0),
-                                                  ),
                                                 ),
                                               ),
                                             if ((valueOrDefault(
@@ -1037,7 +786,8 @@ class _HomeWidgetState extends State<HomeWidget> {
                                               Row(
                                                 mainAxisSize: MainAxisSize.max,
                                                 children: [
-                                                  Column(
+                                                  Expanded(
+                                                    child: Column(
                                                     mainAxisSize:
                                                         MainAxisSize.max,
                                                     children: [
@@ -1047,85 +797,34 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                             .getText(
                                                           'xvmvyd3d' /* Please add a bank account to r... */,
                                                         ),
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMediumFamily,
-                                                                  color: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .error,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  useGoogleFonts:
-                                                                      !FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .bodyMediumIsCustom,
-                                                                ),
+                                                        maxLines: 3,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: context
+                                                            .dsTypography
+                                                            .bodyMedium
+                                                            .copyWith(
+                                                          color: context
+                                                              .dsColors.error,
+                                                        ),
                                                       ),
-                                                      FFButtonWidget(
-                                                        onPressed: () async {
-                                                          context.pushNamed(
-                                                              UpdetBankWidget
-                                                                  .routeName);
-                                                        },
-                                                        text:
+                                                      DsButton.primary(
+                                                        label:
                                                             FFLocalizations.of(
                                                                     context)
                                                                 .getText(
                                                           '7hlqu0xi' /* Bank account update */,
                                                         ),
-                                                        icon: Icon(
-                                                          Icons.account_balance,
-                                                          size: 15.0,
-                                                        ),
-                                                        options:
-                                                            FFButtonOptions(
-                                                          height: 40.0,
-                                                          padding:
-                                                              EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      16.0,
-                                                                      0.0,
-                                                                      16.0,
-                                                                      0.0),
-                                                          iconPadding:
-                                                              EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      0.0,
-                                                                      3.0,
-                                                                      0.0,
-                                                                      0.0),
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .primary,
-                                                          textStyle:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .titleSmall
-                                                                  .override(
-                                                                    fontFamily:
-                                                                        FlutterFlowTheme.of(context)
-                                                                            .titleSmallFamily,
-                                                                    color: Colors
-                                                                        .white,
-                                                                    letterSpacing:
-                                                                        0.0,
-                                                                    useGoogleFonts:
-                                                                        !FlutterFlowTheme.of(context)
-                                                                            .titleSmallIsCustom,
-                                                                  ),
-                                                          elevation: 0.0,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      8.0),
-                                                        ),
+                                                        icon: Icons
+                                                            .account_balance,
+                                                        onPressed: () async {
+                                                          context.pushNamed(
+                                                              UpdetBankWidget
+                                                                  .routeName);
+                                                        },
                                                       ),
                                                     ],
+                                                  ),
                                                   ),
                                                 ],
                                               ),
@@ -1142,151 +841,82 @@ class _HomeWidgetState extends State<HomeWidget> {
                                   mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
-                                          7.0, 0.0, 7.0, 0.0),
-                                      child: Text(
-                                        FFLocalizations.of(context).getText(
-                                          'p9lt26gd' /* Unpaid App Commissions */,
+                                    Flexible(
+                                      child: Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            7.0, 0.0, 7.0, 0.0),
+                                        child: Text(
+                                          FFLocalizations.of(context).getText(
+                                            'p9lt26gd' /* Unpaid App Commissions */,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: context.dsTypography.bodyLarge
+                                              .copyWith(
+                                            color: context.dsColors.error,
+                                          ),
                                         ),
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyLarge
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyLargeFamily,
-                                              color:
-                                                  context.dsColors.error,
-                                              letterSpacing: 0.0,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(context)
-                                                      .bodyLargeIsCustom,
-                                            ),
                                       ),
                                     ),
-                                    AuthUserStreamWidget(
-                                      builder: (context) => Text(
-                                        valueOrDefault(
-                                                currentUserDocument?.totalApp,
-                                                0)
-                                            .toString(),
-                                        style: FlutterFlowTheme.of(context)
-                                            .titleMedium
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleMediumFamily,
-                                              color:
-                                                  context.dsColors.error,
-                                              letterSpacing: 0.0,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(context)
-                                                      .titleMediumIsCustom,
-                                            ),
+                                    Flexible(
+                                      child: AuthUserStreamWidget(
+                                        builder: (context) => Text(
+                                          valueOrDefault(
+                                                  currentUserDocument?.totalApp,
+                                                  0)
+                                              .toString(),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: context
+                                              .dsTypography.titleMedium
+                                              .copyWith(
+                                            color: context.dsColors.error,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                SingleChildScrollView(
-                                  child: 
-                                    AuthUserStreamWidget(
-                                      builder: (context) => Text(
-                                        FFLocalizations.of(context).getText(
-                                          '7rctg8a4' /* This balance is due for paymen... */,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                          maxLines: 3,                 // ✅ Limit to 3 lines
-                                          softWrap: true,              // ✅ Allow wrapping
-                                          overflow: TextOverflow.ellipsis, // ✅ If still longer, show ...
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyLarge
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(
-                                                          context)
-                                                      .bodyLargeFamily,
-                                              color: FlutterFlowTheme.of(
-                                                      context)
-                                                  .error,
-                                              fontSize: 11.0,
-                                              letterSpacing: 0.0,
-                                              decoration:
-                                                  TextDecoration.underline,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(
-                                                          context)
-                                                      .bodyLargeIsCustom,
-                                            ),
-                                      ),
-                                      
+                                AuthUserStreamWidget(
+                                  builder: (context) => Text(
+                                    FFLocalizations.of(context).getText(
+                                      '7rctg8a4' /* This balance is due for paymen... */,
                                     ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 3,
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: context.dsTypography.bodyLarge
+                                        .copyWith(
+                                      color: context.dsColors.error,
+                                      fontSize: 11.0,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
                                 ),
                                 if (valueOrDefault(
                                         currentUserDocument?.totalApp, 0) >
                                     0)
                                   AuthUserStreamWidget(
-                                    builder: (context) => FFButtonWidget(
+                                    builder: (context) => DsButton.danger(
+                                      label: FFLocalizations.of(context)
+                                          .getText(
+                                        '3hqugl0j' /* Pay App Commissions */,
+                                      ),
+                                      icon: Icons.payments_sharp,
+                                      expanded: true,
                                       onPressed: () async {
                                         context
                                             .pushNamed(SuportWidget.routeName);
                                       },
-                                      text: FFLocalizations.of(context).getText(
-                                        '3hqugl0j' /* Pay App Commissions */,
-                                      ),
-                                      icon: Icon(
-                                        Icons.payments_sharp,
-                                        size: 15.0,
-                                      ),
-                                      options: FFButtonOptions(
-                                        width: double.infinity,
-                                        height: 50.0,
-                                        padding: EdgeInsets.all(8.0),
-                                        iconPadding:
-                                            EdgeInsetsDirectional.fromSTEB(
-                                                0.0, 0.0, 0.0, 0.0),
-                                        color: context.dsColors.surface,
-                                        textStyle: FlutterFlowTheme.of(context)
-                                            .titleSmall
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleSmallFamily,
-                                              color:
-                                                  context.dsColors.error,
-                                              letterSpacing: 0.0,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(context)
-                                                      .titleSmallIsCustom,
-                                            ),
-                                        elevation: 2.0,
-                                        borderSide: BorderSide(
-                                          color: context.dsColors.error,
-                                        ),
-                                      ),
                                     ),
                                   ),
                               ].divide(SizedBox(height: 12.0)),
                             ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Material(
-                      color: Colors.transparent,
-                      elevation: 2.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color:
-                              context.dsColors.surface,
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                      ),
                     ),
                   ],
+                ),
+                  ),
                 ),
               ),
             ),

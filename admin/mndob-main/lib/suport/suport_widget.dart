@@ -1,10 +1,9 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'suport_model.dart';
 export 'suport_model.dart';
@@ -101,7 +100,7 @@ class _SuportWidgetState extends State<SuportWidget> {
             child: Scaffold(
               key: scaffoldKey,
               backgroundColor: colors.scaffold,
-              appBar: DsAppBar(
+              appBar: DriverMainAppBar(
                 title: FFLocalizations.of(context).getText(
                   'ic2tltrf' /* Transfer Confirmation */,
                 ),
@@ -115,7 +114,8 @@ class _SuportWidgetState extends State<SuportWidget> {
                     DsSpacing.md,
                     DsSpacing.xxxl,
                   ),
-                  child: Column(
+                  child: DriverFormWidth(
+                    child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       DsCard(
@@ -387,6 +387,7 @@ class _SuportWidgetState extends State<SuportWidget> {
                         ),
                       ),
                     ],
+                  ),
                   ),
                 ),
               ),

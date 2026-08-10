@@ -428,6 +428,96 @@ const kEnterpriseTranslations = <String, Map<String, String>>{
     'ru': 'Без имени',
     'ky': 'Аты жок',
   },
+  'ent_guides_suspended': {
+    'en': 'Suspended',
+    'ar': 'موقوف',
+    'ru': 'Приостановлен',
+    'ky': 'Токтотулган',
+  },
+  'ent_guides_suspended_plural': {
+    'en': 'Suspended',
+    'ar': 'موقوفون',
+    'ru': 'Приостановленные',
+    'ky': 'Токтотулгандар',
+  },
+  'ent_guides_suspend': {
+    'en': 'Suspend',
+    'ar': 'إيقاف',
+    'ru': 'Приостановить',
+    'ky': 'Токтотуу',
+  },
+  'ent_guides_reactivate': {
+    'en': 'Reactivate',
+    'ar': 'إعادة تفعيل',
+    'ru': 'Возобновить',
+    'ky': 'Кайра иштетүү',
+  },
+  'ent_guides_suspend_title': {
+    'en': 'Suspend tour guide?',
+    'ar': 'إيقاف المرشد السياحي؟',
+    'ru': 'Приостановить гида?',
+    'ky': 'Гидди токтотосузбу?',
+  },
+  'ent_guides_suspend_msg': {
+    'en': 'Suspend {0}? They will no longer appear for bookings.',
+    'ar': 'إيقاف {0}؟ لن يظهر للحجوزات بعد الآن.',
+    'ru': 'Приостановить {0}? Гид больше не будет доступен для заказов.',
+    'ky': '{0} токтотулсунбу? Заказдарда көрүнбөйт.',
+  },
+  'ent_guides_reactivate_title': {
+    'en': 'Reactivate tour guide?',
+    'ar': 'إعادة تفعيل المرشد؟',
+    'ru': 'Возобновить гида?',
+    'ky': 'Гидди кайра иштетесизби?',
+  },
+  'ent_guides_reactivate_msg': {
+    'en': 'Reactivate {0} as an approved guide?',
+    'ar': 'إعادة اعتماد {0} كمرشد معتمد؟',
+    'ru': 'Возобновить {0} как одобренного гида?',
+    'ky': '{0} бекитилген гид катары кайра иштетилсинби?',
+  },
+  'ent_guides_suspended_snack': {
+    'en': 'Guide suspended',
+    'ar': 'تم إيقاف المرشد',
+    'ru': 'Гид приостановлен',
+    'ky': 'Гид токтотулду',
+  },
+  'ent_guides_reactivated_snack': {
+    'en': 'Guide reactivated',
+    'ar': 'تمت إعادة تفعيل المرشد',
+    'ru': 'Гид возобновлён',
+    'ky': 'Гид кайра иштетилди',
+  },
+  'ent_guides_country': {
+    'en': 'Country',
+    'ar': 'الدولة',
+    'ru': 'Страна',
+    'ky': 'Өлкө',
+  },
+  'ent_guides_registered': {
+    'en': 'Registered',
+    'ar': 'تاريخ التسجيل',
+    'ru': 'Регистрация',
+    'ky': 'Каттоо',
+  },
+  'ent_guides_vehicle': {
+    'en': 'Vehicle',
+    'ar': 'المركبة',
+    'ru': 'Автомобиль',
+    'ky': 'Унаа',
+  },
+  'ent_guides_id_doc': {
+    'en': 'ID document',
+    'ar': 'وثيقة الهوية',
+    'ru': 'Документ личности',
+    'ky': 'Жеке документ',
+  },
+  'ent_guides_out_of_scope': {
+    'en': 'This guide is outside your country scope',
+    'ar': 'هذا المرشد خارج نطاق دولتك',
+    'ru': 'Гид вне вашей страны',
+    'ky': 'Бул гид сиздин өлкөңүздөн тышкары',
+  },
 
   // Login card
   'ent_login_card_title': {

@@ -331,6 +331,11 @@ class FirebaseAuthManager extends AuthManager
 }
 
 String _firebaseAuthErrorMessage(FirebaseAuthException e) {
+  final code = e.code.toLowerCase();
+  if (code.contains('keychain') ||
+      (e.message ?? '').toLowerCase().contains('keychain')) {
+    return 'Error: Auth storage unavailable on this install. Reinstall via flutter run (not unsigned simctl).';
+  }
   return switch (e.code) {
     'email-already-in-use' =>
       'Error: The email is already in use by a different account',

@@ -1,12 +1,31 @@
 import type { DecodedIdToken } from "firebase-admin/auth";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import { auth, db, COLLECTIONS } from "@/lib/firebase/admin";
+import { logger } from "@/lib/logging/logger";
 
 export type AuthedUser = {
   uid: string;
   email?: string;
   token: DecodedIdToken;
 };
+
+function peekJwtClaims(token: string): Record<string, unknown> {
+  try {
+    const part = token.split(".")[1];
+    if (!part) return {};
+    const json = Buffer.from(part, "base64url").toString("utf8");
+    const payload = JSON.parse(json) as Record<string, unknown>;
+    return {
+      aud: payload.aud,
+      iss: payload.iss,
+      sub: typeof payload.sub === "string" ? payload.sub.slice(0, 8) : undefined,
+      exp: payload.exp,
+      auth_time: payload.auth_time,
+    };
+  } catch {
+    return { peek: "failed" };
+  }
+}
 
 export async function verifyBearerToken(
   authorizationHeader: string | null,
@@ -16,11 +35,32 @@ export async function verifyBearerToken(
   }
   const token = authorizationHeader.slice("Bearer ".length).trim();
   if (!token) throw new ApiError(PaymentErrorCode.AUTH_REQUIRED, 401);
+  const claimsPeek = peekJwtClaims(token);
+
+  // Prefer revocation check; fall back if Identity Toolkit revoke lookup fails (IAM).
   try {
     const decoded = await auth().verifyIdToken(token, true);
     return { uid: decoded.uid, email: decoded.email, token: decoded };
-  } catch {
-    throw new ApiError(PaymentErrorCode.AUTH_INVALID, 401);
+  } catch (revokedErr) {
+    try {
+      const decoded = await auth().verifyIdToken(token, false);
+      logger.warn("verifyIdToken_checkRevoked_failed_using_basic", {
+        claimsPeek,
+        revokedErr:
+          revokedErr instanceof Error ? revokedErr.message : String(revokedErr),
+      });
+      return { uid: decoded.uid, email: decoded.email, token: decoded };
+    } catch (basicErr) {
+      logger.error("verifyIdToken_failed", {
+        claimsPeek,
+        tokenLen: token.length,
+        revokedErr:
+          revokedErr instanceof Error ? revokedErr.message : String(revokedErr),
+        basicErr:
+          basicErr instanceof Error ? basicErr.message : String(basicErr),
+      });
+      throw new ApiError(PaymentErrorCode.AUTH_INVALID, 401);
+    }
   }
 }
 

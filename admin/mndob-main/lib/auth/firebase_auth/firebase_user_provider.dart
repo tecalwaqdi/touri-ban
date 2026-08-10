@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../base_auth_user_provider.dart';
 
@@ -63,9 +62,6 @@ class MndobFirebaseUser extends BaseAuthUser {
 
 Stream<BaseAuthUser> mndobFirebaseUserStream() => FirebaseAuth.instance
         .authStateChanges()
-        .debounce((user) => user == null && !loggedIn
-            ? TimerStream(true, const Duration(seconds: 1))
-            : Stream.value(user))
         .map<BaseAuthUser>(
       (user) {
         currentUser = MndobFirebaseUser(user);

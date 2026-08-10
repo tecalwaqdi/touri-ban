@@ -1,11 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
+import '/auth/firebase_auth/google_auth.dart';
 import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
+import '/backend/profile_photo_service.dart';
 import '/backend/schema/enums/enums.dart';
+import '/core/toury_dialogs.dart';
 import '/core/toury_image.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_language_selector.dart';
@@ -50,62 +53,112 @@ class _Profile05WidgetState extends State<Profile05Widget> {
   }
 
   Future<void> _pickAndUploadPhoto() async {
+    if (_model.isDataUploading_uploadDataMcf) return;
+
+    final uid = currentUserUid;
+    if (uid.isEmpty || currentUserReference == null) {
+      if (!mounted) return;
+      await TouryDialogs.showAlert(
+        context,
+        title: 'dialog_error_title'.tr(),
+        message: 'يجب تسجيل الدخول قبل رفع الصورة.',
+        type: TouryMessageType.error,
+      );
+      return;
+    }
+
     final selectedMedia = await selectMediaWithSourceBottomSheet(
       context: context,
       allowPhoto: true,
+      // Downscale at pick time — further compressed before Storage upload.
+      maxWidth: 1280,
+      maxHeight: 1280,
+      imageQuality: 85,
+      storageFolderPath: 'users/$uid',
     );
-    if (selectedMedia != null &&
-        selectedMedia.every((m) => validateFileFormat(m.storagePath, context))) {
-      safeSetState(() => _model.isDataUploading_uploadDataMcf = true);
-      var selectedUploadedFiles = <FFUploadedFile>[];
-
-      var downloadUrls = <String>[];
-      try {
-        showUploadMessage(
-          context,
-          'Uploading file...',
-          showLoading: true,
-        );
-        selectedUploadedFiles = selectedMedia
-            .map((m) => FFUploadedFile(
-                  name: m.storagePath.split('/').last,
-                  bytes: m.bytes,
-                  height: m.dimensions?.height,
-                  width: m.dimensions?.width,
-                  blurHash: m.blurHash,
-                  originalFilename: m.originalFilename,
-                ))
-            .toList();
-
-        downloadUrls = (await Future.wait(
-          selectedMedia.map(
-            (m) async => await uploadData(m.storagePath, m.bytes),
-          ),
-        ))
-            .where((u) => u != null)
-            .map((u) => u!)
-            .toList();
-      } finally {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        _model.isDataUploading_uploadDataMcf = false;
-      }
-      if (selectedUploadedFiles.length == selectedMedia.length &&
-          downloadUrls.length == selectedMedia.length) {
-        safeSetState(() {
-          _model.uploadedLocalFile_uploadDataMcf = selectedUploadedFiles.first;
-          _model.uploadedFileUrl_uploadDataMcf = downloadUrls.first;
-        });
-        showUploadMessage(context, 'Success!');
-      } else {
-        safeSetState(() {});
-        showUploadMessage(context, 'Failed to upload data');
-        return;
-      }
+    if (selectedMedia == null || selectedMedia.isEmpty) {
+      return; // cancelled — keep existing photo
+    }
+    if (!selectedMedia.every((m) => validateFileFormat(m.storagePath, context))) {
+      return;
     }
 
-    await currentUserReference!.update(createUserRecordData(
-      photoUrl: _model.uploadedFileUrl_uploadDataMcf,
-    ));
+    final picked = selectedMedia.first;
+    if (picked.bytes.isEmpty) {
+      if (!mounted) return;
+      await TouryDialogs.showAlert(
+        context,
+        title: 'dialog_error_title'.tr(),
+        message: 'لم يتم قراءة الصورة. جرّب صورة أخرى.',
+        type: TouryMessageType.error,
+      );
+      return;
+    }
+
+    safeSetState(() => _model.isDataUploading_uploadDataMcf = true);
+    showUploadMessage(
+      context,
+      'جاري رفع الصورة...',
+      showLoading: true,
+    );
+
+    try {
+      // Single upload to stable path users/{uid}/profile.jpg (overwrite).
+      final photoUrl = await uploadUserProfilePhoto(
+        uid: uid,
+        bytes: picked.bytes,
+      );
+
+      await currentUserReference!.update(
+        createUserRecordData(photoUrl: photoUrl),
+      );
+
+      try {
+        currentUserDocument =
+            await UserRecord.getDocumentOnce(currentUserReference!);
+      } catch (_) {}
+
+      if (!mounted) return;
+      safeSetState(() {
+        _model.uploadedLocalFile_uploadDataMcf = FFUploadedFile(
+          name: 'profile.jpg',
+          bytes: picked.bytes,
+          originalFilename: picked.originalFilename,
+        );
+        _model.uploadedFileUrl_uploadDataMcf = photoUrl;
+      });
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      showUploadMessage(
+        context,
+        isProfilePhotoDataUrl(photoUrl)
+            ? 'تم حفظ الصورة محلياً (حصة Storage ممتلئة — راجع Firebase Console).'
+            : 'تم تحديث صورة الملف الشخصي بنجاح',
+      );
+    } on StorageUploadException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      await TouryDialogs.showAlert(
+        context,
+        title: 'dialog_error_title'.tr(),
+        message: e.message,
+        type: TouryMessageType.error,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      await TouryDialogs.showAlert(
+        context,
+        title: 'dialog_error_title'.tr(),
+        message: uploadErrorMessage(e),
+        type: TouryMessageType.error,
+      );
+    } finally {
+      if (mounted) {
+        safeSetState(() => _model.isDataUploading_uploadDataMcf = false);
+      } else {
+        _model.isDataUploading_uploadDataMcf = false;
+      }
+    }
   }
 
   Future<void> _requestAccountDeletion() async {
@@ -137,20 +190,28 @@ class _Profile05WidgetState extends State<Profile05Widget> {
 
   Future<void> _logout() async {
     GoRouter.of(context).prepareAuthEvent();
+    try {
+      await signOutWithGoogle();
+    } catch (_) {}
+    try {
+      await FirebaseMessaging.instance.deleteToken();
+    } catch (_) {}
+    try {
+      FFAppState().clearSensitivePaymentSession();
+      FFAppState.reset();
+    } catch (_) {}
     await authManager.signOut();
     GoRouter.of(context).clearRedirectLocation();
 
+    if (!mounted) return;
     context.goNamedAuth(HomePagWidget.routeName, context.mounted);
   }
 
   @override
   Widget build(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
-    final isDark = brightness == Brightness.dark;
-    final dsTheme = isDark ? DsTheme.dark() : DsTheme.light();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Theme(
-      data: dsTheme,
+    return DsScreenShell(
       child: Builder(
         builder: (context) {
           final colors = context.dsColors;
@@ -161,11 +222,7 @@ class _Profile05WidgetState extends State<Profile05Widget> {
               FocusScope.of(context).unfocus();
               FocusManager.instance.primaryFocus?.unfocus();
             },
-            child: AnnotatedRegion<SystemUiOverlayStyle>(
-              value: isDark
-                  ? SystemUiOverlayStyle.light
-                  : SystemUiOverlayStyle.dark,
-              child: Scaffold(
+            child: Scaffold(
                 key: scaffoldKey,
                 backgroundColor: colors.scaffold,
                 appBar: DsAppBar(
@@ -407,7 +464,6 @@ class _Profile05WidgetState extends State<Profile05Widget> {
                   ),
                 ),
               ),
-            ),
           );
         },
       ),

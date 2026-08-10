@@ -1,0 +1,582 @@
+{
+  "reenabled": [
+    "lm_sa_jeddah_historic-jeddah",
+    "lm_sa_riyadh_kingdom-centre"
+  ],
+  "restoredCount": 95,
+  "skipped": [],
+  "errors": [],
+  "restored": [
+    {
+      "landmarkId": "curated_jeddah_albalad",
+      "source": "apply_report_from",
+      "img1Head": "https://images.unsplash.com/photo-1580418827634-2301c7416009?w=1200&q=80",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "curated_jeddah_corniche",
+      "source": "apply_report_from",
+      "img1Head": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "curated_jeddah_fountain",
+      "source": "apply_report_from",
+      "img1Head": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "curated_makkah_arafat",
+      "source": "apply_report_from",
+      "img1Head": "https://images.unsplash.com/photo-1580418827634-2301c7416009?w=1200&q=80",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "curated_makkah_black_stone",
+      "source": "apply_report_from",
+      "img1Head": "https://images.unsplash.com/photo-1564769625905-50e93615e769?w=1200&q=80",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "curated_makkah_haram",
+      "source": "apply_report_from",
+      "img1Head": "https://images.unsplash.com/photo-1564769625905-50e93615e769?w=1200&q=80",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "curated_riyadh_boulevard",
+      "source": "apply_report_from",
+      "img1Head": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "curated_riyadh_kingdom_centre",
+      "source": "apply_report_from",
+      "img1Head": "https://images.unsplash.com/photo-1580418827634-2301c7416009?w=1200&q=80",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "curated_riyadh_masmak",
+      "source": "apply_report_from",
+      "img1Head": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "lm_kg_batken_batken-ai-kol",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_batken_batken-aigul-tash",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_batken_batken-batken-city",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_batken_batken-kan-i-gut",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_batken_batken-karavshin",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_bishkek_bishkek-ala-too",
+      "source": "apply_report_from",
+      "img1Head": "https://upload.wikimedia.org/wikipedia/commons/5/54/Changing_of_the_guard_Ala-Too_Square%2C_Bishkek%",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "lm_kg_bishkek_bishkek-history-museum",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_bishkek_bishkek-osh-bazaar",
+      "source": "apply_report_from",
+      "img1Head": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Jayma_Bazaar%2C_Osh.jpg",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "lm_kg_bishkek_bishkek-philharmonic",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_chuy_chuy-ala-archa",
+      "source": "staging_mkan",
+      "img1Head": "https://upload.wikimedia.org/wikipedia/commons/6/69/%D0%90%D0%BB%D0%B0-%D0%90%D1%80%D1%87%D0%B0_%D1%",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "lm_kg_chuy_chuy-burana",
+      "source": "apply_report_from",
+      "img1Head": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Burana.JPG",
+      "previousReason": "curated_official_image"
+    },
+    {
+      "landmarkId": "lm_kg_chuy_chuy-chunkurchak",
+      "source": "apply_report_from",
+      "img1Head": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Soviet_Il-28_bomber_monument_in_Tokmok_20080830.",
+      "previousReason": "shared_image_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_chuy_chuy-issyk-ata",
+      "source": "apply_report_from",
+      "img1Head": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Soviet_Il-28_bomber_monument_in_Tokmok_20080830.",
+      "previousReason": "shared_image_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_chuy_chuy-konorchek",
+      "source": "apply_report_from",
+      "img1Head": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Soviet_Il-28_bomber_monument_in_Tokmok_20080830.",
+      "previousReason": "shared_image_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_issyk_kul_issyk_kul-rukh-ordo",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_jalal_abad_jalal_abad-arslanbob",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_jalal_abad_jalal_abad-arslanbob-waterfall",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_jalal_abad_jalal_abad-padysha-ata",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_jalal_abad_jalal_abad-sary-chelek",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_jalal_abad_jalal_abad-shah-fazil",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_naryn_naryn-kel-suu",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_naryn_naryn-koshoi-korgon",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_naryn_naryn-song-kol",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_naryn_naryn-sonkul-yurts",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_naryn_naryn-tash-rabat",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_osh_city_osh_city-jayma-city",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_osh_city_osh_city-osh-central-square",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_osh_city_osh_city-osh-mosque",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_osh_city_osh_city-osh-museum-city",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_osh_city_osh_city-sulaiman-too-city",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_osh_osh-abshir-ata",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_osh_osh-achik-tash",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_osh_osh-alay",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_osh_osh-uzgen",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_osh_osh-uzgen-complex",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_talas_talas-besh-tash",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_talas_talas-gumbez-manas",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_talas_talas-kirov-reservoir",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_talas_talas-manas-ordo",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_kg_talas_talas-talas-museum",
+      "source": "apply_report_from",
+      "img1Head": "https://flagcdn.com/w320/kg.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_jeddah_haramain-jeddah-station",
+      "source": "jeddah_user_images",
+      "img1Head": "assets/images/landmarks/jeddah_haramain_station.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_jeddah_horse-stables",
+      "source": "jeddah_user_images",
+      "img1Head": "assets/images/landmarks/jeddah_horse_stables.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_jeddah_jeddah-corniche-circuit",
+      "source": "jeddah_user_images",
+      "img1Head": "assets/images/landmarks/jeddah_corniche_circuit.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_jeddah_jeddah-new-corniche",
+      "source": "jeddah_user_images",
+      "img1Head": "assets/images/landmarks/jeddah_new_corniche.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_jeddah_kaia",
+      "source": "jeddah_user_images",
+      "img1Head": "assets/images/landmarks/jeddah_kaia.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_jeddah_north-obhur",
+      "source": "staging_mkan",
+      "img1Head": "assets/images/landmarks/jeddah_north_obhur.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_jeddah_red-sea-mall",
+      "source": "staging_mkan",
+      "img1Head": "assets/images/landmarks/jeddah_red_sea_mall.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_jeddah_salam-mall",
+      "source": "jeddah_user_images",
+      "img1Head": "assets/images/landmarks/jeddah_salam_mall.png",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_madinah_masjid-an-nabawi",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_madinah_masjid-hamza",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_madinah_mount-uhud",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_madinah_qatrah-cafe",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_madinah_qiblatain-mosque",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQABLAEsAAD/4QJCRXhpZgAATU0AKgAAAAgACQEPAAIAAAAGAAAAegEQAAIAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_madinah_quba-mosque",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_madinah_uthman-farm",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_makkah_hudaybiyyah-museum",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCiRXhpZgAATU0AKgAAAAgABgEaAAUAAAABAAAAVgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_makkah_jabal-al-nour",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_makkah_jabal-thawr",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QGCRXhpZgAATU0AKgAAAAgACQEPAAIAAAATAAAAegEQAAIAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_makkah_makkah-mall",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QC8RXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_makkah_masjid-al-haram",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQABLAEsAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_makkah_masjid-al-ijabah",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAXgBeAAD/4QCARXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_makkah_masjid-al-tanim",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QC8RXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_makkah_masjid-king-abdulaziz",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCARXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_makkah_usaylah-inscriptions",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCwRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_riyadh_al-batha",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QNwRXhpZgAATU0AKgAAAAgACgEGAAMAAAABAAIAAAEPAAIAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_riyadh_faisaliyah-tower",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_riyadh_ibn-qasim-souq",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_riyadh_king-fahd-stadium",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_riyadh_kkia",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCwRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_riyadh_souq-al-zal",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCkRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_riyadh_suspension-bridge",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QMsRXhpZgAATU0AKgAAAAgACgEPAAIAAAASAAAAhgEQAAIAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_riyadh_thumamah",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAlgCWAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_riyadh_wadi-laban",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_al-shifa-rose-terraces",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_ar-ruddaf-park",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QC4RXhpZgAATU0AKgAAAAgABQEaAAUAAAABAAAASgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_historic-balad-souq",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_historic-palace-museum",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABgAAD/4QCwRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_hotel-loreef",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCwRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_masjid-addas",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QNYRXhpZgAATU0AKgAAAAgACgEPAAIAAAAIAAAAhgEQAAIAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_masjid-al-abbas",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_masjid-al-kaw",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_masjid-al-madhun",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQABLAEsAAD/4QNuRXhpZgAATU0AKgAAAAgACgEPAAIAAAAGAAAAhgEQAAIAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_othaim-mall-taif",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_shubra-palace",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_souk-okaz",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA",
+      "previousReason": "placeholder_to_osm_static"
+    },
+    {
+      "landmarkId": "lm_sa_taif_tilal-resort",
+      "source": "staging_mkan",
+      "img1Head": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABgAAD/4QCwRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAA",
+      "previousReason": "placeholder_to_osm_static"
+    }
+  ],
+  "note": "Did not add/remove landmark documents. Soft-disabled were re-enabled. Images restored from report/staging/patch."
+}

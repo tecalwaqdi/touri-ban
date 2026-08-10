@@ -213,9 +213,7 @@ class _AdminSuperAdminsWidgetState extends State<AdminSuperAdminsWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
                           child: Text(
-                            '${uiTr(context, 'العدد')}: ${admins.length}'
-                            '${admins.length != allAdmins.length ? ' ${uiTr(context, 'من')} ${allAdmins.length}' : ''}'
-                            '${listState.hasMore ? '+' : ''}',
+                            adminListCountLabel(context, listState, visibleCount: admins.length, pageFetched: allAdmins.length),
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
                               color: theme.secondaryText,

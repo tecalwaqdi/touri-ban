@@ -45,9 +45,9 @@ class _HgzmktmlWidgetState extends State<HgzmktmlWidget> {
     return DsCard(
       onTap: () async {
         context.pushNamed(
-          TfaselCopyWidget.routeName,
+          TfaselOrserWidget.routeName,
           queryParameters: {
-            'idorder': serializeParam(
+            'id': serializeParam(
               order.reference,
               ParamType.DocumentReference,
             ),

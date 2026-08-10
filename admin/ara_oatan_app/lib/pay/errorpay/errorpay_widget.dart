@@ -88,6 +88,9 @@ class _ErrorpayWidgetState extends State<ErrorpayWidget> {
                                   decoration: BoxDecoration(
                                     color: colors.errorContainer,
                                     shape: BoxShape.circle,
+                                    boxShadow: DsShadows.soft(
+                                      dark: context.dsIsDark,
+                                    ),
                                   ),
                                   alignment: Alignment.center,
                                   child: Icon(

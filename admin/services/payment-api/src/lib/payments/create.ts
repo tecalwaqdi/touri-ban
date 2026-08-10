@@ -13,7 +13,16 @@ import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import { PaymentStatus, toLegacyStatus } from "@/lib/payments/status";
 import { logger } from "@/lib/logging/logger";
 import { parseBookingDraft } from "@/lib/bookings/build-order";
+import {
+  ensureUnpaidBookingOrder,
+  loadPayableUnpaidOrder,
+} from "@/lib/bookings/unpaid-order";
 import { normalizePaymentPurpose } from "@/lib/payments/guards";
+import { isFirebaseAdcMode } from "@/lib/security/env";
+
+function backendSourceLabel(): string {
+  return isFirebaseAdcMode() ? "firebase_functions" : "external_api";
+}
 
 const createSchema = z.object({
   paymentMethod: z.literal("card"),
@@ -184,12 +193,63 @@ export async function handleCreatePayment(req: Request) {
   const env = getEnv();
   const purpose = normalizePaymentPurpose(body.paymentPurpose);
 
-  const bookingDraft =
-    purpose === "booking" ? parseBookingDraft(body.booking) : null;
-  const verifiedQuote =
-    purpose === "wallet"
-      ? await quoteWalletTopUp(body)
-      : await quoteBooking(body);
+  let unpaidOrderId: string | null = null;
+  let bookingDraft =
+    purpose === "booking" && body.booking != null
+      ? parseBookingDraft(body.booking)
+      : null;
+
+  let verifiedQuote:
+    | Awaited<ReturnType<typeof quoteBooking>>
+    | Awaited<ReturnType<typeof quoteWalletTopUp>>;
+
+  if (purpose === "wallet") {
+    verifiedQuote = await quoteWalletTopUp(body);
+  } else if (body.orderPath) {
+    // Retry payment for an existing unpaid order — use server-stored pricing.
+    const unpaid = await loadPayableUnpaidOrder({
+      orderPath: body.orderPath,
+      userId: user.uid,
+    });
+    unpaidOrderId = unpaid.orderId;
+    // Re-quote from car/country on the order (never trust client amount).
+    verifiedQuote = await quoteBooking({
+      ...body,
+      carPath: unpaid.carPath,
+      countryPath: unpaid.countryPath,
+      bookingHours: unpaid.bookingHours,
+      additionalHours: unpaid.additionalHours,
+    });
+    if (Number(verifiedQuote.amountMinor) !== Number(unpaid.amountMinor)) {
+      // Keep the amount already shown on the unpaid order to avoid surprise charges.
+      verifiedQuote = {
+        ...verifiedQuote,
+        amountMinor: unpaid.amountMinor,
+        amount_halalas: unpaid.amountMinor,
+      };
+    }
+    if (unpaid.draft) {
+      try {
+        bookingDraft = parseBookingDraft(unpaid.draft);
+      } catch {
+        // Order already has route fields; session draft optional for activation.
+      }
+    }
+    if (!bookingDraft && body.booking != null) {
+      bookingDraft = parseBookingDraft(body.booking);
+    }
+    if (!bookingDraft) {
+      throw new ApiError(
+        PaymentErrorCode.BOOKING_NOT_PAYABLE,
+        409,
+        "Unpaid order is missing booking draft",
+      );
+    }
+  } else {
+    bookingDraft = parseBookingDraft(body.booking);
+    verifiedQuote = await quoteBooking(body);
+  }
+
   const sessionId = sessionIdFor(user.uid, body.idempotencyKey);
   const sessionRef = db().collection(COLLECTIONS.paymentSessions).doc(sessionId);
 
@@ -205,7 +265,7 @@ export async function handleCreatePayment(req: Request) {
       purpose,
       purpose_alias: body.paymentPurpose,
       provider: "ngenius",
-      backend_source: "external_api",
+      backend_source: backendSourceLabel(),
       environment: env.NGENIUS_ENV,
       idempotency_key_hash: sessionId,
       amount_halalas: verifiedQuote.amountMinor,
@@ -244,9 +304,12 @@ export async function handleCreatePayment(req: Request) {
         currency: String(existingData.currency),
         paymentUrl: null,
         threeDsUrl: null,
-        backendSource: String(existingData.backend_source || "external_api"),
+        backendSource: String(existingData.backend_source || backendSourceLabel()),
         environment: String(existingData.environment || env.NGENIUS_ENV),
         purpose,
+        bookingId: existingData.booking_id || existingData.unpaid_order_id || sessionId,
+        bookingStatus: "paid",
+        bookingCreated: Boolean(existingData.booking_created),
       };
     }
 
@@ -258,6 +321,42 @@ export async function handleCreatePayment(req: Request) {
         paymentHrefHost: paymentHrefHost(url),
         status,
       });
+      const reuseBookingId = String(
+        existingData.booking_id ||
+          existingData.unpaid_order_id ||
+          unpaidOrderId ||
+          sessionId,
+      );
+      if (purpose === "booking" && bookingDraft) {
+        await ensureUnpaidBookingOrder({
+          orderId: reuseBookingId,
+          sessionId,
+          userId: user.uid,
+          sessionQuote: {
+            user_id: user.uid,
+            carPath: String(verifiedQuote.carPath),
+            countryPath: String(verifiedQuote.countryPath),
+            amount_minor: Number(
+              existingData.amount_minor ?? existingData.amount_halalas,
+            ),
+            amount_halalas: Number(
+              existingData.amount_minor ?? existingData.amount_halalas,
+            ),
+            currency: String(existingData.currency),
+            bookingHours: Number(verifiedQuote.bookingHours || 0),
+            additionalHours: Number(verifiedQuote.additionalHours || 0),
+            baseFareHalalas: Number(verifiedQuote.baseFareHalalas || 0),
+            appFeeHalalas: Number(verifiedQuote.appFeeHalalas || 0),
+            vatHalalas: Number(verifiedQuote.vatHalalas || 0),
+            discountHalalas: Number(verifiedQuote.discountHalalas || 0),
+            provider_order_ref: existingData.provider_order_ref
+              ? String(existingData.provider_order_ref)
+              : undefined,
+            booking_draft: bookingDraft,
+          },
+          draft: bookingDraft,
+        });
+      }
       return {
         id: sessionId,
         status,
@@ -265,9 +364,11 @@ export async function handleCreatePayment(req: Request) {
         currency: String(existingData.currency),
         paymentUrl: url,
         threeDsUrl: url,
-        backendSource: String(existingData.backend_source || "external_api"),
+        backendSource: String(existingData.backend_source || backendSourceLabel()),
         environment: String(existingData.environment || env.NGENIUS_ENV),
         purpose,
+        bookingId: reuseBookingId,
+        bookingStatus: "payment_pending",
       };
     }
 
@@ -310,6 +411,34 @@ export async function handleCreatePayment(req: Request) {
       },
       { merge: true },
     );
+
+    let bookingId: string | null = unpaidOrderId;
+    if (purpose === "booking" && bookingDraft) {
+      const ensured = await ensureUnpaidBookingOrder({
+        orderId: unpaidOrderId || sessionId,
+        sessionId,
+        userId: user.uid,
+        sessionQuote: {
+          user_id: user.uid,
+          carPath: String(verifiedQuote.carPath),
+          countryPath: String(verifiedQuote.countryPath),
+          amount_minor: verifiedQuote.amountMinor,
+          amount_halalas: verifiedQuote.amountMinor,
+          currency: verifiedQuote.currency,
+          bookingHours: Number(verifiedQuote.bookingHours || 0),
+          additionalHours: Number(verifiedQuote.additionalHours || 0),
+          baseFareHalalas: Number(verifiedQuote.baseFareHalalas || 0),
+          appFeeHalalas: Number(verifiedQuote.appFeeHalalas || 0),
+          vatHalalas: Number(verifiedQuote.vatHalalas || 0),
+          discountHalalas: Number(verifiedQuote.discountHalalas || 0),
+          provider_order_ref: order.providerOrderRef,
+          booking_draft: bookingDraft,
+        },
+        draft: bookingDraft,
+      });
+      bookingId = ensured.orderId;
+    }
+
     return {
       id: sessionId,
       status: order.rawState?.toUpperCase().includes("3DS")
@@ -319,9 +448,11 @@ export async function handleCreatePayment(req: Request) {
       currency: verifiedQuote.currency,
       paymentUrl: order.paymentUrl,
       threeDsUrl: order.paymentUrl,
-      backendSource: "external_api",
+      backendSource: backendSourceLabel(),
       environment: env.NGENIUS_ENV,
       purpose,
+      bookingId,
+      bookingStatus: bookingId ? "payment_pending" : null,
     };
   } catch (error) {
     const failureCode =
@@ -340,6 +471,36 @@ export async function handleCreatePayment(req: Request) {
       },
       { merge: true },
     );
+    if (purpose === "booking" && bookingDraft) {
+      try {
+        await ensureUnpaidBookingOrder({
+          orderId: unpaidOrderId || sessionId,
+          sessionId,
+          userId: user.uid,
+          sessionQuote: {
+            user_id: user.uid,
+            carPath: String(verifiedQuote.carPath || ""),
+            countryPath: String(verifiedQuote.countryPath || ""),
+            amount_minor: verifiedQuote.amountMinor,
+            amount_halalas: verifiedQuote.amountMinor,
+            currency: verifiedQuote.currency,
+            bookingHours: Number(verifiedQuote.bookingHours || 0),
+            additionalHours: Number(verifiedQuote.additionalHours || 0),
+            baseFareHalalas: Number(verifiedQuote.baseFareHalalas || 0),
+            appFeeHalalas: Number(verifiedQuote.appFeeHalalas || 0),
+            vatHalalas: Number(verifiedQuote.vatHalalas || 0),
+            discountHalalas: Number(verifiedQuote.discountHalalas || 0),
+            booking_draft: bookingDraft,
+          },
+          draft: bookingDraft,
+        });
+      } catch (ensureErr) {
+        logger.warn("unpaid_order_ensure_after_fail", {
+          sessionIdPrefix: sessionId.slice(0, 8),
+          err: ensureErr instanceof Error ? ensureErr.message : "unknown",
+        });
+      }
+    }
     logger.error("create_payment_failed", {
       sessionIdPrefix: sessionId.slice(0, 8),
       failureCode,

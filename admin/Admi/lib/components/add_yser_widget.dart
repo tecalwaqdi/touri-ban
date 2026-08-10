@@ -7,6 +7,7 @@ import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'add_yser_model.dart';
+import '/core/admin_user_facing_errors.dart';
 export 'add_yser_model.dart';
 
 class AddYserWidget extends StatefulWidget {
@@ -518,7 +519,7 @@ class _AddYserWidgetState extends State<AddYserWidget> {
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('${appTr(context, 'adm_save_account_failed')}: $e'),
+                                content: Text('${appTr(context, 'adm_save_account_failed')}: ${AdminUserFacingErrors.from(context, e)}'),
                               ),
                             );
                           }

@@ -351,9 +351,7 @@ class _DemoDWidgetState extends State<DemoDWidget>
         }),
       );
     }
-    if (_model.dol == null &&
-        _model.dolh != null &&
-        _model.dolh!.isNotEmpty) {
+    if (_model.dol == null && _model.dolh != null && _model.dolh!.isNotEmpty) {
       lookups.add(
         TouryFirestoreCache.countryByNameOnce(_model.dolh!).then((c) {
           _model.dol ??= c;
@@ -424,10 +422,8 @@ class _DemoDWidgetState extends State<DemoDWidget>
     FFAppState().latlngvill = _model.mdenhVill?.latLing;
     FFAppState().mdenh = _model.mdenhVill?.cities;
     FFAppState().vil = touryCanonicalVillageRef(villageRef);
-    FFAppState().naimmdenh =
-        touryLocalizedCityCiteLabel(_model.mdenhVill!);
-    FFAppState().naimvillatext =
-        touryLocalizedVillageLabel(_model.mdenhVill!);
+    FFAppState().naimmdenh = touryLocalizedCityCiteLabel(_model.mdenhVill!);
+    FFAppState().naimvillatext = touryLocalizedVillageLabel(_model.mdenhVill!);
     FFAppState().AdressTelet = _model.mdenh ?? '';
     FFAppState().fullAdress = _model.adress ?? '';
     FFAppState().payth = '';
@@ -517,8 +513,8 @@ class _DemoDWidgetState extends State<DemoDWidget>
     if (!locationReady) {
       locationReady = await _locateAndBind();
       if (locationReady) {
-        locationReady = _commitLocationToAppState() ||
-            await _bindVillageCountryForNext();
+        locationReady =
+            _commitLocationToAppState() || await _bindVillageCountryForNext();
       }
     }
     if (!locationReady) {
@@ -543,7 +539,9 @@ class _DemoDWidgetState extends State<DemoDWidget>
 
   DocumentReference? _resolveVillageRefForNavigation() {
     _model.mdenhVill ??= _model.resolvedVillage;
-    return _model.mdenhVill?.reference ?? FFAppState().villa ?? FFAppState().villnow;
+    return _model.mdenhVill?.reference ??
+        FFAppState().villa ??
+        FFAppState().villnow;
   }
 
   void _pushLandmarksList(DocumentReference villageRef) {
@@ -724,36 +722,79 @@ class _DemoDWidgetState extends State<DemoDWidget>
   }
 
   Future<void> _changeCityManual() async {
-    final confirmDialogResponse = await TouryDialogs.confirmChangeCity(context);
-    if (confirmDialogResponse) {
-      FFAppState().IsLnstantAddress = false;
-      safeSetState(() {});
-
-      context.pushNamed(ListWidget.routeName);
-    }
+    final confirmed = await TouryDialogs.confirmChangeCity(context);
+    if (!confirmed || !mounted) return;
+    FFAppState().IsLnstantAddress = false;
+    safeSetState(() {});
+    await _openCityPicker();
   }
 
   Future<void> _changeCityInstant() async {
-    final confirmDialogResponse = await TouryDialogs.confirmChangeCity(context);
-    if (confirmDialogResponse) {
-      FFAppState().IsLnstantAddress = false;
-      safeSetState(() {});
-      _model.villCITE = await queryVillagesRecordOnce(
-        queryBuilder: (villagesRecord) => villagesRecord.where(
-          'naim',
-          isEqualTo: _model.mdenh,
-        ),
-        singleRecord: true,
-      ).then((s) => s.firstOrNull);
-      FFAppState().mdenh = _model.villCITE?.cities;
-      FFAppState().naimdolh = 'country_saudi'.tr();
-      FFAppState().naimmdenh = _model.villCITE!.naimciteText;
-      safeSetState(() {});
+    final confirmed = await TouryDialogs.confirmChangeCity(context);
+    if (!confirmed || !mounted) return;
 
-      context.pushNamed(ListWidget.routeName);
+    FFAppState().IsLnstantAddress = false;
+
+    // Prefer already-resolved village; never crash if lookup misses.
+    VillagesRecord? village =
+        _model.mdenhVill ?? _model.resolvedVillage ?? _model.villCITE;
+    final lookupName = (_model.mdenh ?? '').trim();
+    if (village == null && lookupName.isNotEmpty) {
+      village = await TouryFirestoreCache.villageByNameOnce(lookupName);
+    }
+    if (!mounted) return;
+
+    _model.villCITE = village;
+    if (village != null) {
+      FFAppState().mdenh = village.cities ?? FFAppState().mdenh;
+      final cityLabel = touryLocalizedCityCiteLabel(village).trim();
+      if (cityLabel.isNotEmpty) {
+        FFAppState().naimmdenh = cityLabel;
+      }
+    }
+    // Keep existing country label; do not force Saudi.
+    safeSetState(() {});
+    await _openCityPicker();
+  }
+
+  /// Opens the real city-selection screen for the active country.
+  Future<void> _openCityPicker() async {
+    if (!mounted) return;
+
+    final countryRef = _model.dol?.reference ??
+        _model.resolvedCountry?.reference ??
+        FFAppState().dolh;
+
+    if (countryRef == null) {
+      context.pushNamed(AldolWidget.routeName);
+      return;
     }
 
-    safeSetState(() {});
+    final countryName = FFAppState().naimdolh.trim().isNotEmpty
+        ? FFAppState().naimdolh
+        : (_model.dolh ?? '');
+
+    context.pushNamed(
+      Citie2Widget.routeName,
+      queryParameters: {
+        'coun': serializeParam(
+          countryRef,
+          ParamType.DocumentReference,
+        ),
+        'naim': serializeParam(
+          countryName,
+          ParamType.String,
+        ),
+        'idcit': serializeParam(
+          countryRef,
+          ParamType.DocumentReference,
+        ),
+        'imgDolh': serializeParam(
+          FFAppState().imgDolh,
+          ParamType.String,
+        ),
+      }.withoutNulls,
+    );
   }
 
   Future<void> _onNextPressed() async {
@@ -899,8 +940,6 @@ class _DemoDWidgetState extends State<DemoDWidget>
   }
 
   Widget _buildStepsHeader(BuildContext context) {
-    final colors = context.dsColors;
-
     return DsCard(
       elevated: true,
       padding: const EdgeInsets.all(DsSpacing.md),
@@ -913,7 +952,7 @@ class _DemoDWidgetState extends State<DemoDWidget>
             compact: true,
           ),
           const SizedBox(height: DsSpacing.sm),
-          Container(height: 1, color: colors.divider),
+          const DsDivider(),
           const SizedBox(height: DsSpacing.sm),
           TouryHelpBanner(
             message: 'ux_choose_trip_hint'.tr(),
@@ -940,8 +979,9 @@ class _DemoDWidgetState extends State<DemoDWidget>
           ),
           child: Text(
             'ux_step_trip_type'.tr(),
-            style: typography.labelLarge.copyWith(
-              color: colors.textSecondary,
+            style: typography.titleSmall.copyWith(
+              color: colors.textPrimary,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -1012,9 +1052,7 @@ class _DemoDWidgetState extends State<DemoDWidget>
     final canChangeCountryManual = !_outsideCoverage && countryLabel.isNotEmpty;
     final canChangeCountryInstant =
         !_outsideCoverage && countryLabel != requiredLabel;
-    final canChangeCityInstant = !_outsideCoverage &&
-        cityLabel.isNotEmpty &&
-        cityLabel != requiredLabel;
+    final canChangeCityInstant = !_outsideCoverage;
 
     return DsCard(
       elevated: true,
@@ -1086,7 +1124,7 @@ class _DemoDWidgetState extends State<DemoDWidget>
           if (showInfoBlock) ...[
             if (showAddressBlock) ...[
               const SizedBox(height: DsSpacing.md),
-              Container(height: 1, color: colors.divider),
+              const DsDivider(),
               const SizedBox(height: DsSpacing.md),
             ],
             if (widget.isSpeed == false)
@@ -1186,7 +1224,7 @@ class _DemoDWidgetState extends State<DemoDWidget>
       child: DsButton(
         label: 'Next'.tr(),
         variant: DsButtonVariant.primary,
-        size: DsButtonSize.lg,
+        size: DsButtonSize.md,
         expanded: true,
         loading: _navigating,
         trailing: Icon(
@@ -1272,15 +1310,8 @@ class _TripTypeCard extends StatelessWidget {
           vertical: DsSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: selected ? null : colors.card,
-          gradient: selected
-              ? LinearGradient(
-                  begin: AlignmentDirectional.topStart,
-                  end: AlignmentDirectional.bottomEnd,
-                  colors: [colors.primary, colors.primaryStrong],
-                )
-              : null,
-          borderRadius: DsRadius.large,
+          color: selected ? colors.primary : colors.card,
+          borderRadius: DsRadius.medium,
           border: Border.all(
             color: selected
                 ? colors.primaryStrong.withValues(alpha: 0.45)
@@ -1288,7 +1319,7 @@ class _TripTypeCard extends StatelessWidget {
             width: selected ? 1.4 : 1,
           ),
           boxShadow: selected
-              ? DsShadows.primaryGlow(dark: isDark)
+              ? DsShadows.soft(dark: isDark)
               : DsShadows.soft(dark: isDark),
         ),
         child: Row(

@@ -609,15 +609,10 @@ class _ListViCopy2WidgetState extends State<ListViCopy2Widget> {
         ),
         FutureBuilder<int>(
           future: queryChatRecordCount(
-            queryBuilder: (chatRecord) => chatRecord
-                .where(
-                  'date',
-                  isEqualTo: getCurrentTimestamp,
-                )
-                .where(
-                  'user1',
-                  isNotEqualTo: currentUserReference,
-                ),
+            queryBuilder: (chatRecord) => chatRecord.where(
+              'participants',
+              arrayContains: currentUserReference,
+            ),
           ),
           builder: (context, snapshot) {
             // Customize what your widget looks like when it's loading.

@@ -14,6 +14,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
 import 'company_drivers_model.dart';
+import '/core/admin_user_facing_errors.dart';
 export 'company_drivers_model.dart';
 
 /// بوابة مدير شركة النقل — سائقو شركته فقط.
@@ -113,7 +114,7 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${appTr(context, 'adm_update_driver_status_failed')}: $e')),
+        SnackBar(content: Text('${appTr(context, 'adm_update_driver_status_failed')}: ${AdminUserFacingErrors.from(context, e)}')),
       );
     }
   }
@@ -252,6 +253,10 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
                                         queryParameters: {
                                           'editUser': serializeParam(
                                             driver.reference,
+                                            ParamType.DocumentReference,
+                                          ),
+                                          'companyRef': serializeParam(
+                                            companyRef,
                                             ParamType.DocumentReference,
                                           ),
                                         }.withoutNulls,

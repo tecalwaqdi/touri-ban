@@ -11,6 +11,7 @@ import '/core/payments/admin_payment_api_client.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/core/admin_currency.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -104,7 +105,9 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
     final alreadyMinor =
         (order.snapshotData['refund_amount_halalas'] as num?)?.toInt() ?? 0;
     final remainingMinor = (paidMinor - alreadyMinor).clamp(0, paidMinor);
-    final currency = (order.snapshotData['currency'] as String?) ?? 'SAR';
+    final currency = AdminCurrency.codeForOrder(order);
+    final currencySymbol = AdminCurrency.displaySymbolForOrder(order);
+    final currencyLabel = currencySymbol.isNotEmpty ? currencySymbol : (currency.isNotEmpty ? currency : '—');
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
@@ -115,15 +118,15 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
               children: [
                 Text(
                   '${uiTr(context, 'المبلغ المدفوع')}: '
-                  '${(paidMinor / 100).toStringAsFixed(2)} $currency',
+                  '${(paidMinor / 100).toStringAsFixed(2)} $currencyLabel',
                 ),
                 Text(
                   '${uiTr(context, 'تم الاسترداد')}: '
-                  '${(alreadyMinor / 100).toStringAsFixed(2)} $currency',
+                  '${(alreadyMinor / 100).toStringAsFixed(2)} $currencyLabel',
                 ),
                 Text(
                   '${uiTr(context, 'المتبقي')}: '
-                  '${(remainingMinor / 100).toStringAsFixed(2)} $currency',
+                  '${(remainingMinor / 100).toStringAsFixed(2)} $currencyLabel',
                 ),
                 const SizedBox(height: 12),
                 Text(uiTr(context, 'تأكيد استرداد المبلغ المدفوع؟')),
@@ -831,7 +834,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                       adminBookingDetailsOrderRecord.total,
                                       formatType: FormatType.decimal,
                                       decimalType: DecimalType.automatic,
-                                      currency: uiTr(context, 'ريال '),
+                                      currency: AdminCurrency.asFormatPrefix(AdminCurrency.displaySymbolForOrder(adminBookingDetailsOrderRecord)),
                                     ),
                                     style: FlutterFlowTheme.of(context)
                                         .bodyMedium
@@ -876,7 +879,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                           .totalMndob2,
                                       formatType: FormatType.decimal,
                                       decimalType: DecimalType.automatic,
-                                      currency: uiTr(context, 'ريال '),
+                                      currency: AdminCurrency.asFormatPrefix(AdminCurrency.displaySymbolForOrder(adminBookingDetailsOrderRecord)),
                                     ),
                                     style: FlutterFlowTheme.of(context)
                                         .bodyMedium
@@ -920,7 +923,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                       adminBookingDetailsOrderRecord.totalApp,
                                       formatType: FormatType.decimal,
                                       decimalType: DecimalType.automatic,
-                                      currency: uiTr(context, 'ريال '),
+                                      currency: AdminCurrency.asFormatPrefix(AdminCurrency.displaySymbolForOrder(adminBookingDetailsOrderRecord)),
                                     ),
                                     style: FlutterFlowTheme.of(context)
                                         .bodyMedium
@@ -1007,7 +1010,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                                       adminBookingDetailsOrderRecord.total,
                                       formatType: FormatType.decimal,
                                       decimalType: DecimalType.automatic,
-                                      currency: uiTr(context, 'ر.س'),
+                                      currency: AdminCurrency.asFormatPrefix(AdminCurrency.displaySymbolForOrder(adminBookingDetailsOrderRecord)),
                                     ),
                                     style: FlutterFlowTheme.of(context)
                                         .headlineSmall

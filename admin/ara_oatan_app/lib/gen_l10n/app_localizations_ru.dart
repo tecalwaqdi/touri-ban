@@ -1854,8 +1854,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ux_change => 'Изменить';
 
   @override
-  String get ux_card_payment_network =>
-      'Безопасная оплата картой через Network International';
+  String get ux_card_payment_network => 'Оплата картой';
 
   @override
   String checkout_extra_hour_discount(
@@ -2226,8 +2225,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get card_invalid_data => 'Данные карты недействительны';
 
   @override
-  String get checkout_paying =>
-      'Обработка платежа через Network International...';
+  String get checkout_paying => 'Обработка оплаты картой...';
 
   @override
   String get map_trip_destination => 'Пункт назначения';

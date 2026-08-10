@@ -30,6 +30,7 @@ class Details24QuizPageWidget extends StatefulWidget {
 
 class _Details24QuizPageWidgetState extends State<Details24QuizPageWidget> {
   late Details24QuizPageModel _model;
+  bool _submitting = false;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -64,29 +65,35 @@ class _Details24QuizPageWidgetState extends State<Details24QuizPageWidget> {
 
   /// Submits the review then flags the order as rated — same call order as before.
   Future<void> _submitReview() async {
-    await ReviewsUserRecord.collection.doc().set(createReviewsUserRecordData(
-          revUser: widget.usermndob,
-          rEVIEWSmsg: _model.textController.text,
-          ret: _model.ratingBarValue?.round(),
-          date: getCurrentTimestamp,
-          userAlSend: currentUserReference,
-          orderRev: widget.idordeer,
-        ));
+    if (_submitting) return;
+    safeSetState(() => _submitting = true);
+    try {
+      await ReviewsUserRecord.collection.doc().set(createReviewsUserRecordData(
+            revUser: widget.usermndob,
+            rEVIEWSmsg: _model.textController.text,
+            ret: _model.ratingBarValue?.round(),
+            date: getCurrentTimestamp,
+            userAlSend: currentUserReference,
+            orderRev: widget.idordeer,
+          ));
 
-    if (mounted) {
-      DsSnackBar.show(
-        context,
-        message: 'ui_text_e93e07976e'.tr(),
-        tone: DsSnackTone.success,
-      );
+      if (mounted) {
+        DsSnackBar.show(
+          context,
+          message: 'ui_text_e93e07976e'.tr(),
+          tone: DsSnackTone.success,
+        );
+      }
+
+      await widget.idordeer!.update(createOrderRecordData(
+        revewSendClent: true,
+      ));
+
+      if (!mounted) return;
+      context.safePop();
+    } finally {
+      if (mounted) safeSetState(() => _submitting = false);
     }
-
-    await widget.idordeer!.update(createOrderRecordData(
-      revewSendClent: true,
-    ));
-
-    if (!mounted) return;
-    context.safePop();
   }
 
   /// Slider is a 0-3 range with two divisions, so each mood owns one third.
@@ -164,6 +171,8 @@ class _Details24QuizPageWidgetState extends State<Details24QuizPageWidget> {
                   label: FFLocalizations.of(context).getText(
                     'fxd4nmkl' /* send the rating */,
                   ),
+                  loading: _submitting,
+                  enabled: !_submitting,
                   onPressed: _submitReview,
                 ),
               ),
@@ -312,13 +321,6 @@ class _Details24QuizPageWidgetState extends State<Details24QuizPageWidget> {
     final colors = context.dsColors;
     final typography = context.dsTypography;
 
-    OutlineInputBorder border(Color color, {double width = 1}) {
-      return OutlineInputBorder(
-        borderRadius: DsRadius.medium,
-        borderSide: BorderSide(color: color, width: width),
-      );
-    }
-
     return DsCard(
       elevated: true,
       child: Column(
@@ -331,38 +333,19 @@ class _Details24QuizPageWidgetState extends State<Details24QuizPageWidget> {
             style: typography.titleSmall.copyWith(color: colors.textPrimary),
           ),
           const SizedBox(height: DsSpacing.xs),
-          TextFormField(
+          DsTextField(
             controller: _model.textController,
             focusNode: _model.textFieldFocusNode,
-            autofocus: false,
-            obscureText: false,
+            label: FFLocalizations.of(context).getText(
+              'zw2w2ljz' /* Leave a comment (optional) */,
+            ),
+            hint: FFLocalizations.of(context).getText(
+              'vp4ryyza' /* TextField */,
+            ),
             maxLines: 3,
             minLines: 2,
             keyboardType: TextInputType.multiline,
-            cursorColor: colors.primary,
-            enableInteractiveSelection: true,
-            style: typography.bodyMedium.copyWith(color: colors.textPrimary),
-            decoration: InputDecoration(
-              isDense: true,
-              labelText: FFLocalizations.of(context).getText(
-                'zw2w2ljz' /* Leave a comment (optional) */,
-              ),
-              labelStyle:
-                  typography.labelMedium.copyWith(color: colors.textSecondary),
-              hintText: FFLocalizations.of(context).getText(
-                'vp4ryyza' /* TextField */,
-              ),
-              hintStyle: typography.bodySmall.copyWith(color: colors.hint),
-              filled: true,
-              fillColor: colors.surface,
-              contentPadding: DsSpacing.inputContentPadding,
-              border: border(colors.border),
-              enabledBorder: border(colors.border),
-              focusedBorder: border(colors.focus, width: 1.6),
-              errorBorder: border(colors.error),
-              focusedErrorBorder: border(colors.error, width: 1.6),
-            ),
-            validator: _model.textControllerValidator.asValidator(context),
+            variant: DsFieldVariant.filled,
           ),
         ],
       ),

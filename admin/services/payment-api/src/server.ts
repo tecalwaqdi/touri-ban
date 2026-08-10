@@ -166,11 +166,25 @@ export function createPaymentApp(): express.Express {
     }
     logger.error("unhandled_express_error", {
       name: err instanceof Error ? err.name : "unknown",
+      message: err instanceof Error ? err.message : String(err),
+      code:
+        err && typeof err === "object" && "code" in err
+          ? String((err as { code?: unknown }).code ?? "")
+          : undefined,
     });
+    const msg = err instanceof Error ? err.message : String(err);
+    const credentialOrIam =
+      /Credential implementation|access token|PERMISSION_DENIED|Missing or insufficient permissions/i.test(
+        msg,
+      );
     sendJson(res, 500, {
       error: {
-        code: PaymentErrorCode.UNKNOWN_ERROR,
-        message: "Unexpected server error",
+        code: credentialOrIam
+          ? PaymentErrorCode.PROVIDER_UNAVAILABLE
+          : PaymentErrorCode.UNKNOWN_ERROR,
+        message: credentialOrIam
+          ? "Payment backend cannot access Firebase (credentials/IAM)"
+          : "Unexpected server error",
       },
     });
   });

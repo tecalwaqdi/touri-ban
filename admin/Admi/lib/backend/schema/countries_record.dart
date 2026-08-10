@@ -65,6 +65,16 @@ class CountriesRecord extends FirestoreRecord {
   String get isoCode => _isoCode ?? '';
   bool hasIsoCode() => _isoCode != null;
 
+  // "currency_code" field — ISO 4217 (SAR, KGS, …).
+  String? _currencyCode;
+  String get currencyCode => _currencyCode ?? '';
+  bool hasCurrencyCode() => _currencyCode != null;
+
+  // "CurrencySymbol" field — display symbol (ر.س, сом, …).
+  String? _currencySymbol;
+  String get currencySymbol => _currencySymbol ?? '';
+  bool hasCurrencySymbol() => _currencySymbol != null;
+
   // "geo_center" field.
   LatLng? _geoCenter;
   LatLng? get geoCenter => _geoCenter;
@@ -105,6 +115,14 @@ class CountriesRecord extends FirestoreRecord {
         castToType<double>(snapshotData['app_commission_percent']);
     _naimEnglesh = snapshotData['naimEnglesh'] as String?;
     _isoCode = snapshotData['iso_code'] as String?;
+    _currencyCode = (snapshotData['currency_code'] ??
+            snapshotData['currencyCode'] ??
+            snapshotData['currency'])
+        ?.toString();
+    _currencySymbol = (snapshotData['CurrencySymbol'] ??
+            snapshotData['currency_symbol'] ??
+            snapshotData['currencySymbol'])
+        ?.toString();
     _geoCenter = snapshotData['geo_center'] as LatLng?;
     _boundsSw = snapshotData['bounds_sw'] as LatLng?;
     _boundsNe = snapshotData['bounds_ne'] as LatLng?;
@@ -170,6 +188,8 @@ Map<String, dynamic> createCountriesRecordData({
   LatLng? boundsSw,
   LatLng? boundsNe,
   Map<String, String>? namesI18n,
+  String? currencyCode,
+  String? currencySymbol,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -190,6 +210,8 @@ Map<String, dynamic> createCountriesRecordData({
       'bounds_sw': boundsSw,
       'bounds_ne': boundsNe,
       'names_i18n': namesI18n,
+      'currency_code': currencyCode,
+      'CurrencySymbol': currencySymbol,
     }.withoutNulls,
   );
 

@@ -8,6 +8,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_super_admin_gate.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/core/admin_currency.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,7 @@ class _AdminReportsHubWidgetState extends State<AdminReportsHubWidget> {
   Timer? _countryDebounce;
   int _loadGeneration = 0;
   StreamSubscription<int>? _statsInvalidationSub;
+  String _currencySymbol = '';
 
   @override
   void initState() {
@@ -50,11 +52,29 @@ class _AdminReportsHubWidgetState extends State<AdminReportsHubWidget> {
     _isInitialLoad = _report == null;
     _loadCountries();
     _reloadReport();
+    _refreshCurrencySymbol();
     _statsInvalidationSub =
         AdminStatsCoordinator.instance.stream(StatsDomain.reports).listen((_) {
       if (!mounted) return;
       _reloadReport();
     });
+  }
+
+  Future<void> _refreshCurrencySymbol() async {
+    String symbol = '';
+    if (_selectedCountry != null) {
+      try {
+        final country = await CountriesRecord.getDocumentOnce(_selectedCountry!);
+        symbol = AdminCurrency.symbolFromCountry(country);
+      } catch (_) {}
+    }
+    if (symbol.isEmpty) {
+      symbol = await AdminCurrency.resolveSymbolForActiveScope();
+    }
+    if (!mounted) return;
+    if (_currencySymbol != symbol) {
+      setState(() => _currencySymbol = symbol);
+    }
   }
 
   @override
@@ -139,6 +159,11 @@ class _AdminReportsHubWidgetState extends State<AdminReportsHubWidget> {
     setState(() {
       _selectedCountry = country?.reference;
       _countryLabel = country?.naim ?? uiTr(context, 'جميع الدول');
+      if (country != null) {
+        _currencySymbol = AdminCurrency.symbolFromCountry(country);
+      } else {
+        _currencySymbol = '';
+      }
     });
     _countryDebounce = Timer(const Duration(milliseconds: 450), () {
       if (!mounted) return;
@@ -147,6 +172,9 @@ class _AdminReportsHubWidgetState extends State<AdminReportsHubWidget> {
         countryLabel: _countryLabel,
       );
       _reloadReport();
+      if (_selectedCountry == null) {
+        _refreshCurrencySymbol();
+      }
     });
   }
 
@@ -194,7 +222,7 @@ class _AdminReportsHubWidgetState extends State<AdminReportsHubWidget> {
         value,
         formatType: FormatType.decimal,
         decimalType: DecimalType.automatic,
-        currency: uiTr(context, 'ر.س '),
+        currency: AdminCurrency.asFormatPrefix(_currencySymbol),
       );
 
   void _openAgentReport(UserRecord agent) {

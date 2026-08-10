@@ -90,6 +90,36 @@ abstract final class TourySystemStatusCodes {
     }
   }
 
+  /// English phrase key for UI localization (DB dual-write still uses Arabic constants).
+  static String displayHalhKeyForCode(String? code) {
+    switch ((code ?? '').trim().toLowerCase()) {
+      case pendingDriver:
+      case legacyAwaitingDriver:
+      case 'pending':
+        return 'Waiting for driver';
+      case driverAssigned:
+      case driverArriving:
+        return 'Accepted';
+      case driverArrived:
+        return 'Driver arrived';
+      case tripStarted:
+      case tripInProgress:
+        return 'Trip started';
+      case completed:
+      case legacyTripCompleted:
+        return 'Completed';
+      case cancelledByCustomer:
+      case cancelledByDriver:
+      case cancelledByAdmin:
+      case legacyCancelled:
+      case legacyCanceled:
+        return 'Cancelled';
+      default:
+        return '';
+    }
+  }
+
+  /// Legacy dual-write Arabic label for Firestore `halh_text` only — not for UI.
   static String displayHalhForCode(String? code) {
     switch ((code ?? '').trim().toLowerCase()) {
       case pendingDriver:

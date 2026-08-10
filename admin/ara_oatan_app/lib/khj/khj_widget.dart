@@ -61,21 +61,9 @@ class _KhjWidgetState extends State<KhjWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () async {
-                    context.pop();
+                    context.safePop();
                   },
                 ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                        0, 0, DsSpacing.xs, 0),
-                    child: DsIconButton(
-                      icon: Icons.arrow_back_ios_new_rounded,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ],
               ),
               body: SafeArea(
                 top: true,

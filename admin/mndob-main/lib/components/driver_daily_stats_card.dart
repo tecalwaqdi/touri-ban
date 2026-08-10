@@ -23,9 +23,9 @@ class DriverDailyStatsCard extends StatelessWidget {
 
     return DsCard(
       margin: const EdgeInsets.fromLTRB(
-        DsSpacing.md,
+        0,
         DsSpacing.xs,
-        DsSpacing.md,
+        0,
         DsSpacing.xxs,
       ),
       elevated: true,
@@ -40,14 +40,17 @@ class DriverDailyStatsCard extends StatelessWidget {
                 size: 20,
               ),
               DsSpacing.gapXs,
-              Text(
-                driverTr(context, "Today's stats"),
-                style: typography.titleMedium.copyWith(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w700,
+              Expanded(
+                child: Text(
+                  driverTr(context, "Today's stats"),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: typography.titleMedium.copyWith(
+                    color: colors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-              const Spacer(),
               if (isLoading)
                 SizedBox(
                   width: 16,
@@ -152,6 +155,8 @@ class _StatTile extends StatelessWidget {
           DsSpacing.gapXs,
           Text(
             value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: typography.headlineSmall.copyWith(
               fontWeight: FontWeight.w700,
               color: colors.textPrimary,
@@ -159,6 +164,8 @@ class _StatTile extends StatelessWidget {
           ),
           Text(
             label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: typography.labelSmall.copyWith(
               color: colors.textSecondary,
             ),

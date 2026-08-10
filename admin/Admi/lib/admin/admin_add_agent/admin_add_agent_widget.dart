@@ -1,8 +1,9 @@
 import '/backend/admin_performance.dart';
-import '/backend/admin_firestore_delete.dart';
+import '/backend/admin_country_geo_service.dart';
 import '/backend/admin_country_location_resolver.dart';
 import '/backend/admin_gps_location_service.dart';
 import '/components/admin_crud_feedback.dart';
+import '/components/admin_location_service.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_user_creation.dart';
 import '/backend/backend.dart';
@@ -12,7 +13,6 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'admin_add_agent_model.dart';
 export 'admin_add_agent_model.dart';
@@ -72,6 +72,10 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _detectingCountryFromGps = false;
+  bool _resolvingMapSearch = false;
+  bool _fetchingCountryGeo = false;
+  late final TextEditingController _mapSearchController;
+  String? _lastResolvedPlaceLabel;
 
   @override
   void initState() {
@@ -106,6 +110,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
         TextEditingController(text: _kAgentVatPercent.toStringAsFixed(0));
 
     _model.switchValue = true;
+    _mapSearchController = TextEditingController();
     _loadCountries();
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
@@ -211,6 +216,9 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
     setState(() => _model.isSubmitting = true);
 
     try {
+      // Ensure country center/bounds exist before attaching them to the agent.
+      await _ensureCountryGeo(_model.selectedCountry!, silent: true);
+
       final email = _model.emailTextController!.text.trim();
       final agentPercent = _parsePercent(_model.textController7!.text) ?? 0.0;
       final appPercent =
@@ -237,6 +245,20 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
             'agent_date_reg': _model.agentStartDate!.toIso8601String(),
           if (_model.agentEndDate != null)
             'agent_date_end': _model.agentEndDate!.toIso8601String(),
+          // Geographic context from assigned country (auto).
+          if (_model.selectedCountry!.isoCode.isNotEmpty)
+            'agent_country_iso': _model.selectedCountry!.isoCode,
+          if (_model.selectedCountry!.geoCenter != null)
+            'agent_geo_center': _model.selectedCountry!.geoCenter,
+          if (_model.selectedCountry!.boundsSw != null)
+            'agent_bounds_sw': _model.selectedCountry!.boundsSw,
+          if (_model.selectedCountry!.boundsNe != null)
+            'agent_bounds_ne': _model.selectedCountry!.boundsNe,
+          if ((_model.selectedCountry!.snapshotData['currency_code'] ?? '')
+              .toString()
+              .isNotEmpty)
+            'agent_currency_code':
+                _model.selectedCountry!.snapshotData['currency_code'],
         },
       );
 
@@ -251,10 +273,11 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      final msg = e is Exception
-          ? AdminUserCreation.authErrorMessage(e)
-          : e.toString().replaceFirst('Exception: ', '');
-      AdminCrudFeedback.error(context, '${uiTr(context, 'تعذر إضافة الوكيل')}: $msg');
+      final msg = AdminUserCreation.authErrorMessage(e);
+      AdminCrudFeedback.error(
+        context,
+        '${uiTr(context, 'تعذر إضافة الوكيل')}: $msg',
+      );
     } finally {
       if (mounted) {
         setState(() => _model.isSubmitting = false);
@@ -314,7 +337,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                   !FlutterFlowTheme.of(context).bodyMediumIsCustom,
             ),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFE0E0E0), width: 1.0),
+          borderSide: BorderSide(color: FlutterFlowTheme.of(context).alternate, width: 1.0),
           borderRadius: BorderRadius.circular(8.0),
         ),
         focusedBorder: OutlineInputBorder(
@@ -330,7 +353,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
           borderRadius: BorderRadius.circular(8.0),
         ),
         filled: true,
-        fillColor: readOnly ? const Color(0xFFF5F5F5) : Colors.white,
+        fillColor: AdminUi.fieldFill(context, muted: readOnly),
         suffixIcon: const Icon(Icons.percent),
         helperText: readOnly ? uiTr(context, 'نسبة ثابتة') : null,
       ),
@@ -356,9 +379,9 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
       borderRadius: BorderRadius.circular(8),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AdminUi.fieldFill(context),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFFE0E0E0)),
+          border: Border.all(color: theme.alternate),
         ),
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -417,7 +440,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
             content: Text(
               uiTr(
                 context,
-                uiTr(context, 'تعذّر قراءة الموقع — فعّل GPS واسمح للتطبيق بالوصول إلى الموقع'),
+                'تعذّر قراءة الموقع — فعّل GPS واسمح للتطبيق بالوصول إلى الموقع',
               ),
             ),
           ),
@@ -425,47 +448,195 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
         return;
       }
 
-      final resolved = await AdminCountryLocationResolver.resolveCountry(
+      await _selectCountryFromPosition(
         position,
-        countries: _model.countries,
-      );
-      if (!mounted) return;
-
-      if (resolved == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              uiTr(
-                context,
-                uiTr(context, 'لم نتمكن من تحديد الدولة من موقعك. تأكد أن الدولة مسجّلة بحدود جغرافية في قسم الدول'),
-              ),
-            ),
-          ),
-        );
-        return;
-      }
-
-      CountriesRecord? match;
-      for (final country in _model.countries) {
-        if (country.reference.path == resolved.reference.path) {
-          match = country;
-          break;
-        }
-      }
-
-      final selected = match ?? resolved;
-      setState(() => _model.selectedCountry = selected);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            uiTr(context, 'تم تحديد الدولة: ${selected.naim}'),
-          ),
-        ),
+        placeLabel: AdminLocationService.formatCoordinates(position),
       );
     } finally {
       if (mounted) {
         setState(() => _detectingCountryFromGps = false);
+      }
+    }
+  }
+
+  Future<void> _searchCountryOnMaps() async {
+    final query = _mapSearchController.text.trim();
+    if (query.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            uiTr(context, 'اكتب اسم الدولة أو المدينة أو الصق إحداثيات Google Maps'),
+          ),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _resolvingMapSearch = true);
+    try {
+      // Direct coordinates paste (from Google Maps share).
+      final coords = AdminLocationService.parseCoordinates(query);
+      if (coords != null) {
+        await _selectCountryFromPosition(
+          coords,
+          placeLabel: AdminLocationService.formatCoordinates(coords),
+        );
+        return;
+      }
+
+      final result = await AdminLocationService.geocode(query);
+      if (!mounted) return;
+      if (result == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              uiTr(context, 'لم يُعثر على موقع لهذا البحث. جرّب اسماً أوضح أو إحداثيات.'),
+            ),
+          ),
+        );
+        return;
+      }
+
+      await _selectCountryFromPosition(
+        result.latLng,
+        placeLabel: result.address,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _resolvingMapSearch = false);
+      }
+    }
+  }
+
+  Future<void> _selectCountryFromPosition(
+    LatLng position, {
+    String? placeLabel,
+  }) async {
+    // Ensure countries have bounds when possible.
+    await _backfillMissingBounds(limit: 12);
+
+    final resolved = await AdminCountryLocationResolver.resolveCountry(
+      position,
+      countries: _model.countries,
+    );
+    if (!mounted) return;
+
+    if (resolved == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            uiTr(
+              context,
+              'لم نتمكن من مطابقة الموقع بدولة مسجّلة. اختر الدولة يدوياً أو أضف حدوداً جغرافية للدولة في قسم الدول.',
+            ),
+          ),
+        ),
+      );
+      setState(() {
+        _lastResolvedPlaceLabel = placeLabel;
+      });
+      return;
+    }
+
+    CountriesRecord? match;
+    for (final country in _model.countries) {
+      if (country.reference.path == resolved.reference.path) {
+        match = country;
+        break;
+      }
+    }
+
+    final selected = match ?? resolved;
+    setState(() {
+      _model.selectedCountry = selected;
+      _lastResolvedPlaceLabel = placeLabel;
+    });
+    await _ensureCountryGeo(selected);
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '${uiTr(context, 'تم تحديد الدولة')}: ${selected.naim}',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _backfillMissingBounds({int limit = 8}) async {
+    final missing = _model.countries
+        .where((c) => !c.hasBounds())
+        .take(limit)
+        .toList();
+    if (missing.isEmpty) return;
+
+    for (final country in missing) {
+      await _ensureCountryGeo(country, silent: true);
+    }
+  }
+
+  Future<void> _ensureCountryGeo(
+    CountriesRecord country, {
+    bool silent = false,
+  }) async {
+    if (country.hasGeoCenter() && country.hasBounds()) {
+      return;
+    }
+
+    if (!silent && mounted) {
+      setState(() => _fetchingCountryGeo = true);
+    }
+
+    try {
+      AdminGeoPlaceData? geo;
+      if (country.isoCode.trim().length == 2) {
+        geo = await AdminCountryGeoService.fetchForIsoCode(country.isoCode);
+      }
+      geo ??= await AdminCountryGeoService.fetchForCountryName(
+        country.naimEnglesh.isNotEmpty ? country.naimEnglesh : country.naim,
+      );
+      if (geo == null || (!geo.hasCenter && !geo.hasBounds)) {
+        if (!silent && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                uiTr(context, 'تعذر جلب إحداثيات الدولة تلقائياً — اخترها يدوياً أو عبر بحث الخريطة'),
+              ),
+            ),
+          );
+        }
+        return;
+      }
+
+      final patch = AdminCountryGeoService.geoFieldsForFirestore(geo);
+      if (patch.isEmpty) return;
+
+      await country.reference.set(patch, SetOptions(merge: true));
+      final refreshed = await CountriesRecord.getDocumentOnce(country.reference);
+      if (!mounted) return;
+
+      final next = <CountriesRecord>[];
+      for (final c in _model.countries) {
+        next.add(c.reference.path == refreshed.reference.path ? refreshed : c);
+      }
+      setState(() {
+        _model.countries = next;
+        if (_model.selectedCountry?.reference.path == refreshed.reference.path) {
+          _model.selectedCountry = refreshed;
+        }
+      });
+    } catch (e) {
+      debugPrint('ensureCountryGeo failed: $e');
+      if (!silent && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(uiTr(context, 'تعذر تحديث بيانات الدولة الجغرافية')),
+          ),
+        );
+      }
+    } finally {
+      if (!silent && mounted) {
+        setState(() => _fetchingCountryGeo = false);
       }
     }
   }
@@ -491,9 +662,9 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AdminUi.fieldFill(context),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFFE0E0E0)),
+          border: Border.all(color: theme.alternate),
         ),
         child: Text(
           uiTr(context, 'لا توجد دول مسجلة. أضف دولاً من قسم الدول أولاً.'),
@@ -506,6 +677,13 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
       );
     }
 
+    final selected = _model.selectedCountry;
+    final geoSummary = selected == null
+        ? null
+        : selected.hasGeoCenter()
+            ? AdminLocationService.formatCoordinates(selected.geoCenter!)
+            : uiTr(context, 'لا توجد إحداثيات محفوظة لهذه الدولة بعد');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -515,11 +693,11 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
           decoration: InputDecoration(
             labelText: FFLocalizations.of(context).getText('2jwojhmw'),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: AdminUi.fieldFill(context),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+              borderSide: BorderSide(color: FlutterFlowTheme.of(context).alternate),
             ),
           ),
           hint: Text(uiTr(context, 'اختر البلد')),
@@ -531,10 +709,55 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                 ),
               )
               .toList(),
-          onChanged: (value) => setState(() => _model.selectedCountry = value),
-          validator: (value) => value == null ? uiTr(context, 'اختر البلد') : null,
+          onChanged: (value) async {
+            setState(() => _model.selectedCountry = value);
+            if (value != null) {
+              await _ensureCountryGeo(value);
+            }
+          },
+          validator: (value) =>
+              value == null ? uiTr(context, 'اختر البلد') : null,
         ),
         const SizedBox(height: 10),
+        TextFormField(
+          controller: _mapSearchController,
+          textInputAction: TextInputAction.search,
+          onFieldSubmitted: (_) => _searchCountryOnMaps(),
+          decoration: InputDecoration(
+            labelText: uiTr(context, 'بحث Google Maps / إحداثيات'),
+            hintText: uiTr(
+              context,
+              'مثال: Kyrgyzstan أو Bishkek أو 42.8746, 74.5698',
+            ),
+            filled: true,
+            fillColor: AdminUi.fieldFill(context),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            suffixIcon: IconButton(
+              tooltip: uiTr(context, 'بحث'),
+              onPressed: _resolvingMapSearch ? null : _searchCountryOnMaps,
+              icon: _resolvingMapSearch
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(Icons.search_rounded, color: theme.primary),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: (_resolvingMapSearch || _detectingCountryFromGps)
+              ? null
+              : _searchCountryOnMaps,
+          icon: Icon(Icons.map_outlined, color: theme.primary),
+          label: Text(uiTr(context, 'تحديد الدولة عبر بحث الخريطة')),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            side: BorderSide(color: AdminUi.brandTeal.withValues(alpha: 0.5)),
+          ),
+        ),
+        const SizedBox(height: 8),
         OutlinedButton.icon(
           onPressed: _detectingCountryFromGps ? null : _detectCountryFromGps,
           icon: _detectingCountryFromGps
@@ -555,10 +778,53 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
             side: BorderSide(color: AdminUi.brandTeal.withValues(alpha: 0.5)),
           ),
         ),
+        if (_fetchingCountryGeo) ...[
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  uiTr(context, 'جاري جلب إحداثيات وحدود الدولة…'),
+                  style: theme.bodySmall,
+                ),
+              ),
+            ],
+          ),
+        ],
+        if (geoSummary != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            '${uiTr(context, 'مركز الدولة')}: $geoSummary',
+            style: theme.bodySmall.override(
+              fontFamily: theme.bodySmallFamily,
+              color: theme.secondaryText,
+              useGoogleFonts: !theme.bodySmallIsCustom,
+            ),
+          ),
+        ],
+        if (_lastResolvedPlaceLabel != null &&
+            _lastResolvedPlaceLabel!.trim().isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            '${uiTr(context, 'آخر موقع من الخريطة')}: $_lastResolvedPlaceLabel',
+            style: theme.bodySmall.override(
+              fontFamily: theme.bodySmallFamily,
+              color: theme.secondaryText,
+              useGoogleFonts: !theme.bodySmallIsCustom,
+            ),
+          ),
+        ],
+        const SizedBox(height: 4),
         Text(
           uiTr(
             context,
-            uiTr(context, 'يستخدم موقعك الحالي لمطابقة الدولة المسجّلة في النظام (يتطلب حدوداً جغرافية للدولة)'),
+            'ابحث في Google Maps أو الصق الإحداثيات، أو استخدم GPS. النظام يطابق الموقع بالدولة المسجّلة (يتطلب حدوداً جغرافية).',
           ),
           style: theme.bodySmall.override(
             fontFamily: theme.bodySmallFamily,
@@ -572,6 +838,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
 
   @override
   void dispose() {
+    _mapSearchController.dispose();
     _model.dispose();
 
     super.dispose();
@@ -703,7 +970,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                     ),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Color(0xFFE0E0E0),
+                                    color: FlutterFlowTheme.of(context).alternate,
                                     width: 1.0,
                                   ),
                                   borderRadius: BorderRadius.circular(8.0),
@@ -730,7 +997,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: AdminUi.fieldFill(context),
                               ),
                               style: FlutterFlowTheme.of(context)
                                   .bodyLarge
@@ -777,7 +1044,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                     ),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Color(0xFFE0E0E0),
+                                    color: FlutterFlowTheme.of(context).alternate,
                                     width: 1.0,
                                   ),
                                   borderRadius: BorderRadius.circular(8.0),
@@ -804,7 +1071,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: AdminUi.fieldFill(context),
                               ),
                               style: FlutterFlowTheme.of(context)
                                   .bodyLarge
@@ -852,7 +1119,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                     ),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Color(0xFFE0E0E0),
+                                    color: FlutterFlowTheme.of(context).alternate,
                                     width: 1.0,
                                   ),
                                   borderRadius: BorderRadius.circular(8.0),
@@ -879,7 +1146,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: AdminUi.fieldFill(context),
                               ),
                               style: FlutterFlowTheme.of(context)
                                   .bodyLarge
@@ -934,7 +1201,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                     ),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Color(0xFFE0E0E0),
+                                    color: FlutterFlowTheme.of(context).alternate,
                                     width: 1.0,
                                   ),
                                   borderRadius: BorderRadius.circular(8.0),
@@ -961,7 +1228,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: AdminUi.fieldFill(context),
                               ),
                               style: FlutterFlowTheme.of(context)
                                   .bodyLarge
@@ -1009,7 +1276,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                     ),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Color(0xFFE0E0E0),
+                                    color: FlutterFlowTheme.of(context).alternate,
                                     width: 1.0,
                                   ),
                                   borderRadius: BorderRadius.circular(8.0),
@@ -1036,7 +1303,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: AdminUi.fieldFill(context),
                                 suffixIcon: InkWell(
                                   onTap: () => safeSetState(
                                     () => _model.passVisibility =
@@ -1100,7 +1367,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                     ),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Color(0xFFE0E0E0),
+                                    color: FlutterFlowTheme.of(context).alternate,
                                     width: 1.0,
                                   ),
                                   borderRadius: BorderRadius.circular(8.0),
@@ -1127,7 +1394,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: AdminUi.fieldFill(context),
                                 suffixIcon: InkWell(
                                   onTap: () => safeSetState(
                                     () => _model.cPassVisibility =

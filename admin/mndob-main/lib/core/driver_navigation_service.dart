@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:map_launcher/map_launcher.dart' as ml;
 
+import '/core/driver_i18n.dart';
 import '/core/driver_trip_service.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -36,7 +37,7 @@ abstract final class DriverNavigationService {
     await launchMap(
       mapType: ml.MapType.google,
       location: destination,
-      title: 'وجهة الرحلة',
+      title: driverTr(null, 'Trip destination'),
     );
   }
 
@@ -44,7 +45,7 @@ abstract final class DriverNavigationService {
       launchMap(
         mapType: ml.MapType.google,
         location: location,
-        title: title ?? 'الموقع',
+        title: title ?? driverTr(null, 'Location'),
       );
 
   /// Opens Google Maps directions for an accepted order (pickup + stops).
@@ -73,7 +74,10 @@ abstract final class DriverNavigationService {
     }
     if (cleaned.isEmpty) return;
     if (cleaned.length == 1) {
-      await openGoogleMapsMarker(cleaned.first, title: 'موقع الطلب');
+      await openGoogleMapsMarker(
+        cleaned.first,
+        title: driverTr(null, 'Order location'),
+      );
       return;
     }
     await openGoogleMapsNavigation(

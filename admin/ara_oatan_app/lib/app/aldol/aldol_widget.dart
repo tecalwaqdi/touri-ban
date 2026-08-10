@@ -127,11 +127,12 @@ class _AldolWidgetState extends State<AldolWidget> {
                 backgroundColor: colors.scaffold,
                 appBar: DsAppBar(
                   title: 'Welcome to the Arra Watan app'.tr(),
+                  centerTitle: false,
                   automaticallyImplyLeading: false,
                   leading: DsIconButton(
                     icon: DsIcons.back,
                     tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => context.safePop(),
                   ),
                 ),
                 body: SafeArea(
@@ -256,12 +257,14 @@ class _FeaturedCountrySection extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: typography.titleMedium.copyWith(
                             color: colors.onPrimary,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         const Spacer(),
                         DsButton.primary(
                           label: 'Browse cities/counties in'.tr(),
                           expanded: true,
+                          size: DsButtonSize.md,
                           icon: DsIcons.map,
                           onPressed: () => onOpen(country),
                         ),
@@ -385,6 +388,7 @@ class _CountryListTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: typography.titleMedium.copyWith(
                   color: colors.textPrimary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),

@@ -93,6 +93,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
   }
 
   Future<void> _pickProfilePhoto() async {
+    if (_model.isUploadingPhoto) {
+      return;
+    }
     if (currentUserUid.isEmpty || currentUserReference == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -101,11 +104,14 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       return;
     }
 
+    final previousPhotoUrl = _model.photoUrlTextController?.text ?? '';
+
     setState(() => _model.isUploadingPhoto = true);
     try {
       final downloadUrl = await pickAndUploadAdminImage(
         context: context,
-        storageFolder: 'users/$currentUserUid/uploads',
+        storageFolder: 'users/$currentUserUid',
+        profileUid: currentUserUid,
         useUserProfileCompression: true,
         onLocalPreview: (bytes) {
           if (!mounted) return;
@@ -115,6 +121,11 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         },
       );
       if (downloadUrl == null) {
+        if (!mounted) return;
+        setState(() {
+          _model.uploadedLocalPhoto =
+              FFUploadedFile(bytes: Uint8List.fromList([]));
+        });
         return;
       }
 
@@ -133,14 +144,20 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         SnackBar(
           content: Text(
             usedFallback
-                ? uiTr(context,
-                    'تم حفظ الصورة في حسابك (وضع احتياطي — فعّل فوترة Firebase Storage للرفع السحابي)')
+                ? appTr(context, 'adm_storage_fallback_saved')
                 : uiTr(context, 'تم تحديث الصورة الشخصية بنجاح'),
           ),
         ),
       );
     } catch (e) {
       if (!mounted) return;
+      // Keep the previous photo — never clear on failed upload.
+      setState(() {
+        _model.photoUrlTextController!.text = previousPhotoUrl;
+        _model.uploadedPhotoUrl = previousPhotoUrl;
+        _model.uploadedLocalPhoto =
+            FFUploadedFile(bytes: Uint8List.fromList([]));
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(AdminCrudFeedback.uploadFailed(context, e))),

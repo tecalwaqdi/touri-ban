@@ -4,15 +4,19 @@ import 'package:flutter/material.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/schema/order_record.dart';
+import '/core/driver_country_service.dart';
+import '/core/driver_i18n.dart';
 import '/core/driver_order_meta.dart';
 import '/core/driver_payment_labels.dart';
+import '/core/driver_payment_status_mapper.dart';
 import '/core/driver_trip_constants.dart';
 import '/core/driver_trip_service.dart';
+import '/core/toury_country_registry.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/flutter_flow/flutter_flow_util.dart';
 
-/// شريط معلومات الرحلة: الدفع، النوع، الأمتعة، الانتظار، ETA، المركبة، المندوب.
+/// Trip info banner: payment, type, luggage, waiting, ETA, vehicle, driver.
 class DriverTripDetailsBanner extends StatefulWidget {
   const DriverTripDetailsBanner({
     super.key,
@@ -52,12 +56,30 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
     super.dispose();
   }
 
+  String get _currency {
+    final iso = DriverCountryService.currentIso2();
+    return TouryCountryRegistry.currencySymbol(iso);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.dsColors;
     final typography = context.dsTypography;
     final order = widget.order;
-    final payment = DriverPaymentLabels.label(order.paymentMethod);
+    final payment =
+        DriverPaymentLabels.label(order.paymentMethod, context: context);
+    final payStatusKey = DriverPaymentStatusMapper.displayKey(
+      DriverPaymentStatusMapper.normalizeStatus(order),
+    );
+    final payStatus = driverTr(context, payStatusKey);
+    final tripType = driverTr(context, order.tripTypeLabelKey());
+    final fare = order.total;
+    final fareText = (fare.isNaN || fare.isInfinite)
+        ? '—'
+        : '${fare.toStringAsFixed(fare.truncateToDouble() == fare ? 0 : 2)} $_currency';
+    final luggage = order.luggageEstimate.isEmpty
+        ? ''
+        : driverTr(context, order.luggageLabelKey());
     final waiting = DriverTripService.waitingDuration(order);
     final waitingText =
         '${waiting.inMinutes.remainder(60).toString().padLeft(2, '0')}:${(waiting.inSeconds % 60).toString().padLeft(2, '0')}';
@@ -97,6 +119,8 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
                   children: [
                     Text(
                       currentUserDisplayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: typography.titleSmall.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colors.textPrimary,
@@ -104,7 +128,11 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
                     ),
                     if (rating != null)
                       Text(
-                        'التقييم: ${rating.toStringAsFixed(1)} ★',
+                        driverTrNamed(context, 'Rating: {value}', {
+                          'value': '${rating.toStringAsFixed(1)} ★',
+                        }),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: typography.bodySmall.copyWith(
                           color: colors.textSecondary,
                         ),
@@ -112,48 +140,75 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
                   ],
                 ),
               ),
-              _chip(
-                context,
-                payment,
-                DriverPaymentLabels.isCash(order.paymentMethod)
-                    ? colors.success
-                    : colors.primary,
+              Flexible(
+                child: _chip(
+                  context,
+                  payment,
+                  DriverPaymentLabels.isCash(order.paymentMethod)
+                      ? colors.success
+                      : colors.primary,
+                ),
               ),
             ],
           ),
           DsSpacing.gapSm,
-          _row(context, 'العميل', order.naimUserText),
-          _row(context, 'نقطة الالتقاط', order.pickupLabel()),
-          _row(context, 'الوجهة', order.destinationLabel()),
-          _row(context, 'الأجرة التقديرية', '${order.total} ر.س'),
-          _row(context, 'نوع الرحلة', order.tripTypeLabel()),
-          if (order.luggageEstimate.isNotEmpty)
-            _row(context, 'الأمتعة', order.luggageLabel()),
+          _row(context, driverTr(context, 'Customer'), order.naimUserText),
           _row(
             context,
-            'المركبة',
+            driverTr(context, 'Pickup point'),
+            order.pickupLabel(),
+          ),
+          _row(
+            context,
+            driverTr(context, 'Destination'),
+            order.destinationLabel(),
+          ),
+          _row(
+            context,
+            driverTr(context, 'Estimated fare'),
+            fareText,
+          ),
+          _row(
+            context,
+            driverTr(context, 'Payment status'),
+            payStatus,
+          ),
+          _row(context, driverTr(context, 'Trip type'), tripType),
+          if (luggage.isNotEmpty)
+            _row(context, driverTr(context, 'Luggage'), luggage),
+          _row(
+            context,
+            driverTr(context, 'Vehicle'),
             '${valueOrDefault(currentUserDocument?.textTypeCarMndob, order.cartext)} · ${valueOrDefault(currentUserDocument?.nameCar, order.nameCar)} · ${valueOrDefault(currentUserDocument?.modelCar, order.modelCar)} · ${valueOrDefault(currentUserDocument?.mdenhAml, '—')} · ${valueOrDefault(currentUserDocument?.numberLohhCar, '—')}',
           ),
           if (order.etaSeconds > 0 || order.distanceRemainingMeters > 0) ...[
             Divider(height: DsSpacing.md, color: colors.divider),
             _row(
               context,
-              'المسافة المتبقية',
+              driverTr(context, 'Remaining distance'),
               distKm >= 1
-                  ? '${distKm.toStringAsFixed(1)} كم'
-                  : '${order.distanceRemainingMeters.round()} م',
+                  ? driverTrNamed(context, '{km} km', {
+                      'km': distKm.toStringAsFixed(1),
+                    })
+                  : driverTrNamed(context, '{m} m', {
+                      'm': '${order.distanceRemainingMeters.round()}',
+                    }),
             ),
-            _row(context, 'وقت الوصول التقديري', '$etaMin دقيقة'),
+            _row(
+              context,
+              driverTr(context, 'ETA'),
+              driverTrNamed(context, '{min} min', {'min': '$etaMin'}),
+            ),
           ],
           if (order.halhText == DriverTripHalh.driverArrived ||
               order.waitingStartedAt != null) ...[
             Divider(height: DsSpacing.md, color: colors.divider),
-            _row(context, 'وقت الانتظار', waitingText),
+            _row(context, driverTr(context, 'Waiting time'), waitingText),
             if (order.waitingCharges > 0)
               _row(
                 context,
-                'رسوم الانتظار',
-                '${order.waitingCharges.toStringAsFixed(2)} ر.س',
+                driverTr(context, 'Waiting charges'),
+                '${order.waitingCharges.toStringAsFixed(2)} $_currency',
               ),
           ],
           if (widget.showArrivalButton &&
@@ -165,7 +220,7 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
                       'driver_arriving')) ...[
             DsSpacing.gapSm,
             DsButton.primary(
-              label: 'تأكيد الوصول للعميل',
+              label: driverTr(context, 'Confirm arrival to customer'),
               icon: Icons.place,
               onPressed: () async {
                 final loc = await getCurrentUserLocation(
@@ -195,10 +250,10 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 110,
+            width: 118,
             child: Text(
               label,
-              style: typography.bodySmall.copyWith(
+              style: typography.labelMedium.copyWith(
                 color: colors.textSecondary,
               ),
             ),
@@ -207,8 +262,8 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
             child: Text(
               value,
               style: typography.bodyMedium.copyWith(
-                fontWeight: FontWeight.w600,
                 color: colors.textPrimary,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -217,21 +272,24 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
     );
   }
 
-  Widget _chip(BuildContext context, String text, Color color) {
+  Widget _chip(BuildContext context, String label, Color color) {
+    final typography = context.dsTypography;
     return Container(
-      padding: DsSpacing.chipPadding,
+      padding: const EdgeInsets.symmetric(
+        horizontal: DsSpacing.sm,
+        vertical: DsSpacing.xxs,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: DsRadius.pill,
-        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Text(
-        text,
-        style: TextStyle(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: typography.labelMedium.copyWith(
           color: color,
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
-          fontFamily: DsTypography.fontFamily,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

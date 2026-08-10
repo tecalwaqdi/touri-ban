@@ -237,6 +237,8 @@ class _DashboardHeroBanner extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         uiTr(context, 'لوحة تحكم أرى وطن'),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: theme.bodySmall.override(
                           fontFamily: theme.bodySmallFamily,
                           color: Colors.white.withValues(alpha: 0.88),
@@ -244,33 +246,38 @@ class _DashboardHeroBanner extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.14),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.calendar_month_rounded,
-                              size: 14,
-                              color: Colors.white.withValues(alpha: 0.9),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              dateLabel,
-                              style: theme.labelSmall.override(
-                                fontFamily: theme.labelSmallFamily,
+                      Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.calendar_month_rounded,
+                                size: 14,
                                 color: Colors.white.withValues(alpha: 0.9),
-                                useGoogleFonts: !theme.labelSmallIsCustom,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 6),
+                              Text(
+                                dateLabel,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.labelSmall.override(
+                                  fontFamily: theme.labelSmallFamily,
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                  useGoogleFonts: !theme.labelSmallIsCustom,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -358,6 +365,8 @@ class _DashboardQuickActionsGrid extends StatelessWidget {
       children: [
         Text(
           appTr(context, 'dash_quick_actions'),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: theme.titleSmall.override(
             fontFamily: theme.titleSmallFamily,
             fontWeight: FontWeight.w700,

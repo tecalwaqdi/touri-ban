@@ -34,6 +34,10 @@ DocumentReference touryCanonicalVillageRef(DocumentReference village) {
       id.startsWith('city_ru_')) {
     return village;
   }
+  // Curated eastern hub uses city_alkhobar; canonical id is city_sa_khobar.
+  if (id == 'city_alkhobar') {
+    return FirebaseFirestore.instance.collection('villages').doc('city_sa_khobar');
+  }
   final legacyCity = RegExp(r'^city_(.+)$').firstMatch(id);
   if (legacyCity != null) {
     final slug = legacyCity.group(1)!.toLowerCase();

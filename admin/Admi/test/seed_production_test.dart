@@ -25,51 +25,57 @@ Future<void> _initFirebaseForTest() async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('seed production landmarks to Firestore', () async {
-    await _initFirebaseForTest();
+  test(
+    'seed production landmarks to Firestore',
+    () async {
+      await _initFirebaseForTest();
 
-    const email = 'demo.super@arawatan.sa';
-    const password = 'Demo@2026';
+      const email = 'demo.super@arawatan.sa';
+      const password = 'Demo@2026';
 
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found' || e.code == 'invalid-credential') {
-        final cred =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
-        final uid = cred.user?.uid;
-        if (uid != null) {
-          await UserRecord.collection.doc(uid).set(
-                createUserRecordData(
-                  email: email,
-                  displayName: 'سوبر أدمن التعبئة',
-                  uid: uid,
-                  actevUser: true,
-                  createdTime: getCurrentTimestamp,
-                  isAdmin: true,
-                  isAdminRule: AdminRoleService.ruleSuperAdmin,
-                ),
-                SetOptions(merge: true),
-              );
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found' || e.code == 'invalid-credential') {
+          final cred =
+              await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: email,
+            password: password,
+          );
+          final uid = cred.user?.uid;
+          if (uid != null) {
+            await UserRecord.collection.doc(uid).set(
+                  createUserRecordData(
+                    email: email,
+                    displayName: 'سوبر أدمن التعبئة',
+                    uid: uid,
+                    actevUser: true,
+                    createdTime: getCurrentTimestamp,
+                    isAdmin: true,
+                    isAdminRule: AdminRoleService.ruleSuperAdmin,
+                  ),
+                  SetOptions(merge: true),
+                );
+          }
+        } else {
+          fail('Auth failed: ${e.code}');
         }
-      } else {
-        fail('Auth failed: ${e.code}');
       }
-    }
 
-    await ensureCurrentUserDocument();
-    final result = await AdminProductionLandmarkSeed.runAuthenticated();
+      await ensureCurrentUserDocument();
+      final result = await AdminProductionLandmarkSeed.runAuthenticated();
 
-    expect(result.success, true, reason: result.error ?? 'unknown');
-    expect(result.landmarks, greaterThanOrEqualTo(50));
-    expect(result.orders, greaterThanOrEqualTo(90));
+      expect(result.success, true, reason: result.error ?? 'unknown');
+      expect(result.landmarks, greaterThanOrEqualTo(50));
+      expect(result.orders, greaterThanOrEqualTo(90));
 
-    await FirebaseAuth.instance.signOut();
-  }, timeout: const Timeout(Duration(minutes: 15)));
+      await FirebaseAuth.instance.signOut();
+    },
+    timeout: const Timeout(Duration(minutes: 15)),
+    skip:
+        'Manual production seed only — not run in CI. Use: flutter test test/seed_production_test.dart --name seed',
+  );
 }

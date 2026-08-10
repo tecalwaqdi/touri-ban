@@ -7,6 +7,7 @@ import '/components/admin_ui.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/core/admin_currency.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/index.dart';
@@ -227,9 +228,9 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                 builder: (ctx) => AlertDialog(
                                                   title: Text(uiTr(context, 'تأكيد باقة المركبات')),
                                                   content: Text(
-                                                    '${uiTr(context, 'سيتم إضافة/تحديث')} ${_vehicleTypePresets.length} ${uiTr(context, 'نوع مركبة')} ' +
-                                                    uiTr(context, 'بترجمات (عربي/إنجليزي/روسي/قيرغيزي/أوزبكي).\\n') +
-                                                    uiTr(context, 'العملية آمنة (merge) ولن تحذف الأنواع الحالية.'),
+                                                    '${uiTr(context, 'سيتم إضافة/تحديث')} ${_vehicleTypePresets.length} ${uiTr(context, 'نوع مركبة')} '
+                                                    '${uiTr(context, 'بترجمات (عربي/إنجليزي/روسي/قيرغيزي/أوزبكي).')}\n'
+                                                    '${uiTr(context, 'العملية آمنة (merge) ولن تحذف الأنواع الحالية.')}',
                                                   ),
                                                   actions: [
                                                     TextButton(
@@ -551,7 +552,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                         decimalType:
                                                                             DecimalType.automatic,
                                                                         currency:
-                                                                            uiTr(context, 'ريال '),
+                                                                            AdminCurrency.asFormatPrefix(AdminCurrency.symbolForIso(listViewTypeCarRecord.countryIso2)),
                                                                       ),
                                                                       uiTr(context, 'غير معرفة'),
                                                                     )}  للساعة الواحدة',

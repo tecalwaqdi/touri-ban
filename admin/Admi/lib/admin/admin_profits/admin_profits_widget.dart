@@ -5,6 +5,7 @@ import '/backend/profits_stats_loader.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/core/admin_currency.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,7 @@ class _AdminProfitsWidgetState extends State<AdminProfitsWidget>
   int? _selectedBarIndex;
   late AnimationController _pulseController;
   StreamSubscription<int>? _statsInvalidationSub;
+  String _currencySymbol = '';
 
   @override
   void initState() {
@@ -47,6 +49,10 @@ class _AdminProfitsWidgetState extends State<AdminProfitsWidget>
         AdminStatsCoordinator.instance.stream(StatsDomain.profits).listen((_) {
       if (!mounted) return;
       _refresh();
+    });
+    AdminCurrency.resolveSymbolForActiveScope().then((symbol) {
+      if (!mounted || symbol.isEmpty) return;
+      setState(() => _currencySymbol = symbol);
     });
   }
 
@@ -107,7 +113,7 @@ class _AdminProfitsWidgetState extends State<AdminProfitsWidget>
         value,
         formatType: FormatType.decimal,
         decimalType: DecimalType.automatic,
-        currency: uiTr(context, 'ر.س '),
+        currency: AdminCurrency.asFormatPrefix(_currencySymbol),
       );
 
   void _openOrder(ProfitsOrderRow row) {

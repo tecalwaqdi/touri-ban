@@ -10,7 +10,6 @@ import '/app_state.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/core/driver_country_service.dart';
-import '/core/driver_design_system.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_i18n.dart';
 import '/core/driver_online_state.dart';
@@ -23,8 +22,8 @@ import '/core/driver_live_route_controller.dart';
 import '/core/driver_map_utils.dart';
 import '/core/driver_navigation_service.dart';
 import '/core/toury_maps_config.dart';
+import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 
@@ -45,8 +44,9 @@ class DriverHomeMapPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+    final isDark = context.dsIsDark;
     final mapHeight = MediaQuery.sizeOf(context).height * 0.46;
     final mapStyle =
         isDark ? GoogleMapStyle.dark : GoogleMapStyle.standard;
@@ -70,7 +70,8 @@ class DriverHomeMapPanel extends StatelessWidget {
               final loc = live ?? driverLoc;
               return _buildShell(
                 context,
-                theme,
+                colors,
+                typography,
                 isDark,
                 mapStyle,
                 mapHeight,
@@ -85,7 +86,8 @@ class DriverHomeMapPanel extends StatelessWidget {
 
         return _buildShell(
           context,
-          theme,
+          colors,
+          typography,
           isDark,
           mapStyle,
           mapHeight,
@@ -100,7 +102,8 @@ class DriverHomeMapPanel extends StatelessWidget {
 
   Widget _buildShell(
     BuildContext context,
-    FlutterFlowTheme theme,
+    DsColors colors,
+    DsTypography typography,
     bool isDark,
     GoogleMapStyle mapStyle,
     double mapHeight,
@@ -114,8 +117,8 @@ class DriverHomeMapPanel extends StatelessWidget {
       width: double.infinity,
       child: ClipRRect(
             borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
+              bottomLeft: DsRadius.xlRadius,
+              bottomRight: DsRadius.xlRadius,
             ),
             child: Stack(
               fit: StackFit.expand,
@@ -145,7 +148,12 @@ class DriverHomeMapPanel extends StatelessWidget {
                     child: SafeArea(
                       bottom: false,
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+                        padding: const EdgeInsets.fromLTRB(
+                          DsSpacing.md,
+                          DsSpacing.xs,
+                          DsSpacing.md,
+                          DsSpacing.lg,
+                        ),
                         child: Row(
                           children: [
                             Expanded(
@@ -158,14 +166,12 @@ class DriverHomeMapPanel extends StatelessWidget {
                                       'Welcome, {name}',
                                       {'name': currentUserDisplayName},
                                     ),
-                                    style: theme.headlineSmall.override(
-                                      fontFamily:
-                                          theme.headlineSmallFamily,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: typography.headlineSmall.copyWith(
                                       color: Colors.white,
                                       fontSize: 20,
-                                      letterSpacing: 0,
-                                      useGoogleFonts:
-                                          !theme.headlineSmallIsCustom,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -174,13 +180,11 @@ class DriverHomeMapPanel extends StatelessWidget {
                                       currentUserDocument?.mndobVillText,
                                       driverTr(context, 'Work area'),
                                     ),
-                                    style: theme.bodySmall.override(
-                                      fontFamily: theme.bodySmallFamily,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: typography.bodySmall.copyWith(
                                       color: Colors.white
                                           .withValues(alpha: 0.85),
-                                      letterSpacing: 0,
-                                      useGoogleFonts:
-                                          !theme.bodySmallIsCustom,
                                     ),
                                   ),
                                 ],
@@ -244,13 +248,13 @@ class DriverHomeMapPanel extends StatelessWidget {
                 if (hasActiveTrip)
                   Positioned(
                     top: MediaQuery.paddingOf(context).top + 72,
-                    left: 16,
-                    right: 16,
+                    left: DsSpacing.md,
+                    right: DsSpacing.md,
                     child: _ActiveTripBanner(),
                   ),
                 Positioned(
-                  left: 16,
-                  right: 16,
+                  left: DsSpacing.md,
+                  right: DsSpacing.md,
                   bottom: 12,
                   child: Row(
                     children: [
@@ -258,44 +262,44 @@ class DriverHomeMapPanel extends StatelessWidget {
                         child: _QuickAction(
                           icon: Icons.list_alt_rounded,
                           label: driverTr(context, 'Available orders'),
-                          color: DriverBrand.teal,
+                          color: colors.primary,
                           onTap: () =>
                               context.pushNamed(NowWidget.routeName),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: DsSpacing.xs),
                       Expanded(
                         child: _QuickAction(
                           icon: Icons.account_balance_wallet_outlined,
                           label: driverTr(context, 'Wallet'),
-                          color: DriverBrand.tealDark,
+                          color: colors.primaryStrong,
                           onTap: () => context
                               .pushNamed(DriverWalletWidget.routeName),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: DsSpacing.xs),
                       Material(
-                        color: theme.secondaryBackground
-                            .withValues(alpha: 0.95),
-                        borderRadius: BorderRadius.circular(14),
-                        elevation: 4,
+                        color: colors.card.withValues(alpha: 0.95),
+                        borderRadius: DsRadius.medium,
+                        elevation: 0,
+                        shadowColor: colors.shadow,
                         child: Tooltip(
                           message: 'Recenter map',
                           child: Semantics(
                             button: true,
                             label: 'Recenter map',
                             child: InkWell(
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: DsRadius.medium,
                               onTap: () => _recenterMap(
                                 googleMapsController,
                                 driverLoc,
                               ),
-                              child: const SizedBox(
+                              child: SizedBox(
                                 width: 48,
                                 height: 48,
                                 child: Icon(
                                   Icons.my_location_rounded,
-                                  color: DriverBrand.tealDark,
+                                  color: colors.primaryStrong,
                                 ),
                               ),
                             ),
@@ -536,7 +540,7 @@ class _HomeMapLayerState extends State<_HomeMapLayer> {
             gmaps.Polyline(
               polylineId: const gmaps.PolylineId('home_route'),
               points: visibleRoute.map((p) => p.toGoogleMaps()).toList(),
-              color: DriverBrand.teal,
+              color: context.dsColors.primary,
               width: 4,
             ),
           }
@@ -678,18 +682,18 @@ class _DemandPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: DriverBrand.tealDark.withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(8),
+        color: colors.primaryStrong.withValues(alpha: 0.9),
+        borderRadius: DsRadius.small,
       ),
       child: Text(
         '$count ${driverTr(context, 'Nearby orders')}',
-        style: const TextStyle(
-          fontFamily: 'cairo',
-          color: Colors.white,
-          fontSize: 11,
+        style: typography.labelSmall.copyWith(
+          color: colors.onPrimary,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -710,13 +714,15 @@ class _HeatmapToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
     return Material(
-      color: Colors.white.withValues(alpha: 0.92),
-      borderRadius: BorderRadius.circular(20),
-      elevation: 3,
+      color: colors.card.withValues(alpha: 0.92),
+      borderRadius: DsRadius.pill,
+      elevation: 0,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: DsRadius.pill,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           child: Row(
@@ -725,18 +731,16 @@ class _HeatmapToggle extends StatelessWidget {
               Icon(
                 enabled ? Icons.whatshot_rounded : Icons.whatshot_outlined,
                 size: 16,
-                color: enabled ? DriverBrand.tealDark : DriverBrand.textSecondary,
+                color: enabled ? colors.primaryStrong : colors.textSecondary,
               ),
               const SizedBox(width: 4),
               Text(
                 enabled
                     ? driverTr(context, 'Heat map')
                     : driverTr(context, 'Map view'),
-                style: TextStyle(
-                  fontFamily: 'cairo',
-                  fontSize: 11,
+                style: typography.labelSmall.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: DriverBrand.tealDark,
+                  color: colors.primaryStrong,
                 ),
               ),
             ],
@@ -760,6 +764,8 @@ class _HomeRoutePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
     final label = isRoadRoute
         ? driverTr(context, 'Road route')
         : failed
@@ -770,23 +776,21 @@ class _HomeRoutePill extends StatelessWidget {
     if (label.isEmpty) return const SizedBox.shrink();
 
     final color = isRoadRoute
-        ? DriverBrand.success
+        ? colors.success
         : failed
-            ? DriverBrand.warning
-            : DriverBrand.tealDark;
+            ? colors.warning
+            : colors.primaryStrong;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: DsRadius.small,
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          fontFamily: 'cairo',
+        style: typography.labelSmall.copyWith(
           color: Colors.white,
-          fontSize: 11,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -807,18 +811,20 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: DsRadius.pill,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: isActive
-                ? DriverBrand.success.withValues(alpha: 0.9)
+                ? colors.success.withValues(alpha: 0.9)
                 : Colors.black.withValues(alpha: 0.35),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: DsRadius.pill,
             border: Border.all(
               color: Colors.white.withValues(alpha: 0.3),
             ),
@@ -831,16 +837,14 @@ class _StatusChip extends StatelessWidget {
                 height: 8,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isActive ? Colors.white : DriverBrand.warning,
+                  color: isActive ? Colors.white : colors.warning,
                 ),
               ),
               const SizedBox(width: 6),
               Text(
                 label,
-                style: const TextStyle(
-                  fontFamily: 'cairo',
+                style: typography.labelMedium.copyWith(
                   color: Colors.white,
-                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -867,13 +871,14 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final typography = context.dsTypography;
     return Material(
       color: color.withValues(alpha: 0.92),
-      borderRadius: BorderRadius.circular(14),
-      elevation: 4,
+      borderRadius: DsRadius.medium,
+      elevation: 0,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: DsRadius.medium,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           child: Row(
@@ -886,10 +891,8 @@ class _QuickAction extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontFamily: 'cairo',
+                  style: typography.labelSmall.copyWith(
                     color: Colors.white,
-                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -918,19 +921,20 @@ class _MapZoomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.dsColors;
     return Material(
-      color: Colors.white.withValues(alpha: 0.94),
-      borderRadius: BorderRadius.circular(12),
-      elevation: 3,
+      color: colors.card.withValues(alpha: 0.94),
+      borderRadius: DsRadius.medium,
+      elevation: 0,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: DsRadius.medium,
         child: Tooltip(
           message: tooltip,
           child: SizedBox(
             width: 40,
             height: 40,
-            child: Icon(icon, color: DriverBrand.tealDark, size: 20),
+            child: Icon(icon, color: colors.primaryStrong, size: 20),
           ),
         ),
       ),
@@ -941,6 +945,8 @@ class _MapZoomButton extends StatelessWidget {
 class _ActiveTripBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
     final revOrder = context.watch<FFAppState>().revOrder!;
     return StreamBuilder<OrderRecord>(
       stream: OrderRecord.getDocument(revOrder),
@@ -950,11 +956,11 @@ class _ActiveTripBanner extends StatelessWidget {
         }
         final order = snapshot.data!;
         return Material(
-          color: DriverBrand.tealDark.withValues(alpha: 0.92),
-          borderRadius: BorderRadius.circular(14),
-          elevation: 6,
+          color: colors.primaryStrong.withValues(alpha: 0.92),
+          borderRadius: DsRadius.medium,
+          elevation: 0,
           child: InkWell(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: DsRadius.medium,
             onTap: () => context.pushNamed(
               TfaselOrserWidget.routeName,
               queryParameters: {
@@ -977,11 +983,9 @@ class _ActiveTripBanner extends StatelessWidget {
                       children: [
                         Text(
                           driverTr(context, 'Active trip'),
-                          style: const TextStyle(
-                            fontFamily: 'cairo',
+                          style: typography.titleSmall.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
-                            fontSize: 14,
                           ),
                         ),
                         Text(
@@ -990,10 +994,8 @@ class _ActiveTripBanner extends StatelessWidget {
                               : driverTr(context, 'Tap to follow trip'),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontFamily: 'cairo',
+                          style: typography.bodySmall.copyWith(
                             color: Colors.white.withValues(alpha: 0.85),
-                            fontSize: 12,
                           ),
                         ),
                       ],

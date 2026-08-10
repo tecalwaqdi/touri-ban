@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/core/driver_auto_activation_service.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_logout_service.dart';
 import '/core/driver_registration_submission_service.dart';
+import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -33,10 +35,7 @@ class _DriverPendingApprovalWidgetState
     if (currentUserReference == null) return;
     setState(() => _refreshing = true);
     try {
-      // Unstick approved-but-inactive accounts (cash-wave self-activate).
-      await DriverRegistrationSubmissionService.repairAutoActivate(
-        userRef: currentUserReference,
-      );
+      await DriverAutoActivationService.tryAutoActivate();
       await currentUserReference!.get(const GetOptions(source: Source.server));
       try {
         currentUserDocument =
@@ -77,16 +76,14 @@ class _DriverPendingApprovalWidgetState
       });
       return;
     }
-    // Auto-repair once when stuck: status approved / pending but not active.
+    // Auto-activate once while waiting (temporary until admin review is enabled).
     if (!_repairAttempted &&
-        (doc.registrationStatus.trim().toLowerCase() == 'approved' ||
+        (doc.registrationStatus.trim().toLowerCase() != 'approved' ||
             life == DriverLifecycle.pendingApproval)) {
       _repairAttempted = true;
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!mounted) return;
-        await DriverRegistrationSubmissionService.repairAutoActivate(
-          userRef: currentUserReference,
-        );
+        await DriverAutoActivationService.tryAutoActivate();
       });
     }
   }
@@ -215,7 +212,8 @@ class _DriverPendingApprovalWidgetState
                 return RefreshIndicator(
                   color: colors.primary,
                   onRefresh: _refresh,
-                  child: ListView(
+                  child: DriverFormWidth(
+                    child: ListView(
                     padding: const EdgeInsets.fromLTRB(
                       DsSpacing.lg,
                       DsSpacing.xxl,
@@ -370,6 +368,7 @@ class _DriverPendingApprovalWidgetState
                       ),
                     ],
                   ),
+                  ),
                 );
               },
             ),
@@ -398,6 +397,8 @@ class _InfoRow extends StatelessWidget {
             flex: 2,
             child: Text(
               label,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
               style: typography.bodySmall.copyWith(
                 color: colors.textSecondary,
               ),
@@ -408,6 +409,8 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.end,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
               style: typography.bodyMedium.copyWith(
                 color: colors.textPrimary,
               ),

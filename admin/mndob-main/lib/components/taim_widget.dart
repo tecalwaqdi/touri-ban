@@ -112,7 +112,8 @@ class _TaimWidgetState extends State<TaimWidget> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _timeColumn(
+                  Expanded(
+                    child: _timeColumn(
                     context,
                     label: FFLocalizations.of(context).getText('r0d4t29u'),
                     icon: Icons.timer_outlined,
@@ -124,7 +125,9 @@ class _TaimWidgetState extends State<TaimWidget> {
                     ),
                     valueColor: colors.success,
                   ),
-                  _timeColumn(
+                  ),
+                  Expanded(
+                    child: _timeColumn(
                     context,
                     label: FFLocalizations.of(context).getText('n5kxjaax'),
                     icon: Icons.timer_off_outlined,
@@ -136,13 +139,15 @@ class _TaimWidgetState extends State<TaimWidget> {
                     ),
                     valueColor: colors.error,
                   ),
+                  ),
                 ],
               ),
               DsSpacing.gapMd,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _timeColumn(
+                  Expanded(
+                    child: _timeColumn(
                     context,
                     label: FFLocalizations.of(context).getText('ipd61kmc'),
                     icon: Icons.timer_outlined,
@@ -154,7 +159,9 @@ class _TaimWidgetState extends State<TaimWidget> {
                     ),
                     valueColor: colors.success,
                   ),
-                  _timeColumn(
+                  ),
+                  Expanded(
+                    child: _timeColumn(
                     context,
                     label: FFLocalizations.of(context).getText('an8ejy50'),
                     icon: Icons.timer_off_outlined,
@@ -165,6 +172,7 @@ class _TaimWidgetState extends State<TaimWidget> {
                       locale: FFLocalizations.of(context).languageCode,
                     ),
                     valueColor: colors.error,
+                  ),
                   ),
                 ],
               ),

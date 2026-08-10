@@ -161,7 +161,7 @@ class _NewPlaceWidgetState extends State<NewPlaceWidget> {
               enText:
                   'Thank you! Your request has been submitted and will be reviewed by the administration for approval.',
               arText:
-                  'شكرًا لك! تم إرسال طلبك، وسيتم مراجعته من قبل الإدارة للموافقة عليه.',
+                  'شكراً لك. تم إرسال اقتراحك وسيُراجع قبل النشر.',
               zh_HansText:
                   'Thank you! Your request has been submitted and will be reviewed by the administration for approval.',
               trText:
@@ -213,7 +213,7 @@ class _NewPlaceWidgetState extends State<NewPlaceWidget> {
                 automaticallyImplyLeading: false,
                 leading: DsIconButton(
                   icon: DsIcons.back,
-                  onPressed: () => context.pop(),
+                  onPressed: () => context.safePop(),
                 ),
               ),
               body: SafeArea(

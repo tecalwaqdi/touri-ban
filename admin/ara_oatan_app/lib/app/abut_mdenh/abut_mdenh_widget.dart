@@ -81,10 +81,11 @@ class _AbutMdenhWidgetState extends State<AbutMdenhWidget> {
               backgroundColor: colors.scaffold,
               appBar: DsAppBar(
                 title: FFAppState().naimvillatext,
+                centerTitle: false,
                 automaticallyImplyLeading: false,
                 leading: DsIconButton(
                   icon: DsIcons.back,
-                  onPressed: () => context.pop(),
+                  onPressed: () => context.safePop(),
                 ),
               ),
               body: SafeArea(
@@ -108,6 +109,7 @@ class _AbutMdenhWidgetState extends State<AbutMdenhWidget> {
                           ),
                           child: DsCard(
                             elevated: true,
+                            padding: DsSpacing.cardPadding,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -126,28 +128,36 @@ class _AbutMdenhWidgetState extends State<AbutMdenhWidget> {
                                         overflow: TextOverflow.ellipsis,
                                         style: typography.titleMedium.copyWith(
                                           color: colors.textPrimary,
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: DsSpacing.sm),
-                                Text(
-                                  valueOrDefault<String>(
-                                    _model.osfHrarh,
-                                    'يرجى الإنتظار....',
+                                if (_model.osfHrarh == null ||
+                                    _model.osfHrarh!.trim().isEmpty)
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: DsSpacing.md,
+                                    ),
+                                    child: DsLoading(size: DsIcons.md),
+                                  )
+                                else
+                                  Text(
+                                    _model.osfHrarh!,
+                                    style: typography.bodyMedium.copyWith(
+                                      color: colors.textSecondary,
+                                      height: 1.45,
+                                    ),
                                   ),
-                                  style: typography.bodyMedium.copyWith(
-                                    color: colors.textSecondary,
-                                  ),
-                                ),
                               ],
                             ),
                           ),
                         ),
                         const Padding(
                           padding: EdgeInsets.symmetric(
-                            horizontal: DsSpacing.lg,
+                            horizontal: DsSpacing.md,
                             vertical: DsSpacing.md,
                           ),
                           child: DsDivider(),
@@ -166,6 +176,7 @@ class _AbutMdenhWidgetState extends State<AbutMdenhWidget> {
                           child: DsCard(
                             color: colors.infoContainer,
                             bordered: false,
+                            padding: DsSpacing.cardPadding,
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -176,15 +187,22 @@ class _AbutMdenhWidgetState extends State<AbutMdenhWidget> {
                                 ),
                                 const SizedBox(width: DsSpacing.xs),
                                 Expanded(
-                                  child: Text(
-                                    valueOrDefault<String>(
-                                      _model.nsayh,
-                                      'يرجى الإنتظار....',
-                                    ),
-                                    style: typography.bodyMedium.copyWith(
-                                      color: colors.textPrimary,
-                                    ),
-                                  ),
+                                  child: (_model.nsayh == null ||
+                                          _model.nsayh!.trim().isEmpty)
+                                      ? const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: DsSpacing.sm,
+                                          ),
+                                          child: DsLoading(size: DsIcons.md),
+                                        )
+                                      : Text(
+                                          _model.nsayh!,
+                                          style:
+                                              typography.bodyMedium.copyWith(
+                                            color: colors.textPrimary,
+                                            height: 1.45,
+                                          ),
+                                        ),
                                 ),
                               ],
                             ),

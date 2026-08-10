@@ -1,11 +1,11 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
+import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/upload_data.dart';
 import '/index.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'profile_update_page_model.dart';
 export 'profile_update_page_model.dart';
@@ -54,31 +54,6 @@ class _ProfileUpdatePageWidgetState extends State<ProfileUpdatePageWidget> {
     super.dispose();
   }
 
-  InputDecoration _fieldDecoration(BuildContext context) {
-    final colors = context.dsColors;
-    return InputDecoration(
-      filled: true,
-      fillColor: colors.surface,
-      contentPadding: DsSpacing.inputContentPadding,
-      enabledBorder: OutlineInputBorder(
-        borderRadius: DsRadius.medium,
-        borderSide: BorderSide(color: colors.border),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: DsRadius.medium,
-        borderSide: BorderSide(color: colors.focus, width: 1.6),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: DsRadius.medium,
-        borderSide: BorderSide(color: colors.error),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: DsRadius.medium,
-        borderSide: BorderSide(color: colors.error, width: 1.6),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return DsScreenShell(
@@ -87,10 +62,10 @@ class _ProfileUpdatePageWidgetState extends State<ProfileUpdatePageWidget> {
           final colors = context.dsColors;
           final typography = context.dsTypography;
 
-          return DsScreenScaffold(
-            scaffoldKey: scaffoldKey,
-            appBar: DsAppBar(
-              automaticallyImplyLeading: true,
+          return Scaffold(
+            key: scaffoldKey,
+            backgroundColor: colors.scaffold,
+            appBar: DriverMainAppBar(
               title: FFLocalizations.of(context).getText(
                 '5fieigiq' /* Edit Profile */,
               ),
@@ -99,14 +74,12 @@ class _ProfileUpdatePageWidgetState extends State<ProfileUpdatePageWidget> {
               top: true,
               child: SingleChildScrollView(
                 padding: DsSpacing.pagePadding,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: DsConstants.maxFormWidth,
-                  ),
+                child: DriverFormWidth(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       DsCard(
+                        padding: DsSpacing.cardPadding,
                         child: Column(
                           children: [
                             AuthUserStreamWidget(
@@ -219,23 +192,13 @@ class _ProfileUpdatePageWidgetState extends State<ProfileUpdatePageWidget> {
                               ),
                             ),
                             AuthUserStreamWidget(
-                              builder: (context) => TextFormField(
+                              builder: (context) => DsTextField(
                                 controller: _model.textController1,
                                 focusNode: _model.textFieldFocusNode1,
-                                readOnly: true,
-                                textInputAction: TextInputAction.next,
-                                decoration: _fieldDecoration(context).copyWith(
-                                  hintText: FFLocalizations.of(context)
-                                      .getText(
-                                    '5m0aofht' /* Enter your full name */,
-                                  ),
+                                enabled: false,
+                                label: FFLocalizations.of(context).getText(
+                                  '5m0aofht' /* Enter your full name */,
                                 ),
-                                style: typography.bodyLarge.copyWith(
-                                  color: colors.textPrimary,
-                                ),
-                                cursorColor: colors.primary,
-                                validator: _model.textController1Validator
-                                    .asValidator(context),
                               ),
                             ),
                             const SizedBox(height: DsSpacing.lg),
@@ -244,23 +207,13 @@ class _ProfileUpdatePageWidgetState extends State<ProfileUpdatePageWidget> {
                                 'knkq6gv5' /* Email Address */,
                               ),
                             ),
-                            TextFormField(
+                            DsTextField.email(
                               controller: _model.textController2,
                               focusNode: _model.textFieldFocusNode2,
-                              readOnly: true,
-                              textInputAction: TextInputAction.next,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: _fieldDecoration(context).copyWith(
-                                hintText: FFLocalizations.of(context).getText(
-                                  'hyjo1hzj' /* Enter your email address */,
-                                ),
+                              enabled: false,
+                              label: FFLocalizations.of(context).getText(
+                                'hyjo1hzj' /* Enter your email address */,
                               ),
-                              style: typography.bodyLarge.copyWith(
-                                color: colors.textPrimary,
-                              ),
-                              cursorColor: colors.primary,
-                              validator: _model.textController2Validator
-                                  .asValidator(context),
                             ),
                             const SizedBox(height: DsSpacing.lg),
                             DsSectionHeader(
@@ -268,22 +221,12 @@ class _ProfileUpdatePageWidgetState extends State<ProfileUpdatePageWidget> {
                                 'tte9qdb6' /* Vehicle Type */,
                               ),
                             ),
-                            TextFormField(
+                            DsTextField(
                               controller: _model.nameCarTextController,
                               focusNode: _model.nameCarFocusNode,
-                              textInputAction: TextInputAction.next,
-                              decoration: _fieldDecoration(context).copyWith(
-                                hintText: FFLocalizations.of(context).getText(
-                                  '4vas6x8x' /* Enter your full name */,
-                                ),
+                              label: FFLocalizations.of(context).getText(
+                                '4vas6x8x' /* Enter your full name */,
                               ),
-                              style: typography.bodyLarge.copyWith(
-                                color: colors.textPrimary,
-                              ),
-                              cursorColor: colors.primary,
-                              validator: _model
-                                  .nameCarTextControllerValidator
-                                  .asValidator(context),
                             ),
                             const SizedBox(height: DsSpacing.lg),
                             DsSectionHeader(
@@ -291,32 +234,21 @@ class _ProfileUpdatePageWidgetState extends State<ProfileUpdatePageWidget> {
                                 '1vt8pppl' /* Vehicle Model */,
                               ),
                             ),
-                            TextFormField(
+                            DsTextField(
                               controller: _model.modelTextController,
                               focusNode: _model.modelFocusNode,
-                              textInputAction: TextInputAction.done,
-                              decoration: _fieldDecoration(context).copyWith(
-                                hintText: FFLocalizations.of(context).getText(
-                                  'jhtehfbm' /* Enter vehicle model */,
-                                ),
+                              label: FFLocalizations.of(context).getText(
+                                'jhtehfbm' /* Enter vehicle model */,
                               ),
-                              style: typography.bodyLarge.copyWith(
-                                color: colors.textPrimary,
-                              ),
-                              cursorColor: colors.primary,
-                              validator: _model.modelTextControllerValidator
-                                  .asValidator(context),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(height: DsSpacing.xxl),
-                      DsButton.primary(
+                      DriverGradientButton(
                         label: FFLocalizations.of(context).getText(
                           '84nkjru1' /* Update Profile */,
                         ),
-                        expanded: true,
-                        size: DsButtonSize.lg,
                         icon: Icons.check_rounded,
                         onPressed: () async {
                           await currentUserReference!

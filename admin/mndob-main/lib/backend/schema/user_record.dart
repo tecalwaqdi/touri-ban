@@ -288,10 +288,19 @@ class UserRecord extends FirestoreRecord {
   static Future<UserRecord> getDocumentOnce(DocumentReference ref) =>
       ref.get().then((s) => UserRecord.fromSnapshot(s));
 
-  static UserRecord fromSnapshot(DocumentSnapshot snapshot) => UserRecord._(
+  static UserRecord fromSnapshot(DocumentSnapshot snapshot) {
+    final raw = snapshot.data();
+    if (raw == null || raw is! Map) {
+      return UserRecord._(
         snapshot.reference,
-        mapFromFirestore(snapshot.data() as Map<String, dynamic>),
+        mapFromFirestore(<String, dynamic>{}),
       );
+    }
+    return UserRecord._(
+      snapshot.reference,
+      mapFromFirestore(Map<String, dynamic>.from(raw)),
+    );
+  }
 
   static UserRecord getDocumentFromData(
     Map<String, dynamic> data,

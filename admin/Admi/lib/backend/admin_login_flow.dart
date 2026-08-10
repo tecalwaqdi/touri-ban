@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_country_landmark_filter.dart';
 import '/backend/admin_panel_session.dart';
 import '/backend/admin_prefetch.dart';
 import '/backend/admin_role_service.dart';
-import '/flutter_flow/nav/nav.dart';
+import '/flutter_flow/flutter_flow_util.dart';
 
 /// Finishes sign-in: syncs auth globals, loads profile, opens panel home.
 Future<AdminLoginResult> completePanelSignIn(
@@ -58,17 +60,15 @@ enum AdminLoginResult {
   navigationFailed,
 }
 
-String messageForLoginResult(AdminLoginResult result) {
+String messageForLoginResult(BuildContext context, AdminLoginResult result) {
   switch (result) {
     case AdminLoginResult.success:
       return '';
     case AdminLoginResult.profileLoadFailed:
-      return 'تعذر تحميل بيانات الحساب. تحقق من الاتصال وحاول مرة أخرى.';
+      return FFLocalizations.of(context).getText('adm_login_profile_failed');
     case AdminLoginResult.unauthorized:
-      return 'هذا الحساب لا يملك صلاحية الدخول للوحة الإدارة. '
-          'يجب أن يكون الحساب مفعّلاً بأحد الأدوار: سوبر أدمن (isAdminRule=1)، '
-          'وكيل دولة (isAdminRule=2)، شريك (isAdminRule=3)، أو مدير شركة نقل (isAdminRule=4).';
+      return FFLocalizations.of(context).getText('adm_login_unauthorized');
     case AdminLoginResult.navigationFailed:
-      return 'تعذر فتح لوحة التحكم. حاول مرة أخرى.';
+      return FFLocalizations.of(context).getText('adm_login_nav_failed');
   }
 }

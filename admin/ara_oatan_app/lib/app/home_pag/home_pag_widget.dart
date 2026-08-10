@@ -100,10 +100,10 @@ class _HomePagWidgetState extends State<HomePagWidget>
         GoRouter.of(context).prepareAuthEvent();
         if (_model.passTextController.text !=
             _model.confpassTextController.text) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('ui_text_44134f762b'.tr()),
-            ),
+          DsSnackBar.show(
+            context,
+            message: 'ui_text_44134f762b'.tr(),
+            tone: DsSnackTone.error,
           );
           return;
         }
@@ -118,12 +118,15 @@ class _HomePagWidgetState extends State<HomePagWidget>
         }
 
         try {
+          // Do not write role flags (ismndob/actev_mndob/ngl) — Firestore
+          // create rules reject those keys for self-provisioned customers.
           await UserRecord.collection.doc(user.uid).set(
                 createUserRecordData(
+                  email: user.email,
+                  displayName: user.displayName,
+                  photoUrl: user.photoUrl,
+                  uid: user.uid,
                   createdTime: getCurrentTimestamp,
-                  ngl: false,
-                  ismndob: false,
-                  actevMndob: false,
                   actevUser: true,
                 ),
                 SetOptions(merge: true),
@@ -206,7 +209,9 @@ class _HomePagWidgetState extends State<HomePagWidget>
       // الإنتقال إلى صفحة
       context.pushNamed(CreateAccount1ShrekWidget.routeName);
 
-  void _openSignIn() => context.pushNamed(HomePagWidget.routeName);
+  void _openSignIn() {
+    // Already on the landing/sign-in screen — avoid stacking another HomePag.
+  }
 
   ThemeData _dsThemeFor(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
@@ -310,16 +315,16 @@ class _HomePagWidgetState extends State<HomePagWidget>
                               ),
                               const Padding(
                                 padding: EdgeInsets.fromLTRB(
-                                  DsSpacing.lg,
+                                  DsSpacing.md,
                                   DsSpacing.xs,
-                                  DsSpacing.lg,
+                                  DsSpacing.md,
                                   DsSpacing.md,
                                 ),
                                 child: DsFadeSlide(child: _WelcomeHeader()),
                               ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: DsSpacing.lg,
+                                  horizontal: DsSpacing.md,
                                 ),
                                 child: DsFadeSlide(
                                   delay: DsDurations.fast,
@@ -405,9 +410,9 @@ class _AuthHeader extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        DsSpacing.lg,
+        DsSpacing.md,
         DsSpacing.sm,
-        DsSpacing.lg,
+        DsSpacing.md,
         DsSpacing.xs,
       ),
       child: Column(
@@ -424,7 +429,7 @@ class _AuthHeader extends StatelessWidget {
                 borderColor: colors.border.withValues(alpha: 0.7),
                 dropdownColor: colors.surface,
                 dropdownIconColor: colors.primary,
-                borderRadius: DsRadius.sm,
+                borderRadius: DsRadius.md,
                 textStyle: typography.labelMedium.copyWith(
                   color: colors.textPrimary,
                 ),
@@ -472,12 +477,12 @@ class _WelcomeHeader extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
-        horizontal: DsSpacing.lg,
+        horizontal: DsSpacing.md,
         vertical: shortScreen ? DsSpacing.sm : DsSpacing.md,
       ),
       decoration: BoxDecoration(
         color: colors.surface.withValues(alpha: 0.88),
-        borderRadius: DsRadius.large,
+        borderRadius: DsRadius.medium,
         border: Border.all(color: colors.border.withValues(alpha: 0.55)),
         boxShadow: DsShadows.soft(dark: context.dsIsDark),
       ),
@@ -575,7 +580,7 @@ class _AuthTabBar extends StatelessWidget {
             height: _kTabHeight,
             child: _AuthTabLabel(
               icon: Icons.person_add_alt_1_rounded,
-              label: 'Email Address'.tr(),
+              label: 'Create an account'.tr(),
             ),
           ),
           Tab(
@@ -653,9 +658,9 @@ class _LoginTabView extends StatelessWidget {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(
-        DsSpacing.lg,
-        DsSpacing.lg,
-        DsSpacing.lg,
+        DsSpacing.md,
+        DsSpacing.md,
+        DsSpacing.md,
         DsSpacing.huge,
       ),
       child: DsFadeSlide(
@@ -665,7 +670,7 @@ class _LoginTabView extends StatelessWidget {
             DsCard(
               elevated: true,
               bordered: false,
-              padding: const EdgeInsets.all(DsSpacing.xl),
+              padding: const EdgeInsets.all(DsSpacing.md),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -689,7 +694,7 @@ class _LoginTabView extends StatelessWidget {
                   const SizedBox(height: DsSpacing.xl),
                   DsButton.primary(
                     label: 'Login'.tr(),
-                    size: DsButtonSize.lg,
+                    size: DsButtonSize.md,
                     expanded: true,
                     loading: loading,
                     icon: Icons.login_rounded,
@@ -698,13 +703,13 @@ class _LoginTabView extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: DsSpacing.lg),
+            const SizedBox(height: DsSpacing.md),
             const _OrDivider(),
             _GoogleSignInSection(
               loading: googleLoading,
               onPressed: onGoogleSignIn,
             ),
-            const SizedBox(height: DsSpacing.md),
+            const SizedBox(height: DsSpacing.sm),
             DsButton.text(
               label: FFLocalizations.of(context).getText(
                 'h9t30wk4' /* Forgot Password ? */,
@@ -752,9 +757,9 @@ class _SignUpTabView extends StatelessWidget {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(
-        DsSpacing.lg,
-        DsSpacing.lg,
-        DsSpacing.lg,
+        DsSpacing.md,
+        DsSpacing.md,
+        DsSpacing.md,
         DsSpacing.huge,
       ),
       child: DsFadeSlide(
@@ -768,7 +773,7 @@ class _SignUpTabView extends StatelessWidget {
             ),
             const SizedBox(height: DsSpacing.md),
             const _OrDivider(),
-            const SizedBox(height: DsSpacing.lg),
+            const SizedBox(height: DsSpacing.md),
             Text(
               FFLocalizations.of(context).getText(
                 'tjrl68rw' /* Please fill in all fields to r... */,
@@ -779,11 +784,11 @@ class _SignUpTabView extends StatelessWidget {
                 height: 1.35,
               ),
             ),
-            const SizedBox(height: DsSpacing.lg),
+            const SizedBox(height: DsSpacing.md),
             DsCard(
               elevated: true,
               bordered: false,
-              padding: const EdgeInsets.all(DsSpacing.xl),
+              padding: const EdgeInsets.all(DsSpacing.md),
               child: Form(
                 key: model.formKey,
                 autovalidateMode: AutovalidateMode.disabled,
@@ -881,7 +886,7 @@ class _SignUpTabView extends StatelessWidget {
                       label: FFLocalizations.of(context).getText(
                         'y6zcycni' /* Register */,
                       ),
-                      size: DsButtonSize.lg,
+                      size: DsButtonSize.md,
                       expanded: true,
                       loading: loading,
                       icon: Icons.person_add_alt_1_rounded,
@@ -891,7 +896,7 @@ class _SignUpTabView extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: DsSpacing.lg),
+            const SizedBox(height: DsSpacing.md),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -943,20 +948,20 @@ class _PartnerTabView extends StatelessWidget {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(
-        DsSpacing.lg,
+        DsSpacing.md,
         DsSpacing.xl,
-        DsSpacing.lg,
+        DsSpacing.md,
         DsSpacing.massive,
       ),
       child: DsScaleFade(
         child: DsCard(
           elevated: true,
-          padding: const EdgeInsets.all(DsSpacing.xxxl),
+          padding: const EdgeInsets.all(DsSpacing.xl),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(DsSpacing.lg),
+                padding: const EdgeInsets.all(DsSpacing.md),
                 decoration: BoxDecoration(
                   color: colors.primarySoft,
                   shape: BoxShape.circle,
@@ -973,6 +978,7 @@ class _PartnerTabView extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: typography.headlineSmall.copyWith(
                   color: colors.primaryStrong,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: DsSpacing.sm),
@@ -982,12 +988,13 @@ class _PartnerTabView extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: typography.bodyMedium.copyWith(
                   color: colors.textSecondary,
+                  height: 1.4,
                 ),
               ),
               const SizedBox(height: DsSpacing.xl),
               DsButton.primary(
                 label: 'Register Now'.tr(),
-                size: DsButtonSize.lg,
+                size: DsButtonSize.md,
                 expanded: true,
                 icon: Icons.arrow_forward_rounded,
                 onPressed: onRegister,

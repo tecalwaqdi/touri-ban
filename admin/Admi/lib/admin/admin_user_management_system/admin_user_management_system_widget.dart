@@ -257,9 +257,7 @@ class _AdminUserManagementSystemWidgetState
                           Padding(
                             padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                             child: Text(
-                              '${uiTr(context, 'العدد')}: ${users.length}'
-                              '${users.length != allUsers.length ? ' ${uiTr(context, 'من')} ${allUsers.length}' : ''}'
-                              '${listState.hasMore ? '+' : ''}',
+                              adminListCountLabel(context, listState, visibleCount: users.length, pageFetched: allUsers.length),
                               style: theme.labelLarge.override(
                                 fontFamily: theme.labelLargeFamily,
                                 color: theme.secondaryText,

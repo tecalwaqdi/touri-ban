@@ -3,7 +3,6 @@ import '/backend/admin_audit_log.dart';
 import '/backend/admin_cascade_delete.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/backend.dart';
-import '/backend/firebase_storage/storage.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_image_picker.dart';
@@ -73,7 +72,7 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, uploadErrorMessage(e)))),
+        SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, e))),
       );
     } finally {
       if (mounted) {
@@ -110,6 +109,8 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
           appCommissionPercent:
               double.tryParse(_model.textController4!.text.trim()) ??
                   record.appCommissionPercent,
+          currencyCode: _model.textControllerCurrencyCode!.text.trim().toUpperCase(),
+          currencySymbol: _model.textControllerCurrencySymbol!.text.trim(),
         ),
       );
       if (!mounted) return;
@@ -240,6 +241,22 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
                 icon: Icons.account_balance_wallet_outlined,
                 keyboardType: TextInputType.number,
                 hint: uiTr(context, 'مثال: 10'),
+              ),
+              const SizedBox(height: AdminUi.fieldGap),
+              AdminTextField(
+                controller: _model.textControllerCurrencyCode!,
+                focusNode: _model.textFieldFocusNodeCurrencyCode,
+                label: uiTr(context, 'رمز العملة (ISO)'),
+                icon: Icons.payments_outlined,
+                hint: uiTr(context, 'مثال: SAR أو KGS'),
+              ),
+              const SizedBox(height: AdminUi.fieldGap),
+              AdminTextField(
+                controller: _model.textControllerCurrencySymbol!,
+                focusNode: _model.textFieldFocusNodeCurrencySymbol,
+                label: uiTr(context, 'رمز عرض العملة'),
+                icon: Icons.attach_money_rounded,
+                hint: uiTr(context, 'مثال: ر.س أو сом'),
               ),
               const SizedBox(height: AdminUi.fieldGap),
               AdminEditSwitchRow(

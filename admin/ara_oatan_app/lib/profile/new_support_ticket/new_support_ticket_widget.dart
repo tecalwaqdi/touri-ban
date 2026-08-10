@@ -111,6 +111,11 @@ class _NewSupportTicketWidgetState extends State<NewSupportTicketWidget> {
                 title: FFLocalizations.of(context).getText(
                   '6hxnd9xt' /* New Support Ticket */,
                 ),
+                automaticallyImplyLeading: false,
+                leading: DsIconButton(
+                  icon: DsIcons.back,
+                  onPressed: () => context.safePop(),
+                ),
               ),
               body: SafeArea(
                 top: true,

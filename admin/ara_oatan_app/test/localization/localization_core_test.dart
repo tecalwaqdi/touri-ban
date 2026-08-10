@@ -27,7 +27,15 @@ void main() {
     );
     expect(
       BookingStatusLocalizer.resolveCode(halhText: 'ملغي'),
-      TouryBookingStatusCodes.cancelled,
+      TouryBookingStatusCodes.cancelledByCustomer,
+    );
+    expect(
+      BookingStatusLocalizer.resolveCode(statusCode: 'cancelled_by_driver'),
+      TouryBookingStatusCodes.cancelledByDriver,
+    );
+    expect(
+      BookingStatusLocalizer.resolveCode(statusCode: 'completed'),
+      TouryBookingStatusCodes.completed,
     );
   });
 

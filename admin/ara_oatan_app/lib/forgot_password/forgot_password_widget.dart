@@ -41,12 +41,10 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
 
   Future<void> _sendResetLink() async {
     if (_model.emailAddressTextController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'ui_text_35d76b889c'.tr(),
-          ),
-        ),
+      DsSnackBar.show(
+        context,
+        message: 'ui_text_35d76b889c'.tr(),
+        tone: DsSnackTone.warning,
       );
       return;
     }
@@ -77,7 +75,7 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () async {
-                    context.pop();
+                    context.safePop();
                   },
                 ),
                 title: FFLocalizations.of(context).getText(
@@ -131,7 +129,7 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                                 ),
                               ),
                             ),
-                          const SizedBox(height: DsSpacing.lg),
+                          const SizedBox(height: DsSpacing.md),
                           DsFadeSlide(
                             child: Center(
                               child: Container(
@@ -152,7 +150,7 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: DsSpacing.xl),
+                          const SizedBox(height: DsSpacing.md),
                           DsFadeSlide(
                             delay: DsDurations.instant,
                             child: Text(
@@ -160,8 +158,9 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                                 'fo18bjgj' /* Forgot Password */,
                               ),
                               textAlign: TextAlign.center,
-                              style: typography.headlineLarge.copyWith(
+                              style: typography.headlineMedium.copyWith(
                                 color: colors.textPrimary,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
@@ -175,15 +174,16 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                               textAlign: TextAlign.center,
                               style: typography.bodyMedium.copyWith(
                                 color: colors.textSecondary,
+                                height: 1.4,
                               ),
                             ),
                           ),
-                          const SizedBox(height: DsSpacing.xl),
+                          const SizedBox(height: DsSpacing.md),
                           DsFadeSlide(
                             delay: DsDurations.fast,
                             child: DsCard(
                               elevated: true,
-                              padding: const EdgeInsets.all(DsSpacing.lg),
+                              padding: const EdgeInsets.all(DsSpacing.md),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
@@ -198,13 +198,13 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                                       '1x3j3nfg' /* Enter your email... */,
                                     ),
                                   ),
-                                  const SizedBox(height: DsSpacing.lg),
+                                  const SizedBox(height: DsSpacing.md),
                                   DsButton.primary(
                                     label:
                                         FFLocalizations.of(context).getText(
                                       '6e3nyqmx' /* Send Link */,
                                     ),
-                                    size: DsButtonSize.lg,
+                                    size: DsButtonSize.md,
                                     expanded: true,
                                     icon: Icons.send_rounded,
                                     onPressed: _sendResetLink,
@@ -213,7 +213,7 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: DsSpacing.xl),
+                          const SizedBox(height: DsSpacing.md),
                         ],
                       ),
                     ),

@@ -4,12 +4,39 @@ import { getEnv, isFirebaseAdcMode } from "@/lib/security/env";
 
 let initialized = false;
 
+const DEFAULT_PROJECT_ID = "tutorial-multi-language-70gx4j";
+
 export function initFirebase(): typeof admin {
   if (!initialized) {
     if (!admin.apps.length) {
-      if (isFirebaseAdcMode()) {
-        // Cloud Functions / ADC: default app + runtime project credentials.
-        admin.initializeApp();
+      // Prefer explicit service-account JSON when present (Render / Secret Manager).
+      // ADC on Cloud Run can verify JWTs without network, but Firestore/revoke
+      // checks need a working OAuth token from the runtime SA.
+      const fromSa = Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64?.trim());
+      const hasCertPair = Boolean(
+        process.env.FIREBASE_PROJECT_ID?.trim() &&
+          process.env.FIREBASE_CLIENT_EMAIL?.trim() &&
+          process.env.FIREBASE_PRIVATE_KEY?.trim(),
+      );
+
+      if (fromSa || hasCertPair) {
+        const env = getEnv({ requireSecrets: false });
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId: env.FIREBASE_PROJECT_ID || DEFAULT_PROJECT_ID,
+            clientEmail: env.FIREBASE_CLIENT_EMAIL,
+            privateKey: env.privateKey,
+          }),
+          projectId: env.FIREBASE_PROJECT_ID || DEFAULT_PROJECT_ID,
+        });
+      } else if (isFirebaseAdcMode()) {
+        admin.initializeApp({
+          credential: admin.credential.applicationDefault(),
+          projectId:
+            process.env.GCLOUD_PROJECT ||
+            process.env.GCP_PROJECT ||
+            DEFAULT_PROJECT_ID,
+        });
       } else {
         const env = getEnv();
         admin.initializeApp({
@@ -18,6 +45,7 @@ export function initFirebase(): typeof admin {
             clientEmail: env.FIREBASE_CLIENT_EMAIL,
             privateKey: env.privateKey,
           }),
+          projectId: env.FIREBASE_PROJECT_ID || DEFAULT_PROJECT_ID,
         });
       }
     }

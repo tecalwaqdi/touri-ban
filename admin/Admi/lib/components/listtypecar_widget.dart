@@ -1,6 +1,7 @@
 import '/backend/admin_performance.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/core/admin_currency.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -110,7 +111,7 @@ class _ListtypecarWidgetState extends State<ListtypecarWidget> {
                       listViewTypeCarRecord.sr,
                       formatType: FormatType.decimal,
                       decimalType: DecimalType.automatic,
-                      currency: uiTr(context, 'ريال '),
+                      currency: AdminCurrency.asFormatPrefix(AdminCurrency.symbolForIso(listViewTypeCarRecord.countryIso2)),
                     ),
                     style: FlutterFlowTheme.of(context).labelMedium.override(
                           fontFamily:

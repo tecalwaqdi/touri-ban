@@ -103,16 +103,30 @@ abstract final class TouryCustomerOrderActions {
           return;
         }
 
+        // Race guard: re-read live assignment + create time inside the txn.
+        final liveCreatedAt =
+            TouryCustomerCancelPolicy.createdAtFromField(data['data_order']);
         if (!TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: liveStatus,
           halhText: liveHalh,
           halhOrderName: (data['halh_order'] ?? '').toString(),
           driverOrderStatus: (data['halhOrderMndob'] ?? '').toString(),
+          mndobUser: data['mndob_user'],
+          createdAt: liveCreatedAt,
+          paymentStatus: (data['payment_status'] ?? '').toString(),
         )) {
           throw FirebaseException(
             plugin: 'cloud_firestore',
             code: 'failed-precondition',
-            message: 'booking_cancel_race',
+            message: TouryCustomerCancelPolicy.hasDriverAccepted(
+              statusCode: liveStatus,
+              halhText: liveHalh,
+              halhOrderName: (data['halh_order'] ?? '').toString(),
+              driverOrderStatus: (data['halhOrderMndob'] ?? '').toString(),
+              mndobUser: data['mndob_user'],
+            )
+                ? 'booking_cancel_after_driver'
+                : 'booking_cancel_race',
           );
         }
 
@@ -130,7 +144,11 @@ abstract final class TouryCustomerOrderActions {
     }
 
     // Cash / unpaid online — never invoke card refund.
-    if (!isOnline || gatewayId.isEmpty) {
+    final unpaidPending = TouryCustomerCancelPolicy.isUnpaidPaymentPending(
+      statusCode: order.rawStatusCode,
+      paymentStatus: paymentStatus,
+    );
+    if (!isOnline || gatewayId.isEmpty || unpaidPending) {
       return null;
     }
 
@@ -152,6 +170,11 @@ abstract final class TouryCustomerOrderActions {
     DocumentReference orderRef,
   ) async {
     if (e.code == 'failed-precondition' &&
+        (e.message ?? '').contains('booking_cancel_after_driver')) {
+      return 'booking_cancel_after_driver';
+    }
+
+    if (e.code == 'failed-precondition' &&
         (e.message ?? '').contains('booking_cancel_race')) {
       return 'booking_cancel_race';
     }
@@ -172,11 +195,24 @@ abstract final class TouryCustomerOrderActions {
           )) {
             return null;
           }
+          if (TouryCustomerCancelPolicy.hasDriverAccepted(
+            statusCode: status,
+            halhText: halh,
+            halhOrderName: (data['halh_order'] ?? '').toString(),
+            driverOrderStatus: (data['halhOrderMndob'] ?? '').toString(),
+            mndobUser: data['mndob_user'],
+          )) {
+            return 'booking_cancel_after_driver';
+          }
           if (!TouryCustomerCancelPolicy.canCustomerCancelBooking(
             statusCode: status,
             halhText: halh,
             halhOrderName: (data['halh_order'] ?? '').toString(),
             driverOrderStatus: (data['halhOrderMndob'] ?? '').toString(),
+            mndobUser: data['mndob_user'],
+            createdAt: TouryCustomerCancelPolicy.createdAtFromField(
+              data['data_order'],
+            ),
           )) {
             return 'booking_cancel_race';
           }

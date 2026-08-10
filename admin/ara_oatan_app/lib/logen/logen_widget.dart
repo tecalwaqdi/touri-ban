@@ -224,7 +224,7 @@ class _LogenWidgetState extends State<LogenWidget>
           fontWeight: FontWeight.w700,
         ),
       ),
-      const SizedBox(height: DsSpacing.xl),
+      const SizedBox(height: DsSpacing.md),
       DsTextField.email(
         controller: _model.emailAddressTextController,
         focusNode: _model.emailAddressFocusNode,
@@ -249,12 +249,12 @@ class _LogenWidgetState extends State<LogenWidget>
       const SizedBox(height: DsSpacing.xl),
       DsButton.primary(
         label: 'Login'.tr(),
-        size: DsButtonSize.lg,
+        size: DsButtonSize.md,
         expanded: true,
         icon: Icons.login_rounded,
         onPressed: _handleEmailSignIn,
       ),
-      const SizedBox(height: DsSpacing.lg),
+      const SizedBox(height: DsSpacing.md),
       Row(
         children: [
           const Expanded(child: DsDivider()),
@@ -270,13 +270,13 @@ class _LogenWidgetState extends State<LogenWidget>
           const Expanded(child: DsDivider()),
         ],
       ),
-      const SizedBox(height: DsSpacing.lg),
+      const SizedBox(height: DsSpacing.md),
       TouryGoogleSignInButton(
         label: 'Login with Google'.tr(),
         loading: _googleSignInLoading,
         onPressed: _handleGoogleSignIn,
       ),
-      const SizedBox(height: DsSpacing.lg),
+      const SizedBox(height: DsSpacing.md),
       RichText(
         textAlign: TextAlign.center,
         textScaler: MediaQuery.of(context).textScaler,

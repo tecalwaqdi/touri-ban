@@ -1,19 +1,17 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
-import '/core/driver_design_system.dart';
+import '/core/driver_country_service.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_online_state.dart';
 import '/core/driver_order_match.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
-import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
-import '/index.dart';
+import '/core/driver_ux_widgets.dart';
+import '/core/toury_country_registry.dart';
 import '/design_system/design_system.dart';
+import '/core/driver_i18n.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'completed_model.dart';
 export 'completed_model.dart';
 
@@ -53,511 +51,427 @@ class _CompletedWidgetState extends State<CompletedWidget> {
     return DsScreenShell(
       child: Builder(
         builder: (context) {
-          return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: context.dsColors.scaffold,
-        appBar: DsAppBar(
-          title: FFLocalizations.of(context).getText(
-            '49igunvq' /* Completed requests */,
-          ),
-          centerTitle: false,
-        ),
-        body: SafeArea(
-          top: true,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                  child: Container(
-                    width: double.infinity,
-                  ),
-                ),
-                if (!DriverOnlineState.isApproved)
-                  Padding(
-                    padding:
-                        EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 16.0),
-                    child: AuthUserStreamWidget(
-                      builder: (context) => Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: context.dsColors.error,
-                          borderRadius: BorderRadius.circular(12.0),
-                          border: Border.all(
-                            color: context.dsColors.divider,
-                            width: 1.0,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            FFLocalizations.of(context).getText(
-                              't4jivayf' /* This account is inactive. For ... */,
-                            ),
-                            textAlign: TextAlign.center,
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: FlutterFlowTheme.of(context)
-                                      .bodyMediumFamily,
-                                  color: Colors.white,
-                                  letterSpacing: 0.0,
-                                  useGoogleFonts: !FlutterFlowTheme.of(context)
-                                      .bodyMediumIsCustom,
-                                ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                  child: StreamBuilder<List<OrderRecord>>(
-                    stream: queryOrderRecord(
-                      queryBuilder: DriverOrderMatch.assignedToMeQuery(),
-                      limit: 40,
-                    ),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Text(
-                              '${FFLocalizations.of(context).getText('error')}\n${snapshot.error}',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        );
-                      }
-                      // Customize what your widget looks like when it's loading.
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: SizedBox(
-                            width: 50.0,
-                            height: 50.0,
-                            child: const DsLoading(),
-                          ),
-                        );
-                      }
-                      List<OrderRecord> listViewOrderRecordList =
-                          snapshot.data!
-                              .where(
-                                (o) =>
-                                    DriverTripActionGates.isCompletedListItem(
-                                  (o.snapshotData['status_code'] ?? '')
-                                      .toString(),
-                                  o.halhText,
-                                ),
-                              )
-                              .toList();
+          final colors = context.dsColors;
+          final typography = context.dsTypography;
 
-                      return ListView.builder(
-                        padding: EdgeInsets.zero,
-                        primary: false,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        itemCount: listViewOrderRecordList.length,
-                        itemBuilder: (context, listViewIndex) {
-                          final listViewOrderRecord =
-                              listViewOrderRecordList[listViewIndex];
-                          return Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 8.0),
-                            child: InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                context.pushNamed(
-                                  TfaselOrserWidget.routeName,
-                                  queryParameters: {
-                                    'id': serializeParam(
-                                      listViewOrderRecord.reference,
-                                      ParamType.DocumentReference,
+          return GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Scaffold(
+              key: scaffoldKey,
+              backgroundColor: colors.scaffold,
+              appBar: DriverMainAppBar(
+                title: FFLocalizations.of(context).getText(
+                  '49igunvq' /* Completed requests */,
+                ),
+              ),
+              body: SafeArea(
+                top: true,
+                child: DriverContentWidth(
+                  child: DriverPagePadding(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          if (!DriverOnlineState.isApproved)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: DsSpacing.md,
+                                bottom: DsSpacing.md,
+                              ),
+                              child: AuthUserStreamWidget(
+                                builder: (context) => DsCard(
+                                  color: colors.error,
+                                  bordered: false,
+                                  padding: const EdgeInsets.all(DsSpacing.sm),
+                                  child: Text(
+                                    FFLocalizations.of(context).getText(
+                                      't4jivayf' /* This account is inactive. For ... */,
                                     ),
-                                  }.withoutNulls,
-                                );
-                              },
-                              child: Material(
-                                color: Colors.transparent,
-                                elevation: 2.0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                child: Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: context.dsColors.surface,
-                                    borderRadius: BorderRadius.circular(12.0),
+                                    textAlign: TextAlign.center,
+                                    style: typography.bodyMedium.copyWith(
+                                      color: colors.onError,
+                                    ),
                                   ),
-                                  child: Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        16.0, 16.0, 16.0, 16.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            Container(
-                                              width: 60.0,
-                                              height: 60.0,
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    context.dsColors.primarySoft,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(30.0),
-                                                child:
-                                                            Image(
-                                        fit: BoxFit.cover,
-                                        image: (listViewOrderRecord.imgProfileClent.isNotEmpty)
-                                            ? NetworkImage(listViewOrderRecord.imgProfileClent)
-                                            : const AssetImage('assets/images/logo.png') as ImageProvider,
-                                      )
-                                                
-                                              ),
+                                ),
+                              ),
+                            ),
+                          StreamBuilder<List<OrderRecord>>(
+                            stream: queryOrderRecord(
+                              queryBuilder:
+                                  DriverOrderMatch.assignedToMeQuery(),
+                              limit: 40,
+                            ),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(DsSpacing.xl),
+                                  child: Text(
+                                    '${FFLocalizations.of(context).getText('error')}\n${snapshot.error}',
+                                    textAlign: TextAlign.center,
+                                    style: typography.bodyMedium.copyWith(
+                                      color: colors.error,
+                                    ),
+                                  ),
+                                );
+                              }
+                              if (!snapshot.hasData) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(DsSpacing.xxl),
+                                  child: Center(child: DsLoading()),
+                                );
+                              }
+                              final listViewOrderRecordList = snapshot.data!
+                                  .where(
+                                    (o) => DriverTripActionGates
+                                        .isCompletedListItem(
+                                      (o.snapshotData['status_code'] ?? '')
+                                          .toString(),
+                                      o.halhText,
+                                    ),
+                                  )
+                                  .toList();
+
+                              if (listViewOrderRecordList.isEmpty) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: DsSpacing.xxl,
+                                  ),
+                                  child: DriverEmptyState(
+                                    title: driverTr(context, 'No orders'),
+                                    message: driverTr(
+                                      context,
+                                      'New orders will appear here when available',
+                                    ),
+                                    icon: Icons.check_circle_outline_rounded,
+                                  ),
+                                );
+                              }
+
+                              return ListView.builder(
+                                padding: EdgeInsets.zero,
+                                primary: false,
+                                shrinkWrap: true,
+                                itemCount: listViewOrderRecordList.length,
+                                itemBuilder: (context, listViewIndex) {
+                                  final order =
+                                      listViewOrderRecordList[listViewIndex];
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: DsSpacing.sm,
+                                    ),
+                                    child: DriverOrderCardShell(
+                                      onTap: () async {
+                                        context.pushNamed(
+                                          TfaselOrserWidget.routeName,
+                                          queryParameters: {
+                                            'id': serializeParam(
+                                              order.reference,
+                                              ParamType.DocumentReference,
                                             ),
-                                            Expanded(
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    listViewOrderRecord
-                                                        .naimUserText,
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .bodyLarge
-                                                        .override(
-                                                          fontFamily:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodyLargeFamily,
-                                                          letterSpacing: 0.0,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          useGoogleFonts:
-                                                              !FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .bodyLargeIsCustom,
-                                                        ),
+                                          }.withoutNulls,
+                                        );
+                                      },
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 60,
+                                                height: 60,
+                                                decoration: BoxDecoration(
+                                                  color: colors.primarySoft,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                  child: Image(
+                                                    fit: BoxFit.cover,
+                                                    image: (order
+                                                            .imgProfileClent
+                                                            .isNotEmpty)
+                                                        ? NetworkImage(order
+                                                            .imgProfileClent)
+                                                        : const AssetImage(
+                                                                'assets/images/logo.png')
+                                                            as ImageProvider,
                                                   ),
-                                                  SingleChildScrollView(
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.max,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                  width: DsSpacing.sm),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      order.naimUserText,
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: typography
+                                                          .titleMedium
+                                                          .copyWith(
+                                                        color:
+                                                            colors.textPrimary,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                        height: DsSpacing.xxs),
+                                                    Wrap(
+                                                      spacing: DsSpacing.md,
+                                                      runSpacing: DsSpacing.xxs,
                                                       children: [
-                                                        Row(
-                                                          mainAxisSize:
-                                                              MainAxisSize.max,
-                                                          children: [
-                                                            Icon(
-                                                              Icons.schedule,
-                                                              color: context.dsColors.textSecondary,
-                                                              size: 12.0,
-                                                            ),
-                                                            Text(
-                                                              'الساعات: ${listViewOrderRecord.totalTaim.toString()}',
-                                                              style: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .bodySmall
-                                                                  .override(
-                                                                    fontFamily: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodySmallFamily,
-                                                                    color: context.dsColors.textSecondary,
-                                                                    letterSpacing:
-                                                                        0.0,
-                                                                    useGoogleFonts:
-                                                                        !FlutterFlowTheme.of(
-                                                                                context)
-                                                                            .bodySmallIsCustom,
-                                                                  ),
-                                                            ),
-                                                          ].divide(SizedBox(
-                                                              width: 4.0)),
+                                                        _MetaChip(
+                                                          icon: Icons.schedule,
+                                                          label: driverTrNamed(
+                                                              context,
+                                                              'Hours: {hours}',
+                                                              {
+                                                                'hours':
+                                                                    '${order.totalTaim}'
+                                                              }),
                                                         ),
                                                         Row(
                                                           mainAxisSize:
-                                                              MainAxisSize.max,
+                                                              MainAxisSize.min,
                                                           children: [
                                                             Icon(
                                                               Icons
                                                                   .grid_3x3_sharp,
-                                                              color: context.dsColors.textSecondary,
-                                                              size: 12.0,
+                                                              color: colors
+                                                                  .textSecondary,
+                                                              size: 12,
                                                             ),
-                                                            Text(
-                                                              listViewOrderRecord
-                                                                  .iDorder,
-                                                              style: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .bodySmall
-                                                                  .override(
-                                                                    fontFamily: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodySmallFamily,
-                                                                    color: context.dsColors.textSecondary,
-                                                                    letterSpacing:
-                                                                        0.0,
-                                                                    useGoogleFonts:
-                                                                        !FlutterFlowTheme.of(
-                                                                                context)
-                                                                            .bodySmallIsCustom,
-                                                                  ),
+                                                            const SizedBox(
+                                                                width: 4),
+                                                            ConstrainedBox(
+                                                              constraints:
+                                                                  const BoxConstraints(
+                                                                maxWidth: 120,
+                                                              ),
+                                                              child: Text(
+                                                                order.iDorder,
+                                                                maxLines: 1,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: typography
+                                                                    .bodySmall
+                                                                    .copyWith(
+                                                                  color: colors
+                                                                      .textSecondary,
+                                                                ),
+                                                              ),
                                                             ),
+                                                            const SizedBox(
+                                                                width: 4),
                                                             InkWell(
-                                                              splashColor: Colors
-                                                                  .transparent,
-                                                              focusColor: Colors
-                                                                  .transparent,
-                                                              hoverColor: Colors
-                                                                  .transparent,
-                                                              highlightColor:
-                                                                  Colors
-                                                                      .transparent,
                                                               onTap: () async {
-                                                                await Clipboard.setData(
-                                                                    ClipboardData(
-                                                                        text: listViewOrderRecord
-                                                                            .iDorder));
-                                                                ScaffoldMessenger
-                                                                        .of(context)
+                                                                await Clipboard
+                                                                    .setData(
+                                                                  ClipboardData(
+                                                                    text: order
+                                                                        .iDorder,
+                                                                  ),
+                                                                );
+                                                                if (!context
+                                                                    .mounted) {
+                                                                  return;
+                                                                }
+                                                                ScaffoldMessenger.of(
+                                                                        context)
                                                                     .showSnackBar(
                                                                   SnackBar(
-                                                                    content: Text(
+                                                                    content:
+                                                                        Text(
                                                                       'تم ا',
                                                                       style:
                                                                           TextStyle(
-                                                                        color: context.dsColors.textPrimary,
+                                                                        color: colors
+                                                                            .textPrimary,
                                                                       ),
                                                                     ),
-                                                                    duration: Duration(
-                                                                        milliseconds:
-                                                                            4000),
+                                                                    duration:
+                                                                        const Duration(
+                                                                      milliseconds:
+                                                                          4000,
+                                                                    ),
                                                                     backgroundColor:
-                                                                        context.dsColors.secondary,
+                                                                        colors
+                                                                            .secondary,
                                                                   ),
                                                                 );
                                                               },
                                                               child: Icon(
                                                                 Icons
                                                                     .content_copy,
-                                                                color: context.dsColors.textPrimary,
-                                                                size: 12.0,
+                                                                color: colors
+                                                                    .textPrimary,
+                                                                size: 12,
                                                               ),
                                                             ),
-                                                          ].divide(SizedBox(
-                                                              width: 4.0)),
+                                                          ],
                                                         ),
-                                                        Row(
-                                                          mainAxisSize:
-                                                              MainAxisSize.max,
-                                                          children: [
-                                                            Icon(
-                                                              Icons.place,
-                                                              color: context.dsColors.textSecondary,
-                                                              size: 12.0,
-                                                            ),
-                                                            Text(
-                                                              'المعالم: ${listViewOrderRecord.addCartNumer.toString()}',
-                                                              style: FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .bodySmall
-                                                                  .override(
-                                                                    fontFamily: FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodySmallFamily,
-                                                                    color: context.dsColors.textSecondary,
-                                                                    letterSpacing:
-                                                                        0.0,
-                                                                    useGoogleFonts:
-                                                                        !FlutterFlowTheme.of(
-                                                                                context)
-                                                                            .bodySmallIsCustom,
-                                                                  ),
-                                                            ),
-                                                          ].divide(SizedBox(
-                                                              width: 4.0)),
+                                                        _MetaChip(
+                                                          icon: Icons.place,
+                                                          label: driverTrNamed(
+                                                              context,
+                                                              'Landmarks: {count}',
+                                                              {
+                                                                'count':
+                                                                    '${order.addCartNumer}'
+                                                              }),
                                                         ),
-                                                      ].divide(
-                                                          SizedBox(width: 16.0)),
+                                                      ],
                                                     ),
-                                                  ),
-                                                ].divide(SizedBox(height: 4.0)),
-                                              ),
-                                            ),
-                                          ].divide(SizedBox(width: 12.0)),
-                                        ),
-                                        Divider(
-                                          thickness: 1.0,
-                                          color: context.dsColors.border,
-                                        ),
-                                        Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  FFLocalizations.of(context)
-                                                      .getText(
-                                                    'z3snkf0u' /* Total Earnings */,
-                                                  ),
-                                                  style:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .labelMedium
-                                                          .override(
-                                                            fontFamily:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .labelMediumFamily,
-                                                            letterSpacing: 0.0,
-                                                            useGoogleFonts:
-                                                                !FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .labelMediumIsCustom,
-                                                          ),
+                                                  ],
                                                 ),
-                                                Text(
-                                                  formatNumber(
-                                                    listViewOrderRecord
-                                                        .totalMndob2,
-                                                    formatType:
-                                                        FormatType.decimal,
-                                                    decimalType:
-                                                        DecimalType.automatic,
-                                                    currency: ' ر.س ',
-                                                  ),
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .headlineSmall
-                                                      .override(
-                                                        fontFamily:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .headlineSmallFamily,
-                                                        color:
-                                                            context.dsColors.primary,
-                                                        letterSpacing: 0.0,
-                                                        useGoogleFonts:
-                                                            !FlutterFlowTheme
-                                                                    .of(context)
-                                                                .headlineSmallIsCustom,
-                                                      ),
-                                                ),
-                                              ].divide(SizedBox(height: 4.0)),
-                                            ),
-                                            FFButtonWidget(
-                                              onPressed: () async {
-                                                context.pushNamed(
-                                                  TfaselOrserWidget.routeName,
-                                                  queryParameters: {
-                                                    'id': serializeParam(
-                                                      listViewOrderRecord
-                                                          .reference,
-                                                      ParamType
-                                                          .DocumentReference,
-                                                    ),
-                                                  }.withoutNulls,
-                                                );
-                                              },
-                                              text: FFLocalizations.of(context)
-                                                  .getText(
-                                                'd1vcn2dg' /* Details */,
                                               ),
-                                              options: FFButtonOptions(
-                                                width: 100.0,
-                                                height: 40.0,
-                                                padding: EdgeInsets.all(8.0),
-                                                iconPadding:
-                                                    EdgeInsetsDirectional
-                                                        .fromSTEB(
-                                                            0.0, 0.0, 0.0, 0.0),
-                                                color:
-                                                    context.dsColors.secondary,
-                                                textStyle:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium
-                                                        .override(
-                                                          fontFamily:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .bodyMediumFamily,
-                                                          color: Colors.white,
-                                                          letterSpacing: 0.0,
-                                                          useGoogleFonts:
-                                                              !FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .bodyMediumIsCustom,
-                                                        ),
-                                                elevation: 1.0,
-                                                borderRadius:
-                                                    BorderRadius.circular(20.0),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          dateTimeFormat(
-                                            "relative",
-                                            listViewOrderRecord.dataOrder!,
-                                            locale: FFLocalizations.of(context)
-                                                .languageCode,
+                                            ],
                                           ),
-                                          style: FlutterFlowTheme.of(context)
-                                              .labelSmall
-                                              .override(
-                                                fontFamily:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelSmallFamily,
-                                                color:
-                                                    context.dsColors.textSecondary,
-                                                letterSpacing: 0.0,
-                                                useGoogleFonts:
-                                                    !FlutterFlowTheme.of(
-                                                            context)
-                                                        .labelSmallIsCustom,
+                                          Divider(
+                                            thickness: 1,
+                                            color: colors.border,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      FFLocalizations.of(
+                                                              context)
+                                                          .getText(
+                                                        'z3snkf0u' /* Total Earnings */,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: typography
+                                                          .labelMedium
+                                                          .copyWith(
+                                                        color: colors
+                                                            .textSecondary,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      formatNumber(
+                                                        order.totalMndob2,
+                                                        formatType:
+                                                            FormatType.decimal,
+                                                        decimalType: DecimalType
+                                                            .automatic,
+                                                        currency:
+                                                            ' ${TouryCountryRegistry.currencySymbol(DriverCountryService.currentIso2())} ',
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: typography
+                                                          .headlineSmall
+                                                          .copyWith(
+                                                        color: colors.primary,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
+                                              DsButton.secondary(
+                                                label:
+                                                    FFLocalizations.of(context)
+                                                        .getText(
+                                                  'd1vcn2dg' /* Details */,
+                                                ),
+                                                onPressed: () async {
+                                                  context.pushNamed(
+                                                    TfaselOrserWidget.routeName,
+                                                    queryParameters: {
+                                                      'id': serializeParam(
+                                                        order.reference,
+                                                        ParamType
+                                                            .DocumentReference,
+                                                      ),
+                                                    }.withoutNulls,
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          Text(
+                                            dateTimeFormat(
+                                              'relative',
+                                              order.dataOrder!,
+                                              locale:
+                                                  FFLocalizations.of(context)
+                                                      .languageCode,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style:
+                                                typography.labelSmall.copyWith(
+                                              color: colors.textSecondary,
+                                            ),
+                                          ),
+                                        ].divide(
+                                          const SizedBox(height: DsSpacing.sm),
                                         ),
-                                      ].divide(SizedBox(height: 12.0)),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
         },
       ),
+    );
+  }
+}
+
+class _MetaChip extends StatelessWidget {
+  const _MetaChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: colors.textSecondary, size: 12),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: typography.bodySmall.copyWith(
+            color: colors.textSecondary,
+          ),
+        ),
+      ],
     );
   }
 }

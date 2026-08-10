@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:ara_oatan_app/add_payment_card/add_payment_card_widget.dart';
-import 'package:ara_oatan_app/auth/base_auth_user_provider.dart';
 import 'package:ara_oatan_app/backend/schema/servies/walletservies.dart';
 import 'package:ara_oatan_app/backend/schema/transactionrecord.dart';
 import 'package:ara_oatan_app/backend/schema/walletrecord.dart';
@@ -11,15 +10,12 @@ import 'package:intl/intl.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/backend/api_requests/api_calls.dart';
-import '/backend/schema/structs/index.dart';
 import '/core/toury_ngenius.dart';
 import '/core/toury_wallet_ngenius.dart';
 import '/core/toury_wallet_packages.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
+import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/index.dart';
-import 'package:provider/provider.dart';
 
 class WalletScreenWidget extends StatefulWidget {
   const WalletScreenWidget({super.key});
@@ -53,42 +49,49 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // In your build method or functions:
     final currentUser = FirebaseAuth.instance.currentUser;
     final currentUserUid = currentUser?.uid;
-    final currentUserRef = currentUserReference;
 
-    return Scaffold(
-      backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-      appBar: AppBar(
-        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-        automaticallyImplyLeading: false,
-        title: Text(
-          'wallet_title'.tr(),
-          style: FlutterFlowTheme.of(context).headlineMedium.override(
-                fontFamily: FlutterFlowTheme.of(context).headlineMediumFamily,
-                letterSpacing: 0.0,
+    return DsScreenShell(
+      child: Builder(
+        builder: (context) {
+          final colors = context.dsColors;
+          final typography = context.dsTypography;
+
+          return GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Scaffold(
+              backgroundColor: colors.scaffold,
+              appBar: DsAppBar(
+                automaticallyImplyLeading: false,
+                title: 'wallet_title'.tr(),
+                leading: DsIconButton(
+                  icon: DsIcons.back,
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                  onPressed: () => context.safePop(),
+                ),
               ),
-        ),
-        centerTitle: false,
-        elevation: 0,
-      ),
-      body: SafeArea(
-        top: true,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Current Balance Card
-              _buildBalanceCard(currentUserUid),
-
-              // Action Buttons
-              _buildActionButtons(currentUserUid),
-
-              // Transaction History
-              _buildTransactionHistory(currentUserUid),
-            ],
-          ),
-        ),
+              body: SafeArea(
+                top: true,
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.only(bottom: DsSpacing.xxxl),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildBalanceCard(currentUserUid),
+                      _buildActionButtons(currentUserUid),
+                      _buildTransactionHistory(currentUserUid, typography),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -101,55 +104,41 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
     return StreamBuilder<WalletRecord?>(
       stream: WalletService.getWalletStream(userId),
       builder: (context, snapshot) {
+        final colors = context.dsColors;
+        final typography = context.dsTypography;
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              width: double.infinity,
-              height: 150,
-              decoration: BoxDecoration(
-                color: FlutterFlowTheme.of(context).alternate,
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: FlutterFlowTheme.of(context).primary,
-                ),
-              ),
+            padding: DsSpacing.pagePadding,
+            child: DsCard(
+              elevated: true,
+              padding: const EdgeInsets.symmetric(vertical: DsSpacing.huge),
+              child: const DsLoading(),
             ),
           );
         }
 
         if (snapshot.hasError) {
           return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: FlutterFlowTheme.of(context).error,
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'wallet_load_error'.tr(),
-                      style: FlutterFlowTheme.of(context).bodyMedium.override(
-                            fontFamily:
-                                FlutterFlowTheme.of(context).bodyMediumFamily,
-                            color: Colors.white,
-                            letterSpacing: 0.0,
-                          ),
-                    ),
-                  ],
-                ),
+            padding: DsSpacing.pagePadding,
+            child: DsCard(
+              elevated: true,
+              color: colors.errorContainer,
+              bordered: false,
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    color: colors.error,
+                    size: DsIcons.xl,
+                  ),
+                  const SizedBox(height: DsSpacing.xs),
+                  Text(
+                    'wallet_load_error'.tr(),
+                    textAlign: TextAlign.center,
+                    style: typography.bodyMedium.copyWith(color: colors.error),
+                  ),
+                ],
               ),
             ),
           );
@@ -157,81 +146,48 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
 
         if (!snapshot.hasData || snapshot.data == null) {
           return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    FlutterFlowTheme.of(context).primary,
-                    FlutterFlowTheme.of(context).secondary,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(20.0),
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 10,
-                    color: Colors.black.withOpacity(0.1),
+            padding: DsSpacing.pagePadding,
+            child: DsCard(
+              elevated: true,
+              color: colors.primary,
+              bordered: false,
+              padding: const EdgeInsets.all(DsSpacing.xl),
+              child: Column(
+                children: [
+                  Text(
+                    'wallet_not_created'.tr(),
+                    textAlign: TextAlign.center,
+                    style: typography.bodyMedium.copyWith(
+                      color: colors.onPrimary.withValues(alpha: 0.85),
+                    ),
+                  ),
+                  const SizedBox(height: DsSpacing.md),
+                  DsButton.secondary(
+                    label: 'wallet_create_button'.tr(),
+                    icon: Icons.account_balance_wallet_outlined,
+                    expanded: true,
+                    onPressed: () async {
+                      try {
+                        await WalletService.getOrCreateWallet(userId);
+                        if (!mounted) return;
+                        DsSnackBar.show(
+                          context,
+                          message: 'wallet_created_success'.tr(),
+                          tone: DsSnackTone.success,
+                        );
+                      } catch (e) {
+                        if (!mounted) return;
+                        DsSnackBar.show(
+                          context,
+                          message: 'wallet_error_generic'.tr(namedArgs: {
+                            'error': '$e',
+                          }),
+                          tone: DsSnackTone.error,
+                        );
+                      }
+                    },
                   ),
                 ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    Text(
-                      'wallet_not_created'.tr(),
-                      style: FlutterFlowTheme.of(context).bodyMedium.override(
-                            fontFamily:
-                                FlutterFlowTheme.of(context).bodyMediumFamily,
-                            color: Colors.white70,
-                            letterSpacing: 0.0,
-                          ),
-                    ),
-                    SizedBox(height: 16),
-                    FFButtonWidget(
-                      onPressed: () async {
-                        try {
-                          await WalletService.getOrCreateWallet(userId);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('wallet_created_success'.tr()),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content:
-                                  Text('wallet_error_generic'.tr(namedArgs: {
-                                'error': '$e',
-                              })),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      },
-                      text: 'wallet_create_button'.tr(),
-                      options: FFButtonOptions(
-                        height: 40,
-                        padding: EdgeInsets.symmetric(horizontal: 24),
-                        color: Colors.white,
-                        textStyle: FlutterFlowTheme.of(context)
-                            .titleSmall
-                            .override(
-                              fontFamily:
-                                  FlutterFlowTheme.of(context).titleSmallFamily,
-                              color: FlutterFlowTheme.of(context).primary,
-                              letterSpacing: 0.0,
-                            ),
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ),
           );
@@ -242,64 +198,48 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
         final currency = wallet.currency;
 
         return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  FlutterFlowTheme.of(context).primary,
-                  FlutterFlowTheme.of(context).secondary,
-                ],
+          padding: DsSpacing.pagePadding,
+          child: DsFadeSlide(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: colors.primary,
+                borderRadius: DsRadius.large,
+                boxShadow: DsShadows.card(dark: context.dsIsDark),
               ),
-              borderRadius: BorderRadius.circular(20.0),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 10,
-                  color: Colors.black.withOpacity(0.1),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(DsSpacing.xl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'wallet_current_balance'.tr(),
-                    style: FlutterFlowTheme.of(context).bodyMedium.override(
-                          fontFamily:
-                              FlutterFlowTheme.of(context).bodyMediumFamily,
-                          color: Colors.white70,
-                          letterSpacing: 0.0,
-                        ),
+                    style: typography.bodyMedium.copyWith(
+                      color: colors.onPrimary.withValues(alpha: 0.8),
+                    ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: DsSpacing.xs),
                   Text(
                     '${balance.toStringAsFixed(2)} $currency',
-                    style: FlutterFlowTheme.of(context).displayLarge.override(
-                          fontFamily:
-                              FlutterFlowTheme.of(context).displayLargeFamily,
-                          color: Colors.white,
-                          fontSize: 48,
-                          letterSpacing: 0.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: typography.displaySmall.copyWith(
+                      color: colors.onPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: DsSpacing.md),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _buildInfoItem(
-                          'wallet_currency_label'.tr(), wallet.currency),
+                        'wallet_currency_label'.tr(),
+                        wallet.currency,
+                      ),
                       _buildInfoItem(
-                          'wallet_last_updated'.tr(),
-                          wallet.lastUpdated != null
-                              ? DateFormat('dd/MM HH:mm')
-                                  .format(wallet.lastUpdated!)
-                              : 'wallet_never'.tr()),
+                        'wallet_last_updated'.tr(),
+                        wallet.lastUpdated != null
+                            ? DateFormat('dd/MM HH:mm')
+                                .format(wallet.lastUpdated!)
+                            : 'wallet_never'.tr(),
+                      ),
                     ],
                   ),
                 ],
@@ -313,68 +253,35 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
 
   Widget _buildNotSignedInState() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: FlutterFlowTheme.of(context).alternate,
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              Icon(
-                Icons.account_circle_outlined,
-                size: 64,
-                color: FlutterFlowTheme.of(context).secondaryText,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'wallet_login_required_title'.tr(),
-                style: FlutterFlowTheme.of(context).headlineSmall.override(
-                      fontFamily:
-                          FlutterFlowTheme.of(context).headlineSmallFamily,
-                      letterSpacing: 0.0,
-                    ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'wallet_login_required_msg'.tr(),
-                style: FlutterFlowTheme.of(context).bodyMedium.override(
-                      fontFamily: FlutterFlowTheme.of(context).bodyMediumFamily,
-                      color: FlutterFlowTheme.of(context).secondaryText,
-                      letterSpacing: 0.0,
-                    ),
-              ),
-            ],
-          ),
-        ),
+      padding: DsSpacing.pagePadding,
+      child: DsEmptyState(
+        icon: Icons.account_circle_outlined,
+        title: 'wallet_login_required_title'.tr(),
+        message: 'wallet_login_required_msg'.tr(),
       ),
     );
   }
 
   Widget _buildInfoItem(String title, String value) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: FlutterFlowTheme.of(context).bodySmall.override(
-                fontFamily: FlutterFlowTheme.of(context).bodySmallFamily,
-                color: Colors.white70,
-                letterSpacing: 0.0,
-              ),
+          style: typography.labelSmall.copyWith(
+            color: colors.onPrimary.withValues(alpha: 0.75),
+          ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: DsSpacing.xxs),
         Text(
           value,
-          style: FlutterFlowTheme.of(context).bodyMedium.override(
-                fontFamily: FlutterFlowTheme.of(context).bodyMediumFamily,
-                color: Colors.white,
-                letterSpacing: 0.0,
-                fontWeight: FontWeight.w600,
-              ),
+          style: typography.bodyMedium.copyWith(
+            color: colors.onPrimary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );
@@ -382,36 +289,24 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
 
   Widget _buildActionButtons(String? userId) {
     if (userId == null) {
-      return SizedBox();
+      return const SizedBox.shrink();
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: DsSpacing.md),
       child: Row(
         children: [
           Expanded(
-            child: FFButtonWidget(
+            child: DsButton.primary(
+              label: 'wallet_add_balance'.tr(),
+              icon: Icons.add_rounded,
+              expanded: true,
               onPressed: () async {
                 await _showAddMoneyDialog(userId);
               },
-              text: 'wallet_add_balance'.tr(),
-              icon: const Icon(Icons.add, size: 20),
-              options: FFButtonOptions(
-                height: 50,
-                padding: const EdgeInsets.all(0),
-                iconPadding: const EdgeInsetsDirectional.fromSTEB(0, 0, 8, 0),
-                color: FlutterFlowTheme.of(context).primary,
-                textStyle: FlutterFlowTheme.of(context).titleSmall.override(
-                      fontFamily: FlutterFlowTheme.of(context).titleSmallFamily,
-                      color: Colors.white,
-                      letterSpacing: 0.0,
-                    ),
-                borderSide: const BorderSide(color: Colors.transparent),
-                borderRadius: BorderRadius.circular(12),
-              ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: DsSpacing.sm),
           Expanded(
             child: StreamBuilder<WalletRecord?>(
               stream: WalletService.getWalletStream(userId),
@@ -420,7 +315,11 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                 final hasBalance = wallet?.currentBalance != null &&
                     wallet!.currentBalance > 0;
 
-                return FFButtonWidget(
+                return DsButton.outlined(
+                  label: 'wallet_withdraw'.tr(),
+                  icon: Icons.upload_rounded,
+                  expanded: true,
+                  enabled: hasBalance,
                   onPressed: hasBalance
                       ? () async {
                           if (wallet != null) {
@@ -428,28 +327,6 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                           }
                         }
                       : null,
-                  text: 'wallet_withdraw'.tr(),
-                  icon: const Icon(Icons.upload, size: 20),
-                  options: FFButtonOptions(
-                    height: 50,
-                    padding: const EdgeInsets.all(0),
-                    iconPadding:
-                        const EdgeInsetsDirectional.fromSTEB(0, 0, 8, 0),
-                    color: FlutterFlowTheme.of(context).secondaryBackground,
-                    textStyle: FlutterFlowTheme.of(context).titleSmall.override(
-                          fontFamily:
-                              FlutterFlowTheme.of(context).titleSmallFamily,
-                          color: hasBalance
-                              ? FlutterFlowTheme.of(context).primaryText
-                              : FlutterFlowTheme.of(context).secondaryText,
-                          letterSpacing: 0.0,
-                        ),
-                    borderSide: BorderSide(
-                      color: FlutterFlowTheme.of(context).alternate,
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
                 );
               },
             ),
@@ -459,13 +336,15 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
     );
   }
 
-  Widget _buildTransactionHistory(String? userId) {
+  Widget _buildTransactionHistory(String? userId, DsTypography typography) {
     if (userId == null) {
-      return SizedBox();
+      return const SizedBox.shrink();
     }
 
+    final colors = context.dsColors;
+
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: DsSpacing.pagePadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -474,45 +353,30 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
             children: [
               Text(
                 'wallet_transactions'.tr(),
-                style: FlutterFlowTheme.of(context).headlineSmall.override(
-                      fontFamily:
-                          FlutterFlowTheme.of(context).headlineSmallFamily,
-                      letterSpacing: 0.0,
-                      fontWeight: FontWeight.w600,
-                    ),
+                style: typography.titleMedium.copyWith(
+                  color: colors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              InkWell(
-                onTap: () {
-                  // Navigate to full transaction history screen
-                  // context.pushNamed('FullTransactionHistory');
-                },
-                child: Text(
-                  'wallet_view_all'.tr(),
-                  style: FlutterFlowTheme.of(context).bodyMedium.override(
-                        fontFamily:
-                            FlutterFlowTheme.of(context).bodyMediumFamily,
-                        color: FlutterFlowTheme.of(context).primary,
-                        letterSpacing: 0.0,
-                        fontWeight: FontWeight.w600,
-                      ),
+              Text(
+                'wallet_view_all'.tr(),
+                style: typography.labelLarge.copyWith(
+                  color: colors.primary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DsSpacing.sm),
           StreamBuilder<List<TransactionRecord>>(
             key: ValueKey(_transactionsRevision),
             stream: Stream.fromFuture(
                 WalletService.getTransactions(userId: userId, limit: 10)),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: CircularProgressIndicator(
-                      color: FlutterFlowTheme.of(context).primary,
-                    ),
-                  ),
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: DsSpacing.xl),
+                  child: DsLoading(),
                 );
               }
 
@@ -530,9 +394,15 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: transactions.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, __) =>
+                    const SizedBox(height: DsSpacing.sm),
                 itemBuilder: (context, index) {
-                  return _buildTransactionItem(transactions[index]);
+                  return DsFadeSlide(
+                    delay: Duration(
+                      milliseconds: (index * 40).clamp(0, 200),
+                    ),
+                    child: _buildTransactionItem(transactions[index]),
+                  );
                 },
               );
             },
@@ -543,13 +413,14 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
   }
 
   Widget _buildTransactionItem(TransactionRecord transaction) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
     final amount = transaction.amount;
     final type = transaction.type;
     final description = transaction.description;
     final createdAt = transaction.createdAt ?? DateTime.now();
     final status = transaction.status;
 
-    // Arabic type names
     String typeName = '';
     switch (type) {
       case 'credit':
@@ -568,7 +439,6 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
         typeName = type;
     }
 
-    // Arabic status names
     String statusName = '';
     switch (status) {
       case 'completed':
@@ -587,232 +457,140 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
         statusName = status;
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: FlutterFlowTheme.of(context).secondaryBackground,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: FlutterFlowTheme.of(context).alternate,
-          width: 1,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: _getTransactionColor(type),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                _getTransactionIcon(type),
-                color: Colors.white,
-                size: 20,
-              ),
+    final statusColor = _getStatusColor(status);
+
+    return DsCard(
+      elevated: true,
+      padding: const EdgeInsets.all(DsSpacing.sm),
+      child: Row(
+        children: [
+          Container(
+            width: DsConstants.avatarMd,
+            height: DsConstants.avatarMd,
+            decoration: BoxDecoration(
+              color: _getTransactionColor(type).withValues(alpha: 0.14),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          description,
-                          style:
-                              FlutterFlowTheme.of(context).bodyMedium.override(
-                                    fontFamily: FlutterFlowTheme.of(context)
-                                        .bodyMediumFamily,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.0,
-                                  ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+            child: Icon(
+              _getTransactionIcon(type),
+              color: _getTransactionColor(type),
+              size: DsIcons.sm,
+            ),
+          ),
+          const SizedBox(width: DsSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        description,
+                        style: typography.titleSmall.copyWith(
+                          color: colors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Container(
+                      padding: DsSpacing.chipPadding,
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.12),
+                        borderRadius: DsRadius.pill,
+                      ),
+                      child: Text(
+                        statusName,
+                        style: typography.labelSmall.copyWith(
+                          color: statusColor,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(status),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          statusName,
-                          style:
-                              FlutterFlowTheme.of(context).bodySmall.override(
-                                    fontFamily: FlutterFlowTheme.of(context)
-                                        .bodySmallFamily,
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                      ),
-                    ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: DsSpacing.xxs),
+                Text(
+                  '$typeName · ${DateFormat('dd/MM/yyyy • HH:mm').format(createdAt)}',
+                  style: typography.labelSmall.copyWith(
+                    color: colors.textSecondary,
                   ),
-                  SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        typeName,
-                        style: FlutterFlowTheme.of(context).bodySmall.override(
-                              fontFamily:
-                                  FlutterFlowTheme.of(context).bodySmallFamily,
-                              color: FlutterFlowTheme.of(context).secondaryText,
-                              letterSpacing: 0.0,
-                            ),
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        '•',
-                        style: FlutterFlowTheme.of(context).bodySmall.override(
-                              fontFamily:
-                                  FlutterFlowTheme.of(context).bodySmallFamily,
-                              color: FlutterFlowTheme.of(context).secondaryText,
-                              letterSpacing: 0.0,
-                            ),
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        DateFormat('dd/MM/yyyy • HH:mm').format(createdAt),
-                        style: FlutterFlowTheme.of(context).bodySmall.override(
-                              fontFamily:
-                                  FlutterFlowTheme.of(context).bodySmallFamily,
-                              color: FlutterFlowTheme.of(context).secondaryText,
-                              letterSpacing: 0.0,
-                            ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            Text(
-              '${type == 'debit' ? '-' : '+'}${amount.toStringAsFixed(2)}',
-              style: FlutterFlowTheme.of(context).titleMedium.override(
-                    fontFamily: FlutterFlowTheme.of(context).titleMediumFamily,
-                    color: type == 'debit'
-                        ? FlutterFlowTheme.of(context).error
-                        : FlutterFlowTheme.of(context).success,
-                    letterSpacing: 0.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+          ),
+          const SizedBox(width: DsSpacing.sm),
+          Text(
+            '${type == 'debit' ? '-' : '+'}${amount.toStringAsFixed(2)}',
+            style: typography.titleMedium.copyWith(
+              color: type == 'debit' ? colors.error : colors.success,
+              fontWeight: FontWeight.w700,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildEmptyState() {
-    return Container(
-      padding: const EdgeInsets.all(40),
-      child: Column(
-        children: [
-          Icon(
-            Icons.account_balance_wallet_outlined,
-            size: 64,
-            color: FlutterFlowTheme.of(context).secondaryText,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'wallet_no_transactions'.tr(),
-            style: FlutterFlowTheme.of(context).bodyLarge.override(
-                  fontFamily: FlutterFlowTheme.of(context).bodyLargeFamily,
-                  color: FlutterFlowTheme.of(context).secondaryText,
-                  letterSpacing: 0.0,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'wallet_no_transactions_hint'.tr(),
-            style: FlutterFlowTheme.of(context).bodySmall.override(
-                  fontFamily: FlutterFlowTheme.of(context).bodySmallFamily,
-                  color: FlutterFlowTheme.of(context).secondaryText,
-                  letterSpacing: 0.0,
-                ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    return DsEmptyState(
+      icon: Icons.account_balance_wallet_outlined,
+      title: 'wallet_no_transactions'.tr(),
+      message: 'wallet_no_transactions_hint'.tr(),
     );
   }
 
   Widget _buildErrorState(String message) {
-    return Container(
-      padding: const EdgeInsets.all(40),
-      child: Column(
-        children: [
-          Icon(
-            Icons.error_outline,
-            size: 64,
-            color: FlutterFlowTheme.of(context).error,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: FlutterFlowTheme.of(context).bodyLarge.override(
-                  fontFamily: FlutterFlowTheme.of(context).bodyLargeFamily,
-                  color: FlutterFlowTheme.of(context).error,
-                  letterSpacing: 0.0,
-                ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    return DsErrorState(
+      title: message,
     );
   }
 
-  // Helper methods
   Color _getTransactionColor(String type) {
+    final colors = context.dsColors;
     switch (type) {
       case 'credit':
-        return FlutterFlowTheme.of(context).success;
+        return colors.success;
       case 'debit':
-        return FlutterFlowTheme.of(context).error;
+        return colors.error;
       case 'refund':
-        return FlutterFlowTheme.of(context).info;
+        return colors.info;
       case 'transfer':
-        return FlutterFlowTheme.of(context).warning;
+        return colors.warning;
       default:
-        return FlutterFlowTheme.of(context).primary;
+        return colors.primary;
     }
   }
 
   Color _getStatusColor(String status) {
+    final colors = context.dsColors;
     switch (status) {
       case 'completed':
-        return FlutterFlowTheme.of(context).success;
+        return colors.success;
       case 'pending':
-        return FlutterFlowTheme.of(context).warning;
+        return colors.warning;
       case 'failed':
-        return FlutterFlowTheme.of(context).error;
+        return colors.error;
       case 'cancelled':
-        return FlutterFlowTheme.of(context).secondaryText;
+        return colors.textSecondary;
       default:
-        return FlutterFlowTheme.of(context).primary;
+        return colors.primary;
     }
   }
 
   IconData _getTransactionIcon(String type) {
     switch (type) {
       case 'credit':
-        return Icons.download;
+        return Icons.download_rounded;
       case 'debit':
-        return Icons.upload;
+        return Icons.upload_rounded;
       case 'refund':
-        return Icons.refresh;
+        return Icons.refresh_rounded;
       case 'transfer':
-        return Icons.swap_horiz;
+        return Icons.swap_horiz_rounded;
       default:
-        return Icons.payment;
+        return Icons.payment_rounded;
     }
   }
 
@@ -821,17 +599,13 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
     _selectedPaymentMethodId = 'ngenius_hosted';
     String? selectedPackageId;
 
-    // Get current user
-    final currentUser = FirebaseAuth.instance.currentUser;
-    final currentUserUid = currentUser?.uid;
     final currentUserRef = currentUserReference;
 
     if (currentUserRef == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('wallet_login_first'.tr()),
-          backgroundColor: Colors.red,
-        ),
+      DsSnackBar.show(
+        context,
+        message: 'wallet_login_first'.tr(),
+        tone: DsSnackTone.error,
       );
       return;
     }
@@ -840,11 +614,19 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
 
     return showDialog(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
+        final colors = DsColors.of(dialogContext);
+        final typography = DsTypography.of(dialogContext);
+
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: Text('wallet_add_balance_title'.tr()),
+              backgroundColor: colors.surface,
+              shape: RoundedRectangleBorder(borderRadius: DsRadius.large),
+              title: Text(
+                'wallet_add_balance_title'.tr(),
+                style: typography.titleLarge.copyWith(color: colors.textPrimary),
+              ),
               content: Form(
                 key: _formKey,
                 child: Column(
@@ -853,48 +635,51 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                     if (packages.isEmpty)
                       Text(
                         'wallet_topup_packages_unavailable'.tr(),
-                        style: TextStyle(
-                          color: FlutterFlowTheme.of(context).secondaryText,
+                        style: typography.bodyMedium.copyWith(
+                          color: colors.textSecondary,
                         ),
                       )
                     else
                       ...packages.map((pkg) {
                         final selected = selectedPackageId == pkg.packageId;
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: InkWell(
-                            onTap: () => setDialogState(() {
-                              selectedPackageId = pkg.packageId;
-                            }),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                border: Border.all(
+                          padding: const EdgeInsets.only(bottom: DsSpacing.xs),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: DsRadius.medium,
+                              onTap: () => setDialogState(() {
+                                selectedPackageId = pkg.packageId;
+                              }),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(DsSpacing.sm),
+                                decoration: BoxDecoration(
                                   color: selected
-                                      ? FlutterFlowTheme.of(context).primary
-                                      : FlutterFlowTheme.of(context).alternate,
-                                  width: 2,
+                                      ? colors.selected
+                                      : colors.surface,
+                                  border: Border.all(
+                                    color: selected
+                                        ? colors.primary
+                                        : colors.border,
+                                    width: selected ? 2 : 1,
+                                  ),
+                                  borderRadius: DsRadius.medium,
                                 ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                '${pkg.amountMajor.toStringAsFixed(2)} ${pkg.currency}',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: FlutterFlowTheme.of(context)
-                                          .bodyMediumFamily,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.0,
-                                    ),
+                                child: Text(
+                                  '${pkg.amountMajor.toStringAsFixed(2)} ${pkg.currency}',
+                                  style: typography.bodyMedium.copyWith(
+                                    color: colors.textPrimary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         );
                       }),
                     // Keep legacy payment-method UI collapsed; hosted N-Genius only.
-                    Visibility(
+                    const Visibility(
                       visible: false,
                       maintainState: false,
                       child: SizedBox.shrink(),
@@ -902,29 +687,29 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                   ],
                 ),
               ),
+              actionsPadding: const EdgeInsets.fromLTRB(
+                DsSpacing.md,
+                0,
+                DsSpacing.md,
+                DsSpacing.md,
+              ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    'dialog_cancel'.tr(),
-                    style: TextStyle(
-                      color: FlutterFlowTheme.of(context).secondaryText,
-                    ),
-                  ),
+                DsButton.text(
+                  label: 'dialog_cancel'.tr(),
+                  onPressed: () => Navigator.pop(dialogContext),
                 ),
-                ElevatedButton(
+                DsButton.primary(
+                  label: 'wallet_add_confirm'.tr(),
+                  enabled: packages.isNotEmpty,
                   onPressed: packages.isEmpty
                       ? null
                       : () async {
                           if (selectedPackageId == null ||
                               selectedPackageId!.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'wallet_topup_select_package'.tr(),
-                                ),
-                                backgroundColor: Colors.red,
-                              ),
+                            DsSnackBar.show(
+                              context,
+                              message: 'wallet_topup_select_package'.tr(),
+                              tone: DsSnackTone.error,
                             );
                             return;
                           }
@@ -936,10 +721,8 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                             showDialog(
                               context: context,
                               barrierDismissible: false,
-                              builder: (context) => Center(
-                                child: CircularProgressIndicator(
-                                  color: FlutterFlowTheme.of(context).primary,
-                                ),
+                              builder: (context) => const Center(
+                                child: DsLoading(),
                               ),
                             );
 
@@ -957,19 +740,16 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                             if (!TouryNGeniusService.createReady(
                               paymentResponse,
                             )) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content:
-                                      Text('checkout_payment_card_error'.tr()),
-                                  backgroundColor: Colors.red,
-                                  duration: const Duration(seconds: 4),
-                                ),
+                              DsSnackBar.show(
+                                context,
+                                message: 'checkout_payment_card_error'.tr(),
+                                tone: DsSnackTone.error,
                               );
                               touryClearWalletTopUpPending();
                               return;
                             }
 
-                            Navigator.pop(context);
+                            Navigator.pop(dialogContext);
 
                             final paymentUrl = NGeniusPaymentCall.url(
                               paymentResponse!.jsonBody,
@@ -980,15 +760,12 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                               final credited = await touryFinalizeWalletTopUp();
                               if (credited && mounted) {
                                 safeSetState(() => _transactionsRevision++);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'wallet_add_success'.tr(namedArgs: {
-                                        'amount': amountLabel,
-                                      }),
-                                    ),
-                                    backgroundColor: Colors.green,
-                                  ),
+                                DsSnackBar.show(
+                                  context,
+                                  message: 'wallet_add_success'.tr(namedArgs: {
+                                    'amount': amountLabel,
+                                  }),
+                                  tone: DsSnackTone.success,
                                 );
                               }
                               return;
@@ -1005,19 +782,15 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                               Navigator.pop(context);
                             }
                             touryClearWalletTopUpPending();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'wallet_error_generic'.tr(namedArgs: {
-                                    'error': e.toString(),
-                                  }),
-                                ),
-                                backgroundColor: Colors.red,
-                              ),
+                            DsSnackBar.show(
+                              context,
+                              message: 'wallet_error_generic'.tr(namedArgs: {
+                                'error': e.toString(),
+                              }),
+                              tone: DsSnackTone.error,
                             );
                           }
                         },
-                  child: Text('wallet_add_confirm'.tr()),
                 ),
               ],
             );
@@ -1027,7 +800,6 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
     );
   }
 
-
   Future<void> _showWithdrawDialog(String userId, WalletRecord wallet) async {
     _amountController?.clear();
     _selectedPaymentMethodId = 'ngenius_hosted';
@@ -1036,11 +808,10 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
 
     final currentUserRef = currentUserReference;
     if (currentUserRef == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('wallet_login_first'.tr()),
-          backgroundColor: Colors.red,
-        ),
+      DsSnackBar.show(
+        context,
+        message: 'wallet_login_first'.tr(),
+        tone: DsSnackTone.error,
       );
       return;
     }
@@ -1048,8 +819,16 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
     return showDialog(
       context: context,
       builder: (dialogContext) {
+        final colors = DsColors.of(dialogContext);
+        final typography = DsTypography.of(dialogContext);
+
         return AlertDialog(
-          title: Text('wallet_withdraw_title'.tr()),
+          backgroundColor: colors.surface,
+          shape: RoundedRectangleBorder(borderRadius: DsRadius.large),
+          title: Text(
+            'wallet_withdraw_title'.tr(),
+            style: typography.titleLarge.copyWith(color: colors.textPrimary),
+          ),
           content: Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -1062,22 +841,40 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                       'amount': balance.toStringAsFixed(2),
                       'currency': currency,
                     }),
-                    style: FlutterFlowTheme.of(context).bodyMedium.override(
-                          fontFamily:
-                              FlutterFlowTheme.of(context).bodyMediumFamily,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.0,
-                        ),
+                    style: typography.bodyMedium.copyWith(
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: DsSpacing.md),
                   TextFormField(
                     controller: _amountController,
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
+                    style: typography.bodyLarge.copyWith(
+                      color: colors.textPrimary,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'wallet_amount_label'.tr(),
-                      prefixIcon: const Icon(Icons.attach_money),
+                      prefixIcon: Icon(
+                        Icons.attach_money_rounded,
+                        color: colors.iconMuted,
+                      ),
                       hintText: '0.00',
+                      filled: true,
+                      fillColor: colors.surfaceElevated,
+                      border: OutlineInputBorder(
+                        borderRadius: DsRadius.medium,
+                        borderSide: BorderSide(color: colors.border),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: DsRadius.medium,
+                        borderSide: BorderSide(color: colors.border),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: DsRadius.medium,
+                        borderSide: BorderSide(color: colors.primary, width: 1.5),
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -1093,14 +890,25 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(
-                      Icons.schedule_outlined,
-                      color: FlutterFlowTheme.of(context).primary,
-                    ),
-                    title: Text('wallet_withdraw_request_note'.tr()),
+                  const SizedBox(height: DsSpacing.md),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.schedule_outlined,
+                        color: colors.primary,
+                        size: DsIcons.sm,
+                      ),
+                      const SizedBox(width: DsSpacing.xs),
+                      Expanded(
+                        child: Text(
+                          'wallet_withdraw_request_note'.tr(),
+                          style: typography.bodyMedium.copyWith(
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   Visibility(
                     visible: false,
@@ -1115,8 +923,7 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
+                          return const DsLoading();
                         }
 
                         final paymentMethods = snapshot.data ?? [];
@@ -1126,59 +933,21 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                             children: [
                               Text(
                                 'wallet_no_payment_methods'.tr(),
-                                style: TextStyle(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryText,
+                                style: typography.bodyMedium.copyWith(
+                                  color: colors.textSecondary,
                                 ),
                               ),
-                              const SizedBox(height: 16),
-                              FFButtonWidget(
+                              const SizedBox(height: DsSpacing.md),
+                              DsButton.primary(
+                                label: 'wallet_add_payment_method'.tr(),
+                                icon: Icons.add_card_rounded,
+                                expanded: true,
                                 onPressed: () {
                                   Navigator.pop(dialogContext);
-                                  if (AddPaymentCardWidget.routeName != null) {
-                                    context.pushNamed(
-                                        AddPaymentCardWidget.routeName!);
-                                  } else {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            AddPaymentCardWidget(),
-                                      ),
-                                    );
-                                  }
+                                  context.pushNamed(
+                                    AddPaymentCardWidget.routeName,
+                                  );
                                 },
-                                text: 'wallet_add_payment_method'.tr(),
-                                icon: Icon(
-                                  Icons.add_card,
-                                  size: 20,
-                                  color: FlutterFlowTheme.of(context).info,
-                                ),
-                                options: FFButtonOptions(
-                                  width: double.infinity,
-                                  height: 50,
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      16, 0, 16, 0),
-                                  iconPadding:
-                                      const EdgeInsetsDirectional.fromSTEB(
-                                          0, 0, 8, 0),
-                                  color: FlutterFlowTheme.of(context).primary,
-                                  textStyle: FlutterFlowTheme.of(context)
-                                      .titleSmall
-                                      .override(
-                                        fontFamily: FlutterFlowTheme.of(context)
-                                            .titleSmallFamily,
-                                        color:
-                                            FlutterFlowTheme.of(context).info,
-                                        letterSpacing: 0.0,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                  elevation: 0.0,
-                                  borderSide: const BorderSide(
-                                    color: Colors.transparent,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
                               ),
                             ],
                           );
@@ -1189,9 +958,11 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                           children: [
                             Text(
                               'wallet_choose_payout'.tr(),
-                              style: FlutterFlowTheme.of(context).bodyMedium,
+                              style: typography.bodyMedium.copyWith(
+                                color: colors.textPrimary,
+                              ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: DsSpacing.xs),
                             ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
@@ -1199,47 +970,36 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                               itemBuilder: (context, index) {
                                 final method = paymentMethods[index];
                                 final last4 = method.displayLast4;
+                                final selected =
+                                    _selectedPaymentMethodId ==
+                                        method.reference.id;
 
                                 return Container(
-                                  margin: const EdgeInsets.only(bottom: 8),
+                                  margin:
+                                      const EdgeInsets.only(bottom: DsSpacing.xs),
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                      color: _selectedPaymentMethodId ==
-                                              method.reference.id
-                                          ? FlutterFlowTheme.of(context).primary
-                                          : FlutterFlowTheme.of(context)
-                                              .alternate,
-                                      width: 2,
+                                      color: selected
+                                          ? colors.primary
+                                          : colors.border,
+                                      width: selected ? 2 : 1,
                                     ),
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: DsRadius.medium,
                                   ),
                                   child: RadioListTile<String>(
                                     title: Text(
                                       'wallet_card_ending'.tr(namedArgs: {
                                         'last4': last4,
                                       }),
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .override(
-                                            fontFamily:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMediumFamily,
-                                            fontWeight: FontWeight.w600,
-                                            letterSpacing: 0.0,
-                                          ),
+                                      style: typography.bodyMedium.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                     subtitle: Text(
                                       method.naim,
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodySmall
-                                          .override(
-                                            fontFamily:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodySmallFamily,
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryText,
-                                            letterSpacing: 0.0,
-                                          ),
+                                      style: typography.bodySmall.copyWith(
+                                        color: colors.textSecondary,
+                                      ),
                                     ),
                                     value: method.reference.id,
                                     groupValue: _selectedPaymentMethodId,
@@ -1248,11 +1008,11 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                                         _selectedPaymentMethodId = value;
                                       });
                                     },
-                                    activeColor:
-                                        FlutterFlowTheme.of(context).primary,
+                                    activeColor: colors.primary,
                                     tileColor: Colors.transparent,
                                     contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
+                                      horizontal: DsSpacing.xs,
+                                    ),
                                   ),
                                 );
                               },
@@ -1266,17 +1026,19 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
               ),
             ),
           ),
+          actionsPadding: const EdgeInsets.fromLTRB(
+            DsSpacing.md,
+            0,
+            DsSpacing.md,
+            DsSpacing.md,
+          ),
           actions: [
-            TextButton(
+            DsButton.text(
+              label: 'dialog_cancel'.tr(),
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text(
-                'dialog_cancel'.tr(),
-                style: TextStyle(
-                  color: FlutterFlowTheme.of(context).secondaryText,
-                ),
-              ),
             ),
-            ElevatedButton(
+            DsButton.primary(
+              label: 'wallet_withdraw_confirm'.tr(),
               onPressed: () async {
                 if (!_formKey.currentState!.validate()) {
                   return;
@@ -1287,10 +1049,8 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                   showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (context) => Center(
-                      child: CircularProgressIndicator(
-                        color: FlutterFlowTheme.of(context).primary,
-                      ),
+                    builder: (context) => const Center(
+                      child: DsLoading(),
                     ),
                   );
 
@@ -1310,41 +1070,29 @@ class _WalletScreenWidgetState extends State<WalletScreenWidget> {
                     safeSetState(() => _transactionsRevision++);
                   }
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content:
-                          Text('wallet_withdraw_request_success'.tr(namedArgs: {
-                        'amount': amount.toStringAsFixed(2),
-                        'currency': currency,
-                      })),
-                      backgroundColor: Colors.green,
-                      duration: const Duration(seconds: 3),
-                    ),
+                  DsSnackBar.show(
+                    context,
+                    message:
+                        'wallet_withdraw_request_success'.tr(namedArgs: {
+                      'amount': amount.toStringAsFixed(2),
+                      'currency': currency,
+                    }),
+                    tone: DsSnackTone.success,
                   );
                 } catch (e) {
                   if (Navigator.canPop(context)) {
                     Navigator.pop(context);
                   }
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('wallet_error_generic'.tr(namedArgs: {
-                        'error': e.toString(),
-                      })),
-                      backgroundColor: Colors.red,
-                      duration: const Duration(seconds: 3),
-                    ),
+                  DsSnackBar.show(
+                    context,
+                    message: 'wallet_error_generic'.tr(namedArgs: {
+                      'error': e.toString(),
+                    }),
+                    tone: DsSnackTone.error,
                   );
                 }
               },
-              child: Text('wallet_withdraw_confirm'.tr()),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: FlutterFlowTheme.of(context).primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
             ),
           ],
         );

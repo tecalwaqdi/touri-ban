@@ -1,7 +1,6 @@
 /// Shared admin-panel strings (all supported app languages).
 /// Merged into [FFLocalizations.getText] lookup.
 const kAdminTranslations = <String, Map<String, String>>{
-  // App
   'adm_app_title': {
     'en': 'Control Panel',
     'ar': 'لوحة التحكم',
@@ -12,6 +11,28 @@ const kAdminTranslations = <String, Map<String, String>>{
     'ky': 'Башкаруу панели',
     'az': 'İdarəetmə paneli',
     'ka': 'მართვის პანელი',
+  },
+  'adm_splash_title': {
+    'en': 'Touri Taxi',
+    'ar': 'توري تاكسي',
+    'zh_Hans': 'Touri Taxi',
+    'tr': 'Touri Taxi',
+    'ur': 'Touri Taxi',
+    'ru': 'Touri Taxi',
+    'ky': 'Touri Taxi',
+    'az': 'Touri Taxi',
+    'ka': 'Touri Taxi',
+  },
+  'adm_splash_tagline': {
+    'en': 'The First Global Saudi Tourism App',
+    'ar': 'أول تطبيق سعودي سياحي عالمي',
+    'zh_Hans': '首个全球沙特旅游应用',
+    'tr': 'İlk Küresel Suudi Turizm Uygulaması',
+    'ur': 'پہلی عالمی سعودی سیاحتی ایپ',
+    'ru': 'Первое глобальное саудовское туристическое приложение',
+    'ky': 'Бirinchi global saudiya turizm kolduk',
+    'az': 'İlk qlobal Səud turizm tətbiqi',
+    'ka': 'პირველი გლობალური საუდის ტურისტული აპი',
   },
   'adm_theme_title': {
     'en': 'Appearance',
@@ -1760,6 +1781,65 @@ const kAdminTranslations = <String, Map<String, String>>{
     'ky': 'Сүрөт окулган жок. Башка файлды байкап көрүңүз.',
     'az': 'Şəkil oxuna bilmədi. Başqa fayl sınayın.',
     'ka': 'სურათის წაკითხვა ვერ მოხერხდა. სცადეთ სხვა ფაილი.',
+  },
+  'adm_err_storage_quota': {
+    'en':
+        'Firebase Storage quota for this project is exceeded. Free this space in Firebase Console → Storage, or enable the Blaze plan. This is a project limit, not an app bug.',
+    'ar':
+        'تم تجاوز حصة Firebase Storage لهذا المشروع. حرّر مساحة من Console → Storage أو فعّل خطة Blaze. هذا حد على المشروع وليس خطأ في التطبيق.',
+    'zh_Hans':
+        '此项目的 Firebase Storage 配额已用尽。请在控制台清理或启用 Blaze 方案。这是项目限制，不是应用错误。',
+    'tr':
+        'Bu projenin Firebase Storage kotası aşıldı. Konsolda alan açın veya Blaze planını etkinleştirin. Bu bir uygulama hatası değil.',
+    'ur':
+        'اس پروجیکٹ کی Firebase Storage کوٹہ ختم ہو چکی ہے۔ Console سے جگہ خالی کریں یا Blaze آن کریں۔ یہ ایپ کا بگ نہیں۔',
+    'ru':
+        'Исчерпана квота Firebase Storage для проекта. Освободите место в Console или включите Blaze. Это лимит проекта, не ошибка приложения.',
+    'ky':
+        'Бул долбоордун Firebase Storage квотасы түгөндү. Console\'дон орун бошотуңуз же Blaze күйгүзүңүз. Бул колдонмо катасы эмес.',
+    'az':
+        'Bu layihənin Firebase Storage kvotası bitib. Console-da yer boşaldın və ya Blaze aktiv edin. Bu tətbiq xətası deyil.',
+    'ka':
+        'ამ პროექტის Firebase Storage კვოტა ამოიწურა. გაასუფთავეთ Console-ში ან ჩართეთ Blaze. ეს აპის შეცდომა არ არის.',
+  },
+  'adm_err_storage_billing': {
+    'en':
+        'Firebase Storage billing is not active. Enable Blaze (pay as you go) for this Firebase project, then try again.',
+    'ar':
+        'فوترة Firebase Storage غير مفعّلة. فعّل خطة Blaze لهذا المشروع ثم أعد المحاولة.',
+    'zh_Hans': '未启用 Firebase Storage 计费。请为此项目启用 Blaze，然后重试。',
+    'tr':
+        'Firebase Storage faturalandırması aktif değil. Blaze planını etkinleştirip tekrar deneyin.',
+    'ur':
+        'Firebase Storage بلنگ فعال نہیں۔ Blaze آن کر کے دوبارہ کوشش کریں۔',
+    'ru':
+        'Биллинг Firebase Storage не активен. Включите план Blaze и повторите попытку.',
+    'ky':
+        'Firebase Storage эсептөөсү өчүк. Blaze күйгүзүп кайра аракет кылыңыз.',
+    'az':
+        'Firebase Storage ödənişi aktiv deyil. Blaze-i aktiv edib yenidən cəhd edin.',
+    'ka':
+        'Firebase Storage ბილინგი არაა ჩართული. ჩართეთ Blaze და სცადეთ თავიდან.',
+  },
+  'adm_storage_fallback_saved': {
+    'en':
+        'Photo saved to your account (offline fallback). Cloud Storage quota/billing is blocking uploads — fix it in Firebase Console to use Storage URLs.',
+    'ar':
+        'تم حفظ الصورة في حسابك (وضع احتياطي). حصة/فوترة Firebase Storage تمنع الرفع السحابي — عالجها من Console لاستخدام روابط Storage.',
+    'zh_Hans':
+        '照片已保存到账户（备用方式）。云存储配额/计费阻止上传 — 请在控制台修复以使用 Storage 链接。',
+    'tr':
+        'Fotoğraf hesabınıza kaydedildi (yedek mod). Bulut kotası/fatura yüklemeyi engelliyor — Storage URL için Console’dan düzeltin.',
+    'ur':
+        'تصویر اکاؤنٹ میں محفوظ ہو گئی (fallback)۔ کلاؤڈ کوٹہ/بلنگ اپلوڈ روک رہی ہے — Console سے درست کریں۔',
+    'ru':
+        'Фото сохранено в аккаунте (резервный режим). Квота/биллинг Storage блокирует загрузку — исправьте в Console.',
+    'ky':
+        'Сүрөт аккаунтка сакталды (запас режим). Storage квотасы/эсептөө жүктөөнү бөгөттөп жатат — Console\'дон оңдоңуз.',
+    'az':
+        'Şəkil hesabınıza yazıldı (ehtiyat). Storage kvota/ödəniş yükləməni əngəlləyir — Console-da düzəldin.',
+    'ka':
+        'ფოტო ანგარიშში შეინახა (რეზერვი). Storage კვოტა/ბილინგი ბლოკავს ატვირთვას — გაასწორეთ Console-ში.',
   },
 
   // Car type form labels

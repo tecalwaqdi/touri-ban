@@ -1,29 +1,20 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
-import '/core/driver_design_system.dart';
 import '/core/driver_dialogs.dart';
-import '/core/driver_i18n.dart';
 import '/core/driver_logout_service.dart';
 import '/core/driver_online_state.dart';
 import '/core/driver_support_ticket_service.dart';
+import '/core/driver_ux_widgets.dart';
+import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_language_selector.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
+import '/core/driver_i18n.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/upload_data.dart';
-import 'dart:math';
-import 'dart:ui';
 import '/index.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'profile07_model.dart';
 export 'profile07_model.dart';
 
@@ -66,8 +57,8 @@ class _Profile07WidgetState extends State<Profile07Widget>
             curve: Curves.easeInOut,
             delay: 0.0.ms,
             duration: 600.0.ms,
-            begin: Offset(0.6, 0.6),
-            end: Offset(1.0, 1.0),
+            begin: const Offset(0.6, 0.6),
+            end: const Offset(1.0, 1.0),
           ),
         ],
       ),
@@ -86,8 +77,8 @@ class _Profile07WidgetState extends State<Profile07Widget>
             curve: Curves.easeInOut,
             delay: 0.0.ms,
             duration: 600.0.ms,
-            begin: Offset(0.0, 20.0),
-            end: Offset(0.0, 0.0),
+            begin: const Offset(0.0, 20.0),
+            end: const Offset(0.0, 0.0),
           ),
         ],
       ),
@@ -106,148 +97,8 @@ class _Profile07WidgetState extends State<Profile07Widget>
             curve: Curves.easeInOut,
             delay: 0.0.ms,
             duration: 600.0.ms,
-            begin: Offset(0.0, 20.0),
-            end: Offset(0.0, 0.0),
-          ),
-        ],
-      ),
-      'dividerOnPageLoadAnimation': AnimationInfo(
-        trigger: AnimationTrigger.onPageLoad,
-        effectsBuilder: () => [
-          VisibilityEffect(duration: 1.ms),
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-          MoveEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: Offset(0.0, 20.0),
-            end: Offset(0.0, 0.0),
-          ),
-        ],
-      ),
-      'containerOnPageLoadAnimation2': AnimationInfo(
-        trigger: AnimationTrigger.onPageLoad,
-        effectsBuilder: () => [
-          VisibilityEffect(duration: 1.ms),
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-          MoveEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: Offset(0.0, 60.0),
-            end: Offset(0.0, 0.0),
-          ),
-        ],
-      ),
-      'containerOnPageLoadAnimation3': AnimationInfo(
-        trigger: AnimationTrigger.onPageLoad,
-        effectsBuilder: () => [
-          VisibilityEffect(duration: 1.ms),
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-          MoveEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: Offset(0.0, 60.0),
-            end: Offset(0.0, 0.0),
-          ),
-        ],
-      ),
-      'containerOnPageLoadAnimation4': AnimationInfo(
-        trigger: AnimationTrigger.onPageLoad,
-        effectsBuilder: () => [
-          VisibilityEffect(duration: 1.ms),
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-          MoveEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: Offset(0.0, 60.0),
-            end: Offset(0.0, 0.0),
-          ),
-        ],
-      ),
-      'containerOnPageLoadAnimation5': AnimationInfo(
-        trigger: AnimationTrigger.onPageLoad,
-        effectsBuilder: () => [
-          VisibilityEffect(duration: 100.ms),
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 100.0.ms,
-            duration: 600.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-          MoveEffect(
-            curve: Curves.easeInOut,
-            delay: 100.0.ms,
-            duration: 600.0.ms,
-            begin: Offset(0.0, 60.0),
-            end: Offset(0.0, 0.0),
-          ),
-        ],
-      ),
-      'buttonOnPageLoadAnimation1': AnimationInfo(
-        trigger: AnimationTrigger.onPageLoad,
-        effectsBuilder: () => [
-          VisibilityEffect(duration: 400.ms),
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 400.0.ms,
-            duration: 600.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-          MoveEffect(
-            curve: Curves.easeInOut,
-            delay: 400.0.ms,
-            duration: 600.0.ms,
-            begin: Offset(0.0, 60.0),
-            end: Offset(0.0, 0.0),
-          ),
-        ],
-      ),
-      'buttonOnPageLoadAnimation2': AnimationInfo(
-        trigger: AnimationTrigger.onPageLoad,
-        effectsBuilder: () => [
-          VisibilityEffect(duration: 400.ms),
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 400.0.ms,
-            duration: 600.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-          MoveEffect(
-            curve: Curves.easeInOut,
-            delay: 400.0.ms,
-            duration: 600.0.ms,
-            begin: Offset(0.0, 60.0),
-            end: Offset(0.0, 0.0),
+            begin: const Offset(0.0, 20.0),
+            end: const Offset(0.0, 0.0),
           ),
         ],
       ),
@@ -259,627 +110,552 @@ class _Profile07WidgetState extends State<Profile07Widget>
   @override
   void dispose() {
     _model.dispose();
-
     super.dispose();
+  }
+
+  Widget _menuRow({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Widget? trailing,
+  }) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+
+    return DsCard(
+      onTap: onTap,
+      padding: DsSpacing.cardPadding,
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: colors.primarySoft,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: colors.primaryStrong, size: 22),
+          ),
+          const SizedBox(width: DsSpacing.md),
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: typography.bodyLarge.copyWith(
+                color: colors.textPrimary,
+              ),
+            ),
+          ),
+          trailing ??
+              Icon(
+                Icons.chevron_left_rounded,
+                color: colors.iconMuted,
+              ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: DriverBrand.surfaceColor(context),
-        body: SafeArea(
-          top: true,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
-                  decoration: BoxDecoration(
-                    gradient: DriverBrand.softGradient,
-                    borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(24),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                AuthUserStreamWidget(
-                  builder: (context) => InkWell(
-                    splashColor: Colors.transparent,
-                    focusColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () async {
-                      final selectedMedia =
-                          await selectMediaWithSourceBottomSheet(
-                        context: context,
-                        allowPhoto: true,
-                        storageFolderPath: 'users/$currentUserUid/uploads',
-                      );
-                      if (selectedMedia == null ||
-                          selectedMedia.isEmpty ||
-                          !selectedMedia.every(
-                              (m) => validateFileFormat(m.storagePath, context))) {
-                        return;
-                      }
-                      safeSetState(
-                          () => _model.isDataUploading_uploadDataB4x = true);
-                      try {
-                        final selectedUploadedFiles = selectedMedia
-                            .map((m) => FFUploadedFile(
-                                  name: m.storagePath.split('/').last,
-                                  bytes: m.bytes,
-                                  height: m.dimensions?.height,
-                                  width: m.dimensions?.width,
-                                  blurHash: m.blurHash,
-                                  originalFilename: m.originalFilename,
-                                ))
-                            .toList();
+    return DsScreenShell(
+      child: Builder(
+        builder: (context) {
+          final colors = context.dsColors;
+          final typography = context.dsTypography;
 
-                        final downloadUrls = <String>[];
-                        for (final m in selectedMedia) {
-                          final url = await uploadData(m.storagePath, m.bytes);
-                          if (url != null && url.isNotEmpty) {
-                            downloadUrls.add(url);
-                          }
-                        }
-
-                        if (selectedUploadedFiles.length !=
-                                selectedMedia.length ||
-                            downloadUrls.length != selectedMedia.length) {
-                          if (context.mounted) {
-                            await DriverDialogs.showAlert(
-                              context,
-                              title: driverTr(context, 'Error'),
-                              message: driverTr(
-                                context,
-                                'Could not upload the file. Please try again.',
-                              ),
-                              type: DriverMessageType.error,
-                            );
-                          }
-                          return;
-                        }
-
-                        await currentUserReference!.update(
-                          createUserRecordData(photoUrl: downloadUrls.first),
-                        );
-                        try {
-                          currentUserDocument = await UserRecord.getDocumentOnce(
-                              currentUserReference!);
-                        } catch (_) {}
-                        safeSetState(() {
-                          _model.uploadedLocalFile_uploadDataB4x =
-                              selectedUploadedFiles.first;
-                          _model.uploadedFileUrl_uploadDataB4x =
-                              downloadUrls.first;
-                        });
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                driverTr(context, 'Profile updated'),
-                              ),
+          return GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Scaffold(
+              key: scaffoldKey,
+              backgroundColor: colors.scaffold,
+              body: SafeArea(
+                top: true,
+                child: DriverContentWidth(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.fromLTRB(
+                            DsSpacing.md,
+                            DsSpacing.lg,
+                            DsSpacing.md,
+                            DsSpacing.xl,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                colors.primary.withValues(alpha: 0.18),
+                                colors.primaryStrong.withValues(alpha: 0.10),
+                              ],
                             ),
-                          );
-                        }
-                      } catch (e) {
-                        debugPrint('Profile photo upload failed: $e');
-                        if (context.mounted) {
-                          await DriverDialogs.showAlert(
-                            context,
-                            title: driverTr(context, 'Error'),
-                            message: driverTr(
-                              context,
-                              'Could not upload the photo. Please try again.',
-                            ),
-                            type: DriverMessageType.error,
-                          );
-                        }
-                      } finally {
-                        if (mounted) {
-                          safeSetState(() =>
-                              _model.isDataUploading_uploadDataB4x = false);
-                        }
-                      }
-                    },
-                    child: Container(
-                      width: 120.0,
-                      height: 120.0,
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).accent1,
-                       image: DecorationImage(
-  fit: BoxFit.cover,
-  image: (currentUserPhoto != null && currentUserPhoto.isNotEmpty)
-      ? NetworkImage(currentUserPhoto)
-      : const AssetImage('assets/images/avatar.jpg')
-          as ImageProvider,
-),
-
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: DriverBrand.teal,
-                          width: 3.0,
-                        ),
-                        boxShadow: DriverBrand.cardShadow(elevated: true),
-                      ),
-                    ),
-                  ).animateOnPageLoad(
-                      animationsMap['containerOnPageLoadAnimation1']!),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 0.0),
-                  child: AuthUserStreamWidget(
-                    builder: (context) => Text(
-                      currentUserDisplayName,
-                      style:
-                          FlutterFlowTheme.of(context).headlineSmall.override(
-                                fontFamily: FlutterFlowTheme.of(context)
-                                    .headlineSmallFamily,
-                                letterSpacing: 0.0,
-                                useGoogleFonts: !FlutterFlowTheme.of(context)
-                                    .headlineSmallIsCustom,
-                              ),
-                    ).animateOnPageLoad(
-                        animationsMap['textOnPageLoadAnimation1']!),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 0.0),
-                  child: AuthUserStreamWidget(
-                    builder: (context) => Text(
-                      valueOrDefault(currentUserDocument?.iDHoyhMNDOB, ''),
-                      style:
-                          FlutterFlowTheme.of(context).headlineSmall.override(
-                                fontFamily: FlutterFlowTheme.of(context)
-                                    .headlineSmallFamily,
-                                fontSize: 15.0,
-                                letterSpacing: 0.0,
-                                useGoogleFonts: !FlutterFlowTheme.of(context)
-                                    .headlineSmallIsCustom,
-                              ),
-                    ).animateOnPageLoad(
-                        animationsMap['textOnPageLoadAnimation2']!),
-                  ),
-                ),
-                    ],
-                  ),
-                ),
-                Divider(
-                  height: 44.0,
-                  thickness: 1.0,
-                  indent: 24.0,
-                  endIndent: 24.0,
-                  color: FlutterFlowTheme.of(context).alternate,
-                ).animateOnPageLoad(
-                    animationsMap['dividerOnPageLoadAnimation']!),
-                Padding(
-                  padding:
-                      EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 0.0),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: DriverBrand.cardDecoration(context),
-                    child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                8.0, 0.0, 0.0, 0.0),
-                            child: Icon(
-                              Icons.power_settings_new_rounded,
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              size: 24.0,
+                            borderRadius: const BorderRadius.vertical(
+                              bottom: Radius.circular(DsRadius.xl),
                             ),
                           ),
-                          Expanded(
-                            child: AuthUserStreamWidget(
-                              builder: (context) {
-                                final isOnline = valueOrDefault<bool>(
-                                  currentUserDocument?.ngl,
-                                  false,
-                                );
-                                return Material(
-                                  color: Colors.transparent,
-                                  child: SwitchListTile.adaptive(
-                                    value: isOnline,
-                                    onChanged: (newValue) async {
-                                      final wantOnline = newValue == true;
-                                      final result = wantOnline
-                                          ? await DriverOnlineState.goOnline()
-                                          : await DriverOnlineState.goOffline(
-                                              hasActiveTrip:
-                                                  FFAppState().revOrder != null,
-                                            );
-                                      if (!result.ok && context.mounted) {
+                          child: Column(
+                            children: [
+                              AuthUserStreamWidget(
+                                builder: (context) => InkWell(
+                                  borderRadius: DsRadius.pill,
+                                  onTap: () async {
+                                    final selectedMedia =
+                                        await selectMediaWithSourceBottomSheet(
+                                      context: context,
+                                      allowPhoto: true,
+                                      storageFolderPath:
+                                          'users/$currentUserUid/uploads',
+                                    );
+                                    if (selectedMedia == null ||
+                                        selectedMedia.isEmpty ||
+                                        !selectedMedia.every((m) =>
+                                            validateFileFormat(
+                                                m.storagePath, context))) {
+                                      return;
+                                    }
+                                    safeSetState(() => _model
+                                        .isDataUploading_uploadDataB4x = true);
+                                    try {
+                                      final selectedUploadedFiles =
+                                          selectedMedia
+                                              .map((m) => FFUploadedFile(
+                                                    name: m.storagePath
+                                                        .split('/')
+                                                        .last,
+                                                    bytes: m.bytes,
+                                                    height:
+                                                        m.dimensions?.height,
+                                                    width: m.dimensions?.width,
+                                                    blurHash: m.blurHash,
+                                                    originalFilename:
+                                                        m.originalFilename,
+                                                  ))
+                                              .toList();
+
+                                      final downloadUrls = <String>[];
+                                      for (final m in selectedMedia) {
+                                        final url = await uploadData(
+                                            m.storagePath, m.bytes);
+                                        if (url != null && url.isNotEmpty) {
+                                          downloadUrls.add(url);
+                                        }
+                                      }
+
+                                      if (selectedUploadedFiles.length !=
+                                              selectedMedia.length ||
+                                          downloadUrls.length !=
+                                              selectedMedia.length) {
+                                        if (context.mounted) {
+                                          await DriverDialogs.showAlert(
+                                            context,
+                                            title: driverTr(context, 'Error'),
+                                            message: driverTr(
+                                              context,
+                                              'Could not upload the file. Please try again.',
+                                            ),
+                                            type: DriverMessageType.error,
+                                          );
+                                        }
+                                        return;
+                                      }
+
+                                      await currentUserReference!.update(
+                                        createUserRecordData(
+                                            photoUrl: downloadUrls.first),
+                                      );
+                                      try {
+                                        currentUserDocument =
+                                            await UserRecord.getDocumentOnce(
+                                                currentUserReference!);
+                                      } catch (_) {}
+                                      safeSetState(() {
+                                        _model.uploadedLocalFile_uploadDataB4x =
+                                            selectedUploadedFiles.first;
+                                        _model.uploadedFileUrl_uploadDataB4x =
+                                            downloadUrls.first;
+                                      });
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              driverTr(
+                                                  context, 'Profile updated'),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      debugPrint(
+                                          'Profile photo upload failed: $e');
+                                      if (context.mounted) {
                                         await DriverDialogs.showAlert(
                                           context,
                                           title: driverTr(context, 'Error'),
                                           message: driverTr(
                                             context,
-                                            result.message ??
-                                                'Something went wrong. Please try again.',
+                                            'Could not upload the photo. Please try again.',
                                           ),
                                           type: DriverMessageType.error,
                                         );
                                       }
-                                      if (mounted) safeSetState(() {});
-                                    },
-                                    title: Text(
-                                      FFLocalizations.of(context).getText(
-                                        '11lqnn52' /* Receiving bookings */,
+                                    } finally {
+                                      if (mounted) {
+                                        safeSetState(() => _model
+                                                .isDataUploading_uploadDataB4x =
+                                            false);
+                                      }
+                                    }
+                                  },
+                                  child: Container(
+                                    width: 120,
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      color: colors.primarySoft,
+                                      image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: (currentUserPhoto.isNotEmpty)
+                                            ? NetworkImage(currentUserPhoto)
+                                            : const AssetImage(
+                                                    'assets/images/avatar.jpg')
+                                                as ImageProvider,
                                       ),
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge
-                                          .override(
-                                            fontFamily:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyLargeFamily,
-                                            letterSpacing: 0.0,
-                                            useGoogleFonts:
-                                                !FlutterFlowTheme.of(context)
-                                                    .bodyLargeIsCustom,
-                                          ),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: colors.primary,
+                                        width: 3,
+                                      ),
+                                      boxShadow: DsShadows.soft(),
                                     ),
-                                    tileColor: FlutterFlowTheme.of(context)
-                                        .secondaryBackground,
-                                    activeColor:
-                                        FlutterFlowTheme.of(context).primary,
-                                    activeTrackColor: Color(0x3439D2C0),
-                                    dense: false,
-                                    controlAffinity:
-                                        ListTileControlAffinity.trailing,
-                                    contentPadding:
-                                        EdgeInsetsDirectional.fromSTEB(
-                                            12.0, 0.0, 4.0, 0.0),
                                   ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ).animateOnPageLoad(
-                      animationsMap['containerOnPageLoadAnimation2']!),
-                ),
-                Padding(
-                  padding:
-                      EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 0.0),
-                  child: InkWell(
-                    splashColor: Colors.transparent,
-                    focusColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () async {
-                      await launchURL('https://wa.me/message/LHEPTGBXGS7UJ1');
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).secondaryBackground,
-                        borderRadius: BorderRadius.circular(12.0),
-                        border: Border.all(
-                          color: FlutterFlowTheme.of(context).alternate,
-                          width: 2.0,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  8.0, 0.0, 0.0, 0.0),
-                              child: Icon(
-                                Icons.contact_support_outlined,
-                                color: FlutterFlowTheme.of(context).primaryText,
-                                size: 24.0,
+                                ).animateOnPageLoad(
+                                  animationsMap[
+                                      'containerOnPageLoadAnimation1']!,
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  11.0, 0.0, 11.0, 0.0),
-                              child: Text(
-                                FFLocalizations.of(context).getText(
+                              const SizedBox(height: DsSpacing.sm),
+                              AuthUserStreamWidget(
+                                builder: (context) => Text(
+                                  currentUserDisplayName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: typography.headlineSmall.copyWith(
+                                    color: colors.textPrimary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ).animateOnPageLoad(
+                                  animationsMap['textOnPageLoadAnimation1']!,
+                                ),
+                              ),
+                              const SizedBox(height: DsSpacing.xs),
+                              AuthUserStreamWidget(
+                                builder: (context) => Text(
+                                  valueOrDefault(
+                                      currentUserDocument?.iDHoyhMNDOB, ''),
+                                  style: typography.bodyMedium.copyWith(
+                                    color: colors.textSecondary,
+                                  ),
+                                ).animateOnPageLoad(
+                                  animationsMap['textOnPageLoadAnimation2']!,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        DriverPagePadding(
+                          top: DsSpacing.md,
+                          bottom: DsSpacing.xxl,
+                          child: Column(
+                            children: [
+                              DsCard(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: DsSpacing.sm,
+                                  vertical: DsSpacing.xxs,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: colors.primarySoft,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.power_settings_new_rounded,
+                                        color: colors.primaryStrong,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: AuthUserStreamWidget(
+                                        builder: (context) {
+                                          final isOnline = valueOrDefault<bool>(
+                                            currentUserDocument?.ngl,
+                                            false,
+                                          );
+                                          return SwitchListTile.adaptive(
+                                            value: isOnline,
+                                            onChanged: (newValue) async {
+                                              final wantOnline =
+                                                  newValue == true;
+                                              final result = wantOnline
+                                                  ? await DriverOnlineState
+                                                      .goOnline()
+                                                  : await DriverOnlineState
+                                                      .goOffline(
+                                                      hasActiveTrip:
+                                                          FFAppState()
+                                                                  .revOrder !=
+                                                              null,
+                                                    );
+                                              if (!result.ok &&
+                                                  context.mounted) {
+                                                await DriverDialogs.showAlert(
+                                                  context,
+                                                  title: driverTr(
+                                                      context, 'Error'),
+                                                  message: driverTr(
+                                                    context,
+                                                    result.message ??
+                                                        'Something went wrong. Please try again.',
+                                                  ),
+                                                  type: DriverMessageType.error,
+                                                );
+                                              }
+                                              if (mounted) {
+                                                safeSetState(() {});
+                                              }
+                                            },
+                                            title: Text(
+                                              FFLocalizations.of(context)
+                                                  .getText(
+                                                '11lqnn52' /* Receiving bookings */,
+                                              ),
+                                              style:
+                                                  typography.bodyLarge.copyWith(
+                                                color: colors.textPrimary,
+                                              ),
+                                            ),
+                                            activeThumbColor: colors.primary,
+                                            activeTrackColor: colors.primary
+                                                .withValues(alpha: 0.35),
+                                            contentPadding:
+                                                const EdgeInsetsDirectional
+                                                    .fromSTEB(8, 0, 4, 0),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: DsSpacing.sm),
+                              _menuRow(
+                                context: context,
+                                icon: Icons.contact_support_outlined,
+                                label: FFLocalizations.of(context).getText(
                                   'g5iyasoo' /* Have a problem? Contact us dir... */,
                                 ),
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: FlutterFlowTheme.of(context)
-                                          .bodyMediumFamily,
-                                      letterSpacing: 0.0,
-                                      useGoogleFonts:
-                                          !FlutterFlowTheme.of(context)
-                                              .bodyMediumIsCustom,
+                                onTap: () async {
+                                  await launchURL(
+                                    'https://wa.me/message/LHEPTGBXGS7UJ1',
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: DsSpacing.sm),
+                              _menuRow(
+                                context: context,
+                                icon: Icons.account_balance_wallet_rounded,
+                                label: driverTr(
+                                    context, 'Wallet and transactions'),
+                                onTap: () => context
+                                    .pushNamed(DriverWalletWidget.routeName),
+                              ),
+                              const SizedBox(height: DsSpacing.sm),
+                              _menuRow(
+                                context: context,
+                                icon: Icons.account_balance_rounded,
+                                label: FFLocalizations.of(context).getText(
+                                  '4627kcfu' /* Bank account update */,
+                                ),
+                                onTap: () => context
+                                    .pushNamed(UpdetBankWidget.routeName),
+                              ),
+                              const SizedBox(height: DsSpacing.sm),
+                              DsCard(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: DsSpacing.sm,
+                                  vertical: DsSpacing.xs,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: colors.primarySoft,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.language_rounded,
+                                        color: colors.primaryStrong,
+                                      ),
                                     ),
+                                    const SizedBox(width: DsSpacing.sm),
+                                    Expanded(
+                                      child: FlutterFlowLanguageSelector(
+                                        width: 140,
+                                        backgroundColor: colors.surface,
+                                        borderColor: Colors.transparent,
+                                        dropdownIconColor: colors.primary,
+                                        borderRadius: DsRadius.sm,
+                                        textStyle:
+                                            typography.bodySmall.copyWith(
+                                          color: colors.primary,
+                                        ),
+                                        hideFlags: true,
+                                        flagSize: 24,
+                                        flagTextGap: 8,
+                                        currentLanguage:
+                                            FFLocalizations.of(context)
+                                                .languageCode,
+                                        languages: FFLocalizations.languages(),
+                                        onChanged: (lang) =>
+                                            setAppLanguage(context, lang),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ).animateOnPageLoad(
-                      animationsMap['containerOnPageLoadAnimation3']!),
-                ),
-                Padding(
-                  padding:
-                      EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 0.0),
-                  child: InkWell(
-                    onTap: () =>
-                        context.pushNamed(DriverWalletWidget.routeName),
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).secondaryBackground,
-                        borderRadius: BorderRadius.circular(12.0),
-                        border: Border.all(
-                          color: FlutterFlowTheme.of(context).alternate,
-                          width: 2.0,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Row(
-                          children: [
-                            Icon(Icons.account_balance_wallet,
-                                color: FlutterFlowTheme.of(context).primary),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'المحفظة والمعاملات',
-                                style: FlutterFlowTheme.of(context).bodyLarge,
+                              const SizedBox(height: DsSpacing.xl),
+                              DsButton.outlined(
+                                label: FFLocalizations.of(context).getText(
+                                  'jso22q9p' /* Log Out */,
+                                ),
+                                expanded: true,
+                                size: DsButtonSize.lg,
+                                icon: Icons.logout_rounded,
+                                onPressed: () async {
+                                  GoRouter.of(context).prepareAuthEvent();
+                                  await DriverLogoutService.logout();
+                                  GoRouter.of(context).clearRedirectLocation();
+                                  if (context.mounted) {
+                                    context.go('/');
+                                  }
+                                },
                               ),
-                            ),
-                            Icon(Icons.chevron_left),
-                          ],
+                              const SizedBox(height: DsSpacing.sm),
+                              DsButton.danger(
+                                label: FFLocalizations.of(context).getText(
+                                  'njmac6gm' /* Delete account */,
+                                ),
+                                expanded: true,
+                                size: DsButtonSize.lg,
+                                icon: Icons.delete_outline_rounded,
+                                onPressed: () async {
+                                  final confirmDialogResponse =
+                                      await showDialog<bool>(
+                                            context: context,
+                                            builder: (alertDialogContext) {
+                                              return AlertDialog(
+                                                title: Text(driverTr(context,
+                                                    'Delete your account')),
+                                                content: Text(
+                                                  driverTr(context,
+                                                      'Are you sure you want to request account deletion?'),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(
+                                                      alertDialogContext,
+                                                      false,
+                                                    ),
+                                                    child: Text(driverTr(
+                                                        context, 'Cancel')),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(
+                                                      alertDialogContext,
+                                                      true,
+                                                    ),
+                                                    child: Text(driverTr(
+                                                        context, 'Confirm')),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          ) ??
+                                          false;
+                                  if (confirmDialogResponse) {
+                                    await showDialog(
+                                      context: context,
+                                      builder: (alertDialogContext) {
+                                        return AlertDialog(
+                                          title: Text(driverTr(
+                                              context, 'Delete account')),
+                                          content: Text(
+                                            driverTr(context,
+                                                'Account deletion request submitted successfully.'),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(
+                                                alertDialogContext,
+                                              ),
+                                              child:
+                                                  Text(driverTr(context, 'OK')),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+
+                                    final del =
+                                        await DriverSupportTicketService.submit(
+                                      DriverSupportTicketDraft(
+                                        category: DriverSupportCategory
+                                            .accountDeletion,
+                                        subject: 'Delete account',
+                                        message: driverTr(
+                                          context,
+                                          'Request to delete my account',
+                                        ),
+                                      ),
+                                    );
+                                    if (!del.ok && context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            del.message ?? 'Error',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
-                Padding(
-                  padding:
-                      EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 0.0),
-                  child: InkWell(
-                    splashColor: Colors.transparent,
-                    focusColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () async {
-                      context.pushNamed(UpdetBankWidget.routeName);
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).secondaryBackground,
-                        borderRadius: BorderRadius.circular(12.0),
-                        border: Border.all(
-                          color: FlutterFlowTheme.of(context).alternate,
-                          width: 2.0,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  8.0, 0.0, 0.0, 0.0),
-                              child: Icon(
-                                Icons.cached_sharp,
-                                color: FlutterFlowTheme.of(context).primaryText,
-                                size: 24.0,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  11.0, 0.0, 11.0, 0.0),
-                              child: Text(
-                                FFLocalizations.of(context).getText(
-                                  '4627kcfu' /* Bank account update */,
-                                ),
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: FlutterFlowTheme.of(context)
-                                          .bodyMediumFamily,
-                                      letterSpacing: 0.0,
-                                      useGoogleFonts:
-                                          !FlutterFlowTheme.of(context)
-                                              .bodyMediumIsCustom,
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ).animateOnPageLoad(
-                      animationsMap['containerOnPageLoadAnimation4']!),
-                ),
-                Padding(
-                  padding:
-                      EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 0.0),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).secondaryBackground,
-                      borderRadius: BorderRadius.circular(12.0),
-                      border: Border.all(
-                        color: FlutterFlowTheme.of(context).alternate,
-                        width: 2.0,
-                      ),
-                    ),
-                    child: FlutterFlowLanguageSelector(
-                      width: 200.0,
-                      backgroundColor:
-                          FlutterFlowTheme.of(context).secondaryBackground,
-                      borderColor: Colors.transparent,
-                      dropdownIconColor: FlutterFlowTheme.of(context).primary,
-                      borderRadius: 8.0,
-                      textStyle: TextStyle(
-                        color: FlutterFlowTheme.of(context).primary,
-                        fontWeight: FontWeight.normal,
-                        fontSize: 13.0,
-                      ),
-                      hideFlags: true,
-                      flagSize: 24.0,
-                      flagTextGap: 8.0,
-                      currentLanguage: FFLocalizations.of(context).languageCode,
-                      languages: FFLocalizations.languages(),
-                      onChanged: (lang) => setAppLanguage(context, lang),
-                    ),
-                  ).animateOnPageLoad(
-                      animationsMap['containerOnPageLoadAnimation5']!),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 16.0, 0.0, 0.0),
-                  child: FFButtonWidget(
-                    onPressed: () async {
-                      GoRouter.of(context).prepareAuthEvent();
-                      await DriverLogoutService.logout();
-                      GoRouter.of(context).clearRedirectLocation();
-                      if (context.mounted) {
-                        context.go('/');
-                      }
-                    },
-                    text: FFLocalizations.of(context).getText(
-                      'jso22q9p' /* Log Out */,
-                    ),
-                    options: FFButtonOptions(
-                      width: 150.0,
-                      height: 50.0,
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                      iconPadding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                      color: FlutterFlowTheme.of(context).primaryBackground,
-                      textStyle: FlutterFlowTheme.of(context)
-                          .bodyLarge
-                          .override(
-                            fontFamily:
-                                FlutterFlowTheme.of(context).bodyLargeFamily,
-                            letterSpacing: 0.0,
-                            useGoogleFonts:
-                                !FlutterFlowTheme.of(context).bodyLargeIsCustom,
-                          ),
-                      elevation: 0.0,
-                      borderSide: BorderSide(
-                        color: FlutterFlowTheme.of(context).alternate,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(38.0),
-                    ),
-                  ).animateOnPageLoad(
-                      animationsMap['buttonOnPageLoadAnimation1']!),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 16.0, 0.0, 0.0),
-                  child: FFButtonWidget(
-                    onPressed: () async {
-                      var confirmDialogResponse = await showDialog<bool>(
-                            context: context,
-                            builder: (alertDialogContext) {
-                              return AlertDialog(
-                                title: Text('حذف حسابك'),
-                                content: Text(
-                                    'هل انت متأكد من إرسال طلب حذف الحساب ؟'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(
-                                        alertDialogContext, false),
-                                    child: Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(alertDialogContext, true),
-                                    child: Text('Confirm'),
-                                  ),
-                                ],
-                              );
-                            },
-                          ) ??
-                          false;
-                      if (confirmDialogResponse) {
-                        await showDialog(
-                          context: context,
-                          builder: (alertDialogContext) {
-                            return AlertDialog(
-                              title: Text('حذف الحساب'),
-                              content: Text('تم إرسال طلب حذف الحساب بنجاح'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(alertDialogContext),
-                                  child: Text('Ok'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-
-                        final del = await DriverSupportTicketService.submit(
-                          const DriverSupportTicketDraft(
-                            category: DriverSupportCategory.accountDeletion,
-                            subject: 'Delete account',
-                            message: 'طلب حذف حسابي من التطبيق',
-                          ),
-                        );
-                        if (!del.ok && context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(del.message ?? 'Error')),
-                          );
-                        }
-                      }
-                    },
-                    text: FFLocalizations.of(context).getText(
-                      'njmac6gm' /* Delete account */,
-                    ),
-                    options: FFButtonOptions(
-                      width: 150.0,
-                      height: 50.0,
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                      iconPadding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                      color: FlutterFlowTheme.of(context).error,
-                      textStyle: FlutterFlowTheme.of(context)
-                          .bodyLarge
-                          .override(
-                            fontFamily:
-                                FlutterFlowTheme.of(context).bodyLargeFamily,
-                            color: FlutterFlowTheme.of(context)
-                                .secondaryBackground,
-                            letterSpacing: 0.0,
-                            useGoogleFonts:
-                                !FlutterFlowTheme.of(context).bodyLargeIsCustom,
-                          ),
-                      elevation: 0.0,
-                      borderSide: BorderSide(
-                        color: FlutterFlowTheme.of(context).alternate,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(38.0),
-                    ),
-                  ).animateOnPageLoad(
-                      animationsMap['buttonOnPageLoadAnimation2']!),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

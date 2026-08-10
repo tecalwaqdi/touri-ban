@@ -17,7 +17,7 @@ def slug(s: str) -> str:
 
 def main():
     lines = [
-        l.strip()
+        l.rstrip('\n').rstrip('\r')
         for l in STRINGS_FILE.read_text(encoding='utf-8').splitlines()
         if l.strip()
     ]

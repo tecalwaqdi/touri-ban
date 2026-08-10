@@ -1,17 +1,19 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
-import '/core/driver_design_system.dart';
+import '/core/driver_country_service.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_online_state.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
-import '/flutter_flow/flutter_flow_util.dart';
+import '/core/driver_ux_widgets.dart';
+import '/core/toury_country_registry.dart';
 import '/design_system/design_system.dart';
+import '/core/driver_i18n.dart';
+import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'cansel_model.dart';
 export 'cansel_model.dart';
 
-/// Completed مكتملة
+/// Cancelled ملغاة
 class CanselWidget extends StatefulWidget {
   const CanselWidget({super.key});
 
@@ -47,367 +49,291 @@ class _CanselWidgetState extends State<CanselWidget> {
     return DsScreenShell(
       child: Builder(
         builder: (context) {
-          return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: context.dsColors.scaffold,
-        appBar: DsAppBar(
-          title: driverTr(context, 'Cancelled'),
-          automaticallyImplyLeading: false,
-          centerTitle: false,
-        ),
-        body: SafeArea(
-          top: true,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                  child: Container(
-                    width: double.infinity,
-                  ),
-                ),
-                if (!DriverOnlineState.isApproved)
-                  Padding(
-                    padding:
-                        EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 16.0),
-                    child: AuthUserStreamWidget(
-                      builder: (context) => Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: context.dsColors.error,
-                          borderRadius: BorderRadius.circular(12.0),
-                          border: Border.all(
-                            color: context.dsColors.divider,
-                            width: 1.0,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            FFLocalizations.of(context).getText(
-                              'wrc914v3' /* This account is inactive. For ... */,
-                            ),
-                            textAlign: TextAlign.center,
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: FlutterFlowTheme.of(context)
-                                      .bodyMediumFamily,
-                                  color: Colors.white,
-                                  letterSpacing: 0.0,
-                                  useGoogleFonts: !FlutterFlowTheme.of(context)
-                                      .bodyMediumIsCustom,
-                                ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-                  child: StreamBuilder<List<OrderRecord>>(
-                    stream: queryOrderRecord(
-                      queryBuilder: (orderRecord) => orderRecord
-                          .where(
-                            'mndob_user',
-                            isEqualTo: currentUserReference,
-                          )
-                          .orderBy('data_order', descending: true)
-                          .limit(80),
-                    ),
-                    builder: (context, snapshot) {
-                      // Customize what your widget looks like when it's loading.
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: SizedBox(
-                            width: 50.0,
-                            height: 50.0,
-                            child: const DsLoading(),
-                          ),
-                        );
-                      }
-                      List<OrderRecord> listViewOrderRecordList =
-                          snapshot.data!
-                              .where(
-                                (o) => DriverTripActionGates.isCancelledListItem(
-                                  (o.snapshotData['status_code'] ?? '')
-                                      .toString(),
-                                  o.halhText,
-                                ),
-                              )
-                              .toList();
+          final colors = context.dsColors;
+          final typography = context.dsTypography;
 
-                      return ListView.builder(
-                        padding: EdgeInsets.zero,
-                        primary: false,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        itemCount: listViewOrderRecordList.length,
-                        itemBuilder: (context, listViewIndex) {
-                          final listViewOrderRecord =
-                              listViewOrderRecordList[listViewIndex];
-                          return Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 8.0),
-                            child: Material(
-                              color: Colors.transparent,
-                              elevation: 2.0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.0),
+          return GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Scaffold(
+              key: scaffoldKey,
+              backgroundColor: colors.scaffold,
+              appBar: DsAppBar(
+                title: driverTr(context, 'Cancelled'),
+                automaticallyImplyLeading: false,
+                centerTitle: false,
+              ),
+              body: SafeArea(
+                top: true,
+                child: DriverContentWidth(
+                  child: DriverPagePadding(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          if (!DriverOnlineState.isApproved)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: DsSpacing.md,
                               ),
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: context.dsColors.surface,
-                                  borderRadius: BorderRadius.circular(12.0),
+                              child: AuthUserStreamWidget(
+                                builder: (context) => DsCard(
+                                  color: colors.error,
+                                  bordered: false,
+                                  padding: const EdgeInsets.all(DsSpacing.sm),
+                                  child: Text(
+                                    FFLocalizations.of(context).getText(
+                                      'wrc914v3' /* This account is inactive. For ... */,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    style: typography.bodyMedium.copyWith(
+                                      color: colors.onError,
+                                    ),
+                                  ),
                                 ),
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      16.0, 16.0, 16.0, 16.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisSize: MainAxisSize.max,
+                              ),
+                            ),
+                          StreamBuilder<List<OrderRecord>>(
+                            stream: queryOrderRecord(
+                              queryBuilder: (orderRecord) => orderRecord
+                                  .where(
+                                    'mndob_user',
+                                    isEqualTo: currentUserReference,
+                                  )
+                                  .orderBy('data_order', descending: true)
+                                  .limit(80),
+                            ),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(DsSpacing.xxl),
+                                  child: Center(child: DsLoading()),
+                                );
+                              }
+                              final listViewOrderRecordList = snapshot.data!
+                                  .where(
+                                    (o) => DriverTripActionGates
+                                        .isCancelledListItem(
+                                      (o.snapshotData['status_code'] ?? '')
+                                          .toString(),
+                                      o.halhText,
+                                    ),
+                                  )
+                                  .toList();
+
+                              if (listViewOrderRecordList.isEmpty) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: DsSpacing.xxl,
+                                  ),
+                                  child: DriverEmptyState(
+                                    title: driverTr(context, 'No orders'),
+                                    message: driverTr(
+                                      context,
+                                      'New orders will appear here when available',
+                                    ),
+                                    icon: Icons.cancel_outlined,
+                                  ),
+                                );
+                              }
+
+                              return ListView.builder(
+                                padding: EdgeInsets.zero,
+                                primary: false,
+                                shrinkWrap: true,
+                                itemCount: listViewOrderRecordList.length,
+                                itemBuilder: (context, listViewIndex) {
+                                  final order =
+                                      listViewOrderRecordList[listViewIndex];
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: DsSpacing.sm,
+                                    ),
+                                    child: DriverOrderCardShell(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Container(
-                                            width: 60.0,
-                                            height: 60.0,
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  context.dsColors.primarySoft,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                              child: Image.network(
-                                                listViewOrderRecord
-                                                    .imgProfileClent,
-                                                fit: BoxFit.cover,
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 60,
+                                                height: 60,
+                                                decoration: BoxDecoration(
+                                                  color: colors.primarySoft,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                  child: Image.network(
+                                                    order.imgProfileClent,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder:
+                                                        (_, __, ___) => Icon(
+                                                      Icons.person_rounded,
+                                                      color:
+                                                          colors.primaryStrong,
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
+                                              const SizedBox(
+                                                  width: DsSpacing.sm),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(
-                                                      'طلب رقم:${listViewOrderRecord.iDorder}',
-                                                      style: FlutterFlowTheme
-                                                              .of(context)
-                                                          .bodyLarge
-                                                          .override(
-                                                            fontFamily:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyLargeFamily,
-                                                            fontSize: 12.0,
-                                                            letterSpacing: 0.0,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            useGoogleFonts:
-                                                                !FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyLargeIsCustom,
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            driverTrNamed(
+                                                                context,
+                                                                'Order #{id}', {
+                                                              'id':
+                                                                  '${order.iDorder}'
+                                                            }),
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: typography
+                                                                .titleSmall
+                                                                .copyWith(
+                                                              color: colors
+                                                                  .textPrimary,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
                                                           ),
+                                                        ),
+                                                        InkWell(
+                                                          onTap: () async {
+                                                            await Clipboard
+                                                                .setData(
+                                                              ClipboardData(
+                                                                text: order
+                                                                    .iDorder,
+                                                              ),
+                                                            );
+                                                            if (!context
+                                                                .mounted) {
+                                                              return;
+                                                            }
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                content: Text(
+                                                                  driverTr(
+                                                                      context,
+                                                                      'Copied'),
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontFamily:
+                                                                        'cairo',
+                                                                    color: colors
+                                                                        .surface,
+                                                                  ),
+                                                                ),
+                                                                duration:
+                                                                    const Duration(
+                                                                  milliseconds:
+                                                                      4000,
+                                                                ),
+                                                                backgroundColor:
+                                                                    colors
+                                                                        .secondary,
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: Icon(
+                                                            Icons.content_copy,
+                                                            color: colors
+                                                                .textPrimary,
+                                                            size: 18,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Text(
+                                                      order.naimUserText,
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: typography
+                                                          .bodyLarge
+                                                          .copyWith(
+                                                        color:
+                                                            colors.textPrimary,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
                                                     ),
                                                     Padding(
-                                                      padding:
-                                                          EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  8.0,
-                                                                  0.0,
-                                                                  8.0,
-                                                                  0.0),
-                                                      child: InkWell(
-                                                        splashColor:
-                                                            Colors.transparent,
-                                                        focusColor:
-                                                            Colors.transparent,
-                                                        hoverColor:
-                                                            Colors.transparent,
-                                                        highlightColor:
-                                                            Colors.transparent,
-                                                        onTap: () async {
-                                                          await Clipboard.setData(
-                                                              ClipboardData(
-                                                                  text: listViewOrderRecord
-                                                                      .iDorder));
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                            SnackBar(
-                                                              content: Text(
-                                                                'تم النسخ',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      'cairo',
-                                                                  color: context.dsColors.surface,
-                                                                ),
-                                                              ),
-                                                              duration: Duration(
-                                                                  milliseconds:
-                                                                      4000),
-                                                              backgroundColor:
-                                                                  context.dsColors.secondary,
-                                                            ),
-                                                          );
-                                                        },
-                                                        child: Icon(
-                                                          Icons.content_copy,
-                                                          color: context.dsColors.textPrimary,
-                                                          size: 18.0,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                        vertical: 3,
+                                                      ),
+                                                      child: Text(
+                                                        FFLocalizations.of(
+                                                                context)
+                                                            .getText(
+                                                          'g5a8p5v3' /* Cancelled */,
+                                                        ),
+                                                        style: typography
+                                                            .labelSmall
+                                                            .copyWith(
+                                                          color: colors.error,
                                                         ),
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
-                                                Text(
-                                                  listViewOrderRecord
-                                                      .naimUserText,
-                                                  style:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodyLarge
-                                                          .override(
-                                                            fontFamily:
-                                                                FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyLargeFamily,
-                                                            letterSpacing: 0.0,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            useGoogleFonts:
-                                                                !FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyLargeIsCustom,
-                                                          ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          0.0, 3.0, 0.0, 3.0),
-                                                  child: Text(
-                                                    FFLocalizations.of(context)
-                                                        .getText(
-                                                      'g5a8p5v3' /* Cancelled */,
-                                                    ),
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .labelSmall
-                                                        .override(
-                                                          fontFamily:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .labelSmallFamily,
-                                                          color: context.dsColors.error,
-                                                          letterSpacing: 0.0,
-                                                          useGoogleFonts:
-                                                              !FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .labelSmallIsCustom,
-                                                        ),
-                                                  ),
-                                                ),
-                                                Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  children: [
-                                                    Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.max,
+                                                    Wrap(
+                                                      spacing: DsSpacing.md,
+                                                      runSpacing: DsSpacing.xxs,
                                                       children: [
-                                                        Icon(
-                                                          Icons.schedule,
-                                                          color: context.dsColors.textSecondary,
-                                                          size: 16.0,
+                                                        _CancelMeta(
+                                                          icon: Icons.schedule,
+                                                          label: driverTrNamed(
+                                                              context,
+                                                              'Hours: {hours}',
+                                                              {
+                                                                'hours':
+                                                                    '${order.totalTaim}'
+                                                              }),
                                                         ),
-                                                        Text(
-                                                          'الساعات: ${listViewOrderRecord.totalTaim.toString()}',
-                                                          style: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .bodySmall
-                                                              .override(
-                                                                fontFamily: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmallFamily,
-color: context.dsColors.textSecondary,
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                useGoogleFonts:
-                                                                    !FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodySmallIsCustom,
-                                                              ),
+                                                        _CancelMeta(
+                                                          icon: Icons.place,
+                                                          label: driverTrNamed(
+                                                              context,
+                                                              'Landmarks: {count}',
+                                                              {
+                                                                'count':
+                                                                    '${order.addCartNumer}'
+                                                              }),
                                                         ),
-                                                      ].divide(
-                                                          SizedBox(width: 4.0)),
-                                                    ),
-                                                    Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.max,
-                                                      children: [
-                                                        Icon(
-                                                          Icons.place,
-                                                          color: context.dsColors.textSecondary,
-                                                          size: 16.0,
-                                                        ),
-                                                        Text(
-                                                          'المعالم: ${listViewOrderRecord.addCartNumer.toString()}',
-                                                          style: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .bodySmall
-                                                              .override(
-                                                                fontFamily: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodySmallFamily,
-color: context.dsColors.textSecondary,
-                                                                letterSpacing:
-                                                                    0.0,
-                                                                useGoogleFonts:
-                                                                    !FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .bodySmallIsCustom,
-                                                              ),
-                                                        ),
-                                                      ].divide(
-                                                          SizedBox(width: 4.0)),
+                                                      ],
                                                     ),
                                                   ].divide(
-                                                      SizedBox(width: 16.0)),
+                                                    const SizedBox(
+                                                      height: DsSpacing.xxs,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ].divide(SizedBox(height: 4.0)),
-                                            ),
+                                              ),
+                                            ],
                                           ),
-                                        ].divide(SizedBox(width: 12.0)),
-                                      ),
-                                      Divider(
-                                        thickness: 1.0,
-                                        color: context.dsColors.border,
-                                      ),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
+                                          Divider(
+                                            thickness: 1,
+                                            color: colors.border,
+                                          ),
                                           Column(
-                                            mainAxisSize: MainAxisSize.min,
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
@@ -416,94 +342,100 @@ color: context.dsColors.textSecondary,
                                                     .getText(
                                                   'fhoeqp3k' /* Total Earnings */,
                                                 ),
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelMedium
-                                                        .override(
-                                                          fontFamily:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .labelMediumFamily,
-                                                          letterSpacing: 0.0,
-                                                          useGoogleFonts:
-                                                              !FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .labelMediumIsCustom,
-                                                        ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: typography.labelMedium
+                                                    .copyWith(
+                                                  color: colors.textSecondary,
+                                                ),
                                               ),
                                               Text(
                                                 formatNumber(
-                                                  listViewOrderRecord
-                                                      .totalMndob2,
+                                                  order.totalMndob2,
                                                   formatType:
                                                       FormatType.decimal,
                                                   decimalType:
                                                       DecimalType.automatic,
-                                                  currency: ' ر.س ',
+                                                  currency:
+                                                      ' ${TouryCountryRegistry.currencySymbol(DriverCountryService.currentIso2())} ',
                                                 ),
-                                                style: FlutterFlowTheme.of(
-                                                        context)
-                                                    .headlineSmall
-                                                    .override(
-                                                      fontFamily: FlutterFlowTheme
-                                                              .of(context)
-                                                          .headlineSmallFamily,
-                                                      color:
-                                                          context.dsColors.error,
-                                                      fontSize: 18.0,
-                                                      letterSpacing: 0.0,
-                                                      decoration: TextDecoration
-                                                          .lineThrough,
-                                                      useGoogleFonts:
-                                                          !FlutterFlowTheme.of(
-                                                                  context)
-                                                              .headlineSmallIsCustom,
-                                                    ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: typography.headlineSmall
+                                                    .copyWith(
+                                                  color: colors.error,
+                                                  fontSize: 18,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                ),
                                               ),
-                                            ].divide(SizedBox(height: 4.0)),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        dateTimeFormat(
-                                          "relative",
-                                          listViewOrderRecord.dataOrder!,
-                                          locale: FFLocalizations.of(context)
-                                              .languageCode,
-                                        ),
-                                        style: FlutterFlowTheme.of(context)
-                                            .labelSmall
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(context)
-                                                      .labelSmallFamily,
-                                              color:
-                                                  context.dsColors.textSecondary,
-                                              letterSpacing: 0.0,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(context)
-                                                      .labelSmallIsCustom,
+                                            ].divide(
+                                              const SizedBox(
+                                                height: DsSpacing.xxs,
+                                              ),
                                             ),
+                                          ),
+                                          Text(
+                                            dateTimeFormat(
+                                              'relative',
+                                              order.dataOrder!,
+                                              locale:
+                                                  FFLocalizations.of(context)
+                                                      .languageCode,
+                                            ),
+                                            style:
+                                                typography.labelSmall.copyWith(
+                                              color: colors.textSecondary,
+                                            ),
+                                          ),
+                                        ].divide(
+                                          const SizedBox(height: DsSpacing.sm),
+                                        ),
                                       ),
-                                    ].divide(SizedBox(height: 12.0)),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
         },
       ),
+    );
+  }
+}
+
+class _CancelMeta extends StatelessWidget {
+  const _CancelMeta({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: colors.textSecondary, size: 16),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: typography.bodySmall.copyWith(
+            color: colors.textSecondary,
+          ),
+        ),
+      ],
     );
   }
 }

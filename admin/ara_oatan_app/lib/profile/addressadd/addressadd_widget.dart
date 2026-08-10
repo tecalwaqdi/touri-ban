@@ -155,19 +155,38 @@ class _AddressaddWidgetState extends State<AddressaddWidget> {
         ),
       }, adressuserRecordReference);
 
-      context.pushNamed(ListAdressSelectWidget.routeName);
+      if (!mounted) return;
+      context.safePop();
     } else {
       await showDialog(
         context: context,
         builder: (alertDialogContext) {
+          final colors = DsColors.of(alertDialogContext);
+          final typography = DsTypography.of(alertDialogContext);
           return WebViewAware(
             child: AlertDialog(
-              title: Text('ui_text_b6f51cadc4'.tr()),
-              content: Text('ui_text_5eac766a7c'.tr()),
+              backgroundColor: colors.surface,
+              shape: RoundedRectangleBorder(borderRadius: DsRadius.large),
+              title: Text(
+                'ui_text_b6f51cadc4'.tr(),
+                style: typography.titleLarge.copyWith(color: colors.textPrimary),
+              ),
+              content: Text(
+                'ui_text_5eac766a7c'.tr(),
+                style: typography.bodyMedium.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+              actionsPadding: const EdgeInsets.fromLTRB(
+                DsSpacing.md,
+                0,
+                DsSpacing.md,
+                DsSpacing.md,
+              ),
               actions: [
-                TextButton(
+                DsButton.primary(
+                  label: 'ui_text_b0a98216a3'.tr(),
                   onPressed: () => Navigator.pop(alertDialogContext),
-                  child: Text('ui_text_b0a98216a3'.tr()),
                 ),
               ],
             ),
@@ -206,7 +225,7 @@ class _AddressaddWidgetState extends State<AddressaddWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () async {
-                    context.pop();
+                    context.safePop();
                   },
                 ),
               ),

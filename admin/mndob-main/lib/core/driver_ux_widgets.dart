@@ -6,6 +6,47 @@ import '/core/driver_design_system.dart';
 import '/core/driver_i18n.dart';
 import '/design_system/design_system.dart';
 
+/// Constrains page content for tablets / wide layouts (Tory DS).
+class DriverContentWidth extends StatelessWidget {
+  const DriverContentWidth({
+    super.key,
+    required this.child,
+    this.maxWidth = DsConstants.maxContentWidth,
+  });
+
+  final Widget child;
+  final double maxWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: child,
+      ),
+    );
+  }
+}
+
+/// Form-oriented max width (auth, bank, profile edit).
+class DriverFormWidth extends StatelessWidget {
+  const DriverFormWidth({
+    super.key,
+    required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return DriverContentWidth(
+      maxWidth: DsConstants.maxFormWidth,
+      child: child,
+    );
+  }
+}
+
 /// مساحة أفقية موحّدة للشاشات الرئيسية.
 class DriverPagePadding extends StatelessWidget {
   const DriverPagePadding({

@@ -2334,7 +2334,7 @@
   "@ux_change": {
     "description": "UI string (source key: ux_change)"
   },
-  "ux_card_payment_network": "Network International аркылуу коопсуз карта төлөмү",
+  "ux_card_payment_network": "Карта менен төлөө",
   "@ux_card_payment_network": {
     "description": "UI string (source key: ux_card_payment_network)"
   },
@@ -2876,7 +2876,7 @@
   "@card_invalid_data": {
     "description": "UI string (source key: card_invalid_data)"
   },
-  "checkout_paying": "Network International аркылуу төлөм иштетилүүдө...",
+  "checkout_paying": "Карта төлөмү иштетилүүдө...",
   "@checkout_paying": {
     "description": "UI string (source key: checkout_paying)"
   },

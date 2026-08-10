@@ -46,6 +46,10 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
     _model.textFieldFocusNode4 ??= FocusNode();
     _model.textController5 ??= TextEditingController();
     _model.textFieldFocusNode5 ??= FocusNode();
+    _model.textControllerCurrencyCode ??= TextEditingController();
+    _model.textFieldFocusNodeCurrencyCode ??= FocusNode();
+    _model.textControllerCurrencySymbol ??= TextEditingController();
+    _model.textFieldFocusNodeCurrencySymbol ??= FocusNode();
     _model.switchValue = true;
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -94,7 +98,21 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
         }
         return null;
       }
-      if (mounted) setState(() => _resolvedGeo = geo);
+      if (mounted) {
+        setState(() {
+          _resolvedGeo = geo;
+          if ((geo?.currencyCode ?? '').isNotEmpty) {
+            _model.textControllerCurrencyCode!.text = geo!.currencyCode!;
+          }
+          if ((geo?.currencySymbol ?? '').isNotEmpty) {
+            _model.textControllerCurrencySymbol!.text = geo!.currencySymbol!;
+          }
+          if ((geo?.isoCode ?? '').isNotEmpty &&
+              _model.textController5!.text.trim().isEmpty) {
+            _model.textController5!.text = geo!.isoCode!;
+          }
+        });
+      }
       return geo;
     } finally {
       if (mounted) setState(() => _isResolvingGeo = false);
@@ -154,9 +172,22 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
         boundsSw: geo.boundsSouthWest,
         boundsNe: geo.boundsNorthEast,
         namesI18n: namesMap,
+        currencyCode: () {
+          final manual = _model.textControllerCurrencyCode!.text.trim().toUpperCase();
+          if (manual.isNotEmpty) return manual;
+          return geo.currencyCode;
+        }(),
+        currencySymbol: () {
+          final manual = _model.textControllerCurrencySymbol!.text.trim();
+          if (manual.isNotEmpty) return manual;
+          return geo.currencySymbol;
+        }(),
       );
 
-      await CountriesRecord.collection.doc().set(countryData);
+      await CountriesRecord.collection.doc().set({
+        ...countryData,
+        ...AdminCountryGeoService.geoFieldsForFirestore(geo),
+      });
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -299,6 +330,29 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
                     labelText: uiTr(context, 'رمز الدولة ISO (اختياري)'),
                     hintText: uiTr(context, 'مثال: SA أو AE'),
                     counterText: '',
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextFormField(
+                  controller: _model.textControllerCurrencyCode,
+                  focusNode: _model.textFieldFocusNodeCurrencyCode,
+                  textCapitalization: TextCapitalization.characters,
+                  maxLength: 3,
+                  decoration: InputDecoration(
+                    labelText: uiTr(context, 'رمز العملة (ISO)'),
+                    hintText: uiTr(context, 'مثال: SAR أو KGS'),
+                    counterText: '',
+                    helperText: uiTr(
+                        context, 'يُملأ تلقائياً من بيانات الدولة ويمكن تعديله'),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextFormField(
+                  controller: _model.textControllerCurrencySymbol,
+                  focusNode: _model.textFieldFocusNodeCurrencySymbol,
+                  decoration: InputDecoration(
+                    labelText: uiTr(context, 'رمز عرض العملة'),
+                    hintText: uiTr(context, 'مثال: ر.س أو сом'),
                   ),
                 ),
                 const SizedBox(height: 14),

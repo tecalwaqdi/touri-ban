@@ -57,7 +57,7 @@ class _MndobWidgetState extends State<MndobWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () async {
-                    context.pop();
+                    context.safePop();
                   },
                 ),
                 actions: const [],

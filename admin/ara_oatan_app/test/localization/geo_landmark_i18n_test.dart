@@ -16,6 +16,15 @@ void main() {
       expect(touryLooksArabic(text), isFalse);
     });
 
+    test('ky prefers en over ru when ky missing', () {
+      final text = touryLocalizedText(
+        {'ar': 'الرياض', 'en': 'Riyadh', 'ru': 'Эр-Рияд'},
+        'الرياض',
+        localeKey: 'ky',
+      );
+      expect(text, 'Riyadh');
+    });
+
     test('ky uses ky when present', () {
       final text = touryLocalizedText(
         {'ar': 'الرياض', 'en': 'Riyadh', 'ky': 'Эр-Рияд'},

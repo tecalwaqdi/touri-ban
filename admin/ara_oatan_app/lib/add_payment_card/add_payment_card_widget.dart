@@ -76,6 +76,15 @@ class AddPaymentCardWidget extends StatelessWidget {
                                 color: colors.textPrimary,
                               ),
                             ),
+                            const SizedBox(height: DsSpacing.xs),
+                            Text(
+                              'please_do_not_close_the_page_until_the_payment_is_completed'
+                                  .tr(),
+                              textAlign: TextAlign.center,
+                              style: typography.bodyMedium.copyWith(
+                                color: colors.textSecondary,
+                              ),
+                            ),
                             const SizedBox(height: DsSpacing.xl),
                             DsButton.primary(
                               label: 'dialog_continue'.tr(),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/core/driver_i18n.dart';
 import '/core/driver_navigation_service.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -9,13 +10,13 @@ abstract final class DriverMapActions {
 
   static void showEmbeddedMapHint(
     BuildContext context, {
-    String label = 'الموقع معروض على الخريطة في أعلى الشاشة',
+    String? label,
   }) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          label,
+          label ?? driverTr(context, 'Location shown on map above'),
           style: const TextStyle(fontFamily: 'cairo'),
         ),
         behavior: SnackBarBehavior.floating,
@@ -44,7 +45,7 @@ abstract final class DriverMapActions {
     if (location == null) {
       showEmbeddedMapHint(
         context,
-        label: 'لا يتوفر موقع لهذه النقطة',
+        label: driverTr(context, 'No location for this point'),
       );
       return;
     }
@@ -57,7 +58,7 @@ abstract final class DriverMapActions {
     }
     showEmbeddedMapHint(
       context,
-      label: title ?? 'تم تحديد الموقع على الخريطة أعلاه',
+      label: title ?? driverTr(context, 'Location marked on map above'),
     );
   }
 }

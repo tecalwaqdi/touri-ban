@@ -1715,7 +1715,7 @@ class _NewDriverRegistrationWidgetState
                                             BorderRadius.circular(12.0),
                                       ),
                                       child: Container(
-                                        width: 233.7,
+                                        width: double.infinity,
                                         height: 100.2,
                                         decoration: BoxDecoration(
                                           color: Colors.white,

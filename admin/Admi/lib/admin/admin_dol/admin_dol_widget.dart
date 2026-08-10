@@ -185,9 +185,7 @@ class _AdminDolWidgetState extends State<AdminDolWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                           child: Text(
-                            '${uiTr(context, 'العدد')}: ${countries.length}'
-                            '${countries.length != allCountries.length ? ' ${uiTr(context, 'من')} ${allCountries.length}' : ''}'
-                            '${listState.hasMore ? '+' : ''}',
+                            adminListCountLabel(context, listState, visibleCount: countries.length, pageFetched: allCountries.length),
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
                               color: theme.secondaryText,
@@ -386,6 +384,12 @@ class _CountryCard extends StatelessWidget {
                   children: [
                     _StatusBadge(active: record.acctev),
                     if (record.saudi) const _SaudiBadge(),
+                    if (record.currencyCode.isNotEmpty ||
+                        record.currencySymbol.isNotEmpty)
+                      _CurrencyBadge(
+                        code: record.currencyCode,
+                        symbol: record.currencySymbol,
+                      ),
                   ],
                 ),
               ],
@@ -527,6 +531,42 @@ class _SaudiBadge extends StatelessWidget {
         style: theme.labelSmall.override(
           fontFamily: theme.labelSmallFamily,
           color: const Color(0xFF1B5E20),
+          fontWeight: FontWeight.w600,
+          useGoogleFonts: !theme.labelSmallIsCustom,
+        ),
+      ),
+    );
+  }
+}
+
+class _CurrencyBadge extends StatelessWidget {
+  const _CurrencyBadge({
+    required this.code,
+    required this.symbol,
+  });
+
+  final String code;
+  final String symbol;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    final label = [
+      if (code.trim().isNotEmpty) code.trim().toUpperCase(),
+      if (symbol.trim().isNotEmpty) symbol.trim(),
+    ].join(' · ');
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE3F2FD),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        label,
+        style: theme.labelSmall.override(
+          fontFamily: theme.labelSmallFamily,
+          color: const Color(0xFF1565C0),
           fontWeight: FontWeight.w600,
           useGoogleFonts: !theme.labelSmallIsCustom,
         ),

@@ -75,7 +75,7 @@ class _SdsdWidgetState extends State<SdsdWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () async {
-                    context.pop();
+                    context.safePop();
                   },
                 ),
                 actions: const [],

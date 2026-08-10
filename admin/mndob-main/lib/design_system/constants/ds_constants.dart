@@ -31,8 +31,12 @@ abstract final class DsConstants {
   static const double cardImageHeight = 160;
   static const double logoWidth = 132;
   static const double logoHeight = 58;
+  /// Auth screens: slightly larger brand mark with balanced proportions.
+  static const double authLogoWidth = 156;
+  static const double authLogoHeight = 68;
+  static const double vision2030Height = 42;
   static const double languageSelectorWidth = 132;
-  static const double authTabBarHeight = 76;
+  static const double authTabBarHeight = 72;
   static const double carThumbWidth = 104;
   static const double carThumbHeight = 78;
 

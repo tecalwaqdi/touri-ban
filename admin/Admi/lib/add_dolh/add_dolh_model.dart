@@ -27,6 +27,10 @@ class AddDolhModel extends FlutterFlowModel<AddDolhWidget> {
   FocusNode? textFieldFocusNode5;
   TextEditingController? textController5;
   String? Function(BuildContext, String?)? textController5Validator;
+  FocusNode? textFieldFocusNodeCurrencyCode;
+  TextEditingController? textControllerCurrencyCode;
+  FocusNode? textFieldFocusNodeCurrencySymbol;
+  TextEditingController? textControllerCurrencySymbol;
   // State field(s) for Switch widget.
   bool? switchValue;
 
@@ -49,5 +53,11 @@ class AddDolhModel extends FlutterFlowModel<AddDolhWidget> {
 
     textFieldFocusNode5?.dispose();
     textController5?.dispose();
+
+    textFieldFocusNodeCurrencyCode?.dispose();
+    textControllerCurrencyCode?.dispose();
+
+    textFieldFocusNodeCurrencySymbol?.dispose();
+    textControllerCurrencySymbol?.dispose();
   }
 }

@@ -227,46 +227,66 @@ class _DriverDialogShell extends StatelessWidget {
     return Dialog(
       backgroundColor: colors.surface,
       shape: RoundedRectangleBorder(borderRadius: DsRadius.large),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          DsSpacing.lg,
-          DsSpacing.xl,
-          DsSpacing.lg,
-          DsSpacing.md,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: style.bg,
-                shape: BoxShape.circle,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 400),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            DsSpacing.lg,
+            DsSpacing.xl,
+            DsSpacing.lg,
+            DsSpacing.md,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: style.bg,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(style.icon, color: style.color, size: 30),
               ),
-              child: Icon(style.icon, color: style.color, size: 30),
-            ),
-            DsSpacing.gapSm,
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: typography.titleLarge.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colors.textPrimary,
+              DsSpacing.gapSm,
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: typography.titleLarge.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: colors.textPrimary,
+                ),
               ),
-            ),
-            DsSpacing.gapXs,
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: typography.bodyMedium.copyWith(
-                color: colors.textSecondary,
-                height: 1.45,
+              DsSpacing.gapXs,
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.sizeOf(context).height * 0.35,
+                ),
+                child: SingleChildScrollView(
+                  child: Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: typography.bodyMedium.copyWith(
+                      color: colors.textSecondary,
+                      height: 1.45,
+                    ),
+                  ),
+                ),
               ),
-            ),
-            DsSpacing.gapLg,
-            Row(children: actions),
-          ],
+              DsSpacing.gapLg,
+              // Bound width so DsButton(expanded: true) / Expanded children
+              // never get infinite horizontal constraints (broken dialog +
+              // sticky modal scrim).
+              SizedBox(
+                width: double.infinity,
+                child: actions.length == 1
+                    ? actions.first
+                    : Row(children: actions),
+              ),
+            ],
+          ),
         ),
       ),
     );

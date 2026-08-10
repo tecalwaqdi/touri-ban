@@ -5,15 +5,18 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '/core/app_ux_widgets.dart';
+import '/design_system/design_system.dart';
 import '/core/app_design_system.dart';
 import '/core/toury_firestore_cache.dart';
 import '/core/toury_navigation_service.dart';
 import '/core/toury_order_meta.dart';
 import '/core/toury_booking_status_localizer.dart';
+import '/core/toury_dialogs.dart';
+import '/core/toury_payment_flow.dart';
+import '/core/toury_order_meta.dart';
+import '/backend/schema/enums/enums.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'list22_task_overview_responsive_model.dart';
 export 'list22_task_overview_responsive_model.dart';
@@ -55,14 +58,15 @@ class _List22TaskOverviewResponsiveWidgetState
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return DsScreenShell(
+      child: GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+        backgroundColor: context.dsColors.scaffold,
         appBar: TouryMainAppBar(
           title: 'Reservations'.tr(),
           subtitle: 'ux_my_bookings_sub'.tr(),
@@ -938,30 +942,32 @@ class _List22TaskOverviewResponsiveWidgetState
                               ),
                             ),
                           Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                16.0, 16.0, 16.0, 0.0),
-                            child: TouryHelpBanner(
+                            padding: const EdgeInsets.fromLTRB(
+                              DsSpacing.md,
+                              DsSpacing.md,
+                              DsSpacing.md,
+                              0,
+                            ),
+                            child: DsInformationCard(
+                              title: 'Reservations'.tr(),
                               message: 'ux_my_bookings_sub'.tr(),
                               icon: Icons.calendar_month_rounded,
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                16.0, 12.0, 16.0, 0.0),
+                            padding: const EdgeInsets.fromLTRB(
+                              DsSpacing.md,
+                              DsSpacing.sm,
+                              DsSpacing.md,
+                              0,
+                            ),
                             child: Text(
                               FFLocalizations.of(context).getText(
                                 'uxg886tt' /* A list of orders or reservatio... */,
                               ),
-                              style: FlutterFlowTheme.of(context)
-                                  .labelMedium
-                                  .override(
-                                    fontFamily: FlutterFlowTheme.of(context)
-                                        .labelMediumFamily,
-                                    letterSpacing: 0.0,
-                                    useGoogleFonts:
-                                        !FlutterFlowTheme.of(context)
-                                            .labelMediumIsCustom,
-                                  ),
+                              style: context.dsTypography.bodyMedium.copyWith(
+                                color: context.dsColors.textSecondary,
+                              ),
                             ),
                           ),
                           Padding(
@@ -1098,93 +1104,30 @@ class _List22TaskOverviewResponsiveWidgetState
                             builder: (context, snapshot) {
                               if (snapshot.hasError) {
                                 return Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      24, 48, 24, 24),
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.cloud_off_rounded,
-                                        size: 56,
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryText,
-                                      ),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        'load_error_title'.tr(),
-                                        textAlign: TextAlign.center,
-                                        style: FlutterFlowTheme.of(context)
-                                            .titleMedium,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'load_error_message'.tr(),
-                                        textAlign: TextAlign.center,
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMediumFamily,
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryText,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(context)
-                                                      .bodyMediumIsCustom,
-                                            ),
-                                      ),
-                                      if (snapshot.error != null) ...[
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          snapshot.error is FirebaseException
-                                              ? (snapshot.error
-                                                      as FirebaseException)
-                                                  .code
-                                              : snapshot.error.toString(),
-                                          textAlign: TextAlign.center,
-                                          style: FlutterFlowTheme.of(context)
-                                              .labelSmall
-                                              .override(
-                                                fontFamily:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelSmallFamily,
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .secondaryText,
-                                                useGoogleFonts:
-                                                    !FlutterFlowTheme.of(
-                                                            context)
-                                                        .labelSmallIsCustom,
-                                              ),
-                                        ),
-                                      ],
-                                      const SizedBox(height: 16),
-                                      FilledButton(
-                                        onPressed: () {
-                                          TouryFirestoreCache.invalidateUserOrders(
-                                            currentUserReference,
-                                          );
-                                          safeSetState(() {});
-                                        },
-                                        child: Text('ux_retry'.tr()),
-                                      ),
-                                    ],
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: DsSpacing.huge,
+                                  ),
+                                  child: DsErrorState(
+                                    title: 'load_error_title'.tr(),
+                                    message: 'load_error_message'.tr(),
+                                    retryLabel: 'ux_retry'.tr(),
+                                    onRetry: () {
+                                      TouryFirestoreCache.invalidateUserOrders(
+                                        currentUserReference,
+                                      );
+                                      safeSetState(() {});
+                                    },
                                   ),
                                 );
                               }
                               if (snapshot.connectionState ==
                                       ConnectionState.waiting &&
                                   !snapshot.hasData) {
-                                return Center(
-                                  child: SizedBox(
-                                    width: 50.0,
-                                    height: 50.0,
-                                    child: SpinKitChasingDots(
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      size: 50.0,
-                                    ),
+                                return const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: DsSpacing.huge,
                                   ),
+                                  child: DsLoading(),
                                 );
                               }
                               List<OrderRecord> listViewOrderRecordList =
@@ -1192,51 +1135,13 @@ class _List22TaskOverviewResponsiveWidgetState
 
                               if (listViewOrderRecordList.isEmpty) {
                                 return Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      24, 48, 24, 24),
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.map_outlined,
-                                        size: 56,
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryText,
-                                      ),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        'ux_no_bookings_title'.tr(),
-                                        textAlign: TextAlign.center,
-                                        style: FlutterFlowTheme.of(context)
-                                            .titleMedium
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(context)
-                                                      .titleMediumFamily,
-                                              fontWeight: FontWeight.w700,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(context)
-                                                      .titleMediumIsCustom,
-                                            ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'ux_no_bookings_msg'.tr(),
-                                        textAlign: TextAlign.center,
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMediumFamily,
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryText,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(context)
-                                                      .bodyMediumIsCustom,
-                                            ),
-                                      ),
-                                    ],
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: DsSpacing.huge,
+                                  ),
+                                  child: DsEmptyState(
+                                    icon: DsIcons.bookings,
+                                    title: 'ux_no_bookings_title'.tr(),
+                                    message: 'ux_no_bookings_msg'.tr(),
                                   ),
                                 );
                               }
@@ -1244,9 +1149,9 @@ class _List22TaskOverviewResponsiveWidgetState
                               return ListView.separated(
                                 padding: const EdgeInsets.fromLTRB(
                                   0,
-                                  0.0,
+                                  DsSpacing.xs,
                                   0,
-                                  44.0,
+                                  DsSpacing.huge,
                                 ),
                                 primary: false,
                                 shrinkWrap: true,
@@ -1256,7 +1161,7 @@ class _List22TaskOverviewResponsiveWidgetState
                                 scrollDirection: Axis.vertical,
                                 itemCount: listViewOrderRecordList.length,
                                 separatorBuilder: (_, __) =>
-                                    const SizedBox(height: 1.0),
+                                    const SizedBox(height: DsSpacing.xs),
                                 itemBuilder: (context, listViewIndex) {
                                   final listViewOrderRecord =
                                       listViewOrderRecordList[listViewIndex];
@@ -1319,6 +1224,7 @@ class _List22TaskOverviewResponsiveWidgetState
           ),
         ),
       ),
+      ),
     );
   }
 }
@@ -1345,6 +1251,9 @@ class _TouryBookingCard extends StatelessWidget {
     );
 
     if (code == TouryBookingStatusCodes.cancelled ||
+        code == TouryBookingStatusCodes.cancelledByCustomer ||
+        code == TouryBookingStatusCodes.cancelledByDriver ||
+        code == TouryBookingStatusCodes.cancelledByAdmin ||
         enumName == 'canceled' ||
         raw.contains('ملغي') ||
         raw.contains('cancel')) {
@@ -1381,6 +1290,15 @@ class _TouryBookingCard extends StatelessWidget {
       );
     }
 
+    if (order.isAwaitingPayment ||
+        code == TouryBookingStatusCodes.paymentPending) {
+      return (
+        key: 'status_awaiting_payment',
+        color: FlutterFlowTheme.of(context).tertiary,
+        icon: Icons.payments_outlined,
+      );
+    }
+
     return (
       key: 'wallet_status_pending',
       color: FlutterFlowTheme.of(context).warning,
@@ -1390,131 +1308,148 @@ class _TouryBookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
     final status = _status(context);
     final hasRoute = order.trackingRouteWaypoints().isNotEmpty ||
         order.customerPickup != null;
+    final isRtl = Directionality.of(context) == ui.TextDirection.rtl;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onOpen,
-          borderRadius: TouryBrand.borderRadiusLg,
-          child: Ink(
-            decoration:
-                TouryBrand.cardDecoration(context: context, elevated: true),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(
+        horizontal: DsSpacing.md,
+        vertical: DsSpacing.xxs,
+      ),
+      child: DsPressable(
+        onTap: onOpen,
+        child: DsCard(
+          elevated: true,
+          padding: DsSpacing.cardPadding,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: status.color.withValues(alpha: 0.14),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Icon(status.icon, color: status.color),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '#${order.iDorder}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.titleMedium.override(
-                                fontFamily: theme.titleMediumFamily,
-                                fontWeight: FontWeight.w700,
-                                useGoogleFonts: !theme.titleMediumIsCustom,
-                              ),
-                            ),
-                            if (order.villText.trim().isNotEmpty)
-                              Text(
-                                order.villText,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.bodySmall.override(
-                                  fontFamily: theme.bodySmallFamily,
-                                  color: theme.secondaryText,
-                                  useGoogleFonts: !theme.bodySmallIsCustom,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: status.color.withValues(alpha: 0.13),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          status.key.tr(),
-                          style: theme.labelSmall.override(
-                            fontFamily: theme.labelSmallFamily,
-                            color: status.color,
-                            fontWeight: FontWeight.w700,
-                            useGoogleFonts: !theme.labelSmallIsCustom,
-                          ),
-                        ),
-                      ),
-                    ],
+                  Container(
+                    width: DsConstants.avatarMd,
+                    height: DsConstants.avatarMd,
+                    decoration: BoxDecoration(
+                      color: status.color.withValues(alpha: 0.14),
+                      borderRadius: DsRadius.medium,
+                    ),
+                    child: Icon(status.icon, color: status.color, size: DsIcons.sm),
                   ),
-                  const SizedBox(height: 12),
-                  Divider(height: 1, color: theme.alternate),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.schedule_outlined,
-                        size: 18,
-                        color: theme.secondaryText,
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          order.dataOrder == null
-                              ? ''
-                              : dateTimeFormat(
-                                  'yMMMd',
-                                  order.dataOrder!,
-                                  locale: context.locale.toString(),
-                                ),
-                          style: theme.bodySmall.override(
-                            fontFamily: theme.bodySmallFamily,
-                            color: theme.secondaryText,
-                            useGoogleFonts: !theme.bodySmallIsCustom,
+                  const SizedBox(width: DsSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '#${order.iDorder}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: typography.titleMedium.copyWith(
+                            color: colors.textPrimary,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
+                        if (order.villText.trim().isNotEmpty) ...[
+                          const SizedBox(height: DsSpacing.xxs),
+                          Text(
+                            order.villText,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: typography.bodySmall.copyWith(
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: DsSpacing.chipPadding,
+                    decoration: BoxDecoration(
+                      color: status.color.withValues(alpha: 0.13),
+                      borderRadius: DsRadius.pill,
+                    ),
+                    child: Text(
+                      status.key.tr(),
+                      style: typography.labelSmall.copyWith(
+                        color: status.color,
+                        fontWeight: FontWeight.w700,
                       ),
-                      if (hasRoute)
-                        TextButton.icon(
-                          onPressed: onMap,
-                          icon: const Icon(Icons.route_rounded, size: 18),
-                          label: Text('booking_view_route'.tr()),
-                        ),
-                      Icon(
-                        Directionality.of(context) == ui.TextDirection.rtl
-                            ? Icons.chevron_left_rounded
-                            : Icons.chevron_right_rounded,
-                        color: theme.secondaryText,
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: DsSpacing.sm),
+              Divider(height: 1, color: colors.divider),
+              const SizedBox(height: DsSpacing.sm),
+              Row(
+                children: [
+                  Icon(
+                    Icons.schedule_outlined,
+                    size: DsIcons.xs,
+                    color: colors.iconMuted,
+                  ),
+                  const SizedBox(width: DsSpacing.xs),
+                  Expanded(
+                    child: Text(
+                      order.dataOrder == null
+                          ? ''
+                          : dateTimeFormat(
+                              'yMMMd',
+                              order.dataOrder!,
+                              locale: context.locale.toString(),
+                            ),
+                      style: typography.bodySmall.copyWith(
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                  ),
+                  if (order.isAwaitingPayment)
+                    DsButton.text(
+                      label: 'order_complete_payment'.tr(),
+                      icon: Icons.payment_rounded,
+                      size: DsButtonSize.sm,
+                      onPressed: () async {
+                        final result =
+                            await touryRetryUnpaidOrderPayment(order: order);
+                        if (!context.mounted) return;
+                        if (!result.success) {
+                          TouryDialogs.showSnackBar(
+                            context,
+                            result.errorMessage ??
+                                'checkout_payment_temporarily_unavailable'
+                                    .tr(),
+                            type: TouryMessageType.error,
+                          );
+                          return;
+                        }
+                        await touryNavigateAfterCardPayment(
+                          context,
+                          result: result,
+                          paymentFlowType: TypeHgz.Rhlh,
+                        );
+                      },
+                    )
+                  else if (hasRoute)
+                    DsButton.text(
+                      label: 'booking_view_route'.tr(),
+                      icon: Icons.route_rounded,
+                      size: DsButtonSize.sm,
+                      onPressed: onMap,
+                    ),
+                  Icon(
+                    isRtl
+                        ? Icons.chevron_left_rounded
+                        : Icons.chevron_right_rounded,
+                    color: colors.iconMuted,
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

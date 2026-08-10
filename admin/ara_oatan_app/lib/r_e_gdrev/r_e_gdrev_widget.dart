@@ -52,6 +52,10 @@ class _REGdrevWidgetState extends State<REGdrevWidget> {
                 'l2ec3lla' /* تسجيل سائق */,
               ),
               automaticallyImplyLeading: false,
+              leading: DsIconButton(
+                icon: DsIcons.back,
+                onPressed: () => context.safePop(),
+              ),
               actions: const [],
             ),
             body: SafeArea(

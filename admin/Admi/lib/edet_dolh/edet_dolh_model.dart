@@ -23,6 +23,10 @@ class EdetDolhModel extends FlutterFlowModel<EdetDolhWidget> {
         TextEditingController(text: record.vatPercent.toString());
     textController4 ??=
         TextEditingController(text: record.appCommissionPercent.toString());
+    textControllerCurrencyCode ??=
+        TextEditingController(text: record.currencyCode);
+    textControllerCurrencySymbol ??=
+        TextEditingController(text: record.currencySymbol);
     switchValue ??= record.acctev;
     uploadedFileUrl_uploadDataX8m = record.img;
     recordInitialized = true;
@@ -42,6 +46,10 @@ class EdetDolhModel extends FlutterFlowModel<EdetDolhWidget> {
   FocusNode? textFieldFocusNode4;
   TextEditingController? textController4;
   String? Function(BuildContext, String?)? textController4Validator;
+  FocusNode? textFieldFocusNodeCurrencyCode;
+  TextEditingController? textControllerCurrencyCode;
+  FocusNode? textFieldFocusNodeCurrencySymbol;
+  TextEditingController? textControllerCurrencySymbol;
   // State field(s) for Switch widget.
   bool? switchValue;
 
@@ -61,5 +69,11 @@ class EdetDolhModel extends FlutterFlowModel<EdetDolhWidget> {
 
     textFieldFocusNode4?.dispose();
     textController4?.dispose();
+
+    textFieldFocusNodeCurrencyCode?.dispose();
+    textControllerCurrencyCode?.dispose();
+
+    textFieldFocusNodeCurrencySymbol?.dispose();
+    textControllerCurrencySymbol?.dispose();
   }
 }

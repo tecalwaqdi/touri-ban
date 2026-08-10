@@ -151,7 +151,7 @@ class _TouryCustomPlaceWidgetState extends State<TouryCustomPlaceWidget> {
                 title: 'custom_place_title'.tr(),
                 leading: DsIconButton(
                   icon: DsIcons.back,
-                  onPressed: () => context.pop(),
+                  onPressed: () => context.safePop(),
                 ),
                 actions: [
                   if (cartCount > 0)
@@ -241,7 +241,7 @@ class _TouryCustomPlaceWidgetState extends State<TouryCustomPlaceWidget> {
                               color: colors.textPrimary,
                             ),
                             elevation: 0,
-                            borderRadius: DsRadius.small,
+                            borderRadius: DsRadius.medium,
                           ),
                         ),
                       ),
@@ -357,7 +357,7 @@ class _TouryCustomPlaceWidgetState extends State<TouryCustomPlaceWidget> {
                             DsButton.primary(
                               label: 'custom_place_add_to_trip'.tr(),
                               icon: Icons.add_location_alt_rounded,
-                              size: DsButtonSize.lg,
+                              size: DsButtonSize.md,
                               expanded: true,
                               onPressed: _confirmAdd,
                             ),

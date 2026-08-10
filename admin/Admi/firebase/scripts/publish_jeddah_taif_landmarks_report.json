@@ -1,0 +1,110 @@
+{
+  "mode": "apply",
+  "count": 8,
+  "landmarks": [
+    {
+      "id": "curated_jeddah_souq_alawi",
+      "cityId": "city_jeddah",
+      "names": {
+        "ar": "سوق العلوي",
+        "en": "Souq Al-Alawi",
+        "ru": "Рынок Аль-Алави",
+        "ky": "Аль-Алави базары"
+      },
+      "lat": 21.485,
+      "lng": 39.1855,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Souq_Al-Alawi_%283975135102%29.jpg/1280px-Souq_Al-Alawi_%283975135102%29.jpg"
+    },
+    {
+      "id": "curated_jeddah_rahmah_mosque",
+      "cityId": "city_jeddah",
+      "names": {
+        "ar": "مسجد الرحمة (المسجد العائم)",
+        "en": "Al-Rahmah Mosque (Floating Mosque)",
+        "ru": "Мечеть Ар-Рахма (плавучая мечеть)",
+        "ky": "Ар-Рахма мечити (сүзүүчү мечит)"
+      },
+      "lat": 21.6486,
+      "lng": 39.1008,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Al-Rahmah_Mosque_2.jpg/1280px-Al-Rahmah_Mosque_2.jpg"
+    },
+    {
+      "id": "curated_jeddah_yacht_club",
+      "cityId": "city_jeddah",
+      "names": {
+        "ar": "نادي جدة لليخوت والمارينا",
+        "en": "Jeddah Yacht Club & Marina",
+        "ru": "Яхт-клуб и марина Джидды",
+        "ky": "Жидда яхта клубу жана маринасы"
+      },
+      "lat": 21.65339,
+      "lng": 39.10157,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Jeddah_Yacht_Club_1.jpg/1280px-Jeddah_Yacht_Club_1.jpg"
+    },
+    {
+      "id": "curated_jeddah_tayebat_museum",
+      "cityId": "city_jeddah",
+      "names": {
+        "ar": "متحف الطيبات للمدن العالمية والحضارات",
+        "en": "Al-Tayebat International City Museum",
+        "ru": "Музей Аль-Тайбат международных цивилизаций",
+        "ky": "Аль-Тайбат эл аралык цивилизациялар музейи"
+      },
+      "lat": 21.58099,
+      "lng": 39.17667,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Tayebat_City_Museum%2C_Jeddah%2C_Saudi_Arabia_%282025%29.jpg/1280px-Tayebat_City_Museum%2C_Jeddah%2C_Saudi_Arabia_%282025%29.jpg"
+    },
+    {
+      "id": "curated_taif_al_hada",
+      "cityId": "city_taif",
+      "names": {
+        "ar": "جبل الهدا",
+        "en": "Al-Hada (Jabal Hada)",
+        "ru": "Аль-Хада (Джабаль Хада)",
+        "ky": "Аль-Хада (Жабал Хада)"
+      },
+      "lat": 21.36861,
+      "lng": 40.28472,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Al-Hada%2C_near_al-Taif%2C_Saudi_Arabia_%282%29.jpg/1280px-Al-Hada%2C_near_al-Taif%2C_Saudi_Arabia_%282%29.jpg"
+    },
+    {
+      "id": "curated_taif_hada_teleferic",
+      "cityId": "city_taif",
+      "names": {
+        "ar": "تلفريك الهدا",
+        "en": "Al-Hada Cable Car (Teleferic)",
+        "ru": "Канатная дорога Аль-Хада (Телеферик)",
+        "ky": "Аль-Хада канат жолу (Телеферик)"
+      },
+      "lat": 21.36861,
+      "lng": 40.28472,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ramada_Al_Hada_Hotel_Telefrique_Station_-_Taif%2C_Saudi_Arabia%2C_%283947435108%29.jpg/1280px-Ramada_Al_Hada_Hotel_Telefrique_Station_-_Taif%2C_Saudi_Arabia%2C_%283947435108%29.jpg"
+    },
+    {
+      "id": "curated_taif_ash_shafa",
+      "cityId": "city_taif",
+      "names": {
+        "ar": "الشفا",
+        "en": "Ash-Shafa (Al-Shafa)",
+        "ru": "Аш-Шафа",
+        "ky": "Аш-Шафа"
+      },
+      "lat": 21.07527,
+      "lng": 40.322033,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Alshafa20.JPG/1280px-Alshafa20.JPG"
+    },
+    {
+      "id": "curated_taif_jabal_daka",
+      "cityId": "city_taif",
+      "names": {
+        "ar": "جبل دكا",
+        "en": "Jabal Daka (Jabal Dakka)",
+        "ru": "Джабаль Дакка",
+        "ky": "Жабал Дакка"
+      },
+      "lat": 21.1,
+      "lng": 40.283,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Jabal_Dakka%2C_Al_Shafa.jpg/1280px-Jabal_Dakka%2C_Al_Shafa.jpg"
+    }
+  ]
+}

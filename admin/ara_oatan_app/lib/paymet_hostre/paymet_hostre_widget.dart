@@ -72,6 +72,7 @@ class _PaymetHostreWidgetState extends State<PaymetHostreWidget> {
                 automaticallyImplyLeading: false,
                 leading: DsIconButton(
                   icon: DsIcons.back,
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                   onPressed: () => context.safePop(),
                 ),
               ),

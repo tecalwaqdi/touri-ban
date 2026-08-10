@@ -104,7 +104,8 @@ class _DriverRideRequestSheetState extends State<DriverRideRequestSheet> {
     final colors = context.dsColors;
     final typography = context.dsTypography;
     final order = widget.order;
-    final payment = DriverPaymentLabels.label(order.paymentMethod);
+    final payment =
+        DriverPaymentLabels.label(order.paymentMethod, context: context);
 
     return DsCard(
       margin: const EdgeInsets.all(DsSpacing.sm),
@@ -116,7 +117,8 @@ class _DriverRideRequestSheetState extends State<DriverRideRequestSheet> {
       ),
       elevated: true,
       child: SafeArea(
-        child: Column(
+        child: SingleChildScrollView(
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -186,12 +188,16 @@ class _DriverRideRequestSheetState extends State<DriverRideRequestSheet> {
               '${order.total} $_currency',
             ),
             _line(context, driverTr(context, 'Payment method'), payment),
-            _line(context, driverTr(context, 'Trip type'), order.tripTypeLabel()),
+            _line(
+              context,
+              driverTr(context, 'Trip type'),
+              driverTr(context, order.tripTypeLabelKey()),
+            ),
             if (order.luggageEstimate.isNotEmpty)
               _line(
                 context,
                 driverTr(context, 'Luggage'),
-                order.luggageLabel(),
+                driverTr(context, order.luggageLabelKey()),
               ),
             if (DriverPaymentLabels.isCash(order.paymentMethod)) ...[
               DsSpacing.gapXs,
@@ -249,6 +255,7 @@ class _DriverRideRequestSheetState extends State<DriverRideRequestSheet> {
             ),
           ],
         ),
+        ),
       ),
     );
   }
@@ -262,18 +269,24 @@ class _DriverRideRequestSheetState extends State<DriverRideRequestSheet> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 110,
+          Flexible(
+            flex: 2,
             child: Text(
               k,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: typography.bodySmall.copyWith(
                 color: colors.textSecondary,
               ),
             ),
           ),
+          const SizedBox(width: DsSpacing.xs),
           Expanded(
+            flex: 3,
             child: Text(
               v,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
               style: typography.bodyMedium.copyWith(
                 fontWeight: FontWeight.w600,
                 color: colors.textPrimary,

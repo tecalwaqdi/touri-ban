@@ -125,13 +125,25 @@ extension TouryOrderMeta on OrderRecord {
   String get rawStatusCode =>
       (snapshotData['status_code'] ?? '').toString().trim();
 
-  /// Customer may cancel only if no driver accepted yet, or accepted but
-  /// has not started moving toward the customer (`driver_arriving`+).
+  /// Trusted create time from Firestore `data_order` (UTC).
+  DateTime? get createdAtUtc => TouryCustomerCancelPolicy.createdAtFromField(
+        snapshotData['data_order'] ?? dataOrder,
+      );
+
+  /// Customer may cancel when awaiting driver (after 1h) or unpaid payment_pending.
   bool get canCancelByCustomer =>
       TouryCustomerCancelPolicy.canCustomerCancelBooking(
         statusCode: rawStatusCode,
         halhText: halhText,
         halhOrderName: halhOrder?.name,
         driverOrderStatus: halhOrderMndob?.name,
+        mndobUser: mndobUser ?? snapshotData['mndob_user'],
+        createdAt: createdAtUtc,
+        paymentStatus: (snapshotData['payment_status'] ?? '').toString(),
+      );
+
+  bool get isAwaitingPayment => BookingStatusLocalizer.isPaymentPending(
+        statusCode: rawStatusCode,
+        paymentStatus: (snapshotData['payment_status'] ?? '').toString(),
       );
 }

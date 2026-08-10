@@ -10,6 +10,7 @@ import '/core/admin_booking_status_label.dart';
 import '/core/finance/financial_engine.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/core/admin_currency.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'package:easy_debounce/easy_debounce.dart';
@@ -117,7 +118,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      AdminCrudFeedback.error(context, '${uiTr(context, 'تعذر إلغاء الحجز')}: $e');
+      AdminCrudFeedback.error(context, AdminCrudFeedback.updateFailed(context, e));
     }
   }
 
@@ -181,9 +182,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                           child: Text(
-                            '${uiTr(context, 'العدد')}: ${bookings.length}'
-                            '${bookings.length != allBookings.length ? ' ${uiTr(context, 'من')} ${allBookings.length}' : ''}'
-                            '${listState.hasMore ? '+' : ''}',
+                            adminListCountLabel(context, listState, visibleCount: bookings.length, pageFetched: allBookings.length),
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
                               color: theme.secondaryText,
@@ -417,7 +416,7 @@ class _BookingTableRow extends StatelessWidget {
                 order.total,
                 formatType: FormatType.decimal,
                 decimalType: DecimalType.automatic,
-                currency: uiTr(context, 'ريال '),
+                currency: AdminCurrency.asFormatPrefix(AdminCurrency.displaySymbolForOrder(order)),
               ),
               style: theme.bodyMedium.override(
                 fontFamily: theme.bodyMediumFamily,
@@ -533,7 +532,7 @@ class _BookingCard extends StatelessWidget {
                     order.total,
                     formatType: FormatType.decimal,
                     decimalType: DecimalType.automatic,
-                    currency: uiTr(context, 'ريال '),
+                    currency: AdminCurrency.asFormatPrefix(AdminCurrency.displaySymbolForOrder(order)),
                   ),
                   highlight: true,
                 ),
@@ -547,7 +546,7 @@ class _BookingCard extends StatelessWidget {
                     order.totalApp,
                     formatType: FormatType.decimal,
                     decimalType: DecimalType.automatic,
-                    currency: uiTr(context, 'ريال '),
+                    currency: AdminCurrency.asFormatPrefix(AdminCurrency.displaySymbolForOrder(order)),
                   ),
                 ),
               ),

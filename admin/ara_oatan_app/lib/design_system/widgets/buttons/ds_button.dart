@@ -4,6 +4,7 @@ import '../../animations/ds_animations.dart';
 import '../../colors/ds_colors.dart';
 import '../../constants/ds_constants.dart';
 import '../../radius/ds_radius.dart';
+import '../../shadows/ds_shadows.dart';
 import '../../spacing/ds_spacing.dart';
 import '../../typography/ds_typography.dart';
 
@@ -219,15 +220,31 @@ class _DsButtonState extends State<DsButton> {
                 : palette.border!,
           );
 
+    final labelStyle = switch (widget.size) {
+      DsButtonSize.sm => typography.labelMedium.copyWith(color: fg),
+      DsButtonSize.md => typography.labelLarge.copyWith(color: fg),
+      DsButtonSize.lg => typography.labelLarge.copyWith(
+          color: fg,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+    };
+    final iconSize = switch (widget.size) {
+      DsButtonSize.sm => DsConstants.iconXs,
+      DsButtonSize.md => DsConstants.iconSm,
+      DsButtonSize.lg => DsConstants.iconMd,
+    };
+    final horizontalPad = switch (widget.size) {
+      DsButtonSize.sm => DsSpacing.md,
+      DsButtonSize.md => DsSpacing.xl,
+      DsButtonSize.lg => DsSpacing.xxl,
+    };
+
     final child = AnimatedContainer(
       duration: DsDurations.fast,
       curve: DsCurves.standard,
       height: _height,
-      padding: EdgeInsets.symmetric(
-        horizontal: widget.size == DsButtonSize.sm
-            ? DsSpacing.md
-            : DsSpacing.xl,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPad),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: DsRadius.medium,
@@ -235,13 +252,7 @@ class _DsButtonState extends State<DsButton> {
         boxShadow: widget.variant == DsButtonVariant.primary &&
                 effectiveEnabled &&
                 !_pressed
-            ? [
-                BoxShadow(
-                  color: colors.primary.withValues(alpha: 0.22),
-                  blurRadius: 14,
-                  offset: const Offset(0, 6),
-                ),
-              ]
+            ? DsShadows.soft()
             : null,
       ),
       child: Row(
@@ -250,8 +261,8 @@ class _DsButtonState extends State<DsButton> {
         children: [
           if (widget.loading)
             SizedBox(
-              width: DsConstants.iconSm,
-              height: DsConstants.iconSm,
+              width: iconSize,
+              height: iconSize,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
                 valueColor: AlwaysStoppedAnimation(fg),
@@ -260,7 +271,7 @@ class _DsButtonState extends State<DsButton> {
           else if (widget.leading != null)
             widget.leading!
           else if (widget.icon != null)
-            Icon(widget.icon, size: DsConstants.iconSm, color: fg),
+            Icon(widget.icon, size: iconSize, color: fg),
           if (widget.loading ||
               widget.leading != null ||
               widget.icon != null)
@@ -270,7 +281,8 @@ class _DsButtonState extends State<DsButton> {
               widget.label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: typography.labelLarge.copyWith(color: fg),
+              textAlign: TextAlign.center,
+              style: labelStyle,
             ),
           ),
           if (widget.trailing != null) ...[
@@ -291,9 +303,8 @@ class _DsButtonState extends State<DsButton> {
             effectiveEnabled ? (_) => setState(() => _pressed = true) : null,
         onTapUp: (_) => setState(() => _pressed = false),
         onTapCancel: () => setState(() => _pressed = false),
-        child: AnimatedScale(
-          scale: _pressed && effectiveEnabled ? 0.98 : 1,
-          duration: DsDurations.fast,
+        child: Opacity(
+          opacity: _pressed && effectiveEnabled ? 0.92 : 1,
           child: widget.expanded
               ? SizedBox(width: double.infinity, child: child)
               : child,

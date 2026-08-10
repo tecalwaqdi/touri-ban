@@ -69,7 +69,7 @@ void main() {
 
     test('localizes notification templates and replaces arguments', () async {
       final text = await TouryNotificationLocalizer.text(
-        'fr',
+        'ru',
         'notification_payment_success_body',
         args: const {'bookingId': '42'},
       );

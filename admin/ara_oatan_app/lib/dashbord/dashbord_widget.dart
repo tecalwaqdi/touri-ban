@@ -58,6 +58,10 @@ class _DashbordWidgetState extends State<DashbordWidget> {
                 ),
                 centerTitle: false,
                 automaticallyImplyLeading: false,
+                leading: DsIconButton(
+                  icon: DsIcons.back,
+                  onPressed: () => context.safePop(),
+                ),
                 actions: [
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(

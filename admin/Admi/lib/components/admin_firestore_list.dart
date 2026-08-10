@@ -90,6 +90,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   int _page = 1;
   int _loadAttempt = 0;
   int _syncGeneration = 0;
+  int? _totalAvailable;
   late final void Function() _externalRefreshListener;
   late final Future<void> Function() _externalAsyncRefreshListener;
   late final void Function(String docId) _externalRemoveListener;
@@ -106,6 +107,20 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   Query _baseQuery() {
     final builder = widget.queryBuilder ?? (q) => q;
     return builder(widget.query);
+  }
+
+  Future<void> _refreshTotalCount() async {
+    try {
+      // Drop orderBy for cheaper aggregate counts when present.
+      var q = _baseQuery();
+      final count = await queryCollectionCount(q);
+      if (!mounted) return;
+      if (count > 0 || _items.isEmpty) {
+        setState(() => _totalAvailable = count);
+      }
+    } catch (_) {
+      // Keep pagination working even if aggregates fail.
+    }
   }
 
   List<T> _map(QuerySnapshot snap) =>
@@ -185,6 +200,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     _page = 1;
     _hasError = false;
     _errorMessage = null;
+    _totalAvailable = null;
     _loading = true;
     _start();
   }
@@ -193,6 +209,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     final query = _baseQuery().limit(widget.pageSize);
     final generation = ++_syncGeneration;
     var showedCache = false;
+    unawaited(_refreshTotalCount());
 
     try {
       final cached = await query.get(const GetOptions(source: Source.cache));
@@ -330,6 +347,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     if (!mounted) return;
     final generation = ++_syncGeneration;
     final query = _baseQuery().limit(widget.pageSize);
+    unawaited(_refreshTotalCount());
     try {
       final snap = await query.get(const GetOptions(source: Source.server));
       if (!mounted || generation != _syncGeneration) return;
@@ -457,6 +475,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
         refresh: refresh,
         loadMore: loadMore,
         totalFetched: _items.length,
+        totalAvailable: _totalAvailable,
       );
 
   String _localizedError(BuildContext context, String? key) {
@@ -532,7 +551,12 @@ class AdminListErrorState extends StatelessWidget {
         children: [
           Icon(Icons.cloud_off_rounded, size: 48, color: theme.error),
           const SizedBox(height: 12),
-          Text(message, textAlign: TextAlign.center, style: theme.bodyMedium),
+          Text(
+            message,
+            softWrap: true,
+            textAlign: TextAlign.center,
+            style: theme.bodyMedium,
+          ),
           const SizedBox(height: 16),
           OutlinedButton.icon(
             onPressed: onRetry,
@@ -582,6 +606,28 @@ class AdminListErrorBanner extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Label for list headers: prefers aggregate total when known.
+String adminListCountLabel(
+  BuildContext context,
+  AdminFirestoreListMeta state, {
+  required int visibleCount,
+  int? pageFetched,
+}) {
+  final total = state.totalAvailable;
+  final fetched = pageFetched ?? state.totalFetched;
+  if (total != null) {
+    if (visibleCount != total) {
+      return '${uiTr(context, 'العدد')}: $visibleCount ${uiTr(context, 'من')} $total';
+    }
+    return '${uiTr(context, 'العدد')}: $total';
+  }
+  final suffix = state.hasMore ? '+' : '';
+  if (visibleCount != fetched) {
+    return '${uiTr(context, 'العدد')}: $visibleCount ${uiTr(context, 'من')} $fetched$suffix';
+  }
+  return '${uiTr(context, 'العدد')}: $visibleCount$suffix';
 }
 
 /// Footer: load-more button + subtle cache indicator.

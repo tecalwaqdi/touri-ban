@@ -32,9 +32,9 @@ abstract final class DriverOnlineState {
   static bool get showInactiveBanner =>
       !isApproved || lifecycle == DriverLifecycle.activeOffline;
 
-  static Map<String, dynamic> _onlinePatch(LatLng loc, {required bool activate}) {
+  static Map<String, dynamic> _onlinePatch(LatLng loc) {
     final geo = GeoPoint(loc.latitude, loc.longitude);
-    final patch = <String, dynamic>{
+    return <String, dynamic>{
       'ngl': true,
       'loceshnMndobNow': geo,
       'operational_status': 'online',
@@ -42,15 +42,6 @@ abstract final class DriverOnlineState {
       'last_online_at': FieldValue.serverTimestamp(),
       'last_seen_at': FieldValue.serverTimestamp(),
     };
-    if (activate) {
-      patch.addAll({
-        'ismndob': true,
-        'ismndom': true,
-        'actev_mndob': true,
-        'registration_status': 'approved',
-      });
-    }
-    return patch;
   }
 
   static Future<DriverOnlineGateResult> goOnline() async {
@@ -94,36 +85,28 @@ abstract final class DriverOnlineState {
       );
     }
 
-    final doc = currentUserDocument;
-
-    Future<void> write({required bool activate}) =>
-        currentUserReference!.update(_onlinePatch(loc, activate: activate));
+    // Never self-activate — only approved drivers (actev_mndob) may go online.
+    if (currentUserDocument?.actevMndob != true) {
+      return const DriverOnlineGateResult(
+        ok: false,
+        code: 'NOT_APPROVED',
+        message:
+            'Your account needs admin approval before going online.',
+      );
+    }
 
     try {
-      // Prefer minimal online patch first (rules: canDriverSetOnlineOffline).
-      if (doc?.actevMndob == true) {
-        await write(activate: false);
-      } else {
-        // Self-activate + online in one write (rules: canDriverSelfActivateOnline).
-        await write(activate: true);
-      }
-    } catch (e1) {
+      await currentUserReference!.update(_onlinePatch(loc));
+    } catch (e) {
       // ignore: avoid_print
-      print('DriverOnlineState.goOnline primary failed: $e1');
-      try {
-        // Fallback: minimal online fields only (doc cache may be stale).
-        await write(activate: false);
-      } catch (e2) {
-        // ignore: avoid_print
-        print('DriverOnlineState.goOnline fallback failed: $e2');
-        return DriverOnlineGateResult(
-          ok: false,
-          code: 'UPDATE_FAILED',
-          message: e2.toString().contains('permission-denied')
-              ? 'Your account needs activation. Open Verify registration, then try again.'
-              : 'Could not go online. Check GPS and try again.',
-        );
-      }
+      print('DriverOnlineState.goOnline failed: $e');
+      return DriverOnlineGateResult(
+        ok: false,
+        code: 'UPDATE_FAILED',
+        message: e.toString().contains('permission-denied')
+            ? 'Your account needs activation. Wait for admin approval, then try again.'
+            : 'Could not go online. Check GPS and try again.',
+      );
     }
 
     try {

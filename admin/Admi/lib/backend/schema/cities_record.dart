@@ -120,6 +120,10 @@ Map<String, dynamic> createCitiesRecordData({
   int? sorting,
   Map<String, String>? namesI18n,
   Map<String, String>? osfI18n,
+  LatLng? geoCenter,
+  LatLng? boundsSw,
+  LatLng? boundsNe,
+  String? geoDisplayName,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -132,6 +136,10 @@ Map<String, dynamic> createCitiesRecordData({
       'sorting': sorting,
       'names_i18n': namesI18n,
       'osf_i18n': osfI18n,
+      'geo_center': geoCenter,
+      'bounds_sw': boundsSw,
+      'bounds_ne': boundsNe,
+      'geo_display_name': geoDisplayName,
     }.withoutNulls,
   );
 

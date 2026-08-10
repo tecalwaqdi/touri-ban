@@ -36,12 +36,12 @@ class PaymentApiClient {
     return Uri.parse('$base$path').replace(queryParameters: query);
   }
 
-  Future<String> _idToken() async {
+  Future<String> _idToken({bool forceRefresh = false}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       throw PaymentApiException('AUTH_REQUIRED');
     }
-    final token = await user.getIdToken();
+    final token = await user.getIdToken(forceRefresh);
     if (token == null || token.isEmpty) {
       throw PaymentApiException('AUTH_INVALID');
     }
@@ -57,15 +57,17 @@ class PaymentApiClient {
     required Map<String, dynamic> booking,
     String? email,
     String? description,
+    String? orderPath,
     String locale = 'ar',
   }) async {
     // Wake Render free-tier cold starts before the authenticated create.
     unawaited(_warmUp());
 
     Object? lastError;
+    var forceRefreshToken = false;
     for (var attempt = 0; attempt < 2; attempt++) {
       try {
-        final token = await _idToken();
+        final token = await _idToken(forceRefresh: forceRefreshToken);
         final response = await _http
             .post(
               _uri('/payments/create'),
@@ -84,6 +86,7 @@ class PaymentApiClient {
                 'bookingHours': bookingHours,
                 'additionalHours': additionalHours,
                 'booking': booking,
+                if (orderPath != null && orderPath.isNotEmpty) 'orderPath': orderPath,
                 if (email != null && email.isNotEmpty) 'email': email,
                 if (description != null) 'description': description,
                 'locale': locale,
@@ -93,11 +96,18 @@ class PaymentApiClient {
         return _decode(response);
       } on PaymentApiException catch (e) {
         lastError = e;
-        final retryable = e.code == 'PROVIDER_UNAVAILABLE' ||
+        final authRetry = e.code == 'AUTH_INVALID' && !forceRefreshToken;
+        final retryable = authRetry ||
+            e.code == 'PROVIDER_UNAVAILABLE' ||
             e.code == 'NETWORK_ERROR' ||
             e.code == 'UNKNOWN_ERROR';
         if (!retryable || attempt == 1) rethrow;
-        if (kDebugMode) {
+        if (authRetry) {
+          forceRefreshToken = true;
+          if (kDebugMode) {
+            debugPrint('PaymentApiClient create retry with refreshed ID token');
+          }
+        } else if (kDebugMode) {
           debugPrint('PaymentApiClient create retry after ${e.code}');
         }
         await Future<void>.delayed(const Duration(seconds: 2));

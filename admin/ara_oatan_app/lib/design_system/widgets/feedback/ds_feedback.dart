@@ -27,10 +27,29 @@ abstract final class DsDialog {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: colors.surface,
-          shape: RoundedRectangleBorder(borderRadius: DsRadius.extraLarge),
+          shape: RoundedRectangleBorder(borderRadius: DsRadius.large),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: DsSpacing.xl,
+            vertical: DsSpacing.xl,
+          ),
+          titlePadding: const EdgeInsets.fromLTRB(
+            DsSpacing.xl,
+            DsSpacing.xl,
+            DsSpacing.xl,
+            DsSpacing.sm,
+          ),
+          contentPadding: const EdgeInsets.fromLTRB(
+            DsSpacing.xl,
+            0,
+            DsSpacing.xl,
+            DsSpacing.md,
+          ),
           title: Text(
             title,
-            style: typography.headlineSmall.copyWith(color: colors.textPrimary),
+            style: typography.titleLarge.copyWith(
+              color: colors.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           content: content ??
               (message == null
@@ -39,6 +58,7 @@ abstract final class DsDialog {
                       message,
                       style: typography.bodyMedium.copyWith(
                         color: colors.textSecondary,
+                        height: 1.45,
                       ),
                     )),
           actionsPadding: const EdgeInsets.fromLTRB(
@@ -158,9 +178,21 @@ abstract final class DsSnackBar {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(
+          message,
+          style: DsTypography.of(context).bodyMedium.copyWith(
+                color: colors.onPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+        ),
         backgroundColor: bg,
         behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.fromLTRB(
+          DsSpacing.md,
+          0,
+          DsSpacing.md,
+          DsSpacing.lg,
+        ),
         shape: RoundedRectangleBorder(borderRadius: DsRadius.medium),
         action: actionLabel == null
             ? null

@@ -17,6 +17,32 @@ class _CacheEntry<T> {
   bool get isExpired => DateTime.now().isAfter(expiresAt);
 }
 
+/// صفحة معالم محفوظة مع مؤشر Firestore لاستكمال التصفح بدون تكرار.
+class TouryMkanCachedPage {
+  TouryMkanCachedPage({
+    required this.items,
+    required this.lastDoc,
+    required this.hasMore,
+    required this.fetchedAt,
+  });
+
+  final List<MkanRecord> items;
+  final DocumentSnapshot? lastDoc;
+  final bool hasMore;
+  final DateTime fetchedAt;
+
+  bool get needsBackgroundRefresh =>
+      DateTime.now().difference(fetchedAt) >=
+      TouryFirestoreCache.mkanSoftRefreshAfter;
+
+  TouryMkanCachedPage copyWithItems() => TouryMkanCachedPage(
+        items: List<MkanRecord>.from(items),
+        lastDoc: lastDoc,
+        hasMore: hasMore,
+        fetchedAt: fetchedAt,
+      );
+}
+
 /// Shared in-memory caches and broadcast streams for hot Firestore reads.
 class TouryFirestoreCache {
   TouryFirestoreCache._();
@@ -27,7 +53,10 @@ class TouryFirestoreCache {
   static final _streamLastValue = <String, dynamic>{};
 
   static const _docTtl = Duration(minutes: 5);
-  static const _mkanTtl = Duration(minutes: 3);
+  /// المعالم شبه ثابتة — كاش أطول يقلل إعادة الجلب عند التنقل.
+  static const _mkanTtl = Duration(minutes: 15);
+  /// بعد هذه المدة نحدّث في الخلفية دون إظهار Loading.
+  static const mkanSoftRefreshAfter = Duration(minutes: 2);
   static const _staticTtl = Duration(minutes: 15);
   static const _countTtl = Duration(minutes: 5);
   static const _chatCountTtl = Duration(minutes: 2);
@@ -102,6 +131,8 @@ class TouryFirestoreCache {
   static const _mkanListLimit = 48;
   static const _mkanPageSize = 24;
   static const _typeCarLimit = 120;
+
+  static int get mkanPageSize => _mkanPageSize;
 
   static Stream<List<MkanRecord>> mkanStream({
     required String cacheKey,
@@ -337,7 +368,7 @@ class TouryFirestoreCache {
     ).catchError((_) => <CountriesRecord>[]);
   }
 
-  /// يحمّل أول 24 معلم فقط — أسرع من جلب مئات المستندات دفعة واحدة.
+  /// يحمّل أول صفحة معالم فقط — أسرع من جلب مئات المستندات دفعة واحدة.
   static void warmMkanForVillage(DocumentReference villageRef) {
     prefetchMkanFirstPage(villageRef);
   }
@@ -350,18 +381,52 @@ class TouryFirestoreCache {
     unawaited(
       once(
         onceKey,
-        () => _fetchMkanPage(villageRef, pageSize: _mkanPageSize),
+        () => _fetchMkanPageBundle(villageRef, pageSize: _mkanPageSize),
         ttl: _mkanTtl,
-      ).catchError((_) => <MkanRecord>[]),
+      ).catchError(
+        (_) => TouryMkanCachedPage(
+          items: const <MkanRecord>[],
+          lastDoc: null,
+          hasMore: false,
+          fetchedAt: DateTime.now(),
+        ),
+      ),
     );
   }
 
-  static List<MkanRecord>? peekMkanFirstPage(DocumentReference villageRef) {
+  static TouryMkanCachedPage? peekMkanPage(DocumentReference villageRef) {
     final cached = _onceCache[_mkanPageOnceKey(villageRef)];
-    if (cached != null && !cached.isExpired) {
-      return List<MkanRecord>.from(cached.value as List<MkanRecord>);
+    if (cached == null || cached.isExpired) return null;
+    final value = cached.value;
+    if (value is TouryMkanCachedPage) {
+      return value.copyWithItems();
+    }
+    if (value is List<MkanRecord>) {
+      // توافق مع إدخالات قديمة في الكاش.
+      return TouryMkanCachedPage(
+        items: List<MkanRecord>.from(value),
+        lastDoc: null,
+        hasMore: value.length >= _mkanPageSize,
+        fetchedAt: cached.expiresAt.subtract(_mkanTtl),
+      );
     }
     return null;
+  }
+
+  static List<MkanRecord>? peekMkanFirstPage(DocumentReference villageRef) {
+    return peekMkanPage(villageRef)?.items;
+  }
+
+  /// يحفظ صفحة المعالم الأولى مع مؤشر التصفح.
+  static void storeMkanPage(
+    DocumentReference villageRef,
+    TouryMkanCachedPage page,
+  ) {
+    if (page.items.isEmpty) return;
+    _onceCache[_mkanPageOnceKey(villageRef)] = _CacheEntry<dynamic>(
+      page,
+      DateTime.now().add(_mkanTtl),
+    );
   }
 
   /// يحفظ صفحة المعالم الأولى في الكاش بعد جلبها من pagination.
@@ -370,8 +435,55 @@ class TouryFirestoreCache {
     List<MkanRecord> items,
   ) {
     if (items.isEmpty) return;
-    _onceCache[_mkanPageOnceKey(villageRef)] =
-        _CacheEntry<dynamic>(List<MkanRecord>.from(items), DateTime.now().add(_mkanTtl));
+    storeMkanPage(
+      villageRef,
+      TouryMkanCachedPage(
+        items: List<MkanRecord>.from(items),
+        lastDoc: null,
+        hasMore: items.length >= _mkanPageSize,
+        fetchedAt: DateTime.now(),
+      ),
+    );
+  }
+
+  static void invalidateMkanPage(DocumentReference villageRef) {
+    _onceCache.remove(_mkanPageOnceKey(villageRef));
+  }
+
+  static Future<TouryMkanCachedPage> _fetchMkanPageBundle(
+    DocumentReference villageRef, {
+    int pageSize = _mkanPageSize,
+    DocumentSnapshot? startAfter,
+  }) async {
+    var query = MkanRecord.collection
+        .where('acctev', isEqualTo: true)
+        .where('id_vill', isEqualTo: villageRef)
+        .orderBy('naim')
+        .limit(pageSize);
+    if (startAfter != null) {
+      query = query.startAfterDocument(startAfter);
+    }
+    final snap =
+        await query.get(const GetOptions(source: Source.serverAndCache));
+    return TouryMkanCachedPage(
+      items: snap.docs.map(MkanRecord.fromSnapshot).toList(),
+      lastDoc: snap.docs.isEmpty ? null : snap.docs.last,
+      hasMore: snap.docs.length >= pageSize,
+      fetchedAt: DateTime.now(),
+    );
+  }
+
+  static Future<List<MkanRecord>> _fetchMkanPage(
+    DocumentReference villageRef, {
+    int pageSize = _mkanPageSize,
+    DocumentSnapshot? startAfter,
+  }) async {
+    final page = await _fetchMkanPageBundle(
+      villageRef,
+      pageSize: pageSize,
+      startAfter: startAfter,
+    );
+    return page.items;
   }
 
   static Future<VillagesRecord> villageDocumentOnce(DocumentReference ref) {
@@ -420,29 +532,13 @@ class TouryFirestoreCache {
     return count(
       'chat-today:$dayKey:$userKey',
       () => queryChatRecordCount(
-        queryBuilder: (chatRecord) => chatRecord
-            .where('date', isEqualTo: getCurrentTimestamp)
-            .where('user1', isNotEqualTo: currentUserRef),
+        queryBuilder: (chatRecord) => chatRecord.where(
+          'participants',
+          arrayContains: currentUserRef,
+        ),
       ),
       ttl: _chatCountTtl,
     );
-  }
-
-  static Future<List<MkanRecord>> _fetchMkanPage(
-    DocumentReference villageRef, {
-    int pageSize = _mkanPageSize,
-    DocumentSnapshot? startAfter,
-  }) async {
-    var query = MkanRecord.collection
-        .where('acctev', isEqualTo: true)
-        .where('id_vill', isEqualTo: villageRef)
-        .orderBy('naim')
-        .limit(pageSize);
-    if (startAfter != null) {
-      query = query.startAfterDocument(startAfter);
-    }
-    final snap = await query.get(const GetOptions(source: Source.serverAndCache));
-    return snap.docs.map(MkanRecord.fromSnapshot).toList();
   }
 
   static Future<T> once<T>(

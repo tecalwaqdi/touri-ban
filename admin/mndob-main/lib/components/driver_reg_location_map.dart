@@ -5,7 +5,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 import '/core/driver_design_system.dart';
 import '/core/driver_dialogs.dart';
-import '/core/driver_i18n.dart';
 import '/core/toury_maps_config.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
@@ -145,7 +144,7 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap> {
             child: Text(
               driverTr(
                 context,
-                'Move the map to adjust your position. Orders will match by this live location.',
+                'Move the map to set your position. You can place the pin manually if GPS is unavailable.',
               ),
               style: typography.bodySmall.copyWith(
                 color: colors.textSecondary,
@@ -172,8 +171,8 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap> {
                   markers: const [],
                   onCameraIdle: (latLng) {
                     if (!TouryMapsConfig.isUsableCoordinate(latLng)) return;
-                    if (!hasGps && !_loading) return;
-                    if (!hasGps) return;
+                    // Allow manual pin placement even when GPS failed.
+                    if (_loading) return;
                     widget.onLocationChanged(latLng);
                   },
                 ),

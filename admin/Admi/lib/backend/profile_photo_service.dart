@@ -11,15 +11,29 @@ const int kProfilePhotoJpegQuality = 72;
 const int kAdminImageMaxEdge = 900;
 const int kAdminImageJpegQuality = 74;
 const int kProfilePhotoMaxFirestoreBytes = 750000;
+
 /// Smaller embed for records with multiple images (e.g. mkan img1–img3).
 const int kContentImageMaxEmbeddedBytes = 200000;
 const int kContentImageMaxEdge = 720;
 const int kContentImageJpegQuality = 70;
+
 /// Smaller cap for [user] docs (many fields + base64 overhead + 1 MiB doc limit).
 const int kUserProfileMaxEmbeddedBytes = 90000;
 const int kUserProfileMaxEdge = 320;
+const int kUserProfileJpegQuality = 68;
 
-/// Resize + JPEG encode for embedding in Firestore when Storage is unavailable.
+/// Thrown when Firebase Storage rejects the upload for a clear, user-safe reason.
+class StorageUploadException implements Exception {
+  StorageUploadException(this.message, {this.isQuotaOrBilling = false});
+
+  final String message;
+  final bool isQuotaOrBilling;
+
+  @override
+  String toString() => message;
+}
+
+/// Resize + JPEG encode before Storage upload / Firestore embed.
 Uint8List compressImageBytes(
   Uint8List bytes, {
   int maxEdge = kProfilePhotoMaxEdge,
@@ -53,35 +67,49 @@ Uint8List compressImageBytes(
   }
 }
 
-Uint8List compressProfilePhotoBytes(Uint8List bytes) => compressImageBytes(bytes);
+Uint8List compressProfilePhotoBytes(Uint8List bytes) =>
+    compressImageBytes(bytes);
 
 /// Shrinks until under Firestore field limit when possible.
 Uint8List compressImageBytesForFirestore(
   Uint8List bytes, {
   int maxEdge = kAdminImageMaxEdge,
+  int quality = kAdminImageJpegQuality,
   int maxBytes = kProfilePhotoMaxFirestoreBytes,
 }) {
   var edge = maxEdge;
-  var quality = kAdminImageJpegQuality;
+  var q = quality;
 
   for (var i = 0; i < 6; i++) {
-    final out = compressImageBytes(bytes, maxEdge: edge, quality: quality);
+    final out = compressImageBytes(bytes, maxEdge: edge, quality: q);
     if (out.length <= maxBytes) {
       return out;
     }
-    quality = (quality - 10).clamp(45, 95);
-    edge = (edge * 0.82).round().clamp(320, maxEdge);
+    q = (q - 10).clamp(45, 95);
+    edge = (edge * 0.82).round().clamp(240, maxEdge);
   }
 
-  return compressImageBytes(bytes, maxEdge: 400, quality: 50);
+  return compressImageBytes(bytes, maxEdge: 280, quality: 48);
 }
 
 String profilePhotoDataUrl(Uint8List jpegBytes) {
   return 'data:image/jpeg;base64,${base64Encode(jpegBytes)}';
 }
 
-bool isProfilePhotoDataUrl(String value) =>
-    value.startsWith('data:image/');
+bool isProfilePhotoDataUrl(String value) => value.startsWith('data:image/');
+
+/// Force `.jpg` after we re-encode so Storage metadata matches the payload.
+String jpegStoragePath(String path) {
+  final slash = path.lastIndexOf('/');
+  final name = slash >= 0 ? path.substring(slash + 1) : path;
+  final dir = slash >= 0 ? path.substring(0, slash + 1) : '';
+  final dot = name.lastIndexOf('.');
+  final base = dot > 0 ? name.substring(0, dot) : name;
+  return '$dir$base.jpg';
+}
+
+/// Stable avatar object — overwrites instead of creating timestamped duplicates.
+String userProfilePhotoStoragePath(String uid) => 'users/$uid/profile.jpg';
 
 bool isStorageBillingOrUnavailable(Object error) {
   final text = error.toString().toLowerCase();
@@ -89,12 +117,16 @@ bool isStorageBillingOrUnavailable(Object error) {
       text.contains('billing') ||
       text.contains('delinquent') ||
       text.contains('payment') ||
-      text.contains('quota exceeded') ||
+      text.contains('quota') ||
+      text.contains('quota-exceeded') ||
       text.contains('bucket does not exist') ||
       text.contains('storage/object-not-found');
 }
 
 bool shouldFallbackToEmbeddedImage(Object error) {
+  if (error is StorageUploadException && error.isQuotaOrBilling) {
+    return true;
+  }
   if (isStorageBillingOrUnavailable(error)) {
     return true;
   }
@@ -107,6 +139,8 @@ bool shouldFallbackToEmbeddedImage(Object error) {
       case 'unknown':
       case 'upload-failed':
       case 'retry-limit-exceeded':
+      case 'quota-exceeded':
+      case 'storage/quota-exceeded':
       case 'unauthorized':
       case 'permission-denied':
       case 'storage/unauthorized':
@@ -119,7 +153,8 @@ bool shouldFallbackToEmbeddedImage(Object error) {
   return false;
 }
 
-/// Tries Firebase Storage; on failure stores a compressed data-URL in Firestore.
+/// Tries Firebase Storage with compressed bytes; on quota/billing falls back
+/// to a compressed data-URL stored in Firestore (no random deletes).
 Future<String> uploadAdminImage({
   required String storagePath,
   required Uint8List bytes,
@@ -128,36 +163,40 @@ Future<String> uploadAdminImage({
   int jpegQuality = kAdminImageJpegQuality,
   int maxEmbeddedBytes = kProfilePhotoMaxFirestoreBytes,
 }) async {
+  // Compress once before any network write — avoids oversized uploads and
+  // reduces chance of hitting free-tier transfer quotas.
+  final forStorage = compressImageBytes(
+    bytes,
+    maxEdge: maxEdge,
+    quality: jpegQuality,
+  );
+  final path = jpegStoragePath(storagePath);
+
   try {
-    final url = await uploadData(storagePath, bytes, filePath: filePath);
+    final url = await uploadData(path, forStorage, filePath: filePath);
     if (url != null && url.isNotEmpty) {
-      // تأكد أن الرابط قابل للقراءة (تجنّب حفظ رابط Storage معطّل 402)
-      try {
-        final probe = await FirebaseStorage.instance
-            .refFromURL(url)
-            .getData(4096);
-        if (probe != null && probe.isNotEmpty) {
-          return url;
-        }
-      } catch (e) {
-        debugPrint('uploadAdminImage URL not readable, embedding: $e');
-      }
+      // Bust CDN/browser cache when overwriting the same Storage object.
+      final sep = url.contains('?') ? '&' : '?';
+      return '$url${sep}v=${DateTime.now().millisecondsSinceEpoch}';
     }
   } catch (e) {
     debugPrint('uploadAdminImage storage failed: $e');
     if (!shouldFallbackToEmbeddedImage(e)) {
-      throw Exception(uploadErrorMessage(e));
+      throw StorageUploadException(uploadErrorMessage(e));
     }
   }
 
   final compressed = compressImageBytesForFirestore(
-    bytes,
+    forStorage,
     maxEdge: maxEdge,
+    quality: jpegQuality,
     maxBytes: maxEmbeddedBytes,
   );
   if (compressed.length > maxEmbeddedBytes) {
-    throw Exception(
-      'الصورة كبيرة جداً. اختر صورة أصغر أو فعّل فوترة Firebase Storage.',
+    throw StorageUploadException(
+      'حصة Firebase Storage ممتلئة والصورة كبيرة للتخزين الاحتياطي. '
+      'افتح Console → Storage واحذف ملفات غير لازمة، أو فعّل خطة Blaze.',
+      isQuotaOrBilling: true,
     );
   }
 
@@ -180,18 +219,26 @@ Future<String> uploadProfilePhoto({
   );
 }
 
-/// User settings avatar — smallest embed to fit inside large user documents.
+/// Logged-in admin settings avatar — always uses a stable Storage path.
 Future<String> uploadUserProfilePhoto({
-  required String storagePath,
+  required String uid,
   required Uint8List bytes,
   String? filePath,
+  @Deprecated('Ignored — path is always users/{uid}/profile.jpg')
+  String? storagePath,
 }) {
+  if (uid.isEmpty) {
+    throw StorageUploadException('يجب تسجيل الدخول قبل رفع الصورة.');
+  }
+  if (bytes.isEmpty) {
+    throw StorageUploadException('لم يتم قراءة الصورة. جرّب صورة أخرى.');
+  }
   return uploadAdminImage(
-    storagePath: storagePath,
+    storagePath: userProfilePhotoStoragePath(uid),
     bytes: bytes,
     filePath: filePath,
     maxEdge: kUserProfileMaxEdge,
-    jpegQuality: 68,
+    jpegQuality: kUserProfileJpegQuality,
     maxEmbeddedBytes: kUserProfileMaxEmbeddedBytes,
   );
 }

@@ -1,0 +1,22 @@
+# Keep Vercel uploads small (Flutter monorepo noise)
+.dart_tool/
+.flutter_sdk/
+.idea/
+.vscode/
+android/
+ios/
+macos/
+linux/
+windows/
+firebase/
+build/web_hosting/
+build/flutter_assets/
+**/Pods/
+**/.symlinks/
+**/node_modules/
+**/*.iml
+**/.DS_Store
+test/
+docs/
+*.md
+!docs/ADMIN_VERCEL.md

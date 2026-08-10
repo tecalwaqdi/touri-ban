@@ -65,22 +65,8 @@ class _HomequickWidgetState extends State<HomequickWidget> {
                 automaticallyImplyLeading: false,
                 leading: DsIconButton(
                   icon: DsIcons.back,
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+                  onPressed: () => context.safePop(),
                 ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                        0, 0, DsSpacing.xs, 0),
-                    child: DsIconButton(
-                      icon: Icons.arrow_back_ios_new_rounded,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ],
               ),
               body: SafeArea(
                 top: true,
@@ -91,7 +77,7 @@ class _HomequickWidgetState extends State<HomequickWidget> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: DsSpacing.xl),
+                            horizontal: DsSpacing.md),
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,8 +86,9 @@ class _HomequickWidgetState extends State<HomequickWidget> {
                               FFLocalizations.of(context).getText(
                                 'fu17746a' /* Where would you like to start ... */,
                               ),
-                              style: typography.displaySmall.copyWith(
+                              style: typography.headlineSmall.copyWith(
                                 color: colors.textPrimary,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                             Column(
@@ -244,18 +231,18 @@ class _HomequickWidgetState extends State<HomequickWidget> {
                               ].divide(const SizedBox(height: DsSpacing.md)),
                             ),
                           ]
-                              .divide(const SizedBox(height: DsSpacing.xl))
+                              .divide(const SizedBox(height: DsSpacing.md))
                               .addToStart(
-                                  const SizedBox(height: DsSpacing.xxxl)),
+                                  const SizedBox(height: DsSpacing.md)),
                         ),
                       ),
                       Align(
                         alignment: const AlignmentDirectional(0.0, 1.0),
                         child: Padding(
                           padding: const EdgeInsetsDirectional.fromSTEB(
-                            DsSpacing.xl,
-                            DsSpacing.xl,
-                            DsSpacing.xl,
+                            DsSpacing.md,
+                            DsSpacing.md,
+                            DsSpacing.md,
                             DsSpacing.xxxl,
                           ),
                           child: DsButton.primary(
@@ -263,7 +250,7 @@ class _HomequickWidgetState extends State<HomequickWidget> {
                               'ke9nketc' /* Next */,
                             ),
                             expanded: true,
-                            size: DsButtonSize.lg,
+                            size: DsButtonSize.md,
                             onPressed: () {
                               context.pushNamed(
                                 DemoDWidget.routeName,
@@ -368,7 +355,7 @@ class _OptionCard extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: colors.card,
-        borderRadius: DsRadius.extraLarge,
+        borderRadius: DsRadius.medium,
         border: Border.all(
           color: highlighted ? colors.primary : colors.border,
           width: highlighted ? 2.0 : 1.0,
@@ -376,7 +363,7 @@ class _OptionCard extends StatelessWidget {
         boxShadow: DsShadows.card(dark: context.dsIsDark),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(DsSpacing.sm),
+        padding: const EdgeInsets.all(DsSpacing.md),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -405,6 +392,7 @@ class _OptionCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: typography.titleMedium.copyWith(
                       color: colors.textPrimary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: DsSpacing.xxs),
@@ -414,6 +402,7 @@ class _OptionCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: typography.bodyMedium.copyWith(
                       color: colors.textSecondary,
+                      height: 1.35,
                     ),
                   ),
                 ],

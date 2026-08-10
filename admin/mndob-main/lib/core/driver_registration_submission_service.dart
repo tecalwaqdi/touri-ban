@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '/backend/backend.dart';
+import '/core/driver_auto_activation_service.dart';
 import '/core/driver_registration_validators.dart';
 import '/core/tour_guide_status.dart';
 import '/core/toury_country_registry.dart';
@@ -234,15 +235,15 @@ class DriverSubmissionResult {
 }
 
 /// Writes registration payload to `user/{uid}` with idempotency.
-/// Cash-wave: auto-activates (`actev_mndob=true`, `registration_status=approved`).
+/// Production: stays `pending_review` until admin/country agent approves.
 abstract final class DriverRegistrationSubmissionService {
   DriverRegistrationSubmissionService._();
 
   static String _newSubmissionId(String uid) =>
       'sub_${uid}_${DateTime.now().millisecondsSinceEpoch}';
 
-  /// Re-applies ismndob + actev for accounts stuck on approved-but-inactive.
-  static Future<bool> repairAutoActivate({DocumentReference? userRef}) async {
+  /// Ensures pending-driver flags without self-activation.
+  static Future<bool> repairPendingClaim({DocumentReference? userRef}) async {
     final ref = userRef ??
         (FirebaseAuth.instance.currentUser == null
             ? null
@@ -252,18 +253,26 @@ abstract final class DriverRegistrationSubmissionService {
       final snap = await ref.get();
       if (!snap.exists) return false;
       final data = snap.data() as Map<String, dynamic>? ?? {};
-      if (data['actev_mndob'] == true && data['ismndob'] == true) {
+      if (data['ismndob'] == true &&
+          (data['registration_status'] == 'pending_review' ||
+              data['registration_status'] == 'submitted' ||
+              data['registration_status'] == 'changes_requested' ||
+              data['actev_mndob'] == true)) {
         return true;
       }
-      await _claimAndAutoActivateDriver(ref);
+      await _claimPendingDriver(ref);
       final after = await ref.get();
       final afterData = after.data() as Map<String, dynamic>? ?? {};
-      return afterData['actev_mndob'] == true && afterData['ismndob'] == true;
+      return afterData['ismndob'] == true;
     } catch (e) {
-      debugPrint('DriverRegistrationSubmissionService.repairAutoActivate: $e');
+      debugPrint('DriverRegistrationSubmissionService.repairPendingClaim: $e');
       return false;
     }
   }
+
+  /// @Deprecated Use [repairPendingClaim]. Kept for older call sites.
+  static Future<bool> repairAutoActivate({DocumentReference? userRef}) =>
+      repairPendingClaim(userRef: userRef);
 
   static Future<DriverSubmissionResult> submit({
     required DriverRegistrationReviewModel model,
@@ -328,36 +337,36 @@ abstract final class DriverRegistrationSubmissionService {
               .map((c) => c.toMap()..['resolved'] = true)
               .toList();
 
-      // Profile fields may force pending/inactive — strip then set approved.
+      // Never allow client payload to self-approve.
       final cleanedProfile = Map<String, dynamic>.from(profileFields)
         ..remove('actev_mndob')
         ..remove('registration_status')
-        ..remove('ismndob');
+        ..remove('submission_status')
+        ..remove('ismndob')
+        ..remove('auto_activated')
+        ..remove('approved_at');
 
       final payload = <String, dynamic>{
         ...cleanedProfile,
         'uid': model.uid,
         'ismndob': true,
         'ismndom': true,
-        // Cash-wave: auto-activate after registration (docs optional).
-        'actev_mndob': true,
+        'actev_mndob': false,
         'ngl': false,
-        'registration_status': 'approved',
-        'submission_status': 'approved',
+        'registration_status': 'pending_review',
+        'submission_status': 'pending_review',
         'rejection_reason': '',
         'submission_id': submissionId,
         'registration_version': nextVersion,
         'submitted_at': FieldValue.serverTimestamp(),
-        'approved_at': FieldValue.serverTimestamp(),
         if (isResubmit) 'resubmitted_at': FieldValue.serverTimestamp(),
         if (isResubmit) 'resubmission_id': submissionId,
         'requested_changes': openChanges,
-        'vehicle_review_status': 'approved',
-        'document_review_status': 'not_required',
-        'account_status': 'active',
+        'vehicle_review_status': 'pending',
+        'document_review_status': 'pending',
+        'account_status': 'inactive',
         'operational_status': 'offline',
-        'auto_activated': true,
-        'auto_activated_at': FieldValue.serverTimestamp(),
+        'auto_activated': false,
       };
 
       final isCompany = model.affiliationType == 'company' &&
@@ -385,33 +394,36 @@ abstract final class DriverRegistrationSubmissionService {
       }
 
       // Firestore create rules forbid `ismndob` on first write. Create the
-      // profile without it, then claim driver + auto-activate via update.
+      // profile without it, then claim pending-driver via update.
       if (!snap.exists) {
         final createPayload = Map<String, dynamic>.from(payload)
-          ..remove('ismndob')
-          ..['actev_mndob'] = false;
+          ..remove('ismndob');
         await ref.set(createPayload);
-        await _claimAndAutoActivateDriver(ref);
+        await _claimPendingDriver(ref);
       } else {
         try {
           await ref.set(payload, SetOptions(merge: true));
         } on FirebaseException catch (e) {
           if (e.code != 'permission-denied') rethrow;
-          final safe = Map<String, dynamic>.from(payload)
-            ..remove('ismndob')
-            ..['actev_mndob'] = false
-            ..['registration_status'] = 'pending_review';
+          final safe = Map<String, dynamic>.from(payload)..remove('ismndob');
           await ref.set(safe, SetOptions(merge: true));
-          await _claimAndAutoActivateDriver(ref);
+          await _claimPendingDriver(ref);
         }
       }
 
-      // Always re-assert activation (covers partial writes / older rules).
-      final activated = await repairAutoActivate(userRef: ref);
-      if (!activated) {
+      final claimed = await repairPendingClaim(userRef: ref);
+      if (!claimed) {
         debugPrint(
-          'DriverRegistrationSubmissionService: activation incomplete '
+          'DriverRegistrationSubmissionService: pending claim incomplete '
           'after submit for ${model.uid}',
+        );
+      }
+
+      final activation = await DriverAutoActivationService.tryAutoActivate();
+      if (!activation.ok) {
+        debugPrint(
+          'DriverRegistrationSubmissionService: auto-activate skipped: '
+          '${activation.code}',
         );
       }
 
@@ -428,40 +440,24 @@ abstract final class DriverRegistrationSubmissionService {
     }
   }
 
-  /// Claims ismndob and auto-activates (temporary cash-wave policy).
-  static Future<void> _claimAndAutoActivateDriver(DocumentReference ref) async {
+  /// Claims ismndob as pending — never self-approves.
+  static Future<void> _claimPendingDriver(DocumentReference ref) async {
     try {
       await ref.update({
         'ismndob': true,
         'ismndom': true,
-        'actev_mndob': true,
-        'registration_status': 'approved',
-        'submission_status': 'approved',
-        'account_status': 'active',
-        'document_review_status': 'not_required',
-        'vehicle_review_status': 'approved',
-        'auto_activated': true,
-        'auto_activated_at': FieldValue.serverTimestamp(),
-        'approved_at': FieldValue.serverTimestamp(),
+        'actev_mndob': false,
+        'ngl': false,
+        'registration_status': 'pending_review',
+        'submission_status': 'pending_review',
+        'account_status': 'inactive',
+        'operational_status': 'offline',
+        'auto_activated': false,
       });
     } catch (e) {
       debugPrint(
-        'DriverRegistrationSubmissionService: auto-activate skipped: $e',
+        'DriverRegistrationSubmissionService: pending claim skipped: $e',
       );
-      // Fallback: at least claim pending-driver flag so Admin list can see them.
-      try {
-        await ref.update({
-          'ismndob': true,
-          'ismndom': true,
-          'actev_mndob': false,
-          'registration_status': 'pending_review',
-          'submission_status': 'pending_review',
-        });
-      } catch (e2) {
-        debugPrint(
-          'DriverRegistrationSubmissionService: ismndob claim skipped: $e2',
-        );
-      }
     }
   }
 }

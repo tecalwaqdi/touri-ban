@@ -46,20 +46,8 @@ class _DeletWidgetState extends State<DeletWidget> {
         leading: DsIconButton(
           icon: DsIcons.back,
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () async {
-            context.pop();
-          },
+          onPressed: () => context.safePop(),
         ),
-        actions: [
-          DsIconButton(
-            icon: DsIcons.close,
-            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          const SizedBox(width: DsSpacing.xxs),
-        ],
       ),
       body: SafeArea(
         top: true,
@@ -69,17 +57,24 @@ class _DeletWidgetState extends State<DeletWidget> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Spacer(),
               DsFadeSlide(
-                child: DsButton.primary(
-                  expanded: true,
-                  label: FFLocalizations.of(context).getText(
-                    '9b2nqkbg' /* Button */,
+                child: DsCard(
+                  elevated: true,
+                  padding: const EdgeInsets.all(DsSpacing.xl),
+                  child: DsButton.primary(
+                    expanded: true,
+                    size: DsButtonSize.lg,
+                    label: FFLocalizations.of(context).getText(
+                      '9b2nqkbg' /* Button */,
+                    ),
+                    onPressed: () {
+                      print('Button pressed ...');
+                    },
                   ),
-                  onPressed: () {
-                    print('Button pressed ...');
-                  },
                 ),
               ),
+              const Spacer(),
             ],
           ),
         ),

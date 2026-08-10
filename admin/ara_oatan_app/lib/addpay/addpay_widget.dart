@@ -69,7 +69,10 @@ class _AddpayWidgetState extends State<AddpayWidget> {
                       maxWidth: DsConstants.maxFormWidth,
                     ),
                     child: DsFadeSlide(
-                      child: Column(
+                      child: DsCard(
+                        elevated: true,
+                        padding: const EdgeInsets.all(DsSpacing.xl),
+                        child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -101,7 +104,7 @@ class _AddpayWidgetState extends State<AddpayWidget> {
                           ),
                           const SizedBox(height: DsSpacing.xs),
                           Text(
-                            'Please do not close the page until the payment is completed'
+                            'please_do_not_close_the_page_until_the_payment_is_completed'
                                 .tr(),
                             textAlign: TextAlign.center,
                             style: typography.bodyMedium.copyWith(
@@ -117,6 +120,7 @@ class _AddpayWidgetState extends State<AddpayWidget> {
                             onPressed: _continueWithNGenius,
                           ),
                         ],
+                      ),
                       ),
                     ),
                   ),

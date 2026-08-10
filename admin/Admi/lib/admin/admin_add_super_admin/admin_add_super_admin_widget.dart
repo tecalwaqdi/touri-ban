@@ -1,7 +1,6 @@
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_user_creation.dart';
-import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_super_admin_gate.dart';
@@ -104,7 +103,7 @@ class _AdminAddSuperAdminWidgetState extends State<AdminAddSuperAdminWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      AdminCrudFeedback.error(context, '${uiTr(context, 'تعذر الإضافة')}: $e');
+      AdminCrudFeedback.error(context, AdminCrudFeedback.saveFailed(context, e));
     } finally {
       if (mounted) setState(() => _model.isSubmitting = false);
     }

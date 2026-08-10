@@ -2,14 +2,25 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/widgets.dart';
 
 /// Canonical booking / trip status codes (stored in DB; never show raw to users).
+/// Aligns with driver/admin [TourySystemStatusCodes] write vocabulary.
 abstract final class TouryBookingStatusCodes {
   static const pendingDriver = 'pending_driver';
   static const driverAssigned = 'driver_assigned';
   static const driverArrived = 'driver_arrived';
   static const tripInProgress = 'trip_in_progress';
+  /// Canonical completed write (driver/admin). Prefer this for new writes.
+  static const completed = 'completed';
+  /// Legacy completed alias still present on older docs.
   static const tripCompleted = 'trip_completed';
+  /// Canonical customer cancel write.
+  static const cancelledByCustomer = 'cancelled_by_customer';
+  static const cancelledByDriver = 'cancelled_by_driver';
+  static const cancelledByAdmin = 'cancelled_by_admin';
+  /// Legacy cancel alias.
   static const cancelled = 'cancelled';
   static const active = 'active';
+  /// Online booking awaiting card payment (not dispatchable).
+  static const paymentPending = 'payment_pending';
 }
 
 /// Maps legacy Arabic `halh_text` + machine `status_code` → localized labels.
@@ -23,9 +34,9 @@ abstract final class BookingStatusLocalizer {
     'وصل السائق': TouryBookingStatusCodes.driverArrived,
     'تم البدء في الرحلة': TouryBookingStatusCodes.tripInProgress,
     'بدأت الرحلة': TouryBookingStatusCodes.tripInProgress,
-    'مكتمل': TouryBookingStatusCodes.tripCompleted,
-    'ملغي': TouryBookingStatusCodes.cancelled,
-    'ملغى': TouryBookingStatusCodes.cancelled,
+    'مكتمل': TouryBookingStatusCodes.completed,
+    'ملغي': TouryBookingStatusCodes.cancelledByCustomer,
+    'ملغى': TouryBookingStatusCodes.cancelledByCustomer,
     'Pending': TouryBookingStatusCodes.pendingDriver,
   };
 
@@ -35,16 +46,31 @@ abstract final class BookingStatusLocalizer {
     'driver_arrived': TouryBookingStatusCodes.driverArrived,
     'trip_started': TouryBookingStatusCodes.tripInProgress,
     'trip_in_progress': TouryBookingStatusCodes.tripInProgress,
-    'trip_completed': TouryBookingStatusCodes.tripCompleted,
-    'completed': TouryBookingStatusCodes.tripCompleted,
-    'cancelled': TouryBookingStatusCodes.cancelled,
-    'canceled': TouryBookingStatusCodes.cancelled,
+    'trip_completed': TouryBookingStatusCodes.completed,
+    'completed': TouryBookingStatusCodes.completed,
+    'cancelled': TouryBookingStatusCodes.cancelledByCustomer,
+    'canceled': TouryBookingStatusCodes.cancelledByCustomer,
+    'cancelled_by_customer': TouryBookingStatusCodes.cancelledByCustomer,
+    'cancelled_by_driver': TouryBookingStatusCodes.cancelledByDriver,
+    'cancelled_by_admin': TouryBookingStatusCodes.cancelledByAdmin,
     'pending': TouryBookingStatusCodes.pendingDriver,
     'pending_driver': TouryBookingStatusCodes.pendingDriver,
-    // Legacy server typo / transitional code from earlier CF builds.
     'awaiting_driver': TouryBookingStatusCodes.pendingDriver,
-    'payment_pending': TouryBookingStatusCodes.pendingDriver,
+    // Keep payment_pending distinct — unpaid online bookings must not look
+    // like driver-pool pending.
+    'payment_pending': TouryBookingStatusCodes.paymentPending,
+    'pending_payment': TouryBookingStatusCodes.paymentPending,
   };
+
+  static bool _isCancelledCode(String code) =>
+      code == TouryBookingStatusCodes.cancelled ||
+      code == TouryBookingStatusCodes.cancelledByCustomer ||
+      code == TouryBookingStatusCodes.cancelledByDriver ||
+      code == TouryBookingStatusCodes.cancelledByAdmin;
+
+  static bool _isCompletedCode(String code) =>
+      code == TouryBookingStatusCodes.completed ||
+      code == TouryBookingStatusCodes.tripCompleted;
 
   /// True when the booking is waiting for a driver (not completed/cancelled).
   static bool isAwaitingDriver({
@@ -53,11 +79,22 @@ abstract final class BookingStatusLocalizer {
     String? halhOrderName,
   }) {
     final code = resolveCode(statusCode: statusCode, halhText: halhText);
+    if (code == TouryBookingStatusCodes.paymentPending) return false;
     if (code == TouryBookingStatusCodes.pendingDriver) return true;
     final order = (halhOrderName ?? '').toLowerCase();
-    // Paid/Cash describe payment method/state, not trip completion.
     if (order == 'pending') return true;
     return false;
+  }
+
+  static bool isPaymentPending({
+    String? statusCode,
+    String? paymentStatus,
+  }) {
+    final code = resolveCode(statusCode: statusCode, halhText: null);
+    if (code == TouryBookingStatusCodes.paymentPending) return true;
+    final ps = (paymentStatus ?? '').trim().toLowerCase();
+    return ps == 'unpaid' &&
+        (statusCode ?? '').trim().toLowerCase() == 'payment_pending';
   }
 
   /// True when the trip itself is completed (not merely payment captured).
@@ -67,7 +104,7 @@ abstract final class BookingStatusLocalizer {
     String? driverOrderStatus,
   }) {
     final code = resolveCode(statusCode: statusCode, halhText: halhText);
-    if (code == TouryBookingStatusCodes.tripCompleted) return true;
+    if (_isCompletedCode(code)) return true;
     final driver = (driverOrderStatus ?? '').toLowerCase();
     return driver == 'completed';
   }
@@ -96,6 +133,8 @@ abstract final class BookingStatusLocalizer {
   }) {
     final code = resolveCode(statusCode: statusCode, halhText: halhText);
     switch (code) {
+      case TouryBookingStatusCodes.paymentPending:
+        return 'status_awaiting_payment'.tr();
       case TouryBookingStatusCodes.pendingDriver:
         return 'status_pending_driver'.tr();
       case TouryBookingStatusCodes.driverAssigned:
@@ -104,14 +143,21 @@ abstract final class BookingStatusLocalizer {
         return 'status_driver_arrived'.tr();
       case TouryBookingStatusCodes.tripInProgress:
         return 'status_trip_started'.tr();
+      case TouryBookingStatusCodes.completed:
       case TouryBookingStatusCodes.tripCompleted:
         return 'status_trip_completed'.tr();
       case TouryBookingStatusCodes.cancelled:
+      case TouryBookingStatusCodes.cancelledByCustomer:
+      case TouryBookingStatusCodes.cancelledByDriver:
+      case TouryBookingStatusCodes.cancelledByAdmin:
         return 'status_cancelled'.tr();
       case TouryBookingStatusCodes.active:
         return 'booking_status_active'.tr();
       default:
-        return 'status_pending_driver'.tr();
+        // Never pretend an unknown machine code is "pending driver".
+        if (_isCancelledCode(code)) return 'status_cancelled'.tr();
+        if (_isCompletedCode(code)) return 'status_trip_completed'.tr();
+        return 'booking_status_active'.tr();
     }
   }
 }

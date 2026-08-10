@@ -67,8 +67,39 @@ abstract final class ErrorLocalizer {
         return 'error_location_permission'.tr();
       case 'permission-denied':
       case 'permission_denied':
-        // Not a connectivity issue — rules/auth rejected the write.
-        return 'booking_save_failed'.tr();
+        return 'booking_permission_denied'.tr();
+      case 'unauthenticated':
+        return 'booking_auth_required'.tr();
+      case 'already-exists':
+      case 'already_exists':
+        return 'booking_duplicate_request'.tr();
+      case 'resource-exhausted':
+      case 'resource_exhausted':
+        return 'error_resource_exhausted'.tr();
+      case 'cancelled':
+      case 'canceled':
+        return 'error_cancelled'.tr();
+      case 'session-expired':
+      case 'session_expired':
+        return 'error_session_expired'.tr();
+      case 'email-already-in-use':
+      case 'email_already_in_use':
+        return 'error_email_already_in_use'.tr();
+      case 'weak-password':
+      case 'weak_password':
+        return 'error_weak_password'.tr();
+      case 'user-disabled':
+      case 'user_disabled':
+        return 'error_user_disabled'.tr();
+      case 'operation-not-allowed':
+      case 'operation_not_allowed':
+        return 'error_operation_not_allowed'.tr();
+      case 'too-many-requests':
+      case 'too_many_requests':
+        return 'error_too_many_requests'.tr();
+      case 'invalid-verification-code':
+      case 'invalid_verification_code':
+        return 'error_invalid_verification_code'.tr();
       case 'route_unavailable':
         return 'error_route_unavailable'.tr();
       case 'outside_service_area':
@@ -86,8 +117,6 @@ abstract final class ErrorLocalizer {
         return 'error_generic_user'.tr();
       case 'booking_price_inconsistent':
         return 'booking_save_failed'.tr();
-      case 'unauthenticated':
-        return 'error_generic_user'.tr();
       default:
         if (normalized.contains('unable to resolve') ||
             normalized.contains('failed host lookup') ||
@@ -112,10 +141,22 @@ abstract final class ErrorLocalizer {
       case 'invalid-credential':
       case 'invalid-email':
         return 'error_generic_user'.tr();
+      case 'email-already-in-use':
+        return 'error_email_already_in_use'.tr();
+      case 'weak-password':
+        return 'error_weak_password'.tr();
+      case 'user-disabled':
+        return 'error_user_disabled'.tr();
+      case 'operation-not-allowed':
+        return 'error_operation_not_allowed'.tr();
+      case 'too-many-requests':
+        return 'error_too_many_requests'.tr();
+      case 'invalid-verification-code':
+        return 'error_invalid_verification_code'.tr();
+      case 'session-expired':
+        return 'error_session_expired'.tr();
       case 'network-request-failed':
         return 'error_network_user'.tr();
-      case 'too-many-requests':
-        return 'error_generic_user'.tr();
       default:
         return 'error_generic_user'.tr();
     }
@@ -129,6 +170,17 @@ abstract final class ErrorLocalizer {
       case 'deadline-exceeded':
       case 'network-request-failed':
         return 'error_network_user'.tr();
+      case 'permission-denied':
+        return 'booking_permission_denied'.tr();
+      case 'unauthenticated':
+        return 'booking_auth_required'.tr();
+      case 'already-exists':
+        return 'booking_duplicate_request'.tr();
+      case 'resource-exhausted':
+        return 'error_resource_exhausted'.tr();
+      case 'cancelled':
+      case 'canceled':
+        return 'error_cancelled'.tr();
       default:
         return 'error_generic_user'.tr();
     }

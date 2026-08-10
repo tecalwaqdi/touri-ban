@@ -50,7 +50,10 @@ class _ListAdressSelectWidgetState extends State<ListAdressSelectWidget> {
     FFAppState().villnow = record.vill;
     FFAppState().update(() {});
 
-    context.pushNamed(Checkout66Widget.routeName);
+    // Return to checkout (or previous screen) instead of stacking another Checkout66.
+    context.safePopOrBookingHome(
+      fallbackRouteName: Checkout66Widget.routeName,
+    );
   }
 
   Future<void> _addAddress() async {
@@ -86,7 +89,7 @@ class _ListAdressSelectWidgetState extends State<ListAdressSelectWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () async {
-                    context.pop();
+                    context.safePop();
                   },
                 ),
               ),
@@ -217,9 +220,9 @@ class _ListAdressSelectWidgetState extends State<ListAdressSelectWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(
                             DsSpacing.md,
-                            DsSpacing.xs,
+                            DsSpacing.sm,
                             DsSpacing.md,
-                            DsSpacing.md,
+                            DsSpacing.lg,
                           ),
                           child: DsButton.primary(
                             label: FFLocalizations.of(context).getText(
