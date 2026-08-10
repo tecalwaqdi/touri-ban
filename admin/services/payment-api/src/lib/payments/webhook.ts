@@ -17,6 +17,7 @@ import {
   transitionStatus,
 } from "@/lib/payments/status";
 import { createBookingFromPaidSession } from "@/lib/bookings/create-from-session";
+import { creditWalletFromPaidSession } from "@/lib/wallet/credit";
 import {
   assertAmountMatch,
   assertCurrencyMatch,
@@ -136,6 +137,14 @@ export async function handleNGeniusWebhook(req: Request) {
 
     if (next === PaymentStatus.paid && session.purpose === "booking") {
       await createBookingFromPaidSession(sessionDoc.id, {
+        ...session,
+        status: toLegacyStatus(next),
+        normalized_status: next,
+      });
+    }
+
+    if (next === PaymentStatus.paid && session.purpose === "wallet") {
+      await creditWalletFromPaidSession(sessionDoc.id, {
         ...session,
         status: toLegacyStatus(next),
         normalized_status: next,

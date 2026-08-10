@@ -75,4 +75,29 @@ describe("env", () => {
     process.env.NGENIUS_REALM = "NIARABIA";
     expect(getEnv().ngeniusRealm).toBe("NIARABIA");
   });
+
+  it("allows missing Firebase cert fields in ADC mode", () => {
+    resetEnvCacheForTests();
+    delete process.env.FIREBASE_CLIENT_EMAIL;
+    delete process.env.FIREBASE_PRIVATE_KEY;
+    delete process.env.FIREBASE_PROJECT_ID;
+    delete process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+    process.env.FIREBASE_USE_APPLICATION_DEFAULT = "true";
+    const env = getEnv({ requireSecrets: true });
+    expect(env.NGENIUS_API_KEY).toBe("test-key");
+    expect(envPresence().firebase).toBe(true);
+    delete process.env.FIREBASE_USE_APPLICATION_DEFAULT;
+  });
+
+  it("still requires Firebase cert fields without ADC", () => {
+    resetEnvCacheForTests();
+    delete process.env.FIREBASE_CLIENT_EMAIL;
+    delete process.env.FIREBASE_PRIVATE_KEY;
+    delete process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+    delete process.env.FIREBASE_USE_APPLICATION_DEFAULT;
+    delete process.env.FIREBASE_CONFIG;
+    delete process.env.FUNCTION_TARGET;
+    delete process.env.K_SERVICE;
+    expect(() => getEnv({ requireSecrets: true })).toThrow(/FIREBASE_/);
+  });
 });

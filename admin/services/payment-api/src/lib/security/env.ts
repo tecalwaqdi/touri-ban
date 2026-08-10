@@ -34,9 +34,9 @@ const envSchema = z.object({
     .default(NGENIUS_KSA_PRODUCTION_BASE_URL),
   NGENIUS_REALM: z.string().optional().default(""),
   NGENIUS_WEBHOOK_HEADER: z.string().default("x-toury-webhook-token"),
-  FIREBASE_PROJECT_ID: z.string().min(1),
-  FIREBASE_CLIENT_EMAIL: z.string().email(),
-  FIREBASE_PRIVATE_KEY: z.string().min(1),
+  FIREBASE_PROJECT_ID: z.string().optional().default(""),
+  FIREBASE_CLIENT_EMAIL: z.string().optional().default(""),
+  FIREBASE_PRIVATE_KEY: z.string().optional().default(""),
   ALLOWED_APP_ORIGINS: z.string().optional().default(""),
   PAYMENT_RETURN_BASE_URL: z.string().url().optional().or(z.literal("")),
   PAYMENT_CANCEL_BASE_URL: z.string().url().optional().or(z.literal("")),
@@ -59,6 +59,22 @@ function normalizePrivateKey(raw: string): string {
 
 function defaultRealm(isProd: boolean): string {
   return isProd ? NGENIUS_KSA_PRODUCTION_REALM : NGENIUS_KSA_SANDBOX_REALM;
+}
+
+/**
+ * True when Firebase Admin should use Application Default Credentials
+ * (Cloud Functions runtime or explicit opt-in).
+ */
+export function isFirebaseAdcMode(): boolean {
+  const flag = String(process.env.FIREBASE_USE_APPLICATION_DEFAULT || "")
+    .trim()
+    .toLowerCase();
+  if (flag === "true" || flag === "1") return true;
+  return Boolean(
+    process.env.FIREBASE_CONFIG ||
+      process.env.FUNCTION_TARGET ||
+      process.env.K_SERVICE,
+  );
 }
 
 /**
@@ -148,6 +164,34 @@ function serviceAccountFromBase64(): {
   }
 }
 
+function assertFirebaseCredentials(
+  data: z.infer<typeof envSchema>,
+  requireSecrets: boolean,
+): void {
+  if (!requireSecrets || isFirebaseAdcMode()) return;
+  const hasCert = Boolean(
+    data.FIREBASE_PROJECT_ID?.trim() &&
+      data.FIREBASE_CLIENT_EMAIL?.trim() &&
+      data.FIREBASE_PRIVATE_KEY?.trim(),
+  );
+  if (!hasCert) {
+    throw new ApiError(
+      PaymentErrorCode.CONFIG_ERROR,
+      500,
+      "Missing or invalid environment: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY (or FIREBASE_SERVICE_ACCOUNT_BASE64 / ADC)",
+    );
+  }
+  // Email format check when cert mode is used
+  const emailOk = z.string().email().safeParse(data.FIREBASE_CLIENT_EMAIL);
+  if (!emailOk.success) {
+    throw new ApiError(
+      PaymentErrorCode.CONFIG_ERROR,
+      500,
+      "Missing or invalid environment: FIREBASE_CLIENT_EMAIL",
+    );
+  }
+}
+
 let cached: AppEnv | null = null;
 
 /** Lazy env load — health may call with partial=true for presence checks. */
@@ -219,6 +263,8 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
   }
 
   const data = parsed.data;
+  assertFirebaseCredentials(data, requireSecrets);
+
   const isProd = data.NGENIUS_ENV === "production";
   const realm = resolveNGeniusRealm(data.NGENIUS_REALM, isProd);
   const base = resolveNGeniusBaseUrl({
@@ -237,7 +283,7 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
     allowedOrigins: data.ALLOWED_APP_ORIGINS.split(",")
       .map((s) => s.trim())
       .filter(Boolean),
-    privateKey: normalizePrivateKey(data.FIREBASE_PRIVATE_KEY),
+    privateKey: normalizePrivateKey(data.FIREBASE_PRIVATE_KEY || ""),
   };
   return cached;
 }
@@ -258,6 +304,7 @@ export function envPresence(): {
     ngeniusOutlet: Boolean(process.env.NGENIUS_OUTLET_REF),
     ngeniusWebhookSecret: Boolean(process.env.NGENIUS_WEBHOOK_SECRET),
     firebase:
+      isFirebaseAdcMode() ||
       fromSa ||
       Boolean(
         process.env.FIREBASE_PROJECT_ID &&

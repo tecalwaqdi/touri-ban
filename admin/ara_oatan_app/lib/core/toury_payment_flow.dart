@@ -87,12 +87,22 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
         description: description,
       );
       final paymentId = body['id']?.toString();
-      final threeDsUrl = body['threeDsUrl']?.toString() ??
+      final rawUrl = body['threeDsUrl']?.toString() ??
           body['paymentUrl']?.toString();
+      final threeDsUrl = _hostedPaymentPageUrlOrNull(rawUrl);
       if (paymentId == null || paymentId.isEmpty) {
         return TouryCardPaymentResult(
           success: false,
           errorMessage: 'checkout_payment_temporarily_unavailable'.tr(),
+        );
+      }
+      if (threeDsUrl == null) {
+        // Force a fresh session on next attempt — do not reuse a dead HPP link.
+        app.clearSensitivePaymentSession();
+        return TouryCardPaymentResult(
+          success: false,
+          paymentId: paymentId,
+          errorMessage: 'checkout_hosted_payment_unavailable'.tr(),
         );
       }
       return TouryCardPaymentResult(
@@ -179,11 +189,12 @@ Future<void> touryNavigateAfterCardPayment(
   }
 
   final threeDs = result.threeDsUrl?.trim() ?? '';
-  if (threeDs.isEmpty) {
+  if (threeDs.isEmpty || _hostedPaymentPageUrlOrNull(threeDs) == null) {
+    FFAppState().clearSensitivePaymentSession();
     if (!context.mounted) return;
     TouryDialogs.showSnackBar(
       context,
-      'checkout_payment_temporarily_unavailable'.tr(),
+      'checkout_hosted_payment_unavailable'.tr(),
       type: TouryMessageType.error,
     );
     return;
@@ -358,6 +369,20 @@ class TouryPaymentSummaryBar extends StatelessWidget {
 bool touryHasElectronicPaymentSelected() {
   if (!TouryPaymentFlags.enableOnlinePayment) return false;
   return FFAppState().ElectronicPayment;
+}
+
+/// Accept only N-Genius Hosted Payment Page URLs (never API order endpoints).
+String? _hostedPaymentPageUrlOrNull(String? raw) {
+  final url = (raw ?? '').trim();
+  if (url.isEmpty) return null;
+  final uri = Uri.tryParse(url);
+  if (uri == null || uri.scheme != 'https') return null;
+  final host = uri.host.toLowerCase();
+  if (host.contains('api-gateway')) return null;
+  final isPaypage = host.startsWith('paypage.') || host.contains('paypage.');
+  if (!isPaypage) return null;
+  if (!uri.queryParameters.containsKey('code')) return null;
+  return url;
 }
 
 String tourySelectedPaymentSubtitle(String payth) {

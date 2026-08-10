@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
@@ -9,14 +8,12 @@ import '/backend/backend.dart';
 import '/backend/push_notifications/push_notifications_util.dart';
 import '/backend/schema/enums/enums.dart';
 import '/core/driver_app_lifecycle_coordinator.dart';
-import '/core/driver_country_service.dart';
 import '/core/driver_offline_queue.dart';
 import '/core/driver_order_meta.dart';
 import '/core/driver_payment_labels.dart';
 import '/core/driver_payment_status_mapper.dart';
 import '/core/driver_trip_constants.dart';
 import '/core/driver_wallet_service.dart';
-import '/core/toury_country_registry.dart';
 import '/core/toury_system_status_codes.dart';
 import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/flutter_flow_util.dart';
@@ -46,11 +43,6 @@ abstract final class DriverTripService {
     return settings?.minDriverWallet ?? 0.0;
   }
 
-  static String _currencySymbol() {
-    final iso = DriverCountryService.currentIso2();
-    return TouryCountryRegistry.currencySymbol(iso);
-  }
-
   static Future<DriverWalletGateResult> validateWalletForAccept({
     OrderRecord? order,
     PaymentMethod? paymentMethod,
@@ -60,11 +52,11 @@ abstract final class DriverTripService {
       return const DriverWalletGateResult(ok: true);
     }
 
-    // Cash-wave / no Blaze: wallet top-up CF is unavailable. Do not block
-    // accept unless explicitly re-enabled at build time.
+    // Server-side gate is preferred; client enforces eligibility by default.
+    // Set TOURY_REQUIRE_DRIVER_WALLET=false only for emergency cash-wave bypass.
     const requireWallet = bool.fromEnvironment(
       'TOURY_REQUIRE_DRIVER_WALLET',
-      defaultValue: false,
+      defaultValue: true,
     );
     if (!requireWallet) {
       return const DriverWalletGateResult(ok: true);
@@ -77,14 +69,11 @@ abstract final class DriverTripService {
 
     final balance = await DriverWalletService.availableBalance();
     if (balance < minimum) {
-      final sym = _currencySymbol();
       return DriverWalletGateResult(
         ok: false,
         code: 'DRIVER_WALLET_INSUFFICIENT',
         message:
-            'Cash orders require at least ${minimum.toStringAsFixed(0)} $sym in your wallet.\n'
-            'Current balance: ${balance.toStringAsFixed(2)} $sym.\n'
-            'Please top up before accepting this request.',
+            'يجب أن يكون رصيد محفظتك ${minimum.toStringAsFixed(0)} ريال على الأقل لاستقبال الطلبات النقدية.',
       );
     }
     return const DriverWalletGateResult(ok: true);
@@ -153,6 +142,25 @@ abstract final class DriverTripService {
           throw StateError('BOOKING_INVALID_STATE');
         }
 
+        // Server-side 1h acceptance window (do not trust device clock alone —
+        // compare against Firestore deadline / data_order written by backend).
+        final deadline = data['acceptanceDeadline'];
+        final deadlineMs = data['acceptance_deadline_ms'];
+        DateTime? deadlineAt;
+        if (deadline is Timestamp) {
+          deadlineAt = deadline.toDate();
+        } else if (deadlineMs is num) {
+          deadlineAt = DateTime.fromMillisecondsSinceEpoch(deadlineMs.toInt());
+        } else {
+          final created = data['data_order'];
+          if (created is Timestamp) {
+            deadlineAt = created.toDate().add(const Duration(hours: 1));
+          }
+        }
+        if (deadlineAt != null && DateTime.now().isAfter(deadlineAt)) {
+          throw StateError('BOOKING_EXPIRED');
+        }
+
         // Claim patch — money fields untouched (rules).
         final claim = <String, dynamic>{
           'mndob_user': driverRef,
@@ -193,35 +201,14 @@ abstract final class DriverTripService {
         message: _messageForCode(code),
       );
     } on FirebaseException catch (e) {
-      // Fallback: non-transaction update (same minimal patch).
-      if (e.code == 'permission-denied') {
-        try {
-          await order.reference.update({
-            'mndob_user': driverRef,
-            'status_code': TourySystemStatusCodes.driverAssigned,
-            'ActiveOrder': true,
-            'ALLNOW': false,
-            'halh_text': DriverTripHalh.accepted,
-            'halhOrderMndob': 'Accepted',
-            'acceptedAt': FieldValue.serverTimestamp(),
-            'naim_mndob_text': currentUserDisplayName,
-          });
-        } on FirebaseException catch (e2) {
-          return DriverWalletGateResult(
-            ok: false,
-            code: e2.code,
-            message:
-                '${_messageForCode('BOOKING_ASSIGNMENT_FAILED')} (${e2.code})',
-          );
-        }
-      } else {
-        return DriverWalletGateResult(
-          ok: false,
-          code: e.code,
-          message:
-              '${_messageForCode('BOOKING_ASSIGNMENT_FAILED')} (${e.code})',
-        );
-      }
+      // Do not fall back to a non-transactional claim — that allows double-assign.
+      return DriverWalletGateResult(
+        ok: false,
+        code: e.code,
+        message: e.code == 'permission-denied'
+            ? _messageForCode('BOOKING_ASSIGNMENT_FAILED')
+            : '${_messageForCode('BOOKING_ASSIGNMENT_FAILED')} (${e.code})',
+      );
     } catch (e) {
       return DriverWalletGateResult(
         ok: false,
@@ -278,10 +265,7 @@ abstract final class DriverTripService {
     }
     final code =
         (order.snapshotData['status_code'] ?? '').toString().trim();
-    final allowed = code == TourySystemStatusCodes.driverAssigned ||
-        code == TourySystemStatusCodes.driverArriving ||
-        code == TourySystemStatusCodes.driverArrived ||
-        order.halhText == DriverTripHalh.accepted ||
+    final allowed = code == TourySystemStatusCodes.driverArrived ||
         order.halhText == DriverTripHalh.driverArrived;
     if (!allowed) {
       throw StateError('BOOKING_INVALID_STATE');
@@ -864,6 +848,8 @@ abstract final class DriverTripService {
         return 'This request has already been accepted by another driver.';
       case 'BOOKING_INVALID_STATE':
         return 'This booking cannot be updated in its current state.';
+      case 'BOOKING_EXPIRED':
+        return 'انتهت مهلة قبول الطلب. لم يعد بإمكانك قبول هذا الطلب.';
       case 'BOOKING_TOO_FAR_OR_TOO_EARLY':
         return 'Move closer to the destination or wait a moment before completing.';
       case 'PERMISSION_DENIED':

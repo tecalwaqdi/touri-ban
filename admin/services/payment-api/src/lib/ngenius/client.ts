@@ -268,15 +268,26 @@ function outletOrdersUrl(): string {
   return `${env.ngeniusBaseUrl}/transactions/outlets/${env.NGENIUS_OUTLET_REF}/orders`;
 }
 
+import {
+  analyzeNGeniusPaymentLinks,
+  extractHostedPaymentPageUrl,
+  isHostedPaymentPageUrl,
+  paymentHrefHost,
+} from "@/lib/ngenius/payment-url";
+
+export {
+  analyzeNGeniusPaymentLinks,
+  extractHostedPaymentPageUrl,
+  isHostedPaymentPageUrl,
+  paymentHrefHost,
+};
+
+/**
+ * Hosted Payment Page URL only (`_links.payment.href`).
+ * Never falls back to API resources (payment:card / cnp:payment-link).
+ */
 export function extractPaymentUrl(data: unknown): string | null {
-  const obj = data as {
-    _links?: { payment?: { href?: string }; "payment:card"?: { href?: string } };
-  };
-  return (
-    obj?._links?.payment?.href ||
-    obj?._links?.["payment:card"]?.href ||
-    null
-  );
+  return extractHostedPaymentPageUrl(data);
 }
 
 export function extractOrderReference(data: unknown): string | null {
@@ -522,9 +533,24 @@ export async function createNGeniusOrder(input: {
   const body = await res.json();
   const providerOrderRef = extractOrderReference(body);
   const paymentUrl = extractPaymentUrl(body);
+  const linkDiag = analyzeNGeniusPaymentLinks(body);
   if (!providerOrderRef || !paymentUrl) {
+    logger.error("ngenius_create_order_missing_hpp", {
+      environment: env.NGENIUS_ENV,
+      hasOrderRef: Boolean(providerOrderRef),
+      ...linkDiag,
+      outletRefMasked: maskOutletRef(env.NGENIUS_OUTLET_REF),
+    });
     throw new ApiError(PaymentErrorCode.PROVIDER_UNAVAILABLE, 502);
   }
+  logger.info("ngenius_create_order_ok", {
+    environment: env.NGENIUS_ENV,
+    orderRefPrefix: String(providerOrderRef).slice(0, 8),
+    orderState: String((body as { state?: string }).state || ""),
+    amount: orderBody.amount.value,
+    currency: orderBody.amount.currencyCode,
+    ...linkDiag,
+  });
   return {
     providerOrderRef,
     paymentUrl,

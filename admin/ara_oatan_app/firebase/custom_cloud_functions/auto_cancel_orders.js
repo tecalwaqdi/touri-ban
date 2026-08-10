@@ -7,66 +7,144 @@ if (!admin.apps.length) {
 
 const PENDING_HALH_TEXT = "بإنتظار قبول المندوب";
 const PENDING_STATUS_CODES = ["pending_driver", "awaiting_driver"];
+const ONE_HOUR_MS = 60 * 60 * 1000;
+
+function deadlineMs(data) {
+  if (data.acceptanceDeadline && typeof data.acceptanceDeadline.toMillis === "function") {
+    return data.acceptanceDeadline.toMillis();
+  }
+  if (typeof data.acceptance_deadline_ms === "number") {
+    return data.acceptance_deadline_ms;
+  }
+  if (data.data_order) {
+    const orderTimeMs = data.data_order.toMillis
+      ? data.data_order.toMillis()
+      : new Date(data.data_order).getTime();
+    if (!isNaN(orderTimeMs)) return orderTimeMs + ONE_HOUR_MS;
+  }
+  return null;
+}
+
+function isCashOrder(data) {
+  const method = String(data.PaymentMethod || data.paymentMethod || "").toLowerCase();
+  const payStatus = String(data.payment_status || "").toLowerCase();
+  return method.includes("cash") || payStatus === "pending_cash";
+}
+
+function isOnlinePaid(data) {
+  const method = String(data.PaymentMethod || "").toLowerCase();
+  const payStatus = String(data.payment_status || "").toLowerCase();
+  return (
+    (method.includes("online") || method.includes("card")) &&
+    (payStatus === "paid" || payStatus === "processing")
+  );
+}
 
 /**
- * Cancels orders still awaiting a driver after 60 minutes.
- * Queries both legacy Arabic halh_text and machine status_code.
+ * Expires bookings still awaiting a driver after acceptanceDeadline (1 hour).
+ * Uses per-doc transactions so accept vs timeout cannot both win.
+ * Online paid → marks refund_pending (refund job / admin / payment-api).
+ * Cash → expire only (no refund).
  */
 exports.autoCancelOrders = functions.pubsub
   .schedule("every 1 minutes")
   .timeZone("Asia/Riyadh")
   .onRun(async () => {
-    try {
-      const nowMs = Date.now();
-      const sixtyMinutesMs = 60 * 60 * 1000;
-      const ordersRef = admin.firestore().collection("order");
+    const nowMs = Date.now();
+    const ordersRef = admin.firestore().collection("order");
 
-      const [byHalh, ...byCodeSnaps] = await Promise.all([
-        ordersRef.where("halh_text", "==", PENDING_HALH_TEXT).get(),
-        ...PENDING_STATUS_CODES.map((code) =>
-          ordersRef.where("status_code", "==", code).get(),
-        ),
-      ]);
+    const [byHalh, ...byCodeSnaps] = await Promise.all([
+      ordersRef.where("halh_text", "==", PENDING_HALH_TEXT).get(),
+      ...PENDING_STATUS_CODES.map((code) =>
+        ordersRef.where("status_code", "==", code).get(),
+      ),
+    ]);
 
-      const docsById = new Map();
-      for (const snap of [byHalh, ...byCodeSnaps]) {
-        snap.forEach((doc) => docsById.set(doc.id, doc));
-      }
-
-      if (docsById.size === 0) {
-        console.log("No orders awaiting acceptance.");
-        return null;
-      }
-
-      const updates = [];
-      docsById.forEach((doc) => {
-        const data = doc.data();
-        if (!data.data_order) return;
-
-        const orderTimeMs = data.data_order.toMillis
-          ? data.data_order.toMillis()
-          : new Date(data.data_order).getTime();
-        if (isNaN(orderTimeMs)) return;
-
-        if (nowMs - orderTimeMs >= sixtyMinutesMs) {
-          updates.push(
-            doc.ref.update({
-              halh_text: "ملغي",
-              status_code: "cancelled",
-              cancelled_at: admin.firestore.FieldValue.serverTimestamp(),
-            }),
-          );
-        }
-      });
-
-      if (updates.length) {
-        await Promise.all(updates);
-        console.log(`Cancelled ${updates.length} orders after 60 minutes.`);
-      }
-
-      return null;
-    } catch (error) {
-      console.error("autoCancelOrders error:", error);
-      throw error;
+    const docsById = new Map();
+    for (const snap of [byHalh, ...byCodeSnaps]) {
+      snap.forEach((doc) => docsById.set(doc.id, doc));
     }
+
+    if (docsById.size === 0) {
+      console.log("No orders awaiting acceptance.");
+      return null;
+    }
+
+    let expired = 0;
+    let refundPending = 0;
+    let skipped = 0;
+
+    for (const doc of docsById.values()) {
+      const due = deadlineMs(doc.data());
+      if (due == null || nowMs < due) {
+        skipped += 1;
+        continue;
+      }
+
+      try {
+        const result = await admin.firestore().runTransaction(async (tx) => {
+          const fresh = await tx.get(doc.ref);
+          if (!fresh.exists) return { action: "missing" };
+          const data = fresh.data() || {};
+
+          if (data.mndob_user) return { action: "accepted" };
+
+          const statusCode = String(data.status_code || "");
+          const stillWaiting =
+            PENDING_STATUS_CODES.includes(statusCode) ||
+            String(data.halh_text || "") === PENDING_HALH_TEXT;
+          if (!stillWaiting) return { action: "not_waiting" };
+
+          const freshDue = deadlineMs(data);
+          if (freshDue == null || Date.now() < freshDue) {
+            return { action: "not_due" };
+          }
+
+          const patch = {
+            halh_text: "ملغي",
+            status_code: "expired",
+            expired_at: admin.firestore.FieldValue.serverTimestamp(),
+            cancelled_at: admin.firestore.FieldValue.serverTimestamp(),
+            expiry_reason: "no_driver_within_deadline",
+            ALLNOW: false,
+            ActiveOrder: false,
+          };
+
+          if (isOnlinePaid(data)) {
+            patch.payment_status = "refund_pending";
+            patch.refundStatus = "refund_pending";
+            patch.refundReason = "no_driver_within_deadline";
+            patch.refundRequestedAt =
+              admin.firestore.FieldValue.serverTimestamp();
+            patch.originalPaymentId =
+              data.payment_session_id || data.ngeniusOrderId || null;
+          }
+
+          tx.update(doc.ref, patch);
+          return {
+            action: isOnlinePaid(data) ? "expired_refund_pending" : "expired",
+            sessionId: data.payment_session_id || null,
+          };
+        });
+
+        if (result.action === "expired") expired += 1;
+        if (result.action === "expired_refund_pending") {
+          expired += 1;
+          refundPending += 1;
+        }
+      } catch (error) {
+        console.error("autoCancelOrders txn error", doc.id, error.message);
+      }
+    }
+
+    console.log(
+      JSON.stringify({
+        message: "autoCancelOrders_done",
+        expired,
+        refundPending,
+        skipped,
+        candidates: docsById.size,
+      }),
+    );
+    return null;
   });

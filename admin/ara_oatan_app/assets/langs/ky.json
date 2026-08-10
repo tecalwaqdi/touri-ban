@@ -937,6 +937,7 @@
   "splash_tagline": "Биринчи глобалдык саудиялык туристтик колдонмо",
   "booking_cancelled_refund_pending": "Буйрутма жокко чыгарылды. Төлөмдү кайтаруу иштетилүүдө — керек болсо колдоого кайрылыңыз.",
   "checkout_payment_temporarily_unavailable": "Онлайн төлөм убактылуу жеткиликсиз. Кийинчерээк кайра аракет кылыңыз.",
+  "checkout_hosted_payment_unavailable": "Төлөмдү баштоо мүмкүн болбоду. Кайра аракет кылыңыз.",
   "PROVIDER_OUTLET_NOT_CONFIGURED": "Онлайн төлөм убактылуу жеткиликсиз. Кийинчерээк кайра аракет кылыңыз.",
   "order_cancel_confirm_back": "Артка",
   "order_cancel_confirm_yes": "Жокко чыгарууну ырастоо",

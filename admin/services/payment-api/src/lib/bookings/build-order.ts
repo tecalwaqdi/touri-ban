@@ -203,6 +203,9 @@ export async function buildPaidOnlineOrderData(
     amount_halalas: amountMinor,
     currency: session.currency || "SAR",
     data_order: now,
+    // Server-side accept window (1 hour). Absolute timestamp — not a Flutter timer.
+    acceptanceDeadline: Timestamp.fromMillis(Date.now() + 60 * 60 * 1000),
+    acceptance_deadline_ms: Date.now() + 60 * 60 * 1000,
     LOKESHN: new GeoPoint(draft.pickupLat, draft.pickupLng),
     mapuser: new GeoPoint(draft.pickupLat, draft.pickupLng),
     originLatitude: draft.pickupLat,

@@ -2,11 +2,11 @@
   "name": "@touri/payment-api",
   "version": "0.2.0",
   "private": true,
-  "description": "Touri Taxi external Payment API (Express + TypeScript) for N-Genius on Render",
+  "description": "Touri Taxi Payment API (Express + TypeScript) — Render and Firebase Functions",
   "engines": {
-    "node": ">=20"
+    "node": "22"
   },
-  "main": "dist/server.js",
+  "main": "dist/firebase.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsup",
@@ -21,6 +21,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "firebase-admin": "^13.0.2",
+    "firebase-functions": "^7.2.5",
     "zod": "^3.24.1"
   },
   "devDependencies": {

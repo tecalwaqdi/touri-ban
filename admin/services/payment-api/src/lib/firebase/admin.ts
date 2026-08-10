@@ -1,20 +1,25 @@
 import { createHash } from "crypto";
 import admin from "firebase-admin";
-import { getEnv } from "@/lib/security/env";
+import { getEnv, isFirebaseAdcMode } from "@/lib/security/env";
 
 let initialized = false;
 
 export function initFirebase(): typeof admin {
   if (!initialized) {
-    const env = getEnv();
     if (!admin.apps.length) {
-      admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId: env.FIREBASE_PROJECT_ID,
-          clientEmail: env.FIREBASE_CLIENT_EMAIL,
-          privateKey: env.privateKey,
-        }),
-      });
+      if (isFirebaseAdcMode()) {
+        // Cloud Functions / ADC: default app + runtime project credentials.
+        admin.initializeApp();
+      } else {
+        const env = getEnv();
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId: env.FIREBASE_PROJECT_ID,
+            clientEmail: env.FIREBASE_CLIENT_EMAIL,
+            privateKey: env.privateKey,
+          }),
+        });
+      }
     }
     initialized = true;
   }
@@ -23,6 +28,9 @@ export function initFirebase(): typeof admin {
 
 export function firebaseReady(): boolean {
   try {
+    if (isFirebaseAdcMode()) {
+      return true;
+    }
     if (Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64?.trim())) {
       return true;
     }

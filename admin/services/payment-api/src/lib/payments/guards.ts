@@ -77,9 +77,36 @@ export function computeRefundable(
   return { remaining, amount };
 }
 
-/** Wallet / extra-hours stay on Firebase until dedicated Vercel port. */
+/** Normalize purpose aliases used by Flutter / future APIs. */
+export function normalizePaymentPurpose(
+  purpose: string,
+): "booking" | "wallet" | "extra_hours" {
+  const p = String(purpose || "").trim().toLowerCase();
+  if (p === "booking" || p === "booking_payment") return "booking";
+  if (p === "wallet" || p === "wallet_topup") return "wallet";
+  if (p === "extra_hours") return "extra_hours";
+  throw new ApiError(PaymentErrorCode.INVALID_REQUEST, 400, "Invalid payment purpose");
+}
+
+/**
+ * Booking + wallet top-up are served by this API.
+ * Extra-hours remains on legacy Firebase callable until ported.
+ */
+export function assertSupportedPaymentPurpose(purpose: string): void {
+  const normalized = normalizePaymentPurpose(purpose);
+  if (normalized === "extra_hours") {
+    throw new ApiError(
+      PaymentErrorCode.INVALID_REQUEST,
+      400,
+      "EXTRA_HOURS_USE_FIREBASE_BACKEND",
+    );
+  }
+}
+
+/** @deprecated Prefer assertSupportedPaymentPurpose */
 export function assertBookingPurposeOnly(purpose: string): void {
-  if (purpose !== "booking") {
+  assertSupportedPaymentPurpose(purpose);
+  if (normalizePaymentPurpose(purpose) !== "booking") {
     throw new ApiError(
       PaymentErrorCode.INVALID_REQUEST,
       400,

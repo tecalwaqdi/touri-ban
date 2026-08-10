@@ -218,9 +218,15 @@ async function verifiedBookingAmount(data) {
   const vatHalalas = country.isvat === true
     ? percentOf(baseFareHalalas, country.vat)
     : 0;
+  const currency = String(
+    country.currency_code || country.currencyCode || country.Currency || "SAR",
+  )
+    .trim()
+    .toUpperCase() || "SAR";
 
   return {
     amountHalalas,
+    currency,
     carPath,
     countryPath,
     bookingHours,
@@ -897,6 +903,10 @@ exports.finalizeNGeniusBooking = functions
         amount_halalas: session.amount_halalas,
         currency: session.currency || "SAR",
         data_order: now,
+        acceptanceDeadline: admin.firestore.Timestamp.fromMillis(
+          Date.now() + 60 * 60 * 1000,
+        ),
+        acceptance_deadline_ms: Date.now() + 60 * 60 * 1000,
         LOKESHN: new admin.firestore.GeoPoint(pickupLat, pickupLng),
         mapuser: new admin.firestore.GeoPoint(pickupLat, pickupLng),
         originLatitude: pickupLat,
@@ -1023,8 +1033,13 @@ exports.createCashBooking = functions
         USER: userRef,
         total: quote.amountHalalas / 100,
         amount_halalas: quote.amountHalalas,
-        currency: "SAR",
+        currency: quote.currency || "SAR",
+        currency_code: quote.currency || "SAR",
         data_order: now,
+        acceptanceDeadline: admin.firestore.Timestamp.fromMillis(
+          Date.now() + 60 * 60 * 1000,
+        ),
+        acceptance_deadline_ms: Date.now() + 60 * 60 * 1000,
         LOKESHN: new admin.firestore.GeoPoint(pickupLat, pickupLng),
         mapuser: new admin.firestore.GeoPoint(pickupLat, pickupLng),
         originLatitude: pickupLat,
