@@ -14,6 +14,7 @@ const {
 } = require("@firebase/rules-unit-testing");
 const {
   doc,
+  getDoc,
   setDoc,
   updateDoc,
 } = require("firebase/firestore");
@@ -95,6 +96,78 @@ describe("Firestore P0 authorization boundaries", () => {
       IsAdmin: true,
       isAdminRule: 1,
     }));
+  });
+
+  it("allows assigned driver to get order details", async () => {
+    const seedDb = testEnv.authenticatedContext("seed-paths").firestore();
+    const driver = doc(seedDb, "user", "driver-1");
+    const customer = doc(seedDb, "user", "customer-1");
+    await seed({
+      "user/driver-1": {
+        ismndob: true,
+        actev_mndob: true,
+        registration_status: "approved",
+      },
+      "user/customer-1": { isAdminRule: 0 },
+      "order/details-1": {
+        USER: customer,
+        mndob_user: driver,
+        status_code: "driver_assigned",
+        ActiveOrder: true,
+        IDorder: "CASH-DETAILS1",
+        total: 100,
+      },
+    });
+
+    const db = testEnv.authenticatedContext("driver-1", {
+      driver: true,
+      driver_active: true,
+    }).firestore();
+    await assertSucceeds(getDoc(doc(db, "order", "details-1")));
+  });
+
+  it("rejects other driver getting assigned order details", async () => {
+    const seedDb = testEnv.authenticatedContext("seed-paths").firestore();
+    const driver = doc(seedDb, "user", "driver-1");
+    await seed({
+      "user/driver-1": {
+        ismndob: true,
+        actev_mndob: true,
+        registration_status: "approved",
+      },
+      "user/driver-2": {
+        ismndob: true,
+        actev_mndob: true,
+        registration_status: "approved",
+      },
+      "order/details-2": {
+        mndob_user: driver,
+        status_code: "driver_assigned",
+        ActiveOrder: true,
+      },
+    });
+
+    const db = testEnv.authenticatedContext("driver-2", {
+      driver: true,
+      driver_active: true,
+    }).firestore();
+    await assertFails(getDoc(doc(db, "order", "details-2")));
+  });
+
+  it("allows customer to get own order details", async () => {
+    const seedDb = testEnv.authenticatedContext("seed-paths").firestore();
+    const customer = doc(seedDb, "user", "customer-1");
+    await seed({
+      "user/customer-1": { isAdminRule: 0 },
+      "order/details-3": {
+        USER: customer,
+        status_code: "pending_driver",
+        ActiveOrder: false,
+      },
+    });
+
+    const db = testEnv.authenticatedContext("customer-1").firestore();
+    await assertSucceeds(getDoc(doc(db, "order", "details-3")));
   });
 
   it("allows an assigned driver to mark arrival", async () => {

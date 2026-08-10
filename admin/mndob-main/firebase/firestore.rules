@@ -44,7 +44,8 @@ service cloud.firestore {
     }
 
     function isFinance() {
-      return claimBool('finance') || isSuperAdmin() || isCountryAdmin();
+      // Do NOT include country_admin — that leaked unscoped order lists.
+      return claimBool('finance') || isSuperAdmin();
     }
 
     function isPartner() {
@@ -72,20 +73,11 @@ service cloud.firestore {
         || profileActivatedDriver();
     }
 
-    // Temporary no-Billing path: ismndob + (actev_mndob OR approved status).
-    // Resolver treats registration_status=approved as activated; rules must match
-    // or drivers get permission-denied on every order query / claim.
+    // Admin-approved drivers only: ismndob + actev_mndob.
     function profileActivatedDriver() {
       return signedIn()
-        && (
-          currentUserData().ismndob == true
-          || currentUserData().ismndom == true
-          || currentUserData().get('registration_status', '') == 'approved'
-        )
-        && (
-          currentUserData().actev_mndob == true
-          || currentUserData().get('registration_status', '') == 'approved'
-        )
+        && currentUserData().ismndob == true
+        && currentUserData().actev_mndob == true
         && currentUserData().get('isAdmin', false) == false
         && currentUserData().get('IsAdmin', false) == false
         && currentUserData().get('isAdminRule', 0) == 0
@@ -97,16 +89,6 @@ service cloud.firestore {
         && !(currentUserData().get('registration_status', 'approved') in
           ['rejected', 'suspended', 'blocked', 'pending_review', 'submitted',
            'changes_requested']);
-    }
-
-    function isPanelUser() {
-      return isSuperAdmin()
-        || isCountryAdmin()
-        || isAgent()
-        || isSupport()
-        || isFinance()
-        || isPartner()
-        || isTransportManager();
     }
 
     function claimCountryPath() {
@@ -143,12 +125,6 @@ service cloud.firestore {
           );
     }
 
-    function countryRefFromClaim() {
-      return claimCountryPath() != null
-        ? /databases/$(database)/documents/$(claimCountryPath())
-        : null;
-    }
-
     function countriesMatchAdminScope(countryRef) {
       return countryRef != null
         && claimCountryPath() != null
@@ -163,7 +139,7 @@ service cloud.firestore {
     }
 
     function orderBelongsToConsumer(data) {
-      // Own bookings always readable — do NOT gate on !isPanelUser().
+      // Own bookings always readable — do NOT gate on panel-role checks.
       // Accept DocumentReference, bare uid, or path string (legacy docs).
       return request.auth != null
         && (
@@ -178,16 +154,15 @@ service cloud.firestore {
     // Query constraints must prove one of these branches for every result.
     function canListOrder(data) {
       return orderBelongsToConsumer(data)
+        || orderAssignedToDriver(data)
         || (
           isApprovedActiveDriver()
           && data.ALLNOW == true
           && data.status_code in ['pending_driver', 'awaiting_driver']
         )
-        // Assigned driver orders (المقبولة) — do not require isDriver() claims;
-        // profile flags can lag and were blocking Accepted list/details.
-        || (signedIn() && data.mndob_user == currentUserRef())
         || isSuperAdmin()
         || isFinance()
+        || orderBelongsToPartner(data)
         || (
           (isCountryAdmin() || isAgent() || isSupport())
           && countriesMatchAdminScope(data.Rev_dolh)
@@ -196,7 +171,14 @@ service cloud.firestore {
 
     function orderAssignedToDriver(data) {
       // Cash-wave: only require auth + assignment field (no isDriver claims).
-      return signedIn() && data.mndob_user == currentUserRef();
+      // Accept DocumentReference, bare uid, or path string (legacy docs).
+      return signedIn()
+        && (
+          data.mndob_user == currentUserRef()
+          || data.mndob_user == request.auth.uid
+          || data.mndob_user == ('user/' + request.auth.uid)
+          || data.mndob_user == ('/user/' + request.auth.uid)
+        );
     }
 
     // Broad assigned-driver patch (location / arrive / start) without money edits.
@@ -232,17 +214,22 @@ service cloud.firestore {
         );
     }
 
+    // Participant / driver-pool reads — must stay free of panel get() calls.
     function canReadOrder(data) {
+      return orderAssignedToDriver(data)
+        || orderBelongsToConsumer(data)
+        || driverCanBrowseOpenOrders(data);
+    }
+
+    // Panel / partner / transport — may use get(); keep in separate allow lines.
+    function panelCanReadOrder(data) {
       return isSuperAdmin()
         || isFinance()
         || (isCountryAdmin() && countriesMatchAdminScope(data.Rev_dolh))
         || (isAgent() && countriesMatchAdminScope(data.Rev_dolh))
         || (isSupport() && countriesMatchAdminScope(data.Rev_dolh))
         || orderBelongsToPartner(data)
-        || transportCompanyMatches(data)
-        || orderAssignedToDriver(data)
-        || driverCanBrowseOpenOrders(data)
-        || orderBelongsToConsumer(data);
+        || transportCompanyMatches(data);
     }
 
     function financialOrderFieldsUnchanged() {
@@ -264,29 +251,38 @@ service cloud.firestore {
         ]);
     }
 
-    // Customer cancel before driver starts moving toward pickup.
-    // Allowed while pending or assigned; blocked once driver_arriving+.
+    // Customer cancel only after 1h from data_order while still unassigned.
+    // Blocked once a driver is assigned/accepted or trip advances.
     // Payload must stay within hasOnly — keeps money/payment/owner immutable.
+    function consumerCancelWaitElapsed(data) {
+      return data.keys().hasAll(['data_order'])
+        && data.data_order is timestamp
+        && request.time >= data.data_order + duration.value(1, 'h');
+    }
+
     function consumerOrderIsCancellable(data) {
-      return !('status_code' in data)
-        || data.status_code == null
-        || data.status_code == ''
-        || data.status_code in [
-          'pending_driver', 'awaiting_driver', 'pending', 'driver_assigned',
-          'payment_pending'
-        ]
-        || (
-          data.get('halh_text', '') in [
-            'بإنتظار قبول المندوب', 'بانتظار قبول المندوب',
-            'بانتظار قبول السائق', 'مقبول'
+      // Only while still unassigned / awaiting a driver, and after 1h from create.
+      return orderUnassigned(data)
+        && consumerCancelWaitElapsed(data)
+        && !(data.get('halhOrderMndob', '') in ['Accepted', 'accepted'])
+        && !(data.get('halh_text', '') in [
+          'مقبول', 'وصل المندوب', 'وصل السائق',
+          'تم البدء في الرحلة', 'بدأت الرحلة', 'مكتمل', 'ملغي', 'ملغى'
+        ])
+        && (
+          !('status_code' in data)
+          || data.status_code == null
+          || data.status_code == ''
+          || data.status_code in [
+            'pending_driver', 'awaiting_driver', 'pending', 'payment_pending'
           ]
-          && !(data.get('status_code', '') in [
-            'driver_arriving', 'driver_arrived', 'trip_started',
-            'trip_in_progress', 'completed', 'trip_completed',
-            'cancelled', 'canceled',
-            'cancelled_by_driver', 'cancelled_by_customer', 'cancelled_by_admin'
-          ])
-        );
+        )
+        && !(data.get('status_code', '') in [
+          'driver_assigned', 'driver_arriving', 'driver_arrived',
+          'trip_started', 'trip_in_progress', 'completed', 'trip_completed',
+          'cancelled', 'canceled',
+          'cancelled_by_driver', 'cancelled_by_customer', 'cancelled_by_admin'
+        ]);
     }
 
     function consumerCanCancelOrder() {
@@ -303,6 +299,7 @@ service cloud.firestore {
           == resource.data.get('payment_status', null)
         && request.resource.data.get('mndob_user', null)
           == resource.data.get('mndob_user', null)
+        && request.resource.data.get('mndob_user', null) == null
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'status_code', 'cancelled_by_code', 'cancelledAt', 'cancelledBy',
           'cancelReason', 'cancellationReason', 'updatedAt',
@@ -351,6 +348,7 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'halh_text', 'mapuser', 'timestamp', 'START', 'ActiveOrder',
           'status_code', 'trip_started_at', 'driverArrivedAt',
+          'driver_en_route_at', 'distanceRemainingMeters', 'etaSeconds',
           'waitingStartedAt', 'customerWaitingTimeInSeconds', 'dateend',
           'halhOrderMndob', 'endTime', 'halh_text_completed_alias',
           'completedAt', 'payment_status', 'cash_collection_status',
@@ -405,13 +403,6 @@ service cloud.firestore {
       ) && financialOrderFieldsUnchanged();
     }
 
-    function operationsCanWriteOrder(data) {
-      return driverCanClaimOrder()
-        || driverCanAdvanceTrip()
-        || driverCanCompleteCashCollection()
-        || panelCanWriteOrder(data);
-    }
-
     function privilegedUserFieldsUnchanged() {
       let d = request.resource.data;
       let prev = resource == null ? {} : resource.data;
@@ -426,14 +417,86 @@ service cloud.firestore {
         && d.get('is_partner', prev.get('is_partner', false)) == prev.get('is_partner', false)
         && d.get('actev_mndob', prev.get('actev_mndob', false)) == prev.get('actev_mndob', false)
         && d.get('Rev_dloh_agent', prev.get('Rev_dloh_agent', null)) == prev.get('Rev_dloh_agent', null)
-        && d.get('partner_mkan', prev.get('partner_mkan', null)) == prev.get('partner_mkan', null);
-      // transport_company is settable by the driver during registration affiliation.
+        && d.get('partner_mkan', prev.get('partner_mkan', null)) == prev.get('partner_mkan', null)
+        && d.get('transport_company', prev.get('transport_company', null)) == prev.get('transport_company', null)
+        && d.get('is_tour_guide', prev.get('is_tour_guide', false)) == prev.get('is_tour_guide', false)
+        && d.get('tour_guide_status', prev.get('tour_guide_status', 'none')) == prev.get('tour_guide_status', 'none')
+        && d.get('tour_guide_permit_url', prev.get('tour_guide_permit_url', '')) == prev.get('tour_guide_permit_url', '')
+        && d.get('tour_guide_reviewed_at', prev.get('tour_guide_reviewed_at', null)) == prev.get('tour_guide_reviewed_at', null)
+        && d.get('tour_guide_rejection_reason', prev.get('tour_guide_rejection_reason', '')) == prev.get('tour_guide_rejection_reason', '');
+    }
+
+    function tourGuideSelfClaimOk() {
+      let d = request.resource.data;
+      let prev = resource == null ? {} : resource.data;
+      let claiming =
+        d.get('is_tour_guide', false) == true
+        && d.get('tour_guide_status', '') == 'pending'
+        && d.get('tour_guide_reviewed_at', prev.get('tour_guide_reviewed_at', null))
+             == prev.get('tour_guide_reviewed_at', null)
+        && d.get('tour_guide_rejection_reason', prev.get('tour_guide_rejection_reason', ''))
+             == prev.get('tour_guide_rejection_reason', '')
+        && prev.get('tour_guide_status', 'none') in ['none', 'pending', 'rejected', ''];
+      let clearing =
+        d.get('is_tour_guide', false) == false
+        && d.get('tour_guide_status', 'none') in ['none', '']
+        && prev.get('tour_guide_status', 'none') in ['none', 'pending', 'rejected', ''];
+      let unchanged =
+        d.get('is_tour_guide', prev.get('is_tour_guide', false)) == prev.get('is_tour_guide', false)
+        && d.get('tour_guide_status', prev.get('tour_guide_status', 'none')) == prev.get('tour_guide_status', 'none')
+        && d.get('tour_guide_permit_url', prev.get('tour_guide_permit_url', '')) == prev.get('tour_guide_permit_url', '')
+        && d.get('tour_guide_reviewed_at', prev.get('tour_guide_reviewed_at', null)) == prev.get('tour_guide_reviewed_at', null)
+        && d.get('tour_guide_rejection_reason', prev.get('tour_guide_rejection_reason', '')) == prev.get('tour_guide_rejection_reason', '');
+      return claiming || clearing || unchanged;
+    }
+
+    function activeTransportCompanyRef(ref) {
+      return ref is path
+        && exists(ref)
+        && get(ref).data.get('actev', false) == true;
+    }
+
+    function panelCanManageTourGuide() {
+      let d = request.resource.data;
+      let prev = resource.data;
+      let statusOk = d.get('tour_guide_status', '') in
+        ['pending', 'approved', 'rejected', 'suspended'];
+      let inScope = isSuperAdmin()
+        || (isCountryAdmin()
+            && (
+              countriesMatchAdminScope(prev.get('Rev_dolh', null))
+              || countriesMatchAdminScope(prev.get('Rev_dloh_agent', null))
+            ));
+      return signedIn()
+        && inScope
+        && prev.get('is_tour_guide', false) == true
+        && d.get('is_tour_guide', true) == true
+        && statusOk
+        && d.diff(prev).affectedKeys()
+            .hasOnly([
+              'is_tour_guide',
+              'tour_guide_status',
+              'tour_guide_permit_url',
+              'tour_guide_reviewed_at',
+              'tour_guide_rejection_reason'
+            ]);
     }
 
     // Driver app self-registration: non-driver → pending driver (cannot self-activate).
     function canSelfRegisterAsPendingDriver(userId) {
       let d = request.resource.data;
       let prev = resource.data;
+      let companyOk =
+        !('transport_company' in d)
+        || d.transport_company == null
+        || (
+          activeTransportCompanyRef(d.transport_company)
+          && (
+            !('transport_company' in prev)
+            || prev.get('transport_company', null) == null
+            || prev.transport_company == d.transport_company
+          )
+        );
       return request.auth != null
         && request.auth.uid == userId
         && d.get('ismndob', false) == true
@@ -450,38 +513,11 @@ service cloud.firestore {
         && d.get('is_partner', false) == false
         && !('Rev_dloh_agent' in d)
         && !('partner_mkan' in d)
-        // transport_company may be set during driver self-registration affiliation.
+        && companyOk
+        && tourGuideSelfClaimOk()
         // First claim OR refresh of an already-pending (inactive) driver profile.
         && (prev.get('ismndob', false) == false
             || prev.get('ismndob', false) == true);
-    }
-
-    // Temporary cash-wave: driver may self-activate after registration
-    // (docs/photos not required). Revert when admin review is mandatory again.
-    // Do NOT use `'field' in request.resource.data` — after merge that map is the
-    // full document and existing null/absent partner fields blocked activation.
-    function canSelfActivateAsDriver(userId) {
-      let d = request.resource.data;
-      let prev = resource.data;
-      return request.auth != null
-        && request.auth.uid == userId
-        && d.get('ismndob', false) == true
-        && d.get('ismndom', false) == true
-        && d.get('actev_mndob', false) == true
-        && prev.get('actev_mndob', false) == false
-        && d.get('isAdmin', false) == false
-        && d.get('IsAdmin', false) == false
-        && d.get('isAdminRule', 0) == 0
-        && d.get('IsAdminRule', 0) == 0
-        && d.get('isagent', false) == false
-        && d.get('Isagent', false) == false
-        && d.get('isPartner', false) == false
-        && d.get('is_partner', false) == false
-        && d.get('Rev_dloh_agent', null) == prev.get('Rev_dloh_agent', null)
-        && d.get('partner_mkan', null) == prev.get('partner_mkan', null)
-        // Affiliation may be chosen/cleared at self-activate time.
-        && d.get('registration_status', '') in
-          ['approved', 'pending_review', 'submitted', ''];
     }
 
     function userSelfFieldsOnly(userId) {
@@ -489,33 +525,14 @@ service cloud.firestore {
         && privilegedUserFieldsUnchanged();
     }
 
-    // Cash-wave: drivers must be able to toggle online + write GPS without
-    // tripping privileged-field comparisons (null/type edge cases).
-    // IMPORTANT: pass match wildcard as userId — bare `document` is unbound in fns.
+    // Drivers may toggle online + write GPS (approved accounts only).
     function canDriverSetOnlineOffline(userId) {
       return signedIn()
         && request.auth.uid == userId
+        && resource.data.get('actev_mndob', false) == true
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'ngl', 'loceshnMndobNow', 'operational_status', 'is_online',
           'last_online_at', 'last_offline_at', 'last_seen_at'
-        ]);
-    }
-
-    // One-shot self-activate + go online for cash-wave approved drivers.
-    function canDriverSelfActivateOnline(userId) {
-      return signedIn()
-        && request.auth.uid == userId
-        && resource.data.get('actev_mndob', false) == false
-        && request.resource.data.get('actev_mndob', false) == true
-        && request.resource.data.get('ismndob', false) == true
-        && request.resource.data.get('isAdmin', false) != true
-        && request.resource.data.get('IsAdmin', false) != true
-        && request.resource.data.get('isAdminRule', 0) != 1
-        && request.resource.data.get('IsAdminRule', 0) != 1
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'ngl', 'loceshnMndobNow', 'operational_status', 'is_online',
-          'last_online_at', 'last_seen_at',
-          'ismndob', 'ismndom', 'actev_mndob', 'registration_status'
         ]);
     }
 
@@ -588,6 +605,52 @@ service cloud.firestore {
             && d.transport_company.path == claimTransportCompanyPath());
     }
 
+
+    // Panel may approve/reject/suspend drivers without elevating admin roles.
+    function panelCanReviewDriver() {
+      let d = request.resource.data;
+      let prev = resource.data;
+      let notElevating =
+        d.get('isAdmin', false) == false
+        && d.get('IsAdmin', false) == false
+        && d.get('isAdminRule', 0) != 1
+        && d.get('IsAdminRule', 0) != 1
+        && d.get('isAdmin', prev.get('isAdmin', false)) == prev.get('isAdmin', false)
+        && d.get('IsAdmin', prev.get('IsAdmin', false)) == prev.get('IsAdmin', false)
+        && d.get('isAdminRule', prev.get('isAdminRule', 0)) == prev.get('isAdminRule', 0)
+        && d.get('IsAdminRule', prev.get('IsAdminRule', 0)) == prev.get('IsAdminRule', 0)
+        && d.get('isagent', prev.get('isagent', false)) == prev.get('isagent', false)
+        && d.get('Isagent', prev.get('Isagent', false)) == prev.get('Isagent', false)
+        && d.get('isPartner', prev.get('isPartner', false)) == prev.get('isPartner', false)
+        && d.get('is_partner', prev.get('is_partner', false)) == prev.get('is_partner', false)
+        && d.get('Rev_dloh_agent', prev.get('Rev_dloh_agent', null)) == prev.get('Rev_dloh_agent', null)
+        && d.get('partner_mkan', prev.get('partner_mkan', null)) == prev.get('partner_mkan', null);
+      let inScope = isSuperAdmin()
+        || (isCountryAdmin()
+            && (
+              countriesMatchAdminScope(prev.get('Rev_dolh', null))
+              || countriesMatchAdminScope(prev.get('Rev_dloh_agent', null))
+            ))
+        || (isTransportManager()
+            && prev.get('transport_company', null) != null
+            && claimTransportCompanyPath() != null
+            && prev.transport_company.path == claimTransportCompanyPath()
+            && d.get('transport_company', null) == prev.get('transport_company', null));
+      return signedIn()
+        && inScope
+        && notElevating
+        && prev.get('ismndob', false) == true
+        && d.get('ismndob', true) == true
+        && d.diff(prev).affectedKeys().hasOnly([
+          'actev_mndob', 'ismndob', 'ismndom', 'ngl',
+          'registration_status', 'submission_status', 'account_status',
+          'operational_status', 'rejection_reason', 'requested_changes',
+          'vehicle_review_status', 'document_review_status',
+          'reviewed_at', 'reviewed_by', 'approved_at',
+          'suspended_at', 'suspended_by', 'auto_activated', 'auto_activated_at'
+        ]);
+    }
+
     match /user/{document} {
       allow create: if request.auth != null && (
         (
@@ -602,13 +665,31 @@ service cloud.firestore {
           && !('isPartner' in request.resource.data)
           && !('Rev_dloh_agent' in request.resource.data)
           && !('partner_mkan' in request.resource.data)
-          // transport_company allowed on self-create for company-affiliated drivers.
+          && (
+            !('transport_company' in request.resource.data)
+            || request.resource.data.transport_company == null
+            || activeTransportCompanyRef(request.resource.data.transport_company)
+          )
+          && (
+            !('is_tour_guide' in request.resource.data)
+            || (
+              request.resource.data.get('is_tour_guide', false) == true
+              && request.resource.data.get('tour_guide_status', '') == 'pending'
+            )
+            || (
+              request.resource.data.get('is_tour_guide', false) == false
+              && request.resource.data.get('tour_guide_status', 'none') in ['none', '']
+            )
+          )
+          && !('tour_guide_reviewed_at' in request.resource.data)
+          && request.resource.data.get('tour_guide_status', 'none') in
+            ['none', 'pending', '']
         )
         || panelCanProvisionUser()
       );
+      allow read: if signedIn() && request.auth.uid == document;
       allow read: if request.auth != null && (
         isSuperAdmin()
-        || request.auth.uid == document
         || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dloh_agent))
         || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dolh))
         || (isTransportManager()
@@ -618,12 +699,12 @@ service cloud.firestore {
       allow update: if request.auth != null && (
         isSuperAdmin()
         || canDriverSetOnlineOffline(document)
-        || canDriverSelfActivateOnline(document)
         || userSelfFieldsOnly(document)
         || canSelfRegisterAsPendingDriver(document)
-        || canSelfActivateAsDriver(document)
+        || panelCanManageTourGuide()
+        || panelCanReviewDriver()
         || countryAdminCanUpdateUser()
-        || panelCanProvisionUser()
+        || (panelCanProvisionUser() && privilegedUserFieldsUnchanged())
       );
       allow delete: if isSuperAdmin();
     }
@@ -634,8 +715,15 @@ service cloud.firestore {
     }
 
     match /transport_company/{document} {
-      // Signed-in drivers need catalog read during registration affiliation.
-      allow read: if request.auth != null;
+      // Active companies are readable by signed-in drivers (registration join).
+      allow read: if request.auth != null && (
+        isSuperAdmin()
+        || isCountryAdmin()
+        || isAgent()
+        || isSupport()
+        || (isTransportManager() && resource.path == claimTransportCompanyPath())
+        || resource.data.get('actev', false) == true
+      );
       allow create: if isSuperAdmin() || isCountryAdmin();
       allow update, delete: if isSuperAdmin()
         || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dolh))
@@ -678,54 +766,22 @@ service cloud.firestore {
       allow create, update, delete: if isSuperAdmin() || isCountryAdmin();
     }
 
-    // Cash bookings must normally be created by createCashBooking CF.
-    // Until that function is published (requires Cloud Billing), allow a
-    // tightly constrained client create for pending cash only.
-    // rules-rev: cash-fallback-2026-07-19
-    function isValidClientCashOrderCreate() {
-      let d = request.resource.data;
-      return signedIn()
-        && d.USER == currentUserRef()
-        && d.PaymentMethod == 'Cash'
-        && d.halh_order == 'Cash'
-        && d.payment_status in ['cash_pending', 'pending_cash']
-        && d.cash_collection_status == 'uncollected'
-        && d.status_code == 'pending_driver'
-        && d.ActiveOrder == false
-        && d.created_by_client_cash_fallback == true
-        && d.pricing_authority == 'client_fallback_pending_cf'
-        && d.keys().hasAll([
-          'USER', 'total', 'amount_halalas', 'currency', 'carRev', 'Rev_dolh',
-          'PaymentMethod', 'payment_status', 'status_code', 'idempotency_key',
-          'created_by_client_cash_fallback', 'pricing_authority',
-          'pricing_quote_halalas'
-        ])
-        && d.total is number && d.total > 0 && d.total < 1000000
-        && d.amount_halalas is number && d.amount_halalas > 0
-        && d.amount_halalas == d.pricing_quote_halalas
-        && d.currency is string
-        && d.idempotency_key is string
-        && d.idempotency_key.size() >= 8
-        && d.idempotency_key.size() <= 96
-        // Never allow client to mark paid / electronic statuses.
-        && !(d.payment_status in ['paid', 'captured', 'authorized'])
-        && !('ngeniusOrderId' in d)
-        && !('payment_session_id' in d);
-    }
+    // Order create is CF-only (createCashBooking Admin SDK). Client create disabled.
+    // rules-rev: order-create-cf-only-2026-08-09
 
     match /order/{document} {
-      // Prefer createCashBooking CF; until Blaze/CF is live, allow constrained
-      // client cash create (see isValidClientCashOrderCreate).
-      // rules-rev: claim-no-hasonly-2026-08-01
-      allow create: if isValidClientCashOrderCreate();
+      // Prefer createCashBooking CF (Admin SDK). Client cash create is disabled
+      // for production — enable only with temporary rules + TOURY_CLIENT_CASH_FALLBACK.
+      // rules-rev: order-create-cf-only-2026-08-09
+      allow create: if false;
       // Idempotent cash create uses a transaction get() on a new doc id.
       // Missing docs have resource == null — must allow that get, else the
       // whole create fails as permission-denied (looks like "no internet").
       // Drivers need get on open-pool docs inside accept transactions.
-      // Cash-wave: signed-in get unblocks details listen (PERMISSION_DENIED
-      // was blanking TfaselOrser body / error screen). List stays gated.
-      // rules-rev: order-get-signedin-2026-08-01b
-      allow get: if signedIn();
+      // rules-rev: order-get-split-participant-2026-08-10
+      allow get: if resource == null;
+      allow get: if canReadOrder(resource.data);
+      allow get: if panelCanReadOrder(resource.data);
       // Use canListOrder (not canReadOrder): partner/transport get() branches
       // in canReadOrder make Firestore reject consumer/driver list queries.
       // rules-rev: order-list-simple-2026-08-01
@@ -956,13 +1012,31 @@ service cloud.firestore {
     }
 
     match /chat/{document} {
+      allow read: if signedIn() && resource.data.user1 == currentUserRef();
+      allow read: if signedIn()
+        && resource.data.participants is list
+        && currentUserRef() in resource.data.participants;
       allow read: if signedIn()
         && resource.data.idorder != null
         && canReadOrder(get(resource.data.idorder).data);
+      allow read: if signedIn()
+        && resource.data.idorder != null
+        && panelCanReadOrder(get(resource.data.idorder).data);
       allow create: if signedIn()
         && request.resource.data.user1 == currentUserRef()
         && request.resource.data.idorder != null
-        && canReadOrder(get(request.resource.data.idorder).data);
+        && (
+          canReadOrder(get(request.resource.data.idorder).data)
+          || panelCanReadOrder(get(request.resource.data.idorder).data)
+        )
+        && (
+          !(request.resource.data.keys().hasAny(['participants']))
+          || (
+            request.resource.data.participants is list
+            && currentUserRef() in request.resource.data.participants
+            && request.resource.data.participants.size() <= 4
+          )
+        );
       allow update, delete: if false;
     }
 
