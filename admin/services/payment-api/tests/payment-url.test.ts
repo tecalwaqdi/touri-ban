@@ -18,6 +18,11 @@ describe("hosted payment page URL", () => {
         "https://paypage.ngenius-payments.com/?code=prodCode",
       ),
     ).toBe(true);
+    expect(
+      isHostedPaymentPageUrl(
+        "https://paypage.ksa.ngenius-payments.com/?code=ksaCode",
+      ),
+    ).toBe(true);
   });
 
   it("rejects API gateway and card API links", () => {

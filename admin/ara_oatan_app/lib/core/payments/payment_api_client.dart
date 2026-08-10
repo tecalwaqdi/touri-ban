@@ -59,32 +59,66 @@ class PaymentApiClient {
     String? description,
     String locale = 'ar',
   }) async {
-    final token = await _idToken();
-    final response = await _http
-        .post(
-          _uri('/payments/create'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: jsonEncode({
-            'paymentMethod': 'card',
-            'paymentPurpose': 'booking',
-            // Body field (not HTTP header) — matches Express createSchema.
-            'idempotencyKey': idempotencyKey,
-            'carPath': carPath,
-            'countryPath': countryPath,
-            'bookingHours': bookingHours,
-            'additionalHours': additionalHours,
-            'booking': booking,
-            if (email != null && email.isNotEmpty) 'email': email,
-            if (description != null) 'description': description,
-            'locale': locale,
-          }),
-        )
-        .timeout(timeout);
-    return _decode(response);
+    // Wake Render free-tier cold starts before the authenticated create.
+    unawaited(_warmUp());
+
+    Object? lastError;
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        final token = await _idToken();
+        final response = await _http
+            .post(
+              _uri('/payments/create'),
+              headers: {
+                'Authorization': 'Bearer $token',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+              },
+              body: jsonEncode({
+                'paymentMethod': 'card',
+                'paymentPurpose': 'booking',
+                // Body field (not HTTP header) — matches Express createSchema.
+                'idempotencyKey': idempotencyKey,
+                'carPath': carPath,
+                'countryPath': countryPath,
+                'bookingHours': bookingHours,
+                'additionalHours': additionalHours,
+                'booking': booking,
+                if (email != null && email.isNotEmpty) 'email': email,
+                if (description != null) 'description': description,
+                'locale': locale,
+              }),
+            )
+            .timeout(timeout);
+        return _decode(response);
+      } on PaymentApiException catch (e) {
+        lastError = e;
+        final retryable = e.code == 'PROVIDER_UNAVAILABLE' ||
+            e.code == 'NETWORK_ERROR' ||
+            e.code == 'UNKNOWN_ERROR';
+        if (!retryable || attempt == 1) rethrow;
+        if (kDebugMode) {
+          debugPrint('PaymentApiClient create retry after ${e.code}');
+        }
+        await Future<void>.delayed(const Duration(seconds: 2));
+      } on TimeoutException catch (e) {
+        lastError = e;
+        if (attempt == 1) {
+          throw PaymentApiException('NETWORK_ERROR');
+        }
+        await Future<void>.delayed(const Duration(seconds: 2));
+      }
+    }
+    if (lastError is PaymentApiException) throw lastError;
+    throw PaymentApiException('NETWORK_ERROR');
+  }
+
+  Future<void> _warmUp() async {
+    try {
+      await _http.get(_uri('/health')).timeout(const Duration(seconds: 8));
+    } catch (_) {
+      // Best-effort only — create still runs.
+    }
   }
 
   Future<Map<String, dynamic>> getStatus(String sessionId) async {

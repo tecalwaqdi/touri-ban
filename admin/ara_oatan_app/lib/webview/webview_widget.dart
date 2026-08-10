@@ -37,6 +37,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   Timer? _verifyTimer;
   bool _finalizingPayment = false;
+  bool _handledProviderErrorPage = false;
   int _pollAttempts = 0;
 
   /// Cap polling so a stuck 3DS session cannot run forever (~3 minutes).
@@ -50,6 +51,50 @@ class _WebviewWidgetState extends State<WebviewWidget> {
     _startThreeDsPolling();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  void _onPaymentPageFinished(String rawUrl) {
+    final url = rawUrl.trim();
+    if (url.isEmpty || _finalizingPayment || _handledProviderErrorPage) return;
+
+    final lower = url.toLowerCase();
+    final uri = Uri.tryParse(url);
+    final host = uri?.host.toLowerCase() ?? '';
+
+    // Safe debug only — never log query (may contain code).
+    assert(() {
+      // ignore: avoid_print
+      print('payment_webview_host=$host path=${uri?.path ?? ''}');
+      return true;
+    }());
+
+    // Provider return page — keep polling; do not treat as paid.
+    if (host.contains('web.app') && lower.contains('payment-return')) {
+      return;
+    }
+
+    // N-Genius HPP error / lost code after submit (common on simulator 3DS).
+    final looksLikeProviderError = lower.contains('error') &&
+        (host.contains('paypage') || host.contains('ngenius-payments.com'));
+    final paypageWithoutCode = host.startsWith('paypage.') &&
+        uri != null &&
+        !uri.queryParameters.containsKey('code');
+
+    if (!looksLikeProviderError && !paypageWithoutCode) return;
+
+    _handledProviderErrorPage = true;
+    _verifyTimer?.cancel();
+    FFAppState().update(() {
+      FFAppState().DonePay = false;
+      FFAppState().paymentInProgress = false;
+      FFAppState().clearSensitivePaymentSession();
+    });
+    if (!mounted) return;
+    DsSnackBar.show(
+      context,
+      message: 'checkout_hosted_payment_unavailable'.tr(),
+      tone: DsSnackTone.error,
+    );
   }
 
   void _startThreeDsPolling() {
@@ -264,6 +309,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
                       child: DsCard(
                         color: colors.warningContainer,
                         bordered: false,
+                        elevated: true,
                         padding: const EdgeInsets.all(DsSpacing.sm),
                         child: Row(
                           children: [
@@ -309,6 +355,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
                               height: constraints.maxHeight,
                               verticalScroll: false,
                               horizontalScroll: false,
+                              onPageFinished: _onPaymentPageFinished,
                             );
                           },
                         ),

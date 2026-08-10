@@ -13,8 +13,13 @@ export function paymentHrefHost(url: string | null | undefined): string | null {
 }
 
 /**
- * True when href is an N-Genius Hosted Payment Page (paypage + code),
+ * True when href is an N-Genius Hosted Payment Page,
  * not an API order resource or cnp payment-link endpoint.
+ *
+ * Accepts global + KSA paypage hosts, e.g.:
+ * - paypage.ngenius-payments.com
+ * - paypage.sandbox.ngenius-payments.com
+ * - paypage.ksa.ngenius-payments.com
  */
 export function isHostedPaymentPageUrl(url: string | null | undefined): boolean {
   if (!url || typeof url !== "string") return false;
@@ -27,18 +32,19 @@ export function isHostedPaymentPageUrl(url: string | null | undefined): boolean 
     return false;
   }
   const host = parsed.host.toLowerCase();
-  // Official paypage hosts (global + KSA).
+  // Never open API gateway resources in the WebView.
+  if (host.includes("api-gateway")) return false;
+  if (!host.endsWith("ngenius-payments.com")) return false;
+
   const isPaypageHost =
     host.startsWith("paypage.") ||
-    host.includes("paypage.ngenius") ||
-    host.includes("paypage.sandbox");
+    host.includes(".paypage.") ||
+    /(^|\.)paypage\./.test(host);
+  // Some MSA portals serve HPP under paypage.* only; require that family.
   if (!isPaypageHost) return false;
-  // Must carry the order access code query (HPP), not a bare host.
-  if (!parsed.searchParams.has("code") && !/[?&]code=/.test(trimmed)) {
-    return false;
-  }
-  // Reject API gateway hosts even if somehow labeled payment.
-  if (host.includes("api-gateway")) return false;
+
+  // Must carry the order access code (query). Do not rewrite/re-encode.
+  if (!parsed.searchParams.has("code")) return false;
   return true;
 }
 

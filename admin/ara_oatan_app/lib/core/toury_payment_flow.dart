@@ -379,7 +379,9 @@ String? _hostedPaymentPageUrlOrNull(String? raw) {
   if (uri == null || uri.scheme != 'https') return null;
   final host = uri.host.toLowerCase();
   if (host.contains('api-gateway')) return null;
-  final isPaypage = host.startsWith('paypage.') || host.contains('paypage.');
+  if (!host.endsWith('ngenius-payments.com')) return null;
+  final isPaypage =
+      host.startsWith('paypage.') || host.contains('.paypage.');
   if (!isPaypage) return null;
   if (!uri.queryParameters.containsKey('code')) return null;
   return url;
