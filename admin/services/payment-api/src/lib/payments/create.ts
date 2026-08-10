@@ -147,7 +147,9 @@ async function quoteWalletTopUp(data: z.infer<typeof createSchema>) {
     }>;
     const found = packs.find((p) => String(p.id) === String(data.packageId));
     amountMajor = Number(found?.amountSar ?? found?.amount ?? 0);
-  } else if (data.amountMajor != null) {
+  }
+  // Fall back to allow-listed client amount when package catalog is missing/mismatched.
+  if ((!Number.isFinite(amountMajor) || amountMajor <= 0) && data.amountMajor != null) {
     amountMajor = Number(data.amountMajor);
   }
   if (!Number.isFinite(amountMajor) || !allowedMajors.has(amountMajor)) {

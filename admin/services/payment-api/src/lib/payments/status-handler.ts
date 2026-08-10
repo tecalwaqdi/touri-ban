@@ -15,6 +15,7 @@ import {
   transitionStatus,
 } from "@/lib/payments/status";
 import { createBookingFromPaidSession } from "@/lib/bookings/create-from-session";
+import { creditWalletFromPaidSession } from "@/lib/wallet/credit";
 
 async function loadOwnedSession(sessionId: string, uid: string, asAdmin: boolean) {
   if (!/^[a-f0-9]{64}$/.test(sessionId)) {
@@ -49,8 +50,11 @@ export async function handlePaymentStatus(req: Request, sessionId: string) {
       status: data.normalized_status || data.status || PaymentStatus.created,
       amountMinor: data.amount_minor ?? data.amount_halalas,
       currency: data.currency,
+      purpose: data.purpose || null,
       bookingCreated: Boolean(data.booking_created),
       bookingId: data.booking_id || null,
+      walletCredited: Boolean(data.wallet_credited),
+      walletId: data.wallet_id || null,
       providerStatus: data.gateway_state || null,
       environment: data.environment || getEnv().NGENIUS_ENV,
       backendSource: data.backend_source || "external_api",
@@ -113,13 +117,32 @@ export async function handlePaymentStatus(req: Request, sessionId: string) {
     bookingId = created.bookingId;
   }
 
+  let walletCredited = Boolean(data.wallet_credited);
+  let walletId = (data.wallet_id as string) || null;
+  if (
+    (next === PaymentStatus.paid || next === PaymentStatus.captured) &&
+    data.purpose === "wallet" &&
+    !walletCredited
+  ) {
+    const credit = await creditWalletFromPaidSession(sessionId, {
+      ...data,
+      status: toLegacyStatus(next),
+      normalized_status: next,
+    });
+    walletCredited = credit.credited || credit.alreadyCredited;
+    walletId = credit.walletId || walletId;
+  }
+
   return {
     id: sessionId,
     status: next,
     amountMinor: data.amount_minor ?? data.amount_halalas,
     currency: data.currency,
+    purpose: data.purpose || null,
     bookingCreated,
     bookingId,
+    walletCredited,
+    walletId,
     providerStatus: gatewayState,
     environment: data.environment || getEnv().NGENIUS_ENV,
     backendSource: data.backend_source || "external_api",

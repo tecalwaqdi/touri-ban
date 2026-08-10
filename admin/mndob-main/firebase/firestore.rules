@@ -423,7 +423,10 @@ service cloud.firestore {
         && d.get('tour_guide_status', prev.get('tour_guide_status', 'none')) == prev.get('tour_guide_status', 'none')
         && d.get('tour_guide_permit_url', prev.get('tour_guide_permit_url', '')) == prev.get('tour_guide_permit_url', '')
         && d.get('tour_guide_reviewed_at', prev.get('tour_guide_reviewed_at', null)) == prev.get('tour_guide_reviewed_at', null)
-        && d.get('tour_guide_rejection_reason', prev.get('tour_guide_rejection_reason', '')) == prev.get('tour_guide_rejection_reason', '');
+        && d.get('tour_guide_rejection_reason', prev.get('tour_guide_rejection_reason', '')) == prev.get('tour_guide_rejection_reason', '')
+        && d.get('walletBalance', prev.get('walletBalance', null)) == prev.get('walletBalance', null)
+        && d.get('currentBalance', prev.get('currentBalance', null)) == prev.get('currentBalance', null)
+        && d.get('total_app', prev.get('total_app', 0)) == prev.get('total_app', 0);
     }
 
     function tourGuideSelfClaimOk() {

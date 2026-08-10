@@ -76,6 +76,7 @@ export async function creditWalletFromPaidSession(
         currentBalance: nextBalance,
         walletBalance: nextBalance,
         walletUpdatedAt: FieldValue.serverTimestamp(),
+        lastUpdated: FieldValue.serverTimestamp(),
         currency,
         isActive: true,
         updatedAt: FieldValue.serverTimestamp(),

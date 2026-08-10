@@ -271,13 +271,14 @@ service cloud.firestore {
         ]);
     }
 
-    // Customer cancel only after 1h from data_order while still unassigned.
-    // Blocked once a driver is assigned/accepted or trip advances.
+    // Customer cancel only within 1h from data_order while still unassigned.
+    // Blocked once a driver is assigned/accepted, trip advances, or the hour elapses.
     // Payload must stay within hasOnly — keeps money/payment/owner immutable.
-    function consumerCancelWaitElapsed(data) {
+    // Uses request.time (Firestore server clock), never the client device clock.
+    function consumerCancelWithinWindow(data) {
       return data.keys().hasAll(['data_order'])
         && data.data_order is timestamp
-        && request.time >= data.data_order + duration.value(1, 'h');
+        && request.time < data.data_order + duration.value(1, 'h');
     }
 
     function consumerUnpaidPaymentPending(data) {
@@ -287,9 +288,9 @@ service cloud.firestore {
     }
 
     function consumerOrderIsCancellable(data) {
-      // Unassigned: after 1h for pool orders, or immediately for unpaid drafts.
+      // Unassigned: within 1h for pool orders, or immediately for unpaid drafts.
       return orderUnassigned(data)
-        && (consumerUnpaidPaymentPending(data) || consumerCancelWaitElapsed(data))
+        && (consumerUnpaidPaymentPending(data) || consumerCancelWithinWindow(data))
         && !(data.get('halhOrderMndob', '') in ['Accepted', 'accepted'])
         && !(data.get('halh_text', '') in [
           'مقبول', 'وصل المندوب', 'وصل السائق',
@@ -448,7 +449,10 @@ service cloud.firestore {
         && d.get('tour_guide_status', prev.get('tour_guide_status', 'none')) == prev.get('tour_guide_status', 'none')
         && d.get('tour_guide_permit_url', prev.get('tour_guide_permit_url', '')) == prev.get('tour_guide_permit_url', '')
         && d.get('tour_guide_reviewed_at', prev.get('tour_guide_reviewed_at', null)) == prev.get('tour_guide_reviewed_at', null)
-        && d.get('tour_guide_rejection_reason', prev.get('tour_guide_rejection_reason', '')) == prev.get('tour_guide_rejection_reason', '');
+        && d.get('tour_guide_rejection_reason', prev.get('tour_guide_rejection_reason', '')) == prev.get('tour_guide_rejection_reason', '')
+        && d.get('walletBalance', prev.get('walletBalance', null)) == prev.get('walletBalance', null)
+        && d.get('currentBalance', prev.get('currentBalance', null)) == prev.get('currentBalance', null)
+        && d.get('total_app', prev.get('total_app', 0)) == prev.get('total_app', 0);
     }
 
     function tourGuideSelfClaimOk() {

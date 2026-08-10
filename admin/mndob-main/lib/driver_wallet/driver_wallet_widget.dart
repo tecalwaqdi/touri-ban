@@ -8,6 +8,8 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/cloud_functions/cloud_functions.dart';
 import '/core/driver_country_service.dart';
 import '/core/driver_i18n.dart';
+import '/core/driver_payment_api_client.dart';
+import '/core/driver_payment_flags.dart';
 import '/core/driver_trip_constants.dart';
 import '/core/driver_wallet_service.dart';
 import '/core/toury_country_registry.dart';
@@ -34,6 +36,9 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
 
   static const _topUpPackages = [100.0, 200.0, 300.0, 500.0];
 
+  static const _msgTopUpSuccess = 'تم شحن المحفظة بنجاح.';
+  static const _msgTopUpFailed = 'لم تكتمل عملية شحن المحفظة.';
+
   String get _fallbackCurrency {
     final iso = DriverCountryService.currentIso2();
     return TouryCountryRegistry.currencySymbol(iso);
@@ -55,48 +60,174 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
     if (_busy) return;
     setState(() => _busy = true);
     try {
-      final packageId = 'sar_${amountSar.toInt()}';
-      final idem =
-          'wallet_${currentUserUid}_${amountSar.toInt()}_${DateTime.now().millisecondsSinceEpoch}';
-      final res = await makeCloudCall('createNGeniusPayment', {
-        'paymentPurpose': 'wallet',
-        'packageId': packageId,
-        'amountMajor': amountSar,
-        'idempotencyKey': idem,
-        'description': 'Wallet top-up — $currentUserDisplayName',
-      });
-      if (!mounted) return;
-      if (res['error'] != null) {
-        final retry = await makeCloudCall('createNGeniusPayment', {
-          'paymentPurpose': 'wallet',
-          'amountMajor': amountSar,
-          'idempotencyKey': '${idem}_b',
-          'description': 'Wallet top-up — $currentUserDisplayName',
-        });
-        if (retry['error'] != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                driverTr(
-                  context,
-                  (retry['error'] ?? res['error'] ?? 'Something went wrong. Please try again.')
-                      .toString(),
-                ),
-              ),
-            ),
-          );
-          return;
-        }
-        await _openPaymentAndFinalize(retry);
-        return;
+      if (DriverPaymentFlags.useExternalWalletTopUp) {
+        await _topUpViaPaymentApi(amountSar);
+      } else {
+        await _topUpViaLegacyCallable(amountSar);
       }
-      await _openPaymentAndFinalize(res);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
-  Future<void> _openPaymentAndFinalize(Map<String, dynamic> res) async {
+  Future<void> _topUpViaPaymentApi(double amountSar) async {
+    final packageId = 'sar_${amountSar.toInt()}';
+    final idem =
+        'wallet_${currentUserUid}_${amountSar.toInt()}_${DateTime.now().millisecondsSinceEpoch}';
+    final client = DriverPaymentApiClient();
+    try {
+      final res = await client.createWalletTopUp(
+        idempotencyKey: idem,
+        amountMajor: amountSar,
+        packageId: packageId,
+        email: currentUserEmail,
+        description: 'Wallet top-up',
+        locale: 'ar',
+      );
+      if (!mounted) return;
+      await _openHostedPageAndWaitForCredit(client, res, amountSar);
+    } on DriverPaymentApiException catch (e) {
+      if (!mounted) return;
+      await _showTopUpFailed(retryAmount: amountSar, detail: e.code);
+    } catch (_) {
+      if (!mounted) return;
+      await _showTopUpFailed(retryAmount: amountSar);
+    }
+  }
+
+  Future<void> _openHostedPageAndWaitForCredit(
+    DriverPaymentApiClient client,
+    Map<String, dynamic> res,
+    double amountSar,
+  ) async {
+    final url = (res['paymentUrl'] ??
+            res['payment_url'] ??
+            res['threeDsUrl'] ??
+            res['three_ds_url'] ??
+            '')
+        .toString();
+    final paymentId = (res['id'] ?? '').toString();
+    if (url.isEmpty || paymentId.isEmpty) {
+      await _showTopUpFailed(retryAmount: amountSar);
+      return;
+    }
+
+    final uri = Uri.tryParse(url);
+    if (uri == null || !(uri.isScheme('https') || uri.isScheme('http'))) {
+      await _showTopUpFailed(retryAmount: amountSar);
+      return;
+    }
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!mounted) return;
+
+    final proceed = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => AlertDialog(
+            title: Text(driverTr(context, 'Top up wallet')),
+            content: Text(
+              driverTr(
+                context,
+                'Complete payment in the browser, then confirm here. Balance updates only after server confirmation.',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(driverTr(context, 'Cancel')),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(driverTr(context, 'Confirm')),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!proceed || !mounted) {
+      await _showTopUpFailed(retryAmount: amountSar);
+      return;
+    }
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      await client.waitForWalletCredit(sessionId: paymentId);
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(_msgTopUpSuccess)),
+        );
+        safeSetState(() {});
+      }
+    } on DriverPaymentApiException catch (_) {
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        await _showTopUpFailed(retryAmount: amountSar);
+      }
+    } catch (_) {
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        await _showTopUpFailed(retryAmount: amountSar);
+      }
+    }
+  }
+
+  Future<void> _showTopUpFailed({double? retryAmount, String? detail}) async {
+    if (!mounted) return;
+    final retry = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(driverTr(context, 'Top up wallet')),
+            content: Text(
+              detail == null || detail.isEmpty
+                  ? _msgTopUpFailed
+                  : '$_msgTopUpFailed\n($detail)',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(driverTr(context, 'Cancel')),
+              ),
+              if (retryAmount != null && retryAmount > 0)
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: Text(driverTr(context, 'Retry')),
+                ),
+            ],
+          ),
+        ) ??
+        false;
+    if (retry && retryAmount != null && retryAmount > 0 && mounted) {
+      await _topUp(retryAmount);
+    }
+  }
+
+  /// Legacy Firebase callable path (rollback only).
+  Future<void> _topUpViaLegacyCallable(double amountSar) async {
+    final packageId = 'sar_${amountSar.toInt()}';
+    final idem =
+        'wallet_${currentUserUid}_${amountSar.toInt()}_${DateTime.now().millisecondsSinceEpoch}';
+    final res = await makeCloudCall('createNGeniusPayment', {
+      'paymentPurpose': 'wallet',
+      'packageId': packageId,
+      'amountMajor': amountSar,
+      'idempotencyKey': idem,
+      'description': 'Wallet top-up — $currentUserDisplayName',
+    });
+    if (!mounted) return;
+    if (res['error'] != null) {
+      await _showTopUpFailed(
+        retryAmount: amountSar,
+        detail: res['error']?.toString(),
+      );
+      return;
+    }
     final url = (res['payment_url'] ??
             res['paymentUrl'] ??
             res['three_ds_url'] ??
@@ -111,7 +242,10 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       }
     }
-    if (paymentId.isEmpty || !mounted) return;
+    if (paymentId.isEmpty || !mounted) {
+      await _showTopUpFailed(retryAmount: amountSar);
+      return;
+    }
 
     final done = await showDialog<bool>(
           context: context,
@@ -136,38 +270,24 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
           ),
         ) ??
         false;
-    if (!done || !mounted) return;
+    if (!done || !mounted) {
+      await _showTopUpFailed(retryAmount: amountSar);
+      return;
+    }
 
     final fin = await makeCloudCall('finalizeNGeniusWalletTopUp', {
       'id': paymentId,
     });
     if (!mounted) return;
     if (fin['error'] != null && fin['credited'] != true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            driverTr(
-              context,
-              (fin['error'] ??
-                      'Payment not confirmed yet. Try again after completion.')
-                  .toString(),
-            ),
-          ),
-        ),
+      await _showTopUpFailed(
+        retryAmount: amountSar,
+        detail: fin['error']?.toString(),
       );
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          driverTr(
-            context,
-            fin['alreadyCredited'] == true
-                ? 'Top-up already applied'
-                : 'Wallet topped up successfully',
-          ),
-        ),
-      ),
+      const SnackBar(content: Text(_msgTopUpSuccess)),
     );
     safeSetState(() {});
   }
