@@ -38,6 +38,40 @@ function isAssignable(statusCode, halhText, halhOrder) {
   return false;
 }
 
+function logStage(stage, t0, extra = {}) {
+  const ms = Date.now() - t0;
+  console.log(
+    JSON.stringify({
+      tag: "acceptDriverOrder",
+      stage,
+      ms,
+      ...extra,
+    }),
+  );
+}
+
+function mapCaughtError(e) {
+  if (e instanceof functions.https.HttpsError) return e;
+  const code = e && (e.code || e.status);
+  const msg = String((e && e.message) || e || "");
+  if (
+    code === 7 ||
+    code === "PERMISSION_DENIED" ||
+    msg.includes("PERMISSION_DENIED") ||
+    msg.includes("Missing or insufficient permissions")
+  ) {
+    return new functions.https.HttpsError(
+      "unavailable",
+      "BOOKING_SERVICE_UNAVAILABLE",
+    );
+  }
+  console.error("acceptDriverOrder_unhandled", code, msg.slice(0, 300));
+  return new functions.https.HttpsError(
+    "internal",
+    "BOOKING_ASSIGNMENT_FAILED",
+  );
+}
+
 async function resolveWalletRef(firestore, userRef) {
   const q = await firestore
     .collection("wallets")
@@ -50,7 +84,10 @@ async function resolveWalletRef(firestore, userRef) {
 
 exports.acceptDriverOrder = functions
   .region("us-central1")
+  .runWith({ timeoutSeconds: 30, memory: "256MB" })
   .https.onCall(async (data, context) => {
+    const t0 = Date.now();
+    logStage("accept_start", t0);
     requireAuth(context);
     const uid = context.auth.uid;
     const orderId = String(data.orderId || "").trim();
@@ -67,14 +104,48 @@ exports.acceptDriverOrder = functions
       ? firestore.doc(orderPath)
       : firestore.collection("order").doc(orderId);
     const userRef = firestore.collection("user").doc(uid);
-    const walletRef = await resolveWalletRef(firestore, userRef);
+
+    let walletRef;
+    try {
+      walletRef = await resolveWalletRef(firestore, userRef);
+      logStage("wallet_loaded", t0, { walletId: walletRef.id });
+    } catch (e) {
+      throw mapCaughtError(e);
+    }
 
     try {
       await firestore.runTransaction(async (tx) => {
-        const [orderSnap, walletSnap] = await Promise.all([
+        logStage("transaction_started", t0);
+        const [orderSnap, walletSnap, driverSnap] = await Promise.all([
           tx.get(orderRef),
           tx.get(walletRef),
+          tx.get(userRef),
         ]);
+        logStage("booking_loaded", t0, { orderExists: orderSnap.exists });
+        logStage("driver_loaded", t0, { driverExists: driverSnap.exists });
+
+        if (!driverSnap.exists) {
+          throw new functions.https.HttpsError(
+            "failed-precondition",
+            "driver-disabled",
+          );
+        }
+        const driver = driverSnap.data() || {};
+        const active =
+          driver.actev_mndob === true ||
+          driver.actevMndob === true ||
+          driver.ismndob === true;
+        const suspended =
+          driver.suspended === true ||
+          driver.is_suspended === true ||
+          driver.blocked === true;
+        if (!active || suspended) {
+          throw new functions.https.HttpsError(
+            "failed-precondition",
+            "driver-disabled",
+          );
+        }
+
         if (!orderSnap.exists) {
           throw new functions.https.HttpsError("not-found", "BOOKING_NOT_FOUND");
         }
@@ -91,6 +162,8 @@ exports.acceptDriverOrder = functions
               "BOOKING_ALREADY_ASSIGNED",
             );
           }
+          // Idempotent re-accept by same driver.
+          return;
         }
         if (
           !isAssignable(
@@ -129,7 +202,7 @@ exports.acceptDriverOrder = functions
           if (bal < MIN_CASH_WALLET) {
             throw new functions.https.HttpsError(
               "failed-precondition",
-              `يجب أن يكون رصيد محفظتك ${MIN_CASH_WALLET} ريال على الأقل لقبول الطلبات النقدية.`,
+              "insufficient-wallet",
             );
           }
         }
@@ -146,11 +219,11 @@ exports.acceptDriverOrder = functions
           acceptedAt: admin.firestore.FieldValue.serverTimestamp(),
           START: admin.firestore.FieldValue.serverTimestamp(),
           timestamp: admin.firestore.FieldValue.serverTimestamp(),
-          naim_mndob_text: String(data.displayName || ""),
+          naim_mndob_text: String(data.displayName || "").slice(0, 160),
           phone_nu_mndob: Number(data.phone || 0),
-          carmndob: String(data.carLabel || ""),
-          NameCar: String(data.NameCar || ""),
-          ModelCar: String(data.ModelCar || ""),
+          carmndob: String(data.carLabel || "").slice(0, 160),
+          NameCar: String(data.NameCar || "").slice(0, 120),
+          ModelCar: String(data.ModelCar || "").slice(0, 120),
         };
         if (Number.isFinite(lat) && Number.isFinite(lng) && (lat || lng)) {
           claim.mapuser = new admin.firestore.GeoPoint(lat, lng);
@@ -158,20 +231,43 @@ exports.acceptDriverOrder = functions
         }
         tx.update(orderRef, claim);
       });
+      logStage("transaction_committed", t0);
+      logStage("accept_completed", t0);
+      // Notifications are client-side / best-effort — never block accept.
       return { ok: true };
     } catch (e) {
-      if (e instanceof functions.https.HttpsError) {
-        const msg = e.message || "";
+      const mapped = mapCaughtError(e);
+      logStage("accept_failed", t0, {
+        code: mapped.code,
+        message: mapped.message,
+      });
+      // Return structured payload (not only throw) so Flutter maps Arabic codes.
+      if (mapped instanceof functions.https.HttpsError) {
+        const msg = mapped.message || "";
+        const errorCode =
+          msg === "insufficient-wallet"
+            ? "DRIVER_WALLET_INSUFFICIENT"
+            : msg === "BOOKING_ALREADY_ASSIGNED"
+              ? "BOOKING_ALREADY_ASSIGNED"
+              : msg === "BOOKING_EXPIRED"
+                ? "BOOKING_EXPIRED"
+                : msg === "driver-disabled"
+                  ? "DRIVER_DISABLED"
+                  : msg === "BOOKING_INVALID_STATE"
+                    ? "BOOKING_INVALID_STATE"
+                    : msg === "BOOKING_NOT_FOUND"
+                      ? "BOOKING_NOT_FOUND"
+                      : msg === "BOOKING_SERVICE_UNAVAILABLE"
+                        ? "BOOKING_SERVICE_UNAVAILABLE"
+                        : msg;
         return {
           ok: false,
           error: msg,
-          errorCode: msg.includes("محفظ")
-            ? "DRIVER_WALLET_INSUFFICIENT"
-            : msg,
-          code: e.code,
+          errorCode,
+          code: mapped.code,
         };
       }
-      throw e;
+      throw mapped;
     }
   });
 

@@ -37,11 +37,22 @@ abstract final class DriverTripService {
   static const int minTripSecondsBeforeComplete = 60;
 
   static Future<double> minWalletFromSettings() async {
-    final settings = await querySettingsRecordOnce(
-      queryBuilder: (q) => q.where('id', isEqualTo: 1),
-      singleRecord: true,
-    ).then((l) => l.firstOrNull);
-    return settings?.minDriverWallet ?? 0.0;
+    try {
+      final settings = await querySettingsRecordOnce(
+        queryBuilder: (q) => q.where('id', isEqualTo: 1),
+        singleRecord: true,
+      ).timeout(const Duration(seconds: 4)).then((l) => l.firstOrNull);
+      return settings?.minDriverWallet ?? 0.0;
+    } catch (_) {
+      return 0.0;
+    }
+  }
+
+  static void _acceptLog(String stage, Stopwatch sw, [Object? detail]) {
+    debugPrint(
+      '[accept] $stage +${sw.elapsedMilliseconds}ms'
+      '${detail == null ? '' : ' $detail'}',
+    );
   }
 
   static Future<DriverWalletGateResult> validateWalletForAccept({
@@ -68,7 +79,8 @@ abstract final class DriverTripService {
 
     double balance;
     try {
-      balance = await DriverWalletService.availableBalance();
+      balance = await DriverWalletService.availableBalance()
+          .timeout(const Duration(seconds: 5));
     } catch (_) {
       balance = 0;
     }
@@ -89,12 +101,16 @@ abstract final class DriverTripService {
     required LatLng? driverLocation,
     required void Function() onStateChanged,
   }) async {
+    final sw = Stopwatch()..start();
+    _acceptLog('accept_start', sw, order.reference.id);
+
     final net = await DriverAppLifecycleCoordinator.requireOnlineOrEnqueue(
       type: DriverOfflineOpType.acceptOrder,
       orderPath: order.reference.path,
       allowQueue: false,
     );
     if (!net.ok) {
+      _acceptLog('accept_failed', sw, 'OFFLINE');
       return DriverWalletGateResult(
         ok: false,
         code: 'OFFLINE',
@@ -103,70 +119,107 @@ abstract final class DriverTripService {
     }
 
     final walletGate = await validateWalletForAccept(order: order);
+    _acceptLog('wallet_loaded', sw, walletGate.ok);
     if (!walletGate.ok) {
+      _acceptLog('accept_failed', sw, walletGate.code);
       return walletGate;
     }
 
     final driverRef = currentUserReference;
     if (driverRef == null) {
+      _acceptLog('accept_failed', sw, 'AUTH_REQUIRED');
       return const DriverWalletGateResult(
         ok: false,
         code: 'AUTH_REQUIRED',
         message: 'Please sign in first.',
       );
     }
+    _acceptLog('driver_loaded', sw, driverRef.id);
 
     // Prefer Admin SDK callable (wallet re-check + atomic claim).
-    final cf = await makeCloudCall('acceptDriverOrder', {
-      'orderId': order.reference.id,
-      'orderPath': order.reference.path,
-      if (driverLocation != null) ...{
-        'lat': driverLocation.latitude,
-        'lng': driverLocation.longitude,
+    final cf = await makeCloudCall(
+      'acceptDriverOrder',
+      {
+        'orderId': order.reference.id,
+        'orderPath': order.reference.path,
+        if (driverLocation != null) ...{
+          'lat': driverLocation.latitude,
+          'lng': driverLocation.longitude,
+        },
+        'displayName': currentUserDisplayName,
+        'phone': valueOrDefault(currentUserDocument?.phoneN, 0),
+        'carLabel':
+            '${valueOrDefault(currentUserDocument?.textTypeCarMndob, '')}- ${valueOrDefault(currentUserDocument?.numberLohhCar, '')}',
+        'NameCar': valueOrDefault(currentUserDocument?.nameCar, ''),
+        'ModelCar': valueOrDefault(currentUserDocument?.modelCar, ''),
       },
-      'displayName': currentUserDisplayName,
-      'phone': valueOrDefault(currentUserDocument?.phoneN, 0),
-      'carLabel':
-          '${valueOrDefault(currentUserDocument?.textTypeCarMndob, '')}- ${valueOrDefault(currentUserDocument?.numberLohhCar, '')}',
-      'NameCar': valueOrDefault(currentUserDocument?.nameCar, ''),
-      'ModelCar': valueOrDefault(currentUserDocument?.modelCar, ''),
-    });
+      timeout: const Duration(seconds: 15),
+    );
+    _acceptLog('cf_done', sw, '${cf['ok']} ${cf['code']} ${cf['errorCode']}');
 
     if (cf['error'] == null && cf['ok'] == true) {
       FFAppState().revOrder = order.reference;
       onStateChanged();
       unawaited(_postAcceptSideEffects(order, driverRef, driverLocation));
+      _acceptLog('accept_completed', sw, 'via_cf');
       return const DriverWalletGateResult(ok: true);
     }
 
-    final cfCode = (cf['code'] ?? '').toString();
-    // not-found / unavailable → local transactional claim (still race-safe).
-    if (cfCode != 'not-found' &&
-        cfCode != 'unavailable' &&
-        cfCode != 'unimplemented' &&
-        (cf['error'] != null || cf['ok'] == false)) {
-      final code = (cf['errorCode'] ?? cfCode).toString();
-      final errText = (cf['error'] ?? '').toString();
-      if (code == 'DRIVER_WALLET_INSUFFICIENT' ||
-          (code == 'failed-precondition' && errText.contains('محفظ'))) {
-        return DriverWalletGateResult(
-          ok: false,
-          code: 'DRIVER_WALLET_INSUFFICIENT',
-          message: errText.isNotEmpty
-              ? errText
-              : 'يجب أن يكون رصيد محفظتك 200 ريال على الأقل لقبول الطلبات النقدية.',
-        );
-      }
-      final mapped = _messageForCode(
-        (cf['errorCode'] ?? 'BOOKING_ASSIGNMENT_FAILED').toString(),
-      );
+    final cfCode = (cf['code'] ?? '').toString().toLowerCase();
+    final errorCode = (cf['errorCode'] ?? '').toString();
+    final errText = (cf['error'] ?? '').toString();
+
+    // Hard business failures — do not fall back.
+    final hardFail = errorCode == 'DRIVER_WALLET_INSUFFICIENT' ||
+        errorCode == 'BOOKING_ALREADY_ASSIGNED' ||
+        errorCode == 'BOOKING_EXPIRED' ||
+        errorCode == 'BOOKING_INVALID_STATE' ||
+        errorCode == 'BOOKING_NOT_FOUND' ||
+        errorCode == 'DRIVER_DISABLED' ||
+        errorCode == 'insufficient-wallet' ||
+        (cfCode == 'failed-precondition' && errText.contains('محفظ')) ||
+        (cfCode == 'already-exists');
+    if (hardFail) {
+      final code = errorCode.isNotEmpty
+          ? errorCode
+          : (cfCode == 'already-exists'
+              ? 'BOOKING_ALREADY_ASSIGNED'
+              : 'BOOKING_ASSIGNMENT_FAILED');
+      final mappedCode = code == 'insufficient-wallet'
+          ? 'DRIVER_WALLET_INSUFFICIENT'
+          : code;
+      _acceptLog('accept_failed', sw, mappedCode);
       return DriverWalletGateResult(
         ok: false,
-        code: (cf['errorCode'] ?? cfCode).toString(),
-        message: (cf['error'] ?? mapped).toString(),
+        code: mappedCode,
+        message: mappedCode == 'DRIVER_WALLET_INSUFFICIENT'
+            ? _messageForCode('DRIVER_WALLET_INSUFFICIENT')
+            : (errText.isNotEmpty && !errText.contains('_')
+                ? errText
+                : _messageForCode(mappedCode)),
       );
     }
 
+    // CF unavailable / IAM / timeout → client transactional claim (rules-gated).
+    final softFail = cfCode == 'not-found' ||
+        cfCode == 'unavailable' ||
+        cfCode == 'unimplemented' ||
+        cfCode == 'internal' ||
+        cfCode == 'deadline-exceeded' ||
+        errorCode == 'BOOKING_SERVICE_UNAVAILABLE' ||
+        cf.isEmpty;
+    if (!softFail && (cf['error'] != null || cf['ok'] == false)) {
+      _acceptLog('accept_failed', sw, errorCode.isEmpty ? cfCode : errorCode);
+      return DriverWalletGateResult(
+        ok: false,
+        code: errorCode.isNotEmpty ? errorCode : cfCode,
+        message: _messageForCode(
+          errorCode.isNotEmpty ? errorCode : 'BOOKING_ASSIGNMENT_FAILED',
+        ),
+      );
+    }
+
+    _acceptLog('transaction_started', sw, 'client_fallback');
     try {
       await FirebaseFirestore.instance.runTransaction((tx) async {
         final snap = await tx.get(order.reference);
@@ -243,23 +296,27 @@ abstract final class DriverTripService {
           );
         }
         tx.update(order.reference, claim);
-      });
+      }).timeout(const Duration(seconds: 12));
+      _acceptLog('transaction_committed', sw, 'client_fallback');
     } on StateError catch (e) {
       final code = e.message;
+      _acceptLog('accept_failed', sw, code);
       return DriverWalletGateResult(
         ok: false,
         code: code,
         message: _messageForCode(code),
       );
     } on FirebaseException catch (e) {
+      _acceptLog('accept_failed', sw, e.code);
       return DriverWalletGateResult(
         ok: false,
         code: e.code,
         message: e.code == 'permission-denied'
-            ? _messageForCode('BOOKING_ASSIGNMENT_FAILED')
+            ? _messageForCode('PERMISSION_DENIED')
             : '${_messageForCode('BOOKING_ASSIGNMENT_FAILED')} (${e.code})',
       );
     } catch (e) {
+      _acceptLog('accept_failed', sw, e);
       return DriverWalletGateResult(
         ok: false,
         code: 'BOOKING_ASSIGNMENT_FAILED',
@@ -270,6 +327,7 @@ abstract final class DriverTripService {
     FFAppState().revOrder = order.reference;
     onStateChanged();
     unawaited(_postAcceptSideEffects(order, driverRef, driverLocation));
+    _acceptLog('accept_completed', sw, 'via_client_txn');
     return const DriverWalletGateResult(ok: true);
   }
 
@@ -289,7 +347,6 @@ abstract final class DriverTripService {
       });
     } catch (_) {}
     try {
-      await actions.trackOrderLocation(order.reference);
       await actions.startTrackingAndUpdateFirebase(order.reference);
     } catch (_) {}
     try {
@@ -895,21 +952,30 @@ abstract final class DriverTripService {
   static String _messageForCode(String code) {
     switch (code) {
       case 'BOOKING_NOT_FOUND':
-        return 'Booking not found.';
+        return 'الطلب غير موجود.';
       case 'BOOKING_ALREADY_ASSIGNED':
-        return 'This request has already been accepted by another driver.';
+        return 'تم قبول هذا الطلب بواسطة مندوب آخر.';
       case 'BOOKING_INVALID_STATE':
-        return 'This booking cannot be updated in its current state.';
+        return 'لا يمكن تحديث هذا الطلب في حالته الحالية.';
       case 'BOOKING_EXPIRED':
         return 'انتهت مهلة قبول الطلب. لم يعد بإمكانك قبول هذا الطلب.';
       case 'DRIVER_WALLET_INSUFFICIENT':
+      case 'insufficient-wallet':
         return 'يجب أن يكون رصيد محفظتك 200 ريال على الأقل لقبول الطلبات النقدية.';
+      case 'DRIVER_DISABLED':
+      case 'driver-disabled':
+        return 'حساب المندوب غير مفعّل أو موقوف.';
+      case 'BOOKING_SERVICE_UNAVAILABLE':
+        return 'خدمة القبول غير متاحة مؤقتًا. حاول مرة أخرى.';
       case 'BOOKING_TOO_FAR_OR_TOO_EARLY':
-        return 'Move closer to the destination or wait a moment before completing.';
+        return 'اقترب من الوجهة أو انتظر قليلًا قبل الإنهاء.';
       case 'PERMISSION_DENIED':
-        return 'You are not allowed to perform this action.';
+        return 'ليس لديك صلاحية لتنفيذ هذا الإجراء.';
+      case 'INTERNAL':
+      case 'internal':
+        return 'تعذّر القبول بسبب خطأ في الخادم. حاول مرة أخرى.';
       default:
-        return 'Could not update the booking. Please try again.';
+        return 'تعذّر القبول. حاول مرة أخرى.';
     }
   }
 }

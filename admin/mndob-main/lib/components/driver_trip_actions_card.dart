@@ -125,6 +125,10 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
     await _run(() async {
       final loc = await getCurrentUserLocation(
         defaultLocation: const LatLng(0, 0),
+        cached: true,
+      ).timeout(
+        const Duration(seconds: 6),
+        onTimeout: () => const LatLng(0, 0),
       );
       final result = await DriverTripService.acceptOrder(
         order: order,
@@ -163,13 +167,15 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
           }
           return;
         }
-        final key = phrase.isNotEmpty
+        final key = phrase.isNotEmpty &&
+                !phrase.toUpperCase().contains('INTERNAL') &&
+                phrase != 'INTERNAL'
             ? phrase.split(' (').first.trim()
-            : (code.isEmpty
-                ? 'Could not accept'
-                : DriverTripService.messageForCode(code));
+            : DriverTripService.messageForCode(
+                code.isEmpty ? 'BOOKING_ASSIGNMENT_FAILED' : code,
+              );
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(driverTr(context, key))),
+          SnackBar(content: Text(key)),
         );
       }
     });
