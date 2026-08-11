@@ -18,6 +18,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import '/backend/backend.dart';
 import '/core/driver_order_meta.dart';
+import '/core/driver_trip_constants.dart';
 import '/core/driver_trip_service.dart';
 import '/flutter_flow/lat_lng.dart';
 
@@ -68,9 +69,15 @@ Future startTrackingAndUpdateFirebase(dynamic orderIdOrRef) async {
       final driverPos = LatLng(position.latitude, position.longitude);
       if (driverPos.latitude == 0 && driverPos.longitude == 0) return;
 
+      await _trackedOrderRef!.update({
+        'mapuser': GeoPoint(position.latitude, position.longitude),
+        'timestamp': FieldValue.serverTimestamp(),
+        'speed': position.speed,
+      });
+
       final order = await OrderRecord.getDocumentOnce(_trackedOrderRef!);
       LatLng? target = order.customerPickup;
-      if (order.halhText == 'تم البدء في الرحلة') {
+      if (order.halhText == DriverTripHalh.inProgress) {
         target = order.tripDestination ?? target;
       }
 

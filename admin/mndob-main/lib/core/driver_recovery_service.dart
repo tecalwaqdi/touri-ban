@@ -139,7 +139,6 @@ abstract final class DriverRecoveryService {
       DriverRuntimeDiagnostics.locationSyncActive = true;
       if (hasActiveTrip && FFAppState().revOrder != null) {
         try {
-          await actions.trackOrderLocation(FFAppState().revOrder!);
           await actions.startTrackingAndUpdateFirebase(FFAppState().revOrder!);
         } catch (e) {
           debugPrint('DriverRecoveryService tracking: $e');

@@ -1,0 +1,21 @@
+=== customer Runner.app ===
+path: /Users/ventura/ara-ban/admin/ara_oatan_app/build/ios/iphoneos/Runner.app/Info.plist
+MinimumOSVersion: 15.0
+CFBundleShortVersionString: 9.1.23
+CFBundleVersion: 32
+NSLocationWhenInUseUsageDescription: 'يستخدم تطبيق Touri Taxi موقعك أثناء الاستخدام لتحديد نقطة الانطلاق، اختيار الوجهات السياحية القريبة، وعرض مسار الرحلة على الخريطة.'
+NSLocationAlwaysAndWhenInUseUsageDescription: None
+NSLocationAlwaysUsageDescription: None
+UIBackgroundModes: ['fetch', 'remote-notification']
+empty purpose strings: []
+
+=== driver Runner.app ===
+path: /Users/ventura/ara-ban/admin/mndob-main/build/ios/iphoneos/Runner.app/Info.plist
+MinimumOSVersion: 15.0
+CFBundleShortVersionString: 11.1.3
+CFBundleVersion: 16
+NSLocationWhenInUseUsageDescription: 'يستخدم Touri Taxi Driver موقعك أثناء استخدام التطبيق لعرض موقعك على الخريطة، إسناد الطلبات القريبة، وتحديث مسار الرحلة أثناء تنفيذها.'
+NSLocationAlwaysAndWhenInUseUsageDescription: 'يستخدم Touri Taxi Driver موقعك أثناء استخدام التطبيق وفي الخلفية لتحديد موقعك أثناء توفرّك للطلبات، إسناد الرحلات المناسبة لك، وتحديث موقع الرحلة أثناء تنفيذها.'
+NSLocationAlwaysUsageDescription: 'يستخدم Touri Taxi Driver موقعك في الخلفية لتحديد موقعك أثناء توفرّك للطلبات، إسناد الرحلات المناسبة لك، وتحديث موقع الرحلة أثناء تنفيذها.'
+UIBackgroundModes: ['fetch', 'remote-notification', 'location']
+empty purpose strings: []

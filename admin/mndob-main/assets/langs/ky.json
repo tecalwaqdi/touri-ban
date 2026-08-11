@@ -85,7 +85,7 @@
   "Manufacturing year cannot be in the future": "Чыгарылган жыл келечекте болбошу керек",
   "Missing": "Жетишпейт",
   "Mobile Number": "Телефон номери",
-  "Move closer to the destination or wait a moment before completing.": "Бара турган жерге жакындаңыз же бүтүрүүдөн мурун күтүңүз.",
+  "Move closer to the destination or wait a moment before completing.": "Брондолгон убакыт бүткөнгө чейин сапарды бүтүрүүгө болбойт.",
   "Move the map to adjust your position. Orders will match by this live location.": "Картаны жылдырып ордуңузду тактаңыз. Заказдар ушул жайгашуу боюнча дал келет.",
   "Name": "Аты",
   "Name cannot contain numbers": "Атка сандар болбошу керек",
@@ -357,5 +357,8 @@
   "Unpaid": "Төлөнбөгөн",
   "Payment status": "Төлөм абалы",
   "Touri Taxi": "Touri Taxi",
-  "The First Global Saudi Tourism App": "Биринчи глобалдык саудиялык туристтик колдонмо"
+  "The First Global Saudi Tourism App": "Биринчи глобалдык саудиялык туристтик колдонмо",
+  "Failed to open chat": "Чаты ачуу мүмкүн болбоду",
+  "Check your connection and try again.": "Байланышты текшерип, кайра аракет кылыңыз.",
+  "Trip ends in {time}. Completing early is not allowed.": "Сапардын аягына {time} калды. Эрте бүтүрүүгө болбойт."
 }

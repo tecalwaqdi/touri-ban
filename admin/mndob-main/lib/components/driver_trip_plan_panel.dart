@@ -6,6 +6,7 @@ import '/core/driver_i18n.dart';
 import '/core/driver_map_actions.dart';
 import '/core/driver_navigation_service.dart';
 import '/core/driver_order_meta.dart';
+import '/core/driver_trip_service.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -24,6 +25,7 @@ class DriverTripPlanPanel extends StatefulWidget {
 
 class _DriverTripPlanPanelState extends State<DriverTripPlanPanel> {
   final Set<int> _visitedStopIndexes = {};
+  bool _markingVisit = false;
 
   OrderRecord get order => widget.order;
 
@@ -48,6 +50,48 @@ class _DriverTripPlanPanelState extends State<DriverTripPlanPanel> {
       return;
     }
     await DriverNavigationService.openGoogleMapsMarker(loc, title: title);
+  }
+
+  Future<void> _markVisited(int stopIndex) async {
+    if (_markingVisit) return;
+    final stops = order.listAmakn.toList();
+    if (stopIndex < 0 || stopIndex >= stops.length) return;
+    if (stops[stopIndex].okdone ||
+        _visitedStopIndexes.contains(stopIndex)) {
+      return;
+    }
+
+    setState(() {
+      _markingVisit = true;
+      _visitedStopIndexes.add(stopIndex);
+    });
+
+    try {
+      await DriverTripService.markStopVisited(
+        order: order,
+        stopIndex: stopIndex,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(driverTr(context, 'Visit confirmed')),
+          backgroundColor: context.dsColors.success,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _visitedStopIndexes.remove(stopIndex));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            driverTr(context, 'Something went wrong. Please try again.'),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _markingVisit = false);
+    }
   }
 
   @override
@@ -164,25 +208,18 @@ class _DriverTripPlanPanelState extends State<DriverTripPlanPanel> {
           ...List.generate(steps.length, (index) {
             final step = steps[index];
             final isLast = index == steps.length - 1;
-            final visited = step.stopIndex != null &&
-                _visitedStopIndexes.contains(step.stopIndex);
+            final stopIdx = step.stopIndex;
+            final visited = stopIdx != null &&
+                (stops[stopIdx].okdone ||
+                    _visitedStopIndexes.contains(stopIdx));
             return _TimelineTile(
               step: step,
               isLast: isLast,
               visited: visited,
               onOpenMap: () => _openMap(step.location, step.title),
-              onMarkVisited: step.stopIndex == null
+              onMarkVisited: stopIdx == null || visited || _markingVisit
                   ? null
-                  : () {
-                      setState(() => _visitedStopIndexes.add(step.stopIndex!));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(driverTr(context, 'Visit confirmed')),
-                          backgroundColor: colors.success,
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    },
+                  : () => _markVisited(stopIdx),
               onFocusInApp: step.location == null
                   ? null
                   : () => DriverMapActions.focusLocationHint(

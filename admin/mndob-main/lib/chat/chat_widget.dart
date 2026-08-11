@@ -2,6 +2,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/backend/push_notifications/push_notifications_util.dart';
+import '/core/driver_i18n.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -32,6 +33,7 @@ class ChatWidget extends StatefulWidget {
 
 class _ChatWidgetState extends State<ChatWidget> {
   late ChatModel _model;
+  bool _sending = false;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -51,6 +53,64 @@ class _ChatWidgetState extends State<ChatWidget> {
     _model.dispose();
 
     super.dispose();
+  }
+
+  List<DocumentReference> _participants(DocumentReference clientRef) {
+    return <DocumentReference>[
+      if (currentUserReference != null) currentUserReference!,
+      clientRef,
+    ];
+  }
+
+  Future<void> _sendMessage({
+    required DocumentReference orderRef,
+    required DocumentReference clientRef,
+  }) async {
+    final text = _model.textController.text.trim();
+    if (text.isEmpty || _sending) return;
+    setState(() => _sending = true);
+    try {
+      await ChatRecord.collection.doc().set(createChatRecordData(
+            idorder: orderRef,
+            user1: currentUserReference,
+            msg: text,
+            date: getCurrentTimestamp,
+            naim: currentUserDisplayName,
+            participants: _participants(clientRef),
+          ));
+      try {
+        await WhatCall.call(
+          to: widget.phoneClent?.toString(),
+          msg:
+              '📩 المندوب راسلك داخل التطبيق، ادخل تفاصيل الطلب لقراءة الرسالة.اطرح سؤالك على ',
+        );
+      } catch (_) {}
+      try {
+        triggerPushNotification(
+          notificationTitle: 'رسالة خاصة - توري تاكسي',
+          notificationText: text,
+          notificationSound: 'default',
+          userRefs: [clientRef],
+          initialPageName: 'Login1',
+          parameterData: {},
+        );
+      } catch (_) {}
+      if (!mounted) return;
+      safeSetState(() {
+        _model.textController?.clear();
+      });
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            driverTr(context, 'Something went wrong. Please try again.'),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
   }
 
   @override
@@ -188,19 +248,53 @@ class _ChatWidgetState extends State<ChatWidget> {
                               ),
                               child: StreamBuilder<List<ChatRecord>>(
                                 stream: queryChatRecord(
-                                  queryBuilder: (chatRecord) => chatRecord
-                                      .where(
-                                        'idorder',
-                                        isEqualTo: orderRef,
-                                      )
-                                      .orderBy('date', descending: true),
+                                  queryBuilder: (chatRecord) {
+                                    var q = chatRecord.where(
+                                      'idorder',
+                                      isEqualTo: orderRef,
+                                    );
+                                    if (currentUserReference != null) {
+                                      q = q.where(
+                                        'participants',
+                                        arrayContains: currentUserReference,
+                                      );
+                                    }
+                                    return q.orderBy('date', descending: true);
+                                  },
                                 ),
                                 builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
+                                  if (snapshot.connectionState ==
+                                          ConnectionState.waiting &&
+                                      !snapshot.hasData) {
                                     return const DsLoading();
                                   }
+                                  if (snapshot.hasError) {
+                                    return DsErrorState(
+                                      title: driverTr(
+                                        context,
+                                        'Failed to open chat',
+                                      ),
+                                      message: driverTr(
+                                        context,
+                                        'Check your connection and try again.',
+                                      ),
+                                      retryLabel: driverTr(context, 'Retry'),
+                                      onRetry: () => safeSetState(() {}),
+                                    );
+                                  }
                                   List<ChatRecord> listViewChatRecordList =
-                                      snapshot.data!;
+                                      snapshot.data ?? const <ChatRecord>[];
+
+                                  if (listViewChatRecordList.isEmpty) {
+                                    return DsEmptyState(
+                                      icon: Icons.chat_bubble_outline_rounded,
+                                      title: columnOrderRecord.naimUserText,
+                                      message: FFLocalizations.of(context)
+                                          .getText(
+                                        'mejzih35' /* Type a message... */,
+                                      ),
+                                    );
+                                  }
 
                                   return ListView.builder(
                                     padding: EdgeInsets.zero,
@@ -323,18 +417,10 @@ class _ChatWidgetState extends State<ChatWidget> {
                                     controller: _model.textController,
                                     focusNode: _model.textFieldFocusNode,
                                     onFieldSubmitted: (_) async {
-                                      await ChatRecord.collection
-                                          .doc()
-                                          .set(createChatRecordData(
-                                            idorder: orderRef,
-                                            user1: currentUserReference,
-                                            msg: _model.textController.text,
-                                            date: getCurrentTimestamp,
-                                            naim: currentUserDisplayName,
-                                          ));
-                                      safeSetState(() {
-                                        _model.textController?.clear();
-                                      });
+                                      await _sendMessage(
+                                        orderRef: orderRef,
+                                        clientRef: clientRef,
+                                      );
                                     },
                                     autofocus: false,
                                     obscureText: false,
@@ -383,36 +469,14 @@ class _ChatWidgetState extends State<ChatWidget> {
                                   filled: true,
                                   background: colors.primary,
                                   foreground: colors.onPrimary,
-                                  onPressed: () async {
-                                    await ChatRecord.collection
-                                        .doc()
-                                        .set(createChatRecordData(
-                                          idorder: orderRef,
-                                          user1: currentUserReference,
-                                          msg: _model.textController.text,
-                                          date: getCurrentTimestamp,
-                                          naim: currentUserDisplayName,
-                                        ));
-                                    await WhatCall.call(
-                                      to: widget.phoneClent?.toString(),
-                                      msg:
-                                          '📩 المندوب راسلك داخل التطبيق، ادخل تفاصيل الطلب لقراءة الرسالة.اطرح سؤالك على ',
-                                    );
-
-                                    triggerPushNotification(
-                                      notificationTitle:
-                                          'رسالة خاصة - توري تاكسي',
-                                      notificationText:
-                                          _model.textController.text,
-                                      notificationSound: 'default',
-                                      userRefs: [clientRef],
-                                      initialPageName: 'Login1',
-                                      parameterData: {},
-                                    );
-                                    safeSetState(() {
-                                      _model.textController?.clear();
-                                    });
-                                  },
+                                  onPressed: _sending
+                                      ? null
+                                      : () async {
+                                          await _sendMessage(
+                                            orderRef: orderRef,
+                                            clientRef: clientRef,
+                                          );
+                                        },
                                 ),
                               ],
                             ),

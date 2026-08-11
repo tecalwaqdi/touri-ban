@@ -2831,24 +2831,45 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                                 SizedBox(
                                                                               width: 90.2,
                                                                               child: DsButton.outlined(
-                                                                                label: FFLocalizations.of(context).getText(
-                                                                                  'a7x02i9c' /* Site Visited */,
-                                                                                ),
-                                                                                onPressed: () async {
-                                                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                                                    SnackBar(
-                                                                                      content: Text(
-                                                                                        driverTr(context, 'Visit confirmed'),
-                                                                                        style: TextStyle(
-                                                                                          fontFamily: 'cairo',
-                                                                                          color: context.dsColors.surface,
-                                                                                        ),
+                                                                                label: mkanItem.okdone
+                                                                                    ? driverTr(context, 'Visited')
+                                                                                    : FFLocalizations.of(context).getText(
+                                                                                        'a7x02i9c' /* Site Visited */,
                                                                                       ),
-                                                                                      duration: Duration(milliseconds: 4000),
-                                                                                      backgroundColor: context.dsColors.primary,
-                                                                                    ),
-                                                                                  );
-                                                                                },
+                                                                                enabled: !mkanItem.okdone,
+                                                                                onPressed: mkanItem.okdone
+                                                                                    ? null
+                                                                                    : () async {
+                                                                                        try {
+                                                                                          await DriverTripService.markStopVisited(
+                                                                                            order: columnOrderRecord,
+                                                                                            stopIndex: mkanIndex,
+                                                                                          );
+                                                                                          if (!context.mounted) return;
+                                                                                          ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            SnackBar(
+                                                                                              content: Text(
+                                                                                                driverTr(context, 'Visit confirmed'),
+                                                                                                style: TextStyle(
+                                                                                                  fontFamily: 'cairo',
+                                                                                                  color: context.dsColors.surface,
+                                                                                                ),
+                                                                                              ),
+                                                                                              duration: Duration(milliseconds: 4000),
+                                                                                              backgroundColor: context.dsColors.primary,
+                                                                                            ),
+                                                                                          );
+                                                                                        } catch (_) {
+                                                                                          if (!context.mounted) return;
+                                                                                          ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            SnackBar(
+                                                                                              content: Text(
+                                                                                                driverTr(context, 'Something went wrong. Please try again.'),
+                                                                                              ),
+                                                                                            ),
+                                                                                          );
+                                                                                        }
+                                                                                      },
                                                                               ),
                                                                             ),
                                                                           ),

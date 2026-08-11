@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Unified payment feature flags for cash-only release + Payment API.
 ///
 /// Firebase paymentApi (preferred — Express on Cloud Functions):
@@ -21,13 +23,17 @@
 ///
 /// Does **not** delete N-Genius code, payment_sessions, webhooks, or CFs.
 abstract final class TouryPaymentFlags {
-  /// When true, cash bookings may use constrained client Firestore create if
-  /// Cloud Function is missing. **Production default is false** — create via CF only.
-  /// Opt-in for local/no-billing: `--dart-define=TOURY_CLIENT_CASH_FALLBACK=true`
+  /// Compile-time opt-in: `--dart-define=TOURY_CLIENT_CASH_FALLBACK=true`
+  /// **Release default is false** — create via CF only.
   static const bool allowClientCashFallback = bool.fromEnvironment(
     'TOURY_CLIENT_CASH_FALLBACK',
     defaultValue: false,
   );
+
+  /// Runtime gate used by booking. Debug builds also allow the constrained
+  /// client cash create when `createCashBooking` CF IAM is broken.
+  static bool get allowClientCashFallbackRuntime =>
+      allowClientCashFallback || kDebugMode;
 
   /// Compile-time flag. Default **false** = cash on delivery only.
   static const bool enableOnlinePayment = bool.fromEnvironment(

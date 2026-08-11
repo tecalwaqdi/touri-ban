@@ -510,14 +510,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.5.0"
-  flutter_background_geolocation:
-    dependency: "direct main"
-    description:
-      name: flutter_background_geolocation
-      sha256: "506fc7d9f2a79c8f67057c1e83debe27b2f611aca464b77e0e14e3b0872db4ad"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.0.1"
   flutter_cache_manager:
     dependency: "direct main"
     description:

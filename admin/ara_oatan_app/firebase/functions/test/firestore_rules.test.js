@@ -17,6 +17,7 @@ const {
   getDoc,
   setDoc,
   updateDoc,
+  Timestamp,
 } = require("firebase/firestore");
 
 const projectId = "demo-touri-taxi";
@@ -263,6 +264,8 @@ describe("Firestore P0 authorization boundaries", () => {
         total: 100,
         amount_halalas: 10000,
         mndob_user: null,
+        // Within first hour — cancel allowed while still unassigned.
+        data_order: Timestamp.fromDate(new Date(Date.now() - 10 * 60 * 1000)),
       },
     });
 

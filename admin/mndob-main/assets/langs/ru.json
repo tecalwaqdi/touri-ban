@@ -85,7 +85,7 @@
   "Manufacturing year cannot be in the future": "Год выпуска не может быть в будущем",
   "Missing": "Отсутствует",
   "Mobile Number": "Номер телефона",
-  "Move closer to the destination or wait a moment before completing.": "Подойдите ближе к месту назначения или подождите перед завершением.",
+  "Move closer to the destination or wait a moment before completing.": "Нельзя завершить поездку до окончания забронированного времени.",
   "Move the map to adjust your position. Orders will match by this live location.": "Перемещайте карту, чтобы уточнить позицию. Заказы подбираются по этому местоположению.",
   "Name": "Имя",
   "Name cannot contain numbers": "Имя не может содержать цифры",
@@ -357,5 +357,8 @@
   "Unpaid": "Не оплачено",
   "Payment status": "Статус оплаты",
   "Touri Taxi": "Touri Taxi",
-  "The First Global Saudi Tourism App": "Первое глобальное саудовское туристическое приложение"
+  "The First Global Saudi Tourism App": "Первое глобальное саудовское туристическое приложение",
+  "Failed to open chat": "Не удалось открыть чат",
+  "Check your connection and try again.": "Проверьте соединение и попробуйте снова.",
+  "Trip ends in {time}. Completing early is not allowed.": "До конца поездки: {time}. Досрочное завершение запрещено."
 }

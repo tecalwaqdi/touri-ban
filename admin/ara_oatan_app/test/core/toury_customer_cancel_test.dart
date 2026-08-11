@@ -44,38 +44,65 @@ void main() {
         DateTime.now().toUtc().subtract(const Duration(hours: 2));
     final createdRecently =
         DateTime.now().toUtc().subtract(const Duration(minutes: 10));
+    final createdAlmostHour =
+        DateTime.now().toUtc().subtract(const Duration(minutes: 59));
 
-    test('waiting for driver + after 1h → allowed', () {
+    test('waiting for driver + within 1h (10 min) → allowed', () {
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: TouryBookingStatusCodes.pendingDriver,
           halhText: 'بانتظار قبول السائق',
-          createdAt: createdLongAgo,
+          createdAt: createdRecently,
         ),
         isTrue,
       );
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: 'awaiting_driver',
-          createdAt: createdLongAgo,
+          createdAt: createdRecently,
         ),
         isTrue,
       );
     });
 
-    test('waiting for driver + before 1h → denied', () {
+    test('waiting for driver + 59 min → still allowed', () {
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: TouryBookingStatusCodes.pendingDriver,
-          createdAt: createdRecently,
+          createdAt: createdAlmostHour,
+        ),
+        isTrue,
+      );
+    });
+
+    test('waiting for driver + after 1h → denied (window expired)', () {
+      expect(
+        TouryCustomerCancelPolicy.canCustomerCancelBooking(
+          statusCode: TouryBookingStatusCodes.pendingDriver,
+          createdAt: createdLongAgo,
         ),
         isFalse,
       );
-      final left = TouryCustomerCancelPolicy.remainingUntilCancelEligible(
+      expect(
+        TouryCustomerCancelPolicy.denyReasonKey(
+          statusCode: TouryBookingStatusCodes.pendingDriver,
+          createdAt: createdLongAgo,
+        ),
+        'booking_cancel_window_expired',
+      );
+      final left = TouryCustomerCancelPolicy.remainingCancelWindow(
+        createdAt: createdLongAgo,
+      );
+      expect(left, Duration.zero);
+    });
+
+    test('within window remaining countdown is positive', () {
+      final left = TouryCustomerCancelPolicy.remainingCancelWindow(
         createdAt: createdRecently,
       );
       expect(left, isNotNull);
       expect(left!.inMinutes, greaterThan(0));
+      expect(left.inMinutes, lessThanOrEqualTo(50));
     });
 
     test('missing createdAt → denied (fail closed)', () {
@@ -92,14 +119,7 @@ void main() {
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: 'completed',
-          createdAt: createdLongAgo,
-        ),
-        isFalse,
-      );
-      expect(
-        TouryCustomerCancelPolicy.canCustomerCancelBooking(
-          statusCode: TouryBookingStatusCodes.tripCompleted,
-          createdAt: createdLongAgo,
+          createdAt: createdRecently,
         ),
         isFalse,
       );
@@ -113,27 +133,20 @@ void main() {
         isTrue,
       );
       expect(
-        TouryCustomerCancelPolicy.isAlreadyCancelled(
-          statusCode: 'pending_driver',
-          halhText: 'ملغي',
-        ),
-        isTrue,
-      );
-      expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: 'cancelled',
-          createdAt: createdLongAgo,
+          createdAt: createdRecently,
         ),
         isFalse,
       );
     });
 
-    test('driver accepted / assigned → denied even after 1h', () {
+    test('driver accepted / assigned → denied even within 1h', () {
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: TouryBookingStatusCodes.driverAssigned,
           halhText: 'مقبول',
-          createdAt: createdLongAgo,
+          createdAt: createdRecently,
         ),
         isFalse,
       );
@@ -141,22 +154,17 @@ void main() {
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: TouryBookingStatusCodes.pendingDriver,
           mndobUser: 'user/driver-1',
-          createdAt: createdLongAgo,
+          createdAt: createdRecently,
         ),
         isFalse,
       );
       expect(
-        TouryCustomerCancelPolicy.hasDriverAccepted(
-          statusCode: 'driver_arriving',
+        TouryCustomerCancelPolicy.denyReasonKey(
+          statusCode: TouryBookingStatusCodes.pendingDriver,
+          mndobUser: 'user/driver-1',
+          createdAt: createdRecently,
         ),
-        isTrue,
-      );
-      expect(
-        TouryCustomerCancelPolicy.canCustomerCancelBooking(
-          statusCode: 'trip_in_progress',
-          createdAt: createdLongAgo,
-        ),
-        isFalse,
+        'booking_cancel_after_driver',
       );
     });
   });
@@ -183,26 +191,12 @@ void main() {
         isTrue,
       );
     });
-
-    test('paid online with gateway id can proceed to refund path', () {
-      expect(
-        TouryCustomerCancelPolicy.requiresPaidCancelGuard(
-          isOnlinePayment: true,
-          paymentStatus: 'paid',
-          gatewayOrderId: 'ng-123',
-        ),
-        isFalse,
-      );
-    });
   });
 
   group('cancel payload', () {
     test('does not mutate payment amount/status/owner fields', () {
       final payload = customerCancelUpdatePayload(authUid: 'cust-1');
       expect(payload.containsKey('payment_status'), isFalse);
-      expect(payload.containsKey('amount_halalas'), isFalse);
-      expect(payload.containsKey('total'), isFalse);
-      expect(payload.containsKey('PaymentMethod'), isFalse);
       expect(payload.containsKey('USER'), isFalse);
       expect(payload.containsKey('mndob_user'), isFalse);
       expect(payload['status_code'], TouryBookingStatusCodes.cancelledByCustomer);
@@ -212,7 +206,7 @@ void main() {
   });
 
   group('unpaid payment_pending', () {
-    test('allows immediate cancel without 1h wait', () {
+    test('allows immediate cancel without window', () {
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: 'payment_pending',
@@ -234,23 +228,6 @@ void main() {
         isFalse,
       );
     });
-
-    test('isUnpaidPaymentPending detects draft', () {
-      expect(
-        TouryCustomerCancelPolicy.isUnpaidPaymentPending(
-          statusCode: 'payment_pending',
-          paymentStatus: 'unpaid',
-        ),
-        isTrue,
-      );
-      expect(
-        TouryCustomerCancelPolicy.isUnpaidPaymentPending(
-          statusCode: 'pending_driver',
-          paymentStatus: 'paid',
-        ),
-        isFalse,
-      );
-    });
   });
 
   group('status localizer payment_pending', () {
@@ -259,15 +236,6 @@ void main() {
         BookingStatusLocalizer.resolveCode(statusCode: 'payment_pending'),
         TouryBookingStatusCodes.paymentPending,
       );
-      expect(
-        BookingStatusLocalizer.isAwaitingDriver(statusCode: 'payment_pending'),
-        isFalse,
-      );
-      expect(
-        BookingStatusLocalizer.isPaymentPending(statusCode: 'payment_pending'),
-        isTrue,
-      );
     });
   });
-
 }

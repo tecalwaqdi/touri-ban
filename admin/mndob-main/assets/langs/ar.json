@@ -84,7 +84,7 @@
   "Manufacturing year cannot be in the future": "سنة الصنع لا يمكن أن تكون في المستقبل",
   "Missing": "ناقص",
   "Mobile Number": "رقم الجوال",
-  "Move closer to the destination or wait a moment before completing.": "اقترب من الوجهة أو انتظر قليلاً قبل إنهاء الرحلة.",
+  "Move closer to the destination or wait a moment before completing.": "لا يمكن إنهاء الرحلة قبل انتهاء وقتها المحجوز.",
   "Move the map to adjust your position. Orders will match by this live location.": "حرّك الخريطة لضبط موقعك. ستُطابق الطلبات حسب هذا الموقع الفعلي.",
   "Name": "الاسم",
   "Name cannot contain numbers": "الاسم لا يمكن أن يحتوي أرقامًا",
@@ -357,5 +357,8 @@
   "Unpaid": "غير مدفوع",
   "Payment status": "حالة الدفع",
   "Touri Taxi": "Touri Taxi",
-  "The First Global Saudi Tourism App": "أول تطبيق سعودي سياحي عالمي"
+  "The First Global Saudi Tourism App": "أول تطبيق سعودي سياحي عالمي",
+  "Failed to open chat": "تعذّر فتح المحادثة",
+  "Check your connection and try again.": "تحقق من الاتصال ثم أعد المحاولة.",
+  "Trip ends in {time}. Completing early is not allowed.": "يتبقى {time} على انتهاء وقت الرحلة. لا يمكن الإنهاء قبل ذلك."
 }

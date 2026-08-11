@@ -50,7 +50,15 @@ abstract final class TouryCustomerOrderActions {
     }
 
     if (!order.canCancelByCustomer) {
-      return 'booking_cancel_not_allowed';
+      return TouryCustomerCancelPolicy.denyReasonKey(
+        statusCode: order.rawStatusCode,
+        halhText: order.halhText,
+        halhOrderName: order.halhOrder?.name,
+        driverOrderStatus: order.halhOrderMndob?.name,
+        mndobUser: order.mndobUser ?? order.snapshotData['mndob_user'],
+        createdAt: order.createdAtUtc,
+        paymentStatus: (order.snapshotData['payment_status'] ?? '').toString(),
+      );
     }
 
     final isOnline = order.paymentMethod == PaymentMethod.OnlinePayment &&
@@ -118,15 +126,15 @@ abstract final class TouryCustomerOrderActions {
           throw FirebaseException(
             plugin: 'cloud_firestore',
             code: 'failed-precondition',
-            message: TouryCustomerCancelPolicy.hasDriverAccepted(
+            message: TouryCustomerCancelPolicy.denyReasonKey(
               statusCode: liveStatus,
               halhText: liveHalh,
               halhOrderName: (data['halh_order'] ?? '').toString(),
               driverOrderStatus: (data['halhOrderMndob'] ?? '').toString(),
               mndobUser: data['mndob_user'],
-            )
-                ? 'booking_cancel_after_driver'
-                : 'booking_cancel_race',
+              createdAt: liveCreatedAt,
+              paymentStatus: (data['payment_status'] ?? '').toString(),
+            ),
           );
         }
 
@@ -175,8 +183,18 @@ abstract final class TouryCustomerOrderActions {
     }
 
     if (e.code == 'failed-precondition' &&
+        (e.message ?? '').contains('booking_cancel_window_expired')) {
+      return 'booking_cancel_window_expired';
+    }
+
+    if (e.code == 'failed-precondition' &&
         (e.message ?? '').contains('booking_cancel_race')) {
       return 'booking_cancel_race';
+    }
+
+    if (e.code == 'failed-precondition' &&
+        (e.message ?? '').contains('booking_cancel_not_allowed')) {
+      return 'booking_cancel_not_allowed';
     }
 
     if (e.code == 'permission-denied') {
@@ -195,16 +213,7 @@ abstract final class TouryCustomerOrderActions {
           )) {
             return null;
           }
-          if (TouryCustomerCancelPolicy.hasDriverAccepted(
-            statusCode: status,
-            halhText: halh,
-            halhOrderName: (data['halh_order'] ?? '').toString(),
-            driverOrderStatus: (data['halhOrderMndob'] ?? '').toString(),
-            mndobUser: data['mndob_user'],
-          )) {
-            return 'booking_cancel_after_driver';
-          }
-          if (!TouryCustomerCancelPolicy.canCustomerCancelBooking(
+          return TouryCustomerCancelPolicy.denyReasonKey(
             statusCode: status,
             halhText: halh,
             halhOrderName: (data['halh_order'] ?? '').toString(),
@@ -213,9 +222,8 @@ abstract final class TouryCustomerOrderActions {
             createdAt: TouryCustomerCancelPolicy.createdAtFromField(
               data['data_order'],
             ),
-          )) {
-            return 'booking_cancel_race';
-          }
+            paymentStatus: (data['payment_status'] ?? '').toString(),
+          );
         }
       } catch (_) {}
       return 'booking_permission_denied';

@@ -72,7 +72,7 @@
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>Allow the "Ara Watan" app to access your location for the purpose of delivering you to the specified tourist destinations.</string>
+		<string>يستخدم تطبيق Touri Taxi موقعك أثناء الاستخدام لتحديد نقطة الانطلاق، اختيار الوجهات السياحية القريبة، وعرض مسار الرحلة على الخريطة.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>Take a photo to set your profile picture using the camera directly.</string>
 		<key>NSPhotoLibraryUsageDescription</key>

@@ -161,11 +161,15 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
   void _syncCancelTicker() {
     _cancelTicker?.cancel();
     _cancelTicker = null;
-    if (!_isOwner || !_awaitingUnassigned || _canCancelNow) return;
+    if (!_isOwner || !_awaitingUnassigned || _driverAccepted) return;
+    final remaining = _cancelRemaining;
+    // Countdown while cancel is still allowed (window not expired).
+    if (remaining == null || remaining <= Duration.zero) return;
     _cancelTicker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
       setState(() {});
-      if (_canCancelNow) {
+      final left = _cancelRemaining;
+      if (left == null || left <= Duration.zero || !_canCancelNow) {
         _cancelTicker?.cancel();
         _cancelTicker = null;
       }
@@ -255,7 +259,7 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
         context,
         message: _driverAccepted
             ? 'order_cancel_after_driver_msg'.tr()
-            : 'order_cancel_wait_hour_msg'.tr(),
+            : 'order_cancel_window_expired_msg'.tr(),
         tone: DsSnackTone.warning,
       );
       return;
@@ -330,13 +334,15 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
     final colors = context.dsColors;
     final typography = context.dsTypography;
     final remaining = _cancelRemaining;
-    final waitingHour =
+    final windowOpen =
+        _awaitingUnassigned && _canCancelNow && !_driverAccepted;
+    final windowExpired =
         _awaitingUnassigned && !_canCancelNow && !_driverAccepted;
 
     final hint = _driverAccepted
         ? 'order_cancel_after_driver_msg'.tr()
-        : waitingHour
-            ? 'order_cancel_wait_hour_msg'.tr()
+        : windowExpired
+            ? 'order_cancel_window_expired_msg'.tr()
             : 'order_cancel_ready_hint'.tr();
 
     return Padding(
@@ -353,7 +359,9 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
                 height: 1.45,
               ),
             ),
-            if (waitingHour && remaining != null && remaining > Duration.zero) ...[
+            if (windowOpen &&
+                remaining != null &&
+                remaining > Duration.zero) ...[
               const SizedBox(height: DsSpacing.sm),
               Text(
                 'order_cancel_remaining'.tr(

@@ -42,12 +42,18 @@ class ChatRecord extends FirestoreRecord {
   String get naim => _naim ?? '';
   bool hasNaim() => _naim != null;
 
+  // "participants" field — required for secure list queries.
+  List<DocumentReference>? _participants;
+  List<DocumentReference> get participants => _participants ?? const [];
+  bool hasParticipants() => _participants != null;
+
   void _initializeFields() {
     _idorder = snapshotData['idorder'] as DocumentReference?;
     _user1 = snapshotData['user1'] as DocumentReference?;
     _msg = snapshotData['msg'] as String?;
     _date = snapshotData['date'] as DateTime?;
     _naim = snapshotData['naim'] as String?;
+    _participants = getDataList(snapshotData['participants']);
   }
 
   static CollectionReference get collection =>
@@ -89,6 +95,7 @@ Map<String, dynamic> createChatRecordData({
   String? msg,
   DateTime? date,
   String? naim,
+  List<DocumentReference>? participants,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -97,6 +104,7 @@ Map<String, dynamic> createChatRecordData({
       'msg': msg,
       'date': date,
       'naim': naim,
+      'participants': participants,
     }.withoutNulls,
   );
 

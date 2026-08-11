@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
@@ -28,6 +30,7 @@ class DriverTripActionsCard extends StatefulWidget {
 
 class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
   bool _busy = false;
+  Timer? _completeGateTick;
 
   OrderRecord get order => widget.order;
 
@@ -62,6 +65,14 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
   bool get _canStart =>
       _assigned && DriverTripActionGates.canStart(_code, order.halhText);
 
+  bool get _tripInProgress {
+    if (!_assigned) return false;
+    final c = _code.toLowerCase();
+    return c == TourySystemStatusCodes.tripInProgress ||
+        c == TourySystemStatusCodes.tripStarted ||
+        order.halhText == DriverTripHalh.inProgress;
+  }
+
   bool get _canComplete =>
       _assigned &&
       DriverTripService.canCompleteTrip(
@@ -69,8 +80,30 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
         driverLocation: currentUserDocument?.loceshnMndobNow,
       );
 
+  bool get _waitingForTripTime => _tripInProgress && !_canComplete;
+
   bool get _hasAny =>
-      _canAccept || _canCancel || _canArrive || _canStart || _canComplete;
+      _canAccept ||
+      _canCancel ||
+      _canArrive ||
+      _canStart ||
+      _canComplete ||
+      _waitingForTripTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _completeGateTick = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (!mounted) return;
+      if (_tripInProgress) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _completeGateTick?.cancel();
+    super.dispose();
+  }
 
   Future<bool> _confirm({
     required String title,
@@ -123,13 +156,7 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
     );
     if (!ok || !mounted) return;
     await _run(() async {
-      final loc = await getCurrentUserLocation(
-        defaultLocation: const LatLng(0, 0),
-        cached: true,
-      ).timeout(
-        const Duration(seconds: 6),
-        onTimeout: () => const LatLng(0, 0),
-      );
+      final loc = await _driverLocationFast();
       final result = await DriverTripService.acceptOrder(
         order: order,
         driverLocation: loc,
@@ -181,14 +208,23 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
     });
   }
 
+  Future<LatLng> _driverLocationFast() {
+    return getCurrentUserLocation(
+      defaultLocation: const LatLng(0, 0),
+      cached: true,
+    ).timeout(
+      const Duration(seconds: 6),
+      onTimeout: () => const LatLng(0, 0),
+    );
+  }
+
   Future<void> _arrive() async {
     await _run(() async {
-      final loc = await getCurrentUserLocation(
-        defaultLocation: const LatLng(0, 0),
-      );
+      final loc = await _driverLocationFast();
       await DriverTripService.markDriverArrived(
         orderRef: order.reference,
         driverLocation: loc,
+        customerRef: order.user,
       );
     });
   }
@@ -200,13 +236,11 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
     );
     if (!ok || !mounted) return;
     await _run(() async {
-      final loc = await getCurrentUserLocation(
-        defaultLocation: const LatLng(0, 0),
-      );
+      final loc = await _driverLocationFast();
       await DriverTripService.startTrip(
         order: order,
         driverLocation: loc,
-      );
+      ).timeout(const Duration(seconds: 12));
     });
   }
 
@@ -217,13 +251,11 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
     );
     if (!ok || !mounted) return;
     await _run(() async {
-      final loc = await getCurrentUserLocation(
-        defaultLocation: const LatLng(0, 0),
-      );
+      final loc = await _driverLocationFast();
       await DriverTripService.completeTrip(
         order: order,
         driverLocation: loc,
-      );
+      ).timeout(const Duration(seconds: 20));
       if (!mounted) return;
       context.goNamed(HomeWidget.routeName);
     });
@@ -236,13 +268,11 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
     );
     if (!ok || !mounted) return;
     await _run(() async {
-      final loc = await getCurrentUserLocation(
-        defaultLocation: const LatLng(0, 0),
-      );
+      final loc = await _driverLocationFast();
       final result = await DriverTripService.cancelTrip(
         order: order,
         driverLocation: loc,
-      );
+      ).timeout(const Duration(seconds: 20));
       if (!mounted) return;
       if (!result.ok) {
         final phrase = (result.message ?? '').trim();
@@ -349,6 +379,39 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
                   onPressed: _complete,
                 ),
               ),
+            if (_waitingForTripTime) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: DsButton.success(
+                  label: driverTr(context, 'Complete trip'),
+                  icon: Icons.flag_outlined,
+                  expanded: true,
+                  enabled: false,
+                  onPressed: null,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  () {
+                    final left =
+                        DriverTripService.remainingBeforeComplete(order);
+                    final pretty = left == null
+                        ? '—'
+                        : DriverTripService.formatRemainingTripTime(left);
+                    return driverTrNamed(
+                      context,
+                      'Trip ends in {time}. Completing early is not allowed.',
+                      {'time': pretty},
+                    );
+                  }(),
+                  textAlign: TextAlign.center,
+                  style: typography.bodySmall.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
             if (_canCancel)
               DsButton.danger(
                 label: driverTr(context, 'Cancel Order'),

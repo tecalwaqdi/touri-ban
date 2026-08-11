@@ -225,10 +225,15 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
               onPressed: () async {
                 final loc = await getCurrentUserLocation(
                   defaultLocation: const LatLng(0, 0),
+                  cached: true,
+                ).timeout(
+                  const Duration(seconds: 6),
+                  onTimeout: () => const LatLng(0, 0),
                 );
                 await DriverTripService.markDriverArrived(
                   orderRef: order.reference,
                   driverLocation: loc,
+                  customerRef: order.user,
                 );
                 widget.onArrived?.call();
               },

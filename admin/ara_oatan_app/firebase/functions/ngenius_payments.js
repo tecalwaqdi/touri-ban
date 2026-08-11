@@ -1016,7 +1016,7 @@ exports.createCashBooking = functions
       if (err instanceof functions.https.HttpsError) throw err;
       console.error("createCashBooking quote failed", err);
       throw new functions.https.HttpsError(
-        "permission-denied",
+        "unavailable",
         "Booking service cannot access Firestore. Check function IAM.",
       );
     }
@@ -1048,7 +1048,7 @@ exports.createCashBooking = functions
     } catch (err) {
       console.error("createCashBooking user get failed", err);
       throw new functions.https.HttpsError(
-        "permission-denied",
+        "unavailable",
         "Booking service cannot access Firestore. Check function IAM.",
       );
     }

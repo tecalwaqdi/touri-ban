@@ -8,6 +8,7 @@ import '/backend/backend.dart';
 import '/backend/cloud_functions/cloud_functions.dart';
 import '/backend/push_notifications/push_notifications_util.dart';
 import '/backend/schema/enums/enums.dart';
+import '/backend/schema/structs/amakn_coistm_struct.dart';
 import '/core/driver_app_lifecycle_coordinator.dart';
 import '/core/driver_offline_queue.dart';
 import '/core/driver_order_meta.dart';
@@ -393,7 +394,8 @@ abstract final class DriverTripService {
     });
   }
 
-  /// Whether the driver may complete: in-progress + (near dropoff OR min duration).
+  /// Whether the driver may complete: in-progress + booked duration fully elapsed.
+  /// Near-dropoff / soft GPS overrides must NOT skip the booked trip time.
   static bool canCompleteTrip({
     required OrderRecord order,
     LatLng? driverLocation,
@@ -405,33 +407,52 @@ abstract final class DriverTripService {
         code == TourySystemStatusCodes.tripStarted ||
         order.halhText == DriverTripHalh.inProgress;
     if (!canByStatus) return false;
+
+    final started = tripStartedAt(order);
+    if (started == null) return false;
+
+    final elapsed = DateTime.now().difference(started);
+    final required = bookedTripDuration(order);
+    if (elapsed < required) return false;
+
+    // Duration gate passed. Optional remote override (unused in UI) skips
+    // further geo checks — none remain after the hard time rule.
     if (allowRemoteOverride) return true;
+    return true;
+  }
 
-    final started = order.start ??
+  /// Booked length from `total_taim` (hours). Falls back to a short minimum.
+  static Duration bookedTripDuration(OrderRecord order) {
+    final hours = order.totalTaim;
+    if (hours > 0) return Duration(hours: hours);
+    return const Duration(seconds: minTripSecondsBeforeComplete);
+  }
+
+  static DateTime? tripStartedAt(OrderRecord order) {
+    return order.start ??
         _asDateTime(order.snapshotData['trip_started_at']);
-    final elapsedOk = started != null &&
-        DateTime.now().difference(started).inSeconds >=
-            minTripSecondsBeforeComplete;
+  }
 
-    final dropoff = order.tripDestination;
-    if (driverLocation != null && dropoff != null) {
-      final meters = haversineMeters(
-        driverLocation.latitude,
-        driverLocation.longitude,
-        dropoff.latitude,
-        dropoff.longitude,
-      );
-      if (meters <= dropoffRadiusMeters) return true;
-    }
+  /// Remaining time before complete is allowed; `Duration.zero` when ready.
+  static Duration? remainingBeforeComplete(
+    OrderRecord order, {
+    DateTime? now,
+  }) {
+    final started = tripStartedAt(order);
+    if (started == null) return null;
+    final left =
+        bookedTripDuration(order) - (now ?? DateTime.now()).difference(started);
+    return left.isNegative ? Duration.zero : left;
+  }
 
-    // Soft override: after 5 minutes allow complete even if GPS says far.
-    if (started != null &&
-        DateTime.now().difference(started).inSeconds >= 300) {
-      return true;
-    }
-
-    // Allow complete after minimum duration when GPS is weak / dropoff missing.
-    return elapsedOk && (dropoff == null || driverLocation == null);
+  static String formatRemainingTripTime(Duration remaining) {
+    final totalMinutes = remaining.inMinutes;
+    if (totalMinutes <= 0) return '0';
+    final h = totalMinutes ~/ 60;
+    final m = totalMinutes % 60;
+    if (h <= 0) return '${m}د';
+    if (m <= 0) return '${h}س';
+    return '${h}س ${m}د';
   }
 
   static Future<void> completeTrip({
@@ -646,9 +667,41 @@ abstract final class DriverTripService {
     }
   }
 
+  static Future<void> markStopVisited({
+    required OrderRecord order,
+    required int stopIndex,
+  }) async {
+    final stops = order.listAmakn.toList();
+    if (stopIndex < 0 || stopIndex >= stops.length) {
+      throw StateError('BOOKING_INVALID_STATE');
+    }
+    if (stops[stopIndex].okdone) return;
+
+    final updated = <Map<String, dynamic>>[];
+    for (var i = 0; i < stops.length; i++) {
+      final s = stops[i];
+      updated.add(
+        mapToFirestore(
+          AmaknCoistmStruct(
+            naim: s.hasNaim() ? s.naim : null,
+            address: s.hasAddress() ? s.address : null,
+            loceshn: s.loceshn,
+            okdone: i == stopIndex ? true : (s.hasOkdone() ? s.okdone : null),
+            revmkan: s.hasRevmkan() ? s.revmkan : null,
+          ).toMap(),
+        ),
+      );
+    }
+
+    await order.reference.update({
+      'listAmakn': updated,
+    }).timeout(const Duration(seconds: 12));
+  }
+
   static Future<void> markDriverArrived({
     required DocumentReference orderRef,
     LatLng? driverLocation,
+    DocumentReference? customerRef,
   }) async {
     final now = getCurrentTimestamp;
     await orderRef.update({
@@ -662,21 +715,38 @@ abstract final class DriverTripService {
       'waitingStartedAt': now,
       'customerWaitingTimeInSeconds': 0,
       'status_code': TourySystemStatusCodes.driverArrived,
-    });
+    }).timeout(const Duration(seconds: 12));
 
-    final order = await OrderRecord.getDocumentOnce(orderRef);
-    if (order.user != null) {
+    // Never block the driver UI on push / re-fetch (can hang on flaky network).
+    unawaited(_notifyDriverArrived(
+      orderRef: orderRef,
+      customerRef: customerRef,
+    ));
+  }
+
+  static Future<void> _notifyDriverArrived({
+    required DocumentReference orderRef,
+    DocumentReference? customerRef,
+  }) async {
+    try {
+      DocumentReference? user = customerRef;
+      if (user == null) {
+        final order = await OrderRecord.getDocumentOnce(orderRef)
+            .timeout(const Duration(seconds: 8));
+        user = order.user;
+      }
+      if (user == null) return;
       triggerPushNotification(
         notificationTitle: 'Driver arrived',
         notificationText:
             'Driver $currentUserDisplayName has arrived at the pickup location.',
-        userRefs: [order.user!],
+        userRefs: [user],
         initialPageName: 'tfasel_order',
         parameterData: {
-          'idorder': order.reference,
+          'idorder': orderRef,
         },
       );
-    }
+    } catch (_) {}
   }
 
   static Future<void> maybeAutoMarkArrived({
@@ -968,7 +1038,7 @@ abstract final class DriverTripService {
       case 'BOOKING_SERVICE_UNAVAILABLE':
         return 'خدمة القبول غير متاحة مؤقتًا. حاول مرة أخرى.';
       case 'BOOKING_TOO_FAR_OR_TOO_EARLY':
-        return 'اقترب من الوجهة أو انتظر قليلًا قبل الإنهاء.';
+        return 'لا يمكن إنهاء الرحلة قبل انتهاء وقتها المحجوز.';
       case 'PERMISSION_DENIED':
         return 'ليس لديك صلاحية لتنفيذ هذا الإجراء.';
       case 'INTERNAL':
