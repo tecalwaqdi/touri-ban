@@ -87,13 +87,11 @@ abstract final class DriverTripActionGates {
 
   static bool canStart(String statusCode, String halhText) {
     final c = statusCode.trim().toLowerCase();
-    if (c == TourySystemStatusCodes.driverAssigned ||
-        c == TourySystemStatusCodes.driverArriving ||
-        c == TourySystemStatusCodes.driverArrived) {
+    // Require arrive first — do not allow start from assigned/arriving.
+    if (c == TourySystemStatusCodes.driverArrived) {
       return true;
     }
-    return halhText == DriverTripHalh.accepted ||
-        halhText == DriverTripHalh.driverArrived;
+    return halhText == DriverTripHalh.driverArrived;
   }
 
   static bool canCompleteByStatus(String statusCode, String halhText) {

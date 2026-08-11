@@ -455,9 +455,7 @@ class _CarTypeAdditionWidgetState extends State<CarTypeAdditionWidget> {
                           autofocus: false,
                           obscureText: false,
                           decoration: InputDecoration(
-                            labelText: FFLocalizations.of(context).getText(
-                              '2duv3mee' /* Hourly Rate (ريال) */,
-                            ),
+                            labelText: uiTr(context, 'السعر بالساعة'),
                             hintStyle: FlutterFlowTheme.of(context)
                                 .bodyMedium
                                 .override(

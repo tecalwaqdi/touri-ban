@@ -13,6 +13,20 @@ import '/core/toury_system_status_codes.dart';
 abstract final class DriverOrderMatch {
   DriverOrderMatch._();
 
+  /// Online unpaid drafts must never enter the driver pool.
+  static bool isDispatchablePayment(Map<String, dynamic>? data) {
+    if (data == null) return false;
+    final payment = (data['payment_status'] ?? '').toString().toLowerCase();
+    if (payment == 'unpaid' || payment == 'failed' || payment == 'expired') {
+      return false;
+    }
+    final status = (data['status_code'] ?? '').toString();
+    if (status == 'payment_pending') return false;
+    // Cash pending or paid online OK.
+    return true;
+  }
+
+
   /// Max distance (km) from driver GPS to order pickup.
   static const maxOrderRadiusKm = 80.0;
 
@@ -210,6 +224,10 @@ abstract final class DriverOrderMatch {
       // Pool UI: hide already-assigned rows (rules allow browse without
       // proving mndob_user==null on the list query).
       if (order.mndobUser != null) continue;
+      if (!isDispatchablePayment(
+            Map<String, dynamic>.from(order.snapshotData))) {
+        continue;
+      }
       // Guide-help orders only for approved tour guides.
       final isGuideOrder = order.snapshotData['DriverGuide'] == true;
       if (isGuideOrder && !isApprovedGuide) continue;

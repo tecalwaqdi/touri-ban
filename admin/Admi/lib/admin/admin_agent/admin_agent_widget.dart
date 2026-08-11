@@ -102,7 +102,7 @@ class _AdminAgentWidgetState extends State<AdminAgentWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      AdminCrudFeedback.error(context, '${uiTr(context, 'تعذر حذف الوكيل')}: $e');
+      AdminCrudFeedback.error(context, AdminCrudFeedback.deleteFailed(context, e));
     }
   }
 
@@ -240,9 +240,7 @@ class _AdminAgentWidgetState extends State<AdminAgentWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
                           child: Text(
-                            '${uiTr(context, 'العدد')}: ${agents.length}'
-                            '${agents.length != allAgents.length ? ' ${uiTr(context, 'من')} ${allAgents.length}' : ''}'
-                            '${listState.hasMore ? '+' : ''}',
+                            adminListCountLabel(context, listState, visibleCount: agents.length, pageFetched: allAgents.length),
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
                               color: theme.secondaryText,

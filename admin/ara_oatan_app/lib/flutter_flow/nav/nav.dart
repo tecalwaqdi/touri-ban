@@ -491,9 +491,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           ),
         ),
         FFRoute(
+          // LEGACY junk — redirect home.
           name: CLENTWidget.routeName,
           path: CLENTWidget.routePath,
-          builder: (context, params) => const CLENTWidget(),
+          builder: (context, params) => const HomePagWidget(),
         ),
         FFRoute(
           // LEGACY junk screen — redirect home.
@@ -524,7 +525,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: SdsdWidget.routeName,
           path: SdsdWidget.routePath,
-          builder: (context, params) => const SdsdWidget(),
+          builder: (context, params) => const HomePagWidget(),
         ),
         FFRoute(
           name: RegComWidget.routeName,
@@ -532,9 +533,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => const RegComWidget(),
         ),
         FFRoute(
+          // LEGACY junk — redirect home.
           name: AaaaaWidget.routeName,
           path: AaaaaWidget.routePath,
-          builder: (context, params) => const AaaaaWidget(),
+          builder: (context, params) => const HomePagWidget(),
         ),
         FFRoute(
           name: CreateAccount1ShrekWidget.routeName,
@@ -555,9 +557,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
                 ),
         ),
         FFRoute(
+          // LEGACY junk — redirect to booking home.
           name: KhjWidget.routeName,
           path: KhjWidget.routePath,
-          builder: (context, params) => const KhjWidget(),
+          builder: (context, params) =>
+              const NavBarPage(initialPage: 'demoD'),
         ),
         FFRoute(
           name: NewPlaceWidget.routeName,
@@ -565,18 +569,21 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => const NewPlaceWidget(),
         ),
         FFRoute(
+          // LEGACY junk — redirect home.
           name: MndobWidget.routeName,
           path: MndobWidget.routePath,
-          builder: (context, params) => const MndobWidget(),
+          builder: (context, params) => const HomePagWidget(),
         ),
         FFRoute(
+          // LEGACY junk — redirect home.
           name: DddscccWidget.routeName,
           path: DddscccWidget.routePath,
-          builder: (context, params) => const DddscccWidget(),
+          builder: (context, params) => const HomePagWidget(),
         ),
         FFRoute(
           name: Chat2Widget.routeName,
           path: Chat2Widget.routePath,
+          requireAuth: true,
           builder: (context, params) => Chat2Widget(
             idorder: params.getParam(
               'idorder',
@@ -688,11 +695,17 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => const HsabWidget(),
         ),
         FFRoute(
-          // LEGACY map demo — redirect to bookings list.
           name: MapTrdemoWidget.routeName,
           path: MapTrdemoWidget.routePath,
           requireAuth: true,
-          builder: (context, params) => const BookingsWidget(),
+          builder: (context, params) => MapTrdemoWidget(
+            idd: params.getParam(
+              'idd',
+              ParamType.DocumentReference,
+              isList: false,
+              collectionNamePath: ['order'],
+            ),
+          ),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
@@ -741,13 +754,33 @@ extension NavigationExtensions on BuildContext {
             );
 
   void safePop() {
-    // If there is only one route on the stack, navigate to the initial
-    // page instead of popping.
+    if (!mounted) return;
+    // Prefer popping the real stack; if empty (deep link / goNamed), go home.
     if (canPop()) {
       pop();
     } else {
       go('/');
     }
+  }
+
+  /// Back for booking/checkout flows: pop when possible, else land on booking home.
+  void safePopOrBookingHome({
+    String? fallbackRouteName,
+    Map<String, String>? fallbackQueryParameters,
+  }) {
+    if (!mounted) return;
+    if (canPop()) {
+      pop();
+      return;
+    }
+    if (fallbackRouteName != null && fallbackRouteName.isNotEmpty) {
+      goNamed(
+        fallbackRouteName,
+        queryParameters: fallbackQueryParameters ?? const <String, String>{},
+      );
+      return;
+    }
+    go('/');
   }
 }
 

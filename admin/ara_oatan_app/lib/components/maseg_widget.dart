@@ -54,6 +54,7 @@ class _MasegWidgetState extends State<MasegWidget> {
             decoration: BoxDecoration(
               color: colors.success,
               borderRadius: DsRadius.medium,
+              boxShadow: DsShadows.soft(),
             ),
             padding: const EdgeInsets.symmetric(
               horizontal: DsSpacing.md,
@@ -66,7 +67,7 @@ class _MasegWidgetState extends State<MasegWidget> {
                 Icon(
                   DsIcons.success,
                   color: colors.onSuccess,
-                  size: DsIcons.lg,
+                  size: DsIcons.md,
                 ),
                 const SizedBox(width: DsSpacing.sm),
                 Flexible(
@@ -75,8 +76,11 @@ class _MasegWidgetState extends State<MasegWidget> {
                       'y7mh462y' /* تمت الإضافة بنجاح */,
                     ),
                     textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: typography.bodyMedium.copyWith(
                       color: colors.onSuccess,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -88,7 +92,7 @@ class _MasegWidgetState extends State<MasegWidget> {
                   ),
                   style: typography.bodyMedium.copyWith(
                     color: colors.onSuccess,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],

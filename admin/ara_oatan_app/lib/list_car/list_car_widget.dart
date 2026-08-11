@@ -156,7 +156,7 @@ class _ListCarWidgetState extends State<ListCarWidget> {
                 automaticallyImplyLeading: false,
                 leading: DsIconButton(
                   icon: DsIcons.back,
-                  onPressed: () => context.pop(),
+                  onPressed: () => context.safePop(),
                 ),
               ),
               body: SafeArea(

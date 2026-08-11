@@ -61,7 +61,7 @@ class _MsgNoAdresdWidgetState extends State<MsgNoAdresdWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () {
-                    debugPrint('IconButton pressed ...');
+                    context.safePop();
                   },
                 ),
               ),
@@ -82,6 +82,7 @@ class _MsgNoAdresdWidgetState extends State<MsgNoAdresdWidget> {
                       ),
                       icon: Icons.add_location_alt_rounded,
                       size: DsButtonSize.lg,
+                      expanded: true,
                       onPressed: () {
                         debugPrint('Button pressed ...');
                       },

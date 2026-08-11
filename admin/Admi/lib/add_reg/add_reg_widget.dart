@@ -1,5 +1,6 @@
 import '/core/i18n/admin_i18n_save_helper.dart';
 import '/backend/admin_agent_country_lock.dart';
+import '/backend/admin_country_geo_service.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
@@ -126,21 +127,46 @@ class _AddRegWidgetState extends State<AddRegWidget> {
         fieldLabel: 'region description',
       );
 
-      await CitiesRecord.collection.doc().set(
-            createCitiesRecordData(
-              naim: adminLegacyFromI18n(namesMap, name),
-              osf: adminLegacyFromI18n(osfMap, desc),
-              namesI18n: namesMap,
-              osfI18n: osfMap,
-              dolh: countryRef,
-              img: img,
-              acctev: _model.switchValue,
-            ),
-          );
+      String? countryIso;
+      String? countryName;
+      try {
+        final country = await CountriesRecord.getDocumentOnce(countryRef!);
+        countryIso = country.isoCode;
+        countryName = country.naim;
+      } catch (_) {}
+
+      final geo = await AdminCountryGeoService.fetchRegionOrProvince(
+        name: name,
+        countryIso: countryIso,
+        countryName: countryName,
+      );
+
+      await CitiesRecord.collection.doc().set({
+        ...createCitiesRecordData(
+          naim: adminLegacyFromI18n(namesMap, name),
+          osf: adminLegacyFromI18n(osfMap, desc),
+          namesI18n: namesMap,
+          osfI18n: osfMap,
+          dolh: countryRef,
+          img: img,
+          acctev: _model.switchValue,
+          geoCenter: geo?.center,
+          boundsSw: geo?.boundsSouthWest,
+          boundsNe: geo?.boundsNorthEast,
+          geoDisplayName: geo?.displayName,
+        ),
+        if (geo != null) ...AdminCountryGeoService.regionGeoFieldsForFirestore(geo),
+      });
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(appTr(context, 'adm_region_added'))),
+        SnackBar(
+          content: Text(
+            geo?.hasCenter == true
+                ? appTr(context, 'adm_region_added')
+                : '${appTr(context, 'adm_region_added')} (geo pending)',
+          ),
+        ),
       );
       context.safePop();
     } catch (e) {

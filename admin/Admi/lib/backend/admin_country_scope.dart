@@ -151,10 +151,24 @@ class AdminCountryScope {
   static Query applyRegionQuery(Query collection) {
     var q = collection as Query<Map<String, dynamic>>;
     final country = activeCountryRef;
-    if (country != null) {
-      q = q.where('dolh', isEqualTo: country);
+    if (country == null) return q;
+
+    if (isSaudiCountryAgent) {
+      final refs = <DocumentReference>[
+        ...AdminSaudiCountry.countryRefsForQuery(),
+      ];
+      if (!refs.any((r) => r.path == country.path)) {
+        refs.add(country);
+      }
+      if (refs.isNotEmpty) {
+        return q.where(
+          'dolh',
+          whereIn: refs.take(30).toList(growable: false),
+        );
+      }
     }
-    return q;
+
+    return q.where('dolh', isEqualTo: country);
   }
 
   static Query applyVillageQuery(Query collection) {
@@ -411,10 +425,24 @@ class AdminCountryScope {
   static Query applyTransportCompanyQuery(Query collection) {
     var q = collection as Query<Map<String, dynamic>>;
     final country = activeCountryRef;
-    if (country != null) {
-      q = q.where('Rev_dolh', isEqualTo: country);
+    if (country == null) return q;
+
+    if (isSaudiCountryAgent) {
+      final refs = <DocumentReference>[
+        ...AdminSaudiCountry.countryRefsForQuery(),
+      ];
+      if (!refs.any((r) => r.path == country.path)) {
+        refs.add(country);
+      }
+      if (refs.isNotEmpty) {
+        return q.where(
+          'Rev_dolh',
+          whereIn: refs.take(30).toList(growable: false),
+        );
+      }
     }
-    return q;
+
+    return q.where('Rev_dolh', isEqualTo: country);
   }
 
   static List<UserRecord> filterRepresentatives(

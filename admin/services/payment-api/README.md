@@ -1,49 +1,56 @@
-# Touri Payment API (Vercel)
+# Touri Payment API (Express + TypeScript)
 
-Standalone Next.js App Router backend for **Network International N-Genius** card payments.
+Standalone **Node.js / Express** service for **Network International N-Genius** card payments, intended for **Render**.
 
-Firebase remains the system of record for Auth, Firestore, Storage, FCM, bookings data, and cash bookings (cash does not require this service).
+Firebase (existing project) remains the system of record for Auth, Firestore, Storage, FCM, bookings, and **cash** bookings. This service does **not** migrate data and does **not** create a new Firebase project.
 
 ## Endpoints
 
 | Method | Path | Auth |
 |--------|------|------|
-| GET | `/api/health` | none |
-| POST | `/api/payments/create` | Firebase Bearer |
-| GET | `/api/payments/status/[sessionId]` | Firebase Bearer |
-| POST | `/api/payments/cancel` | Firebase Bearer |
-| POST | `/api/payments/refund` | Firebase Bearer + finance/admin |
-| POST | `/api/webhooks/ngenius` | Shared webhook secret header |
+| GET | `/health` | none |
+| POST | `/payments/create` | Firebase ID token (`Authorization: Bearer`) |
+| GET | `/payments/status?sessionId=` | Firebase ID token |
+| POST | `/webhooks/ngenius` | Shared webhook secret header |
 
 ## Safety defaults
 
 - `NGENIUS_ENV=sandbox` unless explicitly set to `production`.
-- Never trust client amounts — booking quotes use Firestore vehicle/country data.
-- Webhook creates booking **once** when status becomes `paid` (idempotent).
+- Never trust client amounts — quotes use Firestore vehicle type + hours.
+- Idempotency key → stable `payment_sessions` doc id (no duplicate charges).
+- 3-D Secure via N-Genius hosted payment page (`threeDsUrl` / `paymentUrl`).
+- Webhook (and status poll when paid) creates the booking **once** in the existing Firestore project.
 - Secrets only via environment variables (see `.env.example`).
 
 ## Local development
 
 ```bash
 cd admin/services/payment-api
-cp .env.example .env.local   # fill sandbox values locally; never commit
+cp .env.example .env   # fill sandbox values; never commit
 npm ci
 npm run typecheck
 npm test
 npm run dev
+# listens on PORT (default 3010)
 ```
 
-## Flutter
+## Flutter (customer app) — sandbox card test
 
-Pass:
+Cash stays default until you opt in. Use dart-defines (do **not** hardcode the Render URL in source):
 
 ```bash
---dart-define=PAYMENT_BACKEND=vercel_api
---dart-define=PAYMENT_API_BASE_URL=https://YOUR_VERCEL_URL
+cd admin/ara_oatan_app
+flutter run \
+  --dart-define=ENABLE_ONLINE_PAYMENT=true \
+  --dart-define=PAYMENT_BACKEND=external_api \
+  --dart-define=PAYMENT_API_BASE_URL=https://touri-ban.onrender.com
 ```
 
-Default remains Firebase Functions / cash-only flags unchanged until you opt in.
+`PAYMENT_BACKEND=vercel_api` is accepted as a legacy alias of `external_api`.
 
-## Deploy
+N-Genius production is **only** controlled by Render `NGENIUS_ENV` — Flutter cannot flip it.
+## Deploy (Render)
 
-See `docs/payment_migration/VERCEL_DEPLOYMENT.md`.
+See [`docs/payment_migration/RENDER_DEPLOYMENT.md`](../../../docs/payment_migration/RENDER_DEPLOYMENT.md).
+
+**Do not deploy until you approve.**

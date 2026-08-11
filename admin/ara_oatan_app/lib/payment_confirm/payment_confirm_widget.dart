@@ -5,6 +5,7 @@ import '/backend/backend.dart';
 import '/core/toury_dialogs.dart';
 import '/core/toury_firestore_cache.dart';
 import '/core/toury_payment_flags.dart';
+import '/core/toury_payment_flow.dart';
 import '/core/toury_payment_notifications.dart';
 import '/core/toury_payment_verify.dart';
 import '/core/toury_ngenius_service.dart';
@@ -58,9 +59,19 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
       FFAppState().paymentInProgress = false;
       safeSetState(() {});
 
-      // true = عرض للعرض بعد فشل/إلغاء دون إعادة إنشاء الطلب.
-      // false أو null = تحقق من البوابة وأنشئ الطلب.
-      if (widget.fromWebView == true) return;
+      // true = closed/failed HPP without verified pay — keep unpaid order + retry CTA.
+      if (widget.fromWebView == true) {
+        FFAppState().DonePay = false;
+        if (mounted) {
+          await touryShowPaymentIncompleteSheet(
+            context,
+            orderId: FFAppState().pendingPaymentOrderId.isNotEmpty
+                ? FFAppState().pendingPaymentOrderId
+                : FFAppState().paymentOrderId,
+          );
+        }
+        return;
+      }
 
       if (FFAppState().paymentFlowKind == TypeHgz.Wallet) {
         try {
@@ -82,18 +93,32 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
       }
 
       try {
-        final verify = await touryVerifyGatewayPayment(
+        var verify = await touryVerifyGatewayPayment(
           FFAppState().paymentOrderId,
         );
         _model.verifyResponse = verify.response;
 
+        // External Safari/browser flow: user may still be paying — poll like WebView.
+        if (TouryPaymentFlags.openPaymentInExternalBrowser &&
+            verify.isPending) {
+          for (var i = 0; i < 60 && mounted; i++) {
+            await Future<void>.delayed(const Duration(seconds: 3));
+            verify = await touryVerifyGatewayPayment(
+              FFAppState().paymentOrderId,
+            );
+            _model.verifyResponse = verify.response;
+            if (verify.isPaid || verify.isFailed) break;
+          }
+        }
+
         if (verify.isPending) {
           FFAppState().DonePay = false;
           if (mounted) {
-            TouryDialogs.showSnackBar(
+            await touryShowPaymentIncompleteSheet(
               context,
-              'payment_pending_message'.tr(),
-              type: TouryMessageType.warning,
+              orderId: FFAppState().pendingPaymentOrderId.isNotEmpty
+                  ? FFAppState().pendingPaymentOrderId
+                  : FFAppState().paymentOrderId,
             );
           }
           return;
@@ -101,14 +126,14 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
 
         if (!verify.isPaid) {
           FFAppState().DonePay = false;
+          // Keep unpaid order id for retry; clear only ephemeral payment secrets.
           FFAppState().clearSensitivePaymentSession();
           if (mounted) {
-            TouryDialogs.showSnackBar(
+            await touryShowPaymentIncompleteSheet(
               context,
-              verify.isFailed
-                  ? 'payment_failed_message'.tr()
-                  : 'payment_verify_error'.tr(),
-              type: TouryMessageType.error,
+              orderId: FFAppState().pendingPaymentOrderId.isNotEmpty
+                  ? FFAppState().pendingPaymentOrderId
+                  : FFAppState().paymentOrderId,
             );
           }
           return;
@@ -119,11 +144,18 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
 
         final gatewayId = verify.orderId ?? FFAppState().paymentOrderId;
         final Map<String, dynamic> finalized;
-        if (TouryPaymentFlags.useVercelPaymentApi) {
-          finalized = await PaymentApiClient().finalizeBooking(
+        if (TouryPaymentFlags.useExternalPaymentApi) {
+          // Webhook creates the order; poll status until bookingId appears.
+          final statusBody = await PaymentApiClient().waitForPaidBooking(
             sessionId: gatewayId,
-            booking: TouryOrderIntegration.cloudBookingPayload(),
           );
+          finalized = {
+            'orderId': statusBody['bookingId'] ??
+                statusBody['orderId'] ??
+                gatewayId,
+            'id': statusBody['id'] ?? gatewayId,
+            'bookingCreated': statusBody['bookingCreated'],
+          };
         } else {
           final cf = await TouryNGeniusService.finalizeBooking(
             sessionId: gatewayId,
@@ -163,6 +195,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
         );
 
         FFAppState().totalmndob3 = 0.0;
+        FFAppState().clearPendingPaymentOrder();
         FFAppState().clearSensitivePaymentSession();
         safeSetState(() {});
       } catch (e, st) {
@@ -243,7 +276,13 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
         builder: (context) {
           final colors = context.dsColors;
 
-          return Scaffold(
+          return PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, _) {
+              if (didPop) return;
+              context.goNamed(List22TaskOverviewResponsiveWidget.routeName);
+            },
+            child: Scaffold(
             key: scaffoldKey,
             backgroundColor: colors.scaffold,
             body: SafeArea(
@@ -270,6 +309,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
                 ),
               ),
             ),
+          ),
           );
         },
       ),
@@ -293,12 +333,8 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [colors.primary, colors.primaryStrong],
-                  ),
-                  boxShadow: DsShadows.primaryGlow(dark: context.dsIsDark),
+                  color: colors.primary,
+                  boxShadow: DsShadows.soft(dark: context.dsIsDark),
                 ),
                 child: Icon(
                   DsIcons.success,

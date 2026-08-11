@@ -9,6 +9,7 @@ import '/core/driver_auth_validation_service.dart';
 import '/core/driver_bootstrap.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_i18n.dart';
+import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_language_selector.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -196,7 +197,6 @@ class _Login1WidgetState extends State<Login1Widget> {
       child: Builder(
         builder: (context) {
           final colors = context.dsColors;
-          final typography = context.dsTypography;
 
           return GestureDetector(
             onTap: () {
@@ -215,14 +215,8 @@ class _Login1WidgetState extends State<Login1Widget> {
                         horizontal: DsSpacing.md,
                         vertical: DsSpacing.lg,
                       ),
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            maxWidth: DsConstants.maxFormWidth,
-                          ),
-                          child: _buildLoginCard(context),
-                        ),
+                      child: DriverFormWidth(
+                        child: _buildLoginCard(context),
                       ),
                     );
 
@@ -282,30 +276,34 @@ class _Login1WidgetState extends State<Login1Widget> {
                     ),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: DsSpacing.xs,
-                    vertical: DsSpacing.xxs,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: colors.info),
-                    borderRadius: DsRadius.small,
-                  ),
-                  child: FlutterFlowLanguageSelector(
-                    width: 200,
-                    backgroundColor: colors.surface,
-                    borderColor: Colors.transparent,
-                    dropdownIconColor: colors.primary,
-                    borderRadius: DsRadius.sm,
-                    textStyle: typography.bodySmall.copyWith(
-                      color: colors.primary,
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: DsSpacing.xs,
+                      vertical: DsSpacing.xxs,
                     ),
-                    hideFlags: true,
-                    flagSize: 24,
-                    flagTextGap: 8,
-                    currentLanguage: FFLocalizations.of(context).languageCode,
-                    languages: FFLocalizations.languages(),
-                    onChanged: (lang) => setAppLanguage(context, lang),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: colors.info),
+                      borderRadius: DsRadius.small,
+                    ),
+                    child: FlutterFlowLanguageSelector(
+                      width: 140,
+                      backgroundColor: colors.surface,
+                      borderColor: Colors.transparent,
+                      dropdownIconColor: colors.primary,
+                      borderRadius: DsRadius.sm,
+                      textStyle: typography.bodySmall.copyWith(
+                        color: colors.primary,
+                      ),
+                      hideFlags: true,
+                      flagSize: 24,
+                      flagTextGap: 8,
+                      currentLanguage:
+                          FFLocalizations.of(context).languageCode,
+                      languages: FFLocalizations.languages(),
+                      onChanged: (lang) => setAppLanguage(context, lang),
+                    ),
                   ),
                 ),
               ],

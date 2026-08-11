@@ -122,14 +122,19 @@ class _AdminTransportCompaniesWidgetState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        '${uiTr(context, 'عدد الشركات')}: ${companies.length}',
-                        style: theme.labelLarge.override(
-                          fontFamily: theme.labelLargeFamily,
-                          color: theme.secondaryText,
-                          useGoogleFonts: !theme.labelLargeIsCustom,
+                        Text(
+                          adminListCountLabel(
+                            context,
+                            listState,
+                            visibleCount: companies.length,
+                            pageFetched: allCompanies.length,
+                          ),
+                          style: theme.labelLarge.override(
+                            fontFamily: theme.labelLargeFamily,
+                            color: theme.secondaryText,
+                            useGoogleFonts: !theme.labelLargeIsCustom,
+                          ),
                         ),
-                      ),
                       const SizedBox(height: 12),
                       if (companies.isEmpty)
                         Padding(
@@ -276,6 +281,31 @@ class _CompanyCard extends StatelessWidget {
             ),
           if (company.phone.isNotEmpty)
             Text(appTrFormat(context, 'adm_phone_label', company.phone), style: theme.bodySmall),
+          if (company.email.isNotEmpty)
+            Text('${uiTr(context, 'البريد')}: ${company.email}', style: theme.bodySmall),
+          const SizedBox(height: 6),
+          FutureBuilder<int>(
+            future: UserRecord.collection
+                .where('ismndob', isEqualTo: true)
+                .where('transport_company', isEqualTo: company.reference)
+                .count()
+                .get()
+                .then((v) => v.count ?? 0)
+                .catchError((_) => 0),
+            builder: (context, snap) {
+              final n = snap.data;
+              return Text(
+                n == null
+                    ? '${uiTr(context, 'عدد السائقين')}: …'
+                    : '${uiTr(context, 'عدد السائقين')}: $n',
+                style: theme.bodySmall.override(
+                  fontFamily: theme.bodySmallFamily,
+                  color: theme.secondaryText,
+                  useGoogleFonts: !theme.bodySmallIsCustom,
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 10),
           Row(
             children: [

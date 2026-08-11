@@ -8,6 +8,7 @@ import {
   assertOutletMatch,
   assertWebhookSecret,
   computeRefundable,
+  normalizePaymentPurpose,
 } from "@/lib/payments/guards";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import { calculateBookingQuote } from "@/lib/pricing/booking";
@@ -37,13 +38,14 @@ describe("auth header", () => {
 });
 
 describe("purpose / wallet-extra-hours gate", () => {
-  it("rejects wallet and extra_hours on Vercel create", () => {
-    expectCode(() => assertBookingPurposeOnly("wallet"), PaymentErrorCode.INVALID_REQUEST);
+  it("rejects extra_hours on external create; booking allowed", () => {
     expectCode(() => assertBookingPurposeOnly("extra_hours"), PaymentErrorCode.INVALID_REQUEST);
+    expect(() => assertBookingPurposeOnly("booking")).not.toThrow();
   });
 
-  it("allows booking", () => {
-    expect(() => assertBookingPurposeOnly("booking")).not.toThrow();
+  it("maps purpose aliases", () => {
+    expect(normalizePaymentPurpose("wallet_topup")).toBe("wallet");
+    expect(normalizePaymentPurpose("booking_payment")).toBe("booking");
   });
 });
 

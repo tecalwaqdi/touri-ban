@@ -8,6 +8,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/app_state.dart';
 import '/backend/backend.dart';
 import '/backend/cloud_functions/cloud_functions.dart';
+import '/core/toury_currency.dart';
 import '/core/toury_location_service.dart';
 import '/core/toury_order_integration.dart';
 import '/core/toury_payment_flags.dart';
@@ -58,8 +59,17 @@ bool _isUndeployedOrUnavailableCallable(Map<String, dynamic> data) {
 }
 
 bool _shouldUseCashFirestoreFallback(Map<String, dynamic> data) {
-  if (!TouryPaymentFlags.allowClientCashFallback) return false;
-  return _isUndeployedOrUnavailableCallable(data);
+  if (!TouryPaymentFlags.allowClientCashFallbackRuntime) return false;
+  if (_isUndeployedOrUnavailableCallable(data)) return true;
+  // createCashBooking returns permission-denied when Admin SDK lacks
+  // Firestore IAM — still allow the constrained client write path.
+  final code = (data['code'] ?? '').toString().toLowerCase();
+  final error = (data['error'] ?? '').toString().toLowerCase();
+  final combined = '$code $error';
+  return combined.contains('internal') ||
+      combined.contains('permission-denied') ||
+      combined.contains('permission_denied') ||
+      combined.contains('check function iam');
 }
 
 /// Creates a cash booking through the trusted Cloud Function only.
@@ -123,7 +133,7 @@ Future<TouryCashBookingResult> touryCreateCashBookingFromCurrentState() async {
 
   // No-Billing / cash-only: skip missing CF and write Firestore directly.
   if (TouryPaymentFlags.cashOnlyMode &&
-      TouryPaymentFlags.allowClientCashFallback) {
+      TouryPaymentFlags.allowClientCashFallbackRuntime) {
     debugPrint(
       'createCashBooking skipped (cash-only / no-billing) — '
       'using Firestore cash fallback.',
@@ -213,6 +223,13 @@ Future<TouryCashBookingResult> touryCreateCashBookingViaFirestoreFallback({
   final booking = TouryOrderIntegration.cloudBookingPayload();
   final now = FieldValue.serverTimestamp();
   final totalMajor = quote.customerTotalHalalas / 100;
+  CountriesRecord? countryDoc;
+  try {
+    countryDoc = await CountriesRecord.getDocumentOnce(countryRef);
+  } catch (_) {
+    countryDoc = null;
+  }
+  final currencyFields = TouryCurrency.fieldsForCreate(country: countryDoc);
 
   try {
     final alreadyExisted = await FirebaseFirestore.instance.runTransaction(
@@ -221,12 +238,18 @@ Future<TouryCashBookingResult> touryCreateCashBookingViaFirestoreFallback({
         if (existing.exists) return true;
 
         final stops = (booking['stops'] as List?) ?? const [];
+        final acceptanceDeadlineMs =
+            DateTime.now().millisecondsSinceEpoch + (60 * 60 * 1000);
         tx.set(orderRef, {
           'USER': userRef,
           'total': totalMajor,
           'amount_halalas': quote.customerTotalHalalas,
-          'currency': 'SAR',
+          ...currencyFields,
           'data_order': now,
+          'acceptanceDeadline': Timestamp.fromMillisecondsSinceEpoch(
+            acceptanceDeadlineMs,
+          ),
+          'acceptance_deadline_ms': acceptanceDeadlineMs,
           'LOKESHN': GeoPoint(pickup.latitude, pickup.longitude),
           'mapuser': GeoPoint(pickup.latitude, pickup.longitude),
           'originLatitude': pickup.latitude,
@@ -294,9 +317,15 @@ Future<TouryCashBookingResult> touryCreateCashBookingViaFirestoreFallback({
     );
   } on FirebaseException catch (e) {
     debugPrint('Cash Firestore fallback failed: ${e.code} ${e.message}');
+    final mapped = switch (e.code) {
+      'permission-denied' => 'booking_permission_denied',
+      'unauthenticated' => 'booking_auth_required',
+      'unavailable' || 'deadline-exceeded' => 'booking_service_unavailable',
+      _ => 'booking_unknown_error',
+    };
     return TouryCashBookingResult(
       success: false,
-      error: e.code,
+      error: mapped,
       viaFallback: true,
     );
   } catch (e) {

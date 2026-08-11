@@ -74,14 +74,28 @@ class _ScheduletheTripWidgetState extends State<ScheduletheTripWidget> {
       await showDialog(
         context: context,
         builder: (alertDialogContext) {
+          final dialogColors = alertDialogContext.dsColors;
+          final dialogType = alertDialogContext.dsTypography;
           return WebViewAware(
             child: AlertDialog(
-              title: Text('ui_text_7f2f6a15cf'.tr()),
-              content: Text('ui_text_9262ef60ec'.tr()),
+              backgroundColor: dialogColors.surface,
+              shape: RoundedRectangleBorder(borderRadius: DsRadius.large),
+              title: Text(
+                'ui_text_7f2f6a15cf'.tr(),
+                style: dialogType.titleLarge.copyWith(
+                  color: dialogColors.textPrimary,
+                ),
+              ),
+              content: Text(
+                'ui_text_9262ef60ec'.tr(),
+                style: dialogType.bodyMedium.copyWith(
+                  color: dialogColors.textSecondary,
+                ),
+              ),
               actions: [
-                TextButton(
+                DsButton.text(
+                  label: 'ui_text_b0a98216a3'.tr(),
                   onPressed: () => Navigator.pop(alertDialogContext),
-                  child: Text('ui_text_b0a98216a3'.tr()),
                 ),
               ],
             ),
@@ -97,8 +111,8 @@ class _ScheduletheTripWidgetState extends State<ScheduletheTripWidget> {
           "d/M/y",
           FFAppState().dataSchedule,
           locale: FFLocalizations.of(context).languageCode,
-        )}  الساعة:  ${FFAppState().taimSchedule}',
-        'إختياري ، يمكنك إختيار تاريخ ووقت بدء الرحلة',
+        )} الساعة: ${FFAppState().taimSchedule}',
+        'اختياري: يمكنك اختيار تاريخ ووقت بدء الرحلة',
       );
       FFAppState().update(() {});
 
@@ -132,7 +146,7 @@ class _ScheduletheTripWidgetState extends State<ScheduletheTripWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () async {
-                    context.pop();
+                    context.safePop();
                   },
                 ),
               ),
@@ -150,6 +164,16 @@ class _ScheduletheTripWidgetState extends State<ScheduletheTripWidget> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      DsInformationCard(
+                        title: FFLocalizations.of(context).getText(
+                          'aauqih1n' /* Schedule the Trip */,
+                        ),
+                        message: FFLocalizations.of(context).getText(
+                          'cqytzsi1' /* The trip time is */,
+                        ),
+                        icon: Icons.event_available_rounded,
+                      ),
+                      const SizedBox(height: DsSpacing.md),
                       DsFadeSlide(
                         child: DsCard(
                           elevated: true,
@@ -337,20 +361,9 @@ class _ScheduletheTripWidgetState extends State<ScheduletheTripWidget> {
                       const SizedBox(height: DsSpacing.md),
                       DsFadeSlide(
                         delay: const Duration(milliseconds: 120),
-                        child: Container(
-                          width: double.infinity,
-                          padding: DsSpacing.cardPadding,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [colors.primary, colors.primaryStrong],
-                            ),
-                            borderRadius: DsRadius.large,
-                            boxShadow: DsShadows.primaryGlow(
-                              dark: context.dsIsDark,
-                            ),
-                          ),
+                        child: DsCard(
+                          elevated: true,
+                          color: colors.primarySoft,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,8 +373,7 @@ class _ScheduletheTripWidgetState extends State<ScheduletheTripWidget> {
                                   'cqytzsi1' /* The trip time is */,
                                 ),
                                 style: typography.labelMedium.copyWith(
-                                  color: colors.onPrimary
-                                      .withValues(alpha: 0.85),
+                                  color: colors.primaryStrong,
                                 ),
                               ),
                               const SizedBox(height: DsSpacing.xs),
@@ -375,7 +387,7 @@ class _ScheduletheTripWidgetState extends State<ScheduletheTripWidget> {
                                             .languageCode,
                                       ),
                                 style: typography.headlineSmall.copyWith(
-                                  color: colors.onPrimary,
+                                  color: colors.textPrimary,
                                 ),
                               ),
                             ],

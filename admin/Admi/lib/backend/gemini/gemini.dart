@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/core/admin_user_facing_errors.dart';
 import '/core/cloud_functions/cloud_functions_client.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -10,7 +11,7 @@ Future<String?> geminiGenerateText(
   try {
     return await CloudFunctionsClient.geminiGenerateText(prompt);
   } catch (e) {
-    showSnackbar(context, e.toString());
+    showSnackbar(context, AdminUserFacingErrors.from(context, e));
     return null;
   }
 }
@@ -25,7 +26,7 @@ Future<String?> geminiCountTokens(
     );
     return text;
   } catch (e) {
-    showSnackbar(context, e.toString());
+    showSnackbar(context, AdminUserFacingErrors.from(context, e));
     return null;
   }
 }

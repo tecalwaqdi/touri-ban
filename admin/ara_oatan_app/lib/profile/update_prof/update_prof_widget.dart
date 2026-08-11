@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
+import '/backend/profile_photo_service.dart';
 import '/core/toury_dialogs.dart';
 import '/core/toury_phone_util.dart';
 import '/design_system/design_system.dart';
@@ -55,112 +56,139 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
     super.dispose();
   }
 
-  /// Photo picker offering camera / gallery through a source bottom sheet.
-  Future<void> _pickPhotoFromSourceSheet() async {
-    final selectedMedia = await selectMediaWithSourceBottomSheet(
-      context: context,
-      allowPhoto: true,
-    );
-    if (selectedMedia != null &&
-        selectedMedia
-            .every((m) => validateFileFormat(m.storagePath, context))) {
-      safeSetState(() => _model.isDataUploading_uploadDataMcff1 = true);
-      var selectedUploadedFiles = <FFUploadedFile>[];
+  bool get _isUploading =>
+      _model.isDataUploading_uploadDataMcff1 ||
+      _model.isDataUploading_uploadDataMcff;
 
-      var downloadUrls = <String>[];
-      try {
-        selectedUploadedFiles = selectedMedia
-            .map((m) => FFUploadedFile(
-                  name: m.storagePath.split('/').last,
-                  bytes: m.bytes,
-                  height: m.dimensions?.height,
-                  width: m.dimensions?.width,
-                  blurHash: m.blurHash,
-                  originalFilename: m.originalFilename,
-                ))
-            .toList();
+  /// Shared path: pick → compress → single upload → save URL (or keep old).
+  Future<void> _changeProfilePhoto({required bool galleryOnly}) async {
+    if (_isUploading) return;
 
-        downloadUrls = (await Future.wait(
-          selectedMedia.map(
-            (m) async => await uploadData(m.storagePath, m.bytes),
-          ),
-        ))
-            .where((u) => u != null)
-            .map((u) => u!)
-            .toList();
-      } finally {
-        _model.isDataUploading_uploadDataMcff1 = false;
-      }
-      if (selectedUploadedFiles.length == selectedMedia.length &&
-          downloadUrls.length == selectedMedia.length) {
-        safeSetState(() {
-          _model.uploadedLocalFile_uploadDataMcff1 =
-              selectedUploadedFiles.first;
-          _model.uploadedFileUrl_uploadDataMcff1 = downloadUrls.first;
-        });
-      } else {
-        safeSetState(() {});
-        return;
-      }
+    final uid = currentUserUid;
+    if (uid.isEmpty || currentUserReference == null) {
+      if (!mounted) return;
+      await TouryDialogs.showAlert(
+        context,
+        title: 'dialog_error_title'.tr(),
+        message: 'يجب تسجيل الدخول قبل رفع الصورة.',
+        type: TouryMessageType.error,
+      );
+      return;
     }
 
-    await currentUserReference!.update(createUserRecordData(
-      photoUrl: _model.uploadedFileUrl_uploadDataMcff1,
-    ));
-  }
+    final selectedMedia = galleryOnly
+        ? await selectMedia(
+            mediaSource: MediaSource.photoGallery,
+            multiImage: false,
+            maxWidth: 1280,
+            maxHeight: 1280,
+            imageQuality: 85,
+            storageFolderPath: 'users/$uid',
+          )
+        : await selectMediaWithSourceBottomSheet(
+            context: context,
+            allowPhoto: true,
+            maxWidth: 1280,
+            maxHeight: 1280,
+            imageQuality: 85,
+            storageFolderPath: 'users/$uid',
+          );
 
-  /// Photo picker going straight to the gallery.
-  Future<void> _pickPhotoFromGallery() async {
-    final selectedMedia = await selectMedia(
-      mediaSource: MediaSource.photoGallery,
-      multiImage: false,
-    );
-    if (selectedMedia != null &&
-        selectedMedia
-            .every((m) => validateFileFormat(m.storagePath, context))) {
-      safeSetState(() => _model.isDataUploading_uploadDataMcff = true);
-      var selectedUploadedFiles = <FFUploadedFile>[];
+    if (selectedMedia == null || selectedMedia.isEmpty) {
+      return;
+    }
+    if (!selectedMedia.every((m) => validateFileFormat(m.storagePath, context))) {
+      return;
+    }
 
-      var downloadUrls = <String>[];
+    final picked = selectedMedia.first;
+    if (picked.bytes.isEmpty) {
+      if (!mounted) return;
+      await TouryDialogs.showAlert(
+        context,
+        title: 'dialog_error_title'.tr(),
+        message: 'لم يتم قراءة الصورة. جرّب صورة أخرى.',
+        type: TouryMessageType.error,
+      );
+      return;
+    }
+
+    safeSetState(() {
+      _model.isDataUploading_uploadDataMcff1 = true;
+      _model.isDataUploading_uploadDataMcff = true;
+    });
+
+    try {
+      final photoUrl = await uploadUserProfilePhoto(
+        uid: uid,
+        bytes: picked.bytes,
+      );
+
+      await currentUserReference!.update(
+        createUserRecordData(photoUrl: photoUrl),
+      );
+
       try {
-        selectedUploadedFiles = selectedMedia
-            .map((m) => FFUploadedFile(
-                  name: m.storagePath.split('/').last,
-                  bytes: m.bytes,
-                  height: m.dimensions?.height,
-                  width: m.dimensions?.width,
-                  blurHash: m.blurHash,
-                  originalFilename: m.originalFilename,
-                ))
-            .toList();
+        currentUserDocument =
+            await UserRecord.getDocumentOnce(currentUserReference!);
+      } catch (_) {}
 
-        downloadUrls = (await Future.wait(
-          selectedMedia.map(
-            (m) async => await uploadData(m.storagePath, m.bytes),
-          ),
-        ))
-            .where((u) => u != null)
-            .map((u) => u!)
-            .toList();
-      } finally {
+      if (!mounted) return;
+      safeSetState(() {
+        final local = FFUploadedFile(
+          name: 'profile.jpg',
+          bytes: picked.bytes,
+          originalFilename: picked.originalFilename,
+        );
+        _model.uploadedLocalFile_uploadDataMcff1 = local;
+        _model.uploadedLocalFile_uploadDataMcff = local;
+        _model.uploadedFileUrl_uploadDataMcff1 = photoUrl;
+        _model.uploadedFileUrl_uploadDataMcff = photoUrl;
+      });
+
+      await TouryDialogs.showAlert(
+        context,
+        title: 'نجاح',
+        message: isProfilePhotoDataUrl(photoUrl)
+            ? 'تم حفظ الصورة محلياً لأن حصة Firebase Storage ممتلئة. '
+                'راجع Console → Storage أو فعّل Blaze.'
+            : 'تم تحديث صورة الملف الشخصي بنجاح',
+        type: TouryMessageType.success,
+      );
+    } on StorageUploadException catch (e) {
+      if (!mounted) return;
+      await TouryDialogs.showAlert(
+        context,
+        title: 'dialog_error_title'.tr(),
+        message: e.message,
+        type: TouryMessageType.error,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      await TouryDialogs.showAlert(
+        context,
+        title: 'dialog_error_title'.tr(),
+        message: uploadErrorMessage(e),
+        type: TouryMessageType.error,
+      );
+    } finally {
+      if (mounted) {
+        safeSetState(() {
+          _model.isDataUploading_uploadDataMcff1 = false;
+          _model.isDataUploading_uploadDataMcff = false;
+        });
+      } else {
+        _model.isDataUploading_uploadDataMcff1 = false;
         _model.isDataUploading_uploadDataMcff = false;
       }
-      if (selectedUploadedFiles.length == selectedMedia.length &&
-          downloadUrls.length == selectedMedia.length) {
-        safeSetState(() {
-          _model.uploadedLocalFile_uploadDataMcff = selectedUploadedFiles.first;
-          _model.uploadedFileUrl_uploadDataMcff = downloadUrls.first;
-        });
-      } else {
-        safeSetState(() {});
-        return;
-      }
     }
-
-    await currentUserReference!.update(createUserRecordData(
-      photoUrl: _model.uploadedFileUrl_uploadDataMcff1,
-    ));
   }
+
+  Future<void> _pickPhotoFromSourceSheet() =>
+      _changeProfilePhoto(galleryOnly: false);
+
+  Future<void> _pickPhotoFromGallery() =>
+      _changeProfilePhoto(galleryOnly: true);
 
   Future<void> _submit() async {
     final normalized = TouryPhoneUtil.normalizeForSave(
@@ -207,6 +235,12 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
               appBar: DsAppBar(
                 title: FFLocalizations.of(context).getText(
                   '2sn8j2l0' /* Update Profile */,
+                ),
+                automaticallyImplyLeading: false,
+                leading: DsIconButton(
+                  icon: DsIcons.back,
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                  onPressed: () => context.safePop(),
                 ),
               ),
               body: SafeArea(

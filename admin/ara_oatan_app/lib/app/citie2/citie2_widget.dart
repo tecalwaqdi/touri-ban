@@ -7,6 +7,7 @@ import 'package:webviewx_plus/webviewx_plus.dart';
 
 import '/backend/backend.dart';
 import '/core/toury_country_registry.dart';
+import '/core/toury_geo_aliases.dart';
 import '/core/toury_geo_content_i18n.dart';
 import '/core/toury_google_map_panel.dart';
 import '/core/toury_location_service.dart';
@@ -198,7 +199,8 @@ class _Citie2WidgetState extends State<Citie2Widget> {
     if (!confirmed || !mounted) return;
 
     FFAppState().update(() {
-      FFAppState().mdenh = columnCitiesRecord.reference;
+      FFAppState().mdenh =
+          touryCanonicalRegionRef(columnCitiesRecord.reference);
       FFAppState().naimmdenh = touryCityName(context, columnCitiesRecord);
       // Village is chosen on the next screen.
       // Do not seed villa from city.vil (often null
@@ -261,26 +263,14 @@ class _Citie2WidgetState extends State<Citie2Widget> {
                 backgroundColor: colors.scaffold,
                 appBar: DsAppBar(
                   title: "Select region / city".tr(),
+                  centerTitle: false,
                   automaticallyImplyLeading: false,
                   leading: DsIconButton(
                     icon: DsIcons.back,
                     tooltip:
                         MaterialLocalizations.of(context).backButtonTooltip,
-                    onPressed: () => context.pop(),
+                    onPressed: () => context.safePop(),
                   ),
-                  actions: [
-                    // LEFT (MENU)
-                    Padding(
-                      padding: const EdgeInsetsDirectional.only(
-                        end: DsSpacing.xs,
-                      ),
-                      child: DsIconButton(
-                        icon: Icons.arrow_back_ios_new_rounded,
-                        size: DsIcons.sm,
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
-                  ],
                 ),
                 body: SafeArea(
                   child: TouryAdaptiveScope(
@@ -631,11 +621,12 @@ class _RegionCard extends StatelessWidget {
                       name,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: typography.titleLarge.copyWith(
+                      style: typography.titleMedium.copyWith(
                         color: colors.textPrimary,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: DsSpacing.xxs),
+                    const SizedBox(height: DsSpacing.xs),
                     FutureBuilder<int>(
                       future: TouryFirestoreCache.mkanCount(
                         cacheKey: 'city:${record.reference.path}',
@@ -705,13 +696,19 @@ class _RegionCard extends StatelessWidget {
                 width: double.infinity,
                 height: DsConstants.buttonHeightMd,
                 alignment: AlignmentDirectional.center,
-                color: colors.primary,
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: DsRadius.lgRadius,
+                  ),
+                ),
                 child: Text(
                   "Specify the region".tr(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: typography.labelLarge.copyWith(
                     color: colors.onPrimary,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

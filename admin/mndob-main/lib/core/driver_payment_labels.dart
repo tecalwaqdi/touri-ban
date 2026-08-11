@@ -1,31 +1,52 @@
-import '/backend/schema/enums/enums.dart';
+import 'package:flutter/material.dart';
 
-/// تسميات طريقة الدفع للمندوب (نقدي / إلكتروني).
+import '/backend/schema/enums/enums.dart';
+import '/core/driver_i18n.dart';
+
+/// Payment method labels for the driver app (Cash / Online payment).
 abstract final class DriverPaymentLabels {
   DriverPaymentLabels._();
 
-  static String label(PaymentMethod? method, {String? fallbackRaw}) {
+  static const cashKey = 'Cash';
+  static const onlineKey = 'Online payment';
+
+  /// English phrase key for EasyLocalization (never Arabic).
+  static String labelKey(PaymentMethod? method, {String? fallbackRaw}) {
     switch (method) {
       case PaymentMethod.Cash:
-        return 'نقدي';
+        return cashKey;
       case PaymentMethod.OnlinePayment:
-        return 'دفع إلكتروني';
+        return onlineKey;
       case PaymentMethod.Accepted:
       case PaymentMethod.Completed:
       case null:
         break;
     }
     final raw = (fallbackRaw ?? '').toLowerCase();
-    if (raw.contains('cash') || raw.contains('نقد')) return 'نقدي';
+    if (raw.contains('cash') || raw.contains('نقد')) return cashKey;
     if (raw.contains('online') ||
         raw.contains('electronic') ||
-        raw.contains('الكترون')) {
-      return 'دفع إلكتروني';
+        raw.contains('الكترون') ||
+        raw.contains('электрон')) {
+      return onlineKey;
     }
-    return 'دفع إلكتروني';
+    return onlineKey;
   }
 
-  static bool isCash(PaymentMethod? method) =>
-      method == PaymentMethod.Cash ||
-      label(method).contains('نقد');
+  static String label(
+    PaymentMethod? method, {
+    String? fallbackRaw,
+    BuildContext? context,
+  }) {
+    final key = labelKey(method, fallbackRaw: fallbackRaw);
+    if (context != null) return driverTr(context, key);
+    return key;
+  }
+
+  static bool isCash(PaymentMethod? method, {String? fallbackRaw}) {
+    if (method == PaymentMethod.Cash) return true;
+    if (method == PaymentMethod.OnlinePayment) return false;
+    final raw = (fallbackRaw ?? '').toLowerCase();
+    return raw.contains('cash') || raw.contains('نقد');
+  }
 }

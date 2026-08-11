@@ -27,6 +27,62 @@ class FFButtonOptions {
     this.maxLines,
   });
 
+  /// Classic primary CTA defaults (teal brand). Callers may still override.
+  factory FFButtonOptions.classicPrimary({
+    TextStyle? textStyle,
+    Color? color,
+    double? width,
+    double height = 48,
+  }) {
+    return FFButtonOptions(
+      height: height,
+      width: width,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      color: color ?? const Color(0xFF1F6F5F),
+      disabledColor: const Color(0xFFC5D0CC),
+      disabledTextColor: const Color(0xFF7A8A85),
+      elevation: 1,
+      hoverElevation: 2,
+      borderRadius: BorderRadius.circular(14),
+      iconSize: 20,
+      textStyle: textStyle ??
+          const TextStyle(
+            fontFamily: 'cairo',
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+    );
+  }
+
+  /// Classic outlined secondary action.
+  factory FFButtonOptions.classicOutlined({
+    TextStyle? textStyle,
+    Color? color,
+    double? width,
+    double height = 48,
+  }) {
+    final brand = color ?? const Color(0xFF1F6F5F);
+    return FFButtonOptions(
+      height: height,
+      width: width,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      color: Colors.transparent,
+      elevation: 0,
+      hoverElevation: 0,
+      borderRadius: BorderRadius.circular(14),
+      borderSide: BorderSide(color: brand.withValues(alpha: 0.55), width: 1.2),
+      iconSize: 20,
+      textStyle: textStyle ??
+          TextStyle(
+            fontFamily: 'cairo',
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: brand,
+          ),
+    );
+  }
+
   final TextAlign? textAlign;
   final TextStyle? textStyle;
   final double? elevation;
@@ -108,6 +164,7 @@ class _FFButtonWidgetState extends State<FFButtonWidget> {
                 width: 23,
                 height: 23,
                 child: CircularProgressIndicator(
+                  strokeWidth: 2.2,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     widget.options.textStyle?.color ?? Colors.white,
                   ),
@@ -153,7 +210,8 @@ class _FFButtonWidgetState extends State<FFButtonWidget> {
           );
         }
         return RoundedRectangleBorder(
-          borderRadius: widget.options.borderRadius ?? BorderRadius.circular(8),
+          borderRadius:
+              widget.options.borderRadius ?? BorderRadius.circular(14),
           side: widget.options.borderSide ?? BorderSide.none,
         );
       }),
@@ -187,14 +245,17 @@ class _FFButtonWidgetState extends State<FFButtonWidget> {
       }),
       padding: WidgetStateProperty.all(
         widget.options.padding ??
-            const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+            const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       ),
       elevation: WidgetStateProperty.resolveWith<double?>((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return 0.0;
+        }
         if (states.contains(WidgetState.hovered) &&
             widget.options.hoverElevation != null) {
           return widget.options.hoverElevation!;
         }
-        return widget.options.elevation ?? 0.0;
+        return widget.options.elevation ?? 1.0;
       }),
       iconColor: WidgetStateProperty.resolveWith<Color?>((states) {
         if (states.contains(WidgetState.disabled) &&

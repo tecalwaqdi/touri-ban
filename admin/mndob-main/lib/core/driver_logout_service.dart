@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
 import '/app_state.dart';
@@ -28,6 +29,12 @@ abstract final class DriverLogoutService {
       DriverLiveLocationService.stopIdleSync(force: true);
     } catch (e) {
       debugPrint('DriverLogoutService stop location: $e');
+    }
+
+    try {
+      await FirebaseMessaging.instance.deleteToken();
+    } catch (e) {
+      debugPrint('DriverLogoutService deleteToken: $e');
     }
 
     try {

@@ -101,9 +101,9 @@ class _MktmlhWidgetState extends State<MktmlhWidget> {
                         return DsCard(
                           onTap: () async {
                             context.pushNamed(
-                              TfaselCopyWidget.routeName,
+                              TfaselOrserWidget.routeName,
                               queryParameters: {
-                                'idorder': serializeParam(
+                                'id': serializeParam(
                                   listViewOrderRecord.reference,
                                   ParamType.DocumentReference,
                                 ),

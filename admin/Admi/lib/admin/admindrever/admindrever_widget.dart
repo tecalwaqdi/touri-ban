@@ -177,9 +177,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                             child: Text(
-                              '${uiTr(context, 'العدد')}: ${reps.length}'
-                              '${reps.length != allReps.length ? ' ${uiTr(context, 'من')} ${allReps.length}' : ''}'
-                              '${listState.hasMore ? '+' : ''}',
+                              adminListCountLabel(context, listState, visibleCount: reps.length, pageFetched: allReps.length),
                               style: theme.labelLarge.override(
                                 fontFamily: theme.labelLargeFamily,
                                 color: theme.secondaryText,

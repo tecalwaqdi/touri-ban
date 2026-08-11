@@ -1,0 +1,226 @@
+{
+  "mode": "dry-run",
+  "scannedAt": "2026-08-08T11:09:55.010Z",
+  "counts": {
+    "countries": 2,
+    "regions_cities": 25,
+    "villages": 27,
+    "landmarks": 138,
+    "landmarks_active": 136
+  },
+  "regionSummary": [
+    {
+      "id": "region_kg_batken",
+      "name": "إقليم باتكين",
+      "cities": [
+        {
+          "id": "city_kg_batken",
+          "name": "باتكين"
+        }
+      ],
+      "landmarkCount": 5
+    },
+    {
+      "id": "region_kg_bishkek",
+      "name": "بيشكيك",
+      "cities": [
+        {
+          "id": "city_kg_bishkek",
+          "name": "بيشكيك"
+        }
+      ],
+      "landmarkCount": 5
+    },
+    {
+      "id": "region_kg_chuy",
+      "name": "إقليم تشوي",
+      "cities": [
+        {
+          "id": "city_kg_tokmok",
+          "name": "توكموك"
+        }
+      ],
+      "landmarkCount": 5
+    },
+    {
+      "id": "region_kg_issyk_kul",
+      "name": "إقليم إيسيك كول",
+      "cities": [
+        {
+          "id": "city_kg_karakol",
+          "name": "كاراكول"
+        }
+      ],
+      "landmarkCount": 5
+    },
+    {
+      "id": "region_kg_jalal_abad",
+      "name": "إقليم جلال آباد",
+      "cities": [
+        {
+          "id": "city_kg_jalal_abad",
+          "name": "جلال آباد"
+        }
+      ],
+      "landmarkCount": 5
+    },
+    {
+      "id": "region_kg_naryn",
+      "name": "إقليم نارين",
+      "cities": [
+        {
+          "id": "city_kg_naryn",
+          "name": "نارين"
+        }
+      ],
+      "landmarkCount": 5
+    },
+    {
+      "id": "region_kg_osh",
+      "name": "إقليم أوش",
+      "cities": [
+        {
+          "id": "city_kg_uzgen",
+          "name": "أوزجن"
+        }
+      ],
+      "landmarkCount": 5
+    },
+    {
+      "id": "region_kg_osh_city",
+      "name": "مدينة أوش",
+      "cities": [
+        {
+          "id": "city_kg_osh",
+          "name": "أوش"
+        }
+      ],
+      "landmarkCount": 5
+    },
+    {
+      "id": "region_kg_talas",
+      "name": "إقليم تالاس",
+      "cities": [
+        {
+          "id": "city_kg_talas",
+          "name": "تالاس"
+        }
+      ],
+      "landmarkCount": 5
+    },
+    {
+      "id": "region_sa_abha",
+      "name": "أبها",
+      "cities": [
+        {
+          "id": "city_sa_abha",
+          "name": "أبها"
+        }
+      ],
+      "landmarkCount": 6
+    },
+    {
+      "id": "region_sa_dammam",
+      "name": "الدمام",
+      "cities": [
+        {
+          "id": "city_sa_dammam",
+          "name": "الدمام"
+        }
+      ],
+      "landmarkCount": 4
+    },
+    {
+      "id": "region_sa_jeddah",
+      "name": "جدة",
+      "cities": [
+        {
+          "id": "city_sa_jeddah",
+          "name": "جدة"
+        }
+      ],
+      "landmarkCount": 15
+    },
+    {
+      "id": "region_sa_khobar",
+      "name": "الخبر",
+      "cities": [
+        {
+          "id": "city_sa_khobar",
+          "name": "الخبر"
+        }
+      ],
+      "landmarkCount": 4
+    },
+    {
+      "id": "region_sa_madinah",
+      "name": "المدينة المنورة",
+      "cities": [
+        {
+          "id": "city_sa_madinah",
+          "name": "المدينة المنورة"
+        }
+      ],
+      "landmarkCount": 7
+    },
+    {
+      "id": "region_sa_makkah",
+      "name": "مكة المكرمة",
+      "cities": [
+        {
+          "id": "city_sa_makkah",
+          "name": "مكة المكرمة"
+        }
+      ],
+      "landmarkCount": 16
+    },
+    {
+      "id": "region_sa_riyadh",
+      "name": "الرياض",
+      "cities": [
+        {
+          "id": "city_sa_riyadh",
+          "name": "الرياض"
+        }
+      ],
+      "landmarkCount": 18
+    },
+    {
+      "id": "region_sa_tabuk",
+      "name": "منطقة تبوك",
+      "cities": [
+        {
+          "id": "city_sa_tabuk",
+          "name": "تبوك"
+        }
+      ],
+      "landmarkCount": 4
+    },
+    {
+      "id": "region_sa_taif",
+      "name": "الطائف",
+      "cities": [
+        {
+          "id": "city_sa_taif",
+          "name": "الطائف"
+        }
+      ],
+      "landmarkCount": 17
+    }
+  ],
+  "duplicateClusters": [],
+  "wrongRegion": [],
+  "legacyIdRemaps": [],
+  "nameFixes": [],
+  "i18nFixes": [],
+  "duplicateImages": [],
+  "imageFixes": [],
+  "softDisable": [],
+  "villageParentFixes": [],
+  "notes": [
+    "Soft-disable only; no hard deletes.",
+    "Name-only similarity without nearby coordinates is never treated as a duplicate.",
+    "Image fixes prefer curated Wikimedia URLs; shared/placeholder images fall back to OSM static maps.",
+    "Deploy/apply after reviewing dry-run report."
+  ]
+}

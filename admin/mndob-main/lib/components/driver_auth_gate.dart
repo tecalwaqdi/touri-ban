@@ -50,7 +50,7 @@ class _DriverAuthGateState extends State<DriverAuthGate> {
     try {
       final result = await DriverBootstrapService.resolve(
         hasActiveTrip: FFAppState().revOrder != null,
-      );
+      ).timeout(const Duration(seconds: 15));
       if (!mounted) return;
       setState(() {
         _result = result;
@@ -60,6 +60,16 @@ class _DriverAuthGateState extends State<DriverAuthGate> {
         'DriverAuthGate status=${result.status} life=${result.lifecycle} '
         '→ ${DriverSessionRouter.namedRouteForLifecycle(result.lifecycle)}',
       );
+    } on TimeoutException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e;
+        _resolving = false;
+        _result = DriverBootstrapResult(
+          status: DriverBootstrapStatus.bootstrapError,
+          errorMessage: 'Timed out starting the app',
+        );
+      });
     } catch (e) {
       if (!mounted) return;
       setState(() {

@@ -2,7 +2,6 @@ import 'dart:ui' as ui;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '/backend/backend.dart';
 import '/backend/gemini/gemini.dart';
@@ -128,12 +127,7 @@ class _CarWidgetState extends State<CarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
-    final dsTheme =
-        brightness == Brightness.dark ? DsTheme.dark() : DsTheme.light();
-
-    return Theme(
-      data: dsTheme,
+    return DsScreenShell(
       child: Builder(
         builder: (context) {
           final colors = context.dsColors;
@@ -143,110 +137,121 @@ class _CarWidgetState extends State<CarWidget> {
               FocusScope.of(context).unfocus();
               FocusManager.instance.primaryFocus?.unfocus();
             },
-            child: AnnotatedRegion<SystemUiOverlayStyle>(
-              value: brightness == Brightness.dark
-                  ? SystemUiOverlayStyle.light
-                  : SystemUiOverlayStyle.dark,
-              child: Scaffold(
-                key: scaffoldKey,
-                backgroundColor: colors.scaffold,
-                appBar: DsAppBar(
-                  title: 'ux_choose_car_type'.tr(),
-                  automaticallyImplyLeading: false,
-                  leading: DsIconButton(
-                    icon: DsIcons.back,
-                    onPressed: () => context.pop(),
-                  ),
+            child: Scaffold(
+              key: scaffoldKey,
+              backgroundColor: colors.scaffold,
+              appBar: DsAppBar(
+                title: 'ux_choose_car_type'.tr(),
+                automaticallyImplyLeading: false,
+                leading: DsIconButton(
+                  icon: DsIcons.back,
+                  onPressed: () => context.safePop(),
                 ),
-                body: SafeArea(
-                  child: StreamBuilder<List<TypeCarRecord>>(
-                    stream: TouryFirestoreCache.typeCarStream(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return DsErrorState(
-                          title: 'ux_car_list_error_title'.tr(),
-                          message: 'ux_car_list_error_msg'.tr(),
-                          retryLabel: 'ux_retry'.tr(),
-                          onRetry: () {
-                            TouryFirestoreCache.invalidateTypeCar();
-                            safeSetState(() {});
-                          },
-                        );
-                      }
-
-                      if (snapshot.connectionState == ConnectionState.waiting &&
-                          !snapshot.hasData) {
-                        return const _CarListSkeleton();
-                      }
-
-                      if (!snapshot.hasData) {
-                        return const DsLoading();
-                      }
-
-                      final cars = touryDeduplicateTypeCars(snapshot.data!);
-                      if (cars.isEmpty) {
-                        return DsEmptyState(
-                          title: 'ux_car_list_empty_title'.tr(),
-                          message: 'ux_car_list_empty_msg'.tr(),
-                          icon: DsIcons.car,
-                        );
-                      }
-
-                      return ListView.separated(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(
-                          DsSpacing.md,
-                          DsSpacing.sm,
-                          DsSpacing.md,
-                          DsSpacing.huge,
-                        ),
-                        cacheExtent: 480,
-                        addRepaintBoundaries: true,
-                        addAutomaticKeepAlives: false,
-                        itemCount: cars.length + 1,
-                        separatorBuilder: (_, index) => SizedBox(
-                          height: index == 0 ? DsSpacing.md : DsSpacing.sm,
-                        ),
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            return DsFadeSlide(
-                              child: DsInformationCard(
-                                title: 'ux_choose_car_type'.tr(),
-                                message: 'ux_car_list_hint'.tr(),
-                                icon: DsIcons.car,
-                              ),
-                            );
-                          }
-
-                          final car = cars[index - 1];
-                          final price = formatNumber(
-                            car.sr,
-                            formatType: FormatType.decimal,
-                            decimalType: DecimalType.automatic,
-                            currency: '${FFAppState().RMZCurrency} ',
-                          );
-
-                          return DsFadeSlide(
-                            delay: Duration(
-                              milliseconds: 40 * (index - 1).clamp(0, 8),
-                            ),
-                            child: _CarOptionCard(
-                              title:
-                                  touryVehicleCategoryDisplayName(car, context),
-                              localAsset: touryVehicleCategoryImage(car),
-                              imageUrl: car.img,
-                              documentId: car.reference.id,
-                              priceLabel: price,
-                              perHourLabel: 'ux_per_hour'.tr(),
-                              minHoursLabel:
-                                  '${'ux_min_hours'.tr()}: ${_minHoursLabel(car.aglSaat)}',
-                              onTap: () => _selectCar(car),
-                            ),
-                          );
+              ),
+              body: SafeArea(
+                child: StreamBuilder<List<TypeCarRecord>>(
+                  stream: TouryFirestoreCache.typeCarStream(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return DsErrorState(
+                        title: 'ux_car_list_error_title'.tr(),
+                        message: 'ux_car_list_error_msg'.tr(),
+                        retryLabel: 'ux_retry'.tr(),
+                        onRetry: () {
+                          TouryFirestoreCache.invalidateTypeCar();
+                          safeSetState(() {});
                         },
                       );
-                    },
-                  ),
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting &&
+                        !snapshot.hasData) {
+                      return const _CarListSkeleton();
+                    }
+
+                    if (!snapshot.hasData) {
+                      return const DsLoading();
+                    }
+
+                    final cars = touryDeduplicateTypeCars(snapshot.data!);
+                    if (cars.isEmpty) {
+                      return DsEmptyState(
+                        title: 'ux_car_list_empty_title'.tr(),
+                        message: 'ux_car_list_empty_msg'.tr(),
+                        icon: DsIcons.car,
+                      );
+                    }
+
+                    return ListView.separated(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(
+                        DsSpacing.md,
+                        DsSpacing.sm,
+                        DsSpacing.md,
+                        DsSpacing.huge,
+                      ),
+                      cacheExtent: 480,
+                      addRepaintBoundaries: true,
+                      addAutomaticKeepAlives: false,
+                      itemCount: cars.length + 1,
+                      separatorBuilder: (_, index) => SizedBox(
+                        height: index == 0 ? DsSpacing.md : DsSpacing.sm,
+                      ),
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return DsFadeSlide(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                DsInformationCard(
+                                  title: 'ux_choose_car_type'.tr(),
+                                  message: 'ux_car_list_hint'.tr(),
+                                  icon: DsIcons.car,
+                                ),
+                                const SizedBox(height: DsSpacing.xs),
+                                Text(
+                                  'ux_cars_available_count'.tr(
+                                    namedArgs: {
+                                      'count': '${cars.length}',
+                                    },
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  style: context.dsTypography.labelMedium
+                                      .copyWith(color: colors.textSecondary),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        final car = cars[index - 1];
+                        final price = formatNumber(
+                          car.sr,
+                          formatType: FormatType.decimal,
+                          decimalType: DecimalType.automatic,
+                          currency: '${FFAppState().RMZCurrency} ',
+                        );
+
+                        return DsFadeSlide(
+                          delay: Duration(
+                            milliseconds: 40 * (index - 1).clamp(0, 8),
+                          ),
+                          child: _CarOptionCard(
+                            title:
+                                touryVehicleCategoryDisplayName(car, context),
+                            localAsset: touryVehicleCategoryImage(car),
+                            imageUrl: car.img,
+                            documentId: car.reference.id,
+                            priceLabel: price,
+                            perHourLabel: 'ux_per_hour'.tr(),
+                            minHoursLabel:
+                                '${'ux_min_hours'.tr()}: ${_minHoursLabel(car.aglSaat)}',
+                            onTap: () => _selectCar(car),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ),

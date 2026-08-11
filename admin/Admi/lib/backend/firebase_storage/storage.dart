@@ -21,6 +21,9 @@ String contentTypeForStoragePath(String path) {
 }
 
 /// Upload bytes to Firebase Storage (web + mobile safe — no dart:io).
+///
+/// One putData call per path — callers must not invoke this twice for the
+/// same pick. Paths should already include a unique timestamp segment.
 Future<String?> uploadData(
   String path,
   Uint8List data, {
@@ -50,7 +53,9 @@ Future<String?> uploadData(
 
     return await snapshot.ref.getDownloadURL();
   } on FirebaseException catch (e) {
-    debugPrint('uploadData FirebaseException [$path]: ${e.code} — ${e.message}');
+    debugPrint(
+      'uploadData FirebaseException [$path]: ${e.code} — ${e.message}',
+    );
     rethrow;
   } catch (e, st) {
     debugPrint('uploadData error [$path]: $e\n$st');
@@ -60,6 +65,19 @@ Future<String?> uploadData(
 
 String uploadErrorMessage(Object error) {
   if (error is FirebaseException) {
+    final code = error.code.toLowerCase();
+    final msg = (error.message ?? '').toLowerCase();
+    final combined = '$code $msg';
+
+    if (code.contains('quota') ||
+        msg.contains('quota') ||
+        combined.contains('402')) {
+      return 'تم تجاوز حصة Firebase Storage لهذا المشروع '
+          '(Quota exceeded). هذا حد على مشروع Firebase وليس خطأ في التطبيق. '
+          'افتح Firebase Console → Storage / Usage، احذف ملفات غير لازمة '
+          'أو فعّل خطة Blaze، ثم أعد المحاولة.';
+    }
+
     switch (error.code) {
       case 'unauthorized':
       case 'permission-denied':
@@ -75,19 +93,29 @@ String uploadErrorMessage(Object error) {
       case 'canceled':
         return 'تم إلغاء الرفع.';
       default:
-        final msg = (error.message ?? '').toLowerCase();
         if (msg.contains('billing') ||
             msg.contains('delinquent') ||
-            msg.contains('402') ||
             msg.contains('payment')) {
-          return 'خدمة التخزين متوقفة: يجب تفعيل الفوترة في مشروع Firebase (Google Cloud Billing).';
+          return 'خدمة التخزين متوقفة: يجب تفعيل الفوترة (Blaze) في مشروع Firebase.';
         }
-        final trimmed = error.message?.trim();
-        if (trimmed != null && trimmed.isNotEmpty) {
-          return trimmed;
-        }
-        return 'خطأ في التخزين (${error.code})';
+        return 'تعذر رفع الصورة إلى التخزين السحابي. حاول مرة أخرى أو اختر صورة أصغر.';
     }
   }
-  return error.toString();
+
+  final text = error.toString().toLowerCase();
+  if (text.contains('quota') || text.contains('402')) {
+    return 'تم تجاوز حصة Firebase Storage لهذا المشروع. '
+        'راجع Usage في Firebase Console أو فعّل Blaze.';
+  }
+  if (text.contains('billing') || text.contains('payment')) {
+    return 'خدمة التخزين متوقفة: يجب تفعيل الفوترة (Blaze) في مشروع Firebase.';
+  }
+
+  final raw = error.toString().trim();
+  if (raw.startsWith('Exception: ')) {
+    return raw.substring('Exception: '.length);
+  }
+  return raw.isNotEmpty
+      ? raw
+      : 'تعذر رفع الصورة. حاول مرة أخرى.';
 }

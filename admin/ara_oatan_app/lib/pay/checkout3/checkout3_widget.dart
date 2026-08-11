@@ -72,6 +72,7 @@ class _Checkout3WidgetState extends State<Checkout3Widget> {
                         decoration: BoxDecoration(
                           color: colors.primarySoft,
                           shape: BoxShape.circle,
+                          boxShadow: DsShadows.soft(dark: context.dsIsDark),
                         ),
                         child: Icon(
                           Icons.verified_user_rounded,
@@ -89,7 +90,7 @@ class _Checkout3WidgetState extends State<Checkout3Widget> {
                       ),
                       const SizedBox(height: DsSpacing.xs),
                       Text(
-                        'Please do not close the page until the payment is completed'
+                        'please_do_not_close_the_page_until_the_payment_is_completed'
                             .tr(),
                         textAlign: TextAlign.center,
                         style: typography.bodyMedium.copyWith(

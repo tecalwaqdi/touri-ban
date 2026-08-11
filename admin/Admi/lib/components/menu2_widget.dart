@@ -1,6 +1,7 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
+import '/components/admin_theme_toggle.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -136,6 +137,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
         key: 'finance',
         items: [
           (route: AdminFinanceHubWidget.routeName, icon: Icons.account_balance_rounded),
+          (route: AdminDriverWalletsWidget.routeName, icon: Icons.wallet_rounded),
           (route: AdminProfitsWidget.routeName, icon: Icons.account_balance_wallet_rounded),
           (route: AdminReportsHubWidget.routeName, icon: Icons.assessment_rounded),
         ],
@@ -191,6 +193,8 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                       Expanded(
                         child: Text(
                           l10n.getText('hrrt489c' /* Admin */),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: theme.headlineSmall.override(
                             fontFamily: theme.headlineSmallFamily,
                             color: Colors.white,
@@ -304,6 +308,8 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                               ),
                               label: Text(
                                 l10n.getText('wj2hxjyt' /* Log out */),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: theme.labelMedium.override(
                                   fontFamily: theme.labelMediumFamily,
                                   color: const Color(0xFFFFB4B8),
@@ -328,7 +334,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.only(bottom: 12),
               children: [
                 for (final section in visibleSections) ...[
                   AdminMenuSectionHeader(
@@ -344,6 +350,18 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 ],
               ],
             ),
+          ),
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: Colors.white.withValues(alpha: 0.12),
+                ),
+              ),
+            ),
+            padding: const EdgeInsets.fromLTRB(8, 6, 8, 10),
+            child: const AdminThemeToggle(onTealChrome: true),
           ),
         ],
       ),

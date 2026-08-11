@@ -1843,8 +1843,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get ux_change => 'Өзгөртүү';
 
   @override
-  String get ux_card_payment_network =>
-      'Network International аркылуу коопсуз карта төлөмү';
+  String get ux_card_payment_network => 'Карта менен төлөө';
 
   @override
   String checkout_extra_hour_discount(
@@ -2219,8 +2218,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get card_invalid_data => 'Карта маалыматы жараксыз';
 
   @override
-  String get checkout_paying =>
-      'Network International аркылуу төлөм иштетилүүдө...';
+  String get checkout_paying => 'Карта төлөмү иштетилүүдө...';
 
   @override
   String get map_trip_destination => 'Сапардын көздөгөн жери';

@@ -7,6 +7,7 @@ describe("env", () => {
     process.env.NGENIUS_ENV = "sandbox";
     process.env.NGENIUS_API_KEY = "test-key";
     process.env.NGENIUS_OUTLET_REF = "outlet";
+    process.env.NGENIUS_WEBHOOK_SECRET = "webhook-secret-16chars";
     process.env.FIREBASE_PROJECT_ID = "demo";
     process.env.FIREBASE_CLIENT_EMAIL = "demo@demo.iam.gserviceaccount.com";
     process.env.FIREBASE_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\\nABC\\n-----END PRIVATE KEY-----\\n";
@@ -26,11 +27,77 @@ describe("env", () => {
     expect(p.firebase).toBe(true);
   });
 
+  it("defaults sandbox base URL to global gateway", () => {
+    delete process.env.NGENIUS_SANDBOX_BASE_URL;
+    resetEnvCacheForTests();
+    const env = getEnv();
+    expect(env.ngeniusBaseUrl).toBe(
+      "https://api-gateway.sandbox.ngenius-payments.com",
+    );
+    expect(env.ngeniusIdentityUrl).toBe(
+      "https://api-gateway.sandbox.ngenius-payments.com/identity/auth/access-token",
+    );
+    expect(env.ngeniusRealm).toBe("ni");
+  });
+
   it("requires explicit production env", () => {
     resetEnvCacheForTests();
     process.env.NGENIUS_ENV = "production";
     const env = getEnv();
     expect(env.isProductionNGenius).toBe(true);
-    expect(env.ngeniusBaseUrl).toContain("api-gateway.ngenius-payments.com");
+    expect(env.ngeniusBaseUrl).toContain("api-gateway.ksa.ngenius-payments.com");
+    expect(env.ngeniusBaseUrl).not.toContain("sandbox");
+  });
+
+  it("production uses PRODUCTION_BASE_URL and keeps NIARABIA realm from env", () => {
+    resetEnvCacheForTests();
+    process.env.NGENIUS_ENV = "production";
+    process.env.NGENIUS_REALM = "NIARABIA";
+    process.env.NGENIUS_PRODUCTION_BASE_URL =
+      "https://api-gateway.ksa.ngenius-payments.com";
+    process.env.NGENIUS_SANDBOX_BASE_URL =
+      "https://api-gateway.sandbox.ngenius-payments.com";
+    const env = getEnv();
+    expect(env.NGENIUS_ENV).toBe("production");
+    expect(env.ngeniusBaseUrl).toBe(
+      "https://api-gateway.ksa.ngenius-payments.com",
+    );
+    expect(env.ngeniusIdentityUrl).toBe(
+      "https://api-gateway.ksa.ngenius-payments.com/identity/auth/access-token",
+    );
+    expect(env.ngeniusRealm).toBe("NIARABIA");
+    expect(env.ngeniusBaseUrl).not.toContain("sandbox");
+  });
+
+  it("does not replace an explicit portal realm with docs defaults", () => {
+    resetEnvCacheForTests();
+    process.env.NGENIUS_ENV = "production";
+    process.env.NGENIUS_REALM = "NIARABIA";
+    expect(getEnv().ngeniusRealm).toBe("NIARABIA");
+  });
+
+  it("allows missing Firebase cert fields in ADC mode", () => {
+    resetEnvCacheForTests();
+    delete process.env.FIREBASE_CLIENT_EMAIL;
+    delete process.env.FIREBASE_PRIVATE_KEY;
+    delete process.env.FIREBASE_PROJECT_ID;
+    delete process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+    process.env.FIREBASE_USE_APPLICATION_DEFAULT = "true";
+    const env = getEnv({ requireSecrets: true });
+    expect(env.NGENIUS_API_KEY).toBe("test-key");
+    expect(envPresence().firebase).toBe(true);
+    delete process.env.FIREBASE_USE_APPLICATION_DEFAULT;
+  });
+
+  it("still requires Firebase cert fields without ADC", () => {
+    resetEnvCacheForTests();
+    delete process.env.FIREBASE_CLIENT_EMAIL;
+    delete process.env.FIREBASE_PRIVATE_KEY;
+    delete process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+    delete process.env.FIREBASE_USE_APPLICATION_DEFAULT;
+    delete process.env.FIREBASE_CONFIG;
+    delete process.env.FUNCTION_TARGET;
+    delete process.env.K_SERVICE;
+    expect(() => getEnv({ requireSecrets: true })).toThrow(/FIREBASE_/);
   });
 });

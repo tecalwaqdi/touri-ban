@@ -61,24 +61,36 @@ class AdminUi {
   static const double sectionGap = 14.0;
   static const double fieldGap = 12.0;
 
+  /// Theme-aware fill for text fields and locked/muted surfaces.
+  static Color fieldFill(BuildContext context, {bool muted = false}) {
+    final theme = FlutterFlowTheme.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    if (muted) {
+      return isDark ? theme.alternate : const Color(0xFFF5F5F5);
+    }
+    return theme.secondaryBackground;
+  }
+
   static BoxDecoration cardDecoration(
     BuildContext context, {
     Color? accent,
     bool elevated = true,
   }) {
     final theme = FlutterFlowTheme.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return BoxDecoration(
       color: theme.secondaryBackground,
       borderRadius: BorderRadius.circular(radiusMd),
       border: Border.all(
-        color: accent?.withValues(alpha: 0.25) ?? theme.alternate.withValues(alpha: 0.8),
+        color: accent?.withValues(alpha: isDark ? 0.35 : 0.25) ??
+            theme.alternate.withValues(alpha: isDark ? 1 : 0.8),
         width: 1,
       ),
       boxShadow: elevated
           ? [
               BoxShadow(
-                color: brandTeal.withValues(alpha: 0.06),
-                blurRadius: 18,
+                color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.06),
+                blurRadius: isDark ? 12 : 18,
                 offset: const Offset(0, 8),
               ),
             ]
@@ -200,12 +212,75 @@ class AdminUi {
   }
 
   static ThemeData buildDarkTheme() {
+    const primary = brandMint;
+    const secondary = brandTeal;
+    const scaffold = Color(0xFF0F1414);
+    const surface = Color(0xFF1A2222);
+    const border = Color(0xFF2A3535);
     return ThemeData(
       brightness: Brightness.dark,
       useMaterial3: false,
-      primaryColor: brandMint,
-      scaffoldBackgroundColor: const Color(0xFF1D2428),
+      primaryColor: primary,
+      scaffoldBackgroundColor: scaffold,
       fontFamily: 'cairo',
+      dividerColor: border,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: brandTeal,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: false,
+      ),
+      cardTheme: CardThemeData(
+        color: surface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusMd),
+          side: const BorderSide(color: border),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusMd),
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: surface,
+        contentTextStyle: const TextStyle(color: Color(0xFFF1F5F4)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusSm),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusSm),
+          borderSide: const BorderSide(color: border),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primary,
+          foregroundColor: const Color(0xFF0F1414),
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          minimumSize: const Size(0, 40),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity.compact,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusSm),
+          ),
+        ),
+      ),
+      colorScheme: const ColorScheme.dark(
+        primary: primary,
+        secondary: secondary,
+        surface: surface,
+        error: Color(0xFFF87171),
+        onPrimary: Color(0xFF0F1414),
+        onSurface: Color(0xFFF1F5F4),
+      ),
     );
   }
 }
@@ -237,9 +312,8 @@ class AdminPageHeader extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: (compact ? theme.titleLarge : theme.headlineSmall).override(
-            fontFamily: compact
-                ? theme.titleLargeFamily
-                : theme.headlineSmallFamily,
+            fontFamily:
+                compact ? theme.titleLargeFamily : theme.headlineSmallFamily,
             color: theme.primaryText,
             fontWeight: FontWeight.w700,
             useGoogleFonts: compact
@@ -328,7 +402,7 @@ class AdminMenuTile extends StatelessWidget {
                 Expanded(
                   child: Text(
                     label,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: Colors.white,
@@ -364,8 +438,8 @@ class AdminStatCard extends StatefulWidget {
     this.accentColor,
     this.onTap,
     this.animateCount = true,
-  }) : assert(future != null || count != null,
-            'Provide either future or count');
+  }) : assert(
+            future != null || count != null, 'Provide either future or count');
 
   final String title;
   final IconData icon;
@@ -557,55 +631,58 @@ class AdminLoginCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
-    return Container(
-      width: double.infinity,
+    return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 440),
-      decoration: AdminUi.cardDecoration(context).copyWith(
-        boxShadow: [
-          BoxShadow(
-            color: AdminUi.brandTeal.withValues(alpha: 0.1),
-            blurRadius: 32,
-            offset: const Offset(0, 16),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: theme.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.admin_panel_settings_rounded,
-                    color: theme.primary,
-                    size: 28,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                  Expanded(
-                  child: Text(
-                    appTr(context, 'ent_login_card_title'),
-                    style: theme.headlineSmall.override(
-                      fontFamily: theme.headlineSmallFamily,
-                      color: theme.primaryText,
-                      fontWeight: FontWeight.w700,
-                      useGoogleFonts: !theme.headlineSmallIsCustom,
+      child: DecoratedBox(
+        decoration: AdminUi.cardDecoration(context).copyWith(
+          boxShadow: [
+            BoxShadow(
+              color: AdminUi.brandTeal.withValues(alpha: 0.1),
+              blurRadius: 32,
+              offset: const Offset(0, 16),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: theme.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.admin_panel_settings_rounded,
+                      color: theme.primary,
+                      size: 28,
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            child,
-          ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      appTr(context, 'ent_login_card_title'),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.headlineSmall.override(
+                        fontFamily: theme.headlineSmallFamily,
+                        color: theme.primaryText,
+                        fontWeight: FontWeight.w700,
+                        useGoogleFonts: !theme.headlineSmallIsCustom,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              child,
+            ],
+          ),
         ),
       ),
     );
@@ -793,12 +870,16 @@ class AdminPrimaryButton extends StatelessWidget {
   final IconData? icon;
   final bool isLoading;
   final bool outlined;
+
   /// Prefer intrinsic width — avoid stretched full-width bars.
   final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final onPrimary =
+        isDark ? const Color(0xFF0F1414) : Colors.white;
     final hPad = compact ? 14.0 : 20.0;
     final vPad = compact ? 10.0 : 14.0;
     final child = isLoading
@@ -807,7 +888,7 @@ class AdminPrimaryButton extends StatelessWidget {
             height: 18,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: outlined ? theme.primary : Colors.white,
+              color: outlined ? theme.primary : onPrimary,
             ),
           )
         : Row(
@@ -823,7 +904,7 @@ class AdminPrimaryButton extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: theme.labelLarge.override(
                   fontFamily: theme.labelLargeFamily,
-                  color: outlined ? theme.primary : Colors.white,
+                  color: outlined ? theme.primary : onPrimary,
                   fontWeight: FontWeight.w600,
                   useGoogleFonts: !theme.labelLargeIsCustom,
                 ),
@@ -859,7 +940,7 @@ class AdminPrimaryButton extends StatelessWidget {
             onPressed: isLoading ? null : onPressed,
             style: styleBase.copyWith(
               backgroundColor: WidgetStatePropertyAll(theme.primary),
-              foregroundColor: const WidgetStatePropertyAll(Colors.white),
+              foregroundColor: WidgetStatePropertyAll(onPrimary),
             ),
             child: child,
           );

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 import '/backend/schema/order_record.dart';
 import '/backend/schema/structs/amakn_coistm_struct.dart';
-import '/core/driver_design_system.dart';
+import '/core/driver_i18n.dart';
 import '/core/driver_map_actions.dart';
 import '/core/driver_navigation_service.dart';
 import '/core/driver_order_meta.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
+import '/core/driver_trip_service.dart';
+import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 /// مخطط رحلة احترافي للمندوب: خط زمني + توجيه خرائط + تأكيد زيارة.
@@ -24,15 +25,16 @@ class DriverTripPlanPanel extends StatefulWidget {
 
 class _DriverTripPlanPanelState extends State<DriverTripPlanPanel> {
   final Set<int> _visitedStopIndexes = {};
+  bool _markingVisit = false;
 
   OrderRecord get order => widget.order;
 
-  String _stopTitle(AmaknCoistmStruct stop) {
+  String _stopTitle(BuildContext context, AmaknCoistmStruct stop) {
     final naim = stop.naim.trim();
     if (naim.isNotEmpty) return naim;
     final address = stop.address.trim();
     if (address.isNotEmpty) return address;
-    return 'موقع غير محدد';
+    return driverTr(context, 'Unspecified location');
   }
 
   LatLng? _stopLoc(AmaknCoistmStruct stop) => stop.loceshn;
@@ -41,16 +43,61 @@ class _DriverTripPlanPanelState extends State<DriverTripPlanPanel> {
     if (loc == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('لا يتوفر موقع على الخريطة')),
+        SnackBar(
+          content: Text(driverTr(context, 'No location on the map')),
+        ),
       );
       return;
     }
     await DriverNavigationService.openGoogleMapsMarker(loc, title: title);
   }
 
+  Future<void> _markVisited(int stopIndex) async {
+    if (_markingVisit) return;
+    final stops = order.listAmakn.toList();
+    if (stopIndex < 0 || stopIndex >= stops.length) return;
+    if (stops[stopIndex].okdone ||
+        _visitedStopIndexes.contains(stopIndex)) {
+      return;
+    }
+
+    setState(() {
+      _markingVisit = true;
+      _visitedStopIndexes.add(stopIndex);
+    });
+
+    try {
+      await DriverTripService.markStopVisited(
+        order: order,
+        stopIndex: stopIndex,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(driverTr(context, 'Visit confirmed')),
+          backgroundColor: context.dsColors.success,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _visitedStopIndexes.remove(stopIndex));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            driverTr(context, 'Something went wrong. Please try again.'),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _markingVisit = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
     final stops = order.listAmakn.toList();
     final pickup = order.customerPickup;
     final hours = order.totalTaim;
@@ -59,7 +106,7 @@ class _DriverTripPlanPanelState extends State<DriverTripPlanPanel> {
     final steps = <_TripStep>[
       _TripStep(
         kind: _StepKind.pickup,
-        title: 'الذهاب إلى موقع العميل',
+        title: driverTr(context, 'Go to customer location'),
         subtitle: order.pickupLabel(),
         location: pickup,
         icon: Icons.home_work_rounded,
@@ -67,10 +114,14 @@ class _DriverTripPlanPanelState extends State<DriverTripPlanPanel> {
       for (var i = 0; i < stops.length; i++)
         _TripStep(
           kind: _StepKind.stop,
-          title: 'الذهاب إلى ${_stopTitle(stops[i])}',
+          title: driverTrNamed(
+            context,
+            'Go to {name}',
+            {'name': _stopTitle(context, stops[i])},
+          ),
           subtitle: () {
             final a = stops[i].address.trim();
-            return a.isNotEmpty && a != _stopTitle(stops[i]) ? a : null;
+            return a.isNotEmpty && a != _stopTitle(context, stops[i]) ? a : null;
           }(),
           location: _stopLoc(stops[i]),
           icon: Icons.place_rounded,
@@ -78,62 +129,70 @@ class _DriverTripPlanPanelState extends State<DriverTripPlanPanel> {
         ),
       _TripStep(
         kind: _StepKind.returnPickup,
-        title: 'نهاية الرحلة — العودة لموقع العميل',
+        title: driverTr(context, 'End of trip — return to customer'),
         subtitle: order.pickupLabel(),
         location: pickup,
         icon: Icons.flag_rounded,
       ),
     ];
 
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-      decoration: DriverBrand.cardDecoration(context, elevated: true),
+    return DsCard(
+      margin: const EdgeInsets.fromLTRB(
+        DsSpacing.md,
+        DsSpacing.xs,
+        DsSpacing.md,
+        DsSpacing.xs,
+      ),
+      elevated: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(DsSpacing.xs),
                 decoration: BoxDecoration(
-                  color: DriverBrand.tealLight,
-                  borderRadius: BorderRadius.circular(DriverBrand.radiusSm),
+                  color: colors.primarySoft,
+                  borderRadius: DsRadius.small,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.route_rounded,
-                  color: DriverBrand.tealDark,
+                  color: colors.primaryStrong,
                   size: 22,
                 ),
               ),
-              const SizedBox(width: 12),
+              DsSpacing.gapSm,
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'مخطط الرحلة',
-                      style: theme.titleMedium.override(
-                        fontFamily: 'cairo',
+                      driverTr(context, 'Trip plan'),
+                      style: typography.titleMedium.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: DriverBrand.textPrimaryColor(context),
-                        letterSpacing: 0,
+                        color: colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '$stopCount مكان · $hours ساعة',
-                      style: theme.bodySmall.override(
-                        fontFamily: 'cairo',
-                        color: DriverBrand.textSecondaryColor(context),
-                        letterSpacing: 0,
+                      driverTrNamed(
+                        context,
+                        '{count} places for {hours} hours',
+                        {
+                          'count': '$stopCount',
+                          'hours': '$hours',
+                        },
+                      ),
+                      style: typography.bodySmall.copyWith(
+                        color: colors.textSecondary,
                       ),
                     ),
                   ],
                 ),
               ),
-              TextButton.icon(
+              DsButton.text(
+                label: driverTr(context, 'Route'),
+                icon: Icons.directions_rounded,
                 onPressed: () {
                   final loc = order.driverLivePosition;
                   DriverNavigationService.openOrderRoute(
@@ -142,37 +201,25 @@ class _DriverTripPlanPanelState extends State<DriverTripPlanPanel> {
                     orderRef: order.reference,
                   );
                 },
-                icon: const Icon(Icons.directions_rounded, size: 18),
-                label: const Text('المسار'),
-                style: TextButton.styleFrom(
-                  foregroundColor: DriverBrand.tealDark,
-                ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          DsSpacing.gapSm,
           ...List.generate(steps.length, (index) {
             final step = steps[index];
             final isLast = index == steps.length - 1;
-            final visited = step.stopIndex != null &&
-                _visitedStopIndexes.contains(step.stopIndex);
+            final stopIdx = step.stopIndex;
+            final visited = stopIdx != null &&
+                (stops[stopIdx].okdone ||
+                    _visitedStopIndexes.contains(stopIdx));
             return _TimelineTile(
               step: step,
               isLast: isLast,
               visited: visited,
               onOpenMap: () => _openMap(step.location, step.title),
-              onMarkVisited: step.stopIndex == null
+              onMarkVisited: stopIdx == null || visited || _markingVisit
                   ? null
-                  : () {
-                      setState(() => _visitedStopIndexes.add(step.stopIndex!));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('تم تأكيد الزيارة'),
-                          backgroundColor: DriverBrand.success,
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    },
+                  : () => _markVisited(stopIdx),
               onFocusInApp: step.location == null
                   ? null
                   : () => DriverMapActions.focusLocationHint(
@@ -225,20 +272,24 @@ class _TimelineTile extends StatelessWidget {
   final VoidCallback? onMarkVisited;
   final VoidCallback? onFocusInApp;
 
-  Color get _accent {
+  Color _accent(BuildContext context) {
+    final colors = context.dsColors;
     switch (step.kind) {
       case _StepKind.pickup:
-        return DriverBrand.tealDark;
+        return colors.primaryStrong;
       case _StepKind.stop:
-        return visited ? DriverBrand.success : DriverBrand.partnerRed;
+        return visited ? colors.success : colors.error;
       case _StepKind.returnPickup:
-        return DriverBrand.tealDeeper;
+        return colors.primary;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+    final accent = _accent(context);
+
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -252,15 +303,15 @@ class _TimelineTile extends StatelessWidget {
                   height: 28,
                   decoration: BoxDecoration(
                     color: visited
-                        ? DriverBrand.success.withValues(alpha: 0.15)
-                        : _accent.withValues(alpha: 0.12),
+                        ? colors.success.withValues(alpha: 0.15)
+                        : accent.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
-                    border: Border.all(color: _accent, width: 1.5),
+                    border: Border.all(color: accent, width: 1.5),
                   ),
                   child: Icon(
                     visited ? Icons.check_rounded : step.icon,
                     size: 14,
-                    color: _accent,
+                    color: accent,
                   ),
                 ),
                 if (!isLast)
@@ -268,25 +319,30 @@ class _TimelineTile extends StatelessWidget {
                     child: Container(
                       width: 2,
                       margin: const EdgeInsets.symmetric(vertical: 4),
-                      color: DriverBrand.border.withValues(alpha: 0.9),
+                      color: colors.border.withValues(alpha: 0.9),
                     ),
                   ),
               ],
             ),
           ),
-          const SizedBox(width: 12),
+          DsSpacing.gapSm,
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(bottom: isLast ? 0 : 12),
+              padding: EdgeInsets.only(bottom: isLast ? 0 : DsSpacing.sm),
               child: Container(
-                padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+                padding: const EdgeInsets.fromLTRB(
+                  DsSpacing.sm,
+                  DsSpacing.sm,
+                  DsSpacing.sm,
+                  DsSpacing.xs,
+                ),
                 decoration: BoxDecoration(
-                  color: DriverBrand.surfaceColor(context),
-                  borderRadius: BorderRadius.circular(DriverBrand.radiusSm),
+                  color: colors.scaffold,
+                  borderRadius: DsRadius.small,
                   border: Border.all(
                     color: visited
-                        ? DriverBrand.success.withValues(alpha: 0.35)
-                        : DriverBrand.borderColor(context),
+                        ? colors.success.withValues(alpha: 0.35)
+                        : colors.border,
                   ),
                 ),
                 child: Column(
@@ -294,11 +350,9 @@ class _TimelineTile extends StatelessWidget {
                   children: [
                     Text(
                       step.title,
-                      style: theme.bodyMedium.override(
-                        fontFamily: 'cairo',
+                      style: typography.bodyMedium.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: DriverBrand.textPrimaryColor(context),
-                        letterSpacing: 0,
+                        color: colors.textPrimary,
                       ),
                     ),
                     if (step.subtitle != null &&
@@ -309,43 +363,43 @@ class _TimelineTile extends StatelessWidget {
                         step.subtitle!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.bodySmall.override(
-                          fontFamily: 'cairo',
-                          color: DriverBrand.textSecondaryColor(context),
-                          letterSpacing: 0,
+                        style: typography.bodySmall.copyWith(
+                          color: colors.textSecondary,
                         ),
                       ),
                     ],
-                    const SizedBox(height: 10),
+                    DsSpacing.gapXs,
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: DsSpacing.xs,
+                      runSpacing: DsSpacing.xs,
                       children: [
                         _ActionChip(
-                          label: 'خريطة',
+                          label: driverTr(context, 'Map view'),
                           icon: Icons.map_rounded,
-                          foreground: DriverBrand.tealDark,
-                          background: DriverBrand.tealLight,
+                          foreground: colors.primaryStrong,
+                          background: colors.primarySoft,
                           onTap: onOpenMap,
                         ),
                         if (onFocusInApp != null)
                           _ActionChip(
-                            label: 'داخل التطبيق',
+                            label: driverTr(context, 'In-app'),
                             icon: Icons.my_location_rounded,
-                            foreground: DriverBrand.textSecondary,
-                            background: DriverBrand.border.withValues(alpha: 0.45),
+                            foreground: colors.textSecondary,
+                            background: colors.border.withValues(alpha: 0.45),
                             onTap: onFocusInApp!,
                           ),
                         if (onMarkVisited != null)
                           _ActionChip(
-                            label: visited ? 'تمت الزيارة' : 'تم',
+                            label: visited
+                                ? driverTr(context, 'Visited')
+                                : driverTr(context, 'Done'),
                             icon: Icons.done_rounded,
                             foreground: visited
-                                ? DriverBrand.success
-                                : DriverBrand.textPrimary,
+                                ? colors.success
+                                : colors.textPrimary,
                             background: visited
-                                ? DriverBrand.success.withValues(alpha: 0.15)
-                                : Colors.white,
+                                ? colors.success.withValues(alpha: 0.15)
+                                : colors.card,
                             bordered: !visited,
                             onTap: visited ? null : onMarkVisited,
                           ),
@@ -381,19 +435,20 @@ class _ActionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+
     return Material(
       color: background,
-      borderRadius: BorderRadius.circular(999),
+      borderRadius: DsRadius.pill,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: DsRadius.pill,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: DsSpacing.chipPadding,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(999),
-            border: bordered
-                ? Border.all(color: DriverBrand.border)
-                : null,
+            borderRadius: DsRadius.pill,
+            border: bordered ? Border.all(color: colors.border) : null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -402,9 +457,7 @@ class _ActionChip extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 label,
-                style: TextStyle(
-                  fontFamily: 'cairo',
-                  fontSize: 12,
+                style: typography.labelMedium.copyWith(
                   fontWeight: FontWeight.w600,
                   color: foreground,
                 ),

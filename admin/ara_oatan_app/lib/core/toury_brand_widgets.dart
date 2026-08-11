@@ -114,7 +114,7 @@ class TouryPartnerLogoBanner extends StatelessWidget {
   }
 }
 
-/// زر بخلفية متدرجة بلوني الشعار.
+/// زر أساسي كلاسيكي بألوان الشعار (بدون تدرج مبالغ فيه).
 class TouryGradientButton extends StatelessWidget {
   const TouryGradientButton({
     super.key,
@@ -125,7 +125,7 @@ class TouryGradientButton extends StatelessWidget {
     this.expanded = true,
     this.fontSize = 15,
     this.iconSize = 20,
-    this.horizontalPadding = 16,
+    this.horizontalPadding = 24,
   });
 
   final String label;
@@ -139,6 +139,7 @@ class TouryGradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final enabled = onPressed != null;
     final child = Material(
       color: Colors.transparent,
       child: InkWell(
@@ -147,47 +148,34 @@ class TouryGradientButton extends StatelessWidget {
         child: Ink(
           height: height,
           decoration: BoxDecoration(
-            gradient: onPressed == null
-                ? LinearGradient(
-                    colors: [
-                      TouryBrand.teal.withValues(alpha: 0.4),
-                      TouryBrand.tealDark.withValues(alpha: 0.4),
-                    ],
-                  )
-                : TouryBrand.primaryGradient,
+            color: enabled
+                ? TouryBrand.teal
+                : TouryBrand.teal.withValues(alpha: 0.38),
             borderRadius: TouryBrand.borderRadiusMd,
-            boxShadow: onPressed == null
-                ? null
-                : [
-                    BoxShadow(
-                      color: TouryBrand.tealDark.withValues(alpha: 0.28),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+            boxShadow: enabled ? DsShadows.soft() : null,
           ),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
             child: Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon != null) ...[
                     Icon(icon, color: Colors.white, size: iconSize),
-                    SizedBox(width: iconSize > 16 ? 8 : 4),
+                    const SizedBox(width: DsSpacing.xs),
                   ],
                   Flexible(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        label,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontFamily: 'cairo',
-                          color: Colors.white,
-                          fontSize: fontSize,
-                          fontWeight: FontWeight.w700,
-                        ),
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'cairo',
+                        color: Colors.white,
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),

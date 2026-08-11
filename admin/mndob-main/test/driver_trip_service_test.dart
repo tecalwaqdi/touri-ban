@@ -46,4 +46,17 @@ void main() {
       expect(DriverTripService.minTripSecondsBeforeComplete, 60);
     });
   });
+
+  group('DriverTripService.formatRemainingTripTime', () {
+    test('formats hours and minutes', () {
+      expect(
+        DriverTripService.formatRemainingTripTime(const Duration(hours: 2, minutes: 15)),
+        '2س 15د',
+      );
+      expect(
+        DriverTripService.formatRemainingTripTime(const Duration(minutes: 12)),
+        '12د',
+      );
+    });
+  });
 }

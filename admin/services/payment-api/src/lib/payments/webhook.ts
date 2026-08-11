@@ -17,6 +17,7 @@ import {
   transitionStatus,
 } from "@/lib/payments/status";
 import { createBookingFromPaidSession } from "@/lib/bookings/create-from-session";
+import { creditWalletFromPaidSession } from "@/lib/wallet/credit";
 import {
   assertAmountMatch,
   assertCurrencyMatch,
@@ -43,9 +44,13 @@ export async function handleNGeniusWebhook(req: Request) {
 
   const body = await req.json();
   const hash = payloadHash(body);
+  // N-Genius posts { eventName, outletId, order: { reference, ... } }.
+  const nestedOrder =
+    body && typeof body === "object" && "order" in (body as object)
+      ? (body as { order: unknown }).order
+      : undefined;
   const providerOrderId =
-    extractOrderReference(body) ||
-    String((body as { orderReference?: string }).orderReference || "");
+    extractOrderReference(nestedOrder) || extractOrderReference(body) || "";
   const eventId =
     String((body as { eventId?: string }).eventId || "") ||
     `${providerOrderId}:${hash.slice(0, 16)}`;
@@ -67,7 +72,7 @@ export async function handleNGeniusWebhook(req: Request) {
       processing: true,
       receivedAt: FieldValue.serverTimestamp(),
       payloadHash: hash,
-      backend_source: "vercel_api",
+      backend_source: "external_api",
     },
     { merge: true },
   );
@@ -114,6 +119,10 @@ export async function handleNGeniusWebhook(req: Request) {
       session.outlet_reference as string | undefined,
       env.NGENIUS_OUTLET_REF,
     );
+    const eventOutlet = String((body as { outletId?: string }).outletId || "");
+    if (eventOutlet) {
+      assertOutletMatch(eventOutlet, env.NGENIUS_OUTLET_REF);
+    }
 
     await sessionDoc.ref.set(
       {
@@ -127,9 +136,15 @@ export async function handleNGeniusWebhook(req: Request) {
     );
 
     if (next === PaymentStatus.paid && session.purpose === "booking") {
-      // Pass paid status so booking builder sees recoverable paid session even
-      // if transaction re-read races (status already written above).
       await createBookingFromPaidSession(sessionDoc.id, {
+        ...session,
+        status: toLegacyStatus(next),
+        normalized_status: next,
+      });
+    }
+
+    if (next === PaymentStatus.paid && session.purpose === "wallet") {
+      await creditWalletFromPaidSession(sessionDoc.id, {
         ...session,
         status: toLegacyStatus(next),
         normalized_status: next,

@@ -1,0 +1,24 @@
+{
+  "functions": [
+    {
+      "source": ".",
+      "codebase": "payment-api",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "tests",
+        "src",
+        "coverage",
+        ".env",
+        ".env.*",
+        "*.tsbuildinfo",
+        "tsconfig.tsbuildinfo"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ]
+}

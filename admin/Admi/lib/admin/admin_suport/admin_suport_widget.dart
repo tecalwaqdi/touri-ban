@@ -11,6 +11,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'admin_suport_model.dart';
+import '/core/admin_user_facing_errors.dart';
 export 'admin_suport_model.dart';
 
 class AdminSuportWidget extends StatefulWidget {
@@ -98,7 +99,7 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${appTr(context, 'adm_update_ticket_failed')}: $e')),
+        SnackBar(content: Text('${appTr(context, 'adm_update_ticket_failed')}: ${AdminUserFacingErrors.from(context, e)}')),
       );
     }
   }
@@ -152,9 +153,7 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                           child: Text(
-                            '${uiTr(context, 'العدد')}: ${tickets.length}'
-                            '${tickets.length != allTickets.length ? ' ${uiTr(context, 'من')} ${allTickets.length}' : ''}'
-                            '${listState.hasMore ? '+' : ''}',
+                            adminListCountLabel(context, listState, visibleCount: tickets.length, pageFetched: allTickets.length),
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
                               color: theme.secondaryText,

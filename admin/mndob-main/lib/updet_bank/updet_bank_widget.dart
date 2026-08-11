@@ -1,9 +1,9 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'updet_bank_model.dart';
 export 'updet_bank_model.dart';
@@ -59,10 +59,10 @@ class _UpdetBankWidgetState extends State<UpdetBankWidget> {
           final colors = context.dsColors;
           final typography = context.dsTypography;
 
-          return DsScreenScaffold(
-            scaffoldKey: scaffoldKey,
-            appBar: DsAppBar(
-              automaticallyImplyLeading: true,
+          return Scaffold(
+            key: scaffoldKey,
+            backgroundColor: colors.scaffold,
+            appBar: DriverMainAppBar(
               title: FFLocalizations.of(context).getText(
                 'wfk8nxwe' /* تحديث الحساب البنكي */,
               ),
@@ -71,12 +71,10 @@ class _UpdetBankWidgetState extends State<UpdetBankWidget> {
               top: true,
               child: SingleChildScrollView(
                 padding: DsSpacing.pagePadding,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: DsConstants.maxFormWidth,
-                  ),
+                child: DriverFormWidth(
                   child: DsCard(
                     elevated: true,
+                    padding: DsSpacing.cardPadding,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/schema/order_record.dart';
+import '/core/admin_currency.dart';
 import '/core/finance/financial_engine.dart';
 
 /// Aggregated finance snapshot for the Enterprise Finance Hub.
@@ -223,7 +224,9 @@ abstract final class FinanceLedgerService {
           'amount': econ.totalSales,
           'app_profit': econ.appProfit,
           'commission': econ.repCommission,
-          'currency': order.snapshotData['currency'] ?? 'SAR',
+          'currency': AdminCurrency.codeForOrder(order).isNotEmpty
+              ? AdminCurrency.codeForOrder(order)
+              : (order.snapshotData['currency'] ?? 'SAR'),
           'status': 'issued',
           'created_at': FieldValue.serverTimestamp(),
           'period': order.dataOrder?.toIso8601String() ?? '',

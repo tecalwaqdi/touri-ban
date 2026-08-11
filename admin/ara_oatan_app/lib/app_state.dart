@@ -992,6 +992,10 @@ class FFAppState extends ChangeNotifier {
     _fullAdress = value;
   }
 
+  void clearPendingPaymentOrder() {
+    pendingPaymentOrderId = '';
+  }
+
   void clearSensitivePaymentSession() {
     _ElectronicPayment = false;
     paymentIdempotencyKey = '';
@@ -1012,6 +1016,14 @@ class FFAppState extends ChangeNotifier {
   }
 
   String _paymentIdempotencyKey = '';
+  /// Unpaid online order waiting for retry (order/{id}).
+  String _pendingPaymentOrderId = '';
+  String get pendingPaymentOrderId => _pendingPaymentOrderId;
+  set pendingPaymentOrderId(String value) {
+    _pendingPaymentOrderId = value;
+    // Intentionally not persisted to prefs as a payment secret — order id only.
+  }
+
   String get paymentIdempotencyKey => _paymentIdempotencyKey;
   set paymentIdempotencyKey(String value) {
     _paymentIdempotencyKey = value;

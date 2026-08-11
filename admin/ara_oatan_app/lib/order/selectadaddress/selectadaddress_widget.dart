@@ -86,7 +86,7 @@ class _SelectadaddressWidgetState extends State<SelectadaddressWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () async {
-                    context.pop();
+                    context.safePop();
                   },
                 ),
               ),
@@ -121,29 +121,25 @@ class _SelectadaddressWidgetState extends State<SelectadaddressWidget> {
 
                     return ListView.separated(
                       physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(
+                      padding: EdgeInsets.fromLTRB(
                         DsSpacing.md,
                         DsSpacing.md,
                         DsSpacing.md,
-                        DsSpacing.xxxl,
+                        DsSpacing.xxxl + MediaQuery.paddingOf(context).bottom,
                       ),
                       itemCount: listViewAdressuserRecordList.length + 1,
                       separatorBuilder: (_, __) =>
                           const SizedBox(height: DsSpacing.sm),
                       itemBuilder: (context, listViewIndex) {
                         if (listViewIndex == 0) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: DsSpacing.xxs,
+                          return DsInformationCard(
+                            title: FFLocalizations.of(context).getText(
+                              'w0fdamuo' /* Select the address */,
                             ),
-                            child: Text(
-                              FFLocalizations.of(context).getText(
-                                'fjy1t636' /* Choose your delivery address: */,
-                              ),
-                              style: typography.titleMedium.copyWith(
-                                color: colors.textPrimary,
-                              ),
+                            message: FFLocalizations.of(context).getText(
+                              'fjy1t636' /* Choose your delivery address: */,
                             ),
+                            icon: Icons.location_on_outlined,
                           );
                         }
 

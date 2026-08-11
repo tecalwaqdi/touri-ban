@@ -1,3 +1,4 @@
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_performance.dart';
 import '/backend/admin_resource_guard.dart';
 import '/backend/backend.dart';
@@ -8,6 +9,9 @@ import '/components/admin_ui.dart';
 import '/components/profile_photo_image.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/core/admin_currency.dart';
+import '/core/admin_driver_review_actions.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/index.dart';
@@ -431,7 +435,7 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
                                               .showSnackBar(
                                             SnackBar(
                                               content: Text(
-                                                '${uiTr(context, 'تعذر التحديث')}: $e',
+                                                '${uiTr(context, 'تعذر التحديث')}: ${AdminUserFacingErrors.from(context, e)}',
                                               ),
                                             ),
                                           );
@@ -520,9 +524,15 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
                                                   false;
                                           if (confirmDialogResponse) {
                                             try {
+                                              final adminUid =
+                                                  currentUserUid.isNotEmpty
+                                                      ? currentUserUid
+                                                      : 'admin';
                                               await widget.iduser!.update(
-                                                createUserRecordData(
-                                                  actevMndob: false,
+                                                AdminDriverReviewActions
+                                                    .suspendPatch(
+                                                  reason: 'suspended_by_admin',
+                                                  adminUid: adminUid,
                                                 ),
                                               );
                                               if (!mounted) return;
@@ -540,7 +550,7 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
                                                   .showSnackBar(
                                                 SnackBar(
                                                   content: Text(
-                                                    '${appTr(context, 'adm_deactivate_failed')}: $e',
+                                                    '${appTr(context, 'adm_deactivate_failed')}: ${AdminUserFacingErrors.from(context, e)}',
                                                   ),
                                                 ),
                                               );
@@ -1009,7 +1019,11 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
                                                                     DecimalType
                                                                         .automatic,
                                                                 currency:
-                                                                    uiTr(context, 'ر.س '),
+                                                                    AdminCurrency.asFormatPrefix(
+                                                                      AdminCurrency.displaySymbolForOrder(
+                                                                        listViewOrderRecord,
+                                                                      ),
+                                                                    ),
                                                               ),
                                                               style: FlutterFlowTheme
                                                                       .of(context)

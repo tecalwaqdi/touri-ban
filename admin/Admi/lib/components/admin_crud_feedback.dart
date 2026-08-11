@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '/backend/admin_dashboard_invalidate.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 enum AdminCrudAction { add, edit, delete }
@@ -144,16 +145,20 @@ abstract final class AdminCrudFeedback {
   }
 
   static String saveFailed(BuildContext context, Object error) =>
-      '${FFLocalizations.of(context).getText('adm_save_failed')}: $error';
+      '${FFLocalizations.of(context).getText('adm_save_failed')}: '
+      '${AdminUserFacingErrors.from(context, error)}';
 
   static String deleteFailed(BuildContext context, Object error) =>
-      '${FFLocalizations.of(context).getText('adm_delete_failed')}: $error';
+      '${FFLocalizations.of(context).getText('adm_delete_failed')}: '
+      '${AdminUserFacingErrors.from(context, error)}';
 
   static String updateFailed(BuildContext context, Object error) =>
-      '${FFLocalizations.of(context).getText('adm_update_failed')}: $error';
+      '${FFLocalizations.of(context).getText('adm_update_failed')}: '
+      '${AdminUserFacingErrors.from(context, error)}';
 
   static String uploadFailed(BuildContext context, Object error) =>
-      '${FFLocalizations.of(context).getText('adm_upload_failed')}: $error';
+      '${FFLocalizations.of(context).getText('adm_upload_failed')}: '
+      '${AdminUserFacingErrors.from(context, error)}';
 
   static IconData _icon(AdminCrudAction action) {
     switch (action) {

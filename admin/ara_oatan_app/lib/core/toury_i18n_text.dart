@@ -30,7 +30,8 @@ bool touryLooksArabic(String value) => _arabicScript.hasMatch(value);
 /// 2. any i18n / legacy value that looks Arabic
 /// 3. otherwise English / other / legacy
 ///
-/// Non-Arabic locales: never leak Arabic script when avoidable.
+/// Non-Arabic locales: current locale → `en` → first available non-empty
+/// non-Arabic field. Never prefer Arabic when alternatives exist.
 String touryLocalizedText(
   Map<String, String> i18n,
   String legacy, {
@@ -64,16 +65,12 @@ String touryLocalizedText(
     if (arScript != null) return arScript;
     // No Arabic available — fall through to en / other / legacy.
   } else {
+    // Current locale first; never prefer Arabic when alternatives exist.
     final direct = pick(localeKey) ?? pick(langOnly);
     if (direct != null) return direct;
   }
 
-  // Kyrgyz readers prefer Cyrillic Russian over English/Arabic when ky missing.
-  if (langOnly == 'ky') {
-    final ru = pick('ru');
-    if (ru != null) return ru;
-  }
-
+  // Shared fallback: en, then first available non-empty non-Arabic field.
   final en = pick('en');
   if (en != null) return en;
 
@@ -86,7 +83,7 @@ String touryLocalizedText(
 
   if (legacyTrim.isEmpty) return '';
   if (langOnly != 'ar' && touryLooksArabic(legacyTrim)) {
-    return en ?? '';
+    return '';
   }
   return legacyTrim;
 }

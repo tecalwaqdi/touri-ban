@@ -1,24 +1,42 @@
 import { z } from "zod";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 
+/**
+ * Global N-Genius sandbox (verified for current Merchant Service Account).
+ * KSA hostname returns 404 for this sandbox account — do not default to it.
+ */
+export const NGENIUS_GLOBAL_SANDBOX_BASE_URL =
+  "https://api-gateway.sandbox.ngenius-payments.com";
+/** Optional KSA sandbox — only when portal/account confirms it. */
+export const NGENIUS_KSA_SANDBOX_BASE_URL =
+  "https://api-gateway.sandbox.ksa.ngenius-payments.com";
+export const NGENIUS_KSA_PRODUCTION_BASE_URL =
+  "https://api-gateway.ksa.ngenius-payments.com";
+
+/**
+ * Sandbox realm `ni`; Production `networkinternational` (confirm in portal).
+ */
+export const NGENIUS_KSA_SANDBOX_REALM = "ni";
+export const NGENIUS_KSA_PRODUCTION_REALM = "networkinternational";
+
 const envSchema = z.object({
   NGENIUS_ENV: z.enum(["sandbox", "production"]).default("sandbox"),
   NGENIUS_API_KEY: z.string().min(1, "NGENIUS_API_KEY is required"),
   NGENIUS_OUTLET_REF: z.string().min(1, "NGENIUS_OUTLET_REF is required"),
-  NGENIUS_WEBHOOK_SECRET: z.string().optional().default(""),
+  NGENIUS_WEBHOOK_SECRET: z.string().min(16, "NGENIUS_WEBHOOK_SECRET required"),
   NGENIUS_SANDBOX_BASE_URL: z
     .string()
     .url()
-    .default("https://api-gateway.sandbox.ngenius-payments.com"),
+    .default(NGENIUS_GLOBAL_SANDBOX_BASE_URL),
   NGENIUS_PRODUCTION_BASE_URL: z
     .string()
     .url()
-    .default("https://api-gateway.ngenius-payments.com"),
+    .default(NGENIUS_KSA_PRODUCTION_BASE_URL),
   NGENIUS_REALM: z.string().optional().default(""),
   NGENIUS_WEBHOOK_HEADER: z.string().default("x-toury-webhook-token"),
-  FIREBASE_PROJECT_ID: z.string().min(1),
-  FIREBASE_CLIENT_EMAIL: z.string().email(),
-  FIREBASE_PRIVATE_KEY: z.string().min(1),
+  FIREBASE_PROJECT_ID: z.string().optional().default(""),
+  FIREBASE_CLIENT_EMAIL: z.string().optional().default(""),
+  FIREBASE_PRIVATE_KEY: z.string().optional().default(""),
   ALLOWED_APP_ORIGINS: z.string().optional().default(""),
   PAYMENT_RETURN_BASE_URL: z.string().url().optional().or(z.literal("")),
   PAYMENT_CANCEL_BASE_URL: z.string().url().optional().or(z.literal("")),
@@ -39,6 +57,141 @@ function normalizePrivateKey(raw: string): string {
   return raw.replace(/\\n/g, "\n").trim();
 }
 
+function defaultRealm(isProd: boolean): string {
+  return isProd ? NGENIUS_KSA_PRODUCTION_REALM : NGENIUS_KSA_SANDBOX_REALM;
+}
+
+/**
+ * True when Firebase Admin should use Application Default Credentials
+ * (Cloud Functions runtime or explicit opt-in).
+ */
+export function isFirebaseAdcMode(): boolean {
+  const flag = String(process.env.FIREBASE_USE_APPLICATION_DEFAULT || "")
+    .trim()
+    .toLowerCase();
+  if (flag === "true" || flag === "1") return true;
+  return Boolean(
+    process.env.FIREBASE_CONFIG ||
+      process.env.FUNCTION_TARGET ||
+      process.env.K_SERVICE,
+  );
+}
+
+/**
+ * Use portal realm from env as-is when present (e.g. NIARABIA).
+ * Only fall back to docs defaults when NGENIUS_REALM is unset/blank.
+ */
+export function resolveNGeniusRealm(
+  raw: string | undefined,
+  isProd: boolean,
+): string {
+  const trimmed = String(raw ?? "").trim();
+  if (trimmed) return trimmed;
+  return defaultRealm(isProd);
+}
+
+/** Network International Arabia portal realm (custom; not the generic `ni`). */
+export function isArabiaPortalRealm(realm: string | undefined): boolean {
+  return /^niarabia$/i.test(String(realm || "").trim());
+}
+
+/**
+ * Active N-Genius API base URL.
+ * production → NGENIUS_PRODUCTION_BASE_URL only
+ * sandbox → NGENIUS_SANDBOX_BASE_URL (or global default)
+ */
+export function resolveNGeniusBaseUrl(input: {
+  isProduction: boolean;
+  productionBaseUrl: string;
+  sandboxBaseUrlFromEnv?: string;
+  parsedSandboxBaseUrl: string;
+}): string {
+  if (input.isProduction) {
+    return (
+      String(input.productionBaseUrl || "").trim() ||
+      NGENIUS_KSA_PRODUCTION_BASE_URL
+    );
+  }
+  return resolveSandboxBaseUrl({
+    sandboxBaseUrlFromEnv: input.sandboxBaseUrlFromEnv,
+    parsedSandboxBaseUrl: input.parsedSandboxBaseUrl,
+  });
+}
+
+/**
+ * Sandbox host selection:
+ * - Explicit `NGENIUS_SANDBOX_BASE_URL` always wins (use the portal host).
+ * - Otherwise keep the parsed/default global sandbox URL.
+ */
+export function resolveSandboxBaseUrl(input: {
+  realm?: string;
+  sandboxBaseUrlFromEnv?: string;
+  parsedSandboxBaseUrl: string;
+}): string {
+  const explicit = String(input.sandboxBaseUrlFromEnv || "").trim();
+  if (explicit) return explicit;
+  return input.parsedSandboxBaseUrl || NGENIUS_GLOBAL_SANDBOX_BASE_URL;
+}
+
+/**
+ * Optional base64-encoded full service-account JSON (preferred on Render).
+ * When set, overrides FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY pair.
+ */
+function serviceAccountFromBase64(): {
+  projectId?: string;
+  clientEmail?: string;
+  privateKey?: string;
+} {
+  const b64 = (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64 || "").trim();
+  if (!b64) return {};
+  try {
+    const json = JSON.parse(Buffer.from(b64, "base64").toString("utf8")) as {
+      project_id?: string;
+      client_email?: string;
+      private_key?: string;
+    };
+    return {
+      projectId: json.project_id,
+      clientEmail: json.client_email,
+      privateKey: json.private_key,
+    };
+  } catch {
+    throw new ApiError(
+      PaymentErrorCode.CONFIG_ERROR,
+      500,
+      "FIREBASE_SERVICE_ACCOUNT_BASE64 is not valid base64 JSON",
+    );
+  }
+}
+
+function assertFirebaseCredentials(
+  data: z.infer<typeof envSchema>,
+  requireSecrets: boolean,
+): void {
+  if (!requireSecrets || isFirebaseAdcMode()) return;
+  const hasCert = Boolean(
+    data.FIREBASE_PROJECT_ID?.trim() &&
+      data.FIREBASE_CLIENT_EMAIL?.trim() &&
+      data.FIREBASE_PRIVATE_KEY?.trim(),
+  );
+  if (!hasCert) {
+    throw new ApiError(
+      PaymentErrorCode.CONFIG_ERROR,
+      500,
+      "Missing or invalid environment: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY (or FIREBASE_SERVICE_ACCOUNT_BASE64 / ADC)",
+    );
+  }
+  // Email format check when cert mode is used
+  const emailOk = z.string().email().safeParse(data.FIREBASE_CLIENT_EMAIL);
+  if (!emailOk.success) {
+    throw new ApiError(
+      PaymentErrorCode.CONFIG_ERROR,
+      500,
+      "Missing or invalid environment: FIREBASE_CLIENT_EMAIL",
+    );
+  }
+}
+
 let cached: AppEnv | null = null;
 
 /** Lazy env load — health may call with partial=true for presence checks. */
@@ -46,24 +199,38 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
   if (cached) return cached;
 
   const requireSecrets = options?.requireSecrets !== false;
+  const fromSa = serviceAccountFromBase64();
+  if (fromSa.projectId) process.env.FIREBASE_PROJECT_ID ||= fromSa.projectId;
+  if (fromSa.clientEmail) process.env.FIREBASE_CLIENT_EMAIL ||= fromSa.clientEmail;
+  if (fromSa.privateKey) process.env.FIREBASE_PRIVATE_KEY ||= fromSa.privateKey;
+
   const parsed = envSchema.safeParse(process.env);
   if (!parsed.success) {
     if (!requireSecrets) {
-      // Soft parse for health booleans only
       const soft = envSchema.partial().safeParse(process.env);
       const data = soft.success ? soft.data : {};
       const isProd = data.NGENIUS_ENV === "production";
+      const realm = resolveNGeniusRealm(data.NGENIUS_REALM, isProd);
+      const sandboxBase = resolveSandboxBaseUrl({
+        sandboxBaseUrlFromEnv: process.env.NGENIUS_SANDBOX_BASE_URL,
+        parsedSandboxBaseUrl:
+          data.NGENIUS_SANDBOX_BASE_URL || NGENIUS_GLOBAL_SANDBOX_BASE_URL,
+      });
+      const prodBase =
+        data.NGENIUS_PRODUCTION_BASE_URL || NGENIUS_KSA_PRODUCTION_BASE_URL;
+      const base = resolveNGeniusBaseUrl({
+        isProduction: isProd,
+        productionBaseUrl: prodBase,
+        sandboxBaseUrlFromEnv: process.env.NGENIUS_SANDBOX_BASE_URL,
+        parsedSandboxBaseUrl: sandboxBase,
+      });
       return {
         NGENIUS_ENV: (data.NGENIUS_ENV as "sandbox" | "production") || "sandbox",
         NGENIUS_API_KEY: data.NGENIUS_API_KEY || "",
         NGENIUS_OUTLET_REF: data.NGENIUS_OUTLET_REF || "",
         NGENIUS_WEBHOOK_SECRET: data.NGENIUS_WEBHOOK_SECRET || "",
-        NGENIUS_SANDBOX_BASE_URL:
-          data.NGENIUS_SANDBOX_BASE_URL ||
-          "https://api-gateway.sandbox.ngenius-payments.com",
-        NGENIUS_PRODUCTION_BASE_URL:
-          data.NGENIUS_PRODUCTION_BASE_URL ||
-          "https://api-gateway.ngenius-payments.com",
+        NGENIUS_SANDBOX_BASE_URL: sandboxBase,
+        NGENIUS_PRODUCTION_BASE_URL: prodBase,
         NGENIUS_REALM: data.NGENIUS_REALM || "",
         NGENIUS_WEBHOOK_HEADER:
           data.NGENIUS_WEBHOOK_HEADER || "x-toury-webhook-token",
@@ -76,19 +243,9 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
         PAYMENT_API_PUBLIC_BASE_URL: data.PAYMENT_API_PUBLIC_BASE_URL || "",
         SERVICE_VERSION: data.SERVICE_VERSION || "0.1.0",
         isProductionNGenius: isProd,
-        ngeniusBaseUrl: isProd
-          ? data.NGENIUS_PRODUCTION_BASE_URL ||
-            "https://api-gateway.ngenius-payments.com"
-          : data.NGENIUS_SANDBOX_BASE_URL ||
-            "https://api-gateway.sandbox.ngenius-payments.com",
-        ngeniusIdentityUrl: `${
-          isProd
-            ? data.NGENIUS_PRODUCTION_BASE_URL ||
-              "https://api-gateway.ngenius-payments.com"
-            : data.NGENIUS_SANDBOX_BASE_URL ||
-              "https://api-gateway.sandbox.ngenius-payments.com"
-        }/identity/auth/access-token`,
-        ngeniusRealm: data.NGENIUS_REALM || (isProd ? "networkinternational" : "ni"),
+        ngeniusBaseUrl: base,
+        ngeniusIdentityUrl: `${base}/identity/auth/access-token`,
+        ngeniusRealm: realm,
         allowedOrigins: (data.ALLOWED_APP_ORIGINS || "")
           .split(",")
           .map((s) => s.trim())
@@ -106,26 +263,27 @@ export function getEnv(options?: { requireSecrets?: boolean }): AppEnv {
   }
 
   const data = parsed.data;
-  if (data.NGENIUS_ENV === "production") {
-    // Explicit production only — never silent.
-  }
+  assertFirebaseCredentials(data, requireSecrets);
 
   const isProd = data.NGENIUS_ENV === "production";
-  const base = isProd
-    ? data.NGENIUS_PRODUCTION_BASE_URL
-    : data.NGENIUS_SANDBOX_BASE_URL;
+  const realm = resolveNGeniusRealm(data.NGENIUS_REALM, isProd);
+  const base = resolveNGeniusBaseUrl({
+    isProduction: isProd,
+    productionBaseUrl: data.NGENIUS_PRODUCTION_BASE_URL,
+    sandboxBaseUrlFromEnv: process.env.NGENIUS_SANDBOX_BASE_URL,
+    parsedSandboxBaseUrl: data.NGENIUS_SANDBOX_BASE_URL,
+  });
 
   cached = {
     ...data,
     isProductionNGenius: isProd,
     ngeniusBaseUrl: base,
     ngeniusIdentityUrl: `${base}/identity/auth/access-token`,
-    ngeniusRealm:
-      data.NGENIUS_REALM || (isProd ? "networkinternational" : "ni"),
+    ngeniusRealm: realm,
     allowedOrigins: data.ALLOWED_APP_ORIGINS.split(",")
       .map((s) => s.trim())
       .filter(Boolean),
-    privateKey: normalizePrivateKey(data.FIREBASE_PRIVATE_KEY),
+    privateKey: normalizePrivateKey(data.FIREBASE_PRIVATE_KEY || ""),
   };
   return cached;
 }
@@ -140,14 +298,18 @@ export function envPresence(): {
   ngeniusWebhookSecret: boolean;
   firebase: boolean;
 } {
+  const fromSa = Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64);
   return {
     ngeniusApiKey: Boolean(process.env.NGENIUS_API_KEY),
     ngeniusOutlet: Boolean(process.env.NGENIUS_OUTLET_REF),
     ngeniusWebhookSecret: Boolean(process.env.NGENIUS_WEBHOOK_SECRET),
-    firebase: Boolean(
-      process.env.FIREBASE_PROJECT_ID &&
-        process.env.FIREBASE_CLIENT_EMAIL &&
-        process.env.FIREBASE_PRIVATE_KEY,
-    ),
+    firebase:
+      isFirebaseAdcMode() ||
+      fromSa ||
+      Boolean(
+        process.env.FIREBASE_PROJECT_ID &&
+          process.env.FIREBASE_CLIENT_EMAIL &&
+          process.env.FIREBASE_PRIVATE_KEY,
+      ),
   };
 }

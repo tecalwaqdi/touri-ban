@@ -11,6 +11,7 @@ import '/components/admin_firestore_list.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/core/admin_currency.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
@@ -168,7 +169,7 @@ class _PartnerBookingsWidgetState extends State<PartnerBookingsWidget> {
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         trailing: Text(
-                                          '${order.total} ${uiTr(context, 'ر.س')}',
+                                          '${order.total} ${AdminCurrency.displaySymbolForOrder(order)}',
                                           style: theme.titleSmall.override(
                                             fontFamily: theme.titleSmallFamily,
                                             fontWeight: FontWeight.w700,

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 /// ترجمة واجهة المندوب عبر EasyLocalization (نفس مسار تطبيق المستخدم).
 /// المفتاح الإنجليزي يطابق مفتاح JSON في assets/langs.
-String driverTr(BuildContext context, String key) {
+/// [context] اختياري — الترجمة تعتمد على EasyLocalization العام.
+String driverTr(BuildContext? context, String key) {
   if (key.isEmpty) return key;
   try {
     final translated = key.tr();
@@ -16,7 +17,7 @@ String driverTr(BuildContext context, String key) {
 
 /// قالب مع متغيرات: `"Welcome, {name}"` + `{'name': 'Ahmed'}`.
 String driverTrNamed(
-  BuildContext context,
+  BuildContext? context,
   String template,
   Map<String, String> params,
 ) {

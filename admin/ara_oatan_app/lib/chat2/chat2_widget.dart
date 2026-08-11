@@ -61,12 +61,19 @@ class _Chat2WidgetState extends State<Chat2Widget> {
 
   Future<void> _sendMessage(BuildContext context) async {
     if (_model.textController.text != '') {
+      final me = currentUserReference;
+      final driver = widget.idmndob;
+      final participants = <DocumentReference>[
+        if (me != null) me,
+        if (driver != null) driver,
+      ];
       await ChatRecord.collection.doc().set(createChatRecordData(
             idorder: widget.idorder,
-            user1: currentUserReference,
+            user1: me,
             msg: _model.textController.text,
             date: getCurrentTimestamp,
             naim: currentUserDisplayName,
+            participants: participants,
           ));
       if (widget.idmndob != null) {
         final recipient = await UserRecord.getDocumentOnce(
@@ -115,163 +122,160 @@ class _Chat2WidgetState extends State<Chat2Widget> {
           final colors = context.dsColors;
           final typography = context.dsTypography;
 
-          return StreamBuilder<List<OrderRecord>>(
-            stream: queryOrderRecord(),
-            builder: (context, snapshot) {
-              // Customize what your widget looks like when it's loading.
-              if (!snapshot.hasData) {
-                return Scaffold(
-                  backgroundColor: colors.scaffold,
-                  body: const DsLoading(),
-                );
-              }
-
-              return GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                  FocusManager.instance.primaryFocus?.unfocus();
-                },
-                child: Scaffold(
-                  key: scaffoldKey,
-                  backgroundColor: colors.scaffold,
-                  appBar: DsAppBar(
-                    automaticallyImplyLeading: false,
-                    centerTitle: false,
-                    leading: DsIconButton(
-                      icon: DsIcons.back,
+          return GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Scaffold(
+              key: scaffoldKey,
+              backgroundColor: colors.scaffold,
+              appBar: DsAppBar(
+                automaticallyImplyLeading: false,
+                centerTitle: false,
+                leading: DsIconButton(
+                  icon: DsIcons.back,
+                  onPressed: () async {
+                    context.safePop();
+                  },
+                ),
+                titleWidget: Row(
+                  children: [
+                    Container(
+                      width: DsConstants.avatarSm,
+                      height: DsConstants.avatarSm,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: colors.primarySoft,
+                      ),
+                      child: Image(
+                        fit: BoxFit.cover,
+                        image: touryNetworkImageProvider(
+                          widget.imgMndob,
+                          fallbackAsset: 'assets/images/torytaxi.png',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: DsSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        valueOrDefault<String>(
+                          widget.naimMndob,
+                          '-',
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: typography.titleMedium.copyWith(
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                actions: [
+                  if ((widget.phoneMndob ?? 0) > 0)
+                    DsIconButton(
+                      icon: Icons.phone_outlined,
+                      size: DsIcons.sm,
+                      filled: true,
                       onPressed: () async {
-                        context.safePop();
+                        var phone = widget.phoneMndob!.toString();
+                        if (!phone.startsWith('0') && phone.length <= 10) {
+                          phone = '0$phone';
+                        }
+                        await launchUrl(Uri(scheme: 'tel', path: phone));
                       },
                     ),
-                    titleWidget: Row(
-                      children: [
-                        Container(
-                          width: DsConstants.avatarSm,
-                          height: DsConstants.avatarSm,
-                          clipBehavior: Clip.antiAlias,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colors.primarySoft,
-                          ),
-                          child: Image(
-                            fit: BoxFit.cover,
-                            image: touryNetworkImageProvider(
-                              widget.imgMndob,
-                              fallbackAsset: 'assets/images/torytaxi.png',
-                            ),
-                          ),
+                  const SizedBox(width: DsSpacing.md),
+                ],
+              ),
+              body: SafeArea(
+                top: true,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: StreamBuilder<List<ChatRecord>>(
+                        stream: queryChatRecord(
+                          queryBuilder: (chatRecord) {
+                            var q = chatRecord.where(
+                              'idorder',
+                              isEqualTo: widget.idorder,
+                            );
+                            // Prefer participant-scoped query so list rules
+                            // can be proven without widening access.
+                            if (currentUserReference != null) {
+                              q = q.where(
+                                'participants',
+                                arrayContains: currentUserReference,
+                              );
+                            }
+                            return q.orderBy('date', descending: true);
+                          },
                         ),
-                        const SizedBox(width: DsSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            valueOrDefault<String>(
-                              widget.naimMndob,
-                              '-',
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: typography.titleMedium.copyWith(
-                              color: colors.textPrimary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      DsIconButton(
-                        icon: Icons.phone_outlined,
-                        size: DsIcons.sm,
-                        filled: true,
-                        onPressed: () async {
-                          await launchUrl(Uri(
-                            scheme: 'tel',
-                            path: widget.phoneMndob!.toString(),
-                          ));
-                        },
-                      ),
-                      const SizedBox(width: DsSpacing.xs),
-                      DsIconButton(
-                        icon: DsIcons.location,
-                        size: DsIcons.sm,
-                        filled: true,
-                        onPressed: () {
-                          print('IconButton pressed ...');
-                        },
-                      ),
-                      const SizedBox(width: DsSpacing.md),
-                    ],
-                  ),
-                  body: SafeArea(
-                    top: true,
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: StreamBuilder<List<ChatRecord>>(
-                            stream: queryChatRecord(
-                              queryBuilder: (chatRecord) => chatRecord
-                                  .where(
-                                    'idorder',
-                                    isEqualTo: widget.idorder,
-                                  )
-                                  .orderBy('date', descending: true),
-                            ),
-                            builder: (context, snapshot) {
-                              // Customize what your widget looks like when it's loading.
-                              if (!snapshot.hasData) {
-                                return const DsLoading();
-                              }
-                              List<ChatRecord> listViewChatRecordList =
-                                  snapshot.data!;
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting &&
+                              !snapshot.hasData) {
+                            return const DsLoading();
+                          }
+                          if (snapshot.hasError) {
+                            return DsErrorState(
+                              title: 'order_chat_load_error_title'.tr(),
+                              message: 'order_chat_load_error_msg'.tr(),
+                              retryLabel: 'ux_retry'.tr(),
+                              onRetry: () => safeSetState(() {}),
+                            );
+                          }
+                          final listViewChatRecordList =
+                              snapshot.data ?? const <ChatRecord>[];
 
-                              if (listViewChatRecordList.isEmpty) {
-                                return DsEmptyState(
-                                  icon: DsIcons.chat,
-                                  title: valueOrDefault<String>(
-                                    widget.naimMndob,
-                                    '-',
-                                  ),
-                                  message:
-                                      FFLocalizations.of(context).getText(
-                                    'yvnt7xqi' /* Type your message... */,
-                                  ),
-                                );
-                              }
+                          if (listViewChatRecordList.isEmpty) {
+                            return DsEmptyState(
+                              icon: DsIcons.chat,
+                              title: valueOrDefault<String>(
+                                widget.naimMndob,
+                                '-',
+                              ),
+                              message: FFLocalizations.of(context).getText(
+                                'yvnt7xqi' /* Type your message... */,
+                              ),
+                            );
+                          }
 
-                              return ListView.builder(
-                                padding: const EdgeInsets.fromLTRB(
-                                  DsSpacing.md,
-                                  DsSpacing.md,
-                                  DsSpacing.md,
-                                  DsSpacing.xs,
-                                ),
-                                physics: const BouncingScrollPhysics(),
-                                reverse: true,
-                                scrollDirection: Axis.vertical,
-                                itemCount: listViewChatRecordList.length,
-                                itemBuilder: (context, listViewIndex) {
-                                  final listViewChatRecord =
-                                      listViewChatRecordList[listViewIndex];
-                                  return _MessageBubble(
-                                    record: listViewChatRecord,
-                                    isMine: listViewChatRecord.user1 ==
-                                        currentUserReference,
-                                  );
-                                },
+                          return ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(
+                              DsSpacing.md,
+                              DsSpacing.md,
+                              DsSpacing.md,
+                              DsSpacing.xs,
+                            ),
+                            physics: const BouncingScrollPhysics(),
+                            reverse: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: listViewChatRecordList.length,
+                            itemBuilder: (context, listViewIndex) {
+                              final listViewChatRecord =
+                                  listViewChatRecordList[listViewIndex];
+                              return _MessageBubble(
+                                record: listViewChatRecord,
+                                isMine: listViewChatRecord.user1 ==
+                                    currentUserReference,
                               );
                             },
-                          ),
-                        ),
-                        _Composer(
-                          controller: _model.textController,
-                          focusNode: _model.textFieldFocusNode,
-                          onSend: _sendMessage,
-                        ),
-                      ],
+                          );
+                        },
+                      ),
                     ),
-                  ),
+                    _Composer(
+                      controller: _model.textController,
+                      focusNode: _model.textFieldFocusNode,
+                      onSend: _sendMessage,
+                    ),
+                  ],
                 ),
-              );
-            },
+              ),
+            ),
           );
         },
       ),
@@ -379,18 +383,21 @@ class _Composer extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.dsColors;
 
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
         border: Border(
           top: BorderSide(color: colors.divider),
         ),
+        boxShadow: DsShadows.soft(dark: context.dsIsDark),
       ),
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
         DsSpacing.md,
         DsSpacing.sm,
         DsSpacing.md,
-        DsSpacing.sm,
+        DsSpacing.sm + bottomInset,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -414,6 +421,7 @@ class _Composer extends StatelessWidget {
             child: DsIconButton(
               icon: Icons.send_rounded,
               size: DsIcons.sm,
+              filled: true,
               background: colors.primary,
               foreground: colors.onPrimary,
               onPressed: () async => onSend(context),

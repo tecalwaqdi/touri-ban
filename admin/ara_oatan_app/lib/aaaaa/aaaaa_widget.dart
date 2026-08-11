@@ -1,4 +1,5 @@
 import 'package:ara_oatan_app/core/custom_text_tr.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '/core/toury_mkan_i18n.dart';
 import '/backend/backend.dart';
@@ -57,7 +58,7 @@ class _AaaaaWidgetState extends State<AaaaaWidget> {
               appBar: DsAppBar(
                 automaticallyImplyLeading: false,
                 titleWidget: AppText(
-                  'Page Title',
+                  'page_Title',
                   style: typography.titleLarge.copyWith(
                     color: colors.textPrimary,
                   ),
@@ -107,8 +108,8 @@ class _AaaaaWidgetState extends State<AaaaaWidget> {
                               snapshot.data!;
 
                           if (columnMkanRecordList.isEmpty) {
-                            return const DsEmptyState(
-                              title: 'Page Title',
+                            return DsEmptyState(
+                              title: 'page_Title'.tr(),
                               icon: DsIcons.location,
                             );
                           }

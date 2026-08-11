@@ -55,11 +55,20 @@ Future<List<SelectedFile>?> selectMediaWithSourceBottomSheet({
   required bool allowPhoto,
   bool allowVideo = false,
   String pickerFontFamily = 'Roboto',
-  Color textColor = const Color(0xFF111417),
-  Color backgroundColor = const Color(0xFFF5F5F5),
+  Color? textColor,
+  Color? backgroundColor,
   bool includeDimensions = false,
   bool includeBlurHash = false,
 }) async {
+  final theme = Theme.of(context);
+  final resolvedTextColor =
+      textColor ?? (theme.brightness == Brightness.dark
+          ? const Color(0xFFF1F5F4)
+          : const Color(0xFF111417));
+  final resolvedBackground = backgroundColor ??
+      (theme.brightness == Brightness.dark
+          ? const Color(0xFF1A2222)
+          : const Color(0xFFF5F5F5));
   final createUploadMediaListTile =
       (String label, MediaSource mediaSource) => ListTile(
             title: Text(
@@ -67,12 +76,12 @@ Future<List<SelectedFile>?> selectMediaWithSourceBottomSheet({
               textAlign: TextAlign.center,
               style: GoogleFonts.getFont(
                 pickerFontFamily,
-                color: textColor,
+                color: resolvedTextColor,
                 fontWeight: FontWeight.w600,
                 fontSize: 20,
               ),
             ),
-            tileColor: backgroundColor,
+            tileColor: resolvedBackground,
             dense: false,
             onTap: () => Navigator.pop(
               context,
@@ -81,7 +90,7 @@ Future<List<SelectedFile>?> selectMediaWithSourceBottomSheet({
           );
   final mediaSource = await showModalBottomSheet<MediaSource>(
       context: context,
-      backgroundColor: backgroundColor,
+      backgroundColor: resolvedBackground,
       builder: (context) {
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -91,16 +100,16 @@ Future<List<SelectedFile>?> selectMediaWithSourceBottomSheet({
                 padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                 child: ListTile(
                   title: Text(
-                    'Choose Source',
+                    appTr(context, 'adm_choose_source'),
                     textAlign: TextAlign.center,
                     style: GoogleFonts.getFont(
                       pickerFontFamily,
-                      color: textColor.applyAlpha(0.65),
+                      color: resolvedTextColor.applyAlpha(0.65),
                       fontWeight: FontWeight.w500,
                       fontSize: 20,
                     ),
                   ),
-                  tileColor: backgroundColor,
+                  tileColor: resolvedBackground,
                   dense: false,
                 ),
               ),

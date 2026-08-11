@@ -125,14 +125,17 @@ class _AdminAgentLandmarkListState extends State<AdminAgentLandmarkList> {
       );
 
       final filtered = AdminCountryScope.filterLandmarks(items);
-      if (!mounted || filtered.isEmpty) return;
+      if (!mounted) return;
 
       setState(() {
         _allItems = filtered;
         _visibleCount = _initialVisible(filtered.length);
         _loading = false;
       });
-    } catch (_) {}
+    } catch (_) {
+      if (!mounted) return;
+      // Keep loading=true so background merge can still populate the list.
+    }
   }
 
   void _scheduleBackgroundMerge() {

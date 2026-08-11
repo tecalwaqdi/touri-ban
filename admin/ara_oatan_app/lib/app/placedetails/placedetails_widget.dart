@@ -149,7 +149,7 @@ class _PlacedetailsWidgetState extends State<PlacedetailsWidget> {
                     icon: DsIcons.back,
                     tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                     onPressed: () async {
-                      context.pop();
+                      context.safePop();
                     },
                   ),
                 ),
@@ -382,7 +382,7 @@ class _PlacedetailsWidgetState extends State<PlacedetailsWidget> {
         boxShadow: DsShadows.floating(dark: isDark),
       ),
       child: DsCard(
-        padding: const EdgeInsets.all(DsSpacing.lg),
+        padding: const EdgeInsets.all(DsSpacing.md),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,6 +391,7 @@ class _PlacedetailsWidgetState extends State<PlacedetailsWidget> {
               touryMkanName(context, record),
               style: typography.headlineSmall.copyWith(
                 color: colors.textPrimary,
+                fontWeight: FontWeight.w700,
               ),
             ),
             if (address.isNotEmpty) ...[
@@ -438,23 +439,25 @@ class _PlacedetailsWidgetState extends State<PlacedetailsWidget> {
                 ),
                 style: typography.labelMedium.copyWith(
                   color: colors.textSecondary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: DsSpacing.xxs),
+              const SizedBox(height: DsSpacing.xs),
               Text(
                 description,
                 style: typography.bodyLarge.copyWith(
                   color: colors.textPrimary,
+                  height: 1.45,
                 ),
               ),
             ],
-            const SizedBox(height: DsSpacing.xl),
+            const SizedBox(height: DsSpacing.md),
             DsButton.primary(
               label: FFLocalizations.of(context).getText(
                 'ci8fvgoc' /* Add */,
               ),
               icon: alreadyAdded ? DsIcons.success : DsIcons.add,
-              size: DsButtonSize.lg,
+              size: DsButtonSize.md,
               expanded: true,
               onPressed: () async {
                 await _addToTrip(context, record);

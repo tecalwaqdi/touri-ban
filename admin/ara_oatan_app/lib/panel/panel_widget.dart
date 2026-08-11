@@ -69,7 +69,7 @@ class _PanelWidgetState extends State<PanelWidget> {
           icon: DsIcons.back,
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           onPressed: () async {
-            context.pop();
+            context.safePop();
           },
         ),
       ),

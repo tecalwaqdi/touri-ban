@@ -3568,7 +3568,7 @@ abstract class AppLocalizations {
   /// UI string (source key: ux_card_payment_network)
   ///
   /// In en, this message translates to:
-  /// **'Secure card payment via Network International'**
+  /// **'Pay by card'**
   String get ux_card_payment_network;
 
   /// UI string (source key: checkout_extra_hour_discount)
@@ -4217,7 +4217,7 @@ abstract class AppLocalizations {
   /// UI string (source key: checkout_paying)
   ///
   /// In en, this message translates to:
-  /// **'Processing payment via Network International...'**
+  /// **'Processing card payment...'**
   String get checkout_paying;
 
   /// UI string (source key: map_trip_destination)

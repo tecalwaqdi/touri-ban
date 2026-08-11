@@ -4,11 +4,6 @@ allprojects {
         mavenCentral()
     }
 
-    configurations.all {
-        resolutionStrategy {
-            force "com.transistorsoft:tslocationmanager:4.0.1"
-        }
-    }
 }
 
 rootProject.buildDir = '../build'

@@ -6,6 +6,7 @@ abstract final class TourGuideStatus {
   static const pending = 'pending';
   static const approved = 'approved';
   static const rejected = 'rejected';
+  static const suspended = 'suspended';
 
   static const fieldIsTourGuide = 'is_tour_guide';
   static const fieldStatus = 'tour_guide_status';
@@ -23,5 +24,15 @@ abstract final class TourGuideStatus {
     if (data == null) return false;
     return data[fieldIsTourGuide] == true &&
         (data[fieldStatus] as String?) == pending;
+  }
+
+  static bool isSuspended(Map<String, dynamic>? data) {
+    if (data == null) return false;
+    return data[fieldIsTourGuide] == true &&
+        (data[fieldStatus] as String?) == suspended;
+  }
+
+  static bool isBookable(Map<String, dynamic>? data) {
+    return isApproved(data);
   }
 }

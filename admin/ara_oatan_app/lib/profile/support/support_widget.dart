@@ -57,6 +57,12 @@ class _SupportWidgetState extends State<SupportWidget> {
                 title: FFLocalizations.of(context).getText(
                   'isvgr34v' /* Support Tickets */,
                 ),
+                automaticallyImplyLeading: false,
+                leading: DsIconButton(
+                  icon: DsIcons.back,
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                  onPressed: () => context.safePop(),
+                ),
               ),
               body: SafeArea(
                 top: true,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +8,7 @@ import '/app_state.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/schema/user_record.dart';
 import '/core/driver_account_state_resolver.dart';
+import '/core/driver_auto_activation_service.dart';
 
 /// Result of app start / session resolution. Navigation is NOT done here.
 enum DriverBootstrapStatus {
@@ -52,13 +55,17 @@ abstract final class DriverBootstrapService {
   DriverBootstrapService._();
 
   static const onboardingDoneKey = 'driver_onboarding_done_v1';
+  static const _docReadTimeout = Duration(seconds: 10);
+  static const _prefsTimeout = Duration(seconds: 3);
 
   /// Drop guest sessions — never used for routing into registration.
   static Future<void> clearAnonymousSession() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null && user.isAnonymous) {
       try {
-        await FirebaseAuth.instance.signOut();
+        await FirebaseAuth.instance
+            .signOut()
+            .timeout(const Duration(seconds: 5));
         currentUserDocument = null;
       } catch (e) {
         debugPrint('DriverBootstrapService.clearAnonymousSession: $e');
@@ -67,8 +74,14 @@ abstract final class DriverBootstrapService {
   }
 
   static Future<bool> isOnboardingDone() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(onboardingDoneKey) ?? false;
+    try {
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(_prefsTimeout);
+      return prefs.getBool(onboardingDoneKey) ?? false;
+    } on TimeoutException {
+      debugPrint('DriverBootstrapService.isOnboardingDone: prefs timeout');
+      return true; // Prefer Login over stuck Onboarding when prefs hang.
+    }
   }
 
   static Future<void> markOnboardingDone() async {
@@ -106,7 +119,10 @@ abstract final class DriverBootstrapService {
       UserRecord? doc;
       var exists = false;
       try {
-        final snap = await UserRecord.collection.doc(user.uid).get();
+        final snap = await UserRecord.collection
+            .doc(user.uid)
+            .get()
+            .timeout(_docReadTimeout);
         exists = snap.exists;
         if (exists) {
           doc = UserRecord.fromSnapshot(snap);
@@ -114,6 +130,15 @@ abstract final class DriverBootstrapService {
         } else {
           currentUserDocument = null;
         }
+      } on TimeoutException {
+        debugPrint('DriverBootstrapService doc read: timeout');
+        return DriverBootstrapResult(
+          status: DriverBootstrapStatus.bootstrapError,
+          lifecycle: DriverLifecycle.loading,
+          uid: user.uid,
+          errorMessage: 'Timed out loading driver profile',
+          onboardingCompleted: onboardingDone,
+        );
       } on FirebaseException catch (e) {
         debugPrint('DriverBootstrapService doc read: ${e.code}');
         return DriverBootstrapResult(
@@ -141,9 +166,9 @@ abstract final class DriverBootstrapService {
         );
       }
 
-      final activeTrip =
+      var activeTrip =
           hasActiveTrip ?? (FFAppState().revOrder != null);
-      final life = DriverAccountStateResolver.resolve(
+      var life = DriverAccountStateResolver.resolve(
         hasAuthUser: true,
         isAnonymous: false,
         driverDocumentExists: true,
@@ -152,7 +177,28 @@ abstract final class DriverBootstrapService {
         debugLog: kDebugMode,
       );
 
+      if (life == DriverLifecycle.pendingApproval) {
+        final activation = await DriverAutoActivationService.tryAutoActivate();
+        if (activation.ok && !activation.alreadyActive) {
+          try {
+            doc = await UserRecord.getDocumentOnce(UserRecord.collection.doc(user.uid));
+            currentUserDocument = doc;
+            life = DriverAccountStateResolver.resolve(
+              hasAuthUser: true,
+              isAnonymous: false,
+              driverDocumentExists: true,
+              doc: doc,
+              hasActiveTrip: activeTrip,
+              debugLog: kDebugMode,
+            );
+          } catch (e) {
+            debugPrint('DriverBootstrapService auto-activate reload: $e');
+          }
+        }
+      }
+
       final status = _mapLifecycleToBootstrap(life, missingDoc: false);
+      final profile = doc!;
       _devLog(
         uid: user.uid,
         isAnonymous: false,
@@ -160,12 +206,12 @@ abstract final class DriverBootstrapService {
         lifecycle: life,
         routeHint: status.name,
         raw: {
-          'ismndob': doc.ismndob,
-          'ismndom': doc.ismndom,
-          'actev_mndob': doc.actevMndob,
-          'ngl': doc.ngl,
-          'mndon_newacc': doc.mndonNewacc,
-          'registration_status': doc.registrationStatus,
+          'ismndob': profile.ismndob,
+          'ismndom': profile.ismndom,
+          'actev_mndob': profile.actevMndob,
+          'ngl': profile.ngl,
+          'mndon_newacc': profile.mndonNewacc,
+          'registration_status': profile.registrationStatus,
         },
       );
 
@@ -173,7 +219,7 @@ abstract final class DriverBootstrapService {
         status: status,
         lifecycle: life,
         uid: user.uid,
-        driverDocument: doc,
+        driverDocument: profile,
         onboardingCompleted: onboardingDone,
       );
     } catch (e, st) {

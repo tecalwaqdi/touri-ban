@@ -225,10 +225,18 @@ class DsPaymentCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: typography.titleSmall.copyWith(
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: typography.titleSmall.copyWith(
                   color: colors.textPrimary,
                 )),
-                Text(subtitle, style: typography.bodySmall.copyWith(
+                Text(
+                  subtitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: typography.bodySmall.copyWith(
                   color: colors.textSecondary,
                 )),
               ],

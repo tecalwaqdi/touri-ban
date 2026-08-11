@@ -1,0 +1,97 @@
+{
+  "mode": "apply",
+  "count": 7,
+  "landmarks": [
+    {
+      "id": "curated_riyadh_wadi_hanifa",
+      "names": {
+        "ar": "وادي حنيفة",
+        "en": "Wadi Hanifa",
+        "ru": "Вади Ханифа",
+        "ky": "Вади Ханифа"
+      },
+      "cityId": "city_riyadh",
+      "lat": 24.5809,
+      "lng": 46.71311,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Wadi_Hanifa.jpg/1280px-Wadi_Hanifa.jpg"
+    },
+    {
+      "id": "curated_riyadh_boulevard_world",
+      "names": {
+        "ar": "بوليفارد وورلد",
+        "en": "Boulevard World",
+        "ru": "Boulevard World",
+        "ky": "Boulevard World"
+      },
+      "cityId": "city_riyadh",
+      "lat": 24.77389,
+      "lng": 46.6025,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Boulevard_World_in_Riyadh_%282023%29.jpg/1280px-Boulevard_World_in_Riyadh_%282023%29.jpg"
+    },
+    {
+      "id": "curated_riyadh_edge_of_the_world",
+      "names": {
+        "ar": "حافة العالم (جبل فيهرين)",
+        "en": "Edge of the World (Jebel Fihrayn)",
+        "ru": "Край света (Джебель Фихрайн)",
+        "ky": "Дүйнөнүн чети (Жебел Фихрайн)"
+      },
+      "cityId": "city_riyadh",
+      "lat": 24.94841,
+      "lng": 45.98858,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Edge_of_the_world_%286524166121%29.jpg/1280px-Edge_of_the_world_%286524166121%29.jpg"
+    },
+    {
+      "id": "curated_riyadh_diriyah_turaif",
+      "names": {
+        "ar": "الدرعية التاريخية (حي الطريف)",
+        "en": "Historic Diriyah (At-Turaif District)",
+        "ru": "Историческая Дирия (район Ат-Турайф)",
+        "ky": "Тарыхый Дирия (Ат-Турайф району)"
+      },
+      "cityId": "city_riyadh",
+      "lat": 24.73413,
+      "lng": 46.57247,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/At-Turaif_District_in_ad-Dir%27iyah_%2812%29.jpg/1280px-At-Turaif_District_in_ad-Dir%27iyah_%2812%29.jpg"
+    },
+    {
+      "id": "curated_riyadh_king_abdullah_park",
+      "names": {
+        "ar": "منتزه الملك عبدالله (الملز)",
+        "en": "King Abdullah Park (Al-Malaz)",
+        "ru": "Парк короля Абдаллы (Аль-Малаз)",
+        "ky": "Король Абдулла паркы (Аль-Малаз)"
+      },
+      "cityId": "city_riyadh",
+      "lat": 24.66639,
+      "lng": 46.73694,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/King_Abdullah_Park_Riyadh_entrance.jpg/1280px-King_Abdullah_Park_Riyadh_entrance.jpg"
+    },
+    {
+      "id": "curated_makkah_clock_tower_museum",
+      "names": {
+        "ar": "متحف برج الساعة",
+        "en": "Makkah Clock Tower Museum",
+        "ru": "Музей Часовой башни Мекки",
+        "ky": "Мекке саат мунарасы музейи"
+      },
+      "cityId": "city_makkah",
+      "lat": 21.41889,
+      "lng": 39.82639,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Abraj-al-Bait_largest_clock_tower_ever.jpg/1280px-Abraj-al-Bait_largest_clock_tower_ever.jpg"
+    },
+    {
+      "id": "curated_makkah_jabal_rahmah",
+      "names": {
+        "ar": "جبل الرحمة",
+        "en": "Jabal al-Rahmah (Mount of Mercy)",
+        "ru": "Джабаль ар-Рахма (Гора Милосердия)",
+        "ky": "Жабал ар-Рахма (Ырайым тоосу)"
+      },
+      "cityId": "city_makkah",
+      "lat": 21.35472,
+      "lng": 39.98389,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Jabal-e-Rehmat_%28Mount_of_Mercy%29_Mount_Arafat.jpg/1280px-Jabal-e-Rehmat_%28Mount_of_Mercy%29_Mount_Arafat.jpg"
+    }
+  ]
+}

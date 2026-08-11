@@ -1,12 +1,21 @@
-import '/auth/firebase_auth/auth_util.dart';
-import '/core/driver_country_service.dart';
-import '/core/driver_i18n.dart';
-import '/core/driver_wallet_service.dart';
-import '/core/toury_country_registry.dart';
-import '/design_system/design_system.dart';
-import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/cloud_functions/cloud_functions.dart';
+import '/core/driver_country_service.dart';
+import '/core/driver_i18n.dart';
+import '/core/driver_payment_api_client.dart';
+import '/core/driver_payment_flags.dart';
+import '/core/driver_trip_constants.dart';
+import '/core/driver_wallet_service.dart';
+import '/core/toury_country_registry.dart';
+import '/core/driver_ux_widgets.dart';
+import '/design_system/design_system.dart';
+import '/flutter_flow/flutter_flow_util.dart';
 import 'driver_wallet_model.dart';
 export 'driver_wallet_model.dart';
 
@@ -23,6 +32,12 @@ class DriverWalletWidget extends StatefulWidget {
 class _DriverWalletWidgetState extends State<DriverWalletWidget> {
   late DriverWalletModel _model;
   final _df = DateFormat('yyyy-MM-dd HH:mm');
+  bool _busy = false;
+
+  static const _topUpPackages = [100.0, 200.0, 300.0, 500.0];
+
+  static const _msgTopUpSuccess = 'تم شحن المحفظة بنجاح.';
+  static const _msgTopUpFailed = 'لم تكتمل عملية شحن المحفظة.';
 
   String get _fallbackCurrency {
     final iso = DriverCountryService.currentIso2();
@@ -41,6 +56,365 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
     super.dispose();
   }
 
+  Future<void> _topUp(double amountSar) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      if (DriverPaymentFlags.useExternalWalletTopUp) {
+        await _topUpViaPaymentApi(amountSar);
+      } else {
+        await _topUpViaLegacyCallable(amountSar);
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _topUpViaPaymentApi(double amountSar) async {
+    final packageId = 'sar_${amountSar.toInt()}';
+    final idem =
+        'wallet_${currentUserUid}_${amountSar.toInt()}_${DateTime.now().millisecondsSinceEpoch}';
+    final client = DriverPaymentApiClient();
+    try {
+      final res = await client.createWalletTopUp(
+        idempotencyKey: idem,
+        amountMajor: amountSar,
+        packageId: packageId,
+        email: currentUserEmail,
+        description: 'Wallet top-up',
+        locale: 'ar',
+      );
+      if (!mounted) return;
+      await _openHostedPageAndWaitForCredit(client, res, amountSar);
+    } on DriverPaymentApiException catch (e) {
+      if (!mounted) return;
+      await _showTopUpFailed(retryAmount: amountSar, detail: e.code);
+    } catch (_) {
+      if (!mounted) return;
+      await _showTopUpFailed(retryAmount: amountSar);
+    }
+  }
+
+  Future<void> _openHostedPageAndWaitForCredit(
+    DriverPaymentApiClient client,
+    Map<String, dynamic> res,
+    double amountSar,
+  ) async {
+    final url = (res['paymentUrl'] ??
+            res['payment_url'] ??
+            res['threeDsUrl'] ??
+            res['three_ds_url'] ??
+            '')
+        .toString();
+    final paymentId = (res['id'] ?? '').toString();
+    if (url.isEmpty || paymentId.isEmpty) {
+      await _showTopUpFailed(retryAmount: amountSar);
+      return;
+    }
+
+    final uri = Uri.tryParse(url);
+    if (uri == null || !(uri.isScheme('https') || uri.isScheme('http'))) {
+      await _showTopUpFailed(retryAmount: amountSar);
+      return;
+    }
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!mounted) return;
+
+    final proceed = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => AlertDialog(
+            title: Text(driverTr(context, 'Top up wallet')),
+            content: Text(
+              driverTr(
+                context,
+                'Complete payment in the browser, then confirm here. Balance updates only after server confirmation.',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(driverTr(context, 'Cancel')),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(driverTr(context, 'Confirm')),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!proceed || !mounted) {
+      await _showTopUpFailed(retryAmount: amountSar);
+      return;
+    }
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      await client.waitForWalletCredit(sessionId: paymentId);
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(_msgTopUpSuccess)),
+        );
+        safeSetState(() {});
+      }
+    } on DriverPaymentApiException catch (_) {
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        await _showTopUpFailed(retryAmount: amountSar);
+      }
+    } catch (_) {
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        await _showTopUpFailed(retryAmount: amountSar);
+      }
+    }
+  }
+
+  Future<void> _showTopUpFailed({double? retryAmount, String? detail}) async {
+    if (!mounted) return;
+    final retry = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(driverTr(context, 'Top up wallet')),
+            content: Text(
+              detail == null || detail.isEmpty
+                  ? _msgTopUpFailed
+                  : '$_msgTopUpFailed\n($detail)',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(driverTr(context, 'Cancel')),
+              ),
+              if (retryAmount != null && retryAmount > 0)
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: Text(driverTr(context, 'Retry')),
+                ),
+            ],
+          ),
+        ) ??
+        false;
+    if (retry && retryAmount != null && retryAmount > 0 && mounted) {
+      await _topUp(retryAmount);
+    }
+  }
+
+  /// Legacy Firebase callable path (rollback only).
+  Future<void> _topUpViaLegacyCallable(double amountSar) async {
+    final packageId = 'sar_${amountSar.toInt()}';
+    final idem =
+        'wallet_${currentUserUid}_${amountSar.toInt()}_${DateTime.now().millisecondsSinceEpoch}';
+    final res = await makeCloudCall('createNGeniusPayment', {
+      'paymentPurpose': 'wallet',
+      'packageId': packageId,
+      'amountMajor': amountSar,
+      'idempotencyKey': idem,
+      'description': 'Wallet top-up — $currentUserDisplayName',
+    });
+    if (!mounted) return;
+    if (res['error'] != null) {
+      await _showTopUpFailed(
+        retryAmount: amountSar,
+        detail: res['error']?.toString(),
+      );
+      return;
+    }
+    final url = (res['payment_url'] ??
+            res['paymentUrl'] ??
+            res['three_ds_url'] ??
+            res['redirectUrl'] ??
+            '')
+        .toString();
+    final paymentId =
+        (res['id'] ?? res['paymentId'] ?? res['sessionId'] ?? '').toString();
+    if (url.isNotEmpty) {
+      final uri = Uri.tryParse(url);
+      if (uri != null) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    }
+    if (paymentId.isEmpty || !mounted) {
+      await _showTopUpFailed(retryAmount: amountSar);
+      return;
+    }
+
+    final done = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(driverTr(context, 'Top up wallet')),
+            content: Text(
+              driverTr(
+                context,
+                'Complete payment in the browser, then confirm here. Balance updates only after server confirmation.',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(driverTr(context, 'Cancel')),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(driverTr(context, 'Confirm')),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+    if (!done || !mounted) {
+      await _showTopUpFailed(retryAmount: amountSar);
+      return;
+    }
+
+    final fin = await makeCloudCall('finalizeNGeniusWalletTopUp', {
+      'id': paymentId,
+    });
+    if (!mounted) return;
+    if (fin['error'] != null && fin['credited'] != true) {
+      await _showTopUpFailed(
+        retryAmount: amountSar,
+        detail: fin['error']?.toString(),
+      );
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text(_msgTopUpSuccess)),
+    );
+    safeSetState(() {});
+  }
+
+  Future<void> _payCompany(double balance) async {
+    final controller = TextEditingController();
+    final amount = await showDialog<double>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(driverTr(context, 'Pay company')),
+        content: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            labelText: driverTr(context, 'Amount'),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(driverTr(context, 'Cancel')),
+          ),
+          TextButton(
+            onPressed: () {
+              final v = double.tryParse(controller.text.trim());
+              Navigator.pop(ctx, v);
+            },
+            child: Text(driverTr(context, 'Confirm')),
+          ),
+        ],
+      ),
+    );
+    if (amount == null || amount <= 0 || !mounted) return;
+    if (amount > balance) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(driverTr(context, 'Insufficient wallet balance')),
+        ),
+      );
+      return;
+    }
+
+    var confirmBelowMin = false;
+    if (balance - amount < DriverWalletRules.minCashWalletBalance) {
+      final warn = await showDialog<bool>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text(driverTr(context, 'Confirm')),
+              content: Text(
+                'بعد الدفع سيصبح رصيدك أقل من 200 ريال ولن تتمكن من استقبال الطلبات النقدية حتى تشحن المحفظة.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: Text(driverTr(context, 'Cancel')),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: Text(driverTr(context, 'Confirm')),
+                ),
+              ],
+            ),
+          ) ??
+          false;
+      if (!warn) return;
+      confirmBelowMin = true;
+    }
+
+    setState(() => _busy = true);
+    try {
+      final key =
+          'cp_${currentUserUid}_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(9999)}';
+      final res = await makeCloudCall('payCompanyFromWallet', {
+        'amount': amount,
+        'confirmBelowMin': confirmBelowMin,
+        'idempotencyKey': key,
+        'reference': key,
+      });
+      if (!mounted) return;
+      if (res['error'] != null || res['ok'] == false) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              driverTr(
+                context,
+                (res['error'] ?? 'Something went wrong. Please try again.')
+                    .toString(),
+              ),
+            ),
+          ),
+        );
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            driverTr(
+              context,
+              res['alreadyProcessed'] == true
+                  ? 'Payment already recorded'
+                  : 'Company payment completed',
+            ),
+          ),
+        ),
+      );
+      safeSetState(() {});
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  String _txLabel(String type) {
+    switch (type) {
+      case 'top_up':
+      case 'credit':
+        return driverTr(context, 'Top up');
+      case 'company_payment':
+        return driverTr(context, 'Pay company');
+      case 'debit':
+        return driverTr(context, 'Debit');
+      case 'admin_adjustment':
+        return driverTr(context, 'Admin adjustment');
+      default:
+        return type.isEmpty ? driverTr(context, 'Transaction') : type;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DsScreenShell(
@@ -51,23 +425,25 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
 
           return Scaffold(
             backgroundColor: colors.scaffold,
-            appBar: DsAppBar(
+            appBar: DriverMainAppBar(
               title: driverTr(context, 'Wallet'),
             ),
             body: SafeArea(
               child: StreamBuilder(
                 stream: DriverWalletService.walletStream(),
                 builder: (context, walletSnap) {
-                  if (!walletSnap.hasData) {
+                  if (walletSnap.connectionState == ConnectionState.waiting &&
+                      !walletSnap.hasData) {
                     return const DsLoading();
                   }
-                  final wallet = walletSnap.data!;
-                  final currency = wallet.currency.trim().isNotEmpty
-                      ? wallet.currency
+                  final wallet = walletSnap.data;
+                  final currency = (wallet?.currency ?? '').trim().isNotEmpty
+                      ? wallet!.currency
                       : _fallbackCurrency;
-                  final earnings =
-                      valueOrDefault(currentUserDocument?.totalMndob, 0);
-                  final commission =
+                  final balance = wallet?.currentBalance ?? 0.0;
+                  final cashOk =
+                      balance >= DriverWalletRules.minCashWalletBalance;
+                  final unpaid =
                       valueOrDefault(currentUserDocument?.totalApp, 0);
 
                   return StreamBuilder(
@@ -75,115 +451,137 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
                     builder: (context, txSnap) {
                       final txs = txSnap.data ?? const [];
 
-                      return ListView(
-                        padding: DsSpacing.pagePadding,
-                        children: [
-                          DsWalletCard(
-                            balanceLabel: driverTr(context, 'Current balance'),
-                            balanceValue:
-                                wallet.currentBalance.toStringAsFixed(2),
-                            currency: currency,
-                          ),
-                          DsSpacing.gapMd,
-                          Row(
-                            children: [
-                              Expanded(
-                                child: DsStatisticsCard(
-                                  label: driverTr(context, 'Total earnings'),
-                                  value: '$earnings $currency',
-                                  icon: Icons.trending_up_rounded,
-                                ),
+                      return DriverContentWidth(
+                        child: ListView(
+                          padding: DsSpacing.pagePadding,
+                          children: [
+                            DsWalletCard(
+                              balanceLabel:
+                                  driverTr(context, 'Current balance'),
+                              balanceValue: balance.toStringAsFixed(2),
+                              currency: currency,
+                            ),
+                            DsSpacing.gapSm,
+                            Text(
+                              cashOk
+                                  ? driverTr(
+                                      context,
+                                      'Eligible for cash orders',
+                                    )
+                                  : 'يجب أن يكون رصيد محفظتك 200 ريال على الأقل لقبول الطلبات النقدية.',
+                              style: typography.bodySmall.copyWith(
+                                color: cashOk
+                                    ? colors.success
+                                    : colors.error,
                               ),
+                            ),
+                            if (unpaid > 0) ...[
                               DsSpacing.gapSm,
-                              Expanded(
-                                child: DsStatisticsCard(
-                                  label: driverTr(
-                                    context,
-                                    'Unpaid commissions',
-                                  ),
-                                  value: '$commission $currency',
-                                  icon: Icons.receipt_long_rounded,
+                              Text(
+                                '${driverTr(context, 'Unpaid commissions')}: ${unpaid.toStringAsFixed(2)} $currency',
+                                style: typography.bodySmall.copyWith(
+                                  color: colors.textSecondary,
                                 ),
                               ),
                             ],
-                          ),
-                          DsSpacing.gapXl,
-                          Text(
-                            driverTr(context, 'Transactions'),
-                            style: typography.titleMedium.copyWith(
-                              color: colors.textPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          DsSpacing.gapXs,
-                          if (txs.isEmpty)
-                            DsEmptyState(
-                              title: driverTr(
-                                context,
-                                'No transactions yet',
+                            DsSpacing.gapMd,
+                            Text(
+                              driverTr(context, 'Top up wallet'),
+                              style: typography.titleSmall.copyWith(
+                                fontWeight: FontWeight.w700,
                               ),
-                              icon: Icons.account_balance_wallet_outlined,
-                            )
-                          else
-                            ...txs.map((t) {
-                              final isCredit =
-                                  t.type == 'credit' || t.amount > 0;
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: DsSpacing.sm,
+                            ),
+                            DsSpacing.gapXs,
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: _topUpPackages
+                                  .map(
+                                    (p) => DsButton.secondary(
+                                      label: '${p.toInt()} $currency',
+                                      enabled: !_busy,
+                                      onPressed: () => _topUp(p),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                            DsSpacing.gapMd,
+                            DsButton.primary(
+                              label: driverTr(context, 'Pay company'),
+                              icon: Icons.account_balance_rounded,
+                              expanded: true,
+                              loading: _busy,
+                              enabled: !_busy && balance > 0,
+                              onPressed: () => _payCompany(balance),
+                            ),
+                            DsSpacing.gapXl,
+                            Text(
+                              driverTr(context, 'Transactions'),
+                              style: typography.titleMedium.copyWith(
+                                color: colors.textPrimary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            DsSpacing.gapXs,
+                            if (txs.isEmpty)
+                              DsEmptyState(
+                                title: driverTr(
+                                  context,
+                                  'No transactions yet',
                                 ),
-                                child: DsCard(
-                                  child: ListTile(
-                                    contentPadding: EdgeInsets.zero,
-                                    leading: Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: isCredit
-                                            ? colors.successContainer
-                                            : colors.errorContainer,
-                                        borderRadius: DsRadius.medium,
+                                icon: Icons.account_balance_wallet_outlined,
+                              )
+                            else
+                              ...txs.map((t) {
+                                final isCredit = t.type == 'credit' ||
+                                    t.type == 'top_up' ||
+                                    t.amount > 0;
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: DsSpacing.sm,
+                                  ),
+                                  child: DsCard(
+                                    child: ListTile(
+                                      contentPadding: EdgeInsets.zero,
+                                      leading: Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: isCredit
+                                              ? colors.successContainer
+                                              : colors.errorContainer,
+                                          borderRadius: DsRadius.medium,
+                                        ),
+                                        child: Icon(
+                                          isCredit
+                                              ? Icons.arrow_downward_rounded
+                                              : Icons.arrow_upward_rounded,
+                                          color: isCredit
+                                              ? colors.success
+                                              : colors.error,
+                                        ),
                                       ),
-                                      child: Icon(
-                                        isCredit
-                                            ? Icons.arrow_downward_rounded
-                                            : Icons.arrow_upward_rounded,
-                                        color: isCredit
-                                            ? colors.success
-                                            : colors.error,
-                                        size: 20,
+                                      title: Text(_txLabel(t.type)),
+                                      subtitle: Text(
+                                        t.createdAt == null
+                                            ? t.status
+                                            : '${_df.format(t.createdAt!)} · ${t.status}',
                                       ),
-                                    ),
-                                    title: Text(
-                                      t.description.isNotEmpty
-                                          ? t.description
-                                          : t.type,
-                                      style: typography.bodyMedium.copyWith(
-                                        color: colors.textPrimary,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      t.createdAt != null
-                                          ? _df.format(t.createdAt!)
-                                          : '',
-                                      style: typography.bodySmall.copyWith(
-                                        color: colors.textSecondary,
-                                      ),
-                                    ),
-                                    trailing: Text(
-                                      '${t.amount.abs().toStringAsFixed(2)} $currency',
-                                      style: typography.titleSmall.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: isCredit
-                                            ? colors.success
-                                            : colors.error,
+                                      trailing: Text(
+                                        '${isCredit ? '+' : ''}${t.amount.toStringAsFixed(2)} $currency',
+                                        style: typography.titleSmall.copyWith(
+                                          color: isCredit
+                                              ? colors.success
+                                              : colors.error,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }),
-                        ],
+                                );
+                              }),
+                          ],
+                        ),
                       );
                     },
                   );

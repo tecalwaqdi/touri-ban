@@ -272,7 +272,7 @@ class _ListWidgetState extends State<ListWidget> {
                         icon: DsIcons.back,
                         tooltip: MaterialLocalizations.of(context)
                             .backButtonTooltip,
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => context.safePop(),
                       ),
                       const SizedBox(width: DsSpacing.xxs),
                     ],

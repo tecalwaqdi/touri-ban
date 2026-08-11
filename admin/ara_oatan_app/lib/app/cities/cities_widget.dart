@@ -77,7 +77,7 @@ class _CitiesWidgetState extends State<CitiesWidget> {
                   automaticallyImplyLeading: false,
                   leading: DsIconButton(
                     icon: DsIcons.back,
-                    onPressed: () => context.pop(),
+                    onPressed: () => context.safePop(),
                   ),
                 ),
                 body: CustomScrollView(

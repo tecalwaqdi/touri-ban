@@ -56,6 +56,15 @@ class _MapTrdemoWidgetState extends State<MapTrdemoWidget> {
             context.pop();
           },
         ),
+        actions: [
+          DsIconButton(
+            icon: DsIcons.close,
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+            onPressed: () async {
+              context.pop();
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         top: true,

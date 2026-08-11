@@ -1,5 +1,6 @@
 import '/core/i18n/admin_i18n_save_helper.dart';
 import '/backend/admin_agent_country_lock.dart';
+import '/backend/admin_country_geo_service.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
@@ -157,18 +158,42 @@ class _AddVillWidgetState extends State<AddVillWidget> {
         fieldLabel: 'city description',
       );
 
-      await VillagesRecord.collection.doc().set(
-            createVillagesRecordData(
-              cities: FFAppState().Revreg,
-              dolh: countryRef,
-              naim: adminLegacyFromI18n(namesMap, name),
-              osf: adminLegacyFromI18n(osfMap, desc),
-              namesI18n: namesMap,
-              osfI18n: osfMap,
-              acctev: _model.switchValue,
-              img: img,
-            ),
-          );
+      String? countryIso;
+      String? countryName;
+      String? regionName;
+      try {
+        final country = await CountriesRecord.getDocumentOnce(countryRef!);
+        countryIso = country.isoCode;
+        countryName = country.naim;
+      } catch (_) {}
+      try {
+        final region =
+            await CitiesRecord.getDocumentOnce(FFAppState().Revreg!);
+        regionName = region.naim;
+      } catch (_) {}
+
+      final geo = await AdminCountryGeoService.fetchCity(
+        name: name,
+        regionName: regionName,
+        countryIso: countryIso,
+        countryName: countryName,
+      );
+
+      await VillagesRecord.collection.doc().set({
+        ...createVillagesRecordData(
+          cities: FFAppState().Revreg,
+          dolh: countryRef,
+          naim: adminLegacyFromI18n(namesMap, name),
+          osf: adminLegacyFromI18n(osfMap, desc),
+          namesI18n: namesMap,
+          osfI18n: osfMap,
+          acctev: _model.switchValue,
+          img: img,
+          latLing: geo?.center,
+          naimViilMap: geo?.displayName,
+        ),
+        if (geo != null) ...AdminCountryGeoService.cityGeoFieldsForFirestore(geo),
+      });
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '/core/toury_brand_widgets.dart';
@@ -50,6 +51,12 @@ class _TourySplashScreenState extends State<TourySplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final shortest = MediaQuery.sizeOf(context).shortestSide;
+    final logoWidth = (shortest * 0.52).clamp(160.0, 210.0);
+    final logoHeight = logoWidth * (90 / 210);
+    final titleSize = (shortest * 0.055).clamp(20.0, 26.0);
+    final taglineSize = (shortest * 0.035).clamp(12.0, 14.5);
+
     return Material(
       color: DsPrimaryScale.shade700,
       child: DecoratedBox(
@@ -86,47 +93,65 @@ class _TourySplashScreenState extends State<TourySplashScreen>
                   opacity: _fade,
                   child: ScaleTransition(
                     scale: _scale,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const TouryLogo(
-                          width: 210,
-                          height: 90,
-                          withBackground: true,
-                        ),
-                        const SizedBox(height: DsSpacing.xxl),
-                        FadeTransition(
-                          opacity: _loaderFade,
-                          child: SizedBox(
-                            width: DsIcons.xl,
-                            height: DsIcons.xl,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.6,
-                              color: Colors.white.withValues(alpha: 0.92),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: DsSpacing.lg,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TouryLogo(
+                            width: logoWidth,
+                            height: logoHeight,
+                            withBackground: true,
+                          ),
+                          const SizedBox(height: DsSpacing.md),
+                          Text(
+                            'app_title'.tr(),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: DsTypography.fontFamily,
+                              color: Colors.white.withValues(alpha: 0.96),
+                              fontSize: titleSize,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.6,
+                              height: 1.2,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SafeArea(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: DsSpacing.xxl),
-                  child: FadeTransition(
-                    opacity: _loaderFade,
-                    child: Text(
-                      'Touri Taxi',
-                      style: TextStyle(
-                        fontFamily: DsTypography.fontFamily,
-                        color: Colors.white.withValues(alpha: 0.82),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.4,
+                          const SizedBox(height: DsSpacing.sm),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 320),
+                            child: Text(
+                              'splash_tagline'.tr(),
+                              textAlign: TextAlign.center,
+                              maxLines: 3,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontFamily: DsTypography.fontFamily,
+                                color: Colors.white.withValues(alpha: 0.88),
+                                fontSize: taglineSize,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 0.2,
+                                height: 1.35,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: DsSpacing.xxl),
+                          FadeTransition(
+                            opacity: _loaderFade,
+                            child: SizedBox(
+                              width: DsIcons.xl,
+                              height: DsIcons.xl,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.6,
+                                color: Colors.white.withValues(alpha: 0.92),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

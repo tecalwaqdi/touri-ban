@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'auth/firebase_auth/firebase_user_provider.dart';
 import 'auth/firebase_auth/auth_util.dart';
 
@@ -128,12 +129,16 @@ class _MyAppState extends State<MyApp> {
     _router = createRouter(_appStateNotifier);
     _locale = driverResolveStartupLocale();
     userStream = mndobFirebaseUserStream();
+    // Seed immediately so auth-dependent UI is not blocked if the stream lags.
+    _appStateNotifier.update(
+      MndobFirebaseUser(FirebaseAuth.instance.currentUser),
+    );
     _userDocSub = userStream.listen((user) {
       _appStateNotifier.update(user);
     });
     _jwtSub = jwtTokenStream.listen((_) {});
     Future.delayed(
-      Duration(milliseconds: 1000),
+      const Duration(milliseconds: 800),
       () => _appStateNotifier.stopShowingSplashImage(),
     );
   }
@@ -253,7 +258,9 @@ class _NavBarPageState extends State<NavBarPage> {
               child: SafeArea(
                 top: false,
                 minimum: const EdgeInsets.only(bottom: DsSpacing.xxs),
-                child: BottomNavigationBar(
+                child: SizedBox(
+                  height: DsConstants.bottomNavHeight,
+                  child: BottomNavigationBar(
                   currentIndex: currentIndex < 0 ? 0 : currentIndex,
                   onTap: (i) => safeSetState(() {
                     _currentPage = null;
@@ -359,6 +366,7 @@ class _NavBarPageState extends State<NavBarPage> {
                       tooltip: '',
                     ),
                   ],
+                ),
                 ),
               ),
             ),

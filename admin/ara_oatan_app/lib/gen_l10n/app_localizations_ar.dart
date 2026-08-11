@@ -1821,8 +1821,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ux_change => 'تغيير';
 
   @override
-  String get ux_card_payment_network =>
-      'دفع آمن بالبطاقة عبر Network International';
+  String get ux_card_payment_network => 'الدفع عبر البطاقة';
 
   @override
   String checkout_extra_hour_discount(
@@ -2188,7 +2187,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get card_invalid_data => 'بيانات البطاقة غير صحيحة';
 
   @override
-  String get checkout_paying => 'جاري الدفع عبر Network International...';
+  String get checkout_paying => 'جاري الدفع عبر البطاقة...';
 
   @override
   String get map_trip_destination => 'وجهة الرحلة';

@@ -295,7 +295,15 @@ class _DsButtonState extends State<DsButton> {
           scale: _pressed && effectiveEnabled ? 0.98 : 1,
           duration: DsDurations.fast,
           child: widget.expanded
-              ? SizedBox(width: double.infinity, child: child)
+              ? LayoutBuilder(
+                  builder: (context, constraints) {
+                    final maxW = constraints.maxWidth;
+                    return SizedBox(
+                      width: maxW.isFinite ? maxW : null,
+                      child: child,
+                    );
+                  },
+                )
               : child,
         ),
       ),

@@ -38,6 +38,10 @@ class _OksendWidgetState extends State<OksendWidget> {
     super.dispose();
   }
 
+  void _goToOrders() {
+    context.goNamed(List22TaskOverviewResponsiveWidget.routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return DsScreenShell(
@@ -45,35 +49,38 @@ class _OksendWidgetState extends State<OksendWidget> {
         builder: (context) {
           final colors = context.dsColors;
 
-          return GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-              FocusManager.instance.primaryFocus?.unfocus();
+          return PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, _) {
+              if (didPop) return;
+              _goToOrders();
             },
-            child: Scaffold(
-              key: scaffoldKey,
-              backgroundColor: colors.scaffold,
-              body: SafeArea(
-                top: true,
-                child: DsScaleFade(
-                  child: DsSuccessState(
-                    title: FFLocalizations.of(context).getText(
-                      'qfk6mdxe' /* Your request has been successf... */,
-                    ),
-                    message: FFLocalizations.of(context).getText(
-                      'sjwiiogz' /* You can track the status of yo... */,
-                    ),
-                    action: DsButton.primary(
-                      label: FFLocalizations.of(context).getText(
-                        'eahtmp01' /* View Orders */,
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
+              child: Scaffold(
+                key: scaffoldKey,
+                backgroundColor: colors.scaffold,
+                body: SafeArea(
+                  top: true,
+                  child: DsScaleFade(
+                    child: DsSuccessState(
+                      title: FFLocalizations.of(context).getText(
+                        'qfk6mdxe' /* Your request has been successf... */,
                       ),
-                      icon: DsIcons.bookings,
-                      size: DsButtonSize.lg,
-                      onPressed: () async {
-                        context.pushNamed(
-                          List22TaskOverviewResponsiveWidget.routeName,
-                        );
-                      },
+                      message: FFLocalizations.of(context).getText(
+                        'sjwiiogz' /* You can track the status of yo... */,
+                      ),
+                      action: DsButton.primary(
+                        label: FFLocalizations.of(context).getText(
+                          'eahtmp01' /* View Orders */,
+                        ),
+                        icon: DsIcons.bookings,
+                        size: DsButtonSize.lg,
+                        onPressed: _goToOrders,
+                      ),
                     ),
                   ),
                 ),

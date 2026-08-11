@@ -19,7 +19,7 @@ function deriveClaimsFromUserData(data) {
   }
   if (ruleNum === 2) {
     claims.country_admin = true;
-    claims.finance = true;
+    // Do NOT grant finance — that unlocked unscoped order lists in rules.
     claims.support = true;
   }
   if (data.isagent === true || data.Isagent === true) {
@@ -106,16 +106,44 @@ function hydrateUserData(raw) {
     "mndob_vill",
     "mndob_type_car",
     "mndob_user",
+    "region_ref",
   ];
   for (const field of refFields) {
     if (typeof data[field] === "string" && data[field].includes("/")) {
       data[field] = db.doc(data[field]);
     }
   }
-  const timeFields = ["created_time", "agentDateReg", "agentDateEnd"];
+  const timeFields = [
+    "created_time",
+    "agentDateReg",
+    "agentDateEnd",
+    "agent_date_reg",
+    "agent_date_end",
+  ];
   for (const field of timeFields) {
     if (typeof data[field] === "string") {
-      data[field] = admin.firestore.Timestamp.fromDate(new Date(data[field]));
+      const d = new Date(data[field]);
+      if (!Number.isNaN(d.getTime())) {
+        data[field] = admin.firestore.Timestamp.fromDate(d);
+      }
+    }
+  }
+  const geoFields = [
+    "agent_geo_center",
+    "agent_bounds_sw",
+    "agent_bounds_ne",
+    "geo_center",
+    "bounds_sw",
+    "bounds_ne",
+  ];
+  for (const field of geoFields) {
+    const value = data[field];
+    if (value && typeof value === "object" && !(value instanceof admin.firestore.GeoPoint)) {
+      const lat = value.latitude ?? value.lat;
+      const lng = value.longitude ?? value.lng ?? value.lon;
+      if (typeof lat === "number" && typeof lng === "number") {
+        data[field] = new admin.firestore.GeoPoint(lat, lng);
+      }
     }
   }
   return data;
@@ -166,20 +194,41 @@ exports.createPanelUser = functions.https.onCall(async (data, context) => {
   try {
     userRecord = await admin.auth().createUser({email, password});
   } catch (e) {
-    throw new functions.https.HttpsError("already-exists", e.message);
+    const code = (e && e.code) || "";
+    if (code === "auth/email-already-exists" || code === "auth/email-already-in-use") {
+      throw new functions.https.HttpsError("already-exists", e.message || code);
+    }
+    if (code === "auth/invalid-email" || code === "auth/invalid-password" || code === "auth/weak-password") {
+      throw new functions.https.HttpsError("invalid-argument", e.message || code);
+    }
+    console.error("createPanelUser auth error", e);
+    throw new functions.https.HttpsError("internal", e.message || "Auth create failed");
   }
 
   const uid = userRecord.uid;
-  const doc = {
-    email,
-    uid,
-    created_time: admin.firestore.FieldValue.serverTimestamp(),
-    actev_user: true,
-    ...hydrateUserData(userData),
-  };
+  try {
+    const doc = {
+      email,
+      uid,
+      created_time: admin.firestore.FieldValue.serverTimestamp(),
+      actev_user: true,
+      ...hydrateUserData(userData),
+    };
 
-  await db.doc(`user/${uid}`).set(doc, {merge: true});
-  await syncClaimsForUid(uid);
+    await db.doc(`user/${uid}`).set(doc, {merge: true});
+    await syncClaimsForUid(uid);
+  } catch (e) {
+    console.error("createPanelUser firestore error", e);
+    try {
+      await admin.auth().deleteUser(uid);
+    } catch (cleanupErr) {
+      console.error("createPanelUser cleanup failed", cleanupErr);
+    }
+    throw new functions.https.HttpsError(
+      "internal",
+      e.message || "Failed to write user profile",
+    );
+  }
 
   return {uid};
 });
@@ -375,11 +424,10 @@ exports.notifyAdminsOnNewBooking = functions.firestore
     }
 
     const orderNumber = data.IDorder || orderId;
-    const customerName = data.naim_user_text || "عميل";
+    const customerName = data.naim_user_text || "";
     const total = data.total != null ? String(data.total) : "";
 
     const countryRef = data.Rev_dolh;
-    const tokenSet = new Set();
     const adminDocs = [];
 
     const superAdminsSnap = await db
@@ -392,7 +440,6 @@ exports.notifyAdminsOnNewBooking = functions.firestore
       const u = doc.data();
       if (u.isAdmin || u.IsAdmin || u.isAdminRule === 1 || u.IsAdminRule === 1) {
         adminDocs.push(doc);
-        collectTokens(doc, tokenSet);
       }
     }
 
@@ -405,52 +452,122 @@ exports.notifyAdminsOnNewBooking = functions.firestore
         .get();
       agentsSnap.forEach((doc) => {
         adminDocs.push(doc);
-        collectTokens(doc, tokenSet);
       });
     }
 
-    const tokens = Array.from(tokenSet);
-    if (tokens.length === 0) {
+    if (adminDocs.length === 0) {
       console.log("No admin FCM tokens registered.");
       return null;
     }
 
-    const body =
-      total.length > 0
-        ? `حجز #${orderNumber} من ${customerName} — ${total} ريال`
-        : `حجز #${orderNumber} من ${customerName} بانتظار الموافقة`;
-
-    const message = {
-      notification: {title: "حجز جديد", body},
-      data: {
-        type: "new_booking",
-        orderId,
-        click_action: "FLUTTER_NOTIFICATION_CLICK",
-      },
-      android: {
-        priority: "high",
-        notification: {
-          channelId: "admin_bookings",
-          clickAction: "FLUTTER_NOTIFICATION_CLICK",
-        },
-      },
-      apns: {payload: {aps: {sound: "default", badge: 1}}},
-      tokens,
-    };
-
-    const response = await admin.messaging().sendEachForMulticast(message);
-    console.log(`Booking ${orderId}: sent ${response.successCount}/${tokens.length}`);
-
-    if (response.failureCount > 0) {
-      const invalidTokens = [];
-      response.responses.forEach((res, index) => {
-        if (!res.success) invalidTokens.push(tokens[index]);
-      });
-      await cleanupInvalidTokens(adminDocs, invalidTokens);
+    // Group tokens by preferred_locale so each admin gets their language.
+    const byLocale = new Map();
+    for (const doc of adminDocs) {
+      const u = doc.data() || {};
+      const locale = normalizeNotifLocale(u.preferred_locale);
+      if (!byLocale.has(locale)) {
+        byLocale.set(locale, {tokens: new Set(), docs: []});
+      }
+      const bucket = byLocale.get(locale);
+      bucket.docs.push(doc);
+      collectTokens(doc, bucket.tokens);
     }
 
+    let totalSent = 0;
+    let totalTokens = 0;
+    for (const [locale, bucket] of byLocale.entries()) {
+      const tokens = Array.from(bucket.tokens);
+      if (tokens.length === 0) continue;
+      totalTokens += tokens.length;
+      const copy = bookingNotifCopy(locale, {
+        orderNumber,
+        customerName: customerName || fallbackCustomerName(locale),
+        total,
+      });
+      const message = {
+        notification: {title: copy.title, body: copy.body},
+        data: {
+          type: "new_booking",
+          orderId,
+          code: "NEW_BOOKING",
+          click_action: "FLUTTER_NOTIFICATION_CLICK",
+        },
+        android: {
+          priority: "high",
+          notification: {
+            channelId: "admin_bookings",
+            clickAction: "FLUTTER_NOTIFICATION_CLICK",
+          },
+        },
+        apns: {payload: {aps: {sound: "default", badge: 1}}},
+        tokens,
+      };
+      const response = await admin.messaging().sendEachForMulticast(message);
+      totalSent += response.successCount;
+      if (response.failureCount > 0) {
+        const invalidTokens = [];
+        response.responses.forEach((res, index) => {
+          if (!res.success) invalidTokens.push(tokens[index]);
+        });
+        await cleanupInvalidTokens(bucket.docs, invalidTokens);
+      }
+    }
+
+    console.log(`Booking ${orderId}: sent ${totalSent}/${totalTokens}`);
     return null;
   });
+
+function normalizeNotifLocale(raw) {
+  const code = String(raw || "en").split(/[_-]/)[0].toLowerCase();
+  return ["ar", "en", "ru", "ky"].includes(code) ? code : "en";
+}
+
+function fallbackCustomerName(locale) {
+  switch (locale) {
+    case "ar":
+      return "عميل";
+    case "ru":
+      return "Клиент";
+    case "ky":
+      return "Кардар";
+    default:
+      return "Customer";
+  }
+}
+
+function bookingNotifCopy(locale, {orderNumber, customerName, total}) {
+  const hasTotal = String(total || "").length > 0;
+  switch (locale) {
+    case "ar":
+      return {
+        title: "حجز جديد",
+        body: hasTotal
+          ? `حجز #${orderNumber} من ${customerName} — ${total}`
+          : `حجز #${orderNumber} من ${customerName} بانتظار الموافقة`,
+      };
+    case "ru":
+      return {
+        title: "Новое бронирование",
+        body: hasTotal
+          ? `Бронь #${orderNumber} от ${customerName} — ${total}`
+          : `Бронь #${orderNumber} от ${customerName} ожидает подтверждения`,
+      };
+    case "ky":
+      return {
+        title: "Жаңы брондоо",
+        body: hasTotal
+          ? `Брон #${orderNumber} — ${customerName} — ${total}`
+          : `Брон #${orderNumber} — ${customerName} бекитүүнү күтүүдө`,
+      };
+    default:
+      return {
+        title: "New booking",
+        body: hasTotal
+          ? `Booking #${orderNumber} from ${customerName} — ${total}`
+          : `Booking #${orderNumber} from ${customerName} awaiting approval`,
+      };
+  }
+}
 
 function collectTokens(doc, tokenSet) {
   const user = doc.data();

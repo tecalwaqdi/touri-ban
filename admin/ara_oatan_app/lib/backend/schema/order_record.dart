@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 
 import '/backend/schema/util/firestore_util.dart';
@@ -295,20 +296,20 @@ class OrderRecord extends FirestoreRecord {
     _rhlh = getDataList<DocumentReference>(snapshotData['rhlh']);
     _total = castToType<double>(snapshotData['total']);
     _user = castDocRef(snapshotData['USER']);
-    _lokeshn = snapshotData['LOKESHN'] as LatLng?;
+    _lokeshn = _readLatLng(snapshotData['LOKESHN']);
     _dataOrder = snapshotData['data_order'] as DateTime?;
-    _cartext = snapshotData['cartext'] as String?;
+    _cartext = castToType<String>(snapshotData['cartext']);
     _carRev = castDocRef(snapshotData['carRev']);
     _mndobUser = castDocRef(snapshotData['mndob_user']);
     _mzodUser = getDataList<DocumentReference>(snapshotData['mzod_user']);
     _mdend = castDocRef(snapshotData['mdend']);
-    _imgMndob = snapshotData['img_mndob'] as String?;
-    _halhText = snapshotData['halh_text'] as String?;
-    _naimUserText = snapshotData['naim_user_text'] as String?;
+    _imgMndob = castToType<String>(snapshotData['img_mndob']);
+    _halhText = castToType<String>(snapshotData['halh_text']);
+    _naimUserText = castToType<String>(snapshotData['naim_user_text']);
     _vill = castDocRef(snapshotData['vill']);
-    _naimMndobText = snapshotData['naim_mndob_text'] as String?;
+    _naimMndobText = castToType<String>(snapshotData['naim_mndob_text']);
     _phoneNumper = castToType<int>(snapshotData['phone_numper']);
-    _villText = snapshotData['vill_text'] as String?;
+    _villText = castToType<String>(snapshotData['vill_text']);
     _addCartNumer = castToType<int>(snapshotData['add_cart_numer']);
     _phoneNuMndob = castToType<int>(snapshotData['phone_nu_mndob']);
     _listamakn = snapshotData['listamakn'] is AmaknCostmStruct
@@ -320,44 +321,58 @@ class OrderRecord extends FirestoreRecord {
       snapshotData['listAmakn'],
       AmaknCostmStruct.fromMap,
     );
-    _halh = snapshotData['halh'] as String?;
-    _iDorder = snapshotData['IDorder'] as String?;
+    _halh = castToType<String>(snapshotData['halh']);
+    _iDorder = castToType<String>(snapshotData['IDorder']);
     _norder = castToType<int>(snapshotData['norder']);
     _totalMndob = castToType<int>(snapshotData['total_mndob']);
     _totalVat = castToType<int>(snapshotData['total_vat']);
     _totalApp = castToType<int>(snapshotData['total_app']);
     _halhOrder = snapshotData['halh_order'] is Halh
         ? snapshotData['halh_order']
-        : deserializeEnum<Halh>(snapshotData['halh_order']);
+        : deserializeEnum<Halh>(castToType<String>(snapshotData['halh_order']));
     _schedule = snapshotData['Schedule'] as DateTime?;
-    _fullSchedule = snapshotData['fullSchedule'] as String?;
-    _imgProfileClent = snapshotData['imgProfileClent'] as String?;
-    _loceshStreng = snapshotData['loceshStreng'] as String?;
-    _allnow = snapshotData['ALLNOW'] as bool?;
-    _activeOrder = snapshotData['ActiveOrder'] as bool?;
+    _fullSchedule = castToType<String>(snapshotData['fullSchedule']);
+    _imgProfileClent = castToType<String>(snapshotData['imgProfileClent']);
+    _loceshStreng = castToType<String>(snapshotData['loceshStreng']);
+    _allnow = castToType<bool>(snapshotData['ALLNOW']);
+    _activeOrder = castToType<bool>(snapshotData['ActiveOrder']);
     _totalMndob2 = castToType<double>(snapshotData['total_mndob2']);
     _ksm = castToType<double>(snapshotData['ksm']);
-    _driverGuide = snapshotData['DriverGuide'] as bool?;
-    _reviewMndonsend = snapshotData['ReviewMndonsend'] as bool?;
+    _driverGuide = castToType<bool>(snapshotData['DriverGuide']);
+    _reviewMndonsend = castToType<bool>(snapshotData['ReviewMndonsend']);
     _retengUser = castToType<double>(snapshotData['RetengUser']);
-    _carmndob = snapshotData['carmndob'] as String?;
+    _carmndob = castToType<String>(snapshotData['carmndob']);
     _halhOrderMndob = snapshotData['halhOrderMndob'] is HalhOrder
         ? snapshotData['halhOrderMndob']
-        : deserializeEnum<HalhOrder>(snapshotData['halhOrderMndob']);
-    _revewSendClent = snapshotData['revewSendClent'] as bool?;
+        : deserializeEnum<HalhOrder>(
+            castToType<String>(snapshotData['halhOrderMndob']));
+    _revewSendClent = castToType<bool>(snapshotData['revewSendClent']);
     _srSAAH = castToType<double>(snapshotData['SrSAAH']);
     _paymentMethod = snapshotData['PaymentMethod'] is PaymentMethod
         ? snapshotData['PaymentMethod']
-        : deserializeEnum<PaymentMethod>(snapshotData['PaymentMethod']);
-    _ngeniusOrderId = (snapshotData['ngeniusOrderId'] ?? snapshotData['idMoyser'])
-        as String?;
-    _idMoyser = snapshotData['idMoyser'] as String?;
-    _notSestem = snapshotData['NotSestem'] as String?;
+        : deserializeEnum<PaymentMethod>(
+            castToType<String>(snapshotData['PaymentMethod']));
+    _ngeniusOrderId = castToType<String>(
+        snapshotData['ngeniusOrderId'] ?? snapshotData['idMoyser']);
+    _idMoyser = castToType<String>(snapshotData['idMoyser']);
+    _notSestem = castToType<String>(snapshotData['NotSestem']);
     _endTime = snapshotData['endTime'] as DateTime?;
     _start = snapshotData['START'] as DateTime?;
-    _mapuser = snapshotData['mapuser'] as LatLng?;
-    _modelCar = snapshotData['ModelCar'] as String?;
-    _nameCar = snapshotData['NameCar'] as String?;
+    _mapuser = _readLatLng(snapshotData['mapuser']);
+    _modelCar = castToType<String>(snapshotData['ModelCar']);
+    _nameCar = castToType<String>(snapshotData['NameCar']);
+  }
+
+  static LatLng? _readLatLng(dynamic value) {
+    if (value == null) return null;
+    if (value is LatLng) return value;
+    if (value is GeoPoint) return value.toLatLng();
+    if (value is Map) {
+      final lat = castToType<double>(value['latitude'] ?? value['lat']);
+      final lng = castToType<double>(value['longitude'] ?? value['lng']);
+      if (lat != null && lng != null) return LatLng(lat, lng);
+    }
+    return null;
   }
 
   static CollectionReference get collection =>
@@ -369,10 +384,13 @@ class OrderRecord extends FirestoreRecord {
   static Future<OrderRecord> getDocumentOnce(DocumentReference ref) =>
       ref.get().then((s) => OrderRecord.fromSnapshot(s));
 
-  static OrderRecord fromSnapshot(DocumentSnapshot snapshot) => OrderRecord._(
-        snapshot.reference,
-        mapFromFirestore(snapshot.data() as Map<String, dynamic>),
-      );
+  static OrderRecord fromSnapshot(DocumentSnapshot snapshot) {
+    final raw = snapshot.data();
+    final data = raw is Map<String, dynamic>
+        ? mapFromFirestore(Map<String, dynamic>.from(raw))
+        : <String, dynamic>{};
+    return OrderRecord._(snapshot.reference, data);
+  }
 
   static OrderRecord getDocumentFromData(
     Map<String, dynamic> data,

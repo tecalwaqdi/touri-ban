@@ -373,21 +373,44 @@ T? castToType<T>(dynamic value) {
   if (value == null) {
     return null;
   }
+  // Already the right runtime type (covers non-num generics too).
+  if (value is T) {
+    return value;
+  }
   switch (T) {
     case double:
-      // Doubles may be stored as ints in some cases.
-      return value.toDouble() as T;
+      if (value is num) return value.toDouble() as T;
+      if (value is String) {
+        final parsed = double.tryParse(value.trim());
+        if (parsed != null) return parsed as T;
+      }
+      break;
     case int:
-      // Likewise, ints may be stored as doubles. If this is the case
-      // (i.e. no decimal value), return the value as an int.
-      if (value is num && value.toInt() == value) {
-        return value.toInt() as T;
+      // Firestore often stores money/hours as doubles (e.g. 45.5, 300.0).
+      if (value is num) return value.round() as T;
+      if (value is String) {
+        final parsed = num.tryParse(value.trim());
+        if (parsed != null) return parsed.round() as T;
+      }
+      break;
+    case String:
+      return value.toString() as T;
+    case bool:
+      if (value is num) return (value != 0) as T;
+      if (value is String) {
+        final s = value.trim().toLowerCase();
+        if (s == 'true' || s == '1') return true as T;
+        if (s == 'false' || s == '0') return false as T;
       }
       break;
     default:
       break;
   }
-  return value as T;
+  try {
+    return value as T;
+  } catch (_) {
+    return null;
+  }
 }
 
 dynamic getJsonField(

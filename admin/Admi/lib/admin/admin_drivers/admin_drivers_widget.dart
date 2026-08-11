@@ -14,6 +14,7 @@ import '/index.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'admin_drivers_model.dart';
+import '/core/admin_user_facing_errors.dart';
 export 'admin_drivers_model.dart';
 
 /// قائمة المناديب بانتظار التفعيل (`actev_mndob=false`).
@@ -96,7 +97,7 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${appTr(context, 'adm_deactivate_failed')}: $e')),
+        SnackBar(content: Text('${appTr(context, 'adm_deactivate_failed')}: ${AdminUserFacingErrors.from(context, e)}')),
       );
     }
   }
@@ -174,9 +175,7 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
                                     Padding(
                             padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                             child: Text(
-                              '${uiTr(context, 'العدد')}: ${drivers.length}'
-                              '${drivers.length != allDrivers.length ? ' ${uiTr(context, 'من')} ${allDrivers.length}' : ''}'
-                              '${listState.hasMore ? '+' : ''}',
+                              adminListCountLabel(context, listState, visibleCount: drivers.length, pageFetched: allDrivers.length),
                               style: theme.labelLarge.override(
                                 fontFamily: theme.labelLargeFamily,
                                 color: theme.secondaryText,

@@ -42,6 +42,7 @@ class _PayMethWidgetState extends State<PayMethWidget> {
     final typography = DsTypography.of(context);
 
     return DsCard(
+      padding: DsSpacing.cardPadding,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -50,11 +51,12 @@ class _PayMethWidgetState extends State<PayMethWidget> {
             FFLocalizations.of(context).getText(
               'u0j8lddj' /* Payment Methods */,
             ),
-            style: typography.headlineSmall.copyWith(
+            style: typography.titleLarge.copyWith(
               color: colors.textPrimary,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: DsSpacing.sm),
+          const SizedBox(height: DsSpacing.md),
           DsCard(
             onTap: () async {
               FFAppState().payth = 'نقدي';
@@ -63,39 +65,48 @@ class _PayMethWidgetState extends State<PayMethWidget> {
             },
             padding: const EdgeInsets.symmetric(
               horizontal: DsSpacing.md,
-              vertical: DsSpacing.sm,
+              vertical: DsSpacing.sm + 2,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Row(
-                  children: [
-                    Icon(
-                      Icons.payments_outlined,
-                      color: colors.icon,
-                      size: DsIcons.lg,
-                    ),
-                    const SizedBox(width: DsSpacing.sm),
-                    Flexible(
-                      child: Text(
-                      FFLocalizations.of(context).getText(
-                        'shd52l15' /* Cash */,
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: colors.primarySoft,
+                          borderRadius: DsRadius.small,
+                        ),
+                        child: Icon(
+                          Icons.payments_outlined,
+                          color: colors.primary,
+                          size: DsIcons.md,
+                        ),
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: typography.bodyMedium.copyWith(
-                        color: colors.textPrimary,
+                      const SizedBox(width: DsSpacing.sm),
+                      Flexible(
+                        child: Text(
+                          FFLocalizations.of(context).getText(
+                            'shd52l15' /* Cash */,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: typography.bodyLarge.copyWith(
+                            color: colors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
                 ),
                 Icon(
-                  Icons.done_sharp,
-                  color: colors.icon,
-                  size: DsIcons.lg,
+                  Icons.check_circle_outline_rounded,
+                  color: colors.primary,
+                  size: DsIcons.md,
                 ),
               ],
             ),

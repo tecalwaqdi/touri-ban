@@ -1,0 +1,146 @@
+{
+  "mode": "apply",
+  "count": 10,
+  "landmarks": [
+    {
+      "id": "curated_abha_abu_khayal",
+      "cityId": "city_abha",
+      "regionId": "region_asir",
+      "names": {
+        "ar": "منتزه أبو خيال",
+        "en": "Abu Khayal Park",
+        "ru": "Парк Абу-Хаяль",
+        "ky": "Абу-Хаяль паркы"
+      },
+      "lat": 18.2000427,
+      "lng": 42.5009346,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/ABHA_20210717_170259.jpg/1280px-ABHA_20210717_170259.jpg"
+    },
+    {
+      "id": "curated_abha_art_street",
+      "cityId": "city_abha",
+      "regionId": "region_asir",
+      "names": {
+        "ar": "شارع الفن",
+        "en": "Art Street",
+        "ru": "Улица искусств",
+        "ky": "Искусство көчөсү"
+      },
+      "lat": 18.2145882,
+      "lng": 42.4924316,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/ABHA_20210718_190454.jpg/1280px-ABHA_20210718_190454.jpg"
+    },
+    {
+      "id": "curated_abha_fog_walkway",
+      "cityId": "city_abha",
+      "regionId": "region_asir",
+      "names": {
+        "ar": "ممشى الضباب",
+        "en": "Al-Dhabab Walkway (Fog Walkway)",
+        "ru": "Променад Ад-Дабаб (Туманный)",
+        "ky": "Ад-Дабаб сейилдөөсү (Тумандуу)"
+      },
+      "lat": 18.1968254,
+      "lng": 42.5075814,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Sarawat_Mountains%2C_Asir_Region%2C_Saudi_Arabia_%282%29.jpg/1280px-Sarawat_Mountains%2C_Asir_Region%2C_Saudi_Arabia_%282%29.jpg"
+    },
+    {
+      "id": "curated_abha_dam",
+      "cityId": "city_abha",
+      "regionId": "region_asir",
+      "names": {
+        "ar": "سد أبها",
+        "en": "Abha Dam",
+        "ru": "Плотина Абхи",
+        "ky": "Абха дамбасы"
+      },
+      "lat": 18.210525,
+      "lng": 42.48351389,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Abha_Dam_Lake.jpg/1280px-Abha_Dam_Lake.jpg"
+    },
+    {
+      "id": "curated_abha_high_city",
+      "cityId": "city_abha",
+      "regionId": "region_asir",
+      "names": {
+        "ar": "مدينة أبها العالية",
+        "en": "Abha High City (Al-Madinah Al-Aliyah)",
+        "ru": "Высокий город Абхи (Аль-Мадина аль-Алия)",
+        "ky": "Абха Жогорку шаары (Аль-Мадина аль-Алия)"
+      },
+      "lat": 18.2025,
+      "lng": 42.5022,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Abha%2C_Saudi_Arabia_%286702650739%29.jpg/1280px-Abha%2C_Saudi_Arabia_%286702650739%29.jpg"
+    },
+    {
+      "id": "curated_abha_green_mountain",
+      "cityId": "city_abha",
+      "regionId": "region_asir",
+      "names": {
+        "ar": "الجبل الأخضر",
+        "en": "Green Mountain (Jabal al-Akhdar)",
+        "ru": "Зелёная гора (Джабаль аль-Ахдар)",
+        "ky": "Жашыл тоо (Жабал аль-Ахдар)"
+      },
+      "lat": 18.20444,
+      "lng": 42.50611,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Green_Mountain_-_Abha%2C_Saudi_Arabia_%286702611457%29.jpg/1280px-Green_Mountain_-_Abha%2C_Saudi_Arabia_%286702611457%29.jpg"
+    },
+    {
+      "id": "curated_tabuk_castle",
+      "cityId": "city_tabuk",
+      "regionId": "region_tabuk",
+      "names": {
+        "ar": "قلعة تبوك",
+        "en": "Tabuk Castle",
+        "ru": "Крепость Табук",
+        "ky": "Табук чеби"
+      },
+      "lat": 28.38278,
+      "lng": 36.55667,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Tabuk_Fortress_2022.jpg/1280px-Tabuk_Fortress_2022.jpg"
+    },
+    {
+      "id": "curated_tabuk_tawbah_mosque",
+      "cityId": "city_tabuk",
+      "regionId": "region_tabuk",
+      "names": {
+        "ar": "مسجد التوبة",
+        "en": "Al-Tawbah Mosque (Mosque of Repentance)",
+        "ru": "Мечеть Ат-Тауба (Мечеть Покаяния)",
+        "ky": "Ат-Тауба мечити (Тообо мечити)"
+      },
+      "lat": 28.38393056,
+      "lng": 36.55810556,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Al_Tawbah_Mosque_Tabuk.JPG/1280px-Al_Tawbah_Mosque_Tabuk.JPG"
+    },
+    {
+      "id": "curated_tabuk_jabal_lawz",
+      "cityId": "city_tabuk",
+      "regionId": "region_tabuk",
+      "names": {
+        "ar": "جبال اللوز",
+        "en": "Jabal al-Lawz (Almond Mountains)",
+        "ru": "Джабаль аль-Лауз (Миндальные горы)",
+        "ky": "Жабал аль-Лауз (Бадам тоолору)"
+      },
+      "lat": 28.65404,
+      "lng": 35.304,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/%D8%A7%D9%84%D8%AB%D9%84%D9%88%D8%AC_%D8%AA%D8%BA%D8%B7%D9%8A_%D8%AC%D8%A8%D9%84_%D8%A7%D9%84%D9%84%D9%88%D8%B2_%D9%81%D9%8A_%D8%AA%D8%A8%D9%88%D9%83_2022.jpg/1280px-%D8%A7%D9%84%D8%AB%D9%84%D9%88%D8%AC_%D8%AA%D8%BA%D8%B7%D9%8A_%D8%AC%D8%A8%D9%84_%D8%A7%D9%84%D9%84%D9%88%D8%B2_%D9%81%D9%8A_%D8%AA%D8%A8%D9%88%D9%83_2022.jpg"
+    },
+    {
+      "id": "curated_tabuk_jabal_zaytah",
+      "cityId": "city_tabuk",
+      "regionId": "region_tabuk",
+      "names": {
+        "ar": "جبال الزيتة",
+        "en": "Jibal al-Zaytah (Zaytah Mountains)",
+        "ru": "Горы аз-Зайта",
+        "ky": "Аз-Зайта тоолору"
+      },
+      "lat": 28.8521171,
+      "lng": 35.4836179,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/9/9f/%D8%AC%D8%A8%D8%A7%D9%84_%D9%85%D9%86%D8%B7%D9%82%D8%A9_%D8%AD%D9%82%D9%84_%D8%A8%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9.jpg"
+    }
+  ]
+}

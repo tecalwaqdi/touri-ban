@@ -1,0 +1,246 @@
+{
+  "regions": [
+    {
+      "id": "region_sa_makkah",
+      "name": "مكة المكرمة",
+      "hadDoc": true,
+      "imgRestored": true
+    },
+    {
+      "id": "region_sa_riyadh",
+      "name": "الرياض",
+      "hadDoc": true,
+      "imgRestored": true
+    },
+    {
+      "id": "region_sa_jeddah",
+      "name": "جدة",
+      "hadDoc": true,
+      "imgRestored": false
+    },
+    {
+      "id": "region_sa_taif",
+      "name": "الطائف",
+      "hadDoc": true,
+      "imgRestored": false
+    },
+    {
+      "id": "region_sa_dammam",
+      "name": "الدمام",
+      "hadDoc": false,
+      "imgRestored": false
+    },
+    {
+      "id": "region_sa_khobar",
+      "name": "الخبر",
+      "hadDoc": false,
+      "imgRestored": false
+    },
+    {
+      "id": "region_sa_abha",
+      "name": "أبها",
+      "hadDoc": false,
+      "imgRestored": false
+    }
+  ],
+  "villages": [
+    {
+      "id": "city_sa_makkah",
+      "parent": "region_sa_makkah"
+    },
+    {
+      "id": "city_sa_riyadh",
+      "parent": "region_sa_riyadh"
+    },
+    {
+      "id": "city_sa_jeddah",
+      "parent": "region_sa_jeddah"
+    },
+    {
+      "id": "city_sa_taif",
+      "parent": "region_sa_taif"
+    },
+    {
+      "id": "city_sa_dammam",
+      "parent": "region_sa_dammam"
+    },
+    {
+      "id": "city_sa_khobar",
+      "parent": "region_sa_khobar"
+    },
+    {
+      "id": "city_sa_abha",
+      "parent": "region_sa_abha"
+    }
+  ],
+  "landmarks": [
+    {
+      "mkan": "curated_jeddah_albalad",
+      "from": "region_sa_makkah",
+      "to": "region_sa_jeddah",
+      "villageId": "city_sa_jeddah"
+    },
+    {
+      "mkan": "curated_jeddah_corniche",
+      "from": "region_sa_makkah",
+      "to": "region_sa_jeddah",
+      "villageId": "city_sa_jeddah"
+    },
+    {
+      "mkan": "curated_jeddah_fountain",
+      "from": "region_sa_makkah",
+      "to": "region_sa_jeddah",
+      "villageId": "city_sa_jeddah"
+    },
+    {
+      "mkan": "curated_jeddah_rahmah_mosque",
+      "from": "region_sa_makkah",
+      "to": "region_sa_jeddah",
+      "villageId": "city_sa_jeddah"
+    },
+    {
+      "mkan": "curated_jeddah_souq_alawi",
+      "from": "region_sa_makkah",
+      "to": "region_sa_jeddah",
+      "villageId": "city_sa_jeddah"
+    },
+    {
+      "mkan": "curated_jeddah_tayebat_museum",
+      "from": "region_sa_makkah",
+      "to": "region_sa_jeddah",
+      "villageId": "city_sa_jeddah"
+    },
+    {
+      "mkan": "curated_jeddah_yacht_club",
+      "from": "region_sa_makkah",
+      "to": "region_sa_jeddah",
+      "villageId": "city_sa_jeddah"
+    },
+    {
+      "mkan": "curated_taif_al_hada",
+      "from": "region_sa_makkah",
+      "to": "region_sa_taif",
+      "villageId": "city_sa_taif"
+    },
+    {
+      "mkan": "curated_taif_ash_shafa",
+      "from": "region_sa_makkah",
+      "to": "region_sa_taif",
+      "villageId": "city_sa_taif"
+    },
+    {
+      "mkan": "curated_taif_hada_teleferic",
+      "from": "region_sa_makkah",
+      "to": "region_sa_taif",
+      "villageId": "city_sa_taif"
+    },
+    {
+      "mkan": "curated_taif_jabal_daka",
+      "from": "region_sa_makkah",
+      "to": "region_sa_taif",
+      "villageId": "city_sa_taif"
+    },
+    {
+      "mkan": "curated_dammam_coral_island",
+      "from": "region_sa_eastern",
+      "to": "region_sa_dammam",
+      "villageId": "city_sa_dammam"
+    },
+    {
+      "mkan": "curated_dammam_corniche",
+      "from": "region_sa_eastern",
+      "to": "region_sa_dammam",
+      "villageId": "city_sa_dammam"
+    },
+    {
+      "mkan": "curated_dammam_heritage_village",
+      "from": "region_sa_eastern",
+      "to": "region_sa_dammam",
+      "villageId": "city_sa_dammam"
+    },
+    {
+      "mkan": "curated_dammam_seafront",
+      "from": "region_sa_eastern",
+      "to": "region_sa_dammam",
+      "villageId": "city_sa_dammam"
+    },
+    {
+      "mkan": "curated_khobar_corniche",
+      "from": "region_sa_eastern",
+      "to": "region_sa_khobar",
+      "villageId": "city_sa_khobar"
+    },
+    {
+      "mkan": "curated_khobar_half_moon_bay",
+      "from": "region_sa_eastern",
+      "to": "region_sa_khobar",
+      "villageId": "city_sa_khobar"
+    },
+    {
+      "mkan": "curated_khobar_king_fahd_causeway",
+      "from": "region_sa_eastern",
+      "to": "region_sa_khobar",
+      "villageId": "city_sa_khobar"
+    },
+    {
+      "mkan": "curated_khobar_water_tower",
+      "from": "region_sa_eastern",
+      "to": "region_sa_khobar",
+      "villageId": "city_sa_khobar"
+    },
+    {
+      "mkan": "curated_abha_abu_khayal",
+      "from": "region_sa_asir",
+      "to": "region_sa_abha",
+      "villageId": "city_sa_abha"
+    },
+    {
+      "mkan": "curated_abha_art_street",
+      "from": "region_sa_asir",
+      "to": "region_sa_abha",
+      "villageId": "city_sa_abha"
+    },
+    {
+      "mkan": "curated_abha_dam",
+      "from": "region_sa_asir",
+      "to": "region_sa_abha",
+      "villageId": "city_sa_abha"
+    },
+    {
+      "mkan": "curated_abha_fog_walkway",
+      "from": "region_sa_asir",
+      "to": "region_sa_abha",
+      "villageId": "city_sa_abha"
+    },
+    {
+      "mkan": "curated_abha_green_mountain",
+      "from": "region_sa_asir",
+      "to": "region_sa_abha",
+      "villageId": "city_sa_abha"
+    },
+    {
+      "mkan": "curated_abha_high_city",
+      "from": "region_sa_asir",
+      "to": "region_sa_abha",
+      "villageId": "city_sa_abha"
+    }
+  ],
+  "hidden": [
+    "region_sa_eastern",
+    "region_sa_asir",
+    "region_eastern",
+    "region_asir",
+    "region_makkah",
+    "region_riyadh"
+  ],
+  "duplicates": [
+    "villages/city_makkah → city_sa_makkah",
+    "villages/city_riyadh → city_sa_riyadh",
+    "villages/city_jeddah → city_sa_jeddah",
+    "villages/city_taif → city_sa_taif",
+    "villages/city_dammam → city_sa_dammam",
+    "villages/city_alkhobar → city_sa_khobar",
+    "villages/city_khobar → city_sa_khobar",
+    "villages/city_abha → city_sa_abha"
+  ]
+}

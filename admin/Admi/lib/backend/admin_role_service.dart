@@ -144,6 +144,7 @@ class AdminRoleService {
   static const _financeRoutes = {
     'AdminProfits',
     'AdminFinanceHub',
+    'AdminDriverWallets',
     'AdminReportsHub',
   };
 

@@ -1835,8 +1835,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ux_change => 'Change';
 
   @override
-  String get ux_card_payment_network =>
-      'Secure card payment via Network International';
+  String get ux_card_payment_network => 'Pay by card';
 
   @override
   String checkout_extra_hour_discount(
@@ -2208,8 +2207,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get card_invalid_data => 'Card details are invalid';
 
   @override
-  String get checkout_paying =>
-      'Processing payment via Network International...';
+  String get checkout_paying => 'Processing card payment...';
 
   @override
   String get map_trip_destination => 'Trip destination';

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -352,21 +353,42 @@ T? castToType<T>(dynamic value) {
   if (value == null) {
     return null;
   }
+  if (value is T) {
+    return value;
+  }
   switch (T) {
     case double:
-      // Doubles may be stored as ints in some cases.
-      return value.toDouble() as T;
+      if (value is num) return value.toDouble() as T;
+      if (value is String) {
+        final parsed = double.tryParse(value.trim());
+        if (parsed != null) return parsed as T;
+      }
+      break;
     case int:
-      // Likewise, ints may be stored as doubles. If this is the case
-      // (i.e. no decimal value), return the value as an int.
-      if (value is num && value.toInt() == value) {
-        return value.toInt() as T;
+      if (value is num) return value.round() as T;
+      if (value is String) {
+        final parsed = num.tryParse(value.trim());
+        if (parsed != null) return parsed.round() as T;
+      }
+      break;
+    case String:
+      return value.toString() as T;
+    case bool:
+      if (value is num) return (value != 0) as T;
+      if (value is String) {
+        final s = value.trim().toLowerCase();
+        if (s == 'true' || s == '1') return true as T;
+        if (s == 'false' || s == '0') return false as T;
       }
       break;
     default:
       break;
   }
-  return value as T;
+  try {
+    return value as T;
+  } catch (_) {
+    return null;
+  }
 }
 
 dynamic getJsonField(
@@ -508,6 +530,17 @@ void setAppLanguage(BuildContext context, String language) async {
   await context.setLocale(locale);
   await FFLocalizations.storeLocale(language);
   MyApp.of(context).setLocale(language);
+  final user = FirebaseAuth.instance.currentUser;
+  if (user != null && !user.isAnonymous) {
+    try {
+      await FirebaseFirestore.instance.doc('user/${user.uid}').set(
+        {'preferred_locale': language.replaceAll('_', '-')},
+        SetOptions(merge: true),
+      );
+    } catch (_) {
+      // Best-effort — offline / rules must not block language switching.
+    }
+  }
 }
 
 void setDarkModeSetting(BuildContext context, ThemeMode themeMode) =>

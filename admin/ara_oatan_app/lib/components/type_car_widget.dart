@@ -68,11 +68,11 @@ class _TypeCarWidgetState extends State<TypeCarWidget> {
               itemBuilder: (context, listViewIndex) {
                 final listViewTypeCarRecord = cars[listViewIndex];
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: DsSpacing.xs),
+                  padding: const EdgeInsets.only(bottom: DsSpacing.sm),
                   child: DsCard(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: DsSpacing.sm,
-                      vertical: DsSpacing.xs,
+                      horizontal: DsSpacing.md,
+                      vertical: DsSpacing.sm,
                     ),
                     child: Row(
                       children: [
@@ -80,8 +80,8 @@ class _TypeCarWidgetState extends State<TypeCarWidget> {
                           borderRadius: DsRadius.small,
                           child: TouryNetworkImage(
                             url: listViewTypeCarRecord.img,
-                            width: 64.0,
-                            height: 48.0,
+                            width: 72.0,
+                            height: 54.0,
                             fit: BoxFit.cover,
                             fallbackAsset: 'assets/images/car.png',
                             useBrandedFallback: true,
@@ -99,10 +99,12 @@ class _TypeCarWidgetState extends State<TypeCarWidget> {
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: typography.titleLarge.copyWith(
+                                style: typography.titleMedium.copyWith(
                                   color: colors.textPrimary,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
+                              const SizedBox(height: DsSpacing.xxs),
                               Text(
                                 FFLocalizations.of(context).getText(
                                   'fkqe7gw6' /* تحديد */,
@@ -110,7 +112,8 @@ class _TypeCarWidgetState extends State<TypeCarWidget> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: typography.labelMedium.copyWith(
-                                  color: colors.textSecondary,
+                                  color: colors.primary,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -119,7 +122,7 @@ class _TypeCarWidgetState extends State<TypeCarWidget> {
                         Icon(
                           Icons.arrow_forward_ios_rounded,
                           color: colors.iconMuted,
-                          size: DsIcons.lg,
+                          size: DsIcons.sm,
                         ),
                       ],
                     ),

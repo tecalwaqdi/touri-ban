@@ -1,7 +1,6 @@
 /// Shared admin-panel strings (all supported app languages).
 /// Merged into [FFLocalizations.getText] lookup.
 const kAdminTranslations = <String, Map<String, String>>{
-  // App
   'adm_app_title': {
     'en': 'Control Panel',
     'ar': 'لوحة التحكم',
@@ -12,6 +11,72 @@ const kAdminTranslations = <String, Map<String, String>>{
     'ky': 'Башкаруу панели',
     'az': 'İdarəetmə paneli',
     'ka': 'მართვის პანელი',
+  },
+  'adm_splash_title': {
+    'en': 'Touri Taxi',
+    'ar': 'توري تاكسي',
+    'zh_Hans': 'Touri Taxi',
+    'tr': 'Touri Taxi',
+    'ur': 'Touri Taxi',
+    'ru': 'Touri Taxi',
+    'ky': 'Touri Taxi',
+    'az': 'Touri Taxi',
+    'ka': 'Touri Taxi',
+  },
+  'adm_splash_tagline': {
+    'en': 'The First Global Saudi Tourism App',
+    'ar': 'أول تطبيق سعودي سياحي عالمي',
+    'zh_Hans': '首个全球沙特旅游应用',
+    'tr': 'İlk Küresel Suudi Turizm Uygulaması',
+    'ur': 'پہلی عالمی سعودی سیاحتی ایپ',
+    'ru': 'Первое глобальное саудовское туристическое приложение',
+    'ky': 'Бirinchi global saudiya turizm kolduk',
+    'az': 'İlk qlobal Səud turizm tətbiqi',
+    'ka': 'პირველი გლობალური საუდის ტურისტული აპი',
+  },
+  'adm_theme_title': {
+    'en': 'Appearance',
+    'ar': 'المظهر',
+    'zh_Hans': '外观',
+    'tr': 'Görünüm',
+    'ur': 'ظاہری شکل',
+    'ru': 'Оформление',
+    'ky': 'Көрүнүш',
+    'az': 'Görünüş',
+    'ka': 'გარეგნობა',
+  },
+  'adm_theme_subtitle': {
+    'en': 'Switch between light and dark mode for the control panel.',
+    'ar': 'بدّل بين الوضع العادي والليلي للوحة التحكم.',
+    'zh_Hans': '在控制面板的浅色与深色模式之间切换。',
+    'tr': 'Kontrol paneli için açık ve koyu mod arasında geçiş yapın.',
+    'ur': 'کنٹرول پینل کے لیے لائٹ اور ڈارک موڈ تبدیل کریں۔',
+    'ru': 'Переключайте светлый и тёмный режим панели управления.',
+    'ky': 'Башкаруу панели үчүн жарык жана караңгы режимди которуңуз.',
+    'az': 'İdarəetmə paneli üçün açıq və tünd rejim arasında keçid edin.',
+    'ka': 'გადართეთ მართვის პანელის ნათელი და მუქი რეჟიმი.',
+  },
+  'adm_theme_light': {
+    'en': 'Light mode',
+    'ar': 'الوضع العادي',
+    'zh_Hans': '浅色模式',
+    'tr': 'Açık mod',
+    'ur': 'لائٹ موڈ',
+    'ru': 'Светлый режим',
+    'ky': 'Жарык режим',
+    'az': 'Açıq rejim',
+    'ka': 'ნათელი რეჟიმი',
+  },
+  'adm_theme_dark': {
+    'en': 'Dark mode',
+    'ar': 'الوضع الليلي',
+    'zh_Hans': '深色模式',
+    'tr': 'Koyu mod',
+    'ur': 'ڈارک موڈ',
+    'ru': 'Тёмный режим',
+    'ky': 'Караңгы режим',
+    'az': 'Tünd rejim',
+    'ka': 'მუქი რეჟიმი',
   },
 
   // Actions
@@ -687,7 +752,8 @@ const kAdminTranslations = <String, Map<String, String>>{
     'ru': 'Не удалось загрузить данные. Проверьте подключение и повторите.',
     'ky': 'Маалымат жүктөлгөн жок. Байланышты текшерип, кайра аракет кылыңыз.',
     'az': 'Məlumat yüklənmədi. Bağlantını yoxlayın və yenidən cəhd edin.',
-    'ka': 'მონაცემების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ თავიდან.',
+    'ka':
+        'მონაცემების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ თავიდან.',
   },
   'adm_load_more_failed': {
     'en': 'Could not load more records',
@@ -797,9 +863,12 @@ const kAdminTranslations = <String, Map<String, String>>{
     'tr': 'Acente ülkesi sabit — bölge seçin, ardından şehir bilgilerini girin',
     'ur': 'ایجنٹ کا ملک مقفل ہے — علاقہ منتخب کریں پھر شہر کی تفصیلات درج کریں',
     'ru': 'Страна агента фиксирована — выберите регион и введите данные города',
-    'ky': 'Агенттин өлкөсү бекитилген — регионду тандап, шаар маалыматтарын киргизиңиз',
-    'az': 'Agent ölkəsi sabitdir — region seçin, sonra şəhər məlumatlarını daxil edin',
-    'ka': 'აგენტის ქვეყანა ფიქსირებულია — აირჩიეთ რეგიონი, შემდეგ შეიყვანეთ ქალაქის მონაცემები',
+    'ky':
+        'Агенттин өлкөсү бекитилген — регионду тандап, шаар маалыматтарын киргизиңиз',
+    'az':
+        'Agent ölkəsi sabitdir — region seçin, sonra şəhər məlumatlarını daxil edin',
+    'ka':
+        'აგენტის ქვეყანა ფიქსირებულია — აირჩიეთ რეგიონი, შემდეგ შეიყვანეთ ქალაქის მონაცემები',
   },
   'adm_add_city_subtitle': {
     'en': 'Select country and region, then enter city details',
@@ -1467,6 +1536,311 @@ const kAdminTranslations = <String, Map<String, String>>{
     'az': 'Şifrə sıfırlama keçidi e-poçtunuza göndərildi',
     'ka': 'პაროლის აღდგენის ბმული გაიგზავნა ელფოსტაზე',
   },
+  'adm_login_profile_failed': {
+    'en': 'Could not load account data. Check your connection and try again.',
+    'ar': 'تعذر تحميل بيانات الحساب. تحقق من الاتصال وحاول مرة أخرى.',
+    'zh_Hans': '无法加载账户数据。请检查网络后重试。',
+    'tr':
+        'Hesap verileri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.',
+    'ur': 'اکاؤنٹ ڈیٹا لوڈ نہیں ہو سکا۔ کنکشن چیک کریں اور دوبارہ کوشش کریں۔',
+    'ru':
+        'Не удалось загрузить данные аккаунта. Проверьте соединение и повторите попытку.',
+    'ky':
+        'Аккаунт маалыматын жүктөө мүмкүн болбоду. Байланышты текшерип, кайра аракет кылыңыз.',
+    'az':
+        'Hesab məlumatları yüklənmədi. Bağlantını yoxlayıb yenidən cəhd edin.',
+    'ka':
+        'ანგარიშის მონაცემების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.',
+  },
+  'adm_login_unauthorized': {
+    'en':
+        'This account is not authorized for the admin panel. The account must be activated with one of these roles: Super Admin, Country Agent, Partner, or Transport Company Manager.',
+    'ar':
+        'هذا الحساب لا يملك صلاحية الدخول للوحة الإدارة. يجب أن يكون الحساب مفعّلاً بأحد الأدوار: سوبر أدمن، وكيل دولة، شريك، أو مدير شركة نقل.',
+    'zh_Hans': '此账户无权访问管理面板。账户须激活为以下角色之一：超级管理员、国家代理、合作伙伴或运输公司经理。',
+    'tr':
+        'Bu hesabın yönetici paneline erişim yetkisi yok. Hesap şu rollerden biriyle etkinleştirilmelidir: Süper Yönetici, Ülke Temsilcisi, Ortak veya Ulaşım Şirketi Yöneticisi.',
+    'ur':
+        'اس اکاؤنٹ کو ایڈمن پینل کی اجازت نہیں۔ اکاؤنٹ ان میں سے کسی ایک رول کے ساتھ فعال ہونا چاہیے: سپر ایڈمن، کنٹری ایجنٹ، پارٹنر، یا ٹرانسپورٹ کمپنی مینیجر۔',
+    'ru':
+        'У этой учётной записи нет доступа к панели администратора. Аккаунт должен быть активирован с одной из ролей: супер-админ, агент страны, партнёр или менеджер транспортной компании.',
+    'ky':
+        'Бул аккаунттун админ панелине кирүүгө укугу жок. Аккаунт супер-админ, өлкө агенти, өнөктөш же транспорт компаниясынын менеджери ролу менен активдештирилиши керек.',
+    'az':
+        'Bu hesabın admin panelinə girişi yoxdur. Hesab bu rollardan biri ilə aktivləşdirilməlidir: Super Admin, Ölkə Agenti, Tərəfdaş və ya Nəqliyyat Şirkəti Meneceri.',
+    'ka':
+        'ამ ანგარიშს ადმინ პანელზე წვდომა არ აქვს. ანგარიში უნდა იყოს გააქტიურებული ერთ-ერთი როლით: სუპერ ადმინი, ქვეყნის აგენტი, პარტნიორი ან სატრანსპორტო კომპანიის მენეჯერი.',
+  },
+  'adm_login_nav_failed': {
+    'en': 'Could not open the control panel. Please try again.',
+    'ar': 'تعذر فتح لوحة التحكم. حاول مرة أخرى.',
+    'zh_Hans': '无法打开控制面板。请重试。',
+    'tr': 'Kontrol paneli açılamadı. Lütfen tekrar deneyin.',
+    'ur': 'کنٹرول پینل نہیں کھل سکا۔ دوبارہ کوشش کریں۔',
+    'ru': 'Не удалось открыть панель управления. Попробуйте ещё раз.',
+    'ky': 'Башкаруу панелин ачуу мүмкүн болбоду. Кайра аракет кылыңыз.',
+    'az': 'İdarəetmə paneli açıla bilmədi. Yenidən cəhd edin.',
+    'ka': 'მართვის პანელის გახსნა ვერ მოხერხდა. სცადეთ ხელახლა.',
+  },
+  'adm_unauthorized_title': {
+    'en': 'Unauthorized',
+    'ar': 'غير مصرّح',
+    'zh_Hans': '未授权',
+    'tr': 'Yetkisiz',
+    'ur': 'غیر مجاز',
+    'ru': 'Нет доступа',
+    'ky': 'Уруксат жок',
+    'az': 'İcazəsiz',
+    'ka': 'არაავტორიზებული',
+  },
+  'adm_login_user_not_found': {
+    'en': 'No account found with this email.',
+    'ar': 'لا يوجد حساب بهذا البريد الإلكتروني.',
+    'zh_Hans': '未找到使用此邮箱的账户。',
+    'tr': 'Bu e-posta ile kayıtlı hesap bulunamadı.',
+    'ur': 'اس ای میل سے کوئی اکاؤنٹ نہیں ملا۔',
+    'ru': 'Аккаунт с этой почтой не найден.',
+    'ky': 'Бул почта менен аккаунт табылган жок.',
+    'az': 'Bu e-poçt ilə hesab tapılmadı.',
+    'ka': 'ამ ელფოსტით ანგარიში ვერ მოიძებნა.',
+  },
+  'adm_login_wrong_password': {
+    'en': 'Incorrect email or password.',
+    'ar': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+    'zh_Hans': '邮箱或密码不正确。',
+    'tr': 'E-posta veya şifre hatalı.',
+    'ur': 'ای میل یا پاس ورڈ غلط ہے۔',
+    'ru': 'Неверный email или пароль.',
+    'ky': 'Электрондук почта же сырсөз туура эмес.',
+    'az': 'E-poçt və ya şifrə yanlışdır.',
+    'ka': 'ელფოსტა ან პაროლი არასწორია.',
+  },
+  'adm_login_invalid_email': {
+    'en': 'Invalid email address.',
+    'ar': 'البريد الإلكتروني غير صالح.',
+    'zh_Hans': '邮箱地址无效。',
+    'tr': 'Geçersiz e-posta adresi.',
+    'ur': 'غلط ای میل پتہ۔',
+    'ru': 'Некорректный адрес электронной почты.',
+    'ky': 'Электрондук почта дареги жараксыз.',
+    'az': 'Yanlış e-poçt ünvanı.',
+    'ka': 'არასწორი ელფოსტის მისამართი.',
+  },
+  'adm_login_user_disabled': {
+    'en': 'This account has been disabled.',
+    'ar': 'تم تعطيل هذا الحساب.',
+    'zh_Hans': '此账户已被禁用。',
+    'tr': 'Bu hesap devre dışı bırakıldı.',
+    'ur': 'یہ اکاؤنٹ غیر فعال کر دیا گیا ہے۔',
+    'ru': 'Этот аккаунт отключён.',
+    'ky': 'Бул аккаунт өчүрүлгөн.',
+    'az': 'Bu hesab deaktiv edilib.',
+    'ka': 'ეს ანგარიში გამორთულია.',
+  },
+  'adm_login_too_many_requests': {
+    'en': 'Too many attempts. Please try again later.',
+    'ar': 'محاولات كثيرة جداً. حاول لاحقاً.',
+    'zh_Hans': '尝试次数过多。请稍后再试。',
+    'tr': 'Çok fazla deneme. Lütfen daha sonra tekrar deneyin.',
+    'ur': 'بہت زیادہ کوششیں۔ بعد میں دوبارہ کوشش کریں۔',
+    'ru': 'Слишком много попыток. Попробуйте позже.',
+    'ky': 'Өтө көп аракет. Кийинчерээк кайра аракет кылыңыз.',
+    'az': 'Həddindən artıq cəhd. Daha sonra yenidən cəhd edin.',
+    'ka': 'ძალიან ბევრი მცდელობა. მოგვიანებით სცადეთ.',
+  },
+  'adm_login_email_in_use': {
+    'en': 'This email is already in use.',
+    'ar': 'هذا البريد الإلكتروني مستخدم مسبقاً.',
+    'zh_Hans': '此邮箱已被使用。',
+    'tr': 'Bu e-posta zaten kullanılıyor.',
+    'ur': 'یہ ای میل پہلے سے استعمال میں ہے۔',
+    'ru': 'Этот email уже используется.',
+    'ky': 'Бул электрондук почта мурунтан колдонулууда.',
+    'az': 'Bu e-poçt artıq istifadə olunur.',
+    'ka': 'ეს ელფოსტა უკვე გამოყენებულია.',
+  },
+  'adm_login_weak_password': {
+    'en': 'Password is too weak.',
+    'ar': 'كلمة المرور ضعيفة جداً.',
+    'zh_Hans': '密码太弱。',
+    'tr': 'Şifre çok zayıf.',
+    'ur': 'پاس ورڈ بہت کمزور ہے۔',
+    'ru': 'Слишком слабый пароль.',
+    'ky': 'Сырсөз өтө алсыз.',
+    'az': 'Şifrə çox zəifdir.',
+    'ka': 'პაროლი ძალიან სუსტია.',
+  },
+
+  // Generic user-facing errors
+  'adm_err_permission': {
+    'en': 'Permission denied.',
+    'ar': 'ليس لديك صلاحية.',
+    'zh_Hans': '没有权限。',
+    'tr': 'İzin reddedildi.',
+    'ur': 'اجازت نہیں۔',
+    'ru': 'Нет доступа.',
+    'ky': 'Уруксат жок.',
+    'az': 'İcazə rədd edildi.',
+    'ka': 'წვდომა აკრძალულია.',
+  },
+  'adm_err_not_found': {
+    'en': 'Not found.',
+    'ar': 'غير موجود.',
+    'zh_Hans': '未找到。',
+    'tr': 'Bulunamadı.',
+    'ur': 'نہیں ملا۔',
+    'ru': 'Не найдено.',
+    'ky': 'Табылган жок.',
+    'az': 'Tapılmadı.',
+    'ka': 'ვერ მოიძებნა.',
+  },
+  'adm_err_network': {
+    'en': 'Network error. Check your connection.',
+    'ar': 'خطأ في الشبكة. تحقق من الاتصال.',
+    'zh_Hans': '网络错误。请检查连接。',
+    'tr': 'Ağ hatası. Bağlantınızı kontrol edin.',
+    'ur': 'نیٹ ورک خرابی۔ کنکشن چیک کریں۔',
+    'ru': 'Ошибка сети. Проверьте соединение.',
+    'ky': 'Тармак катасы. Байланышты текшериңиз.',
+    'az': 'Şəbəkə xətası. Bağlantınızı yoxlayın.',
+    'ka': 'ქსელის შეცდომა. შეამოწმეთ კავშირი.',
+  },
+  'adm_err_unavailable': {
+    'en': 'Service temporarily unavailable.',
+    'ar': 'الخدمة غير متاحة مؤقتاً.',
+    'zh_Hans': '服务暂时不可用。',
+    'tr': 'Hizmet geçici olarak kullanılamıyor.',
+    'ur': 'سروس عارضی طور پر دستیاب نہیں۔',
+    'ru': 'Сервис временно недоступен.',
+    'ky': 'Кызмат убактылуу жеткиликсиз.',
+    'az': 'Xidmət müvəqqəti əlçatan deyil.',
+    'ka': 'სერვისი დროებით მიუწვდომელია.',
+  },
+  'adm_err_generic': {
+    'en': 'Something went wrong. Please try again.',
+    'ar': 'حدث خطأ. حاول مرة أخرى.',
+    'zh_Hans': '出了点问题。请重试。',
+    'tr': 'Bir şeyler ters gitti. Lütfen tekrar deneyin.',
+    'ur': 'کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔',
+    'ru': 'Что-то пошло не так. Попробуйте ещё раз.',
+    'ky': 'Бир нерсе туура эмес болду. Кайра аракет кылыңыз.',
+    'az': 'Bir şey səhv getdi. Yenidən cəhd edin.',
+    'ka': 'რაღაც შეცდომა მოხდა. სცადეთ ხელახლა.',
+  },
+  'adm_err_already_exists': {
+    'en': 'This record already exists.',
+    'ar': 'هذا السجل موجود مسبقاً.',
+    'zh_Hans': '该记录已存在。',
+    'tr': 'Bu kayıt zaten mevcut.',
+    'ur': 'یہ ریکارڈ پہلے سے موجود ہے۔',
+    'ru': 'Такая запись уже существует.',
+    'ky': 'Мындай жазуу мурунтан бар.',
+    'az': 'Bu qeyd artıq mövcuddur.',
+    'ka': 'ეს ჩანაწერი უკვე არსებობს.',
+  },
+  'adm_err_invalid_argument': {
+    'en': 'Invalid data. Please check the form.',
+    'ar': 'بيانات غير صالحة. تحقق من النموذج.',
+    'zh_Hans': '数据无效。请检查表单。',
+    'tr': 'Geçersiz veri. Lütfen formu kontrol edin.',
+    'ur': 'غلط ڈیٹا۔ فارم چیک کریں۔',
+    'ru': 'Некорректные данные. Проверьте форму.',
+    'ky': 'Жараксыз маалымат. Форманы текшериңиз.',
+    'az': 'Yanlış məlumat. Formanı yoxlayın.',
+    'ka': 'არასწორი მონაცემები. შეამოწმეთ ფორმა.',
+  },
+  'adm_err_unauthenticated': {
+    'en': 'Please sign in before uploading.',
+    'ar': 'يجب تسجيل الدخول قبل رفع الصورة.',
+    'zh_Hans': '请先登录再上传。',
+    'tr': 'Yüklemeden önce giriş yapın.',
+    'ur': 'اپ لوڈ سے پہلے سائن ان کریں۔',
+    'ru': 'Войдите перед загрузкой.',
+    'ky': 'Жүктөөдөн мурун кириңиз.',
+    'az': 'Yükləməzdən əvvəl daxil olun.',
+    'ka': 'ატვირთვამდე შედით სისტემაში.',
+  },
+  'adm_err_canceled': {
+    'en': 'Upload canceled.',
+    'ar': 'تم إلغاء الرفع.',
+    'zh_Hans': '上传已取消。',
+    'tr': 'Yükleme iptal edildi.',
+    'ur': 'اپ لوڈ منسوخ ہو گیا۔',
+    'ru': 'Загрузка отменена.',
+    'ky': 'Жүктөө жокко чыгарылды.',
+    'az': 'Yükləmə ləğv edildi.',
+    'ka': 'ატვირთვა გაუქმდა.',
+  },
+  'adm_err_empty_file': {
+    'en': 'Could not read the image. Try another file.',
+    'ar': 'لم يتم قراءة الصورة من المعرض. جرّب صورة أخرى.',
+    'zh_Hans': '无法读取图片，请换一张。',
+    'tr': 'Görsel okunamadı. Başka bir dosya deneyin.',
+    'ur': 'تصویر نہیں پڑھی جا سکی۔ دوسری فائل آزمائیں۔',
+    'ru': 'Не удалось прочитать изображение. Попробуйте другой файл.',
+    'ky': 'Сүрөт окулган жок. Башка файлды байкап көрүңүз.',
+    'az': 'Şəkil oxuna bilmədi. Başqa fayl sınayın.',
+    'ka': 'სურათის წაკითხვა ვერ მოხერხდა. სცადეთ სხვა ფაილი.',
+  },
+  'adm_err_storage_quota': {
+    'en':
+        'Firebase Storage quota for this project is exceeded. Free this space in Firebase Console → Storage, or enable the Blaze plan. This is a project limit, not an app bug.',
+    'ar':
+        'تم تجاوز حصة Firebase Storage لهذا المشروع. حرّر مساحة من Console → Storage أو فعّل خطة Blaze. هذا حد على المشروع وليس خطأ في التطبيق.',
+    'zh_Hans':
+        '此项目的 Firebase Storage 配额已用尽。请在控制台清理或启用 Blaze 方案。这是项目限制，不是应用错误。',
+    'tr':
+        'Bu projenin Firebase Storage kotası aşıldı. Konsolda alan açın veya Blaze planını etkinleştirin. Bu bir uygulama hatası değil.',
+    'ur':
+        'اس پروجیکٹ کی Firebase Storage کوٹہ ختم ہو چکی ہے۔ Console سے جگہ خالی کریں یا Blaze آن کریں۔ یہ ایپ کا بگ نہیں۔',
+    'ru':
+        'Исчерпана квота Firebase Storage для проекта. Освободите место в Console или включите Blaze. Это лимит проекта, не ошибка приложения.',
+    'ky':
+        'Бул долбоордун Firebase Storage квотасы түгөндү. Console\'дон орун бошотуңуз же Blaze күйгүзүңүз. Бул колдонмо катасы эмес.',
+    'az':
+        'Bu layihənin Firebase Storage kvotası bitib. Console-da yer boşaldın və ya Blaze aktiv edin. Bu tətbiq xətası deyil.',
+    'ka':
+        'ამ პროექტის Firebase Storage კვოტა ამოიწურა. გაასუფთავეთ Console-ში ან ჩართეთ Blaze. ეს აპის შეცდომა არ არის.',
+  },
+  'adm_err_storage_billing': {
+    'en':
+        'Firebase Storage billing is not active. Enable Blaze (pay as you go) for this Firebase project, then try again.',
+    'ar':
+        'فوترة Firebase Storage غير مفعّلة. فعّل خطة Blaze لهذا المشروع ثم أعد المحاولة.',
+    'zh_Hans': '未启用 Firebase Storage 计费。请为此项目启用 Blaze，然后重试。',
+    'tr':
+        'Firebase Storage faturalandırması aktif değil. Blaze planını etkinleştirip tekrar deneyin.',
+    'ur':
+        'Firebase Storage بلنگ فعال نہیں۔ Blaze آن کر کے دوبارہ کوشش کریں۔',
+    'ru':
+        'Биллинг Firebase Storage не активен. Включите план Blaze и повторите попытку.',
+    'ky':
+        'Firebase Storage эсептөөсү өчүк. Blaze күйгүзүп кайра аракет кылыңыз.',
+    'az':
+        'Firebase Storage ödənişi aktiv deyil. Blaze-i aktiv edib yenidən cəhd edin.',
+    'ka':
+        'Firebase Storage ბილინგი არაა ჩართული. ჩართეთ Blaze და სცადეთ თავიდან.',
+  },
+  'adm_storage_fallback_saved': {
+    'en':
+        'Photo saved to your account (offline fallback). Cloud Storage quota/billing is blocking uploads — fix it in Firebase Console to use Storage URLs.',
+    'ar':
+        'تم حفظ الصورة في حسابك (وضع احتياطي). حصة/فوترة Firebase Storage تمنع الرفع السحابي — عالجها من Console لاستخدام روابط Storage.',
+    'zh_Hans':
+        '照片已保存到账户（备用方式）。云存储配额/计费阻止上传 — 请在控制台修复以使用 Storage 链接。',
+    'tr':
+        'Fotoğraf hesabınıza kaydedildi (yedek mod). Bulut kotası/fatura yüklemeyi engelliyor — Storage URL için Console’dan düzeltin.',
+    'ur':
+        'تصویر اکاؤنٹ میں محفوظ ہو گئی (fallback)۔ کلاؤڈ کوٹہ/بلنگ اپلوڈ روک رہی ہے — Console سے درست کریں۔',
+    'ru':
+        'Фото сохранено в аккаунте (резервный режим). Квота/биллинг Storage блокирует загрузку — исправьте в Console.',
+    'ky':
+        'Сүрөт аккаунтка сакталды (запас режим). Storage квотасы/эсептөө жүктөөнү бөгөттөп жатат — Console\'дон оңдоңуз.',
+    'az':
+        'Şəkil hesabınıza yazıldı (ehtiyat). Storage kvota/ödəniş yükləməni əngəlləyir — Console-da düzəldin.',
+    'ka':
+        'ფოტო ანგარიშში შეინახა (რეზერვი). Storage კვოტა/ბილინგი ბლოკავს ატვირთვას — გაასწორეთ Console-ში.',
+  },
 
   // Car type form labels
   'adm_car_name_en': {
@@ -1668,15 +2042,33 @@ const kAdminTranslations = <String, Map<String, String>>{
     'ka': 'შეცდომა: %s',
   },
   'adm_auth_recent_login': {
-    'en': 'Too long since most recent sign in. Sign in again before updating your email.',
-    'ar': 'مر وقت طويل منذ آخر تسجيل دخول. سجّل الدخول مجدداً قبل تحديث البريد.',
+    'en':
+        'Too long since most recent sign in. Sign in again before updating your email.',
+    'ar':
+        'مر وقت طويل منذ آخر تسجيل دخول. سجّل الدخول مجدداً قبل تحديث البريد.',
     'zh_Hans': '距离上次登录过久。请重新登录后再更新邮箱。',
-    'tr': 'Son oturumun üzerinden çok zaman geçti. E-postayı güncellemeden önce yeniden giriş yapın.',
-    'ur': 'آخری سائن اِن کے بعد کافی وقت ہو گیا۔ ای میل اپ ڈیٹ سے پہلے دوبارہ سائن اِن کریں۔',
+    'tr':
+        'Son oturumun üzerinden çok zaman geçti. E-postayı güncellemeden önce yeniden giriş yapın.',
+    'ur':
+        'آخری سائن اِن کے بعد کافی وقت ہو گیا۔ ای میل اپ ڈیٹ سے پہلے دوبارہ سائن اِن کریں۔',
     'ru': 'Слишком давно был вход. Войдите снова перед обновлением почты.',
-    'ky': 'Акыркы кирүүдөн көп убакыт өттү. Почтаны жаңылоодон мурун кайра кириңиз.',
-    'az': 'Son girişdən çox vaxt keçib. E-poçtu yeniləməzdən əvvəl yenidən daxil olun.',
-    'ka': 'ბოლო შესვლიდან დიდი დრო გავიდა. ელფოსტის განახლებამდე თავიდან შეხვიდეთ.',
+    'ky':
+        'Акыркы кирүүдөн көп убакыт өттү. Почтаны жаңылоодон мурун кайра кириңиз.',
+    'az':
+        'Son girişdən çox vaxt keçib. E-poçtu yeniləməzdən əvvəl yenidən daxil olun.',
+    'ka':
+        'ბოლო შესვლიდან დიდი დრო გავიდა. ელფოსტის განახლებამდე თავიდან შეხვიდეთ.',
+  },
+  'adm_choose_source': {
+    'en': 'Choose Source',
+    'ar': 'اختر المصدر',
+    'zh_Hans': '选择来源',
+    'tr': 'Kaynak seçin',
+    'ur': 'ذریعہ منتخب کریں',
+    'ru': 'Выберите источник',
+    'ky': 'Булагын тандаңыз',
+    'az': 'Mənbə seçin',
+    'ka': 'აირჩიეთ წყარო',
   },
 };
 

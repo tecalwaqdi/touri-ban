@@ -155,7 +155,7 @@ class _LISTCountriesWidgetState extends State<LISTCountriesWidget> {
                 automaticallyImplyLeading: false,
                 leading: DsIconButton(
                   icon: DsIcons.back,
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => context.safePop(),
                 ),
               ),
               body: CustomScrollView(

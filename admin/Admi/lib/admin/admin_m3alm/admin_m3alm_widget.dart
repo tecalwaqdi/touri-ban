@@ -8,6 +8,7 @@ import '/backend/admin_performance.dart';
 import '/backend/admin_resource_guard.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
+import '/components/admin_agent_landmark_list.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
@@ -143,6 +144,33 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
     required FFLocalizations l10n,
     required FlutterFlowTheme theme,
   }) {
+    // Country agents: geo-merge loader (matches dashboard landmark totals).
+    if (AdminRoleService.isCountryAgent) {
+      return AdminAgentLandmarkList(
+        key: ValueKey(
+          'm3alm_agent_${widget.partnersOnly}_${AdminCountryScope.activeCountryRef?.path}',
+        ),
+        partnersOnly: widget.partnersOnly,
+        pageSize: kAdminPageSize,
+        builder: (context, visibleLandmarks, listState) {
+          AdminLandmarkIndex.ingest(visibleLandmarks);
+          final landmarks = _filterLandmarks(visibleLandmarks);
+          final total = listState.totalAvailable ?? visibleLandmarks.length;
+          return _buildLandmarksCard(
+            context: context,
+            l10n: l10n,
+            theme: theme,
+            landmarks: landmarks,
+            totalLabel: uiTr(context, 'العدد'),
+            listState: listState,
+            partnerTotal: widget.partnersOnly ? total : null,
+            filteredFromTotal: visibleLandmarks.length != landmarks.length,
+            displayTotal: total,
+          );
+        },
+      );
+    }
+
     return AdminFirestoreList<MkanRecord>(
       key: ValueKey(
         'm3alm_list_${widget.partnersOnly}_${AdminRoleService.isCountryAgent}',
@@ -168,6 +196,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
           listState: listState,
           partnerTotal: partnerTotal,
           filteredFromTotal: allLandmarks.length != landmarks.length,
+          displayTotal: listState.totalAvailable,
         );
       },
     );
@@ -301,6 +330,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
     AdminFirestoreListMeta<MkanRecord>? listState,
     int? partnerTotal,
     bool filteredFromTotal = false,
+    int? displayTotal,
   }) {
     final hasMore = listState?.hasMore ?? false;
     final isWide = AdminUi.useTableLayout(context);
@@ -308,6 +338,9 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
         AdminUi.responsiveColumnCount(context, wide: 3, medium: 2, narrow: 1);
     final activeCount = landmarks.where((m) => m.acctev).length;
     final isSearching = _searchQuery.trim().isNotEmpty;
+    final count = displayTotal ??
+        listState?.totalAvailable ??
+        landmarks.length;
 
     return AdminContentCard(
       padding: EdgeInsets.zero,
@@ -316,8 +349,8 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
         children: [
           _LandmarksSummaryBar(
             totalLabel: totalLabel,
-            count: landmarks.length,
-            hasMore: hasMore,
+            count: count,
+            hasMore: hasMore && displayTotal == null && listState?.totalAvailable == null,
             activeCount: activeCount,
             inactiveCount: landmarks.length - activeCount,
             isSearching: isSearching,

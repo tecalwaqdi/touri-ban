@@ -9,6 +9,7 @@ import '/backend/admin_dashboard_invalidate.dart';
 import '/backend/admin_session_cleanup.dart';
 
 import '/backend/backend.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'anonymous_auth.dart';
 import 'apple_auth.dart';
@@ -97,8 +98,7 @@ class FirebaseAuthManager extends AuthManager
       if (e.code == 'requires-recent-login') {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(appTr(context, 'adm_auth_recent_login'))),
+          SnackBar(content: Text(appTr(context, 'adm_auth_recent_login'))),
         );
       }
     }
@@ -119,8 +119,8 @@ class FirebaseAuthManager extends AuthManager
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(
-                  appTrFormat(context, 'adm_auth_error', e.message!))),
+              content:
+                  Text(appTrFormat(context, 'adm_auth_error', e.message!))),
         );
       }
     }
@@ -136,9 +136,7 @@ class FirebaseAuthManager extends AuthManager
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content:
-                Text(appTrFormat(context, 'adm_auth_error', e.message!))),
+        SnackBar(content: Text(AdminUserFacingErrors.from(context, e))),
       );
       return null;
     }
@@ -314,16 +312,9 @@ class FirebaseAuthManager extends AuthManager
           ? null
           : AdminArawatanFirebaseUser.fromUserCredential(userCredential);
     } on FirebaseAuthException catch (e) {
-      final errorMsg = switch (e.code) {
-        'email-already-in-use' =>
-          'Error: The email is already in use by a different account',
-        'INVALID_LOGIN_CREDENTIALS' =>
-          'Error: The supplied auth credential is incorrect, malformed or has expired',
-        _ => 'Error: ${e.message!}',
-      };
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMsg)),
+        SnackBar(content: Text(AdminUserFacingErrors.from(context, e))),
       );
       return null;
     }

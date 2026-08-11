@@ -65,6 +65,23 @@ cd admin/Admi
 
 ---
 
+## النشر على Vercel
+
+راجع `docs/ADMIN_VERCEL.md`.
+
+**مهم:** Vercel يُبنى بـ `base-href=/` (جذر النطاق). Firebase Hosting يستخدم `/admin/`.
+
+| الاستضافة | أمر البناء | مثال الدخول |
+|-----------|------------|-------------|
+| Vercel | `./scripts/build_web_admin.sh /` | `https://….vercel.app/homePage` |
+| Firebase Hosting | `./scripts/build_web_admin.sh /admin/` | `https://….web.app/admin/homePage` |
+
+Root Directory في Vercel: `admin/Admi`  
+Build: `bash scripts/vercel_build.sh`  
+Output: `build/web`
+
+---
+
 ## النشر على Firebase Hosting
 
 المشروع مضبوط على Firebase project: `tutorial-multi-language-70gx4j`

@@ -63,7 +63,8 @@ class _ReviewScreenWidgetState extends State<ReviewScreenWidget> {
       padding: DsSpacing.pagePadding,
       child: Stack(
         children: [
-          Column(
+          SingleChildScrollView(
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Column(
@@ -92,6 +93,8 @@ class _ReviewScreenWidgetState extends State<ReviewScreenWidget> {
                   Text(
                     valueOrDefault<String>(widget.naim, '- '),
                     textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: typography.headlineMedium.copyWith(
                       color: colors.textPrimary,
                     ),
@@ -155,15 +158,26 @@ class _ReviewScreenWidgetState extends State<ReviewScreenWidget> {
                 icon: Icons.auto_awesome_rounded,
                 expanded: true,
                 onPressed: () async {
+                  final orderRef = widget.idOrder;
+                  final clientRef = widget.revClent;
+                  if (orderRef == null || clientRef == null) {
+                    if (!context.mounted) return;
+                    DsSnackBar.show(
+                      context,
+                      message: 'تعذر إرسال التقييم: بيانات ناقصة',
+                      tone: DsSnackTone.error,
+                    );
+                    return;
+                  }
                   await ReviewsUserRecord.collection
                       .doc()
                       .set(createReviewsUserRecordData(
-                        revUser: widget.revClent,
+                        revUser: clientRef,
                         rEVIEWSmsg: _model.textController.text,
                         ret: _model.ratingBarValue?.round(),
                         date: getCurrentTimestamp,
                         userAlSend: currentUserReference,
-                        orderRev: widget.idOrder,
+                        orderRev: orderRef,
                       ));
                   if (!context.mounted) return;
                   DsSnackBar.show(
@@ -172,11 +186,11 @@ class _ReviewScreenWidgetState extends State<ReviewScreenWidget> {
                     tone: DsSnackTone.success,
                   );
 
-                  await widget.idOrder!.update(createOrderRecordData(
+                  await orderRef.update(createOrderRecordData(
                     reviewMndobsend: true,
                   ));
 
-                  await widget.revClent!.update({
+                  await clientRef.update({
                     ...mapToFirestore(
                       {
                         'Reteng': FieldValue.arrayUnion(
@@ -188,6 +202,7 @@ class _ReviewScreenWidgetState extends State<ReviewScreenWidget> {
                 },
               ),
             ],
+          ),
           ),
           Positioned(
             top: 0,

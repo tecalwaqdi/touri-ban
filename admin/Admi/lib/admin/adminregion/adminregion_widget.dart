@@ -222,9 +222,7 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
                                 Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                           child: Text(
-                            '${uiTr(context, 'العدد')}: ${regions.length}'
-                            '${allRegions.length != regions.length ? ' ${uiTr(context, 'من')} ${allRegions.length}' : ''}'
-                            '${listState.hasMore ? '+' : ''}',
+                            adminListCountLabel(context, listState, visibleCount: regions.length, pageFetched: allRegions.length),
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
                               color: theme.secondaryText,

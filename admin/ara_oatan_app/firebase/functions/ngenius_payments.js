@@ -218,9 +218,15 @@ async function verifiedBookingAmount(data) {
   const vatHalalas = country.isvat === true
     ? percentOf(baseFareHalalas, country.vat)
     : 0;
+  const currency = String(
+    country.currency_code || country.currencyCode || country.Currency || "SAR",
+  )
+    .trim()
+    .toUpperCase() || "SAR";
 
   return {
     amountHalalas,
+    currency,
     carPath,
     countryPath,
     bookingHours,
@@ -415,17 +421,33 @@ function resolveWalletPackageFromCatalog(catalog, packageId, options = {}) {
 }
 
 async function verifiedWalletTopUpAmount(data) {
-  // Intentionally ignore data.amount / data.amountMinor from the client.
-  const snapshot = await admin.firestore().doc(WALLET_TOPUP_PACKAGES_PATH).get();
-  if (!snapshot.exists) {
-    throw new functions.https.HttpsError(
-      "failed-precondition",
-      "Wallet top-up packages document is missing.",
-    );
+  // Intentionally ignore client amountMinor; allow curated packages or allow-listed majors.
+  const allowedMajors = new Set([100, 200, 300, 500]);
+  const packageId = sanitizeString(data.packageId, 64);
+  if (packageId) {
+    const snapshot = await admin.firestore().doc(WALLET_TOPUP_PACKAGES_PATH).get();
+    if (snapshot.exists) {
+      try {
+        return resolveWalletPackageFromCatalog(snapshot.data(), packageId, {
+          countryCode: data.countryCode,
+        });
+      } catch (_) {
+        // Fall through to amountMajor allow-list.
+      }
+    }
   }
-  return resolveWalletPackageFromCatalog(snapshot.data(), data.packageId, {
-    countryCode: data.countryCode,
-  });
+  const major = Number(data.amountMajor);
+  if (Number.isFinite(major) && allowedMajors.has(major)) {
+    return {
+      amountHalalas: Math.round(major * 100),
+      currency: "SAR",
+      packageId: packageId || `sar_${major}`,
+    };
+  }
+  throw new functions.https.HttpsError(
+    "invalid-argument",
+    "Invalid wallet top-up package or amount.",
+  );
 }
 
 function webhookPayloadHash(body) {
@@ -897,6 +919,10 @@ exports.finalizeNGeniusBooking = functions
         amount_halalas: session.amount_halalas,
         currency: session.currency || "SAR",
         data_order: now,
+        acceptanceDeadline: admin.firestore.Timestamp.fromMillis(
+          Date.now() + 60 * 60 * 1000,
+        ),
+        acceptance_deadline_ms: Date.now() + 60 * 60 * 1000,
         LOKESHN: new admin.firestore.GeoPoint(pickupLat, pickupLng),
         mapuser: new admin.firestore.GeoPoint(pickupLat, pickupLng),
         originLatitude: pickupLat,
@@ -983,7 +1009,17 @@ exports.createCashBooking = functions
         "A valid booking idempotency key is required.",
       );
     }
-    const quote = await verifiedBookingAmount(data);
+    let quote;
+    try {
+      quote = await verifiedBookingAmount(data);
+    } catch (err) {
+      if (err instanceof functions.https.HttpsError) throw err;
+      console.error("createCashBooking quote failed", err);
+      throw new functions.https.HttpsError(
+        "unavailable",
+        "Booking service cannot access Firestore. Check function IAM.",
+      );
+    }
     const booking = data.booking && typeof data.booking === "object"
       ? data.booking
       : {};
@@ -1006,7 +1042,16 @@ exports.createCashBooking = functions
     const stops = safeStops(booking.stops, uid);
     const firestore = admin.firestore();
     const userRef = firestore.collection("user").doc(uid);
-    const userSnapshot = await userRef.get();
+    let userSnapshot;
+    try {
+      userSnapshot = await userRef.get();
+    } catch (err) {
+      console.error("createCashBooking user get failed", err);
+      throw new functions.https.HttpsError(
+        "unavailable",
+        "Booking service cannot access Firestore. Check function IAM.",
+      );
+    }
     const user = userSnapshot.exists ? userSnapshot.data() : {};
     const orderId = sessionIdFor(uid, `cash:${idempotencyKey}`);
     const orderRef = firestore.collection("order").doc(orderId);
@@ -1023,8 +1068,13 @@ exports.createCashBooking = functions
         USER: userRef,
         total: quote.amountHalalas / 100,
         amount_halalas: quote.amountHalalas,
-        currency: "SAR",
+        currency: quote.currency || "SAR",
+        currency_code: quote.currency || "SAR",
         data_order: now,
+        acceptanceDeadline: admin.firestore.Timestamp.fromMillis(
+          Date.now() + 60 * 60 * 1000,
+        ),
+        acceptance_deadline_ms: Date.now() + 60 * 60 * 1000,
         LOKESHN: new admin.firestore.GeoPoint(pickupLat, pickupLng),
         mapuser: new admin.firestore.GeoPoint(pickupLat, pickupLng),
         originLatitude: pickupLat,
@@ -1134,9 +1184,11 @@ exports.finalizeNGeniusWalletTopUp = functions
       const currentBalance = wallet.exists
         ? Number(wallet.data().currentBalance || 0)
         : 0;
+      const nextBalance = currentBalance + amountSar;
       transaction.set(walletRef, {
         userRef,
-        currentBalance: currentBalance + amountSar,
+        currentBalance: nextBalance,
+        walletBalance: nextBalance,
         lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
         currency: "SAR",
         isActive: true,
@@ -1148,12 +1200,15 @@ exports.finalizeNGeniusWalletTopUp = functions
         amount: amountSar,
         amount_halalas: session.amount_halalas,
         currency: "SAR",
-        type: "credit",
+        type: "top_up",
         description_code: "wallet_top_up",
         status: "completed",
+        balanceBefore: currentBalance,
+        balanceAfter: nextBalance,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         referenceId: sessionId,
+        reference: sessionId,
         notes: "ngenius",
       });
       transaction.set(sessionRef, {

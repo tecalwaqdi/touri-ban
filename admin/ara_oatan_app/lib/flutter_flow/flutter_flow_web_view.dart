@@ -21,6 +21,7 @@ class FlutterFlowWebView extends StatefulWidget {
     this.horizontalScroll = false,
     this.verticalScroll = false,
     this.html = false,
+    this.onPageFinished,
   });
 
   final String content;
@@ -30,6 +31,8 @@ class FlutterFlowWebView extends StatefulWidget {
   final bool horizontalScroll;
   final bool verticalScroll;
   final bool html;
+  /// Receives the finished page URL/host path (may be empty on some platforms).
+  final void Function(String url)? onPageFinished;
 
   @override
   _FlutterFlowWebViewState createState() => _FlutterFlowWebViewState();
@@ -51,6 +54,9 @@ class _FlutterFlowWebViewState extends State<FlutterFlowWebView> {
                 ? SourceType.urlBypass
                 : SourceType.url,
         javascriptMode: JavascriptMode.unrestricted,
+        onPageFinished: (src) {
+          widget.onPageFinished?.call(src);
+        },
         onWebViewCreated: (controller) async {
           if (controller.connector is WebViewController && isAndroid) {
             final androidController =

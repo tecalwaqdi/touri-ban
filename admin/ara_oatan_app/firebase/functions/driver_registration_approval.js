@@ -118,3 +118,72 @@ exports.approveDriverRegistration = (data, context) => reviewDriver('approved', 
 exports.rejectDriverRegistration = (data, context) => reviewDriver('rejected', data, context);
 exports.requestDriverChanges = (data, context) => reviewDriver('changes_requested', data, context);
 exports._testApprovalBlockingReasons = approvalBlockingReasons;
+
+function autoActivationBlockingReasons(data) {
+  const blockers = [];
+  const status = data.registration_status || '';
+  if (status === 'suspended' || status === 'blocked' || status === 'rejected') {
+    blockers.push('account_not_eligible');
+  }
+  if (!data.mndob_vill) blockers.push('village_required');
+  if (!data.mndob_type_car && !data.car_rev_mndob) blockers.push('vehicle_type_required');
+  const open = (data.requested_changes || []).filter((e) => e && e.resolved !== true);
+  if (open.length) blockers.push('open_requested_changes');
+  return blockers;
+}
+
+/** Temporary cash-wave path: driver self-activates after registration submit. */
+exports.autoActivateDriver = async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
+  }
+  const driverId = context.auth.uid;
+  const ref = db.doc('user/' + driverId);
+  let action = 'auto_activated';
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) {
+      throw new functions.https.HttpsError('not-found', 'Driver profile not found.');
+    }
+    const driver = snap.data() || {};
+    if (driver.ismndob !== true && driver.ismndom !== true) {
+      throw new functions.https.HttpsError('failed-precondition', 'Target is not a driver.');
+    }
+    const status = driver.registration_status || '';
+    if (driver.actev_mndob === true && status === 'approved') {
+      action = 'already_active';
+      return;
+    }
+    const blockers = autoActivationBlockingReasons(driver);
+    if (blockers.length) {
+      throw new functions.https.HttpsError('failed-precondition', blockers.join(','));
+    }
+    const now = admin.firestore.FieldValue.serverTimestamp();
+    tx.update(ref, {
+      actev_mndob: true,
+      ismndob: true,
+      ismndom: true,
+      ngl: false,
+      registration_status: 'approved',
+      submission_status: 'approved',
+      account_status: 'active',
+      operational_status: 'offline',
+      vehicle_review_status: 'approved',
+      document_review_status: 'approved',
+      auto_activated: true,
+      approved_at: now,
+      reviewed_at: now,
+      reviewed_by: 'auto_activate',
+      rejection_reason: admin.firestore.FieldValue.delete(),
+      requested_changes: [],
+    });
+  });
+  const existing = (await admin.auth().getUser(driverId)).customClaims || {};
+  await admin.auth().setCustomUserClaims(driverId, {
+    ...existing,
+    driver: true,
+    driver_active: true,
+  });
+  return {ok: true, driverId, action, contractVersion: 2};
+};
+exports._testAutoActivationBlockingReasons = autoActivationBlockingReasons;

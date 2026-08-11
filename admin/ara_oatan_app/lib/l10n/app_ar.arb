@@ -2334,7 +2334,7 @@
   "@ux_change": {
     "description": "UI string (source key: ux_change)"
   },
-  "ux_card_payment_network": "دفع آمن بالبطاقة عبر Network International",
+  "ux_card_payment_network": "الدفع عبر البطاقة",
   "@ux_card_payment_network": {
     "description": "UI string (source key: ux_card_payment_network)"
   },
@@ -2876,7 +2876,7 @@
   "@card_invalid_data": {
     "description": "UI string (source key: card_invalid_data)"
   },
-  "checkout_paying": "جاري الدفع عبر Network International...",
+  "checkout_paying": "جاري الدفع عبر البطاقة...",
   "@checkout_paying": {
     "description": "UI string (source key: checkout_paying)"
   },

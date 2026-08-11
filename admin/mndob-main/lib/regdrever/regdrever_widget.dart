@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
@@ -14,11 +13,10 @@ import '/components/list_type_car_widget.dart';
 import '/core/driver_auth_errors.dart';
 import '/core/driver_auth_validation_service.dart';
 import '/core/driver_country_service.dart';
-import '/core/driver_design_system.dart';
+import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_document_upload_service.dart';
-import '/core/driver_i18n.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_location_catalog_service.dart';
 import '/core/driver_phone_number_service.dart';
@@ -28,7 +26,6 @@ import '/core/driver_registration_validators.dart';
 import '/core/driver_session_router.dart';
 import '/core/toury_country_registry.dart';
 import '/core/toury_maps_config.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/upload_data.dart';
 import 'regdrever_model.dart';
@@ -192,19 +189,66 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     _companyPath = draft.companyPath;
     _companyName = draft.companyName;
     _isTourGuide = draft.isTourGuide;
-    _guidePermitUrl = draft.guidePermitUrl;
+    _guidePermitUrl = draft.guidePermitUrl.startsWith('pending://')
+        ? ''
+        : draft.guidePermitUrl;
+    if (draft.photoUrl.startsWith('pending://')) {
+      _model.uploadedFileUrl_uploadDataLbm = '';
+    }
+    if (draft.idImageUrl.startsWith('pending://')) {
+      _model.uploadedFileUrl_uploadData1k33 = '';
+    }
+    if (draft.carImageUrl.startsWith('pending://')) {
+      _carImageUrl = '';
+    } else if (draft.carImageUrl.isNotEmpty) {
+      _carImageUrl = draft.carImageUrl;
+    }
     if (draft.lat != null && draft.lng != null) {
       _regLocation = LatLng(draft.lat!, draft.lng!);
+    }
+    // Restore country from draft ISO before region/city so cascade stays consistent.
+    if (draft.countryIso.trim().isNotEmpty) {
+      try {
+        final countries = await DriverCountryService.listActiveCountries();
+        final iso = draft.countryIso.trim().toUpperCase();
+        final match = countries.where((c) {
+          final id = c.reference.id.toUpperCase();
+          return id == iso ||
+              id.endsWith('_$iso') ||
+              id.contains(iso.toLowerCase());
+        }).firstOrNull;
+        if (match != null) {
+          // Preserve region/city after applyCountry clears them.
+          final savedRegion = DriverLocationCatalogService.refFromPath(
+            draft.regionPath,
+          );
+          final savedVillage = DriverLocationCatalogService.refFromPath(
+            draft.villagePath,
+          );
+          final savedRegionName = draft.regionName;
+          final savedVillageName =
+              draft.villageName.isNotEmpty ? draft.villageName : draft.cityName;
+          await DriverCountryService.applyCountry(FFAppState(), match);
+          if (savedRegion != null) {
+            FFAppState().mdenh = savedRegion;
+            FFAppState().naimmdenh = savedRegionName;
+          }
+          if (savedVillage != null) {
+            FFAppState().villmndoBREV = savedVillage;
+            FFAppState().textvill = savedVillageName;
+          }
+        }
+      } catch (_) {}
     }
     final regionRef =
         DriverLocationCatalogService.refFromPath(draft.regionPath);
     final villageRef =
         DriverLocationCatalogService.refFromPath(draft.villagePath);
-    if (regionRef != null) {
+    if (regionRef != null && FFAppState().mdenh == null) {
       FFAppState().mdenh = regionRef;
       FFAppState().naimmdenh = draft.regionName;
     }
-    if (villageRef != null) {
+    if (villageRef != null && FFAppState().villmndoBREV == null) {
       FFAppState().villmndoBREV = villageRef;
       FFAppState().textvill =
           draft.villageName.isNotEmpty ? draft.villageName : draft.cityName;
@@ -236,6 +280,45 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       message: t('Draft saved. You can continue registration later.'),
       type: DriverMessageType.success,
     );
+    if (mounted) await _leaveToLogin(persist: false);
+  }
+
+  /// AppBar back: previous step, or leave registration to Login.
+  Future<void> _handleAppBarBack() async {
+    if (_submitting) return;
+    if (_step > 0) {
+      _goTo(_step - 1);
+      return;
+    }
+    await _leaveToLogin();
+  }
+
+  /// Leave Regdrever → Login. Persist draft, then pop or sign out + AuthGate.
+  Future<void> _leaveToLogin({bool persist = true}) async {
+    if (persist) {
+      try {
+        await _persistDraft();
+      } catch (e) {
+        debugPrint('Regdrever leave draft save failed: $e');
+      }
+    }
+    if (!mounted) return;
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    // Embedded in AuthGate (no stack) — sign out so gate shows Login.
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await authManager.signOut();
+      } catch (e) {
+        debugPrint('Regdrever leave signOut failed: $e');
+        try {
+          await FirebaseAuth.instance.signOut();
+        } catch (_) {}
+      }
+    }
     if (mounted) context.go('/');
   }
 
@@ -494,9 +577,19 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         );
         return;
       }
+      if (!_hasRequiredDocumentUploads()) {
+        await DriverDialogs.showAlert(
+          context,
+          title: t('Error'),
+          message: t(
+            'Please upload all required documents before continuing',
+          ),
+          type: DriverMessageType.warning,
+        );
+        return;
+      }
       if (_isTourGuide &&
-          _guidePermitUrl.trim().isEmpty &&
-          _pendingGuidePermit == null) {
+          !_isUploadReady(url: _guidePermitUrl, pending: _pendingGuidePermit)) {
         await DriverDialogs.showAlert(
           context,
           title: t('Error'),
@@ -505,12 +598,29 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         );
         return;
       }
-      // Documents are optional during initial registration. Admin review may
-      // request them later; approval remains blocked until they are present.
       await _goTo(3);
       return;
     }
     await _registerDriver();
+  }
+
+  bool _isUploadReady({required String url, SelectedFile? pending}) {
+    if (pending != null && pending.bytes.isNotEmpty) return true;
+    final trimmed = url.trim();
+    if (trimmed.startsWith('pending://')) return false;
+    return trimmed.startsWith('https://');
+  }
+
+  bool _hasRequiredDocumentUploads() {
+    return _isUploadReady(
+          url: _model.uploadedFileUrl_uploadDataLbm,
+          pending: _pendingPhoto,
+        ) &&
+        _isUploadReady(
+          url: _model.uploadedFileUrl_uploadData1k33,
+          pending: _pendingIdDoc,
+        ) &&
+        _isUploadReady(url: _carImageUrl, pending: _pendingCarPhoto);
   }
 
   /// Email/password Auth must exist before location step (Firestore catalog).
@@ -528,6 +638,7 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       if (existing != null && existing.isAnonymous) {
         await FirebaseAuth.instance.signOut();
       }
+      if (!mounted) return false;
       final user = await authManager.createAccountWithEmail(
         context,
         emailController.text.trim(),
@@ -612,6 +723,43 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       );
       return;
     }
+    if (_affiliationType == 'company' && _companyPath.trim().isEmpty) {
+      await DriverDialogs.showAlert(
+        context,
+        title: t('Error'),
+        message: t('Please select a transport company'),
+        type: DriverMessageType.warning,
+      );
+      return;
+    }
+    if (!_hasRequiredDocumentUploads() ||
+        (_isTourGuide &&
+            !_isUploadReady(
+              url: _guidePermitUrl,
+              pending: _pendingGuidePermit,
+            ))) {
+      await DriverDialogs.showAlert(
+        context,
+        title: t('Error'),
+        message: t(
+          'Please upload all required documents before continuing',
+        ),
+        type: DriverMessageType.warning,
+      );
+      return;
+    }
+    if (_uploadingPhoto ||
+        _uploadingId ||
+        _uploadingCar ||
+        _uploadingGuide) {
+      await DriverDialogs.showAlert(
+        context,
+        title: t('Please wait'),
+        message: t('Document upload is still in progress'),
+        type: DriverMessageType.warning,
+      );
+      return;
+    }
 
     setState(() => _submitting = true);
     try {
@@ -629,12 +777,14 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         if (existingAuth != null && existingAuth.isAnonymous) {
           await FirebaseAuth.instance.signOut();
         }
+        if (!mounted) return;
         final user = await authManager.createAccountWithEmail(
           context,
           emailController.text.trim(),
           passwordController.text,
           ensureUserDoc: false,
         );
+        if (!mounted) return;
         if (user == null || user.uid == null || user.uid!.isEmpty) {
           await DriverDialogs.showAlert(
             context,
@@ -648,6 +798,29 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
 
         await DriverRegistrationDraft.migrateGuestToUid(uid);
         await _flushPendingUploads(uid);
+      }
+
+      // Never persist pending:// placeholders to Firestore.
+      if (!_hasRequiredDocumentUploads() ||
+          (_isTourGuide &&
+              !_isUploadReady(
+                url: _guidePermitUrl,
+                pending: _pendingGuidePermit,
+              )) ||
+          _model.uploadedFileUrl_uploadDataLbm.startsWith('pending://') ||
+          _model.uploadedFileUrl_uploadData1k33.startsWith('pending://') ||
+          _carImageUrl.startsWith('pending://') ||
+          _guidePermitUrl.startsWith('pending://')) {
+        if (!mounted) return;
+        await DriverDialogs.showAlert(
+          context,
+          title: t('Error'),
+          message: t(
+            'Document upload is incomplete. Please re-upload and try again.',
+          ),
+          type: DriverMessageType.error,
+        );
+        return;
       }
 
       final iso = TouryCountryRegistry.isoFromCoordinates(_regLocation!);
@@ -670,6 +843,7 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
 
       final countryRef = FFAppState().dolh;
       if (countryRef == null) {
+        if (!mounted) return;
         await DriverDialogs.showAlert(
           context,
           title: t('Error'),
@@ -684,6 +858,7 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       final phoneIso =
           iso ?? TouryCountryRegistry.normalizeIso(FFAppState().dolh?.id);
       if (phoneIso == null || phoneIso.isEmpty) {
+        if (!mounted) return;
         await DriverDialogs.showAlert(
           context,
           title: t('Error'),
@@ -802,6 +977,7 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         profileFields: profileFields,
       );
       if (!submit.success) {
+        if (!mounted) return;
         await DriverDialogs.showAlert(
           context,
           title: t('Error'),
@@ -827,7 +1003,11 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       await DriverDialogs.showAlert(
         context,
         title: t('Success'),
-        message: t('Registration completed. Your account is active.'),
+        message: _isTourGuide
+            ? t(
+                'Registration completed. Tour guide status is pending review.',
+              )
+            : t('Registration completed. Your account is active.'),
         type: DriverMessageType.success,
       );
 
@@ -864,7 +1044,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: DriverBrand.cardColor(context),
+      backgroundColor: context.dsColors.card,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -920,16 +1100,15 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
         // User cancelled picker — no error dialog.
         return;
       }
+      if (!mounted) return;
       final file = selectedMedia.first;
       if (!validateFileFormat(file.storagePath, context)) {
-        if (mounted) {
-          await DriverDialogs.showAlert(
-            context,
-            title: t('Error'),
-            message: t('Invalid file format'),
-            type: DriverMessageType.warning,
-          );
-        }
+        await DriverDialogs.showAlert(
+          context,
+          title: t('Error'),
+          message: t('Invalid file format'),
+          type: DriverMessageType.warning,
+        );
         return;
       }
       final mimeGuess = file.storagePath.toLowerCase().endsWith('.png')
@@ -941,6 +1120,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                   : 'image/jpeg';
       final mime = DriverDocumentValidator.validateMime(mimeGuess);
       if (!mime.isValid) {
+        if (!mounted) return;
         await DriverDialogs.showAlert(
           context,
           title: t('Error'),
@@ -951,6 +1131,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
       }
       final size = DriverDocumentValidator.validateSize(file.bytes.length);
       if (!size.isValid) {
+        if (!mounted) return;
         await DriverDialogs.showAlert(
           context,
           title: t('Error'),
@@ -965,7 +1146,16 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
           selected: file,
           uid: uid,
         );
-        if (!mounted || url == null) return;
+        if (!mounted) return;
+        if (url == null || url.isEmpty || !url.startsWith('https://')) {
+          await DriverDialogs.showAlert(
+            context,
+            title: t('Error'),
+            message: t('Could not upload the file. Please try again.'),
+            type: DriverMessageType.error,
+          );
+          return;
+        }
         setState(() {
           if (kind == 'photo') {
             _model.uploadedFileUrl_uploadDataLbm = url;
@@ -981,6 +1171,16 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
             _pendingCarPhoto = null;
           }
         });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                t('Document uploaded successfully'),
+                style: const TextStyle(fontFamily: 'cairo'),
+              ),
+            ),
+          );
+        }
       } else {
         // Defer Storage upload until Auth uid exists (submit).
         setState(() {
@@ -1035,49 +1235,62 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
   }
 
   Future<void> _flushPendingUploads(String uid) async {
-    Future<String?> up(SelectedFile? f) async {
-      if (f == null) return null;
-      // Rebuild path under real uid.
+    Future<String> up(SelectedFile f) async {
       final name = f.storagePath.split('/').last;
       final path =
           '${DriverDocumentUploadService.storageRootForUid(uid)}/$name';
       final url = await uploadData(path, f.bytes);
-      if (url == null || url.isEmpty) {
+      if (url == null || url.isEmpty || !url.startsWith('https://')) {
         throw StateError('Document upload is incomplete');
       }
       return url;
     }
 
-    if (_pendingPhoto != null ||
-        _model.uploadedFileUrl_uploadDataLbm.startsWith('pending://')) {
-      final url = await up(_pendingPhoto);
-      if (url != null) {
-        _model.uploadedFileUrl_uploadDataLbm = url;
-        _pendingPhoto = null;
+    Future<void> flushOne({
+      required SelectedFile? pending,
+      required String currentUrl,
+      required void Function(String url) assign,
+      required void Function() clearPending,
+    }) async {
+      if (pending != null) {
+        assign(await up(pending));
+        clearPending();
+        return;
+      }
+      if (currentUrl.startsWith('pending://')) {
+        throw StateError(
+          'Document upload is incomplete. Please re-upload and try again.',
+        );
       }
     }
-    if (_pendingIdDoc != null ||
-        _model.uploadedFileUrl_uploadData1k33.startsWith('pending://')) {
-      final url = await up(_pendingIdDoc);
-      if (url != null) {
-        _model.uploadedFileUrl_uploadData1k33 = url;
-        _pendingIdDoc = null;
-      }
-    }
-    if (_pendingCarPhoto != null || _carImageUrl.startsWith('pending://')) {
-      final url = await up(_pendingCarPhoto);
-      if (url != null) {
-        _carImageUrl = url;
-        _pendingCarPhoto = null;
-      }
-    }
-    if (_pendingGuidePermit != null ||
-        _guidePermitUrl.startsWith('pending://')) {
-      final url = await up(_pendingGuidePermit);
-      if (url != null) {
-        _guidePermitUrl = url;
-        _pendingGuidePermit = null;
-      }
+
+    await flushOne(
+      pending: _pendingPhoto,
+      currentUrl: _model.uploadedFileUrl_uploadDataLbm,
+      assign: (url) => _model.uploadedFileUrl_uploadDataLbm = url,
+      clearPending: () => _pendingPhoto = null,
+    );
+    await flushOne(
+      pending: _pendingIdDoc,
+      currentUrl: _model.uploadedFileUrl_uploadData1k33,
+      assign: (url) => _model.uploadedFileUrl_uploadData1k33 = url,
+      clearPending: () => _pendingIdDoc = null,
+    );
+    await flushOne(
+      pending: _pendingCarPhoto,
+      currentUrl: _carImageUrl,
+      assign: (url) => _carImageUrl = url,
+      clearPending: () => _pendingCarPhoto = null,
+    );
+    if (_isTourGuide ||
+        _pendingGuidePermit != null ||
+        _guidePermitUrl.isNotEmpty) {
+      await flushOne(
+        pending: _pendingGuidePermit,
+        currentUrl: _guidePermitUrl,
+        assign: (url) => _guidePermitUrl = url,
+        clearPending: () => _pendingGuidePermit = null,
+      );
     }
   }
 
@@ -1095,7 +1308,13 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
             scaffoldKey: scaffoldKey,
             appBar: DsAppBar(
               centerTitle: false,
+              automaticallyImplyLeading: false,
               title: t('New Driver Registration'),
+              leading: DsIconButton(
+                icon: Icons.arrow_back_rounded,
+                tooltip: t('Back'),
+                onPressed: _submitting ? null : _handleAppBarBack,
+              ),
               actions: [
                 TextButton(
                   onPressed: _submitting ? null : _saveAndExit,
@@ -1109,7 +1328,8 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
               ],
             ),
             body: SafeArea(
-              child: Form(
+              child: DriverFormWidth(
+                child: Form(
                 key: _formKey,
                 child: Column(
                   children: [
@@ -1205,6 +1425,8 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                             FFAppState().naimmdenh = '';
                             FFAppState().villmndoBREV = null;
                             FFAppState().textvill = '';
+                            _companyPath = '';
+                            _companyName = '';
                             if (mounted) setState(() {});
                           }
                         },
@@ -1258,6 +1480,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                           });
                           _persistDraft();
                         },
+                        countryRef: FFAppState().dolh,
                         onTourGuideChanged: (value) {
                           setState(() {
                             _isTourGuide = value;
@@ -1344,6 +1567,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
               ],
             ),
           ),
+          ),
         ),
           );
         },
@@ -1375,7 +1599,7 @@ class _StepHeader extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
       decoration: BoxDecoration(
-        gradient: DriverBrand.softGradient,
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [context.dsColors.primary.withValues(alpha: 0.18), context.dsColors.primaryStrong.withValues(alpha: 0.10)]),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1387,7 +1611,7 @@ class _StepHeader extends StatelessWidget {
             }),
             style: TextStyle(
               fontFamily: 'cairo',
-              color: DriverBrand.textSecondaryColor(context),
+              color: context.dsColors.textSecondary,
               fontSize: 12,
             ),
           ),
@@ -1401,7 +1625,7 @@ class _StepHeader extends StatelessWidget {
                       EdgeInsetsDirectional.only(end: i == total - 1 ? 0 : 6),
                   height: 6,
                   decoration: BoxDecoration(
-                    color: active ? DriverBrand.tealDark : DriverBrand.border,
+                    color: active ? context.dsColors.primaryStrong : context.dsColors.border,
                     borderRadius: BorderRadius.circular(99),
                   ),
                 ),
@@ -1411,11 +1635,11 @@ class _StepHeader extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             labels[step],
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'cairo',
               fontWeight: FontWeight.w800,
               fontSize: 20,
-              color: DriverBrand.tealDark,
+              color: context.dsColors.primaryStrong,
             ),
           ),
         ],
@@ -1463,19 +1687,19 @@ class _Field extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        prefixIcon: Icon(icon, color: DriverBrand.tealDark),
+        prefixIcon: Icon(icon, color: context.dsColors.primaryStrong),
         filled: true,
-        fillColor: DriverBrand.cardColor(context),
+        fillColor: context.dsColors.card,
         border: OutlineInputBorder(
-          borderRadius: DriverBrand.borderRadiusMd,
+          borderRadius: DsRadius.medium,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: DriverBrand.borderRadiusMd,
-          borderSide: BorderSide(color: DriverBrand.borderColor(context)),
+          borderRadius: DsRadius.medium,
+          borderSide: BorderSide(color: context.dsColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: DriverBrand.borderRadiusMd,
-          borderSide: const BorderSide(color: DriverBrand.teal, width: 2),
+          borderRadius: DsRadius.medium,
+          borderSide: BorderSide(color: context.dsColors.primary, width: 2),
         ),
       ),
     );
@@ -1563,11 +1787,11 @@ class _AccountStep extends StatelessWidget {
             decoration: InputDecoration(
               labelText: t('Birth date'),
               prefixIcon:
-                  const Icon(Icons.cake_outlined, color: DriverBrand.tealDark),
+                  Icon(Icons.cake_outlined, color: context.dsColors.primaryStrong),
               filled: true,
-              fillColor: DriverBrand.cardColor(context),
+              fillColor: context.dsColors.card,
               border:
-                  OutlineInputBorder(borderRadius: DriverBrand.borderRadiusMd),
+                  OutlineInputBorder(borderRadius: DsRadius.medium),
             ),
             child: Text(
               birthDate == null
@@ -1626,26 +1850,28 @@ Widget _affiliationChoiceChip({
   return Expanded(
     child: InkWell(
       onTap: onTap,
-      borderRadius: DriverBrand.borderRadiusMd,
+      borderRadius: DsRadius.medium,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         decoration: BoxDecoration(
           color: selected
-              ? DriverBrand.teal.withValues(alpha: 0.12)
-              : DriverBrand.cardColor(context),
-          borderRadius: DriverBrand.borderRadiusMd,
+              ? context.dsColors.primary.withValues(alpha: 0.12)
+              : context.dsColors.card,
+          borderRadius: DsRadius.medium,
           border: Border.all(
-            color: selected ? DriverBrand.teal : DriverBrand.border,
+            color: selected ? context.dsColors.primary : context.dsColors.border,
             width: selected ? 2 : 1,
           ),
         ),
         child: Text(
           label,
           textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontFamily: 'cairo',
             fontWeight: FontWeight.w700,
-            color: selected ? DriverBrand.tealDark : Colors.black87,
+            color: selected ? context.dsColors.primaryStrong : context.dsColors.textPrimary,
           ),
         ),
       ),
@@ -1659,12 +1885,14 @@ class _TransportCompanyDropdown extends StatefulWidget {
     required this.selectedPath,
     required this.selectedName,
     required this.onSelected,
+    this.countryRef,
   });
 
   final String Function(String) t;
   final String selectedPath;
   final String selectedName;
   final void Function(String path, String name) onSelected;
+  final DocumentReference? countryRef;
 
   @override
   State<_TransportCompanyDropdown> createState() =>
@@ -1680,6 +1908,14 @@ class _TransportCompanyDropdownState extends State<_TransportCompanyDropdown> {
     _future = _loadCompanies();
   }
 
+  @override
+  void didUpdateWidget(covariant _TransportCompanyDropdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.countryRef?.path != widget.countryRef?.path) {
+      _future = _loadCompanies();
+    }
+  }
+
   static String _companyDisplayName(Map<String, dynamic> data, String id) {
     final naim = (data['naim'] as String?)?.trim() ?? '';
     if (naim.isNotEmpty) return naim;
@@ -1690,26 +1926,60 @@ class _TransportCompanyDropdownState extends State<_TransportCompanyDropdown> {
     return id;
   }
 
+  /// Only companies explicitly marked active (schema: `actev`).
   static bool _isActiveCompany(Map<String, dynamic> data) {
-    if (data.containsKey('is_active')) {
-      return data['is_active'] == true;
-    }
     if (data.containsKey('actev')) {
       return data['actev'] == true;
+    }
+    if (data.containsKey('is_active')) {
+      return data['is_active'] == true;
     }
     if (data.containsKey('active')) {
       return data['active'] == true;
     }
-    return true;
+    return false;
+  }
+
+  static bool _matchesCountry(
+    Map<String, dynamic> data,
+    DocumentReference? country,
+  ) {
+    if (country == null) return true;
+    final rev = data['Rev_dolh'];
+    if (rev is DocumentReference) {
+      return rev.path == country.path;
+    }
+    if (rev is String && rev.isNotEmpty) {
+      return rev == country.path || rev.endsWith('/${country.id}');
+    }
+    return false;
   }
 
   Future<List<_CompanyOption>> _loadCompanies() async {
-    final snap =
-        await FirebaseFirestore.instance.collection('transport_company').get();
+    final country = widget.countryRef ?? FFAppState().dolh;
+    QuerySnapshot<Map<String, dynamic>> snap;
+    try {
+      if (country != null) {
+        snap = await FirebaseFirestore.instance
+            .collection('transport_company')
+            .where('Rev_dolh', isEqualTo: country)
+            .get();
+      } else {
+        snap = await FirebaseFirestore.instance
+            .collection('transport_company')
+            .get();
+      }
+    } catch (_) {
+      snap = await FirebaseFirestore.instance
+          .collection('transport_company')
+          .get();
+    }
+
     final options = <_CompanyOption>[];
     for (final doc in snap.docs) {
       final data = doc.data();
       if (!_isActiveCompany(data)) continue;
+      if (!_matchesCountry(data, country)) continue;
       options.add(
         _CompanyOption(
           path: doc.reference.path,
@@ -1755,7 +2025,7 @@ class _TransportCompanyDropdownState extends State<_TransportCompanyDropdown> {
             widget.t('No active transport companies found'),
             style: TextStyle(
               fontFamily: 'cairo',
-              color: DriverBrand.textSecondaryColor(context),
+              color: context.dsColors.textSecondary,
             ),
           );
         }
@@ -1767,14 +2037,14 @@ class _TransportCompanyDropdownState extends State<_TransportCompanyDropdown> {
           initialValue: value,
           decoration: InputDecoration(
             labelText: widget.t('Transport company'),
-            prefixIcon: const Icon(
+            prefixIcon: Icon(
               Icons.business_outlined,
-              color: DriverBrand.tealDark,
+              color: context.dsColors.primaryStrong,
             ),
             filled: true,
-            fillColor: DriverBrand.cardColor(context),
+            fillColor: context.dsColors.card,
             border: OutlineInputBorder(
-              borderRadius: DriverBrand.borderRadiusMd,
+              borderRadius: DsRadius.medium,
             ),
           ),
           items: options
@@ -1840,7 +2110,7 @@ class _LocationStep extends StatelessWidget {
           t('Confirm your current location on the map'),
           style: TextStyle(
             fontFamily: 'cairo',
-            color: DriverBrand.textSecondaryColor(context),
+            color: context.dsColors.textSecondary,
           ),
         ),
         const SizedBox(height: 12),
@@ -1900,6 +2170,7 @@ class _VehicleStep extends StatelessWidget {
     required this.onCompanySelected,
     required this.onTourGuideChanged,
     required this.onUploadGuidePermit,
+    this.countryRef,
   });
 
   final String Function(String) t;
@@ -1937,13 +2208,15 @@ class _VehicleStep extends StatelessWidget {
   final void Function(String path, String name) onCompanySelected;
   final ValueChanged<bool> onTourGuideChanged;
   final VoidCallback onUploadGuidePermit;
+  final DocumentReference? countryRef;
 
   Widget _docBtn(BuildContext context,
       {required String label,
       required String url,
       required bool loading,
       required VoidCallback onTap}) {
-    final ok = url.isNotEmpty;
+    final pending = url.startsWith('pending://');
+    final ok = url.startsWith('https://');
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: SizedBox(
@@ -1958,11 +2231,23 @@ class _VehicleStep extends StatelessWidget {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : Icon(
-                  ok ? Icons.check_circle : Icons.upload_file,
-                  color: ok ? Colors.green : DriverBrand.tealDark,
+                  ok
+                      ? Icons.check_circle
+                      : pending
+                          ? Icons.schedule
+                          : Icons.upload_file,
+                  color: ok
+                      ? Colors.green
+                      : pending
+                          ? Colors.orange
+                          : context.dsColors.primaryStrong,
                 ),
           label: Text(
-            ok ? '$label ✓' : label,
+            ok
+                ? '$label ✓'
+                : pending
+                    ? '$label (${t('Selected')})'
+                    : label,
             style: const TextStyle(fontFamily: 'cairo', fontWeight: FontWeight.w700),
           ),
         ),
@@ -2025,19 +2310,19 @@ class _VehicleStep extends StatelessWidget {
         const SizedBox(height: 12),
         InkWell(
           onTap: onPickType,
-          borderRadius: DriverBrand.borderRadiusMd,
+          borderRadius: DsRadius.medium,
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-                color: DriverBrand.cardColor(context),
-                borderRadius: DriverBrand.borderRadiusMd,
+                color: context.dsColors.card,
+                borderRadius: DsRadius.medium,
                 border: Border.all(
                     color: selectedType.isEmpty
-                        ? DriverBrand.border
-                        : DriverBrand.teal)),
+                        ? context.dsColors.border
+                        : context.dsColors.primary)),
             child: Row(children: [
-              const Icon(Icons.category_outlined, color: DriverBrand.tealDark),
+              Icon(Icons.category_outlined, color: context.dsColors.primaryStrong),
               const SizedBox(width: 12),
               Expanded(
                   child: Text(
@@ -2046,7 +2331,7 @@ class _VehicleStep extends StatelessWidget {
                           : selectedType,
                       style: const TextStyle(
                           fontFamily: 'cairo', fontWeight: FontWeight.w700))),
-              const Icon(Icons.expand_more, color: DriverBrand.tealDark),
+              Icon(Icons.expand_more, color: context.dsColors.primaryStrong),
             ]),
           ),
         ),
@@ -2083,6 +2368,7 @@ class _VehicleStep extends StatelessWidget {
             t: t,
             selectedPath: companyPath,
             selectedName: companyName,
+            countryRef: countryRef,
             onSelected: onCompanySelected,
           ),
         ],

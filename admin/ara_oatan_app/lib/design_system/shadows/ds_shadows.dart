@@ -53,13 +53,13 @@ abstract final class DsShadows {
         ),
       ];
 
-  /// Subtle brand glow for primary CTAs.
+  /// Subtle brand glow for primary CTAs (classic, restrained).
   static List<BoxShadow> primaryGlow({bool dark = false}) => [
         BoxShadow(
           color: (dark ? const Color(0xFF4A9A87) : DsPrimaryScale.shade500)
-              .withValues(alpha: 0.28),
-          blurRadius: 18,
-          offset: const Offset(0, 8),
+              .withValues(alpha: 0.16),
+          blurRadius: 10,
+          offset: const Offset(0, 3),
         ),
       ];
 }

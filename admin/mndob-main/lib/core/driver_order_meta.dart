@@ -2,7 +2,7 @@ import '/backend/schema/order_record.dart';
 import '/core/driver_trip_constants.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
-/// حقول إضافية على مستند `order` (اختيارية — تُقرأ بأمان).
+/// Optional extra fields on `order` documents (read safely).
 extension DriverOrderMeta on OrderRecord {
   String get cartext =>
       (snapshotData['cartext'] as String?)?.trim() ?? '';
@@ -33,28 +33,36 @@ extension DriverOrderMeta on OrderRecord {
   DateTime? get destinationUpdatedAt =>
       snapshotData['destinationUpdatedAt'] as DateTime?;
 
-  String tripTypeLabel() {
+  /// English phrase key for EasyLocalization (never Arabic UI literal).
+  String tripTypeLabelKey() {
     final raw = tripTypeRaw.toLowerCase();
     if (raw.contains('round') || raw.contains('عودة')) {
-      return 'ذهاب وعودة';
+      return 'Round trip';
     }
     if (raw.contains('one') || raw.contains('ذهاب')) {
-      return 'ذهاب فقط';
+      return 'One way';
     }
-    if (driverGuide) return 'جولة إرشادية';
-    if (addCartNumer > 1) return 'متعدد الوجهات';
-    return 'ذهاب فقط';
+    if (driverGuide) return 'Guided tour';
+    if (addCartNumer > 1) return 'Multi-stop';
+    return 'One way';
   }
 
-  String luggageLabel() {
+  /// Prefer [tripTypeLabelKey] + driverTr in UI.
+  String tripTypeLabel() => tripTypeLabelKey();
+
+  String luggageLabelKey() {
     final raw = luggageEstimate.toLowerCase();
     if (raw.isEmpty) return '—';
-    if (raw.contains('none') || raw.contains('لا')) return 'بدون أمتعة';
-    if (raw.contains('small') || raw.contains('صغير')) return 'أمتعة صغيرة';
-    if (raw.contains('medium') || raw.contains('متوسط')) return 'أمتعة متوسطة';
-    if (raw.contains('large') || raw.contains('كبير')) return 'أمتعة كبيرة';
+    if (raw.contains('none') || raw.contains('لا')) return 'No luggage';
+    if (raw.contains('small') || raw.contains('صغير')) return 'Small luggage';
+    if (raw.contains('medium') || raw.contains('متوسط')) {
+      return 'Medium luggage';
+    }
+    if (raw.contains('large') || raw.contains('كبير')) return 'Large luggage';
     return luggageEstimate;
   }
+
+  String luggageLabel() => luggageLabelKey();
 
   String pickupLabel() {
     if (loceshStreng.isNotEmpty) return loceshStreng;
@@ -76,13 +84,13 @@ extension DriverOrderMeta on OrderRecord {
     return '—';
   }
 
-  /// موقع العميل للالتقاط (ثابت عند إنشاء الطلب).
+  /// Customer pickup location (fixed at order creation).
   LatLng? get customerPickup => lokeshn;
 
-  /// موقع المندوب الحي (يُحدَّث أثناء التتبع في mapuser).
+  /// Live driver position (updated during tracking in mapuser).
   LatLng? get driverLivePosition => mapuser;
 
-  /// وجهة الرحلة من قائمة الأماكن أو الإحداثيات المحفوظة.
+  /// Trip destination from places list or saved coordinates.
   LatLng? get tripDestination {
     if (listAmakn.isNotEmpty) {
       final last = listAmakn.last;
@@ -94,7 +102,7 @@ extension DriverOrderMeta on OrderRecord {
     return null;
   }
 
-  /// نقاط المسار: مندوب → التقاط → كل المحطات بالترتيب → الوجهة الأخيرة.
+  /// Route points: driver → pickup → stops → final destination.
   List<LatLng> routeWaypoints({LatLng? driverOverride}) {
     final driver = driverOverride ??
         (DriverTripHalh.isActiveTrip(halhText) ? driverLivePosition : null);

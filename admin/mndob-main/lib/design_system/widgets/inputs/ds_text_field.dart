@@ -94,7 +94,6 @@ class DsTextField extends StatelessWidget {
     String? errorText,
     ValueChanged<String>? onChanged,
     bool enabled = true,
-    Widget? prefixIcon,
   }) =>
       DsTextField(
         key: key,
@@ -108,7 +107,7 @@ class DsTextField extends StatelessWidget {
         keyboardType: TextInputType.phone,
         textInputAction: TextInputAction.next,
         autofillHints: const [AutofillHints.telephoneNumber],
-        prefixIcon: prefixIcon ?? const Icon(Icons.phone_outlined),
+        prefixIcon: const Icon(Icons.phone_outlined),
       );
 
   factory DsTextField.password({

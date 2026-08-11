@@ -12,6 +12,7 @@ import '/backend/admin_agent_session_ready.dart';
 import '/backend/admin_route_guard.dart';
 import '/backend/admin_role_service.dart';
 
+import '/core/admin_splash_screen.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -410,6 +411,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: AdminRegesrWidget.routeName,
           path: AdminRegesrWidget.routePath,
+          requireAuth: true,
           builder: (context, params) => AdminRegesrWidget(),
         ),
         FFRoute(
@@ -581,6 +583,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => const AdminFinanceHubWidget(),
         ),
         FFRoute(
+          name: AdminDriverWalletsWidget.routeName,
+          path: AdminDriverWalletsWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminDriverWalletsWidget(),
+        ),
+        FFRoute(
           name: AddUserWidget.routeName,
           path: AddUserWidget.routePath,
           requireAuth: true,
@@ -589,6 +597,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: HomeWidget.routeName,
           path: HomeWidget.routePath,
+          requireAuth: true,
           builder: (context, params) => HomeWidget(),
         ),
         FFRoute(
@@ -851,13 +860,7 @@ class FFRoute {
                 )
               : builder(context, ffParams);
           final child = appStateNotifier.loading
-              ? Container(
-                  color: FlutterFlowTheme.of(context).secondaryBackground,
-                  child: Image.asset(
-                    'assets/images/__2025-07-09_133622.png',
-                    fit: BoxFit.contain,
-                  ),
-                )
+              ? const AdminSplashScreen()
               : page;
 
           final transitionInfo = state.transitionInfo;

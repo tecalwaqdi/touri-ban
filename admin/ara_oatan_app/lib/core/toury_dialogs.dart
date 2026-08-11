@@ -341,78 +341,71 @@ class _TouryDialogShell extends StatelessWidget {
       backgroundColor: Colors.transparent,
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: DsSpacing.xxl),
-      child: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.85, end: 1),
-        duration: DsDurations.slow,
-        curve: DsCurves.bounceOut,
-        builder: (context, scale, child) =>
-            Transform.scale(scale: scale, child: child),
-        child: Container(
-          decoration: BoxDecoration(
-            color: surface,
-            borderRadius: DsRadius.large,
-            boxShadow: TouryBrand.cardShadow(elevated: true),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: DsSpacing.xl),
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: style.bg,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(style.icon, color: style.color, size: DsIcons.xl),
+      child: Container(
+        decoration: BoxDecoration(
+          color: surface,
+          borderRadius: DsRadius.large,
+          boxShadow: DsShadows.dialog(),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: DsSpacing.xl),
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: style.bg,
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: DsSpacing.md),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: DsSpacing.xl),
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: DsTypography.fontFamily,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: textPrimary,
-                  ),
+              child: Icon(style.icon, color: style.color, size: DsIcons.lg),
+            ),
+            const SizedBox(height: DsSpacing.md),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: DsSpacing.xl),
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: DsTypography.fontFamily,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 17,
+                  color: textPrimary,
                 ),
               ),
-              const SizedBox(height: DsSpacing.xs),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: DsSpacing.xl),
-                child: Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: DsTypography.fontFamily,
-                    fontSize: 14,
-                    color: textSecondary,
-                    height: 1.45,
-                  ),
+            ),
+            const SizedBox(height: DsSpacing.xs),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: DsSpacing.xl),
+              child: Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: DsTypography.fontFamily,
+                  fontSize: 14,
+                  color: textSecondary,
+                  height: 1.45,
                 ),
               ),
-              const SizedBox(height: DsSpacing.xl),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  DsSpacing.md,
-                  0,
-                  DsSpacing.md,
-                  DsSpacing.md,
-                ),
-                child: Row(
-                  children: [
-                    for (var i = 0; i < actions.length; i++) ...[
-                      if (i > 0) const SizedBox(width: DsSpacing.xs),
-                      Expanded(child: actions[i]),
-                    ],
+            ),
+            const SizedBox(height: DsSpacing.xl),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                DsSpacing.md,
+                0,
+                DsSpacing.md,
+                DsSpacing.md,
+              ),
+              child: Row(
+                children: [
+                  for (var i = 0; i < actions.length; i++) ...[
+                    if (i > 0) const SizedBox(width: DsSpacing.xs),
+                    Expanded(child: actions[i]),
                   ],
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -444,19 +437,12 @@ class _TouryDialogButton extends StatelessWidget {
     final bg = destructive
         ? error
         : filled
-            ? null
+            ? primary
             : Colors.transparent;
-    final gradient = destructive || !filled
-        ? null
-        : LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [primary, DsPrimaryScale.shade700],
-          );
     final fg = filled ? onPrimary : textPrimary;
     final border = filled
         ? null
-        : Border.all(color: borderColor, width: 1.5);
+        : Border.all(color: borderColor, width: 1.2);
 
     return Material(
       color: Colors.transparent,
@@ -467,18 +453,20 @@ class _TouryDialogButton extends StatelessWidget {
           height: DsConstants.buttonHeightMd,
           decoration: BoxDecoration(
             color: bg,
-            gradient: gradient,
             borderRadius: DsRadius.medium,
             border: border,
+            boxShadow: filled && !destructive ? DsShadows.soft() : null,
           ),
           child: Center(
             child: Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontFamily: DsTypography.fontFamily,
                 color: fg,
                 fontSize: 15,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),

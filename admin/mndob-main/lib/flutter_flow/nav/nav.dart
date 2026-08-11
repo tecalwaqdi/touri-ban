@@ -16,7 +16,6 @@ import '/backend/push_notifications/push_notifications_handler.dart'
     show PushNotificationsHandler;
 import '/components/driver_auth_gate.dart';
 import '/main.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/lat_lng.dart';
 import '/flutter_flow/place.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -26,6 +25,7 @@ import '/index.dart';
 import '/driver_pending_approval/driver_pending_approval_widget.dart';
 import '/components/driver_new_order_listener.dart';
 import '/components/driver_location_wake_scope.dart';
+import '/core/driver_splash_screen.dart';
 
 export 'package:go_router/go_router.dart';
 export 'serialization_util.dart';
@@ -52,7 +52,9 @@ class AppStateNotifier extends ChangeNotifier {
   /// Otherwise, this will trigger a refresh and interrupt the action(s).
   bool notifyOnAuthChange = true;
 
-  bool get loading => user == null || showSplashImage;
+  // Do not wait on `user == null` — authStateChanges can lag or stall and
+  // leave the splash forever. Match customer app: splash is timed only.
+  bool get loading => showSplashImage;
   bool get loggedIn => user?.loggedIn ?? false;
   bool get initiallyLoggedIn => initialUser?.loggedIn ?? false;
   bool get shouldRedirect => loggedIn && _redirectLocation != null;
@@ -137,16 +139,23 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => MktmlhWidget(),
         ),
         FFRoute(
+          // LEGACY trip screen — redirect to canonical DriverTripService UI.
           name: TfaselCopyWidget.routeName,
           path: TfaselCopyWidget.routePath,
           requireAuth: true,
-          builder: (context, params) => TfaselCopyWidget(
-            idorder: params.getParam(
-              'idorder',
-              ParamType.DocumentReference,
-              isList: false,
-              collectionNamePath: ['order'],
-            ),
+          builder: (context, params) => TfaselOrserWidget(
+            id: params.getParam(
+                  'id',
+                  ParamType.DocumentReference,
+                  isList: false,
+                  collectionNamePath: ['order'],
+                ) ??
+                params.getParam(
+                  'idorder',
+                  ParamType.DocumentReference,
+                  isList: false,
+                  collectionNamePath: ['order'],
+                ),
           ),
         ),
         FFRoute(
@@ -165,9 +174,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => RegCompneWidget(),
         ),
         FFRoute(
+          // LEGACY demo AI — redirect home.
           name: DemoAI1Widget.routeName,
           path: DemoAI1Widget.routePath,
-          builder: (context, params) => DemoAI1Widget(),
+          builder: (context, params) =>
+              params.isEmpty ? NavBarPage(initialPage: 'home') : HomeWidget(),
         ),
         FFRoute(
           // DEPRECATED — Wasl legacy registration. Redirect to production `regdrever`.
@@ -246,6 +257,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: ChatWidget.routeName,
           path: ChatWidget.routePath,
+          requireAuth: true,
           builder: (context, params) => ChatWidget(
             idorder: params.getParam(
               'idorder',
@@ -491,13 +503,7 @@ class FFRoute {
                 )
               : builder(context, ffParams);
           final child = appStateNotifier.loading
-              ? Container(
-                  color: FlutterFlowTheme.of(context).secondaryBackground,
-                  child: Image.asset(
-                    'assets/images/logoTory.png',
-                    fit: BoxFit.contain,
-                  ),
-                )
+              ? const DriverSplashScreen()
               : DriverLocationWakeScope(
                   child: DriverNewOrderListener(
                     child: PushNotificationsHandler(child: page),

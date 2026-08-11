@@ -69,17 +69,32 @@ class _ListAdressWidgetState extends State<ListAdressWidget> {
     var confirmDialogResponse = await showDialog<bool>(
           context: context,
           builder: (alertDialogContext) {
+            final colors = DsColors.of(alertDialogContext);
+            final typography = DsTypography.of(alertDialogContext);
             return WebViewAware(
               child: AlertDialog(
-                content: Text('ui_text_def4060285'.tr()),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(alertDialogContext, false),
-                    child: Text('ui_text_5c528d9fa3'.tr()),
+                backgroundColor: colors.surface,
+                shape: RoundedRectangleBorder(borderRadius: DsRadius.large),
+                content: Text(
+                  'ui_text_def4060285'.tr(),
+                  style: typography.bodyMedium.copyWith(
+                    color: colors.textSecondary,
                   ),
-                  TextButton(
+                ),
+                actionsPadding: const EdgeInsets.fromLTRB(
+                  DsSpacing.md,
+                  0,
+                  DsSpacing.md,
+                  DsSpacing.md,
+                ),
+                actions: [
+                  DsButton.text(
+                    label: 'ui_text_5c528d9fa3'.tr(),
+                    onPressed: () => Navigator.pop(alertDialogContext, false),
+                  ),
+                  DsButton.danger(
+                    label: 'ui_text_d045bef8e5'.tr(),
                     onPressed: () => Navigator.pop(alertDialogContext, true),
-                    child: Text('ui_text_d045bef8e5'.tr()),
                   ),
                 ],
               ),
@@ -129,7 +144,7 @@ class _ListAdressWidgetState extends State<ListAdressWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () async {
-                    context.pushNamed(Profile05Widget.routeName);
+                    context.safePop();
                   },
                 ),
               ),

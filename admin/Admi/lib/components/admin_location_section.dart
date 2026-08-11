@@ -185,7 +185,7 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
           decoration: InputDecoration(
             hintText: uiTr(context, 'ابحث عن موقع أو عنوان'),
             filled: true,
-            fillColor: const Color(0xFFF5F5F5),
+            fillColor: AdminUi.fieldFill(context, muted: true),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,
@@ -226,7 +226,7 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
                   hintText: uiTr(context, 'خط العرض، خط الطول (من Google Earth)'),
                   helperText: appTr(context, 'adm_coords_example'),
                   filled: true,
-                  fillColor: const Color(0xFFF5F5F5),
+                  fillColor: AdminUi.fieldFill(context, muted: true),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 14,
@@ -273,7 +273,7 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
         Container(
           height: 220,
           decoration: BoxDecoration(
-            color: const Color(0xFFF5F5F5),
+            color: AdminUi.fieldFill(context, muted: true),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: AdminUi.brandTeal.withValues(alpha: 0.2)),
           ),

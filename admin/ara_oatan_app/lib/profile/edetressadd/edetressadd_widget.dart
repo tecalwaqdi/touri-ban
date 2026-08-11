@@ -114,7 +114,8 @@ class _EdetressaddWidgetState extends State<EdetressaddWidget> {
       vill: FFAppState().adressVillRev,
     ));
 
-    context.pushNamed(ListAdressWidget.routeName);
+    if (!mounted) return;
+    context.safePop();
   }
 
   @override
@@ -142,8 +143,9 @@ class _EdetressaddWidgetState extends State<EdetressaddWidget> {
                 ),
                 leading: DsIconButton(
                   icon: DsIcons.back,
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                   onPressed: () async {
-                    context.pop();
+                    context.safePop();
                   },
                 ),
               ),

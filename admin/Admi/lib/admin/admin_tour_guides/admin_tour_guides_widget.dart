@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_performance.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_enterprise_kit.dart';
+import '/components/admin_firestore_list.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
@@ -14,7 +16,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 
-/// مراجعة طلبات المرشدين السياحيين (موافقة / رفض).
+/// مراجعة طلبات المرشدين السياحيين (موافقة / رفض / إيقاف).
 class AdminTourGuidesWidget extends StatefulWidget {
   const AdminTourGuidesWidget({super.key});
 
@@ -31,15 +33,13 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
   final _searchCtrl = TextEditingController();
   String _filter = TourGuideStatus.pending;
   String _query = '';
-  Stream<List<UserRecord>>? _stream;
-  String? _streamKey;
   Timer? _searchDebounce;
+  bool _busy = false;
 
   @override
   void initState() {
     super.initState();
     _menu2Model = createModel(context, () => Menu2Model());
-    _ensureStream();
   }
 
   @override
@@ -50,22 +50,20 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
     super.dispose();
   }
 
-  void _ensureStream() {
-    final key = _filter;
-    if (_stream != null && _streamKey == key) return;
-    _streamKey = key;
-    _stream = queryUserRecord(
-      queryBuilder: (q) {
-        var query = q.where(TourGuideStatus.fieldIsTourGuide, isEqualTo: true);
-        if (_filter != 'all') {
-          query = query.where(
-            TourGuideStatus.fieldStatus,
-            isEqualTo: _filter,
-          );
-        }
-        return query.limit(120);
-      },
-    );
+  Query _guidesQuery(Query collection) {
+    var query = (collection as Query<Map<String, dynamic>>)
+        .where(TourGuideStatus.fieldIsTourGuide, isEqualTo: true);
+    if (_filter != 'all') {
+      query = query.where(
+        TourGuideStatus.fieldStatus,
+        isEqualTo: _filter,
+      );
+    }
+    final country = AdminCountryScope.activeCountryRef;
+    if (AdminRoleService.isCountryAgent && country != null) {
+      query = query.where('Rev_dolh', isEqualTo: country);
+    }
+    return query.orderBy(FieldPath.documentId);
   }
 
   void _onSearchChanged(String value) {
@@ -78,90 +76,164 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
 
   void _setFilter(String value) {
     if (_filter == value) return;
-    setState(() {
-      _filter = value;
-      _ensureStream();
-    });
+    setState(() => _filter = value);
   }
 
-  List<UserRecord> _scoped(List<UserRecord> users) {
-    if (!AdminRoleService.isCountryAgent) return users;
+  bool _inScope(UserRecord user) {
+    if (!AdminRoleService.isCountryAgent) return true;
     final country = AdminCountryScope.activeCountryRef;
-    if (country == null) return users;
-    return users.where((u) {
-      final rev = u.revDolh;
-      final agent = u.revDlohAgent;
-      return rev?.path == country.path || agent?.path == country.path;
-    }).toList();
+    if (country == null) return false;
+    final rev = user.revDolh;
+    final agent = user.revDlohAgent;
+    return rev?.path == country.path || agent?.path == country.path;
   }
 
   List<UserRecord> _filtered(List<UserRecord> users) {
+    final scoped = users.where(_inScope);
     final q = _query.trim().toLowerCase();
-    if (q.isEmpty) return users;
-    return users.where((u) {
+    if (q.isEmpty) return scoped.toList();
+    return scoped.where((u) {
       return u.displayName.toLowerCase().contains(q) ||
           u.email.toLowerCase().contains(q) ||
-          u.phoneNumber.toLowerCase().contains(q);
+          u.phoneNumber.toLowerCase().contains(q) ||
+          u.transportCompanyText.toLowerCase().contains(q) ||
+          u.mndobVillText.toLowerCase().contains(q);
     }).toList();
   }
 
+  Future<void> _guardedAction(
+    UserRecord user,
+    Future<void> Function() action,
+  ) async {
+    if (!_inScope(user)) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(appTr(context, 'ent_guides_out_of_scope'))),
+      );
+      return;
+    }
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      await action();
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _approve(UserRecord user) async {
-    final ok = await showAdminConfirmDialog(
-      context,
-      title: appTr(context, 'ent_guides_approve_title'),
-      message: appTrFormat(context, 'ent_guides_approve_msg', user.displayName),
-      confirmLabel: appTr(context, 'ent_guides_approve'),
-      cancelLabel: appTr(context, 'ent_cancel'),
-    );
-    if (!ok) return;
-    await user.reference.update({
-      TourGuideStatus.fieldIsTourGuide: true,
-      TourGuideStatus.fieldStatus: TourGuideStatus.approved,
-      TourGuideStatus.fieldReviewedAt: FieldValue.serverTimestamp(),
-      TourGuideStatus.fieldRejectionReason: '',
+    await _guardedAction(user, () async {
+      final ok = await showAdminConfirmDialog(
+        context,
+        title: appTr(context, 'ent_guides_approve_title'),
+        message: appTrFormat(context, 'ent_guides_approve_msg', user.displayName),
+        confirmLabel: appTr(context, 'ent_guides_approve'),
+        cancelLabel: appTr(context, 'ent_cancel'),
+      );
+      if (!ok) return;
+      await user.reference.update({
+        TourGuideStatus.fieldIsTourGuide: true,
+        TourGuideStatus.fieldStatus: TourGuideStatus.approved,
+        TourGuideStatus.fieldReviewedAt: FieldValue.serverTimestamp(),
+        TourGuideStatus.fieldRejectionReason: '',
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(appTr(context, 'ent_guides_approved_snack'))),
+      );
     });
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(appTr(context, 'ent_guides_approved_snack'))),
-    );
   }
 
   Future<void> _reject(UserRecord user) async {
-    final reasonCtrl = TextEditingController();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(appTr(ctx, 'ent_guides_reject_title')),
-        content: TextField(
-          controller: reasonCtrl,
-          decoration: InputDecoration(
-            labelText: appTr(ctx, 'ent_guides_reject_reason'),
+    await _guardedAction(user, () async {
+      final reasonCtrl = TextEditingController();
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(appTr(ctx, 'ent_guides_reject_title')),
+          content: TextField(
+            controller: reasonCtrl,
+            decoration: InputDecoration(
+              labelText: appTr(ctx, 'ent_guides_reject_reason'),
+            ),
+            maxLines: 3,
           ),
-          maxLines: 3,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(appTr(ctx, 'ent_cancel')),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(appTr(ctx, 'ent_guides_reject')),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(appTr(ctx, 'ent_cancel')),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(appTr(ctx, 'ent_guides_reject')),
-          ),
-        ],
-      ),
-    );
-    if (ok != true) return;
-    await user.reference.update({
-      TourGuideStatus.fieldStatus: TourGuideStatus.rejected,
-      TourGuideStatus.fieldReviewedAt: FieldValue.serverTimestamp(),
-      TourGuideStatus.fieldRejectionReason: reasonCtrl.text.trim(),
+      );
+      if (ok != true) {
+        reasonCtrl.dispose();
+        return;
+      }
+      await user.reference.update({
+        TourGuideStatus.fieldStatus: TourGuideStatus.rejected,
+        TourGuideStatus.fieldReviewedAt: FieldValue.serverTimestamp(),
+        TourGuideStatus.fieldRejectionReason: reasonCtrl.text.trim(),
+      });
+      reasonCtrl.dispose();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(appTr(context, 'ent_guides_rejected_snack'))),
+      );
     });
-    reasonCtrl.dispose();
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(appTr(context, 'ent_guides_rejected_snack'))),
-    );
+  }
+
+  Future<void> _suspend(UserRecord user) async {
+    await _guardedAction(user, () async {
+      final ok = await showAdminConfirmDialog(
+        context,
+        title: appTr(context, 'ent_guides_suspend_title'),
+        message:
+            appTrFormat(context, 'ent_guides_suspend_msg', user.displayName),
+        confirmLabel: appTr(context, 'ent_guides_suspend'),
+        cancelLabel: appTr(context, 'ent_cancel'),
+      );
+      if (!ok) return;
+      await user.reference.update({
+        TourGuideStatus.fieldStatus: TourGuideStatus.suspended,
+        TourGuideStatus.fieldReviewedAt: FieldValue.serverTimestamp(),
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(appTr(context, 'ent_guides_suspended_snack'))),
+      );
+    });
+  }
+
+  Future<void> _reactivate(UserRecord user) async {
+    await _guardedAction(user, () async {
+      final ok = await showAdminConfirmDialog(
+        context,
+        title: appTr(context, 'ent_guides_reactivate_title'),
+        message: appTrFormat(
+          context,
+          'ent_guides_reactivate_msg',
+          user.displayName,
+        ),
+        confirmLabel: appTr(context, 'ent_guides_reactivate'),
+        cancelLabel: appTr(context, 'ent_cancel'),
+      );
+      if (!ok) return;
+      await user.reference.update({
+        TourGuideStatus.fieldIsTourGuide: true,
+        TourGuideStatus.fieldStatus: TourGuideStatus.approved,
+        TourGuideStatus.fieldReviewedAt: FieldValue.serverTimestamp(),
+        TourGuideStatus.fieldRejectionReason: '',
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(appTr(context, 'ent_guides_reactivated_snack'))),
+      );
+    });
   }
 
   AdminBadgeTone _tone(String status) {
@@ -171,6 +243,7 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
       case TourGuideStatus.pending:
         return AdminBadgeTone.warning;
       case TourGuideStatus.rejected:
+      case TourGuideStatus.suspended:
         return AdminBadgeTone.danger;
       default:
         return AdminBadgeTone.neutral;
@@ -185,9 +258,19 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
         return appTr(context, 'ent_guides_pending');
       case TourGuideStatus.rejected:
         return appTr(context, 'ent_guides_rejected');
+      case TourGuideStatus.suspended:
+        return appTr(context, 'ent_guides_suspended');
       default:
         return status;
     }
+  }
+
+  String _countryLabel(UserRecord user) {
+    final scoped = AdminCountryScope.activeCountryLabel;
+    if (AdminRoleService.isCountryAgent && scoped.isNotEmpty) return scoped;
+    final path = user.revDolh?.id ?? user.revDlohAgent?.id ?? '';
+    if (path.isEmpty) return '—';
+    return path;
   }
 
   @override
@@ -227,6 +310,11 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
                 onSelected: (_) => _setFilter(TourGuideStatus.rejected),
               ),
               AdminFilterChip(
+                label: appTr(context, 'ent_guides_suspended_plural'),
+                selected: _filter == TourGuideStatus.suspended,
+                onSelected: (_) => _setFilter(TourGuideStatus.suspended),
+              ),
+              AdminFilterChip(
                 label: appTr(context, 'ent_all'),
                 selected: _filter == 'all',
                 onSelected: (_) => _setFilter('all'),
@@ -234,22 +322,15 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
             ],
           ),
           Expanded(
-            child: StreamBuilder<List<UserRecord>>(
-              stream: _stream,
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return AdminEmptyState(
-                    title: appTr(context, 'ent_guides_load_failed'),
-                    message: snapshot.error.toString(),
-                    icon: Icons.error_outline,
-                  );
-                }
-                if (!snapshot.hasData) {
-                  return AdminLoadingState(
-                      label: appTr(context, 'ent_loading'));
-                }
-                final list = _filtered(_scoped(snapshot.data!));
-                if (list.isEmpty) {
+            child: AdminFirestoreList<UserRecord>(
+              key: ValueKey('tour_guides_$_filter'),
+              query: UserRecord.collection,
+              recordBuilder: UserRecord.fromSnapshot,
+              pageSize: kAdminPageSize,
+              queryBuilder: _guidesQuery,
+              builder: (context, allGuides, listState) {
+                final list = _filtered(allGuides);
+                if (list.isEmpty && !listState.isLoading) {
                   return AdminEmptyState(
                     title: appTr(context, 'ent_guides_empty'),
                     message: appTr(context, 'ent_guides_empty_hint'),
@@ -257,17 +338,41 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
                   );
                 }
                 return ListView.separated(
-                  itemCount: list.length,
+                  itemCount: list.length + 1,
                   separatorBuilder: (_, __) => const SizedBox(height: 10),
                   itemBuilder: (context, index) {
+                    if (index == list.length) {
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Text(
+                              adminListCountLabel(
+                                context,
+                                listState,
+                                visibleCount: list.length,
+                                pageFetched: allGuides.length,
+                              ),
+                              style: theme.labelMedium,
+                            ),
+                          ),
+                          AdminListLoadMoreFooter(state: listState),
+                        ],
+                      );
+                    }
                     final user = list[index];
                     final data = user.snapshotData;
                     final status = (data[TourGuideStatus.fieldStatus]
                             as String?) ??
-                        TourGuideStatus.none;
-                    final permit =
-                        (data[TourGuideStatus.fieldPermitUrl] as String?) ??
-                            '';
+                        user.tourGuideStatus;
+                    final permit = user.tourGuidePermitUrl.isNotEmpty
+                        ? user.tourGuidePermitUrl
+                        : ((data[TourGuideStatus.fieldPermitUrl] as String?) ??
+                            '');
+                    final idDoc = user.imgIdRksh.isNotEmpty
+                        ? user.imgIdRksh
+                        : user.imgId;
+                    final registered = user.createdTime;
                     return AdminContentCard(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -303,12 +408,23 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
                                 const SizedBox(height: 4),
                                 Text(
                                   [
+                                    '${appTr(context, 'ent_guides_country')}: ${_countryLabel(user)}',
                                     if (user.phoneNumber.isNotEmpty)
                                       user.phoneNumber,
                                     if (user.email.isNotEmpty) user.email,
                                     if (user.transportCompanyText.isNotEmpty)
                                       user.transportCompanyText,
-                                  ].join(' · '),
+                                    if (user.textTypeCarMndob.isNotEmpty ||
+                                        user.mndobVillText.isNotEmpty)
+                                      '${appTr(context, 'ent_guides_vehicle')}: ${[
+                                        if (user.textTypeCarMndob.isNotEmpty)
+                                          user.textTypeCarMndob,
+                                        if (user.mndobVillText.isNotEmpty)
+                                          user.mndobVillText,
+                                      ].join(' · ')}',
+                                    if (registered != null)
+                                      '${appTr(context, 'ent_guides_registered')}: ${dateTimeFormat('yMMMd', registered)}',
+                                  ].join('\n'),
                                   style: theme.bodySmall.override(
                                     fontFamily: theme.bodySmallFamily,
                                     color: theme.secondaryText,
@@ -320,17 +436,36 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
                                   label: _statusLabel(context, status),
                                   tone: _tone(status),
                                 ),
-                                if (permit.isNotEmpty) ...[
-                                  const SizedBox(height: 10),
-                                  TextButton.icon(
-                                    onPressed: () {
-                                      launchURL(permit);
-                                    },
-                                    icon: const Icon(Icons.badge_outlined),
-                                    label: Text(
-                                        appTr(context, 'ent_guides_view_permit')),
-                                  ),
-                                ],
+                                const SizedBox(height: 8),
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 4,
+                                  children: [
+                                    if (permit.isNotEmpty)
+                                      TextButton.icon(
+                                        onPressed: () => launchURL(permit),
+                                        icon: const Icon(Icons.badge_outlined),
+                                        label: Text(appTr(
+                                            context, 'ent_guides_view_permit')),
+                                      ),
+                                    if (idDoc.isNotEmpty)
+                                      TextButton.icon(
+                                        onPressed: () => launchURL(idDoc),
+                                        icon: const Icon(Icons.credit_card),
+                                        label: Text(appTr(
+                                            context, 'ent_guides_id_doc')),
+                                      ),
+                                    if (user.imgIdCar.isNotEmpty)
+                                      TextButton.icon(
+                                        onPressed: () =>
+                                            launchURL(user.imgIdCar),
+                                        icon: const Icon(
+                                            Icons.directions_car_outlined),
+                                        label: Text(appTr(
+                                            context, 'ent_guides_vehicle')),
+                                      ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
@@ -340,14 +475,35 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
                                 AdminPrimaryButton(
                                   label: appTr(context, 'ent_guides_approve'),
                                   icon: Icons.check_rounded,
-                                  onPressed: () => _approve(user),
+                                  onPressed:
+                                      _busy ? null : () => _approve(user),
                                 ),
                                 const SizedBox(height: 8),
                                 AdminPrimaryButton(
                                   label: appTr(context, 'ent_guides_reject'),
                                   outlined: true,
                                   icon: Icons.close_rounded,
-                                  onPressed: () => _reject(user),
+                                  onPressed:
+                                      _busy ? null : () => _reject(user),
+                                ),
+                              ],
+                              if (status == TourGuideStatus.approved) ...[
+                                AdminPrimaryButton(
+                                  label: appTr(context, 'ent_guides_suspend'),
+                                  outlined: true,
+                                  icon: Icons.pause_circle_outline,
+                                  onPressed:
+                                      _busy ? null : () => _suspend(user),
+                                ),
+                              ],
+                              if (status == TourGuideStatus.suspended ||
+                                  status == TourGuideStatus.rejected) ...[
+                                AdminPrimaryButton(
+                                  label:
+                                      appTr(context, 'ent_guides_reactivate'),
+                                  icon: Icons.play_circle_outline,
+                                  onPressed:
+                                      _busy ? null : () => _reactivate(user),
                                 ),
                               ],
                               TextButton(

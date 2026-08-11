@@ -9,6 +9,7 @@ import '/components/admin_edit_shell.dart';
 import '/components/admin_image_picker.dart';
 import '/components/admin_region_picker.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -239,7 +240,12 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${appTr(context, 'adm_load_courier_failed')}: $e')),
+        SnackBar(
+          content: Text(
+            '${appTr(context, 'adm_load_courier_failed')}: '
+            '${AdminUserFacingErrors.from(context, e)}',
+          ),
+        ),
       );
     } finally {
       if (mounted) {
@@ -325,6 +331,19 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       );
       return;
     }
+    if (AdminRoleService.isTransportCompany) {
+      final owned = AdminRoleService.transportCompanyRef;
+      if (owned == null ||
+          _selectedCompany == null ||
+          _selectedCompany!.reference.path != owned.path) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(uiTr(context, 'لا تملك صلاحية تعديل سائقي شركة أخرى')),
+          ),
+        );
+        return;
+      }
+    }
 
     if (!widget.isEditMode) {
       if (_model.passTextController!.text.length < 6) {
@@ -393,18 +412,27 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
           'phone_number': phone,
           if (photoUrl != null && photoUrl.isNotEmpty) 'photo_url': photoUrl,
           'actev_user': true,
-          // Cash-wave / no-Billing: auto-activate so they can receive orders.
-          'actev_mndob': true,
+          // Company portal: pending review. Admin/agent may activate immediately.
+          'actev_mndob': !AdminRoleService.isTransportCompany,
           'ismndob': true,
           'ismndom': true,
           'ngl': false,
-          'registration_status': 'approved',
-          'submission_status': 'approved',
-          'account_status': 'active',
+          'registration_status': AdminRoleService.isTransportCompany
+              ? 'pending_review'
+              : 'approved',
+          'submission_status': AdminRoleService.isTransportCompany
+              ? 'pending_review'
+              : 'approved',
+          'account_status':
+              AdminRoleService.isTransportCompany ? 'inactive' : 'active',
           'operational_status': 'offline',
-          'auto_activated': true,
-          'document_review_status': 'not_required',
-          'vehicle_review_status': 'approved',
+          'auto_activated': false,
+          'document_review_status': AdminRoleService.isTransportCompany
+              ? 'pending'
+              : 'approved',
+          'vehicle_review_status': AdminRoleService.isTransportCompany
+              ? 'pending'
+              : 'approved',
           if (workCityRef != null) 'mndob_vill': workCityRef.path,
           if (carTypeRef != null) 'mndob_type_car': carTypeRef.path,
           'mndob_vill_text': workCity,
@@ -439,8 +467,8 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         SnackBar(
           content: Text(
             widget.isEditMode
-                ? '${uiTr(context, 'تعذر تحديث المندوب')}: $e'
-                : '${uiTr(context, 'تعذر إضافة المندوب')}: $e',
+                ? '${uiTr(context, 'تعذر تحديث المندوب')}: ${AdminUserFacingErrors.from(context, e)}'
+                : '${uiTr(context, 'تعذر إضافة المندوب')}: ${AdminUserFacingErrors.from(context, e)}',
           ),
         ),
       );
@@ -600,7 +628,10 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                   )
                 else
                   DropdownButtonFormField<TransportCompanyRecord?>(
-                    value: _selectedCompany,
+                    key: ValueKey(
+                      _selectedCompany?.reference.path ?? 'company-none',
+                    ),
+                    initialValue: _selectedCompany,
                     isExpanded: true,
                     decoration: InputDecoration(
                       labelText: uiTr(context, 'شركة النقل (اختياري)'),

@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 
 import '/core/toury_payment_flags.dart';
 
-/// Typed client for the Vercel payment-api. Never holds provider secrets.
+/// Typed client for the external Express Payment API on Render.
+/// Never holds provider secrets. Paths match Express (no `/api` prefix).
 class PaymentApiClient {
   PaymentApiClient({
     http.Client? httpClient,
@@ -17,7 +18,7 @@ class PaymentApiClient {
   final http.Client _http;
   final Duration timeout;
 
-  Uri _uri(String path) {
+  Uri _uri(String path, [Map<String, String>? query]) {
     final base =
         TouryPaymentFlags.paymentApiBaseUrl.replaceAll(RegExp(r'/$'), '');
     if (base.isEmpty) {
@@ -28,23 +29,19 @@ class PaymentApiClient {
         !base.startsWith('http://localhost')) {
       throw PaymentApiException('CONFIG_ERROR');
     }
-    // Release builds must not silently use localhost.
-    assert(() {
-      return true;
-    }());
     if (kReleaseMode &&
         (base.contains('localhost') || base.contains('127.0.0.1'))) {
       throw PaymentApiException('CONFIG_ERROR');
     }
-    return Uri.parse('$base$path');
+    return Uri.parse('$base$path').replace(queryParameters: query);
   }
 
-  Future<String> _idToken() async {
+  Future<String> _idToken({bool forceRefresh = false}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       throw PaymentApiException('AUTH_REQUIRED');
     }
-    final token = await user.getIdToken();
+    final token = await user.getIdToken(forceRefresh);
     if (token == null || token.isEmpty) {
       throw PaymentApiException('AUTH_INVALID');
     }
@@ -60,40 +57,85 @@ class PaymentApiClient {
     required Map<String, dynamic> booking,
     String? email,
     String? description,
+    String? orderPath,
     String locale = 'ar',
   }) async {
-    final token = await _idToken();
-    final response = await _http
-        .post(
-          _uri('/api/payments/create'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: jsonEncode({
-            'paymentMethod': 'card',
-            'paymentPurpose': 'booking',
-            'idempotencyKey': idempotencyKey,
-            'carPath': carPath,
-            'countryPath': countryPath,
-            'bookingHours': bookingHours,
-            'additionalHours': additionalHours,
-            'booking': booking,
-            if (email != null && email.isNotEmpty) 'email': email,
-            if (description != null) 'description': description,
-            'locale': locale,
-          }),
-        )
-        .timeout(timeout);
-    return _decode(response);
+    // Wake Render free-tier cold starts before the authenticated create.
+    unawaited(_warmUp());
+
+    Object? lastError;
+    var forceRefreshToken = false;
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        final token = await _idToken(forceRefresh: forceRefreshToken);
+        final response = await _http
+            .post(
+              _uri('/payments/create'),
+              headers: {
+                'Authorization': 'Bearer $token',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+              },
+              body: jsonEncode({
+                'paymentMethod': 'card',
+                'paymentPurpose': 'booking',
+                // Body field (not HTTP header) — matches Express createSchema.
+                'idempotencyKey': idempotencyKey,
+                'carPath': carPath,
+                'countryPath': countryPath,
+                'bookingHours': bookingHours,
+                'additionalHours': additionalHours,
+                'booking': booking,
+                if (orderPath != null && orderPath.isNotEmpty) 'orderPath': orderPath,
+                if (email != null && email.isNotEmpty) 'email': email,
+                if (description != null) 'description': description,
+                'locale': locale,
+              }),
+            )
+            .timeout(timeout);
+        return _decode(response);
+      } on PaymentApiException catch (e) {
+        lastError = e;
+        final authRetry = e.code == 'AUTH_INVALID' && !forceRefreshToken;
+        final retryable = authRetry ||
+            e.code == 'PROVIDER_UNAVAILABLE' ||
+            e.code == 'NETWORK_ERROR' ||
+            e.code == 'UNKNOWN_ERROR';
+        if (!retryable || attempt == 1) rethrow;
+        if (authRetry) {
+          forceRefreshToken = true;
+          if (kDebugMode) {
+            debugPrint('PaymentApiClient create retry with refreshed ID token');
+          }
+        } else if (kDebugMode) {
+          debugPrint('PaymentApiClient create retry after ${e.code}');
+        }
+        await Future<void>.delayed(const Duration(seconds: 2));
+      } on TimeoutException catch (e) {
+        lastError = e;
+        if (attempt == 1) {
+          throw PaymentApiException('NETWORK_ERROR');
+        }
+        await Future<void>.delayed(const Duration(seconds: 2));
+      }
+    }
+    if (lastError is PaymentApiException) throw lastError;
+    throw PaymentApiException('NETWORK_ERROR');
+  }
+
+  Future<void> _warmUp() async {
+    try {
+      await _http.get(_uri('/health')).timeout(const Duration(seconds: 8));
+    } catch (_) {
+      // Best-effort only — create still runs.
+    }
   }
 
   Future<Map<String, dynamic>> getStatus(String sessionId) async {
     final token = await _idToken();
     final response = await _http
         .get(
-          _uri('/api/payments/status/$sessionId'),
+          _uri('/payments/status', {'sessionId': sessionId}),
           headers: {
             'Authorization': 'Bearer $token',
             'Accept': 'application/json',
@@ -103,52 +145,37 @@ class PaymentApiClient {
     return _decode(response);
   }
 
-  Future<Map<String, dynamic>> finalizeBooking({
+  /// Polls until webhook/status creates the booking, or fails/times out.
+  Future<Map<String, dynamic>> waitForPaidBooking({
     required String sessionId,
-    Map<String, dynamic>? booking,
+    int attempts = 15,
+    Duration interval = const Duration(seconds: 2),
   }) async {
-    final token = await _idToken();
-    final response = await _http
-        .post(
-          _uri('/api/payments/finalize'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: jsonEncode({
-            'sessionId': sessionId,
-            if (booking != null) 'booking': booking,
-          }),
-        )
-        .timeout(timeout);
-    return _decode(response);
-  }
-
-  Future<Map<String, dynamic>> refund({
-    required String sessionId,
-    required String idempotencyKey,
-    int? amountMinor,
-    String? reason,
-  }) async {
-    final token = await _idToken();
-    final response = await _http
-        .post(
-          _uri('/api/payments/refund'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: jsonEncode({
-            'sessionId': sessionId,
-            'idempotencyKey': idempotencyKey,
-            if (amountMinor != null) 'amountMinor': amountMinor,
-            if (reason != null) 'reason': reason,
-          }),
-        )
-        .timeout(timeout);
-    return _decode(response);
+    Map<String, dynamic> last = {};
+    for (var i = 0; i < attempts; i++) {
+      last = await getStatus(sessionId);
+      final status = last['status']?.toString() ?? '';
+      final bookingCreated = last['bookingCreated'] == true;
+      final bookingId = last['bookingId']?.toString();
+      if (bookingCreated && bookingId != null && bookingId.isNotEmpty) {
+        return last;
+      }
+      if (status == 'failed' ||
+          status == 'cancelled' ||
+          status == 'expired') {
+        throw PaymentApiException(status.toUpperCase());
+      }
+      if (i < attempts - 1) {
+        await Future<void>.delayed(interval);
+      }
+    }
+    // Do not invent a booking id — require server bookingCreated.
+    throw PaymentApiException(
+      (last['status']?.toString() == 'paid' ||
+              last['status']?.toString() == 'captured')
+          ? 'BOOKING_PENDING'
+          : 'PAYMENT_PENDING',
+    );
   }
 
   Map<String, dynamic> _decode(http.Response response) {

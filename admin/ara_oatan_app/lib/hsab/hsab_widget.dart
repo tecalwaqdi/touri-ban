@@ -103,20 +103,8 @@ class _HsabWidgetState extends State<HsabWidget> {
         leading: DsIconButton(
           icon: DsIcons.back,
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () async {
-            context.pop();
-          },
+          onPressed: () => context.safePop(),
         ),
-        actions: [
-          DsIconButton(
-            icon: DsIcons.close,
-            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          const SizedBox(width: DsSpacing.xxs),
-        ],
       ),
       body: SafeArea(
         top: true,

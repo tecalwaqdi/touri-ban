@@ -41,7 +41,8 @@ class _NodataWidgetState extends State<NodataWidget> {
       title: FFLocalizations.of(context).getText(
         'zk2cl9lt' /* لم يتم العثور على بيانات */,
       ),
-      icon: Icons.error_outline_rounded,
+      message: 'لا توجد عناصر للعرض حالياً',
+      icon: Icons.inbox_outlined,
     );
   }
 }

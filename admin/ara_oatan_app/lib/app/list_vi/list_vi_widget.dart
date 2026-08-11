@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'dart:async';
 
 import '/auth/firebase_auth/auth_util.dart';
 import '/core/toury_content_locale.dart';
@@ -33,7 +34,9 @@ import '/core/app_ux_widgets.dart';
 import '/core/app_design_system.dart';
 import '/core/toury_landmark_skeleton.dart';
 import '/core/toury_image.dart';
+import '/core/toury_image_cache.dart';
 import '/core/toury_geo_aliases.dart';
+import '/design_system/design_system.dart';
 import 'list_vi_model.dart';
 export 'list_vi_model.dart';
 
@@ -61,8 +64,9 @@ class _ListViWidgetState extends State<ListViWidget>
 
   final animationsMap = <String, AnimationInfo>{};
 
-  late final TouryMkanPaginationController _mkanPage;
+  late TouryMkanPaginationController _mkanPage;
   Future<int>? _chatCountFuture;
+  String? _imagePrefetchVillagePath;
 
   Future<int> _chatCount() => _chatCountFuture ??= TouryFirestoreCache.chatTodayCount(
         currentUserRef: currentUserReference,
@@ -110,7 +114,53 @@ class _ListViWidgetState extends State<ListViWidget>
     if (FFAppState().villa?.path != canonical.path) {
       FFAppState().villa = canonical;
     }
-    _mkanPage.bindVillage(canonical);
+    final next = TouryMkanPaginationHub.acquire(canonical);
+    if (!identical(_mkanPage, next)) {
+      safeSetState(() => _mkanPage = next);
+    }
+  }
+
+  /// إن ظهرت صفحة فارغة بسبب فلتر الواجهة بينما ما زال هناك المزيد — حمّل المزيد تلقائياً.
+  void _ensureVisibleLandmarks(List<MkanRecord> visible) {
+    if (visible.length >= 8) return;
+    if (!_mkanPage.hasMore || _mkanPage.isLoading || _mkanPage.isLoadingMore) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(_mkanPage.loadMore());
+    });
+  }
+
+  /// تحميل مسبق لصور أول بطاقات ظاهرة — يقلل وميض التحميل عند التمرير.
+  void _prefetchVisibleLandmarkImages(
+    DocumentReference village,
+    List<MkanRecord> visible,
+  ) {
+    if (visible.isEmpty) return;
+    if (_imagePrefetchVillagePath == village.path) return;
+    _imagePrefetchVillagePath = village.path;
+    for (final lm in visible.take(12)) {
+      final raw = lm.img1.trim();
+      if (raw.isEmpty ||
+          raw.startsWith('data:') ||
+          raw.startsWith('assets/')) {
+        continue;
+      }
+      final url = touryNormalizeImageUrl(raw);
+      if (url == null || url.isEmpty) continue;
+      final key = TouryImageCache.keyFor(
+        url,
+        documentId: lm.reference.id,
+      );
+      unawaited(
+        () async {
+          try {
+            await TouryImageCache.manager.downloadFile(url, key: key);
+          } catch (_) {}
+        }(),
+      );
+    }
   }
 
   /// تحديث عدّاد السلة بعد الإطار الحالي — الضغط يستجيب فوراً.
@@ -133,12 +183,15 @@ class _ListViWidgetState extends State<ListViWidget>
   void initState() {
     super.initState();
     _model = createModel(context, () => ListViModel());
-    _mkanPage = TouryMkanPaginationController();
     FFAppState().addListener(_onAppVillageChanged);
 
     final village = widget.cite ?? FFAppState().villa;
     if (village != null) {
-      _bindVillage(village);
+      _mkanPage = TouryMkanPaginationHub.acquire(
+        touryCanonicalVillageRef(village),
+      );
+    } else {
+      _mkanPage = TouryMkanPaginationController();
     }
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -353,7 +406,10 @@ class _ListViWidgetState extends State<ListViWidget>
   @override
   void dispose() {
     FFAppState().removeListener(_onAppVillageChanged);
-    _mkanPage.dispose();
+    // جلسات Hub تبقى حية لتفادي إعادة التحميل عند العودة للشاشة.
+    if (!TouryMkanPaginationHub.owns(_mkanPage)) {
+      _mkanPage.dispose();
+    }
     _model.dispose();
 
     super.dispose();
@@ -369,11 +425,7 @@ class _ListViWidgetState extends State<ListViWidget>
       return Scaffold(
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         body: const Center(
-          child: SizedBox(
-            width: 50,
-            height: 50,
-            child: CircularProgressIndicator(),
-          ),
+          child: DsLoading(size: DsIcons.xl),
         ),
       );
     }
@@ -397,7 +449,7 @@ class _ListViWidgetState extends State<ListViWidget>
                 message: 'load_error_message'.tr(),
                 icon: Icons.cloud_off_rounded,
                 actionLabel: 'ux_retry'.tr(),
-                onAction: () => _bindVillage(villageFilter),
+                onAction: () => _mkanPage.forceReload(),
               ),
             ),
           );
@@ -407,8 +459,11 @@ class _ListViWidgetState extends State<ListViWidget>
           _mkanPage.items,
           touryContentLocaleFromContext(context),
         );
-        final showLandmarkSkeleton =
-            listViMkanRecordList.isEmpty && _mkanPage.isLoading;
+        final showLandmarkSkeleton = listViMkanRecordList.isEmpty &&
+            (_mkanPage.isLoading ||
+                (_mkanPage.items.isEmpty && _mkanPage.isRefreshing));
+        _ensureVisibleLandmarks(listViMkanRecordList);
+        _prefetchVisibleLandmarkImages(villageFilter, listViMkanRecordList);
 
         return GestureDetector(
           onTap: () {
@@ -1475,60 +1530,64 @@ class _ListViWidgetState extends State<ListViWidget>
               ),
             ),
             appBar: AppBar(
-  backgroundColor: FlutterFlowTheme.of(context).primary,
-  automaticallyImplyLeading: false,
-  centerTitle: true,
-  elevation: 2.0,
-
-  // LEFT (MENU)
-  leading:   Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(0, 10, 10, 0),
-      child: FlutterFlowIconButton(
-        borderRadius: 20.0,
-        buttonSize: 40.0,
-        icon: Icon(
-          Icons.arrow_back_ios_new,
-          color: FlutterFlowTheme.of(context).secondaryBackground,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-    ),
-
-  title: Text(
-    [
-      FFAppState().naimmdenh.trim(),
-      FFAppState().naimvillatext.trim(),
-    ].where((e) => e.isNotEmpty).join(' - '),
-    maxLines: 1,
-    overflow: TextOverflow.ellipsis,
-    style: FlutterFlowTheme.of(context).labelLarge.override(
-      fontFamily: FlutterFlowTheme.of(context).labelLargeFamily,
-      color: FlutterFlowTheme.of(context).secondaryBackground,
-      fontSize: 13.0,
-    ),
-  ),
-
-  // RIGHT (BACK)
-  actions: [
-  Padding(
-    padding: const EdgeInsetsDirectional.fromSTEB(0, 10, 11, 0),
-    child: FlutterFlowIconButton(
-      borderRadius: 20.0,
-      buttonSize: 40.0,
-      icon: Icon(
-        Icons.menu,
-        color: FlutterFlowTheme.of(context).secondaryBackground,
-      ),
-      onPressed: () {
-        scaffoldKey.currentState!.openDrawer();
-      },
-    ),
-  ),
-  ],
-),
-
+              backgroundColor: FlutterFlowTheme.of(context).primary,
+              automaticallyImplyLeading: false,
+              centerTitle: true,
+              elevation: 0,
+              toolbarHeight: DsConstants.appBarHeight,
+              leading: Padding(
+                padding: const EdgeInsetsDirectional.only(
+                  start: DsSpacing.xs,
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                    size: DsIcons.sm,
+                  ),
+                  tooltip:
+                      MaterialLocalizations.of(context).backButtonTooltip,
+                  onPressed: () {
+                    context.safePop();
+                  },
+                ),
+              ),
+              title: Text(
+                [
+                  FFAppState().naimmdenh.trim(),
+                  FFAppState().naimvillatext.trim(),
+                ].where((e) => e.isNotEmpty).join(' - '),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: FlutterFlowTheme.of(context).titleMedium.override(
+                      fontFamily:
+                          FlutterFlowTheme.of(context).titleMediumFamily,
+                      color: FlutterFlowTheme.of(context).secondaryBackground,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                      useGoogleFonts: !FlutterFlowTheme.of(context)
+                          .titleMediumIsCustom,
+                    ),
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(
+                    end: DsSpacing.xs,
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.menu_rounded,
+                      color:
+                          FlutterFlowTheme.of(context).secondaryBackground,
+                      size: DsIcons.md,
+                    ),
+                    onPressed: () {
+                      scaffoldKey.currentState!.openDrawer();
+                    },
+                  ),
+                ),
+              ],
+            ),
             body: Stack(
               children: [
                 Stack(
@@ -1622,82 +1681,31 @@ class _ListViWidgetState extends State<ListViWidget>
                                                       ),
                                                     ),
                                                     Flexible(
-                                                      child: FFButtonWidget(
-                                                      onPressed: () async {
-                                                        if (FFAppState().addcart < 1) {
-                                                          TouryDialogs.showSnackBar(
-                                                            context,
-                                                            'add_destination_first'.tr(),
-                                                            type: TouryMessageType.warning,
-                                                          );
-                                                          return;
-                                                        }
-                                                        touryOpenCheckout(context);
-                                                      },
-                                                      text: "View My Trip".tr(),
-                                                      icon: const FaIcon(
-                                                        FontAwesomeIcons
-                                                            .glasses,
-                                                        size: 11.0,
+                                                      child: DsButton.primary(
+                                                        label:
+                                                            "View My Trip".tr(),
+                                                        icon: Icons
+                                                            .visibility_rounded,
+                                                        size: DsButtonSize.md,
+                                                        onPressed: () async {
+                                                          if (FFAppState()
+                                                                  .addcart <
+                                                              1) {
+                                                            TouryDialogs
+                                                                .showSnackBar(
+                                                              context,
+                                                              'add_destination_first'
+                                                                  .tr(),
+                                                              type:
+                                                                  TouryMessageType
+                                                                      .warning,
+                                                            );
+                                                            return;
+                                                          }
+                                                          touryOpenCheckout(
+                                                              context);
+                                                        },
                                                       ),
-                                                      options: FFButtonOptions(
-                                                        height: 31.76,
-                                                        padding:
-                                                            const EdgeInsetsDirectional
-                                                                .fromSTEB(16.0,
-                                                                0.0, 16.0, 0.0),
-                                                        iconPadding:
-                                                            const EdgeInsetsDirectional
-                                                                .fromSTEB(0.0,
-                                                                0.0, 0.0, 0.0),
-                                                        iconColor: FlutterFlowTheme
-                                                                .of(context)
-                                                            .secondaryBackground,
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .primary,
-                                                        textStyle:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .titleSmall
-                                                                .override(
-                                                                  fontFamily: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .titleSmallFamily,
-                                                                  color: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .secondaryBackground,
-                                                                  fontSize: 9.0,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .normal,
-                                                                  useGoogleFonts:
-                                                                      !FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .titleSmallIsCustom,
-                                                                ),
-                                                        elevation: 0.0,
-                                                        borderRadius:
-                                                            const BorderRadius
-                                                                .only(
-                                                          bottomLeft:
-                                                              Radius.circular(
-                                                                  11.0),
-                                                          bottomRight:
-                                                              Radius.circular(
-                                                                  11.0),
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  11.0),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  11.0),
-                                                        ),
-                                                      ),
-                                                    ),
                                                     ),
                                                   ],
                                                 ),
@@ -1719,8 +1727,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                     Radius.circular(0.0),
                                                 bottomRight:
                                                     Radius.circular(0.0),
-                                                topLeft: Radius.circular(16.0),
-                                                topRight: Radius.circular(16.0),
+                                                topLeft: DsRadius.mdRadius,
+                                                topRight: DsRadius.mdRadius,
                                               ),
                                               border: Border.all(
                                                 color:
@@ -1753,8 +1761,11 @@ class _ListViWidgetState extends State<ListViWidget>
                                                     Padding(
                                                       padding:
                                                           const EdgeInsetsDirectional
-                                                              .fromSTEB(16.0,
-                                                              16.0, 16.0, 0.0),
+                                                              .fromSTEB(
+                                                              DsSpacing.md,
+                                                              DsSpacing.md,
+                                                              DsSpacing.md,
+                                                              0.0),
                                                       child: Text(
                                                      "Experience top destinations".tr(),
                                                         style:
@@ -1769,9 +1780,12 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                           context)
                                                                       .primary,
                                                                   fontSize:
-                                                                      17.0,
+                                                                      18.0,
                                                                   letterSpacing:
                                                                       0.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
                                                                   useGoogleFonts:
                                                                       !FlutterFlowTheme.of(
                                                                               context)
@@ -1784,8 +1798,11 @@ class _ListViWidgetState extends State<ListViWidget>
                                                     Padding(
                                                       padding:
                                                           const EdgeInsetsDirectional
-                                                              .fromSTEB(16.0,
-                                                              4.0, 16.0, 0.0),
+                                                              .fromSTEB(
+                                                              DsSpacing.md,
+                                                              DsSpacing.xxs,
+                                                              DsSpacing.md,
+                                                              0.0),
                                                       child: Text(
                                                         FFAppState()
                                                             .naimvillatext,
@@ -1801,7 +1818,7 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                           context)
                                                                       .primary,
                                                                   fontSize:
-                                                                      16.0,
+                                                                      15.0,
                                                                   letterSpacing:
                                                                       0.0,
                                                                   useGoogleFonts:
@@ -1817,7 +1834,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                       padding:
                                                           const EdgeInsetsDirectional
                                                               .fromSTEB(0.0,
-                                                              12.0, 0.0, 0.0),
+                                                              DsSpacing.sm,
+                                                              0.0, 0.0),
                                                       child: Builder(
                                                           builder: (context) {
                                                             final featured =
@@ -1983,6 +2001,7 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                               width: double.infinity,
                                                                               height: TouryLayout.landmarkAdImageHeight(context),
                                                                               fit: BoxFit.cover,
+                                                                              allowPlacePhotoFallback: false,
                                                                             ),
                                                                           ),
                                                                           ),
@@ -2871,6 +2890,7 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                 width: double.infinity,
                                                                                 height: TouryLayout.cardImageHeight(context),
                                                                                 fit: BoxFit.cover,
+                                                                                allowPlacePhotoFallback: false,
                                                                               ),
                                                                             ),
                                                                           ),
@@ -3269,6 +3289,7 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                 width: double.infinity,
                                                                                 height: TouryLayout.cardImageHeight(context),
                                                                                 fit: BoxFit.cover,
+                                                                                allowPlacePhotoFallback: false,
                                                                               ),
                                                                             ),
                                                                           ),
@@ -3612,6 +3633,7 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                 width: double.infinity,
                                                                                 height: TouryLayout.cardImageHeight(context),
                                                                                 fit: BoxFit.cover,
+                                                                                allowPlacePhotoFallback: false,
                                                                               ),
                                                                             ),
                                                                           ),

@@ -14,6 +14,7 @@ import '/index.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'adminvill_model.dart';
+import '/core/admin_user_facing_errors.dart';
 export 'adminvill_model.dart';
 
 class AdminvillWidget extends StatefulWidget {
@@ -156,7 +157,7 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${appTr(context, 'adm_update_city_status_failed')}: $e')),
+        SnackBar(content: Text('${appTr(context, 'adm_update_city_status_failed')}: ${AdminUserFacingErrors.from(context, e)}')),
       );
     }
   }
@@ -222,9 +223,7 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
                                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                           child: Text(
-                            '${uiTr(context, 'العدد')}: ${cities.length}'
-                            '${allCities.length != cities.length ? ' ${uiTr(context, 'من')} ${allCities.length}' : ''}'
-                            '${listState.hasMore ? '+' : ''}',
+                            adminListCountLabel(context, listState, visibleCount: cities.length, pageFetched: allCities.length),
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
                               color: theme.secondaryText,

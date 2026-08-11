@@ -27,6 +27,11 @@ exports.rejectDriverRegistration = functions.region("us-central1")
   .https.onCall(driverApproval.rejectDriverRegistration);
 exports.requestDriverChanges = functions.region("us-central1")
   .https.onCall(driverApproval.requestDriverChanges);
+exports.autoActivateDriver = functions.region("us-central1")
+  .https.onCall(driverApproval.autoActivateDriver);
+const driverWalletOps = require("./driver_wallet_ops.js");
+exports.acceptDriverOrder = driverWalletOps.acceptDriverOrder;
+exports.payCompanyFromWallet = driverWalletOps.payCompanyFromWallet;
 const kFcmTokensCollection = "fcm_tokens";
 const kPushNotificationsCollection = "ff_push_notifications";
 const kUserPushNotificationsCollection = "ff_user_push_notifications";

@@ -87,7 +87,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
     final fieldBody = Container(
       width: MediaQuery.sizeOf(context).width * 1.0,
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
+        color: AdminUi.fieldFill(context, muted: true),
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Padding(
@@ -319,7 +319,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: AdminUi.fieldFill(context),
                               ),
                               style: FlutterFlowTheme.of(context)
                                   .bodyLarge
@@ -393,7 +393,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: AdminUi.fieldFill(context),
                               ),
                               style: FlutterFlowTheme.of(context)
                                   .bodyLarge
@@ -538,7 +538,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0xFFF5F5F5),
+                                          color: AdminUi.fieldFill(context, muted: true),
                                           borderRadius:
                                               BorderRadius.circular(8.0),
                                         ),
@@ -581,7 +581,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0xFFF5F5F5),
+                                          color: AdminUi.fieldFill(context, muted: true),
                                           borderRadius:
                                               BorderRadius.circular(8.0),
                                         ),
@@ -929,7 +929,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                 child: Container(
                                   width: MediaQuery.sizeOf(context).width * 1.0,
                                   decoration: BoxDecoration(
-                                    color: Color(0xFFF5F5F5),
+                                    color: AdminUi.fieldFill(context, muted: true),
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   child: Padding(
@@ -990,7 +990,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                 child: Container(
                                   width: MediaQuery.sizeOf(context).width * 1.0,
                                   decoration: BoxDecoration(
-                                    color: Color(0xFFF5F5F5),
+                                    color: AdminUi.fieldFill(context, muted: true),
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   child: Padding(

@@ -30,13 +30,13 @@ void main() {
       expect(RegExp(r'[\u0600-\u06FF]').hasMatch(name), isFalse);
     });
 
-    test('ky prefers russian before english when ky missing', () {
+    test('ky prefers en over russian when ky missing', () {
       final name = touryLocalizedText(
         {'ar': 'سيدان', 'en': 'Sedan', 'ru': 'Седан'},
         'سيدان',
         localeKey: 'ky',
       );
-      expect(name, 'Седан');
+      expect(name, 'Sedan');
     });
 
     test('ky never leaks arabic address', () {

@@ -153,10 +153,11 @@ export type SessionQuote = {
 /**
  * Build production-compatible order fields matching finalizeNGeniusBooking / createCashBooking.
  */
-export async function buildPaidOnlineOrderData(
+async function buildOnlineOrderCore(
   sessionId: string,
   session: SessionQuote,
   draft: BookingDraft,
+  mode: "unpaid" | "paid",
 ): Promise<Record<string, unknown>> {
   const uid = session.user_id;
   if (!uid || !session.carPath || !session.countryPath) {
@@ -197,6 +198,7 @@ export async function buildPaidOnlineOrderData(
     return result;
   });
 
+  const paid = mode === "paid";
   const orderData: Record<string, unknown> = {
     USER: userRef,
     total: amountMinor / 100,
@@ -221,9 +223,7 @@ export async function buildPaidOnlineOrderData(
     total_app: appFee / 100,
     total_vat: vat / 100,
     ksm: discount / 100,
-    // Hourly rate (major) — same formula as CF finalizeNGeniusBooking
     SrSAAH: baseFare / hours / 100,
-    // Pricing snapshot used by admin finance / reporting (legacy field names)
     total_mndob2: baseFare / 100,
     total_mndob: driverNetMinor / 100,
     pricing_quote_halalas: amountMinor,
@@ -241,30 +241,85 @@ export async function buildPaidOnlineOrderData(
     plannedDistanceMeters: draft.plannedDistanceMeters || 0,
     plannedDurationSeconds: draft.plannedDurationSeconds || 0,
     IDorder: sessionId.slice(0, 12).toUpperCase(),
-    // Match CF finalizeNGeniusBooking lifecycle fields
-    halh_order: "Paid",
-    halh: "paid",
-    halh_text: "بإنتظار قبول المندوب",
-    status_code: "pending_driver",
-    payment_status: "paid",
     PaymentMethod: "OnlinePayment",
-    ngeniusOrderId: session.provider_order_ref || sessionId,
     payment_session_id: sessionId,
-    payment_verified_at: now,
-    ALLNOW: true,
     ActiveOrder: false,
     ReviewMndonsend: false,
-    backend_source: "vercel_api",
+    backend_source: "external_api",
     pricing_authority: "server",
     created_by_function: true,
   };
 
+  if (paid) {
+    orderData.acceptanceDeadline = Timestamp.fromMillis(Date.now() + 60 * 60 * 1000);
+    orderData.acceptance_deadline_ms = Date.now() + 60 * 60 * 1000;
+    orderData.halh_order = "Paid";
+    orderData.halh = "paid";
+    orderData.halh_text = "بإنتظار قبول المندوب";
+    orderData.status_code = "pending_driver";
+    orderData.payment_status = "paid";
+    orderData.ngeniusOrderId = session.provider_order_ref || sessionId;
+    orderData.payment_verified_at = now;
+    orderData.ALLNOW = true;
+  } else {
+    // Unpaid draft order — visible in My Orders, never in driver pool.
+    orderData.halh_order = "Pending";
+    orderData.halh = "pending";
+    orderData.halh_text = "بانتظار الدفع";
+    orderData.status_code = "payment_pending";
+    orderData.payment_status = "unpaid";
+    orderData.ALLNOW = false;
+    orderData.ngeniusOrderId = session.provider_order_ref || null;
+  }
+
   Object.keys(orderData).forEach((key) => {
     if (orderData[key] == null || orderData[key] === "") {
-      // Keep empty strings for some text fields used by UI; drop null refs only
       if (orderData[key] == null) delete orderData[key];
     }
   });
 
   return orderData;
+}
+
+/** Unpaid online booking saved before HPP completes (not dispatchable). */
+export async function buildUnpaidOnlineOrderData(
+  sessionId: string,
+  session: SessionQuote,
+  draft: BookingDraft,
+): Promise<Record<string, unknown>> {
+  return buildOnlineOrderCore(sessionId, session, draft, "unpaid");
+}
+
+/**
+ * Build production-compatible order fields matching finalizeNGeniusBooking / createCashBooking.
+ */
+export async function buildPaidOnlineOrderData(
+  sessionId: string,
+  session: SessionQuote,
+  draft: BookingDraft,
+): Promise<Record<string, unknown>> {
+  return buildOnlineOrderCore(sessionId, session, draft, "paid");
+}
+
+/** Fields to flip an existing unpaid order into the driver pool after verified pay. */
+export function paidActivationPatch(
+  session: SessionQuote,
+  sessionId: string,
+): Record<string, unknown> {
+  const now = FieldValue.serverTimestamp();
+  return {
+    status_code: "pending_driver",
+    payment_status: "paid",
+    ALLNOW: true,
+    ActiveOrder: false,
+    halh_order: "Paid",
+    halh: "paid",
+    halh_text: "بإنتظار قبول المندوب",
+    ngeniusOrderId: session.provider_order_ref || sessionId,
+    payment_session_id: sessionId,
+    payment_verified_at: now,
+    acceptanceDeadline: Timestamp.fromMillis(Date.now() + 60 * 60 * 1000),
+    acceptance_deadline_ms: Date.now() + 60 * 60 * 1000,
+    updated_at: now,
+  };
 }

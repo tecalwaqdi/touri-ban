@@ -1,0 +1,15 @@
+# Dependencies are installed on Cloud Build; keep local junk out of the upload.
+.node_modules
+node_modules
+dist
+coverage
+.env
+.env.*
+!.env.example
+*.log
+*.tsbuildinfo
+.next
+.git
+tests
+vitest.config.ts
+tsconfig.tsbuildinfo

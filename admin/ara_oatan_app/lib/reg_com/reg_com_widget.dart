@@ -159,6 +159,10 @@ class _RegComWidgetState extends State<RegComWidget> {
                   'r6dt23i9' /* Company Information -  Step 3 ... */,
                 ),
                 automaticallyImplyLeading: false,
+                leading: DsIconButton(
+                  icon: DsIcons.back,
+                  onPressed: () => context.safePop(),
+                ),
                 actions: const [],
               ),
               body: SafeArea(

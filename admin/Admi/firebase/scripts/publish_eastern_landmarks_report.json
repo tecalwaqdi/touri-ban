@@ -1,0 +1,110 @@
+{
+  "mode": "apply",
+  "count": 8,
+  "landmarks": [
+    {
+      "id": "curated_dammam_corniche",
+      "cityId": "city_dammam",
+      "names": {
+        "ar": "كورنيش الدمام",
+        "en": "Dammam Corniche",
+        "ru": "Набережная Даммама",
+        "ky": "Даммам корниши"
+      },
+      "lat": 26.4628388,
+      "lng": 50.1130664,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Dammam_Corniche_%283%29.jpg/1280px-Dammam_Corniche_%283%29.jpg"
+    },
+    {
+      "id": "curated_dammam_coral_island",
+      "cityId": "city_dammam",
+      "names": {
+        "ar": "جزيرة المرجان",
+        "en": "Coral Island (Jazirat al-Marjan)",
+        "ru": "Коралловый остров (Джазират аль-Марджан)",
+        "ky": "Корал аралы (Жазират аль-Маржан)"
+      },
+      "lat": 26.4835705,
+      "lng": 50.1052903,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/%D8%AC%D8%B2%D9%8A%D8%B1%D8%A9_%D8%A7%D9%84%D9%85%D8%B1%D8%AC%D8%A7%D9%86_-_panoramio.jpg/1280px-%D8%AC%D8%B2%D9%8A%D8%B1%D8%A9_%D8%A7%D9%84%D9%85%D8%B1%D8%AC%D8%A7%D9%86_-_panoramio.jpg"
+    },
+    {
+      "id": "curated_dammam_seafront",
+      "cityId": "city_dammam",
+      "names": {
+        "ar": "الواجهة البحرية",
+        "en": "Dammam Seafront",
+        "ru": "Морской фасад Даммама",
+        "ky": "Даммам деңиз фасады"
+      },
+      "lat": 26.4978865,
+      "lng": 50.1300192,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Hamooz_cornich_01.jpg/1280px-Hamooz_cornich_01.jpg"
+    },
+    {
+      "id": "curated_dammam_heritage_village",
+      "cityId": "city_dammam",
+      "names": {
+        "ar": "القرية الشعبية",
+        "en": "Heritage Village",
+        "ru": "Народная деревня (Heritage Village)",
+        "ky": "Элдик кыштак (Heritage Village)"
+      },
+      "lat": 26.459006,
+      "lng": 50.120661,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Dammam_Corniche_%281%29.jpg/1280px-Dammam_Corniche_%281%29.jpg"
+    },
+    {
+      "id": "curated_khobar_corniche",
+      "cityId": "city_alkhobar",
+      "names": {
+        "ar": "كورنيش الخبر",
+        "en": "Al Khobar Corniche",
+        "ru": "Набережная Аль-Хубара",
+        "ky": "Аль-Хубар корниши"
+      },
+      "lat": 26.2942461,
+      "lng": 50.2250079,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Al_Khobar_Corniche.JPG/1280px-Al_Khobar_Corniche.JPG"
+    },
+    {
+      "id": "curated_khobar_water_tower",
+      "cityId": "city_alkhobar",
+      "names": {
+        "ar": "برج المياه",
+        "en": "Al Khobar Water Tower",
+        "ru": "Водонапорная башня Аль-Хубара",
+        "ky": "Аль-Хубар суу мунарасы"
+      },
+      "lat": 26.3077797,
+      "lng": 50.2318893,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Khobar_water_tower.jpg/1280px-Khobar_water_tower.jpg"
+    },
+    {
+      "id": "curated_khobar_king_fahd_causeway",
+      "cityId": "city_alkhobar",
+      "names": {
+        "ar": "جسر الملك فهد",
+        "en": "King Fahd Causeway",
+        "ru": "Мост короля Фахда",
+        "ky": "Король Фахд көпүрөсү"
+      },
+      "lat": 26.1825,
+      "lng": 50.33583333,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/King_Fahd_Causeway_bridge_num4.jpg/1280px-King_Fahd_Causeway_bridge_num4.jpg"
+    },
+    {
+      "id": "curated_khobar_half_moon_bay",
+      "cityId": "city_alkhobar",
+      "names": {
+        "ar": "شاطئ نصف القمر",
+        "en": "Half Moon Bay",
+        "ru": "Бухта Полумесяца",
+        "ky": "Жарым Ай булуңу"
+      },
+      "lat": 26.1167,
+      "lng": 50.0667,
+      "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/A_camel_passing_by_at_the_khobar_half_moon_beach_%282931856192%29.jpg/1280px-A_camel_passing_by_at_the_khobar_half_moon_beach_%282931856192%29.jpg"
+    }
+  ]
+}

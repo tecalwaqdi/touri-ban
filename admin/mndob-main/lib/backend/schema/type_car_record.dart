@@ -97,12 +97,35 @@ class TypeCarRecord extends FirestoreRecord {
   String localizedName(String languageCode) {
     final lang = languageCode.toLowerCase();
     final map = namesI18n;
-    for (final key in [lang, if (lang == 'ky') 'ru', 'en', 'ar']) {
+    // locale → en → first non-empty (never force Arabic for non-ar UI).
+    final ordered = <String>[
+      if (lang.isNotEmpty) lang,
+      if (lang != 'en') 'en',
+    ];
+    for (final key in ordered) {
       final v = map[key]?.trim();
       if (v != null && v.isNotEmpty) return v;
     }
-    return naim;
+    for (final entry in map.entries) {
+      if (lang != 'ar' && entry.key == 'ar') continue;
+      final v = entry.value.trim();
+      if (v.isNotEmpty) return v;
+    }
+    if (lang == 'ar') {
+      final ar = map['ar']?.trim();
+      if (ar != null && ar.isNotEmpty) return ar;
+    }
+    final legacy = naim.trim();
+    if (lang != 'ar' && _looksArabic(legacy)) {
+      final en = map['en']?.trim();
+      if (en != null && en.isNotEmpty) return en;
+      return '';
+    }
+    return legacy;
   }
+
+  static bool _looksArabic(String value) =>
+      RegExp(r'[\u0600-\u06FF]').hasMatch(value);
 
   static CollectionReference get collection =>
       FirebaseFirestore.instance.collection('type_car');

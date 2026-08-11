@@ -87,6 +87,7 @@ Map<String, dynamic> createChatRecordData({
   String? msg,
   DateTime? date,
   String? naim,
+  List<DocumentReference>? participants,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -95,6 +96,7 @@ Map<String, dynamic> createChatRecordData({
       'msg': msg,
       'date': date,
       'naim': naim,
+      'participants': participants,
     }.withoutNulls,
   );
 

@@ -111,6 +111,26 @@ abstract final class DriverLegacyFieldCompat {
         'approved_at': FieldValue.serverTimestamp(),
       };
 
+  /// Server-side auto-activate (cash-wave). Client must call CF, not write locally.
+  static Map<String, dynamic> autoActivatePatch() => {
+        'actev_mndob': true,
+        'ismndob': true,
+        'ismndom': true,
+        'ngl': false,
+        'registration_status': 'approved',
+        'submission_status': 'approved',
+        'account_status': 'active',
+        'operational_status': 'offline',
+        'vehicle_review_status': 'approved',
+        'document_review_status': 'approved',
+        'auto_activated': true,
+        'approved_at': FieldValue.serverTimestamp(),
+        'reviewed_at': FieldValue.serverTimestamp(),
+        'reviewed_by': 'auto_activate',
+        'rejection_reason': '',
+        'requested_changes': <dynamic>[],
+      };
+
   /// Admin reject dual-write.
   static Map<String, dynamic> adminRejectPatch({
     required String reason,

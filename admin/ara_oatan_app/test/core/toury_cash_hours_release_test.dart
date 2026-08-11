@@ -98,8 +98,8 @@ void main() {
       expect(touryRequiresPaymentMethodSelection(TouryPaymentKeys.unset), isFalse);
     });
 
-    test('client cash fallback enabled by default', () {
-      expect(TouryPaymentFlags.allowClientCashFallback, isTrue);
+    test('client cash fallback disabled by default (production)', () {
+      expect(TouryPaymentFlags.allowClientCashFallback, isFalse);
     });
 
     test('online payment value detection', () {

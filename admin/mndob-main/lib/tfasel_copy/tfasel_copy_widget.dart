@@ -454,7 +454,6 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                           size: 15.0,
                                         ),
                                         options: FFButtonOptions(
-                                          width: 294.9,
                                           height: 45.0,
                                           padding: EdgeInsets.all(8.0),
                                           iconPadding:
@@ -681,10 +680,13 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                               'مقبول') &&
                                           (columnOrderRecord.mndobUser ==
                                               currentUserReference))
-                                        Text(
+                                        Flexible(
+                                          child: Text(
                                           FFLocalizations.of(context).getText(
                                             'lqmmaqas' /* The customer is currently wait... */,
                                           ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                           style: FlutterFlowTheme.of(context)
                                               .bodyLarge
                                               .override(
@@ -703,6 +705,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                               ),
                                         ).animateOnPageLoad(animationsMap[
                                             'textOnPageLoadAnimation2']!),
+                                        ),
                                     ].divide(SizedBox(width: 8.0)),
                                   ),
                                 Row(
@@ -710,7 +713,8 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    FFButtonWidget(
+                                    Expanded(
+                                      child: FFButtonWidget(
                                       onPressed: () async {
                                         var confirmDialogResponse =
                                             await showDialog<bool>(
@@ -768,7 +772,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                         size: 15.0,
                                       ),
                                       options: FFButtonOptions(
-                                        width: 158.88,
+                                        width: double.infinity,
                                         height: 45.0,
                                         padding: EdgeInsets.all(8.0),
                                         iconPadding:
@@ -791,7 +795,9 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                         elevation: 2.0,
                                       ),
                                     ),
-                                    FFButtonWidget(
+                                    ),
+                                    Expanded(
+                                      child: FFButtonWidget(
                                       onPressed: () async {
                                         if (columnOrderRecord.paymentMethod ==
                                             PaymentMethod.Cash) {
@@ -938,7 +944,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                         size: 15.0,
                                       ),
                                       options: FFButtonOptions(
-                                        width: 150.0,
+                                        width: double.infinity,
                                         height: 45.0,
                                         padding: EdgeInsets.all(8.0),
                                         iconPadding:
@@ -960,6 +966,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                             ),
                                         elevation: 2.0,
                                       ),
+                                    ),
                                     ),
                                   ].divide(SizedBox(width: 8.0)),
                                 ),
@@ -1202,13 +1209,16 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                         ),
                                       ),
                                     ),
-                                    Column(
+                                    Flexible(
+                                      child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           columnOrderRecord.naimUserText,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                           style: FlutterFlowTheme.of(context)
                                               .bodyLarge
                                               .override(
@@ -1481,6 +1491,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                         ),
                                       ].divide(SizedBox(height: 4.0)),
                                     ),
+                                    ),
                                   ].divide(SizedBox(width: 16.0)),
                                 ),
                               ].divide(SizedBox(height: 12.0)),
@@ -1555,8 +1566,11 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                             ),
                                       ),
                                     ),
-                                    Text(
+                                    Flexible(
+                                      child: Text(
                                       columnOrderRecord.iDorder,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
                                       style: FlutterFlowTheme.of(context)
                                           .bodyMedium
                                           .override(
@@ -1570,6 +1584,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                 !FlutterFlowTheme.of(context)
                                                     .bodyMediumIsCustom,
                                           ),
+                                    ),
                                     ),
                                   ],
                                 ),

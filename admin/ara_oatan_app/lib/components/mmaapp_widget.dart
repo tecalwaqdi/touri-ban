@@ -301,15 +301,73 @@ class _MmaappWidgetState extends State<MmaappWidget> {
     if (currentUserLocationValue == null) {
       return Container(
         color: colors.scaffold,
-        child: DsLoading(
-          size: 50,
-          message: 'map_locating'.tr(),
+        child: Stack(
+          children: [
+            DsLoading(
+              size: 50,
+              message: 'map_locating'.tr(),
+            ),
+            PositionedDirectional(
+              top: DsSpacing.sm,
+              end: DsSpacing.sm,
+              child: DsIconButton(
+                icon: DsIcons.close,
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                onPressed: () {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       );
     }
 
     return Column(
       children: [
+        /// رأس الورقة: عنوان + إغلاق
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            DsSpacing.md,
+            DsSpacing.sm,
+            DsSpacing.xs,
+            DsSpacing.xs,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsetsDirectional.only(end: DsSpacing.sm),
+                decoration: BoxDecoration(
+                  color: colors.divider,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  'booking_view_route'.tr(),
+                  style: typography.titleMedium.copyWith(
+                    color: colors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              DsIconButton(
+                icon: DsIcons.close,
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                onPressed: () {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+
         /// 🗺️ الخريطة مع المسار
         Container(
           height: 400,
@@ -350,6 +408,27 @@ class _MmaappWidgetState extends State<MmaappWidget> {
                     ),
                   ),
                 ),
+
+              // Floating close over the map (easy to tap on full-bleed map)
+              PositionedDirectional(
+                top: DsSpacing.sm,
+                end: DsSpacing.sm,
+                child: Material(
+                  color: colors.surface.withValues(alpha: 0.92),
+                  shape: const CircleBorder(),
+                  elevation: 2,
+                  child: DsIconButton(
+                    icon: DsIcons.close,
+                    tooltip:
+                        MaterialLocalizations.of(context).closeButtonTooltip,
+                    onPressed: () {
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
+                ),
+              ),
             ],
           ),
         ),

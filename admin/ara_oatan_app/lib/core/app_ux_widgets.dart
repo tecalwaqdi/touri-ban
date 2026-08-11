@@ -520,11 +520,16 @@ class TouryMainAppBar extends StatelessWidget implements PreferredSizeWidget {
       height: height,
       child: Container(
         decoration: BoxDecoration(
-          gradient: TouryBrand.verticalGradient,
-          boxShadow: TouryBrand.cardShadow(elevated: true),
+          color: TouryBrand.teal,
+          boxShadow: DsShadows.soft(),
         ),
         child: Padding(
-          padding: EdgeInsets.fromLTRB(16, compactHeader ? 4 : 6, 16, 6),
+          padding: EdgeInsets.fromLTRB(
+            DsSpacing.md,
+            compactHeader ? DsSpacing.xxs : DsSpacing.xs,
+            DsSpacing.md,
+            DsSpacing.xs,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
@@ -593,18 +598,17 @@ class TouryOptionCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: TouryBrand.borderRadiusLg,
+        borderRadius: DsRadius.large,
         child: Ink(
-          padding: const EdgeInsets.all(16),
+          padding: DsSpacing.cardPadding,
           decoration: BoxDecoration(
-            gradient: selected ? TouryBrand.primaryGradient : null,
-            color: selected ? null : colors.surface,
-            borderRadius: TouryBrand.borderRadiusLg,
+            color: selected ? TouryBrand.teal : colors.surface,
+            borderRadius: DsRadius.large,
             border: Border.all(
               color: selected ? TouryBrand.tealDark : colors.border,
-              width: selected ? 2 : 1,
+              width: selected ? 1.5 : 1,
             ),
-            boxShadow: selected ? TouryBrand.cardShadow(elevated: true) : null,
+            boxShadow: selected ? DsShadows.soft() : null,
           ),
           child: Row(
             children: [
@@ -613,13 +617,13 @@ class TouryOptionCard extends StatelessWidget {
                 height: 48,
                 decoration: BoxDecoration(
                   color: selected
-                      ? Colors.white.withValues(alpha: 0.22)
-                      : TouryBrand.teal.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(14),
+                      ? Colors.white.withValues(alpha: 0.18)
+                      : TouryBrand.teal.withValues(alpha: 0.12),
+                  borderRadius: DsRadius.medium,
                   border: selected
                       ? null
                       : Border.all(
-                          color: TouryBrand.tealDark.withValues(alpha: 0.25),
+                          color: TouryBrand.tealDark.withValues(alpha: 0.22),
                         ),
                 ),
                 child: Icon(
@@ -627,7 +631,7 @@ class TouryOptionCard extends StatelessWidget {
                   color: selected ? Colors.white : TouryBrand.tealDark,
                 ),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: DsSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -640,7 +644,7 @@ class TouryOptionCard extends StatelessWidget {
                       fontSize: 16,
                       color: selected ? Colors.white : TouryBrand.tealDark,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: DsSpacing.xxs),
                     TouryText(
                       subtitle,
                       style: typography.bodySmall,
@@ -691,45 +695,46 @@ class TouryEmptyState extends StatelessWidget {
     final colors = context.dsColors;
     final typography = context.dsTypography;
     return Padding(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(DsSpacing.xxxl),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: 72,
+            height: 72,
             decoration: BoxDecoration(
-              gradient: TouryBrand.softGradient,
+              color: colors.primarySoft,
               shape: BoxShape.circle,
               border: Border.all(
-                color: TouryBrand.teal.withValues(alpha: 0.35),
+                color: TouryBrand.teal.withValues(alpha: 0.28),
               ),
             ),
-            child: Icon(icon, size: 40, color: TouryBrand.tealDark),
+            child: Icon(icon, size: 34, color: TouryBrand.tealDark),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: DsSpacing.lg),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: typography.headlineSmall.copyWith(
+            style: typography.titleLarge.copyWith(
               fontWeight: FontWeight.w700,
               color: colors.textPrimary,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DsSpacing.xs),
           Text(
             message,
             textAlign: TextAlign.center,
             style: typography.bodyMedium.copyWith(
               color: colors.textSecondary,
+              height: 1.45,
             ),
           ),
           if (actionLabel != null && onAction != null) ...[
-            const SizedBox(height: 20),
-            FilledButton.icon(
+            const SizedBox(height: DsSpacing.xl),
+            DsButton.primary(
+              label: actionLabel!.tr(),
               onPressed: onAction,
-              icon: const Icon(Icons.add_rounded),
-              label: Text(actionLabel!.tr()),
+              icon: Icons.add_rounded,
             ),
           ],
         ],
@@ -1083,23 +1088,31 @@ class TouryPriceSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.dsColors;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: DsSpacing.md,
+        vertical: DsSpacing.xs,
+      ),
       child: Container(
         width: double.infinity,
-        decoration:
-            TouryBrand.cardDecoration(context: context, elevated: true),
-        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: DsRadius.large,
+          border: Border.all(color: colors.border),
+          boxShadow: DsShadows.soft(),
+        ),
+        padding: DsSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(DsSpacing.xs),
                   decoration: BoxDecoration(
                     color: TouryBrand.tealLight,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: DsRadius.small,
                   ),
                   child: const Icon(
                     Icons.receipt_long_rounded,
@@ -1107,7 +1120,7 @@ class TouryPriceSummaryCard extends StatelessWidget {
                     size: 20,
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: DsSpacing.sm),
                 Expanded(
                   child: TouryText(
                     title,
@@ -1120,7 +1133,7 @@ class TouryPriceSummaryCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: DsSpacing.sm),
             ...children,
           ],
         ),
@@ -1289,6 +1302,7 @@ class TouryLandmarkCardImage extends StatelessWidget {
         fit: BoxFit.cover,
         fallbackAsset: kTouryRegionFallback,
         useBrandedFallback: true,
+        allowPlacePhotoFallback: false,
       ),
     );
   }

@@ -538,6 +538,6 @@ SPEC CHECKSUMS:
   video_player_avfoundation: 2cef49524dd1f16c5300b9cd6efd9611ce03639b
   webview_flutter_wkwebview: 1821ceac936eba6f7984d89a9f3bcb4dea99ebb2
 
-PODFILE CHECKSUM: 47afbc65af3f300fe9496b75a4af616151d3f309
+PODFILE CHECKSUM: a3ef59ca9a94735eaa4b436c28e3ecf55f8bf799
 
 COCOAPODS: 1.17.0

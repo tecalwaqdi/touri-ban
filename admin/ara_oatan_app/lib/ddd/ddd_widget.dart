@@ -62,21 +62,10 @@ class _DddWidgetState extends State<DddWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () {
-                    print('IconButton pressed ...');
+                    context.safePop();
                   },
                 ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                        0, 0, DsSpacing.xs, 0),
-                    child: DsIconButton(
-                      icon: Icons.arrow_back_ios_new_rounded,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ],
+                actions: const [],
               ),
               body: SafeArea(
                 top: true,

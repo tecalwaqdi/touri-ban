@@ -1,4 +1,3 @@
-import '/backend/firebase_storage/storage.dart';
 import '/backend/profile_photo_service.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_ui.dart';
@@ -12,12 +11,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// Opens gallery or camera and uploads the image. Returns download URL.
+///
+/// When [profileUid] is set, uploads to the stable path `users/{uid}/profile.jpg`
+/// (overwrites) with user-avatar compression — ignores FlutterFlow timestamp paths.
 Future<String?> pickAndUploadAdminImage({
   required BuildContext context,
   required String storageFolder,
   bool useProfileCompression = false,
   bool useUserProfileCompression = false,
   bool useContentCompression = false,
+  /// When non-empty, forces settings avatar upload to `users/{uid}/profile.jpg`.
+  String? profileUid,
   void Function(Uint8List bytes)? onLocalPreview,
 }) async {
   final selected = await selectMediaWithSourceBottomSheet(
@@ -55,35 +59,35 @@ Future<String?> pickAndUploadAdminImage({
 
   onLocalPreview?.call(bytes);
 
-  try {
-    if (useUserProfileCompression) {
-      return await uploadUserProfilePhoto(
-        storagePath: media.storagePath,
-        bytes: bytes,
-        filePath: media.filePath,
-      );
+  final uid = (profileUid ?? '').trim();
+  if (uid.isNotEmpty || useUserProfileCompression) {
+    if (uid.isEmpty) {
+      throw Exception(uiTr(context, 'يجب تسجيل الدخول أولاً'));
     }
-    return await uploadAdminImage(
-      storagePath: media.storagePath,
+    return uploadUserProfilePhoto(
+      uid: uid,
       bytes: bytes,
       filePath: media.filePath,
-      maxEdge: useContentCompression
-          ? kContentImageMaxEdge
-          : (useProfileCompression ? kProfilePhotoMaxEdge : kAdminImageMaxEdge),
-      jpegQuality: useContentCompression
-          ? kContentImageJpegQuality
-          : (useProfileCompression
-              ? kProfilePhotoJpegQuality
-              : kAdminImageJpegQuality),
-      maxEmbeddedBytes: useContentCompression
-          ? kContentImageMaxEmbeddedBytes
-          : (useProfileCompression
-              ? kUserProfileMaxEmbeddedBytes
-              : kProfilePhotoMaxFirestoreBytes),
     );
-  } catch (e) {
-    throw Exception(uploadErrorMessage(e));
   }
+  return uploadAdminImage(
+    storagePath: media.storagePath,
+    bytes: bytes,
+    filePath: media.filePath,
+    maxEdge: useContentCompression
+        ? kContentImageMaxEdge
+        : (useProfileCompression ? kProfilePhotoMaxEdge : kAdminImageMaxEdge),
+    jpegQuality: useContentCompression
+        ? kContentImageJpegQuality
+        : (useProfileCompression
+            ? kProfilePhotoJpegQuality
+            : kAdminImageJpegQuality),
+    maxEmbeddedBytes: useContentCompression
+        ? kContentImageMaxEmbeddedBytes
+        : (useProfileCompression
+            ? kUserProfileMaxEmbeddedBytes
+            : kProfilePhotoMaxFirestoreBytes),
+  );
 }
 
 /// Image picker card with preview for admin edit forms.
@@ -506,7 +510,7 @@ Future<void> handleAdminImagePick({
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, uploadErrorMessage(e)))),
+      SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, e))),
     );
   } finally {
     setUploading(false);

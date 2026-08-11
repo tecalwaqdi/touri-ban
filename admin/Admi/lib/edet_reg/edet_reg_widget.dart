@@ -3,7 +3,6 @@ import '/backend/admin_audit_log.dart';
 import '/backend/admin_cascade_delete.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/backend.dart';
-import '/backend/firebase_storage/storage.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_image_picker.dart';
@@ -89,7 +88,7 @@ class _EdetRegWidgetState extends State<EdetRegWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, uploadErrorMessage(e)))),
+        SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, e))),
       );
     } finally {
       if (mounted) {

@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -56,8 +58,7 @@ class MyAppScrollBehavior extends MaterialScrollBehavior {
 
 class _MyAppState extends State<MyApp> {
   late Locale _locale = FFLocalizations.resolveInitialLocale();
-
-  ThemeMode _themeMode = FlutterFlowTheme.themeMode;
+  late ThemeMode _themeMode = FlutterFlowTheme.themeMode;
 
   late AppStateNotifier _appStateNotifier;
   late GoRouter _router;
@@ -81,6 +82,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _themeMode = FlutterFlowTheme.themeMode;
 
     _appStateNotifier = AppStateNotifier.instance;
     _router = createRouter(_appStateNotifier);
@@ -112,10 +114,11 @@ class _MyAppState extends State<MyApp> {
     FFLocalizations.storeLocale(language);
   }
 
-  void setThemeMode(ThemeMode mode) => safeSetState(() {
-        _themeMode = mode;
-        FlutterFlowTheme.saveThemeMode(mode);
-      });
+  void setThemeMode(ThemeMode mode) {
+    final next = mode == ThemeMode.dark ? ThemeMode.dark : ThemeMode.light;
+    FlutterFlowTheme.saveThemeMode(next);
+    safeSetState(() => _themeMode = next);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +159,16 @@ class _MyAppState extends State<MyApp> {
       theme: AdminUi.buildLightTheme(),
       darkTheme: AdminUi.buildDarkTheme(),
       themeMode: _themeMode,
+      themeAnimationDuration: const Duration(milliseconds: 280),
+      themeAnimationCurve: Curves.easeInOut,
+      builder: (context, child) {
+        final isRtl = _locale.languageCode.toLowerCase() == 'ar';
+        return Directionality(
+          textDirection:
+              isRtl ? ui.TextDirection.rtl : ui.TextDirection.ltr,
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       routerConfig: _router,
     );
   }

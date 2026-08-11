@@ -75,7 +75,7 @@ class _ListvillnowWidgetState extends State<ListvillnowWidget> {
                 leading: DsIconButton(
                   icon: DsIcons.back,
                   onPressed: () async {
-                    context.pop();
+                    context.safePop();
                   },
                 ),
               ),

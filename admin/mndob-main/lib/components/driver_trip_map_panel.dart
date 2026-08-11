@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 import '/backend/schema/order_record.dart';
+import '/core/driver_i18n.dart';
 import '/core/driver_navigation_service.dart';
 import '/core/driver_live_route_controller.dart';
 import '/core/driver_map_utils.dart';
@@ -88,7 +89,7 @@ class _DriverTripMapPanelState extends State<DriverTripMapPanel> {
         id: 'driver',
         point: driver,
         hue: gmaps.BitmapDescriptor.hueAzure,
-        title: 'موقعك',
+        title: driverTr(context, 'Your location'),
       ));
     }
     if (customerPickup != null) {
@@ -96,7 +97,7 @@ class _DriverTripMapPanelState extends State<DriverTripMapPanel> {
         id: 'pickup',
         point: customerPickup,
         hue: gmaps.BitmapDescriptor.hueGreen,
-        title: 'نقطة الالتقاط',
+        title: driverTr(context, 'Pickup point'),
       ));
     }
     if (destination != null) {
@@ -104,7 +105,7 @@ class _DriverTripMapPanelState extends State<DriverTripMapPanel> {
         id: 'dropoff',
         point: destination,
         hue: gmaps.BitmapDescriptor.hueRed,
-        title: 'الوجهة',
+        title: driverTr(context, 'Destination'),
       ));
     }
 
@@ -169,7 +170,7 @@ class _DriverTripMapPanelState extends State<DriverTripMapPanel> {
                   if (destination != null || customerPickup != null)
                     _MapIconButton(
                       icon: Icons.navigation_rounded,
-                      tooltip: 'التوجيه في Google Maps',
+                      tooltip: driverTr(context, 'Open route in Google Maps'),
                       color: colors.primaryStrong,
                       onTap: () => DriverNavigationService.openOrderRoute(
                         waypoints: widget.order.routeWaypoints(
@@ -184,7 +185,7 @@ class _DriverTripMapPanelState extends State<DriverTripMapPanel> {
                   if (customerPickup != null)
                     _MapIconButton(
                       icon: Icons.trip_origin,
-                      tooltip: 'نقطة الالتقاط',
+                      tooltip: driverTr(context, 'Pickup point'),
                       onTap: () => DriverMapUtils.fitBounds(
                         _controller,
                         [customerPickup],
@@ -196,7 +197,7 @@ class _DriverTripMapPanelState extends State<DriverTripMapPanel> {
                   if (destination != null)
                     _MapIconButton(
                       icon: Icons.flag_rounded,
-                      tooltip: 'الوجهة',
+                      tooltip: driverTr(context, 'Destination'),
                       onTap: () => DriverMapUtils.fitBounds(
                         _controller,
                         [destination],
@@ -211,7 +212,7 @@ class _DriverTripMapPanelState extends State<DriverTripMapPanel> {
               left: DsSpacing.sm,
               child: _MapIconButton(
                 icon: Icons.center_focus_strong_rounded,
-                tooltip: 'توسيط المسار',
+                tooltip: driverTr(context, 'Center the route'),
                 onTap: () => DriverMapUtils.fitBounds(
                   _controller,
                   visibleRoutePoints,
@@ -238,7 +239,13 @@ class _DriverTripMapPanelState extends State<DriverTripMapPanel> {
                     borderRadius: DsRadius.small,
                   ),
                   child: Text(
-                    'ETA ~ ${(widget.order.etaSeconds / 60).ceil()} د',
+                    driverTrNamed(
+                      context,
+                      'ETA ~ {min} min',
+                      {
+                        'min': '${(widget.order.etaSeconds / 60).ceil()}',
+                      },
+                    ),
                     style: typography.labelMedium.copyWith(
                       color: colors.onPrimary,
                       fontWeight: FontWeight.w600,
@@ -314,12 +321,12 @@ class _RouteStatusPill extends StatelessWidget {
     final typography = context.dsTypography;
 
     final label = isRoadRoute
-        ? 'مسار الطرق'
+        ? driverTr(context, 'Road route')
         : failed
-            ? 'مسار تقريبي'
+            ? driverTr(context, 'Approximate route')
             : loading
-                ? 'جاري المسار...'
-                : 'مسار تقريبي';
+                ? driverTr(context, 'Loading route...')
+                : driverTr(context, 'Approximate route');
     final color = isRoadRoute
         ? colors.success
         : failed

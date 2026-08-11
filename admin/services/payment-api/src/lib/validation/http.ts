@@ -1,28 +1,19 @@
-import { NextResponse } from "next/server";
-import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
-import { logger } from "@/lib/logging/logger";
+/** Framework-agnostic JSON helpers (Express handlers throw ApiError instead). */
 
-export function jsonOk(body: unknown, status = 200) {
-  return NextResponse.json(body, { status });
+export function jsonBody(status: number, body: unknown): Response {
+  return Response.json(body, { status });
 }
 
-export function jsonError(error: unknown) {
-  if (error instanceof ApiError) {
-    return NextResponse.json(
-      { error: { code: error.code, message: error.message } },
-      { status: error.status },
-    );
-  }
-  logger.error("unhandled_api_error", {
-    name: error instanceof Error ? error.name : "unknown",
+export function jsonOk(body: unknown, status = 200): Response {
+  return jsonBody(status, body);
+}
+
+export function jsonError(
+  status: number,
+  code: string,
+  message?: string,
+): Response {
+  return jsonBody(status, {
+    error: { code, message: message || code },
   });
-  return NextResponse.json(
-    {
-      error: {
-        code: PaymentErrorCode.UNKNOWN_ERROR,
-        message: "Unexpected server error",
-      },
-    },
-    { status: 500 },
-  );
 }

@@ -102,12 +102,14 @@ class _CreateAccount1ShrekWidgetState extends State<CreateAccount1ShrekWidget>
     }
 
     try {
+      // Avoid role keys on create — blocked by Firestore self-create rules.
       await UserRecord.collection.doc(user.uid).set(
             createUserRecordData(
+              email: user.email,
+              displayName: user.displayName,
+              photoUrl: user.photoUrl,
+              uid: user.uid,
               createdTime: getCurrentTimestamp,
-              ngl: false,
-              ismndob: false,
-              actevMndob: false,
               actevUser: true,
             ),
             SetOptions(merge: true),
@@ -150,7 +152,7 @@ class _CreateAccount1ShrekWidgetState extends State<CreateAccount1ShrekWidget>
         ) ??
         false;
     if (confirmDialogResponse) {
-      context.pushNamed(HomePagWidget.routeName);
+      context.safePop();
     }
   }
 
@@ -269,7 +271,7 @@ class _CreateAccount1ShrekWidgetState extends State<CreateAccount1ShrekWidget>
               'ufwudlm6' /* Create an account */,
             ),
             textAlign: TextAlign.center,
-            style: typography.headlineLarge.copyWith(
+            style: typography.headlineMedium.copyWith(
               color: colors.textPrimary,
               fontWeight: FontWeight.w700,
             ),
@@ -289,13 +291,13 @@ class _CreateAccount1ShrekWidgetState extends State<CreateAccount1ShrekWidget>
             ),
           ),
         ),
-        const SizedBox(height: DsSpacing.xl),
+        const SizedBox(height: DsSpacing.md),
         DsFadeSlide(
           delay: DsDurations.fast,
           child: DsCard(
             elevated: true,
             bordered: false,
-            padding: const EdgeInsets.all(DsSpacing.xl),
+            padding: const EdgeInsets.all(DsSpacing.md),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -349,17 +351,15 @@ class _CreateAccount1ShrekWidgetState extends State<CreateAccount1ShrekWidget>
                     'y3h5xljf' /* Next  */,
                   ),
                   icon: Icons.navigate_before_outlined,
-                  size: DsButtonSize.lg,
+                  size: DsButtonSize.md,
                   expanded: true,
                   onPressed: _createAccount,
                 ),
                 const SizedBox(height: DsSpacing.sm),
-                DsButton.danger(
-                  label: FFLocalizations.of(context).getText(
-                    'go8pkq43' /* Cancel Order */,
-                  ),
-                  icon: Icons.cancel_sharp,
-                  size: DsButtonSize.lg,
+                DsButton.outlined(
+                  label: 'dialog_cancel'.tr(),
+                  icon: Icons.cancel_outlined,
+                  size: DsButtonSize.md,
                   expanded: true,
                   onPressed: _cancelRegistration,
                 ),
@@ -384,13 +384,13 @@ class _StepBanner extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
-        horizontal: DsSpacing.xl,
-        vertical: DsSpacing.lg,
+        horizontal: DsSpacing.md,
+        vertical: DsSpacing.md,
       ),
       decoration: BoxDecoration(
         color: colors.primary,
         borderRadius: const BorderRadius.vertical(
-          bottom: DsRadius.lgRadius,
+          bottom: DsRadius.mdRadius,
         ),
         boxShadow: DsShadows.soft(dark: context.dsIsDark),
       ),
@@ -399,7 +399,10 @@ class _StepBanner extends StatelessWidget {
         FFLocalizations.of(context).getText(
           'mos06s1x' /* Step 2 of 3 */,
         ),
-        style: typography.titleMedium.copyWith(color: colors.onPrimary),
+        style: typography.titleMedium.copyWith(
+          color: colors.onPrimary,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
