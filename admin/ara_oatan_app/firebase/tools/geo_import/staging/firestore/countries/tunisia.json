@@ -1,0 +1,47 @@
+{
+  "__path": "countries/tunisia",
+  "__writtenAt": "2026-08-13T21:39:16.496Z",
+  "__target": "local-staging",
+  "naim": "تونس",
+  "naimEnglesh": "Tunisia",
+  "names_i18n": {
+    "ar": "تونس",
+    "en": "Tunisia",
+    "ru": "Тунис",
+    "ky": "Тунис",
+    "uz": "Tunis"
+  },
+  "osf": "تونس — medina عربية وآثار قرطاج في العاصمة.",
+  "osf_i18n": {
+    "ar": "تونس — medina عربية وآثار قرطاج في العاصمة.",
+    "en": "Tunisia — Arab medina and Carthage ruins from the capital.",
+    "ru": "Тунис — медина и руины Карфагена.",
+    "ky": "Тунис — медina жана Карфаген.",
+    "uz": "Tunis — medina va Karfagen."
+  },
+  "img": "https://flagcdn.com/w320/tn.png",
+  "hederImg": "https://flagcdn.com/w1280/tn.png",
+  "iso_code": "TN",
+  "iso3": "TUN",
+  "CurrencySymbol": "د.ت",
+  "currency_code": "TND",
+  "phone_code": "+216",
+  "timezone": "Africa/Tunis",
+  "acctev": true,
+  "saudi": false,
+  "num_trteb": 6,
+  "geo_center": {
+    "lat": 36.8065,
+    "lng": 10.1815
+  },
+  "bounds_sw": {
+    "lat": 30.2,
+    "lng": 7.5
+  },
+  "bounds_ne": {
+    "lat": 37.5,
+    "lng": 11.6
+  },
+  "geo_import_id": "country_tn",
+  "geo_import_source": "international_seven_2026"
+}

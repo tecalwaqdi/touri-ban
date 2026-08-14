@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '/backend/backend.dart';
+import '/core/toury_city_display_order.dart';
 import '/core/toury_firestore_cache.dart';
 import '/core/toury_geo_i18n.dart';
 import '/core/toury_image.dart';
@@ -229,7 +230,7 @@ class _CitiesListSliver extends StatelessWidget {
           );
         }
 
-        final cities = snapshot.data!;
+        final cities = TouryCityDisplayOrder.sort(snapshot.data!);
         if (cities.isEmpty) {
           return SliverToBoxAdapter(
             child: DsEmptyState(

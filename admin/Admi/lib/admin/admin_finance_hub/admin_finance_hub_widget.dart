@@ -164,6 +164,22 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                               useGoogleFonts: !theme.labelLargeIsCustom,
                             ),
                           ),
+                          if (data.isApproximate) ...[
+                            const SizedBox(height: 8),
+                            AdminStatusBadge(
+                              label: uiTr(
+                                context,
+                                'بيانات تقريبية (عيّنة محلية — تعذر الاتصال بالخادم)',
+                              ),
+                              tone: AdminBadgeTone.warning,
+                            ),
+                          ] else ...[
+                            const SizedBox(height: 8),
+                            AdminStatusBadge(
+                              label: uiTr(context, 'بيانات من الخادم'),
+                              tone: AdminBadgeTone.success,
+                            ),
+                          ],
                           const SizedBox(height: 12),
                           AdminKpiStrip(
                             items: [
@@ -263,8 +279,12 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                                   Text(_fmt(e.amount)),
                                   Text(e.partyLabel,
                                       overflow: TextOverflow.ellipsis),
-                                  Text(appTr(context, e.note),
-                                      overflow: TextOverflow.ellipsis),
+                                  Text(
+                                    e.note.startsWith('ent_')
+                                        ? appTr(context, e.note)
+                                        : (e.note.isEmpty ? '—' : e.note),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ],
                             ],
                           ),

@@ -10,6 +10,8 @@ class AdminaddMkanCopyModel extends FlutterFlowModel<AdminaddMkanCopyWidget> {
 
   bool recordInitialized = false;
   bool mainImageRemoved = false;
+  bool secondImageRemoved = false;
+  bool thirdImageRemoved = false;
 
   void bindMkanRecord(MkanRecord record) {
     if (recordInitialized) {
@@ -25,6 +27,7 @@ class AdminaddMkanCopyModel extends FlutterFlowModel<AdminaddMkanCopyWidget> {
     ratingValue = record.rate;
     uploadedFileUrl_uploadDataCni = record.img1;
     uploadedFileUrl_uploadData8dq = record.img2;
+    uploadedFileUrl_uploadDataImg3 = record.img3;
     if (record.location != null) {
       placePickerValue = FFPlace(
         latLng: record.location!,
@@ -57,6 +60,11 @@ class AdminaddMkanCopyModel extends FlutterFlowModel<AdminaddMkanCopyWidget> {
   FFUploadedFile uploadedLocalFile_uploadData8dq =
       FFUploadedFile(bytes: Uint8List.fromList([]), originalFilename: '');
   String uploadedFileUrl_uploadData8dq = '';
+
+  bool isDataUploading_uploadDataImg3 = false;
+  FFUploadedFile uploadedLocalFile_uploadDataImg3 =
+      FFUploadedFile(bytes: Uint8List.fromList([]), originalFilename: '');
+  String uploadedFileUrl_uploadDataImg3 = '';
 
   // State field(s) for PlacePicker widget.
   FFPlace placePickerValue = FFPlace();

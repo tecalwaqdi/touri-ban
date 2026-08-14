@@ -1,0 +1,35 @@
+{
+  "__path": "cities/region_id_jakarta",
+  "__writtenAt": "2026-08-13T21:39:16.497Z",
+  "__target": "local-staging",
+  "naim": "جاكرتا",
+  "names_i18n": {
+    "ar": "جاكرتا",
+    "en": "Jakarta",
+    "ru": "Джakarta",
+    "ky": "Jakarta",
+    "uz": "Jakarta"
+  },
+  "osf": "جاكرتا — إندونيسيا.",
+  "osf_i18n": {
+    "ar": "جاكرتا — إندونيسيا.",
+    "en": "Jakarta — Indonesia.",
+    "ru": "Джakarta — Индонезия.",
+    "ky": "Jakarta — Индонезия.",
+    "uz": "Jakarta — Indoneziya."
+  },
+  "img": "https://flagcdn.com/w320/id.png",
+  "icon": "https://flagcdn.com/w320/id.png",
+  "dolh": "countries/indonesia",
+  "vil": "villages/city_id_jakarta",
+  "acctev": true,
+  "sorting": 1,
+  "iso_code": "ID-JK",
+  "country_iso": "ID",
+  "geo_center": {
+    "lat": -6.2088,
+    "lng": 106.8456
+  },
+  "geo_import_id": "region_id_jakarta",
+  "geo_import_source": "international_seven_2026"
+}

@@ -14,10 +14,12 @@ class AdminUserCreation {
 
   static const _secondaryAppName = 'AdminUserProvision';
 
-  /// When true (default), fall back to client Auth+Firestore if CF is missing.
+  /// When true, fall back to client Auth+Firestore if CF is missing.
+  /// Production default is false — set
+  /// `--dart-define=TOURY_ADMIN_USER_CREATE_FALLBACK=true` only for local/dev.
   static const bool allowClientFallback = bool.fromEnvironment(
     'TOURY_ADMIN_USER_CREATE_FALLBACK',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   static String authErrorMessage(Object error) {

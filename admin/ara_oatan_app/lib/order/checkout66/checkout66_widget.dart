@@ -18,6 +18,7 @@ import '/core/toury_navigation.dart';
 import '/core/toury_polyline.dart';
 import '/core/toury_route_metrics.dart';
 import '/core/toury_distance_format.dart';
+import '/core/toury_directions_service.dart';
 import '/core/toury_pricing.dart';
 import '/core/toury_error_localizer.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -180,6 +181,43 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
       if (destinations.isEmpty) {
         setState(() => isCalculating = false);
         return;
+      }
+
+      // Prefer Google Routes (traffic-aware) when authenticated; OSRM as fallback.
+      if (loggedIn) {
+        final googleRoute = await TouryDirectionsService.fetchRoadRouteResult(
+          validation.points,
+          language: context.locale.toString(),
+          region: 'sa',
+          optimal: true,
+        );
+        if (!mounted || _routeCalcCancelled) return;
+        if (googleRoute != null &&
+            googleRoute.distanceMeters > 0 &&
+            googleRoute.durationSeconds > 0) {
+          final distanceKm = touryMetersToKm(googleRoute.distanceMeters.toDouble());
+          if (touryRoadMetricsArePlausible(
+            distanceKm: distanceKm,
+            durationSeconds: googleRoute.durationSeconds.toDouble(),
+            points: validation.points,
+          )) {
+            setState(() {
+              osrmTime = googleRoute.durationSeconds / 60;
+              osrmDistance = distanceKm;
+              _rejectedRoutePoints = validation.rejectedCount;
+              isCalculating = false;
+            });
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted || _routeCalcCancelled) return;
+              FFAppState().update(() {
+                FFAppState().osrmTotalTime = osrmTime;
+                FFAppState().osrmTotalDistance = distanceKm;
+                FFAppState().osrmCalculationTime = DateTime.now();
+              });
+            });
+            return;
+          }
+        }
       }
 
       // Build coordinates string

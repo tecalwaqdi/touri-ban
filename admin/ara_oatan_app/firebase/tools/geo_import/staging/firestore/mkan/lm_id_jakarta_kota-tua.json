@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_id_jakarta_kota-tua",
+  "__writtenAt": "2026-08-13T21:39:16.497Z",
+  "__target": "local-staging",
+  "naim": "Kota Tua",
+  "osf": "Historic Dutch colonial quarter around Fatahillah Square.",
+  "names_i18n": {
+    "ar": "Kota Tua",
+    "en": "Old Town (Kota Tua)",
+    "ru": "Старый город Kota Tua",
+    "ky": "Kota Tua эski шаары",
+    "uz": "Kota Tua eski shahar"
+  },
+  "osf_i18n": {
+    "ar": "Historic Dutch colonial quarter around Fatahillah Square.",
+    "en": "Historic Dutch colonial quarter around Fatahillah Square.",
+    "ru": "Исторический голландский квартal у Fatahillah.",
+    "ky": "Fatahillah аянтынын тарыхый району.",
+    "uz": "Fatahillah maydoni atrofidagi tarixiy hudud."
+  },
+  "content_locale": "ar",
+  "address": "Kota Tua، جاكرتا، إندونيسيا",
+  "address_i18n": {
+    "ar": "Kota Tua, جاكرتا, إندونيسيا",
+    "en": "Old Town (Kota Tua), Jakarta, Indonesia",
+    "ru": "Старый город Kota Tua, Джakarta, Индонезия",
+    "ky": "Kota Tua эski шаары, Jakarta, Индонезия",
+    "uz": "Kota Tua eski shahar, Jakarta, Indoneziya"
+  },
+  "Location": {
+    "latitude": -6.1352,
+    "longitude": 106.8133
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Jakarta_Indonesia_People-in-Kota-Jakarta-01.jpg/960px-Jakarta_Indonesia_People-in-Kota-Jakarta-01.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_id_jakarta",
+  "id_vill": "villages/city_id_jakarta",
+  "Rev_dolh": "countries/indonesia",
+  "country_iso": "ID",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_id_jakarta_kota-tua",
+  "geo_import_slug": "kota-tua",
+  "geo_import_source": "international_seven_2026"
+}

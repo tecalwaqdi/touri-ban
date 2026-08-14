@@ -1535,22 +1535,11 @@ class _ListViWidgetState extends State<ListViWidget>
               centerTitle: true,
               elevation: 0,
               toolbarHeight: DsConstants.appBarHeight,
-              leading: Padding(
-                padding: const EdgeInsetsDirectional.only(
-                  start: DsSpacing.xs,
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    color: FlutterFlowTheme.of(context).secondaryBackground,
-                    size: DsIcons.sm,
-                  ),
-                  tooltip:
-                      MaterialLocalizations.of(context).backButtonTooltip,
-                  onPressed: () {
-                    context.safePop();
-                  },
-                ),
+              leadingWidth: DsConstants.minTapTarget,
+              leading: DsBackButton(
+                foreground:
+                    FlutterFlowTheme.of(context).secondaryBackground,
+                onPressed: () => context.safePop(),
               ),
               title: Text(
                 [

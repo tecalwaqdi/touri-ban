@@ -129,6 +129,45 @@ class AdminListRefresh {
 abstract final class AdminCrudFeedback {
   AdminCrudFeedback._();
 
+  /// Non-dismissible progress dialog while a long cascade runs.
+  static Future<T> runWithBlockingProgress<T>({
+    required BuildContext context,
+    required String message,
+    required Future<T> Function() action,
+  }) async {
+    showDialog<void>(
+      context: context,
+      useRootNavigator: true,
+      barrierDismissible: false,
+      builder: (dialogCtx) {
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            content: Row(
+              children: [
+                const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(strokeWidth: 3),
+                ),
+                const SizedBox(width: 16),
+                Expanded(child: Text(message)),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    try {
+      return await action();
+    } finally {
+      final nav = Navigator.of(context, rootNavigator: true);
+      if (nav.canPop()) {
+        nav.pop();
+      }
+    }
+  }
+
   static String deleteSuccessMessage(BuildContext context) =>
       FFLocalizations.of(context).getText('adm_deleted_success');
 

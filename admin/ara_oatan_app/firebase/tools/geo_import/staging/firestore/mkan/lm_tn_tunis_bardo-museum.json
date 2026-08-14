@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_tn_tunis_bardo-museum",
+  "__writtenAt": "2026-08-13T21:39:16.496Z",
+  "__target": "local-staging",
+  "naim": "متحف Bardo",
+  "osf": "متحف يضم أكبر مجموعة mosaics رومانية.",
+  "names_i18n": {
+    "ar": "متحف Bardo",
+    "en": "Bardo National Museum",
+    "ru": "Национальный музей Bardo",
+    "ky": "Bardo музейи",
+    "uz": "Bardo milliy muzeyi"
+  },
+  "osf_i18n": {
+    "ar": "متحف يضم أكبر مجموعة mosaics رومانية.",
+    "en": "Museum housing one of the world’s finest Roman mosaic collections.",
+    "ru": "Музей с одной из лучших коллекций римских мозаик.",
+    "ky": "Рим мозaika коллекциясы.",
+    "uz": "Rim mozaika kolleksiyasi."
+  },
+  "content_locale": "ar",
+  "address": "متحف Bardo، تونس، تونس",
+  "address_i18n": {
+    "ar": "متحف Bardo, تونس, تونس",
+    "en": "Bardo National Museum, Tunis, Tunisia",
+    "ru": "Национальный музей Bardo, Тунис, Тунис",
+    "ky": "Bardo музейи, Тунис, Тунис",
+    "uz": "Bardo milliy muzeyi, Tunis, Tunis"
+  },
+  "Location": {
+    "latitude": 36.8092,
+    "longitude": 10.1342
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Mus%C3%A9e_National_du_Bardo_in_Tunis_%282017%29.jpg/960px-Mus%C3%A9e_National_du_Bardo_in_Tunis_%282017%29.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 2,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_tn_tunis",
+  "id_vill": "villages/city_tn_tunis",
+  "Rev_dolh": "countries/tunisia",
+  "country_iso": "TN",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_tn_tunis_bardo-museum",
+  "geo_import_slug": "bardo-museum",
+  "geo_import_source": "international_seven_2026"
+}

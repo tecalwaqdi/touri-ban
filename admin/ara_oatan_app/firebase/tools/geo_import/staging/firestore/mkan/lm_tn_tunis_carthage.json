@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_tn_tunis_carthage",
+  "__writtenAt": "2026-08-13T21:39:16.496Z",
+  "__target": "local-staging",
+  "naim": "Carthage",
+  "osf": "Ruins فينيقية ورومانية على تل Byrsa.",
+  "names_i18n": {
+    "ar": "Carthage",
+    "en": "Carthage Archaeological Site",
+    "ru": "Карфаген",
+    "ky": "Карфаген",
+    "uz": "Karfagen"
+  },
+  "osf_i18n": {
+    "ar": "Ruins فينيقية ورومانية على تل Byrsa.",
+    "en": "Phoenician and Roman ruins on Byrsa Hill.",
+    "ru": "Финикийские и римские руины на холме Byrsa.",
+    "ky": "Byrsa тepesindegi археология.",
+    "uz": "Byrsa tepasidagi qadimiy joy."
+  },
+  "content_locale": "ar",
+  "address": "Carthage، تونس، تونس",
+  "address_i18n": {
+    "ar": "Carthage, تونس, تونس",
+    "en": "Carthage Archaeological Site, Tunis, Tunisia",
+    "ru": "Карфаген, Тунис, Тунис",
+    "ky": "Карфаген, Тунис, Тунис",
+    "uz": "Karfagen, Tunis, Tunis"
+  },
+  "Location": {
+    "latitude": 36.854,
+    "longitude": 10.3236
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Archaeological_Site_of_Carthage-130237.jpg/960px-Archaeological_Site_of_Carthage-130237.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_tn_tunis",
+  "id_vill": "villages/city_tn_tunis",
+  "Rev_dolh": "countries/tunisia",
+  "country_iso": "TN",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_tn_tunis_carthage",
+  "geo_import_slug": "carthage",
+  "geo_import_source": "international_seven_2026"
+}

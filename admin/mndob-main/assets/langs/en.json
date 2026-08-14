@@ -360,5 +360,9 @@
   "The First Global Saudi Tourism App": "The First Global Saudi Tourism App",
   "Failed to open chat": "Failed to open chat",
   "Check your connection and try again.": "Check your connection and try again.",
-  "Trip ends in {time}. Completing early is not allowed.": "Trip ends in {time}. Completing early is not allowed."
+  "Trip ends in {time}. Completing early is not allowed.": "Trip ends in {time}. Completing early is not allowed.",
+  "Appearance": "Appearance",
+  "Light mode": "Light mode",
+  "Dark mode": "Dark mode",
+  "Choose light or dark appearance.": "Choose light or dark appearance."
 }

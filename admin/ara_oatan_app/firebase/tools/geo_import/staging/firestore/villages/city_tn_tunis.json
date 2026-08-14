@@ -1,0 +1,33 @@
+{
+  "__path": "villages/city_tn_tunis",
+  "__writtenAt": "2026-08-13T21:39:16.496Z",
+  "__target": "local-staging",
+  "naim": "تونس",
+  "names_i18n": {
+    "ar": "تونس",
+    "en": "Tunis",
+    "ru": "Тунис",
+    "ky": "Тунис",
+    "uz": "Tunis"
+  },
+  "osf": "تونس — عاصمة تونس.",
+  "osf_i18n": {
+    "ar": "تونس — عاصمة تونس.",
+    "en": "Tunis — capital of Tunisia.",
+    "ru": "Тунис — capital of Tunisia.",
+    "ky": "Тунис — capital of Tunisia.",
+    "uz": "Tunis — capital of Tunisia."
+  },
+  "img": "https://flagcdn.com/w320/tn.png",
+  "cities": "cities/region_tn_tunis",
+  "dolh": "countries/tunisia",
+  "lat_ling": {
+    "latitude": 36.8065,
+    "longitude": 10.1815
+  },
+  "acctev": true,
+  "country_iso": "TN",
+  "naimciteText": "Tunis",
+  "geo_import_id": "city_tn_tunis",
+  "geo_import_source": "international_seven_2026"
+}

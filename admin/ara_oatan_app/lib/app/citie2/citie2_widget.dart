@@ -6,7 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 
 import '/backend/backend.dart';
+import '/core/toury_city_display_order.dart';
 import '/core/toury_country_registry.dart';
+import '/core/toury_firestore_cache.dart';
 import '/core/toury_geo_aliases.dart';
 import '/core/toury_geo_content_i18n.dart';
 import '/core/toury_google_map_panel.dart';
@@ -198,18 +200,31 @@ class _Citie2WidgetState extends State<Citie2Widget> {
         false;
     if (!confirmed || !mounted) return;
 
+    final regionRef = touryCanonicalRegionRef(columnCitiesRecord.reference);
+    // Drop stale village/region streams from older wrong remaps (e.g. region_sa_*).
+    TouryFirestoreCache.invalidateDocument(regionRef.path);
+    TouryFirestoreCache.invalidateDocument(columnCitiesRecord.reference.path);
+
     FFAppState().update(() {
-      FFAppState().mdenh =
-          touryCanonicalRegionRef(columnCitiesRecord.reference);
+      FFAppState().mdenh = regionRef;
       FFAppState().naimmdenh = touryCityName(context, columnCitiesRecord);
-      // Village is chosen on the next screen.
-      // Do not seed villa from city.vil (often null
-      // for KG/RU/UZ regions).
-      FFAppState().villa = null;
-      FFAppState().vil = null;
-      FFAppState().villnow = null;
-      FFAppState().naimvillatext = '';
-      FFAppState().villtextnow = '';
+      // Prefer linked capital hub when region has a single vil ref.
+      final hub = columnCitiesRecord.vil;
+      if (hub != null) {
+        final canonicalHub = touryCanonicalVillageRef(hub);
+        FFAppState().villa = canonicalHub;
+        FFAppState().vil = canonicalHub;
+        FFAppState().villnow = canonicalHub;
+        FFAppState().naimvillatext = touryCityName(context, columnCitiesRecord);
+        FFAppState().villtextnow = FFAppState().naimvillatext;
+      } else {
+        // Village is chosen on the next screen.
+        FFAppState().villa = null;
+        FFAppState().vil = null;
+        FFAppState().villnow = null;
+        FFAppState().naimvillatext = '';
+        FFAppState().villtextnow = '';
+      }
       FFAppState().mapNEW = null;
       FFAppState().ismapview = false;
     });
@@ -522,15 +537,8 @@ class _Citie2WidgetState extends State<Citie2Widget> {
             child: DsLoading(message: 'loading_regions'.tr()),
           );
         }
-        List<CitiesRecord> columnCitiesRecordList = snapshot.data!;
-        columnCitiesRecordList = List<CitiesRecord>.from(columnCitiesRecordList)
-          ..sort((a, b) {
-            final bySort = a.sorting.compareTo(b.sorting);
-            if (bySort != 0) return bySort;
-            return touryCityName(context, a).toLowerCase().compareTo(
-                  touryCityName(context, b).toLowerCase(),
-                );
-          });
+        List<CitiesRecord> columnCitiesRecordList =
+            TouryCityDisplayOrder.sort(snapshot.data!);
         final seen = <String>{};
         columnCitiesRecordList = columnCitiesRecordList.where((r) {
           final key = r.naim.trim().toLowerCase();

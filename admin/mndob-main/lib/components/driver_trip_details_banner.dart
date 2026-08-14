@@ -197,7 +197,18 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
             _row(
               context,
               driverTr(context, 'ETA'),
-              driverTrNamed(context, '{min} min', {'min': '$etaMin'}),
+              () {
+                final approx = order.snapshotData['etaApproximate'] == true;
+                final base = driverTrNamed(
+                  context,
+                  '{min} min',
+                  {'min': '$etaMin'},
+                );
+                final suffix = approx
+                    ? ' (${driverTr(context, 'estimated')})'
+                    : ' (${driverTr(context, 'based on traffic')})';
+                return '$base$suffix';
+              }(),
             ),
           ],
           if (order.halhText == DriverTripHalh.driverArrived ||

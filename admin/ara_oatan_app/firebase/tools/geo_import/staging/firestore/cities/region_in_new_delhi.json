@@ -1,0 +1,35 @@
+{
+  "__path": "cities/region_in_new_delhi",
+  "__writtenAt": "2026-08-13T21:39:16.502Z",
+  "__target": "local-staging",
+  "naim": "نيودلهي",
+  "names_i18n": {
+    "ar": "نيودلهي",
+    "en": "New Delhi",
+    "ru": "Нью-Дели",
+    "ky": "New Delhi",
+    "uz": "New Delhi"
+  },
+  "osf": "نيودلهي — الهند.",
+  "osf_i18n": {
+    "ar": "نيودلهي — الهند.",
+    "en": "New Delhi — India.",
+    "ru": "Нью-Дели — Индия.",
+    "ky": "New Delhi — Индия.",
+    "uz": "New Delhi — Hindiston."
+  },
+  "img": "https://flagcdn.com/w320/in.png",
+  "icon": "https://flagcdn.com/w320/in.png",
+  "dolh": "countries/india",
+  "vil": "villages/city_in_new_delhi",
+  "acctev": true,
+  "sorting": 1,
+  "iso_code": "IN-DL",
+  "country_iso": "IN",
+  "geo_center": {
+    "lat": 28.6139,
+    "lng": 77.209
+  },
+  "geo_import_id": "region_in_new_delhi",
+  "geo_import_source": "international_seven_2026"
+}

@@ -1,0 +1,35 @@
+{
+  "__path": "cities/region_tn_tunis",
+  "__writtenAt": "2026-08-13T21:39:16.496Z",
+  "__target": "local-staging",
+  "naim": "تونس",
+  "names_i18n": {
+    "ar": "تونس",
+    "en": "Tunis",
+    "ru": "Тунис",
+    "ky": "Тунис",
+    "uz": "Tunis"
+  },
+  "osf": "تونس — تونس.",
+  "osf_i18n": {
+    "ar": "تونس — تونس.",
+    "en": "Tunis — Tunisia.",
+    "ru": "Тунис — Тунис.",
+    "ky": "Тунис — Тунис.",
+    "uz": "Tunis — Tunis."
+  },
+  "img": "https://flagcdn.com/w320/tn.png",
+  "icon": "https://flagcdn.com/w320/tn.png",
+  "dolh": "countries/tunisia",
+  "vil": "villages/city_tn_tunis",
+  "acctev": true,
+  "sorting": 1,
+  "iso_code": "TN-11",
+  "country_iso": "TN",
+  "geo_center": {
+    "lat": 36.8065,
+    "lng": 10.1815
+  },
+  "geo_import_id": "region_tn_tunis",
+  "geo_import_source": "international_seven_2026"
+}

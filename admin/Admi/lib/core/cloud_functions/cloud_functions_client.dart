@@ -48,6 +48,24 @@ class CloudFunctionsClient {
     return Map<String, dynamic>.from(result.data as Map);
   }
 
+  /// Credits/debits a driver wallet via Admin SDK (finance / super_admin).
+  /// [amount] > 0 credits, < 0 debits. Writes a `transactions` ledger row.
+  static Future<Map<String, dynamic>> adminAdjustDriverWallet({
+    required String driverId,
+    required double amount,
+    String note = '',
+    String currency = 'SAR',
+  }) async {
+    final result =
+        await _functions.httpsCallable('adminAdjustDriverWallet').call({
+      'driverId': driverId,
+      'amount': amount,
+      if (note.isNotEmpty) 'note': note,
+      'currency': currency,
+    });
+    return Map<String, dynamic>.from(result.data as Map);
+  }
+
   static Future<void> recordAuditLog({
     required String action,
     required String target,

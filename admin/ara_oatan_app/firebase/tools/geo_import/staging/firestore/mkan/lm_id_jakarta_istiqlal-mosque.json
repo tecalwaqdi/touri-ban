@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_id_jakarta_istiqlal-mosque",
+  "__writtenAt": "2026-08-13T21:39:16.497Z",
+  "__target": "local-staging",
+  "naim": "مسجد Istiqlal",
+  "osf": "أكبر مسجد في جنوب شرق Asia مقابل Cathedral.",
+  "names_i18n": {
+    "ar": "مسجد Istiqlal",
+    "en": "Istiqlal Mosque",
+    "ru": "Мечеть Istiqlal",
+    "ky": "Istiqlal мечити",
+    "uz": "Istiqlal masjidi"
+  },
+  "osf_i18n": {
+    "ar": "أكبر مسجد في جنوب شرق Asia مقابل Cathedral.",
+    "en": "Southeast Asia’s largest mosque, facing Jakarta Cathedral.",
+    "ru": "Крупнейшая мечеть Юго-Восточной Азии.",
+    "ky": "Түштүк-Чыгыш Азиянын чоң мечити.",
+    "uz": "Janubi-Sharqiy Osiyoning eng katta masjidi."
+  },
+  "content_locale": "ar",
+  "address": "مسجد Istiqlal، جاكرتا، إندونيسيا",
+  "address_i18n": {
+    "ar": "مسجد Istiqlal, جاكرتا, إندونيسيا",
+    "en": "Istiqlal Mosque, Jakarta, Indonesia",
+    "ru": "Мечеть Istiqlal, Джakarta, Индонезия",
+    "ky": "Istiqlal мечити, Jakarta, Индонезия",
+    "uz": "Istiqlal masjidi, Jakarta, Indoneziya"
+  },
+  "Location": {
+    "latitude": -6.1702,
+    "longitude": 106.831
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Ablution_fountain_Istiqlal_Mosque_Jakarta.jpg/960px-Ablution_fountain_Istiqlal_Mosque_Jakarta.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 2,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": true,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم دينية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_id_jakarta",
+  "id_vill": "villages/city_id_jakarta",
+  "Rev_dolh": "countries/indonesia",
+  "country_iso": "ID",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_id_jakarta_istiqlal-mosque",
+  "geo_import_slug": "istiqlal-mosque",
+  "geo_import_source": "international_seven_2026"
+}

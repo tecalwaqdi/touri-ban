@@ -134,18 +134,15 @@ class _ListViCopy2WidgetState extends State<ListViCopy2Widget> {
             automaticallyImplyLeading: false,
             centerTitle: true,
             title: '${FFAppState().naimmdenh}- ${FFAppState().naimvillatext}',
-            leading: DsIconButton(
-              icon: Icons.menu_rounded,
-              onPressed: () async {
-                scaffoldKey.currentState!.openDrawer();
-              },
+            leading: DsBackButton(
+              onPressed: () => Navigator.pop(context),
             ),
             actions: [
               DsIconButton(
-                icon: DsIcons.back,
-                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                onPressed: () {
-                  Navigator.pop(context);
+                icon: Icons.menu_rounded,
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+                onPressed: () async {
+                  scaffoldKey.currentState!.openDrawer();
                 },
               ),
               const SizedBox(width: DsSpacing.xxs),

@@ -360,5 +360,9 @@
   "The First Global Saudi Tourism App": "Первое глобальное саудовское туристическое приложение",
   "Failed to open chat": "Не удалось открыть чат",
   "Check your connection and try again.": "Проверьте соединение и попробуйте снова.",
-  "Trip ends in {time}. Completing early is not allowed.": "До конца поездки: {time}. Досрочное завершение запрещено."
+  "Trip ends in {time}. Completing early is not allowed.": "До конца поездки: {time}. Досрочное завершение запрещено.",
+  "Appearance": "Оформление",
+  "Light mode": "Дневной режим",
+  "Dark mode": "Ночной режим",
+  "Choose light or dark appearance.": "Выберите дневной или ночной режим."
 }

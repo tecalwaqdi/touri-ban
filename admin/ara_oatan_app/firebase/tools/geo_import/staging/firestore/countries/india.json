@@ -1,0 +1,47 @@
+{
+  "__path": "countries/india",
+  "__writtenAt": "2026-08-13T21:39:16.502Z",
+  "__target": "local-staging",
+  "naim": "الهند",
+  "naimEnglesh": "India",
+  "names_i18n": {
+    "ar": "الهند",
+    "en": "India",
+    "ru": "Индия",
+    "ky": "Индия",
+    "uz": "Hindiston"
+  },
+  "osf": "الهند — New Delhi ومعالم إمبراطorية mogul.",
+  "osf_i18n": {
+    "ar": "الهند — New Delhi ومعالم إمبراطorية mogul.",
+    "en": "India — New Delhi and Mughal imperial landmarks.",
+    "ru": "Индия — Нью-Дели и памятники эпохи Великих Mogul.",
+    "ky": "Индия — New Delhi жана Mogul мuraasy.",
+    "uz": "Hindiston — New Delhi va Mogʻul merosi."
+  },
+  "img": "https://flagcdn.com/w320/in.png",
+  "hederImg": "https://flagcdn.com/w1280/in.png",
+  "iso_code": "IN",
+  "iso3": "IND",
+  "CurrencySymbol": "₹",
+  "currency_code": "INR",
+  "phone_code": "+91",
+  "timezone": "Asia/Kolkata",
+  "acctev": true,
+  "saudi": false,
+  "num_trteb": 9,
+  "geo_center": {
+    "lat": 28.6139,
+    "lng": 77.209
+  },
+  "bounds_sw": {
+    "lat": 8,
+    "lng": 68
+  },
+  "bounds_ne": {
+    "lat": 35.5,
+    "lng": 97.5
+  },
+  "geo_import_id": "country_in",
+  "geo_import_source": "international_seven_2026"
+}

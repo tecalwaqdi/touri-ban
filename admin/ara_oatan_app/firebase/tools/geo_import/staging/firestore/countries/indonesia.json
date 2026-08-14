@@ -1,0 +1,47 @@
+{
+  "__path": "countries/indonesia",
+  "__writtenAt": "2026-08-13T21:39:16.497Z",
+  "__target": "local-staging",
+  "naim": "إندونيسيا",
+  "naimEnglesh": "Indonesia",
+  "names_i18n": {
+    "ar": "إندونيسيا",
+    "en": "Indonesia",
+    "ru": "Индонезия",
+    "ky": "Индонезия",
+    "uz": "Indoneziya"
+  },
+  "osf": "إندونيسيا — جاكرتا العاصمة الفعلية مع معالم وطنية بارزة.",
+  "osf_i18n": {
+    "ar": "إندونيسيا — جاكرتا العاصمة الفعلية مع معالم وطنية بارزة.",
+    "en": "Indonesia — Jakarta as the functioning capital with national landmarks.",
+    "ru": "Индонезия — Джakarta как действующая столица.",
+    "ky": "Индонезия — иш жараган poytaхт Jakarta.",
+    "uz": "Indoneziya — faol poytaxt Jakarta."
+  },
+  "img": "https://flagcdn.com/w320/id.png",
+  "hederImg": "https://flagcdn.com/w1280/id.png",
+  "iso_code": "ID",
+  "iso3": "IDN",
+  "CurrencySymbol": "Rp",
+  "currency_code": "IDR",
+  "phone_code": "+62",
+  "timezone": "Asia/Jakarta",
+  "acctev": true,
+  "saudi": false,
+  "num_trteb": 7,
+  "geo_center": {
+    "lat": -6.2088,
+    "lng": 106.8456
+  },
+  "bounds_sw": {
+    "lat": -11,
+    "lng": 95
+  },
+  "bounds_ne": {
+    "lat": 6,
+    "lng": 141
+  },
+  "geo_import_id": "country_id",
+  "geo_import_source": "international_seven_2026"
+}

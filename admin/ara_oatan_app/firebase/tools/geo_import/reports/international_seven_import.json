@@ -1,0 +1,175 @@
+{
+  "ok": true,
+  "stats": {
+    "countries": 7,
+    "regions": 7,
+    "cities": 7,
+    "landmarks": 35,
+    "totalDocs": 56
+  },
+  "imageCheck": {
+    "total": 35,
+    "bad": [
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Museo_del_Prado_2005July_008.jpg/960px-Museo_del_Prado_2005July_008.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Palacio_de_Cristal_-_02.jpg/960px-Palacio_de_Cristal_-_02.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Felipe_III_-_Plaza_Mayor_de_Madrid_-_01.jpg/960px-Felipe_III_-_Plaza_Mayor_de_Madrid_-_01.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Honor_guard_at_Mausoleum_of_Mohammed_V%2C_Rabat%2C_Morocco.jpg/960px-Honor_guard_at_Mausoleum_of_Mohammed_V%2C_Rabat%2C_Morocco.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Kasbah_Oudayas_exterior.jpg/960px-Kasbah_Oudayas_exterior.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Chellah_landscape.jpg/960px-Chellah_landscape.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Royal_Palace_%28Rabat%29_%285509106348%29.jpg/960px-Royal_Palace_%28Rabat%29_%285509106348%29.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Jer%C3%B3nimos_Monastery_in_Bel%C3%A9m%2C_Lisbon%2C_20250604_1340_9252.jpg/960px-Jer%C3%B3nimos_Monastery_in_Bel%C3%A9m%2C_Lisbon%2C_20250604_1340_9252.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Castelo_de_S%C3%A3o_Jorge%2C_Lisbon%2C_20250604_1706_9397.jpg/960px-Castelo_de_S%C3%A3o_Jorge%2C_Lisbon%2C_20250604_1706_9397.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Arco_Triunfal_da_Rua_Augusta%2C_Plaza_del_Comercio%2C_Lisboa%2C_Portugal%2C_2012-05-12%2C_DD_02.JPG/960px-Arco_Triunfal_da_Rua_Augusta%2C_Plaza_del_Comercio%2C_Lisboa%2C_Portugal%2C_2012-05-12%2C_DD_02.JPG",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Padr%C3%A3o_Descobrimentos_April_2009-3c.jpg/960px-Padr%C3%A3o_Descobrimentos_April_2009-3c.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Door_in_the_medina_of_Tunis_03.jpg/960px-Door_in_the_medina_of_Tunis_03.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Mus%C3%A9e_National_du_Bardo_in_Tunis_%282017%29.jpg/960px-Mus%C3%A9e_National_du_Bardo_in_Tunis_%282017%29.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Archaeological_Site_of_Carthage-130237.jpg/960px-Archaeological_Site_of_Carthage-130237.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Cath%C3%A9drale_Saint-Vincent-de-Paul%2C_Tunis_03.jpg/960px-Cath%C3%A9drale_Saint-Vincent-de-Paul%2C_Tunis_03.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Jasmine_Revolution_Avenue_Bouguiba.jpg/960px-Jasmine_Revolution_Avenue_Bouguiba.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Monumen_Nasional%2C_Jakarta%2C_Indonesia.jpg/960px-Monumen_Nasional%2C_Jakarta%2C_Indonesia.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Ablution_fountain_Istiqlal_Mosque_Jakarta.jpg/960px-Ablution_fountain_Istiqlal_Mosque_Jakarta.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Jakarta_Indonesia_Jakarta-Cathedral-07.jpg/960px-Jakarta_Indonesia_Jakarta-Cathedral-07.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Jakarta_Indonesia_People-in-Kota-Jakarta-01.jpg/960px-Jakarta_Indonesia_People-in-Kota-Jakarta-01.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Saudjana_Viewing_Tower%2C_Taman_Mini_Indonesia_Indah%2C_lower_perspective.jpg/960px-Saudjana_Viewing_Tower%2C_Taman_Mini_Indonesia_Indah%2C_lower_perspective.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Petronas_Panorama_II.jpg/960px-Petronas_Panorama_II.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Gombak_Selangor_Batu-Caves-01.jpg/960px-Gombak_Selangor_Batu-Caves-01.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Merdeka_Square_Malaysia.jpg/960px-Merdeka_Square_Malaysia.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/KL_Tower_Kuala_Lumpur.jpg/960px-KL_Tower_Kuala_Lumpur.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Thean_Hou_Temple_%2849496683627%29.jpg/960px-Thean_Hou_Temple_%2849496683627%29.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/India_Gate_1_%28New_Delhi%29.jpg/960px-India_Gate_1_%28New_Delhi%29.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Lahori_Gate_-_Red_Fort_-_Delhi_2014-05-13_3151-3160_Compress.JPG/960px-Lahori_Gate_-_Red_Fort_-_Delhi_2014-05-13_3151-3160_Compress.JPG",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Qutub_Minar_in_Delhi_03-2016.jpg/960px-Qutub_Minar_in_Delhi_03-2016.jpg",
+        "status": 429
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Lotus_Temple_in_New_Delhi_03-2016.jpg/960px-Lotus_Temple_in_New_Delhi_03-2016.jpg",
+        "status": 429
+      }
+    ],
+    "ok": 5
+  },
+  "written": 56,
+  "manifestDocCount": 1316,
+  "capitals": [
+    {
+      "country": "Spain",
+      "capital": "Madrid",
+      "iso": "ES"
+    },
+    {
+      "country": "Morocco",
+      "capital": "Rabat",
+      "iso": "MA"
+    },
+    {
+      "country": "Portugal",
+      "capital": "Lisbon",
+      "iso": "PT"
+    },
+    {
+      "country": "Tunisia",
+      "capital": "Tunis",
+      "iso": "TN"
+    },
+    {
+      "country": "Indonesia",
+      "capital": "Jakarta",
+      "iso": "ID"
+    },
+    {
+      "country": "Malaysia",
+      "capital": "Kuala Lumpur",
+      "iso": "MY"
+    },
+    {
+      "country": "India",
+      "capital": "New Delhi",
+      "iso": "IN"
+    }
+  ]
+}

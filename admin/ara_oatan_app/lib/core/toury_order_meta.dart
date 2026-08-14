@@ -15,6 +15,14 @@ extension TouryOrderMeta on OrderRecord {
 
   int get etaMinutes => etaSeconds <= 0 ? 0 : (etaSeconds / 60).ceil();
 
+  bool get etaApproximate => snapshotData['etaApproximate'] == true;
+
+  double? get driverHeading {
+    final v = snapshotData['driverHeading'];
+    if (v is num) return v.toDouble();
+    return null;
+  }
+
   LatLng? get driverLivePosition => mapuser;
 
   String get statusCode =>
@@ -104,9 +112,13 @@ extension TouryOrderMeta on OrderRecord {
 
   String etaLabel() {
     if (etaMinutes <= 0) return '';
-    return 'map_eta_minutes'.tr(
+    final base = 'map_eta_minutes'.tr(
       namedArgs: {'minutes': etaMinutes.toString()},
     );
+    final suffix = etaApproximate
+        ? ' (${'map_eta_estimated'.tr()})'
+        : ' (${'map_eta_traffic'.tr()})';
+    return '$base$suffix';
   }
 
   bool get isPending {

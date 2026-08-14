@@ -261,18 +261,16 @@ class _ListWidgetState extends State<ListWidget> {
                   appBar: DsAppBar(
                     title: countryName,
                     automaticallyImplyLeading: false,
-                    leading: DsIconButton(
-                      icon: Icons.menu_rounded,
-                      tooltip:
-                          MaterialLocalizations.of(context).openAppDrawerTooltip,
-                      onPressed: () => scaffoldKey.currentState?.openDrawer(),
+                    leading: DsBackButton(
+                      onPressed: () => context.safePop(),
                     ),
                     actions: [
                       DsIconButton(
-                        icon: DsIcons.back,
+                        icon: Icons.menu_rounded,
                         tooltip: MaterialLocalizations.of(context)
-                            .backButtonTooltip,
-                        onPressed: () => context.safePop(),
+                            .openAppDrawerTooltip,
+                        onPressed: () =>
+                            scaffoldKey.currentState?.openDrawer(),
                       ),
                       const SizedBox(width: DsSpacing.xxs),
                     ],

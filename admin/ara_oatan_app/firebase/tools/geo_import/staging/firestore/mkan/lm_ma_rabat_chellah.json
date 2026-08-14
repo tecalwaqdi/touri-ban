@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_ma_rabat_chellah",
+  "__writtenAt": "2026-08-13T21:39:16.494Z",
+  "__target": "local-staging",
+  "naim": "شالة",
+  "osf": "موقع أثري روماني ومريني على ضفاف نهر بُو رِگْرَag.",
+  "names_i18n": {
+    "ar": "شالة",
+    "en": "Chellah Necropolis",
+    "ru": "Шелла",
+    "ky": "Шелла",
+    "uz": "Chellah"
+  },
+  "osf_i18n": {
+    "ar": "موقع أثري روماني ومريني على ضفاف نهر بُو رِگْرَag.",
+    "en": "Roman and Marinid archaeological site on the Bou Regreg river.",
+    "ru": "Римско-маринидский археологический комплекс на Бу-Регреге.",
+    "ky": "Бу-Регreg дарыясындагы археологиялык комплекс.",
+    "uz": "Bu-Regreg daryosi bo‘yidagi arxeologik joy."
+  },
+  "content_locale": "ar",
+  "address": "شالة، الرباط، المغرب",
+  "address_i18n": {
+    "ar": "شالة, الرباط, المغرب",
+    "en": "Chellah Necropolis, Rabat, Morocco",
+    "ru": "Шелла, Рабат, Марокко",
+    "ky": "Шелла, Рабат, Марокко",
+    "uz": "Chellah, Rabat, Marokash"
+  },
+  "Location": {
+    "latitude": 34.0069,
+    "longitude": -6.8217
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Chellah_landscape.jpg/960px-Chellah_landscape.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_ma_rabat",
+  "id_vill": "villages/city_ma_rabat",
+  "Rev_dolh": "countries/morocco",
+  "country_iso": "MA",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_ma_rabat_chellah",
+  "geo_import_slug": "chellah",
+  "geo_import_source": "international_seven_2026"
+}

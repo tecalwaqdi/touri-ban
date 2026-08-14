@@ -58,24 +58,9 @@ class _CLENTWidgetState extends State<CLENTWidget> {
                   'z500a02z' /* Page Title */,
                 ),
                 automaticallyImplyLeading: false,
-                leading: DsIconButton(
-                  icon: DsIcons.back,
-                  onPressed: () async {
-                    context.pop();
-                  },
+                leading: DsBackButton(
+                  onPressed: () => context.pop(),
                 ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                        0, 0, DsSpacing.xs, 0),
-                    child: DsIconButton(
-                      icon: Icons.arrow_back_ios_new_rounded,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ],
               ),
               body: SafeArea(
                 top: true,

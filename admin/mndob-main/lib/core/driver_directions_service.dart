@@ -5,13 +5,51 @@ import 'package:flutter/foundation.dart';
 import '/backend/cloud_functions/cloud_functions.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
-/// جلب مسارات Google Directions وفك ترميز polyline.
+/// نتيجة مسار من Google Routes (أو Directions كاحتياطي).
+class DriverRoadRoute {
+  const DriverRoadRoute({
+    required this.points,
+    required this.distanceMeters,
+    required this.durationSeconds,
+    required this.staticDurationSeconds,
+    required this.trafficAware,
+    required this.approximate,
+    required this.source,
+    this.encodedPolyline = '',
+  });
+
+  final List<LatLng> points;
+  final int distanceMeters;
+  final int durationSeconds;
+  final int staticDurationSeconds;
+  final bool trafficAware;
+  final bool approximate;
+  final String source;
+  final String encodedPolyline;
+
+  double get distanceKm => distanceMeters / 1000.0;
+  int get durationMinutes =>
+      durationSeconds <= 0 ? 0 : (durationSeconds / 60).ceil();
+}
+
+/// جلب مسارات Google Routes (traffic-aware) عبر Cloud Function آمنة.
 abstract final class DriverDirectionsService {
   DriverDirectionsService._();
 
   static const _earthRadiusMeters = 6371000.0;
 
-  static Future<List<LatLng>?> fetchRoadRoute(List<LatLng> points) async {
+  static Future<List<LatLng>?> fetchRoadRoute(
+    List<LatLng> points, {
+    bool optimal = false,
+  }) async {
+    final route = await fetchRoadRouteResult(points, optimal: optimal);
+    return route?.points;
+  }
+
+  static Future<DriverRoadRoute?> fetchRoadRouteResult(
+    List<LatLng> points, {
+    bool optimal = true,
+  }) async {
     if (points.length < 2) return null;
 
     try {
@@ -24,36 +62,98 @@ abstract final class DriverDirectionsService {
             .toList(growable: false),
         'language': 'ar',
         'region': 'sa',
+        if (optimal) 'routingPreference': 'TRAFFIC_AWARE_OPTIMAL',
       });
       if (body.containsKey('error')) {
-        debugPrint('Directions request failed: ${body['code']}');
+        debugPrint('Routes request failed: ${body['code']}');
         return null;
       }
-      final status = body['status'] as String? ?? 'UNKNOWN';
-      if (status != 'OK') {
-        debugPrint('Directions API status=$status');
-        return null;
-      }
-
-      final routes = body['routes'];
-      if (routes is! List || routes.isEmpty) return null;
-
-      final route = routes.first as Map<String, dynamic>;
-      final detailed = _decodeFromLegs(route);
-      if (detailed.length >= 2) return detailed;
-
-      final overviewPolyline = route['overview_polyline'];
-      final encoded = overviewPolyline is Map<String, dynamic>
-          ? overviewPolyline['points'] as String?
-          : null;
-      if (encoded == null || encoded.isEmpty) return null;
-
-      final decoded = decodePolyline(encoded);
-      return decoded.length >= 2 ? decoded : null;
+      return _parseRouteBody(body);
     } catch (e) {
-      debugPrint('Directions fetch error: $e');
+      debugPrint('Routes fetch error: $e');
       return null;
     }
+  }
+
+  static DriverRoadRoute? _parseRouteBody(Map<String, dynamic> body) {
+    final status = body['status'] as String? ?? 'UNKNOWN';
+    if (status != 'OK' && body['ok'] != true) {
+      debugPrint('Routes API status=$status');
+      return null;
+    }
+
+    var distanceMeters = _asInt(body['distanceMeters']);
+    var durationSeconds = _asInt(body['durationSeconds']);
+    var staticDurationSeconds = _asInt(body['staticDurationSeconds']);
+    final encoded = (body['encodedPolyline'] as String?) ?? '';
+    final trafficAware = body['trafficAware'] == true;
+    final approximate =
+        body['approximate'] == true || body['fallback'] == true;
+    final source = (body['source'] as String?) ?? 'unknown';
+
+    List<LatLng> points = const [];
+    if (encoded.isNotEmpty) {
+      points = decodePolyline(encoded);
+    }
+    if (points.length < 2) {
+      final routes = body['routes'];
+      if (routes is List && routes.isNotEmpty) {
+        final route = routes.first;
+        if (route is Map<String, dynamic>) {
+          final detailed = _decodeFromLegs(route);
+          if (detailed.length >= 2) {
+            points = detailed;
+          } else {
+            final overviewPolyline = route['overview_polyline'];
+            final overviewEncoded = overviewPolyline is Map<String, dynamic>
+                ? overviewPolyline['points'] as String?
+                : null;
+            if (overviewEncoded != null && overviewEncoded.isNotEmpty) {
+              points = decodePolyline(overviewEncoded);
+            }
+          }
+
+          if (distanceMeters <= 0 || durationSeconds <= 0) {
+            final routeLegs = route['legs'];
+            if (routeLegs is List) {
+              for (final leg in routeLegs) {
+                if (leg is! Map) continue;
+                final d = leg['distance'];
+                final t = leg['duration'];
+                if (d is Map) distanceMeters += _asInt(d['value']);
+                if (t is Map) durationSeconds += _asInt(t['value']);
+              }
+              if (staticDurationSeconds <= 0) {
+                staticDurationSeconds = durationSeconds;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (points.length < 2 && distanceMeters <= 0 && durationSeconds <= 0) {
+      return null;
+    }
+
+    return DriverRoadRoute(
+      points: points.length >= 2 ? points : const [],
+      distanceMeters: distanceMeters,
+      durationSeconds: durationSeconds,
+      staticDurationSeconds:
+          staticDurationSeconds > 0 ? staticDurationSeconds : durationSeconds,
+      trafficAware: trafficAware,
+      approximate: approximate || !trafficAware,
+      source: source,
+      encodedPolyline: encoded,
+    );
+  }
+
+  static int _asInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.round();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
   }
 
   static List<LatLng> _decodeFromLegs(Map<String, dynamic> route) {

@@ -1,0 +1,33 @@
+{
+  "__path": "villages/city_pt_lisbon",
+  "__writtenAt": "2026-08-13T21:39:16.495Z",
+  "__target": "local-staging",
+  "naim": "لشبونة",
+  "names_i18n": {
+    "ar": "لشبونة",
+    "en": "Lisbon",
+    "ru": "Лиссабон",
+    "ky": "Лиссабон",
+    "uz": "Lissabon"
+  },
+  "osf": "لشبونة — عاصمة البرتغال.",
+  "osf_i18n": {
+    "ar": "لشبونة — عاصمة البرتغال.",
+    "en": "Lisbon — capital of Portugal.",
+    "ru": "Лиссабон — capital of Portugal.",
+    "ky": "Лиссабон — capital of Portugal.",
+    "uz": "Lissabon — capital of Portugal."
+  },
+  "img": "https://flagcdn.com/w320/pt.png",
+  "cities": "cities/region_pt_lisbon",
+  "dolh": "countries/portugal",
+  "lat_ling": {
+    "latitude": 38.7223,
+    "longitude": -9.1393
+  },
+  "acctev": true,
+  "country_iso": "PT",
+  "naimciteText": "Lisbon",
+  "geo_import_id": "city_pt_lisbon",
+  "geo_import_source": "international_seven_2026"
+}

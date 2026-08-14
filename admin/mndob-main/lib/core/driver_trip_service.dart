@@ -10,6 +10,7 @@ import '/backend/push_notifications/push_notifications_util.dart';
 import '/backend/schema/enums/enums.dart';
 import '/backend/schema/structs/amakn_coistm_struct.dart';
 import '/core/driver_app_lifecycle_coordinator.dart';
+import '/core/driver_directions_service.dart';
 import '/core/driver_offline_queue.dart';
 import '/core/driver_order_meta.dart';
 import '/core/driver_payment_labels.dart';
@@ -36,6 +37,16 @@ abstract final class DriverTripService {
   static const double dropoffRadiusMeters = 150.0;
   /// Minimum seconds after start before complete is allowed without dropoff proximity.
   static const int minTripSecondsBeforeComplete = 60;
+
+  /// Throttle Google Routes ETA refresh (not every GPS tick).
+  static const Duration _etaRefreshInterval = Duration(seconds: 25);
+  static const double _etaMoveThresholdMeters = 60.0;
+  static DateTime? _lastEtaFetchAt;
+  static LatLng? _lastEtaOrigin;
+  static LatLng? _lastEtaTarget;
+  static int? _cachedEtaSeconds;
+  static int? _cachedDistanceMeters;
+  static bool _cachedEtaApproximate = true;
 
   static Future<double> minWalletFromSettings() async {
     try {
@@ -816,23 +827,74 @@ abstract final class DriverTripService {
     required DocumentReference orderRef,
     required LatLng driverPosition,
     LatLng? target,
+    double? heading,
+    double? speed,
   }) async {
     final orderUpdates = <String, dynamic>{
       'mapuser':
           GeoPoint(driverPosition.latitude, driverPosition.longitude),
       'timestamp': FieldValue.serverTimestamp(),
     };
+    if (heading != null && heading.isFinite) {
+      orderUpdates['driverHeading'] = heading;
+    }
+    if (speed != null && speed.isFinite && speed >= 0) {
+      orderUpdates['speed'] = speed;
+    }
 
     if (target != null) {
-      final meters = haversineMeters(
-        driverPosition.latitude,
-        driverPosition.longitude,
-        target.latitude,
-        target.longitude,
+      final shouldRefreshEta = _shouldRefreshRoadEta(
+        origin: driverPosition,
+        target: target,
       );
-      const avgSpeedMps = 8.33;
-      orderUpdates['distanceRemainingMeters'] = meters;
-      orderUpdates['etaSeconds'] = (meters / avgSpeedMps).round();
+      if (shouldRefreshEta) {
+        try {
+          final route = await DriverDirectionsService.fetchRoadRouteResult(
+            [driverPosition, target],
+            optimal: true,
+          );
+          _lastEtaFetchAt = DateTime.now();
+          _lastEtaOrigin = driverPosition;
+          _lastEtaTarget = target;
+          if (route != null &&
+              (route.durationSeconds > 0 || route.distanceMeters > 0)) {
+            _cachedEtaSeconds = route.durationSeconds;
+            _cachedDistanceMeters = route.distanceMeters;
+            _cachedEtaApproximate = route.approximate || !route.trafficAware;
+          } else {
+            // Safe temporary fallback — never crash tracking.
+            final meters = haversineMeters(
+              driverPosition.latitude,
+              driverPosition.longitude,
+              target.latitude,
+              target.longitude,
+            );
+            _cachedDistanceMeters = meters.round();
+            _cachedEtaSeconds = (meters / 8.33).round();
+            _cachedEtaApproximate = true;
+          }
+        } catch (e) {
+          debugPrint('updateTrackingMetrics route ETA: $e');
+          final meters = haversineMeters(
+            driverPosition.latitude,
+            driverPosition.longitude,
+            target.latitude,
+            target.longitude,
+          );
+          _cachedDistanceMeters = meters.round();
+          _cachedEtaSeconds = (meters / 8.33).round();
+          _cachedEtaApproximate = true;
+        }
+      }
+
+      if (_cachedDistanceMeters != null) {
+        orderUpdates['distanceRemainingMeters'] = _cachedDistanceMeters;
+      }
+      if (_cachedEtaSeconds != null) {
+        orderUpdates['etaSeconds'] = _cachedEtaSeconds;
+      }
+      orderUpdates['etaApproximate'] = _cachedEtaApproximate;
+      orderUpdates['etaUpdatedAt'] = FieldValue.serverTimestamp();
     }
 
     await orderRef.update(orderUpdates);
@@ -860,6 +922,36 @@ abstract final class DriverTripService {
         loceshnMndobNow: driverPosition,
       ));
     }
+  }
+
+  static bool _shouldRefreshRoadEta({
+    required LatLng origin,
+    required LatLng target,
+  }) {
+    if (_lastEtaFetchAt == null ||
+        _cachedEtaSeconds == null ||
+        _lastEtaOrigin == null ||
+        _lastEtaTarget == null) {
+      return true;
+    }
+    final age = DateTime.now().difference(_lastEtaFetchAt!);
+    if (age >= _etaRefreshInterval) return true;
+
+    final originMoved = haversineMeters(
+      _lastEtaOrigin!.latitude,
+      _lastEtaOrigin!.longitude,
+      origin.latitude,
+      origin.longitude,
+    );
+    if (originMoved >= _etaMoveThresholdMeters) return true;
+
+    final targetMoved = haversineMeters(
+      _lastEtaTarget!.latitude,
+      _lastEtaTarget!.longitude,
+      target.latitude,
+      target.longitude,
+    );
+    return targetMoved >= 30;
   }
 
   /// Marks `driver_arriving` once the driver has left accept location

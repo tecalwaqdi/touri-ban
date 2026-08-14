@@ -1,8 +1,4 @@
-NSCameraUsageDescription = "Please allow camera access to update your profile picture.
-";
+NSCameraUsageDescription = "Please allow camera access to update your profile picture.";
 NSPhotoLibraryUsageDescription = "Please allow access to photos to update your profile picture from the photo gallery.";
-NSLocationWhenInUseUsageDescription = "نحتاج للوصول إلى موقعك لتحديد مكانك على الخريطة أثناء استخدام التطبيق";
-NSLocationAlwaysAndWhenInUseUsageDescription = "نحتاج لموقعك لتتبع الرحلة حتى عند إغلاق التطبيق";
-NSLocationAlwaysUsageDescription = "نحتاج إلى موقعك لتحديث حالة طلب التوصيل وتتبع السائق حتى عند إغلاق التطبيق. هذا يساعدنا على توفير خدمة دقيقة.";
-NSMotionUsageDescription = "نستخدم بيانات الحركة لتقليل استهلاك البطارية وتحديد حالة السائق أثناء التتبع";
-NSFaceIDUsageDescription = " لتتبع حركة الموقع وذلك للتبع الرحلة";
+NSLocationWhenInUseUsageDescription = "Touri Taxi Driver uses your location while the app is open to show your position on the map, match nearby orders, and update trip progress.";
+NSFaceIDUsageDescription = "We use Face ID to secure your account and verify your identity.";

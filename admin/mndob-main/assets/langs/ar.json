@@ -360,5 +360,9 @@
   "The First Global Saudi Tourism App": "أول تطبيق سعودي سياحي عالمي",
   "Failed to open chat": "تعذّر فتح المحادثة",
   "Check your connection and try again.": "تحقق من الاتصال ثم أعد المحاولة.",
-  "Trip ends in {time}. Completing early is not allowed.": "يتبقى {time} على انتهاء وقت الرحلة. لا يمكن الإنهاء قبل ذلك."
+  "Trip ends in {time}. Completing early is not allowed.": "يتبقى {time} على انتهاء وقت الرحلة. لا يمكن الإنهاء قبل ذلك.",
+  "Appearance": "المظهر",
+  "Light mode": "الوضع النهاري",
+  "Dark mode": "الوضع الليلي",
+  "Choose light or dark appearance.": "اختر الوضع النهاري أو الليلي."
 }

@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_id_jakarta_national-monument",
+  "__writtenAt": "2026-08-13T21:39:16.497Z",
+  "__target": "local-staging",
+  "naim": "Monas",
+  "osf": "Monumen nasional 132m في Merdeka Square.",
+  "names_i18n": {
+    "ar": "Monas",
+    "en": "National Monument (Monas)",
+    "ru": "Национальный монумент Monas",
+    "ky": "Monas эстлigi",
+    "uz": "Monas yodgorligi"
+  },
+  "osf_i18n": {
+    "ar": "Monumen nasional 132m في Merdeka Square.",
+    "en": "132 m national monument in Merdeka Square.",
+    "ru": "132-метровый национальный монумент на Merdeka.",
+    "ky": "Merdeka аянтындагы 132 м эстлик.",
+    "uz": "Merdeka maydonidagi 132 m yodgorlik."
+  },
+  "content_locale": "ar",
+  "address": "Monas، جاكرتا، إندونيسيا",
+  "address_i18n": {
+    "ar": "Monas, جاكرتا, إندونيسيا",
+    "en": "National Monument (Monas), Jakarta, Indonesia",
+    "ru": "Национальный монумент Monas, Джakarta, Индонезия",
+    "ky": "Monas эстлigi, Jakarta, Индонезия",
+    "uz": "Monas yodgorligi, Jakarta, Indoneziya"
+  },
+  "Location": {
+    "latitude": -6.1754,
+    "longitude": 106.8272
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Monumen_Nasional%2C_Jakarta%2C_Indonesia.jpg/960px-Monumen_Nasional%2C_Jakarta%2C_Indonesia.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_id_jakarta",
+  "id_vill": "villages/city_id_jakarta",
+  "Rev_dolh": "countries/indonesia",
+  "country_iso": "ID",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_id_jakarta_national-monument",
+  "geo_import_slug": "national-monument",
+  "geo_import_source": "international_seven_2026"
+}

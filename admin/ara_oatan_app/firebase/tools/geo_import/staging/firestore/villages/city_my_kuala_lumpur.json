@@ -1,0 +1,33 @@
+{
+  "__path": "villages/city_my_kuala_lumpur",
+  "__writtenAt": "2026-08-13T21:39:16.498Z",
+  "__target": "local-staging",
+  "naim": "Kuala Lumpur",
+  "names_i18n": {
+    "ar": "Kuala Lumpur",
+    "en": "Kuala Lumpur",
+    "ru": "Kuala Lumpur",
+    "ky": "Kuala Lumpur",
+    "uz": "Kuala Lumpur"
+  },
+  "osf": "Kuala Lumpur — عاصمة ماليزيا.",
+  "osf_i18n": {
+    "ar": "Kuala Lumpur — عاصمة ماليزيا.",
+    "en": "Kuala Lumpur — capital of Malaysia.",
+    "ru": "Kuala Lumpur — capital of Malaysia.",
+    "ky": "Kuala Lumpur — capital of Malaysia.",
+    "uz": "Kuala Lumpur — capital of Malaysia."
+  },
+  "img": "https://flagcdn.com/w320/my.png",
+  "cities": "cities/region_my_kuala_lumpur",
+  "dolh": "countries/malaysia",
+  "lat_ling": {
+    "latitude": 3.139,
+    "longitude": 101.6869
+  },
+  "acctev": true,
+  "country_iso": "MY",
+  "naimciteText": "Kuala Lumpur",
+  "geo_import_id": "city_my_kuala_lumpur",
+  "geo_import_source": "international_seven_2026"
+}

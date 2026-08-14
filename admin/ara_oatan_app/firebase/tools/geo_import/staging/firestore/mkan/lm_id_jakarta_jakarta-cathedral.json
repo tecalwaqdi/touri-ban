@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_id_jakarta_jakarta-cathedral",
+  "__writtenAt": "2026-08-13T21:39:16.497Z",
+  "__target": "local-staging",
+  "naim": "Jakarta Cathedral",
+  "osf": "كاتhedral neo-gothic مقابل Istiqlal.",
+  "names_i18n": {
+    "ar": "Jakarta Cathedral",
+    "en": "Jakarta Cathedral",
+    "ru": "Собор Jakarta",
+    "ky": "Jakarta собору",
+    "uz": "Jakarta sobori"
+  },
+  "osf_i18n": {
+    "ar": "كاتhedral neo-gothic مقابل Istiqlal.",
+    "en": "Neo-Gothic cathedral opposite Istiqlal Mosque.",
+    "ru": "Неogothic собор напротив Istiqlal.",
+    "ky": "Istiqlal кarshыsindagi neo-gothic собор.",
+    "uz": "Istiqlal qarshisidagi neo-gotik sobor."
+  },
+  "content_locale": "ar",
+  "address": "Jakarta Cathedral، جاكرتا، إندونيسيا",
+  "address_i18n": {
+    "ar": "Jakarta Cathedral, جاكرتا, إندونيسيا",
+    "en": "Jakarta Cathedral, Jakarta, Indonesia",
+    "ru": "Собор Jakarta, Джakarta, Индонезия",
+    "ky": "Jakarta собору, Jakarta, Индонезия",
+    "uz": "Jakarta sobori, Jakarta, Indoneziya"
+  },
+  "Location": {
+    "latitude": -6.1692,
+    "longitude": 106.831
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Jakarta_Indonesia_Jakarta-Cathedral-07.jpg/960px-Jakarta_Indonesia_Jakarta-Cathedral-07.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": true,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم دينية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_id_jakarta",
+  "id_vill": "villages/city_id_jakarta",
+  "Rev_dolh": "countries/indonesia",
+  "country_iso": "ID",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_id_jakarta_jakarta-cathedral",
+  "geo_import_slug": "jakarta-cathedral",
+  "geo_import_source": "international_seven_2026"
+}

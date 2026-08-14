@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_ma_rabat_hassan-tower",
+  "__writtenAt": "2026-08-13T21:39:16.494Z",
+  "__target": "local-staging",
+  "naim": "صومعة حسان",
+  "osf": "مئذنة تاريخية من القرن الثاني عشر لمشروع مسجد ضخم.",
+  "names_i18n": {
+    "ar": "صومعة حسان",
+    "en": "Hassan Tower",
+    "ru": "Башня Хасана",
+    "ky": "Хасан мунары",
+    "uz": "Hasan minorasi"
+  },
+  "osf_i18n": {
+    "ar": "مئذنة تاريخية من القرن الثاني عشر لمشروع مسجد ضخم.",
+    "en": "12th-century minaret of an unfinished grand mosque project.",
+    "ru": "Минaret XII века недостроенной великой мечети.",
+    "ky": "XII кылым минарети.",
+    "uz": "XII asr minorasi."
+  },
+  "content_locale": "ar",
+  "address": "صومعة حسان، الرباط، المغرب",
+  "address_i18n": {
+    "ar": "صومعة حسان, الرباط, المغرب",
+    "en": "Hassan Tower, Rabat, Morocco",
+    "ru": "Башня Хасана, Рабат, Марокко",
+    "ky": "Хасан мунары, Рабат, Марокко",
+    "uz": "Hasan minorasi, Rabat, Marokash"
+  },
+  "Location": {
+    "latitude": 34.0244,
+    "longitude": -6.8225
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Hassan_Tower_01.jpg/960px-Hassan_Tower_01.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_ma_rabat",
+  "id_vill": "villages/city_ma_rabat",
+  "Rev_dolh": "countries/morocco",
+  "country_iso": "MA",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_ma_rabat_hassan-tower",
+  "geo_import_slug": "hassan-tower",
+  "geo_import_source": "international_seven_2026"
+}

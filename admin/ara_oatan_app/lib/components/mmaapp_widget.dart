@@ -6,6 +6,7 @@ import '/core/toury_location_service.dart';
 import '/core/toury_polyline.dart';
 import '/core/toury_route_metrics.dart';
 import '/core/toury_distance_format.dart';
+import '/core/toury_directions_service.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -15,6 +16,7 @@ import 'dart:math';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart' as maps;
 import 'package:intl/intl.dart';
+import '/auth/firebase_auth/auth_util.dart';
 
 class MmaappWidget extends StatefulWidget {
   final Function(double, double)? onCalculationComplete;
@@ -83,6 +85,57 @@ class _MmaappWidgetState extends State<MmaappWidget> {
         return;
       }
       final destinations = validation.points.skip(1).toList();
+
+      if (loggedIn) {
+        final googleRoute = await TouryDirectionsService.fetchRoadRouteResult(
+          validation.points,
+          language: context.locale.toString(),
+          region: 'sa',
+          optimal: true,
+        );
+        if (googleRoute != null &&
+            googleRoute.distanceMeters > 0 &&
+            googleRoute.durationSeconds > 0) {
+          totalDistanceKm =
+              touryMetersToKm(googleRoute.distanceMeters.toDouble());
+          totalTimeMinutes = googleRoute.durationSeconds / 60.0;
+          if (touryRoadMetricsArePlausible(
+            distanceKm: totalDistanceKm,
+            durationSeconds: googleRoute.durationSeconds.toDouble(),
+            points: validation.points,
+          )) {
+            FFAppState().update(() {
+              FFAppState().osrmTotalTime = totalTimeMinutes;
+              FFAppState().osrmTotalDistance = totalDistanceKm;
+              FFAppState().osrmCalculationTime = DateTime.now();
+            });
+            widget.onCalculationComplete?.call(totalTimeMinutes, totalDistanceKm);
+            final List<maps.LatLng> polylinePoints;
+            if (googleRoute.points.isNotEmpty) {
+              polylinePoints = googleRoute.points
+                  .map((p) => maps.LatLng(p.latitude, p.longitude))
+                  .toList();
+            } else if (googleRoute.encodedPolyline.isNotEmpty) {
+              polylinePoints = _decodePolyline(googleRoute.encodedPolyline);
+            } else {
+              polylinePoints = validation.points
+                  .map((p) => maps.LatLng(p.latitude, p.longitude))
+                  .toList();
+            }
+            _createMarkers(destinations);
+            _createPolyline(polylinePoints);
+            safeSetState(() {
+              isLoading = false;
+              errorMessage = validation.rejectedCount == 0
+                  ? null
+                  : 'map_invalid_destinations'.tr(
+                      namedArgs: {'count': '${validation.rejectedCount}'},
+                    );
+            });
+            return;
+          }
+        }
+      }
 
       // Build coordinates string for OSRM: "lon,lat;lon,lat;..."
       final coordinates = [

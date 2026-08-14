@@ -31,7 +31,7 @@ abstract final class DsIcons {
   static const IconData error = Icons.error_rounded;
   static const IconData warning = Icons.warning_amber_rounded;
   static const IconData info = Icons.info_rounded;
-  static const IconData back = Icons.arrow_back_rounded;
+  static const IconData back = Icons.arrow_back_ios_new_rounded;
   static const IconData close = Icons.close_rounded;
   static const IconData add = Icons.add_rounded;
   static const IconData edit = Icons.edit_rounded;

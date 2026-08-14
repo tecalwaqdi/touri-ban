@@ -1,4 +1,6 @@
 rules_version = '2';
+// Canonical copy: keep in sync with
+// admin/ara_oatan_app/firebase/firestore.rules (deploy from customer app).
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -182,16 +184,16 @@ service cloud.firestore {
         && !('payment_session_id' in d);
     }
 
-    // List-only: no get(otherDoc) on resource fields (those break queries).
-    // Query constraints must prove one of these branches for every result.
+    // Prefer consumer ownership first — avoids get()-heavy driver branches
+    // breaking customer list queries (USER == auth) with permission-denied.
     function canListOrder(data) {
       return orderBelongsToConsumer(data)
+        || orderAssignedToDriver(data)
         || (
           isApprovedActiveDriver()
           && data.ALLNOW == true
           && data.status_code in ['pending_driver', 'awaiting_driver']
         )
-        || (signedIn() && data.mndob_user == currentUserRef())
         || isSuperAdmin()
         || isFinance()
         || orderBelongsToPartner(data)
@@ -203,7 +205,14 @@ service cloud.firestore {
 
     function orderAssignedToDriver(data) {
       // Cash-wave: only require auth + assignment field (no isDriver claims).
-      return signedIn() && data.mndob_user == currentUserRef();
+      // Accept DocumentReference, bare uid, or path string (legacy docs).
+      return signedIn()
+        && (
+          data.mndob_user == currentUserRef()
+          || data.mndob_user == request.auth.uid
+          || data.mndob_user == ('user/' + request.auth.uid)
+          || data.mndob_user == ('/user/' + request.auth.uid)
+        );
     }
 
     // Broad assigned-driver patch (location / arrive / start) without money edits.
@@ -239,17 +248,24 @@ service cloud.firestore {
         );
     }
 
+    // Participant / driver-pool reads — must stay free of panel get() calls.
+    // OR-ing these with transportCompanyMatches/isSuperAdmin in one expression
+    // caused get() evaluation to deny assigned drivers opening order details.
     function canReadOrder(data) {
+      return orderAssignedToDriver(data)
+        || orderBelongsToConsumer(data)
+        || driverCanBrowseOpenOrders(data);
+    }
+
+    // Panel / partner / transport — may use get(); keep in separate allow lines.
+    function panelCanReadOrder(data) {
       return isSuperAdmin()
         || isFinance()
         || (isCountryAdmin() && countriesMatchAdminScope(data.Rev_dolh))
         || (isAgent() && countriesMatchAdminScope(data.Rev_dolh))
         || (isSupport() && countriesMatchAdminScope(data.Rev_dolh))
         || orderBelongsToPartner(data)
-        || transportCompanyMatches(data)
-        || orderAssignedToDriver(data)
-        || driverCanBrowseOpenOrders(data)
-        || orderBelongsToConsumer(data);
+        || transportCompanyMatches(data);
     }
 
     function financialOrderFieldsUnchanged() {
@@ -375,6 +391,7 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'halh_text', 'mapuser', 'timestamp', 'START', 'ActiveOrder',
           'status_code', 'trip_started_at', 'driverArrivedAt',
+          'driver_en_route_at', 'distanceRemainingMeters', 'etaSeconds',
           'waitingStartedAt', 'customerWaitingTimeInSeconds', 'dateend',
           'halhOrderMndob', 'endTime', 'halh_text_completed_alias',
           'completedAt', 'payment_status', 'cash_collection_status',
@@ -716,9 +733,11 @@ service cloud.firestore {
         )
         || panelCanProvisionUser()
       );
+      // Own profile first (separate statement) — avoids recursive isSuperAdmin()
+      // get() while evaluating currentUserData() from other rules.
+      allow read: if signedIn() && request.auth.uid == document;
       allow read: if request.auth != null && (
         isSuperAdmin()
-        || request.auth.uid == document
         || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dloh_agent))
         || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dolh))
         || (isTransportManager()
@@ -807,10 +826,12 @@ service cloud.firestore {
       // Missing docs have resource == null — must allow that get, else the
       // whole create fails as permission-denied (looks like "no internet").
       // Drivers need get on open-pool docs inside accept transactions.
-      // Scoped get — no open IDOR for any signed-in user.
-      // resource==null allows idempotent create transaction probes.
-      // rules-rev: order-get-scoped-2026-08-09
-      allow get: if resource == null || canReadOrder(resource.data);
+      // Scoped get — split participant vs panel so get()-heavy panel roles
+      // cannot poison assigned-driver / consumer order detail reads.
+      // rules-rev: order-get-split-participant-2026-08-10
+      allow get: if resource == null;
+      allow get: if canReadOrder(resource.data);
+      allow get: if panelCanReadOrder(resource.data);
       // Use canListOrder (not canReadOrder): partner/transport get() branches
       // in canReadOrder make Firestore reject consumer/driver list queries.
       // rules-rev: order-list-simple-2026-08-01
@@ -994,6 +1015,15 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    match /company_payments/{document} {
+      allow read: if signedIn() && (
+        resource.data.userRef == currentUserRef()
+        || resource.data.driverId == request.auth.uid
+        || isFinance()
+      );
+      allow create, update, delete: if false;
+    }
+
     match /wallet_withdrawals/{document} {
       allow read: if signedIn() && (
         resource.data.userRef == currentUserRef() || isFinance()
@@ -1041,23 +1071,24 @@ service cloud.firestore {
     }
 
     match /chat/{document} {
-      // Message author or explicit order participants may read.
-      // Participant array enables secure list queries without widening access.
-      allow read: if signedIn() && (
-        resource.data.user1 == currentUserRef()
-        || (
-          resource.data.participants is list
-          && currentUserRef() in resource.data.participants
-        )
-        || (
-          resource.data.idorder != null
-          && canReadOrder(get(resource.data.idorder).data)
-        )
-      );
+      // Split so participant paths do not depend on panel get() side-effects.
+      allow read: if signedIn() && resource.data.user1 == currentUserRef();
+      allow read: if signedIn()
+        && resource.data.participants is list
+        && currentUserRef() in resource.data.participants;
+      allow read: if signedIn()
+        && resource.data.idorder != null
+        && canReadOrder(get(resource.data.idorder).data);
+      allow read: if signedIn()
+        && resource.data.idorder != null
+        && panelCanReadOrder(get(resource.data.idorder).data);
       allow create: if signedIn()
         && request.resource.data.user1 == currentUserRef()
         && request.resource.data.idorder != null
-        && canReadOrder(get(request.resource.data.idorder).data)
+        && (
+          canReadOrder(get(request.resource.data.idorder).data)
+          || panelCanReadOrder(get(request.resource.data.idorder).data)
+        )
         && (
           !(request.resource.data.keys().hasAny(['participants']))
           || (

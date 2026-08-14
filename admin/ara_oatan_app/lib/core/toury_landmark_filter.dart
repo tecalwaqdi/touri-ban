@@ -2,6 +2,7 @@ import '/app_state.dart';
 import '/backend/backend.dart';
 import '/core/saudi_city_registry.dart';
 import '/core/toury_i18n_text.dart';
+import '/core/toury_landmark_display_order.dart';
 import '/flutter_flow/lat_lng.dart';
 
 /// Names that must never appear as tourist landmarks.
@@ -159,7 +160,7 @@ List<MkanRecord> touryFilterLandmarksForUi(
   FFAppState? state,
 }) {
   final app = state ?? FFAppState();
-  return items.where((m) {
+  final out = items.where((m) {
     if (touryMkanLooksLikeJunk(m)) return false;
     if (!touryLandmarkMatchesActiveCity(m, app)) return false;
     // Prefer locale → en; never drop a real landmark just because Arabic
@@ -181,5 +182,6 @@ List<MkanRecord> touryFilterLandmarksForUi(
     if (touryIsBannedLandmarkName(visible)) return false;
     if (touryIsBannedLandmarkName(m.naim)) return false;
     return true;
-  }).toList(growable: false);
+  }).toList();
+  return TouryLandmarkDisplayOrder.sort(out);
 }

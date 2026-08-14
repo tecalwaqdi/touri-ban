@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '/core/i18n/admin_i18n_save_helper.dart';
 import '/backend/admin_country_geo_service.dart';
+import '/backend/admin_firestore_delete.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_edit_shell.dart';
@@ -139,6 +140,46 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
     final geo = await _resolveCountryGeo();
     if (geo == null) return;
 
+    final iso = (geo.isoCode ?? '').trim().toUpperCase();
+    if (iso.length == 2) {
+      final byIso = await queryCountriesRecordOnce(
+        queryBuilder: (q) => q.where('iso_code', isEqualTo: iso),
+        limit: 1,
+      );
+      if (byIso.isNotEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${uiTr(context, 'يوجد دولة بنفس رمز ISO بالفعل')} ($iso)',
+            ),
+          ),
+        );
+        return;
+      }
+    }
+
+    final nameNorm = name.trim().toLowerCase();
+    final englishNorm = (geo.englishName ?? '').trim().toLowerCase();
+    final existingCountries = await queryCountriesRecordOnce(limit: 200);
+    final nameExists = existingCountries.any((c) {
+      final naim = c.naim.trim().toLowerCase();
+      final en = c.naimEnglesh.trim().toLowerCase();
+      return naim == nameNorm ||
+          en == nameNorm ||
+          (englishNorm.isNotEmpty &&
+              (naim == englishNorm || en == englishNorm));
+    });
+    if (nameExists) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(uiTr(context, 'يوجد دولة بنفس الاسم بالفعل')),
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSaving = true);
 
     try {
@@ -184,7 +225,8 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
         }(),
       );
 
-      await CountriesRecord.collection.doc().set({
+      final countryRef = CountriesRecord.collection.doc();
+      await AdminFirestoreDelete.setDocument(countryRef, {
         ...countryData,
         ...AdminCountryGeoService.geoFieldsForFirestore(geo),
       });

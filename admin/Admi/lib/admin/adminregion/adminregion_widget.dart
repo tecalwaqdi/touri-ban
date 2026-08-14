@@ -1,6 +1,7 @@
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_cascade_delete.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_legacy_alias_filter.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
@@ -50,9 +51,13 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
   }
 
   List<CitiesRecord> _filterRegions(List<CitiesRecord> items) {
+    final visible = AdminLegacyAliasFilter.keepWhereId(
+      items,
+      (r) => r.reference.id,
+    );
     final q = _searchQuery.trim().toLowerCase();
-    if (q.isEmpty) return items;
-    return items.where((r) {
+    if (q.isEmpty) return visible;
+    return visible.where((r) {
       return r.naim.toLowerCase().contains(q) ||
           r.osf.toLowerCase().contains(q);
     }).toList();
@@ -94,7 +99,11 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
     if (!confirmed) return;
 
     try {
-      await deleteRegionCascade(record.reference);
+      await AdminCrudFeedback.runWithBlockingProgress(
+        context: context,
+        message: uiTr(context, 'جاري الحذف… لا تغلق التطبيق'),
+        action: () => deleteRegionCascade(record.reference),
+      );
       await AdminAuditLog.recordDelete(
         targetType: 'region',
         targetId: record.reference.id,

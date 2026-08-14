@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_my_kuala_lumpur_thean-hou-temple",
+  "__writtenAt": "2026-08-13T21:39:16.501Z",
+  "__target": "local-staging",
+  "naim": "Thean Hou Temple",
+  "osf": "Chinese temple على hill بـ six tiers.",
+  "names_i18n": {
+    "ar": "Thean Hou Temple",
+    "en": "Thean Hou Temple",
+    "ru": "Храм Thean Hou",
+    "ky": "Thean Hou храмы",
+    "uz": "Thean Hou ibodatxonasi"
+  },
+  "osf_i18n": {
+    "ar": "Chinese temple على hill بـ six tiers.",
+    "en": "Six-tier Chinese temple on Robson Hill.",
+    "ru": "Шестиуровневый китайский храм на Robson Hill.",
+    "ky": "Robson Hill кытай храмы.",
+    "uz": "Robson tepasidagi xitoy ibodatxonasi."
+  },
+  "content_locale": "ar",
+  "address": "Thean Hou Temple، Kuala Lumpur، ماليزيا",
+  "address_i18n": {
+    "ar": "Thean Hou Temple, Kuala Lumpur, ماليزيا",
+    "en": "Thean Hou Temple, Kuala Lumpur, Malaysia",
+    "ru": "Храм Thean Hou, Kuala Lumpur, Малайзия",
+    "ky": "Thean Hou храмы, Kuala Lumpur, Малайзия",
+    "uz": "Thean Hou ibodatxonasi, Kuala Lumpur, Malayziya"
+  },
+  "Location": {
+    "latitude": 3.1219,
+    "longitude": 101.6877
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Thean_Hou_Temple_%2849496683627%29.jpg/960px-Thean_Hou_Temple_%2849496683627%29.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": true,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم دينية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_my_kuala_lumpur",
+  "id_vill": "villages/city_my_kuala_lumpur",
+  "Rev_dolh": "countries/malaysia",
+  "country_iso": "MY",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_my_kuala_lumpur_thean-hou-temple",
+  "geo_import_slug": "thean-hou-temple",
+  "geo_import_source": "international_seven_2026"
+}

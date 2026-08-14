@@ -1,0 +1,33 @@
+{
+  "__path": "villages/city_es_madrid",
+  "__writtenAt": "2026-08-13T21:39:16.493Z",
+  "__target": "local-staging",
+  "naim": "مدريد",
+  "names_i18n": {
+    "ar": "مدريد",
+    "en": "Madrid",
+    "ru": "Мадрид",
+    "ky": "Мадрид",
+    "uz": "Madrid"
+  },
+  "osf": "مدريد — عاصمة إسبانيا.",
+  "osf_i18n": {
+    "ar": "مدريد — عاصمة إسبانيا.",
+    "en": "Madrid — capital of Spain.",
+    "ru": "Мадрид — capital of Spain.",
+    "ky": "Мадрид — capital of Spain.",
+    "uz": "Madrid — capital of Spain."
+  },
+  "img": "https://flagcdn.com/w320/es.png",
+  "cities": "cities/region_es_madrid",
+  "dolh": "countries/spain",
+  "lat_ling": {
+    "latitude": 40.4168,
+    "longitude": -3.7038
+  },
+  "acctev": true,
+  "country_iso": "ES",
+  "naimciteText": "Madrid",
+  "geo_import_id": "city_es_madrid",
+  "geo_import_source": "international_seven_2026"
+}

@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_pt_lisbon_monument-discoveries",
+  "__writtenAt": "2026-08-13T21:39:16.496Z",
+  "__target": "local-staging",
+  "naim": "Monumento aos Descobrimentos",
+  "osf": "نصب تذكاري على Tagus يخلّد Navigators البرtuguese.",
+  "names_i18n": {
+    "ar": "Monumento aos Descobrimentos",
+    "en": "Monument to the Discoveries",
+    "ru": "Памятник открытиям",
+    "ky": "Ачуулар эстлigi",
+    "uz": "Kashfiyotlar yodgorligi"
+  },
+  "osf_i18n": {
+    "ar": "نصب تذكاري على Tagus يخلّد Navigators البرtuguese.",
+    "en": "Riverside monument honoring the Portuguese Age of Discovery.",
+    "ru": "Монумент эпохе великих географических открытий.",
+    "ky": "Португалия ачууларына арналган эстлик.",
+    "uz": "Portugal kashfiyotlari yodgorligi."
+  },
+  "content_locale": "ar",
+  "address": "Monumento aos Descobrimentos، لشبونة، البرتغال",
+  "address_i18n": {
+    "ar": "Monumento aos Descobrimentos, لشبونة, البرتغال",
+    "en": "Monument to the Discoveries, Lisbon, Portugal",
+    "ru": "Памятник открытиям, Лиссабон, Португалия",
+    "ky": "Ачуулар эстлigi, Лиссабон, Португалия",
+    "uz": "Kashfiyotlar yodgorligi, Lissabon, Portugaliya"
+  },
+  "Location": {
+    "latitude": 38.6937,
+    "longitude": -9.2057
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Padr%C3%A3o_Descobrimentos_April_2009-3c.jpg/960px-Padr%C3%A3o_Descobrimentos_April_2009-3c.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_pt_lisbon",
+  "id_vill": "villages/city_pt_lisbon",
+  "Rev_dolh": "countries/portugal",
+  "country_iso": "PT",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_pt_lisbon_monument-discoveries",
+  "geo_import_slug": "monument-discoveries",
+  "geo_import_source": "international_seven_2026"
+}

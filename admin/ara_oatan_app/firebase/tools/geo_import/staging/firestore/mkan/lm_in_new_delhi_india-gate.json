@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_in_new_delhi_india-gate",
+  "__writtenAt": "2026-08-13T21:39:16.502Z",
+  "__target": "local-staging",
+  "naim": "India Gate",
+  "osf": "War memorial 42m على Rajpath.",
+  "names_i18n": {
+    "ar": "India Gate",
+    "en": "India Gate",
+    "ru": "Ворота India",
+    "ky": "India Gate",
+    "uz": "India Gate"
+  },
+  "osf_i18n": {
+    "ar": "War memorial 42m على Rajpath.",
+    "en": "42 m war memorial on Rajpath.",
+    "ru": "42-метровый мemorial на Rajpath.",
+    "ky": "Rajpath эстлigi.",
+    "uz": "Rajpath yodgorligi."
+  },
+  "content_locale": "ar",
+  "address": "India Gate، نيودلهي، الهند",
+  "address_i18n": {
+    "ar": "India Gate, نيودلهي, الهند",
+    "en": "India Gate, New Delhi, India",
+    "ru": "Ворота India, Нью-Дели, Индия",
+    "ky": "India Gate, New Delhi, Индия",
+    "uz": "India Gate, New Delhi, Hindiston"
+  },
+  "Location": {
+    "latitude": 28.6129,
+    "longitude": 77.2295
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/India_Gate_1_%28New_Delhi%29.jpg/960px-India_Gate_1_%28New_Delhi%29.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_in_new_delhi",
+  "id_vill": "villages/city_in_new_delhi",
+  "Rev_dolh": "countries/india",
+  "country_iso": "IN",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_in_new_delhi_india-gate",
+  "geo_import_slug": "india-gate",
+  "geo_import_source": "international_seven_2026"
+}

@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_ma_rabat_mohammed-v-mausoleum",
+  "__writtenAt": "2026-08-13T21:39:16.494Z",
+  "__target": "local-staging",
+  "naim": "ضريح محمد الخامس",
+  "osf": "ضريح ملكي يضم محمد الخامس وابنه Hassan II.",
+  "names_i18n": {
+    "ar": "ضريح محمد الخامس",
+    "en": "Mausoleum of Mohammed V",
+    "ru": "Мавзолей Мохammed V",
+    "ky": "Мохammed V мавзолейи",
+    "uz": "Muhammad V maqbarasi"
+  },
+  "osf_i18n": {
+    "ar": "ضريح ملكي يضم محمد الخامس وابنه Hassan II.",
+    "en": "Royal mausoleum of King Mohammed V and Hassan II.",
+    "ru": "Королевский мавзолей Мохammed V и Hassan II.",
+    "ky": "Мохammed V жана Hassan II мавзолейи.",
+    "uz": "Muhammad V va Hasan II maqbarasi."
+  },
+  "content_locale": "ar",
+  "address": "ضريح محمد الخامس، الرباط، المغرب",
+  "address_i18n": {
+    "ar": "ضريح محمد الخامس, الرباط, المغرب",
+    "en": "Mausoleum of Mohammed V, Rabat, Morocco",
+    "ru": "Мавзолей Мохammed V, Рабат, Марокко",
+    "ky": "Мохammed V мавзолейи, Рабат, Марокко",
+    "uz": "Muhammad V maqbarasi, Rabat, Marokash"
+  },
+  "Location": {
+    "latitude": 34.0209,
+    "longitude": -6.8266
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Honor_guard_at_Mausoleum_of_Mohammed_V%2C_Rabat%2C_Morocco.jpg/960px-Honor_guard_at_Mausoleum_of_Mohammed_V%2C_Rabat%2C_Morocco.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 2,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_ma_rabat",
+  "id_vill": "villages/city_ma_rabat",
+  "Rev_dolh": "countries/morocco",
+  "country_iso": "MA",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_ma_rabat_mohammed-v-mausoleum",
+  "geo_import_slug": "mohammed-v-mausoleum",
+  "geo_import_source": "international_seven_2026"
+}

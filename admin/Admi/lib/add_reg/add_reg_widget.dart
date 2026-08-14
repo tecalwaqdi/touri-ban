@@ -2,6 +2,7 @@ import '/core/i18n/admin_i18n_save_helper.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_country_geo_service.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
@@ -141,7 +142,8 @@ class _AddRegWidgetState extends State<AddRegWidget> {
         countryName: countryName,
       );
 
-      await CitiesRecord.collection.doc().set({
+      final regionRef = CitiesRecord.collection.doc();
+      await AdminFirestoreDelete.setDocument(regionRef, {
         ...createCitiesRecordData(
           naim: adminLegacyFromI18n(namesMap, name),
           osf: adminLegacyFromI18n(osfMap, desc),

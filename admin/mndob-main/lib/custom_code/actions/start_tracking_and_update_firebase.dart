@@ -14,6 +14,8 @@ import '/custom_code/actions/index.dart';
 import '/flutter_flow/custom_functions.dart';
 
 import 'dart:async';
+import 'dart:io' show Platform;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import '/backend/backend.dart';
@@ -34,9 +36,38 @@ DocumentReference _resolveOrderRef(dynamic orderIdOrRef) {
       .doc(orderIdOrRef.toString());
 }
 
+LocationSettings _tripLocationSettings() {
+  if (Platform.isIOS) {
+    return AppleSettings(
+      accuracy: LocationAccuracy.best,
+      activityType: ActivityType.automotiveNavigation,
+      distanceFilter: 10,
+      pauseLocationUpdatesAutomatically: false,
+      allowBackgroundLocationUpdates: true,
+      showBackgroundLocationIndicator: true,
+    );
+  }
+  if (Platform.isAndroid) {
+    return AndroidSettings(
+      accuracy: LocationAccuracy.best,
+      distanceFilter: 10,
+      intervalDuration: const Duration(seconds: 5),
+      foregroundNotificationConfig: const ForegroundNotificationConfig(
+        notificationTitle: 'Touri Trip',
+        notificationText: 'Sharing your location during the active trip',
+        enableWakeLock: true,
+      ),
+    );
+  }
+  return const LocationSettings(
+    accuracy: LocationAccuracy.best,
+    distanceFilter: 10,
+  );
+}
+
 /// بدء التتبع عند قبول الطلب — يقبل معرّف المستند أو DocumentReference.
 Future startTrackingAndUpdateFirebase(dynamic orderIdOrRef) async {
-  LocationPermission permission = await Geolocator.checkPermission();
+  var permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
@@ -50,30 +81,26 @@ Future startTrackingAndUpdateFirebase(dynamic orderIdOrRef) async {
     return;
   }
 
+  // Soft-upgrade to Always for background trip tracking (driver app only).
+  if (permission == LocationPermission.whileInUse) {
+    try {
+      permission = await Geolocator.requestPermission();
+    } catch (_) {}
+  }
+
   await _positionStream?.cancel();
   _positionStream = null;
 
   final orderRef = _resolveOrderRef(orderIdOrRef);
   _trackedOrderRef = orderRef;
 
-  const locationSettings = LocationSettings(
-    accuracy: LocationAccuracy.best,
-    distanceFilter: 5,
-  );
-
   _positionStream =
-      Geolocator.getPositionStream(locationSettings: locationSettings)
+      Geolocator.getPositionStream(locationSettings: _tripLocationSettings())
           .listen((Position position) async {
     if (_trackedOrderRef == null) return;
     try {
       final driverPos = LatLng(position.latitude, position.longitude);
       if (driverPos.latitude == 0 && driverPos.longitude == 0) return;
-
-      await _trackedOrderRef!.update({
-        'mapuser': GeoPoint(position.latitude, position.longitude),
-        'timestamp': FieldValue.serverTimestamp(),
-        'speed': position.speed,
-      });
 
       final order = await OrderRecord.getDocumentOnce(_trackedOrderRef!);
       LatLng? target = order.customerPickup;
@@ -85,14 +112,13 @@ Future startTrackingAndUpdateFirebase(dynamic orderIdOrRef) async {
         orderRef: _trackedOrderRef!,
         driverPosition: driverPos,
         target: target,
+        heading: position.heading.isFinite ? position.heading : null,
+        speed: position.speed.isFinite ? position.speed : null,
       );
       await DriverTripService.maybeAutoMarkArrived(
         order: order,
         driverPosition: driverPos,
       );
-
-      print(
-          'Location updated for order ${_trackedOrderRef!.id}: ${position.latitude}, ${position.longitude}');
     } catch (e) {
       print('Firestore update error: $e');
     }

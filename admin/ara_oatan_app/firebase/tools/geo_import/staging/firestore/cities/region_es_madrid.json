@@ -1,0 +1,35 @@
+{
+  "__path": "cities/region_es_madrid",
+  "__writtenAt": "2026-08-13T21:39:16.493Z",
+  "__target": "local-staging",
+  "naim": "مدريد",
+  "names_i18n": {
+    "ar": "مدريد",
+    "en": "Madrid",
+    "ru": "Мадрид",
+    "ky": "Мадрид",
+    "uz": "Madrid"
+  },
+  "osf": "مدريد — إسبانيا.",
+  "osf_i18n": {
+    "ar": "مدريد — إسبانيا.",
+    "en": "Madrid — Spain.",
+    "ru": "Мадрид — Испания.",
+    "ky": "Мадрид — Испания.",
+    "uz": "Madrid — Ispaniya."
+  },
+  "img": "https://flagcdn.com/w320/es.png",
+  "icon": "https://flagcdn.com/w320/es.png",
+  "dolh": "countries/spain",
+  "vil": "villages/city_es_madrid",
+  "acctev": true,
+  "sorting": 1,
+  "iso_code": "ES-MD",
+  "country_iso": "ES",
+  "geo_center": {
+    "lat": 40.4168,
+    "lng": -3.7038
+  },
+  "geo_import_id": "region_es_madrid",
+  "geo_import_source": "international_seven_2026"
+}

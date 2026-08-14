@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_es_madrid_prado-museum",
+  "__writtenAt": "2026-08-13T21:39:16.494Z",
+  "__target": "local-staging",
+  "naim": "متحف برادو",
+  "osf": "أحد أهم متاحف الفن في العالم مع أعمال غoya وفélix وغيرهم.",
+  "names_i18n": {
+    "ar": "متحف برادو",
+    "en": "Prado Museum",
+    "ru": "Музей Прадо",
+    "ky": "Прадо музейи",
+    "uz": "Prado muzeyi"
+  },
+  "osf_i18n": {
+    "ar": "أحد أهم متاحف الفن في العالم مع أعمال غoya وفélix وغيرهم.",
+    "en": "One of the world’s leading art museums, home to Goya, Velázquez, and more.",
+    "ru": "Один из ведущих художественных музеев мира с работами Гойи и Вélásquez.",
+    "ky": "Дүйнөнүн негизги искусство музейлеринин бири.",
+    "uz": "Dunyoning yetakchi sanʼat muzeylaridan biri."
+  },
+  "content_locale": "ar",
+  "address": "متحف برادو، مدريد، إسبانيا",
+  "address_i18n": {
+    "ar": "متحف برادو, مدريد, إسبانيا",
+    "en": "Prado Museum, Madrid, Spain",
+    "ru": "Музей Прадо, Мадрид, Испания",
+    "ky": "Прадо музейи, Мадрид, Испания",
+    "uz": "Prado muzeyi, Madrid, Ispaniya"
+  },
+  "Location": {
+    "latitude": 40.4138,
+    "longitude": -3.6921
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Museo_del_Prado_2005July_008.jpg/960px-Museo_del_Prado_2005July_008.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 2,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_es_madrid",
+  "id_vill": "villages/city_es_madrid",
+  "Rev_dolh": "countries/spain",
+  "country_iso": "ES",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_es_madrid_prado-museum",
+  "geo_import_slug": "prado-museum",
+  "geo_import_source": "international_seven_2026"
+}

@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_my_kuala_lumpur_merdeka-square",
+  "__writtenAt": "2026-08-13T21:39:16.499Z",
+  "__target": "local-staging",
+  "naim": "Merdeka Square",
+  "osf": "Historic square حيث أُعلن الاستقلال 1957.",
+  "names_i18n": {
+    "ar": "Merdeka Square",
+    "en": "Merdeka Square",
+    "ru": "Площадь Merdeka",
+    "ky": "Merdeka аянты",
+    "uz": "Merdeka maydoni"
+  },
+  "osf_i18n": {
+    "ar": "Historic square حيث أُعلن الاستقلال 1957.",
+    "en": "Historic square where independence was declared in 1957.",
+    "ru": "Историческая площадь провозglaшения независимости 1957.",
+    "ky": "1957 көзнemisздik аянты.",
+    "uz": "1957 mustaqillik eʼlon qilingan maydon."
+  },
+  "content_locale": "ar",
+  "address": "Merdeka Square، Kuala Lumpur، ماليزيا",
+  "address_i18n": {
+    "ar": "Merdeka Square, Kuala Lumpur, ماليزيا",
+    "en": "Merdeka Square, Kuala Lumpur, Malaysia",
+    "ru": "Площадь Merdeka, Kuala Lumpur, Малайзия",
+    "ky": "Merdeka аянты, Kuala Lumpur, Малайзия",
+    "uz": "Merdeka maydoni, Kuala Lumpur, Malayziya"
+  },
+  "Location": {
+    "latitude": 3.1486,
+    "longitude": 101.6936
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Merdeka_Square_Malaysia.jpg/960px-Merdeka_Square_Malaysia.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_my_kuala_lumpur",
+  "id_vill": "villages/city_my_kuala_lumpur",
+  "Rev_dolh": "countries/malaysia",
+  "country_iso": "MY",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_my_kuala_lumpur_merdeka-square",
+  "geo_import_slug": "merdeka-square",
+  "geo_import_source": "international_seven_2026"
+}

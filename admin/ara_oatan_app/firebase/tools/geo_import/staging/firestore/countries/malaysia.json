@@ -1,0 +1,47 @@
+{
+  "__path": "countries/malaysia",
+  "__writtenAt": "2026-08-13T21:39:16.498Z",
+  "__target": "local-staging",
+  "naim": "ماليزيا",
+  "naimEnglesh": "Malaysia",
+  "names_i18n": {
+    "ar": "ماليزيا",
+    "en": "Malaysia",
+    "ru": "Малайзия",
+    "ky": "Малайзия",
+    "uz": "Malayziya"
+  },
+  "osf": "ماليزia — Kuala Lumpur وبرj Petronas وثقافة متعددة.",
+  "osf_i18n": {
+    "ar": "ماليزia — Kuala Lumpur وبرj Petronas وثقافة متعددة.",
+    "en": "Malaysia — Kuala Lumpur, Petronas Towers, and diverse culture.",
+    "ru": "Малайзия — Kuala Lumpur и башни Petronas.",
+    "ky": "Малайзия — Kuala Lumpur жана Petronas.",
+    "uz": "Malayziya — Kuala Lumpur va Petronas."
+  },
+  "img": "https://flagcdn.com/w320/my.png",
+  "hederImg": "https://flagcdn.com/w1280/my.png",
+  "iso_code": "MY",
+  "iso3": "MYS",
+  "CurrencySymbol": "RM",
+  "currency_code": "MYR",
+  "phone_code": "+60",
+  "timezone": "Asia/Kuala_Lumpur",
+  "acctev": true,
+  "saudi": false,
+  "num_trteb": 8,
+  "geo_center": {
+    "lat": 3.139,
+    "lng": 101.6869
+  },
+  "bounds_sw": {
+    "lat": 0.8,
+    "lng": 99.6
+  },
+  "bounds_ne": {
+    "lat": 7.4,
+    "lng": 119.3
+  },
+  "geo_import_id": "country_my",
+  "geo_import_source": "international_seven_2026"
+}
