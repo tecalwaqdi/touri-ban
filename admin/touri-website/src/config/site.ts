@@ -3,12 +3,21 @@
  * Fill store URLs, email, and social links before launch.
  * Empty strings are treated as unavailable — the UI hides those actions.
  */
+
+/** Accepts `https://example.com` or bare `example.com`. */
+function normalizePublicUrl(raw: string | undefined): string {
+  const trimmed = (raw ?? "").trim().replace(/\/$/, "");
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 export const siteConfig = {
   name: "Touri",
   legalName: "Touri Taxi",
   customerApp: "Touri Taxi",
   driverApp: "Touri Taxi Driver",
-  url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "",
+  url: normalizePublicUrl(process.env.NEXT_PUBLIC_SITE_URL),
   defaultLocale: "ar" as const,
   locales: ["ar", "en"] as const,
   legalUpdated: "2026-08-01",
@@ -39,7 +48,9 @@ export type Locale = (typeof siteConfig.locales)[number];
 
 export function getSiteUrl() {
   if (siteConfig.url) return siteConfig.url;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  if (process.env.VERCEL_URL) {
+    return normalizePublicUrl(process.env.VERCEL_URL);
+  }
   return "http://localhost:3000";
 }
 
