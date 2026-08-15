@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '/backend/backend.dart';
+import '/core/toury_firestore_cache.dart';
 import '/core/toury_geo_content_i18n.dart';
 import '/core/toury_geo_i18n.dart';
+import '/core/toury_location_service.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -43,6 +45,7 @@ class _AldolWidgetState extends State<AldolWidget> {
 
   Future<void> _openCountry(CountriesRecord country) async {
     TouryLocationService.applyManualCountry(country);
+    TouryFirestoreCache.clear();
     unawaited(TouryLocationService.refreshCache());
     safeSetState(() {});
 
@@ -75,6 +78,7 @@ class _AldolWidgetState extends State<AldolWidget> {
 
   Future<void> _openFeaturedCountry(CountriesRecord country) async {
     TouryLocationService.applyManualCountry(country);
+    TouryFirestoreCache.clear();
     unawaited(TouryLocationService.refreshCache());
     safeSetState(() {});
 

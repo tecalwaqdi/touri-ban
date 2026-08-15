@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_my_kuala_lumpur_petronas-towers",
+  "__writtenAt": "2026-08-13T21:39:16.498Z",
+  "__target": "local-staging",
+  "naim": "Petronas Twin Towers",
+  "osf": "Twin towers 452m — رمز KL.",
+  "names_i18n": {
+    "ar": "Petronas Twin Towers",
+    "en": "Petronas Twin Towers",
+    "ru": "Башни Petronas",
+    "ky": "Petronas башнялары",
+    "uz": "Petronas minoralari"
+  },
+  "osf_i18n": {
+    "ar": "Twin towers 452m — رمز KL.",
+    "en": "452 m twin towers — icon of Kuala Lumpur.",
+    "ru": "452-метровые башни-близнецы — символ KL.",
+    "ky": "452 м эки башня.",
+    "uz": "452 m ikki minorali majmua."
+  },
+  "content_locale": "ar",
+  "address": "Petronas Twin Towers، Kuala Lumpur، ماليزيا",
+  "address_i18n": {
+    "ar": "Petronas Twin Towers, Kuala Lumpur, ماليزيا",
+    "en": "Petronas Twin Towers, Kuala Lumpur, Malaysia",
+    "ru": "Башни Petronas, Kuala Lumpur, Малайзия",
+    "ky": "Petronas башнялары, Kuala Lumpur, Малайзия",
+    "uz": "Petronas minoralari, Kuala Lumpur, Malayziya"
+  },
+  "Location": {
+    "latitude": 3.1578,
+    "longitude": 101.7114
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Petronas_Panorama_II.jpg/960px-Petronas_Panorama_II.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_my_kuala_lumpur",
+  "id_vill": "villages/city_my_kuala_lumpur",
+  "Rev_dolh": "countries/malaysia",
+  "country_iso": "MY",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_my_kuala_lumpur_petronas-towers",
+  "geo_import_slug": "petronas-towers",
+  "geo_import_source": "international_seven_2026"
+}

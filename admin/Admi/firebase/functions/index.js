@@ -343,6 +343,7 @@ exports.aggregateFinancialSummary = functions.https.onCall(async (data, context)
   let pendingCount = 0;
   let canceledCount = 0;
   let totalBookings = 0;
+  let pendingSettlements = 0;
 
   for (const order of orders) {
     totalBookings++;
@@ -359,6 +360,7 @@ exports.aggregateFinancialSummary = functions.https.onCall(async (data, context)
       deliveryFees += order.total_mndob2 || 0;
     } else {
       pendingCount++;
+      pendingSettlements += Number(order.total || 0);
     }
   }
 
@@ -372,7 +374,9 @@ exports.aggregateFinancialSummary = functions.https.onCall(async (data, context)
     pendingCount,
     canceledCount,
     totalBookings,
+    pendingSettlements,
     orderCount: paidCount + pendingCount,
+    source: "server",
     loadedAt: new Date().toISOString(),
   };
 
@@ -610,3 +614,126 @@ async function cleanupInvalidTokens(adminDocs, invalidTokens) {
 
   if (writes > 0) await batch.commit();
 }
+
+// ── Admin wallet adjustment (finance / super_admin only) ────────────────────
+
+exports.adminAdjustDriverWallet = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError("unauthenticated", "Sign in required.");
+  }
+  const token = context.auth.token || {};
+  if (!token.super_admin && !token.finance) {
+    throw new functions.https.HttpsError("permission-denied", "Not authorized.");
+  }
+
+  const driverId = String((data && data.driverId) || "").trim();
+  const amount = Number(data && data.amount);
+  const note = String((data && data.note) || "").trim().slice(0, 500);
+  const currency = String((data && data.currency) || "SAR").trim().toUpperCase() || "SAR";
+
+  if (!driverId) {
+    throw new functions.https.HttpsError("invalid-argument", "driverId required.");
+  }
+  if (!Number.isFinite(amount) || amount === 0 || Math.abs(amount) > 50000) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "amount must be a non-zero number within ±50000.",
+    );
+  }
+
+  const userRef = db.collection("user").doc(driverId);
+  const wallets = await db
+    .collection("wallets")
+    .where("userRef", "==", userRef)
+    .limit(1)
+    .get();
+  const walletRef = wallets.empty
+    ? db.collection("wallets").doc(driverId)
+    : wallets.docs[0].ref;
+
+  const ledgerId = `admin_adj_${driverId.slice(0, 8)}_${Date.now()}`;
+  const ledgerRef = db.collection("transactions").doc(ledgerId);
+
+  let balanceBefore = 0;
+  let balanceAfter = 0;
+
+  try {
+    await db.runTransaction(async (tx) => {
+      const wallet = await tx.get(walletRef);
+      balanceBefore = wallet.exists ? Number(wallet.data().currentBalance || 0) : 0;
+      balanceAfter = balanceBefore + amount;
+      if (balanceAfter < 0) {
+        throw new Error("INSUFFICIENT_BALANCE");
+      }
+
+      tx.set(
+        walletRef,
+        {
+          userRef,
+          currentBalance: balanceAfter,
+          walletBalance: balanceAfter,
+          currency,
+          isActive: true,
+          walletUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          ...(wallet.exists
+            ? {}
+            : {createdAt: admin.firestore.FieldValue.serverTimestamp()}),
+        },
+        {merge: true},
+      );
+
+      tx.set(ledgerRef, {
+        driverId,
+        userRef,
+        walletRef,
+        type: "admin_adjustment",
+        amount,
+        currency,
+        status: "completed",
+        description_code: amount > 0 ? "admin_credit" : "admin_debit",
+        notes: note || `Admin adjustment by ${context.auth.uid}`,
+        balanceBefore,
+        balanceAfter,
+        actorUid: context.auth.uid,
+        actorEmail: (context.auth.token && context.auth.token.email) || "",
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+  } catch (e) {
+    if (String((e && e.message) || e).includes("INSUFFICIENT_BALANCE")) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "Insufficient wallet balance for debit.",
+      );
+    }
+    throw e;
+  }
+
+  await db.collection("admin_audit_log").add({
+    actor_uid: context.auth.uid,
+    actor_email: (context.auth.token && context.auth.token.email) || "",
+    action: "wallet_adjust",
+    target: `wallets/${walletRef.id}`,
+    details: JSON.stringify({
+      driverId,
+      amount,
+      balanceBefore,
+      balanceAfter,
+      note,
+      ledgerId,
+    }),
+    created_at: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  return {
+    ok: true,
+    driverId,
+    walletId: walletRef.id,
+    amount,
+    balanceBefore,
+    balanceAfter,
+    ledgerId,
+  };
+});

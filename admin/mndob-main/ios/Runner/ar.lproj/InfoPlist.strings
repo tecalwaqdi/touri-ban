@@ -1,1 +1,6 @@
-
+NSCameraUsageDescription = "يرجى السماح بالوصول للكاميرا لتحديث صورة الملف الشخصي.";
+NSPhotoLibraryUsageDescription = "يرجى السماح بالوصول للصور لتحديث صورة الملف الشخصي من المعرض.";
+NSLocationWhenInUseUsageDescription = "يستخدم Touri Taxi Driver موقعك أثناء فتح التطبيق لعرض موقعك على الخريطة، وإسناد الطلبات القريبة، وتحديث مسار الرحلة أثناء تنفيذها.";
+NSLocationAlwaysAndWhenInUseUsageDescription = "يستخدم Touri Taxi Driver موقعك في الخلفية أثناء الرحلة النشطة فقط حتى يتمكن العميل من متابعة وصولك ومسار الرحلة عند قفل الشاشة أو الانتقال لتطبيق آخر. يتوقف التتبع فور انتهاء الرحلة.";
+NSLocationAlwaysUsageDescription = "يستخدم Touri Taxi Driver موقعك في الخلفية أثناء الرحلة النشطة فقط حتى يتمكن العميل من متابعة وصولك ومسار الرحلة عند قفل الشاشة أو الانتقال لتطبيق آخر. يتوقف التتبع فور انتهاء الرحلة.";
+NSFaceIDUsageDescription = "نستخدم Face ID لتأمين حسابك والتأكد من هوية المستخدم.";

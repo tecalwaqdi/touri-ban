@@ -1,0 +1,33 @@
+{
+  "__path": "villages/city_ma_rabat",
+  "__writtenAt": "2026-08-13T21:39:16.494Z",
+  "__target": "local-staging",
+  "naim": "الرباط",
+  "names_i18n": {
+    "ar": "الرباط",
+    "en": "Rabat",
+    "ru": "Рабат",
+    "ky": "Рабат",
+    "uz": "Rabat"
+  },
+  "osf": "الرباط — عاصمة المغرب.",
+  "osf_i18n": {
+    "ar": "الرباط — عاصمة المغرب.",
+    "en": "Rabat — capital of Morocco.",
+    "ru": "Рабат — capital of Morocco.",
+    "ky": "Рабат — capital of Morocco.",
+    "uz": "Rabat — capital of Morocco."
+  },
+  "img": "https://flagcdn.com/w320/ma.png",
+  "cities": "cities/region_ma_rabat",
+  "dolh": "countries/morocco",
+  "lat_ling": {
+    "latitude": 34.0209,
+    "longitude": -6.8416
+  },
+  "acctev": true,
+  "country_iso": "MA",
+  "naimciteText": "Rabat",
+  "geo_import_id": "city_ma_rabat",
+  "geo_import_source": "international_seven_2026"
+}

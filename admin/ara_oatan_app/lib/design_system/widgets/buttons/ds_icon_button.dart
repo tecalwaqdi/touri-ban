@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../colors/ds_colors.dart';
 import '../../constants/ds_constants.dart';
 import '../../radius/ds_radius.dart';
+import '../icons/ds_icons.dart';
 
 /// Unified icon button.
 class DsIconButton extends StatelessWidget {
@@ -47,6 +48,31 @@ class DsIconButton extends StatelessWidget {
 
     if (tooltip == null) return button;
     return Tooltip(message: tooltip!, child: button);
+  }
+}
+
+/// زر رجوع موحّد — يُوضع دائماً في `AppBar.leading` (يمين في العربية).
+class DsBackButton extends StatelessWidget {
+  const DsBackButton({
+    super.key,
+    this.onPressed,
+    this.foreground,
+    this.filled = false,
+  });
+
+  final VoidCallback? onPressed;
+  final Color? foreground;
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) {
+    return DsIconButton(
+      icon: DsIcons.back,
+      tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+      foreground: foreground,
+      filled: filled,
+      onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
+    );
   }
 }
 

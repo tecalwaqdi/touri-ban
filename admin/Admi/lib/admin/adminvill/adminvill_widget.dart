@@ -1,6 +1,7 @@
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_cascade_delete.dart';
+import '/backend/admin_legacy_alias_filter.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
@@ -51,9 +52,13 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
   }
 
   List<VillagesRecord> _filterCities(List<VillagesRecord> items) {
+    final visible = AdminLegacyAliasFilter.keepWhereId(
+      items,
+      (c) => c.reference.id,
+    );
     final q = _searchQuery.trim().toLowerCase();
-    if (q.isEmpty) return items;
-    return items.where((c) {
+    if (q.isEmpty) return visible;
+    return visible.where((c) {
       return c.naim.toLowerCase().contains(q) ||
           c.osf.toLowerCase().contains(q);
     }).toList();
@@ -96,7 +101,11 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
     if (!confirmed) return;
 
     try {
-      await deleteCityCascade(record.reference);
+      await AdminCrudFeedback.runWithBlockingProgress(
+        context: context,
+        message: uiTr(context, 'جاري الحذف… لا تغلق التطبيق'),
+        action: () => deleteCityCascade(record.reference),
+      );
       await AdminAuditLog.recordDelete(
         targetType: 'city',
         targetId: record.reference.id,
@@ -146,12 +155,15 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
       await record.reference.update(
         createVillagesRecordData(acctev: activate),
       );
+      await setCityLandmarksActive(record.reference, activate);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              activate ? uiTr(context, 'تم تنشيط المدينة') : uiTr(context, 'تم إيقاف تنشيط المدينة')),
+              activate
+                  ? uiTr(context, 'تم تنشيط المدينة والمعالم المرتبطة')
+                  : uiTr(context, 'تم إيقاف تنشيط المدينة والمعالم المرتبطة')),
         ),
       );
     } catch (e) {

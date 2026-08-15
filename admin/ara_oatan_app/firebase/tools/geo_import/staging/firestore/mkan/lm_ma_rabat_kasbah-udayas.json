@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_ma_rabat_kasbah-udayas",
+  "__writtenAt": "2026-08-13T21:39:16.494Z",
+  "__target": "local-staging",
+  "naim": "قصبة الأوداية",
+  "osf": "حصن أندلسي على المحيط مع أزقة زرقاء وحدائق.",
+  "names_i18n": {
+    "ar": "قصبة الأوداية",
+    "en": "Kasbah of the Udayas",
+    "ru": "Кasbah des Oudayas",
+    "ky": "Уdayas кasbah",
+    "uz": "Udayas qalʼasi"
+  },
+  "osf_i18n": {
+    "ar": "حصن أندلسي على المحيط مع أزقة زرقاء وحدائق.",
+    "en": "Andalusian fortress on the Atlantic with blue alleys and gardens.",
+    "ru": "Андalusская крепость у Атлантики с синими улочками.",
+    "ky": "Атлантика жээгиндеги андalus креpost.",
+    "uz": "Atlantika qirgʼogʻidagi Andalus qalʼasi."
+  },
+  "content_locale": "ar",
+  "address": "قصبة الأوداية، الرباط، المغرب",
+  "address_i18n": {
+    "ar": "قصبة الأوداية, الرباط, المغرب",
+    "en": "Kasbah of the Udayas, Rabat, Morocco",
+    "ru": "Кasbah des Oudayas, Рабат, Марокко",
+    "ky": "Уdayas кasbah, Рабат, Марокко",
+    "uz": "Udayas qalʼasi, Rabat, Marokash"
+  },
+  "Location": {
+    "latitude": 34.0317,
+    "longitude": -6.8367
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Kasbah_Oudayas_exterior.jpg/960px-Kasbah_Oudayas_exterior.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_ma_rabat",
+  "id_vill": "villages/city_ma_rabat",
+  "Rev_dolh": "countries/morocco",
+  "country_iso": "MA",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_ma_rabat_kasbah-udayas",
+  "geo_import_slug": "kasbah-udayas",
+  "geo_import_source": "international_seven_2026"
+}

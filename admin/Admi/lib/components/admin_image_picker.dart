@@ -1,3 +1,4 @@
+import '/backend/admin_storage_cleanup.dart';
 import '/backend/profile_photo_service.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_ui.dart';
@@ -305,18 +306,22 @@ String effectiveImageUrl({
 }
 
 /// Ensures the image is persisted for the client app (URL or compressed data-URL).
+///
+/// When [previousUrl] is provided and differs from the saved value, the old
+/// Firebase Storage object is deleted best-effort.
 Future<String> resolveImageForFirestoreSave({
   required String pickedUrl,
   required String existingUrl,
   Uint8List? localBytes,
   int maxEmbeddedBytes = kContentImageMaxEmbeddedBytes,
+  String? previousUrl,
+  bool cleanupReplaced = true,
 }) async {
   final picked = pickedUrl.trim();
+  late final String result;
   if (picked.isNotEmpty) {
-    return picked;
-  }
-
-  if (localBytes != null && localBytes.isNotEmpty) {
+    result = picked;
+  } else if (localBytes != null && localBytes.isNotEmpty) {
     final compressed = compressImageBytesForFirestore(
       localBytes,
       maxEdge: kContentImageMaxEdge,
@@ -327,10 +332,16 @@ Future<String> resolveImageForFirestoreSave({
         'الصورة كبيرة جداً لتخزينها في قاعدة البيانات. اختر صورة أصغر أو فعّل فوترة Firebase Storage.',
       );
     }
-    return profilePhotoDataUrl(compressed);
+    result = profilePhotoDataUrl(compressed);
+  } else {
+    result = existingUrl.trim();
   }
 
-  return existingUrl.trim();
+  if (cleanupReplaced) {
+    final prior = (previousUrl ?? existingUrl).trim();
+    await deleteReplacedAdminStorageUrl(previousUrl: prior, nextUrl: result);
+  }
+  return result;
 }
 
 /// ImageProvider for network URLs and Firestore data-URL fallbacks.

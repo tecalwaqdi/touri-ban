@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_es_madrid_puerta-alcala",
+  "__writtenAt": "2026-08-13T21:39:16.494Z",
+  "__target": "local-staging",
+  "naim": "Puerta de Alcalá",
+  "osf": "بوابة neoclassical أيقونية على Plaza de la Independencia.",
+  "names_i18n": {
+    "ar": "Puerta de Alcalá",
+    "en": "Puerta de Alcalá",
+    "ru": "Пуэрта de Alcalá",
+    "ky": "Пуэрта de Alcalá",
+    "uz": "Puerta de Alcalá"
+  },
+  "osf_i18n": {
+    "ar": "بوابة neoclassical أيقونية على Plaza de la Independencia.",
+    "en": "Iconic neoclassical gate on Plaza de la Independencia.",
+    "ru": "Знаменитые неоклассические ворота на площади Независимости.",
+    "ky": "Независимость аянтынын неоклассикалык дарбазасы.",
+    "uz": "Mustaqillik maydonidagi neoklassik darvoza."
+  },
+  "content_locale": "ar",
+  "address": "Puerta de Alcalá، مدريد، إسبانيا",
+  "address_i18n": {
+    "ar": "Puerta de Alcalá, مدريد, إسبانيا",
+    "en": "Puerta de Alcalá, Madrid, Spain",
+    "ru": "Пуэрта de Alcalá, Мадрид, Испания",
+    "ky": "Пуэрта de Alcalá, Мадрид, Испания",
+    "uz": "Puerta de Alcalá, Madrid, Ispaniya"
+  },
+  "Location": {
+    "latitude": 40.42,
+    "longitude": -3.6887
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Puerta_de_Alcal%C3%A1%2C_Madrid%2C_illuminated_with_the_rainbow_colours_during_the_celebrations_of_WorldPride_2017.jpg/960px-Puerta_de_Alcal%C3%A1%2C_Madrid%2C_illuminated_with_the_rainbow_colours_during_the_celebrations_of_WorldPride_2017.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_es_madrid",
+  "id_vill": "villages/city_es_madrid",
+  "Rev_dolh": "countries/spain",
+  "country_iso": "ES",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_es_madrid_puerta-alcala",
+  "geo_import_slug": "puerta-alcala",
+  "geo_import_source": "international_seven_2026"
+}

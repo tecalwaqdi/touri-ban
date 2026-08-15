@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_in_new_delhi_lotus-temple",
+  "__writtenAt": "2026-08-13T21:39:16.502Z",
+  "__target": "local-staging",
+  "naim": "Lotus Temple",
+  "osf": "Baháʼí House of Worship على شكل lotus.",
+  "names_i18n": {
+    "ar": "Lotus Temple",
+    "en": "Lotus Temple",
+    "ru": "Храм Лotus",
+    "ky": "Lotus храмы",
+    "uz": "Lotus ibodatxonasi"
+  },
+  "osf_i18n": {
+    "ar": "Baháʼí House of Worship على شكل lotus.",
+    "en": "Baháʼí House of Worship shaped like a lotus flower.",
+    "ru": "Baháʼí храм в форме лotus.",
+    "ky": "Lotus гүлүнүн формасындагы храм.",
+    "uz": "Lotus gul shaklidagi ibodatxona."
+  },
+  "content_locale": "ar",
+  "address": "Lotus Temple، نيودلهي، الهند",
+  "address_i18n": {
+    "ar": "Lotus Temple, نيودلهي, الهند",
+    "en": "Lotus Temple, New Delhi, India",
+    "ru": "Храм Лotus, Нью-Дели, Индия",
+    "ky": "Lotus храмы, New Delhi, Индия",
+    "uz": "Lotus ibodatxonasi, New Delhi, Hindiston"
+  },
+  "Location": {
+    "latitude": 28.5535,
+    "longitude": 77.2588
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Lotus_Temple_in_New_Delhi_03-2016.jpg/960px-Lotus_Temple_in_New_Delhi_03-2016.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": true,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم دينية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_in_new_delhi",
+  "id_vill": "villages/city_in_new_delhi",
+  "Rev_dolh": "countries/india",
+  "country_iso": "IN",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_in_new_delhi_lotus-temple",
+  "geo_import_slug": "lotus-temple",
+  "geo_import_source": "international_seven_2026"
+}

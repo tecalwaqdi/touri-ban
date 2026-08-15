@@ -1,0 +1,33 @@
+{
+  "__path": "villages/city_in_new_delhi",
+  "__writtenAt": "2026-08-13T21:39:16.502Z",
+  "__target": "local-staging",
+  "naim": "نيودلهي",
+  "names_i18n": {
+    "ar": "نيودلهي",
+    "en": "New Delhi",
+    "ru": "Нью-Дели",
+    "ky": "New Delhi",
+    "uz": "New Delhi"
+  },
+  "osf": "نيودلهي — عاصمة الهند.",
+  "osf_i18n": {
+    "ar": "نيودلهي — عاصمة الهند.",
+    "en": "New Delhi — capital of India.",
+    "ru": "Нью-Дели — capital of India.",
+    "ky": "New Delhi — capital of India.",
+    "uz": "New Delhi — capital of India."
+  },
+  "img": "https://flagcdn.com/w320/in.png",
+  "cities": "cities/region_in_new_delhi",
+  "dolh": "countries/india",
+  "lat_ling": {
+    "latitude": 28.6139,
+    "longitude": 77.209
+  },
+  "acctev": true,
+  "country_iso": "IN",
+  "naimciteText": "New Delhi",
+  "geo_import_id": "city_in_new_delhi",
+  "geo_import_source": "international_seven_2026"
+}

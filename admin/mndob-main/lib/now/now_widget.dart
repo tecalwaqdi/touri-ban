@@ -7,6 +7,7 @@ import '/core/driver_order_meta.dart';
 import '/core/driver_navigation_service.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_ux_widgets.dart';
+import '/core/driver_pickup_eta_cache.dart';
 import '/design_system/design_system.dart';
 import '/core/toury_distance_format.dart';
 import '/auth/firebase_auth/auth_util.dart';
@@ -536,21 +537,44 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                                                         ),
                                                                         Flexible(
                                                                           child:
-                                                                              Text(
-                                                                            () {
+                                                                              FutureBuilder<DriverPickupEta?>(
+                                                                            future: DriverPickupEtaCache.forPickup(
+                                                                              orderId: listViewOrderRecord.reference.id,
+                                                                              driver: currentUserLocationValue ?? currentUserDocument?.loceshnMndobNow,
+                                                                              pickup: listViewOrderRecord.customerPickup,
+                                                                            ),
+                                                                            builder: (context, snap) {
+                                                                              final eta = snap.data;
+                                                                              if (eta != null && eta.durationMinutes > 0) {
+                                                                                final dist = touryFormatDistanceKm(eta.distanceKm);
+                                                                                final trafficNote = eta.approximate
+                                                                                    ? driverTr(context, 'est.')
+                                                                                    : driverTr(context, 'traffic');
+                                                                                return Text(
+                                                                                  '$dist · ${eta.durationMinutes} ${driverTr(context, 'min')} ($trafficNote)',
+                                                                                  maxLines: 1,
+                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                  style: context.dsTypography.bodySmall.copyWith(
+                                                                                    color: context.dsColors.textSecondary,
+                                                                                  ),
+                                                                                );
+                                                                              }
                                                                               final km = DriverOrderMatch.distanceKm(
                                                                                 listViewOrderRecord,
                                                                                 currentUserLocationValue ?? currentUserDocument?.loceshnMndobNow,
                                                                               );
-                                                                              final label = km == null ? driverTr(context, 'Distance unknown') : touryFormatDistanceKm(km);
-                                                                              return label;
-                                                                            }(),
-                                                                            maxLines:
-                                                                                1,
-                                                                            overflow:
-                                                                                TextOverflow.ellipsis,
-                                                                            style:
-                                                                                context.dsTypography.bodySmall.copyWith(color: context.dsColors.textSecondary),
+                                                                              final label = km == null
+                                                                                  ? driverTr(context, 'Distance unknown')
+                                                                                  : touryFormatDistanceKm(km);
+                                                                              return Text(
+                                                                                label,
+                                                                                maxLines: 1,
+                                                                                overflow: TextOverflow.ellipsis,
+                                                                                style: context.dsTypography.bodySmall.copyWith(
+                                                                                  color: context.dsColors.textSecondary,
+                                                                                ),
+                                                                              );
+                                                                            },
                                                                           ),
                                                                         ),
                                                                       ].divide(SizedBox(

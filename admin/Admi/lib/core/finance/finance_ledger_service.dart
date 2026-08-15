@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/schema/order_record.dart';
-import '/core/admin_currency.dart';
+import '/core/cloud_functions/cloud_functions_client.dart';
 import '/core/finance/financial_engine.dart';
 
 /// Aggregated finance snapshot for the Enterprise Finance Hub.
@@ -21,6 +21,7 @@ class FinanceHubSnapshot {
     required this.agentBalances,
     required this.ledger,
     required this.periodLabel,
+    this.isApproximate = false,
   });
 
   final double revenue;
@@ -35,6 +36,9 @@ class FinanceHubSnapshot {
   final Map<String, double> agentBalances;
   final List<FinanceLedgerEntry> ledger;
   final String periodLabel;
+
+  /// True when KPIs came from a client sample fallback (not CF aggregates).
+  final bool isApproximate;
 }
 
 class FinanceLedgerEntry {
@@ -57,7 +61,7 @@ class FinanceLedgerEntry {
   final String note;
 }
 
-/// Builds ledger-style finance views from existing order economics.
+/// Builds finance hub views from server aggregates + real wallet/ledger docs.
 abstract final class FinanceLedgerService {
   FinanceLedgerService._();
 
@@ -65,6 +69,110 @@ abstract final class FinanceLedgerService {
     required DateTime from,
     required DateTime to,
     String periodLabel = '',
+  }) async {
+    Map<String, dynamic>? remote;
+    try {
+      remote = await CloudFunctionsClient.aggregateFinancialSummary(
+        countryPath: AdminCountryScope.activeCountryRef?.path,
+        periodStart: from,
+      );
+    } catch (_) {
+      remote = null;
+    }
+
+    final driverBal = await _loadWalletBalances();
+    final ledger = await _loadTransactionLedger();
+
+    if (remote != null) {
+      return FinanceHubSnapshot(
+        revenue: (remote['totalSales'] as num?)?.toDouble() ?? 0,
+        appProfit: (remote['appProfit'] as num?)?.toDouble() ?? 0,
+        commissions: (remote['repCommission'] as num?)?.toDouble() ?? 0,
+        pendingSettlements:
+            (remote['pendingSettlements'] as num?)?.toDouble() ?? 0,
+        paidOrders: (remote['paidCount'] as int?) ??
+            (remote['paidCount'] as num?)?.toInt() ??
+            0,
+        pendingOrders: (remote['pendingCount'] as int?) ??
+            (remote['pendingCount'] as num?)?.toInt() ??
+            0,
+        canceledOrders: (remote['canceledCount'] as int?) ??
+            (remote['canceledCount'] as num?)?.toInt() ??
+            0,
+        driverBalances: driverBal,
+        companyBalances: const {},
+        agentBalances: const {},
+        ledger: ledger,
+        periodLabel: periodLabel,
+        isApproximate: false,
+      );
+    }
+
+    // Fallback: limited client sample — marked approximate in UI.
+    return _loadApproximateFromOrders(
+      from: from,
+      to: to,
+      periodLabel: periodLabel,
+      driverBalances: driverBal,
+      ledger: ledger,
+    );
+  }
+
+  static Future<Map<String, double>> _loadWalletBalances() async {
+    final out = <String, double>{};
+    try {
+      final snap =
+          await FirebaseFirestore.instance.collection('wallets').limit(200).get();
+      for (final doc in snap.docs) {
+        final d = doc.data();
+        final bal = (d['currentBalance'] as num?)?.toDouble() ?? 0;
+        final uid = (d['userRef'] is DocumentReference)
+            ? (d['userRef'] as DocumentReference).id
+            : (d['driverId'] ?? doc.id).toString();
+        out[uid] = bal;
+      }
+    } catch (_) {}
+    return out;
+  }
+
+  static Future<List<FinanceLedgerEntry>> _loadTransactionLedger() async {
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection('transactions')
+          .orderBy('createdAt', descending: true)
+          .limit(80)
+          .get();
+      return snap.docs.map((doc) {
+        final d = doc.data();
+        final uid = (d['userRef'] is DocumentReference)
+            ? (d['userRef'] as DocumentReference).id
+            : (d['driverId'] ?? '—').toString();
+        DateTime? at;
+        final created = d['createdAt'];
+        if (created is Timestamp) at = created.toDate();
+        return FinanceLedgerEntry(
+          id: doc.id,
+          type: (d['type'] ?? 'tx').toString(),
+          amount: (d['amount'] as num?)?.toDouble() ?? 0,
+          partyLabel: uid,
+          createdAt: at,
+          orderPath: (d['orderRef'] is DocumentReference)
+              ? (d['orderRef'] as DocumentReference).path
+              : '',
+          note: (d['notes'] ?? d['description_code'] ?? '').toString(),
+        );
+      }).toList();
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  static Future<FinanceHubSnapshot> _loadApproximateFromOrders({
+    required DateTime from,
+    required DateTime to,
+    required String periodLabel,
+    required Map<String, double> driverBalances,
+    required List<FinanceLedgerEntry> ledger,
   }) async {
     QuerySnapshot<Map<String, dynamic>> snap;
     try {
@@ -78,7 +186,6 @@ abstract final class FinanceLedgerService {
     }
 
     final country = AdminCountryScope.activeCountryRef;
-
     final orders = snap.docs
         .map((d) => OrderRecord.fromSnapshot(d))
         .where((o) {
@@ -105,14 +212,10 @@ abstract final class FinanceLedgerService {
     var paid = 0;
     var pendingCount = 0;
     var canceled = 0;
-    final driverBal = <String, double>{};
-    final companyBal = <String, double>{};
-    final agentBal = <String, double>{};
-    final ledger = <FinanceLedgerEntry>[];
+    final fallbackLedger = <FinanceLedgerEntry>[...ledger];
 
     for (final order in orders) {
       final econ = FinancialEngine.orderFinancials(order);
-
       if (OrderStatusHelper.isCanceled(order)) {
         canceled++;
         continue;
@@ -122,74 +225,26 @@ abstract final class FinanceLedgerService {
         revenue += econ.totalSales;
         appProfit += econ.appProfit;
         commissions += econ.repCommission;
-        final driverKey = order.mndobUser?.id ??
-            (order.snapshotData['mndob_user'] is DocumentReference
-                ? (order.snapshotData['mndob_user'] as DocumentReference).id
-                : 'unknown');
-        driverBal[driverKey] =
-            (driverBal[driverKey] ?? 0) + econ.repCommission;
-
-        final companyPath =
-            (order.snapshotData['transport_company'] as DocumentReference?)
-                    ?.path ??
-                '';
-        if (companyPath.isNotEmpty) {
-          companyBal[companyPath] =
-              (companyBal[companyPath] ?? 0) + (econ.repCommission * 0.1);
+        if (fallbackLedger.length < 80) {
+          fallbackLedger.add(
+            FinanceLedgerEntry(
+              id: order.reference.id,
+              type: 'revenue',
+              amount: econ.totalSales,
+              partyLabel: order.mndobUser?.id ?? order.reference.id,
+              createdAt: order.dataOrder,
+              orderPath: order.reference.path,
+              note: 'ent_ledger_revenue',
+            ),
+          );
         }
-
-        final agentPath =
-            (order.snapshotData['Rev_dloh_agent'] as DocumentReference?)
-                    ?.path ??
-                (order.snapshotData['agent_ref'] as DocumentReference?)?.path ??
-                '';
-        if (agentPath.isNotEmpty) {
-          agentBal[agentPath] =
-              (agentBal[agentPath] ?? 0) + (econ.appProfit * 0.05);
-        }
-
-        ledger.add(
-          FinanceLedgerEntry(
-            id: order.reference.id,
-            type: 'revenue',
-            amount: econ.totalSales,
-            partyLabel: driverKey,
-            createdAt: order.dataOrder,
-            orderPath: order.reference.path,
-            note: 'ent_ledger_revenue',
-          ),
-        );
-        ledger.add(
-          FinanceLedgerEntry(
-            id: '${order.reference.id}_comm',
-            type: 'commission',
-            amount: econ.repCommission,
-            partyLabel: driverKey,
-            createdAt: order.dataOrder,
-            orderPath: order.reference.path,
-            note: 'ent_ledger_commission',
-          ),
-        );
       } else if (OrderStatusHelper.isPending(order)) {
         pendingCount++;
         pending += econ.totalSales > 0
             ? econ.totalSales
             : order.total.toDouble();
-        ledger.add(
-          FinanceLedgerEntry(
-            id: '${order.reference.id}_pending',
-            type: 'pending',
-            amount: order.total.toDouble(),
-            partyLabel: order.reference.id,
-            createdAt: order.dataOrder,
-            orderPath: order.reference.path,
-            note: 'ent_ledger_pending',
-          ),
-        );
       }
     }
-
-    await _ensureInvoices(orders);
 
     return FinanceHubSnapshot(
       revenue: revenue,
@@ -199,48 +254,12 @@ abstract final class FinanceLedgerService {
       paidOrders: paid,
       pendingOrders: pendingCount,
       canceledOrders: canceled,
-      driverBalances: driverBal,
-      companyBalances: companyBal,
-      agentBalances: agentBal,
-      ledger: ledger,
+      driverBalances: driverBalances,
+      companyBalances: const {},
+      agentBalances: const {},
+      ledger: fallbackLedger,
       periodLabel: periodLabel,
+      isApproximate: true,
     );
-  }
-
-  static Future<void> _ensureInvoices(List<OrderRecord> orders) async {
-    final batch = FirebaseFirestore.instance.batch();
-    var writes = 0;
-    for (final order in orders) {
-      if (!OrderStatusHelper.isPaid(order)) continue;
-      final invRef = FirebaseFirestore.instance
-          .collection('finance_invoices')
-          .doc(order.reference.id);
-      try {
-        final existing = await invRef.get();
-        if (existing.exists) continue;
-        final econ = FinancialEngine.orderFinancials(order);
-        batch.set(invRef, {
-          'order_ref': order.reference,
-          'amount': econ.totalSales,
-          'app_profit': econ.appProfit,
-          'commission': econ.repCommission,
-          'currency': AdminCurrency.codeForOrder(order).isNotEmpty
-              ? AdminCurrency.codeForOrder(order)
-              : (order.snapshotData['currency'] ?? 'SAR'),
-          'status': 'issued',
-          'created_at': FieldValue.serverTimestamp(),
-          'period': order.dataOrder?.toIso8601String() ?? '',
-          if (AdminCountryScope.activeCountryRef != null)
-            'Rev_dolh': AdminCountryScope.activeCountryRef,
-        });
-        writes++;
-        if (writes >= 40) break;
-      } catch (_) {}
-    }
-    if (writes > 0) {
-      try {
-        await batch.commit();
-      } catch (_) {}
-    }
   }
 }

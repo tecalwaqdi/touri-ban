@@ -1,4 +1,5 @@
 import '/backend/backend.dart';
+import '/core/toury_city_display_order.dart';
 import '/core/toury_geo_content_i18n.dart';
 import '/core/toury_firestore_cache.dart';
 import '/design_system/design_system.dart';
@@ -64,7 +65,8 @@ class _ListRegionWidgetState extends State<ListRegionWidget> {
         if (!snapshot.hasData) {
           return const DsLoading();
         }
-        List<CitiesRecord> columnCitiesRecordList = snapshot.data!;
+        List<CitiesRecord> columnCitiesRecordList =
+            TouryCityDisplayOrder.sort(snapshot.data!);
 
         return Column(
           mainAxisSize: MainAxisSize.max,

@@ -5,6 +5,7 @@ import '../../colors/ds_colors.dart';
 import '../../constants/ds_constants.dart';
 import '../../spacing/ds_spacing.dart';
 import '../../typography/ds_typography.dart';
+import '../buttons/ds_icon_button.dart';
 
 class DsAppBar extends StatelessWidget implements PreferredSizeWidget {
   const DsAppBar({
@@ -36,6 +37,9 @@ class DsAppBar extends StatelessWidget implements PreferredSizeWidget {
     final colors = DsColors.of(context);
     final typography = DsTypography.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final canPop = ModalRoute.of(context)?.impliesAppBarDismissal ?? false;
+    final resolvedLeading = leading ??
+        (automaticallyImplyLeading && canPop ? const DsBackButton() : null);
 
     return AppBar(
       title: titleWidget ??
@@ -47,10 +51,11 @@ class DsAppBar extends StatelessWidget implements PreferredSizeWidget {
                     color: colors.textPrimary,
                   ),
                 )),
-      leading: leading,
+      leading: resolvedLeading,
+      leadingWidth: DsConstants.minTapTarget,
       actions: actions,
       centerTitle: centerTitle,
-      automaticallyImplyLeading: automaticallyImplyLeading,
+      automaticallyImplyLeading: false,
       backgroundColor: colors.surface,
       foregroundColor: colors.textPrimary,
       surfaceTintColor: Colors.transparent,

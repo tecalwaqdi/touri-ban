@@ -165,26 +165,22 @@ class _Checkout66Copy2WidgetState extends State<Checkout66Copy2Widget> {
       title: FFLocalizations.of(context).getText(
         'n4minjo8' /* My trip list */,
       ),
-      leading: DsIconButton(
-        icon: Icons.list_alt_rounded,
-        onPressed: () async {
-          context.pushNamed(
-            ListViWidget.routeName,
-            queryParameters: {
-              'cite': serializeParam(
-                FFAppState().villa,
-                ParamType.DocumentReference,
-              ),
-            }.withoutNulls,
-          );
-        },
+      leading: DsBackButton(
+        onPressed: () => Navigator.pop(context),
       ),
       actions: [
         DsIconButton(
-          icon: DsIcons.back,
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () {
-            Navigator.pop(context);
+          icon: Icons.list_alt_rounded,
+          onPressed: () async {
+            context.pushNamed(
+              ListViWidget.routeName,
+              queryParameters: {
+                'cite': serializeParam(
+                  FFAppState().villa,
+                  ParamType.DocumentReference,
+                ),
+              }.withoutNulls,
+            );
           },
         ),
         const SizedBox(width: DsSpacing.xxs),

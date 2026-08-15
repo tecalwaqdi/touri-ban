@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_in_new_delhi_red-fort",
+  "__writtenAt": "2026-08-13T21:39:16.502Z",
+  "__target": "local-staging",
+  "naim": "Red Fort",
+  "osf": "Mughal fort UNESCO في Old Delhi.",
+  "names_i18n": {
+    "ar": "Red Fort",
+    "en": "Red Fort",
+    "ru": "Красный форт",
+    "ky": "Red Fort",
+    "uz": "Qizil qalʼa"
+  },
+  "osf_i18n": {
+    "ar": "Mughal fort UNESCO في Old Delhi.",
+    "en": "UNESCO Mughal fortress in Old Delhi.",
+    "ru": "UNESCO креpostь Mogul в Старом Дели.",
+    "ky": "UNESCO Mogul qalʼasy.",
+    "uz": "UNESCO Mogʻul qalʼasi."
+  },
+  "content_locale": "ar",
+  "address": "Red Fort، نيودلهي، الهند",
+  "address_i18n": {
+    "ar": "Red Fort, نيودلهي, الهند",
+    "en": "Red Fort, New Delhi, India",
+    "ru": "Красный форт, Нью-Дели, Индия",
+    "ky": "Red Fort, New Delhi, Индия",
+    "uz": "Qizil qalʼa, New Delhi, Hindiston"
+  },
+  "Location": {
+    "latitude": 28.6562,
+    "longitude": 77.241
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Lahori_Gate_-_Red_Fort_-_Delhi_2014-05-13_3151-3160_Compress.JPG/960px-Lahori_Gate_-_Red_Fort_-_Delhi_2014-05-13_3151-3160_Compress.JPG",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 2,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_in_new_delhi",
+  "id_vill": "villages/city_in_new_delhi",
+  "Rev_dolh": "countries/india",
+  "country_iso": "IN",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_in_new_delhi_red-fort",
+  "geo_import_slug": "red-fort",
+  "geo_import_source": "international_seven_2026"
+}

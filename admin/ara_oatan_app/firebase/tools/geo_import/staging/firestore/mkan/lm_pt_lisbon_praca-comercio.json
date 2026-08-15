@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_pt_lisbon_praca-comercio",
+  "__writtenAt": "2026-08-13T21:39:16.495Z",
+  "__target": "local-staging",
+  "naim": "Praça do Comércio",
+  "osf": "ساحة رئيسية على Tagus كانت بوابة الإمبراطorية.",
+  "names_i18n": {
+    "ar": "Praça do Comércio",
+    "en": "Commerce Square",
+    "ru": "Площадь Комércio",
+    "ky": "Commerce аянты",
+    "uz": "Commerce maydoni"
+  },
+  "osf_i18n": {
+    "ar": "ساحة رئيسية على Tagus كانت بوابة الإمبراطorية.",
+    "en": "Grand riverside square that was the gateway to the empire.",
+    "ru": "Главная набережная площадь — ворота империи.",
+    "ky": "Империянын darbaza аянты.",
+    "uz": "Imperiya darvozasi maydoni."
+  },
+  "content_locale": "ar",
+  "address": "Praça do Comércio، لشبونة، البرتغال",
+  "address_i18n": {
+    "ar": "Praça do Comércio, لشبونة, البرتغال",
+    "en": "Commerce Square, Lisbon, Portugal",
+    "ru": "Площадь Комércio, Лиссабон, Португалия",
+    "ky": "Commerce аянты, Лиссабон, Португалия",
+    "uz": "Commerce maydoni, Lissabon, Portugaliya"
+  },
+  "Location": {
+    "latitude": 38.7075,
+    "longitude": -9.1365
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Arco_Triunfal_da_Rua_Augusta%2C_Plaza_del_Comercio%2C_Lisboa%2C_Portugal%2C_2012-05-12%2C_DD_02.JPG/960px-Arco_Triunfal_da_Rua_Augusta%2C_Plaza_del_Comercio%2C_Lisboa%2C_Portugal%2C_2012-05-12%2C_DD_02.JPG",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_pt_lisbon",
+  "id_vill": "villages/city_pt_lisbon",
+  "Rev_dolh": "countries/portugal",
+  "country_iso": "PT",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_pt_lisbon_praca-comercio",
+  "geo_import_slug": "praca-comercio",
+  "geo_import_source": "international_seven_2026"
+}

@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_tn_tunis_cathedral-st-vincent",
+  "__writtenAt": "2026-08-13T21:39:16.497Z",
+  "__target": "local-staging",
+  "naim": "Cathedral of St. Vincent de Paul",
+  "osf": "كاتhedral neoclassical على Avenue Habib Bourguiba.",
+  "names_i18n": {
+    "ar": "Cathedral of St. Vincent de Paul",
+    "en": "Cathedral of St. Vincent de Paul",
+    "ru": "Собор Saint-Vincent-de-Paul",
+    "ky": "Saint-Vincent собору",
+    "uz": "Saint-Vincent sobori"
+  },
+  "osf_i18n": {
+    "ar": "كاتhedral neoclassical على Avenue Habib Bourguiba.",
+    "en": "Neoclassical cathedral on Habib Bourguiba Avenue.",
+    "ru": "Неоклассический собор на авеню Habib Bourguiba.",
+    "ky": "Habib Bourguiba проспектindegi собор.",
+    "uz": "Habib Bourguiba prospektidagi sobor."
+  },
+  "content_locale": "ar",
+  "address": "Cathedral of St. Vincent de Paul، تونس، تونس",
+  "address_i18n": {
+    "ar": "Cathedral of St. Vincent de Paul, تونس, تونس",
+    "en": "Cathedral of St. Vincent de Paul, Tunis, Tunisia",
+    "ru": "Собор Saint-Vincent-de-Paul, Тунис, Тунис",
+    "ky": "Saint-Vincent собору, Тунис, Тунис",
+    "uz": "Saint-Vincent sobori, Tunis, Tunis"
+  },
+  "Location": {
+    "latitude": 36.8006,
+    "longitude": 10.185
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Cath%C3%A9drale_Saint-Vincent-de-Paul%2C_Tunis_03.jpg/960px-Cath%C3%A9drale_Saint-Vincent-de-Paul%2C_Tunis_03.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": true,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم دينية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_tn_tunis",
+  "id_vill": "villages/city_tn_tunis",
+  "Rev_dolh": "countries/tunisia",
+  "country_iso": "TN",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_tn_tunis_cathedral-st-vincent",
+  "geo_import_slug": "cathedral-st-vincent",
+  "geo_import_source": "international_seven_2026"
+}

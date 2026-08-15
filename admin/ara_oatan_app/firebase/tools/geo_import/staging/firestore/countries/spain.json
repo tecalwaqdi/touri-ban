@@ -1,0 +1,47 @@
+{
+  "__path": "countries/spain",
+  "__writtenAt": "2026-08-13T21:39:16.486Z",
+  "__target": "local-staging",
+  "naim": "إسبانيا",
+  "naimEnglesh": "Spain",
+  "names_i18n": {
+    "ar": "إسبانيا",
+    "en": "Spain",
+    "ru": "Испания",
+    "ky": "Испания",
+    "uz": "Ispaniya"
+  },
+  "osf": "إسبانيا — فنون، تاريخ، وعمارة أوروبية في قلب مدريد.",
+  "osf_i18n": {
+    "ar": "إسبانيا — فنون، تاريخ، وعمارة أوروبية في قلب مدريد.",
+    "en": "Spain — art, history, and European architecture from Madrid.",
+    "ru": "Испания — искусство, история и архитектура от Мадрида.",
+    "ky": "Испания — Мадридден искусство, тарых жана архитектура.",
+    "uz": "Ispaniya — Madrid markazidagi sanʼat, tarix va meʼmorchilik."
+  },
+  "img": "https://flagcdn.com/w320/es.png",
+  "hederImg": "https://flagcdn.com/w1280/es.png",
+  "iso_code": "ES",
+  "iso3": "ESP",
+  "CurrencySymbol": "€",
+  "currency_code": "EUR",
+  "phone_code": "+34",
+  "timezone": "Europe/Madrid",
+  "acctev": true,
+  "saudi": false,
+  "num_trteb": 3,
+  "geo_center": {
+    "lat": 40.4168,
+    "lng": -3.7038
+  },
+  "bounds_sw": {
+    "lat": 36,
+    "lng": -9.5
+  },
+  "bounds_ne": {
+    "lat": 43.8,
+    "lng": 4.5
+  },
+  "geo_import_id": "country_es",
+  "geo_import_source": "international_seven_2026"
+}

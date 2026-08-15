@@ -949,5 +949,8 @@
   "payment_incomplete_title": "Оплата не завершена",
   "payment_incomplete_body": "Оплата не завершена. Заказ сохранён — вы можете повторить оплату позже.",
   "payment_incomplete_retry": "Повторить оплату",
-  "payment_incomplete_go_orders": "К моим заказам"
+  "payment_incomplete_go_orders": "К моим заказам",
+  "map_km": "км",
+  "map_eta_estimated": "примерно",
+  "map_eta_traffic": "с учётом пробок"
 }

@@ -1,6 +1,7 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
+import '/components/driver_theme_mode_card.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_logout_service.dart';
 import '/core/driver_online_state.dart';
@@ -489,6 +490,8 @@ class _Profile07WidgetState extends State<Profile07Widget>
                                 onTap: () => context
                                     .pushNamed(UpdetBankWidget.routeName),
                               ),
+                              const SizedBox(height: DsSpacing.sm),
+                              const DriverThemeModeCard(),
                               const SizedBox(height: DsSpacing.sm),
                               DsCard(
                                 padding: const EdgeInsets.symmetric(

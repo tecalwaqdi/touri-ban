@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_my_kuala_lumpur_kl-tower",
+  "__writtenAt": "2026-08-13T21:39:16.500Z",
+  "__target": "local-staging",
+  "naim": "KL Tower",
+  "osf": "Communications tower 421m مع observation deck.",
+  "names_i18n": {
+    "ar": "KL Tower",
+    "en": "KL Tower",
+    "ru": "Башня KL",
+    "ky": "KL башнясы",
+    "uz": "KL minorasi"
+  },
+  "osf_i18n": {
+    "ar": "Communications tower 421m مع observation deck.",
+    "en": "421 m communications tower with observation deck.",
+    "ru": "421-метровая башня с смотровой площадкой.",
+    "ky": "421 м байланыш башнясы.",
+    "uz": "421 m aloqa minorasi."
+  },
+  "content_locale": "ar",
+  "address": "KL Tower، Kuala Lumpur، ماليزيا",
+  "address_i18n": {
+    "ar": "KL Tower, Kuala Lumpur, ماليزيا",
+    "en": "KL Tower, Kuala Lumpur, Malaysia",
+    "ru": "Башня KL, Kuala Lumpur, Малайзия",
+    "ky": "KL башнясы, Kuala Lumpur, Малайзия",
+    "uz": "KL minorasi, Kuala Lumpur, Malayziya"
+  },
+  "Location": {
+    "latitude": 3.1528,
+    "longitude": 101.7038
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/KL_Tower_Kuala_Lumpur.jpg/960px-KL_Tower_Kuala_Lumpur.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_my_kuala_lumpur",
+  "id_vill": "villages/city_my_kuala_lumpur",
+  "Rev_dolh": "countries/malaysia",
+  "country_iso": "MY",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_my_kuala_lumpur_kl-tower",
+  "geo_import_slug": "kl-tower",
+  "geo_import_source": "international_seven_2026"
+}

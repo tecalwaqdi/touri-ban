@@ -5,6 +5,7 @@ import '/backend/admin_audit_log.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_landmark_search.dart';
 import '/backend/admin_resource_guard.dart';
+import '/backend/admin_storage_cleanup.dart';
 import '/components/admin_crud_feedback.dart';
 import '/backend/backend.dart';
 import '/components/admin_edit_shell.dart';
@@ -85,18 +86,42 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
     try {
       await AdminAgentCountryLock.ensureCountryResolved();
       final countryRef = AdminCountryScope.mkanCountryRefForSave();
+      final previousImg1 = record.img1;
+      final previousImg2 = record.img2;
+      final previousImg3 = record.img3;
       final img1 = _model.mainImageRemoved
           ? ''
           : await resolveImageForFirestoreSave(
               pickedUrl: _model.uploadedFileUrl_uploadDataCni,
               existingUrl: record.img1,
               localBytes: _model.uploadedLocalFile_uploadDataCni.bytes,
+              previousUrl: previousImg1,
             );
-      final img2 = await resolveImageForFirestoreSave(
-        pickedUrl: _model.uploadedFileUrl_uploadData8dq,
-        existingUrl: record.img2,
-        localBytes: _model.uploadedLocalFile_uploadData8dq.bytes,
-      );
+      final img2 = _model.secondImageRemoved
+          ? ''
+          : await resolveImageForFirestoreSave(
+              pickedUrl: _model.uploadedFileUrl_uploadData8dq,
+              existingUrl: record.img2,
+              localBytes: _model.uploadedLocalFile_uploadData8dq.bytes,
+              previousUrl: previousImg2,
+            );
+      final img3 = _model.thirdImageRemoved
+          ? ''
+          : await resolveImageForFirestoreSave(
+              pickedUrl: _model.uploadedFileUrl_uploadDataImg3,
+              existingUrl: record.img3,
+              localBytes: _model.uploadedLocalFile_uploadDataImg3.bytes,
+              previousUrl: previousImg3,
+            );
+      if (_model.mainImageRemoved) {
+        await deleteAdminStorageUrl(previousImg1);
+      }
+      if (_model.secondImageRemoved) {
+        await deleteAdminStorageUrl(previousImg2);
+      }
+      if (_model.thirdImageRemoved) {
+        await deleteAdminStorageUrl(previousImg3);
+      }
 
       await AdminFirestoreDelete.updateDocument(
         widget.idmkan!,
@@ -114,7 +139,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
           },
           img1: img1,
           img2: img2,
-          img3: record.img3,
+          img3: img3,
           sr: record.sr,
           ismsgd: _model.switchMosqueValue ?? record.ismsgd,
           isfood: _model.switchrestaurantValue ?? record.isfood,
@@ -240,6 +265,158 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
     );
   }
 
+  Future<void> _pickSecondImage() async {
+    setState(() => _model.isDataUploading_uploadData8dq = true);
+    try {
+      final url = await pickAndUploadAdminImage(
+        context: context,
+        storageFolder: 'landmarks/uploads',
+        useContentCompression: true,
+        onLocalPreview: (bytes) {
+          if (!mounted) return;
+          safeSetState(() {
+            _model.uploadedLocalFile_uploadData8dq =
+                FFUploadedFile(bytes: bytes);
+          });
+        },
+      );
+      if (url == null) return;
+      safeSetState(() {
+        _model.uploadedFileUrl_uploadData8dq = url;
+        _model.uploadedLocalFile_uploadData8dq =
+            FFUploadedFile(bytes: Uint8List.fromList([]));
+        _model.secondImageRemoved = false;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(appTr(context, 'adm_image_selected'))),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, e))),
+      );
+    } finally {
+      if (mounted) {
+        safeSetState(() => _model.isDataUploading_uploadData8dq = false);
+      }
+    }
+  }
+
+  Future<void> _confirmDeleteSecondImage() async {
+    final localBytes = _model.uploadedLocalFile_uploadData8dq.bytes;
+    final hasImage = !_model.secondImageRemoved &&
+        (_model.uploadedFileUrl_uploadData8dq.isNotEmpty ||
+            (localBytes != null && localBytes.isNotEmpty));
+    if (!hasImage) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(uiTr(context, 'حذف الصورة')),
+        content: Text(uiTr(context, 'هل تريد حذف الصورة الإضافية؟')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(appTr(context, 'adm_cancel')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text(uiTr(context, 'حذف')),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    safeSetState(() {
+      _model.uploadedFileUrl_uploadData8dq = '';
+      _model.uploadedLocalFile_uploadData8dq =
+          FFUploadedFile(bytes: Uint8List.fromList([]));
+      _model.secondImageRemoved = true;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(uiTr(context, 'تم حذف الصورة — احفظ التعديلات لتأكيد الحذف'))),
+    );
+  }
+
+  Future<void> _pickThirdImage() async {
+    setState(() => _model.isDataUploading_uploadDataImg3 = true);
+    try {
+      final url = await pickAndUploadAdminImage(
+        context: context,
+        storageFolder: 'landmarks/uploads',
+        useContentCompression: true,
+        onLocalPreview: (bytes) {
+          if (!mounted) return;
+          safeSetState(() {
+            _model.uploadedLocalFile_uploadDataImg3 =
+                FFUploadedFile(bytes: bytes);
+          });
+        },
+      );
+      if (url == null) return;
+      safeSetState(() {
+        _model.uploadedFileUrl_uploadDataImg3 = url;
+        _model.uploadedLocalFile_uploadDataImg3 =
+            FFUploadedFile(bytes: Uint8List.fromList([]));
+        _model.thirdImageRemoved = false;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(appTr(context, 'adm_image_selected'))),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, e))),
+      );
+    } finally {
+      if (mounted) {
+        safeSetState(() => _model.isDataUploading_uploadDataImg3 = false);
+      }
+    }
+  }
+
+  Future<void> _confirmDeleteThirdImage() async {
+    final localBytes = _model.uploadedLocalFile_uploadDataImg3.bytes;
+    final hasImage = !_model.thirdImageRemoved &&
+        (_model.uploadedFileUrl_uploadDataImg3.isNotEmpty ||
+            (localBytes != null && localBytes.isNotEmpty));
+    if (!hasImage) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(uiTr(context, 'حذف الصورة')),
+        content: Text(uiTr(context, 'هل تريد حذف الصورة الإضافية؟')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(appTr(context, 'adm_cancel')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text(uiTr(context, 'حذف')),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    safeSetState(() {
+      _model.uploadedFileUrl_uploadDataImg3 = '';
+      _model.uploadedLocalFile_uploadDataImg3 =
+          FFUploadedFile(bytes: Uint8List.fromList([]));
+      _model.thirdImageRemoved = true;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(uiTr(context, 'تم حذف الصورة — احفظ التعديلات لتأكيد الحذف'))),
+    );
+  }
+
   Future<void> _deleteLandmark(MkanRecord record) async {
     if (!AdminResourceGuard.canEditMkan(record)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -271,6 +448,13 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
 
     setState(() => _isDeleting = true);
     try {
+      await deleteAdminStorageUrls(
+        adminImageUrlsFromData({
+          'img1': record.img1,
+          'img2': record.img2,
+          'img3': record.img3,
+        }),
+      );
       await AdminFirestoreDelete.deleteDocument(record.reference);
       AdminLandmarkIndex.removeRecord(record);
       await AdminAuditLog.recordDelete(
@@ -299,6 +483,16 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
   String _mainImageUrl(MkanRecord record) {
     if (_model.mainImageRemoved) return '';
     return _model.uploadedFileUrl_uploadDataCni;
+  }
+
+  String _secondImageUrl(MkanRecord record) {
+    if (_model.secondImageRemoved) return '';
+    return _model.uploadedFileUrl_uploadData8dq;
+  }
+
+  String _thirdImageUrl(MkanRecord record) {
+    if (_model.thirdImageRemoved) return '';
+    return _model.uploadedFileUrl_uploadDataImg3;
   }
 
   Future<void> _loadCityLabel(MkanRecord record) async {
@@ -650,6 +844,64 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                   onPick: _pickMainImage,
                                   onDelete: _confirmDeleteMainImage,
                                   height: 220,
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  uiTr(context, 'صورة إضافية 1'),
+                                  style: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .override(
+                                        fontFamily: FlutterFlowTheme.of(context)
+                                            .titleMediumFamily,
+                                        fontWeight: FontWeight.w700,
+                                        color: AdminUi.brandTeal,
+                                        letterSpacing: 0.0,
+                                        useGoogleFonts:
+                                            !FlutterFlowTheme.of(context)
+                                                .titleMediumIsCustom,
+                                      ),
+                                ),
+                                const SizedBox(height: 12),
+                                AdminEditableImageCard(
+                                  imageUrl: _secondImageUrl(
+                                      adminaddMkanCopyMkanRecord),
+                                  localBytes: _model
+                                      .uploadedLocalFile_uploadData8dq.bytes,
+                                  isUploading:
+                                      _model.isDataUploading_uploadData8dq,
+                                  hint: uiTr(context, 'اختر صورة إضافية'),
+                                  onPick: _pickSecondImage,
+                                  onDelete: _confirmDeleteSecondImage,
+                                  height: 180,
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  uiTr(context, 'صورة إضافية 2'),
+                                  style: FlutterFlowTheme.of(context)
+                                      .titleMedium
+                                      .override(
+                                        fontFamily: FlutterFlowTheme.of(context)
+                                            .titleMediumFamily,
+                                        fontWeight: FontWeight.w700,
+                                        color: AdminUi.brandTeal,
+                                        letterSpacing: 0.0,
+                                        useGoogleFonts:
+                                            !FlutterFlowTheme.of(context)
+                                                .titleMediumIsCustom,
+                                      ),
+                                ),
+                                const SizedBox(height: 12),
+                                AdminEditableImageCard(
+                                  imageUrl: _thirdImageUrl(
+                                      adminaddMkanCopyMkanRecord),
+                                  localBytes: _model
+                                      .uploadedLocalFile_uploadDataImg3.bytes,
+                                  isUploading:
+                                      _model.isDataUploading_uploadDataImg3,
+                                  hint: uiTr(context, 'اختر صورة إضافية'),
+                                  onPick: _pickThirdImage,
+                                  onDelete: _confirmDeleteThirdImage,
+                                  height: 180,
                                 ),
                               ],
                             ),

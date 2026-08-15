@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_es_madrid_royal-palace",
+  "__writtenAt": "2026-08-13T21:39:16.493Z",
+  "__target": "local-staging",
+  "naim": "القصر الملكي",
+  "osf": "مقر رسمي للعائلة الملكية الإسبانية وتحفة باروكية في قلب العاصمة.",
+  "names_i18n": {
+    "ar": "القصر الملكي",
+    "en": "Royal Palace of Madrid",
+    "ru": "Королевский дворец Мадрида",
+    "ky": "Мадрид королдук сарайы",
+    "uz": "Madrid qirol saroyi"
+  },
+  "osf_i18n": {
+    "ar": "مقر رسمي للعائلة الملكية الإسبانية وتحفة باروكية في قلب العاصمة.",
+    "en": "Official residence of the Spanish Royal Family and a baroque landmark in the capital.",
+    "ru": "Официальная резиденция королевской семьи Испании в центре столицы.",
+    "ky": "Испания корол үй-бүлөсүнүн резиденциясы — Мадриддин борборунда.",
+    "uz": "Ispaniya qirol oilasining rasmiy qarorgohi — poytaxt markazida."
+  },
+  "content_locale": "ar",
+  "address": "القصر الملكي، مدريد، إسبانيا",
+  "address_i18n": {
+    "ar": "القصر الملكي, مدريد, إسبانيا",
+    "en": "Royal Palace of Madrid, Madrid, Spain",
+    "ru": "Королевский дворец Мадрида, Мадрид, Испания",
+    "ky": "Мадрид королдук сарайы, Мадрид, Испания",
+    "uz": "Madrid qirol saroyi, Madrid, Ispaniya"
+  },
+  "Location": {
+    "latitude": 40.418,
+    "longitude": -3.7142
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Palacio_Real_de_Madrid_Julio_2016_%28cropped%29.jpg/960px-Palacio_Real_de_Madrid_Julio_2016_%28cropped%29.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_es_madrid",
+  "id_vill": "villages/city_es_madrid",
+  "Rev_dolh": "countries/spain",
+  "country_iso": "ES",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_es_madrid_royal-palace",
+  "geo_import_slug": "royal-palace",
+  "geo_import_source": "international_seven_2026"
+}

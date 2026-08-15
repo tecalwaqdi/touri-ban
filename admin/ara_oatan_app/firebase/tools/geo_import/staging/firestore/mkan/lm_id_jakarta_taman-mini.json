@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_id_jakarta_taman-mini",
+  "__writtenAt": "2026-08-13T21:39:16.497Z",
+  "__target": "local-staging",
+  "naim": "Taman Mini Indonesia Indah",
+  "osf": "Theme park يعرض ثقافات إندonesia في Jakarta Timur.",
+  "names_i18n": {
+    "ar": "Taman Mini Indonesia Indah",
+    "en": "Taman Mini Indonesia Indah",
+    "ru": "Taman Mini Indonesia Indah",
+    "ky": "Taman Mini",
+    "uz": "Taman Mini"
+  },
+  "osf_i18n": {
+    "ar": "Theme park يعرض ثقافات إندonesia في Jakarta Timur.",
+    "en": "Cultural theme park showcasing Indonesia’s provinces.",
+    "ru": "Культурный парк провинций Индонезии.",
+    "ky": "Indoneziya мадaniyet парки.",
+    "uz": "Indoneziya madaniyati parki."
+  },
+  "content_locale": "ar",
+  "address": "Taman Mini Indonesia Indah، جاكرتا، إندونيسيا",
+  "address_i18n": {
+    "ar": "Taman Mini Indonesia Indah, جاكرتا, إندونيسيا",
+    "en": "Taman Mini Indonesia Indah, Jakarta, Indonesia",
+    "ru": "Taman Mini Indonesia Indah, Джakarta, Индонезия",
+    "ky": "Taman Mini, Jakarta, Индонезия",
+    "uz": "Taman Mini, Jakarta, Indoneziya"
+  },
+  "Location": {
+    "latitude": -6.3024,
+    "longitude": 106.8953
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Saudjana_Viewing_Tower%2C_Taman_Mini_Indonesia_Indah%2C_lower_perspective.jpg/960px-Saudjana_Viewing_Tower%2C_Taman_Mini_Indonesia_Indah%2C_lower_perspective.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_id_jakarta",
+  "id_vill": "villages/city_id_jakarta",
+  "Rev_dolh": "countries/indonesia",
+  "country_iso": "ID",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_id_jakarta_taman-mini",
+  "geo_import_slug": "taman-mini",
+  "geo_import_source": "international_seven_2026"
+}

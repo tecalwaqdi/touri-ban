@@ -1,0 +1,47 @@
+{
+  "__path": "countries/portugal",
+  "__writtenAt": "2026-08-13T21:39:16.495Z",
+  "__target": "local-staging",
+  "naim": "البرتغال",
+  "naimEnglesh": "Portugal",
+  "names_i18n": {
+    "ar": "البرتغال",
+    "en": "Portugal",
+    "ru": "Португалия",
+    "ky": "Португалия",
+    "uz": "Portugaliya"
+  },
+  "osf": "البرتغال — لisboa واكتشافات وتراث بحري على نهر Tagus.",
+  "osf_i18n": {
+    "ar": "البرتغال — لisboa واكتشافات وتراث بحري على نهر Tagus.",
+    "en": "Portugal — Lisbon, maritime heritage, and discoveries on the Tagus.",
+    "ru": "Португалия — Лиссабон и морское наследие на Тежу.",
+    "ky": "Португалия — Лиссабон жана Тежу дарыясы.",
+    "uz": "Portugaliya — Lisbon va Tagus daryosi."
+  },
+  "img": "https://flagcdn.com/w320/pt.png",
+  "hederImg": "https://flagcdn.com/w1280/pt.png",
+  "iso_code": "PT",
+  "iso3": "PRT",
+  "CurrencySymbol": "€",
+  "currency_code": "EUR",
+  "phone_code": "+351",
+  "timezone": "Europe/Lisbon",
+  "acctev": true,
+  "saudi": false,
+  "num_trteb": 5,
+  "geo_center": {
+    "lat": 38.7223,
+    "lng": -9.1393
+  },
+  "bounds_sw": {
+    "lat": 36.9,
+    "lng": -9.5
+  },
+  "bounds_ne": {
+    "lat": 42.2,
+    "lng": -6.2
+  },
+  "geo_import_id": "country_pt",
+  "geo_import_source": "international_seven_2026"
+}

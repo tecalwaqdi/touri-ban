@@ -1,0 +1,35 @@
+{
+  "__path": "cities/region_my_kuala_lumpur",
+  "__writtenAt": "2026-08-13T21:39:16.498Z",
+  "__target": "local-staging",
+  "naim": "Kuala Lumpur",
+  "names_i18n": {
+    "ar": "Kuala Lumpur",
+    "en": "Kuala Lumpur",
+    "ru": "Kuala Lumpur",
+    "ky": "Kuala Lumpur",
+    "uz": "Kuala Lumpur"
+  },
+  "osf": "Kuala Lumpur — ماليزيا.",
+  "osf_i18n": {
+    "ar": "Kuala Lumpur — ماليزيا.",
+    "en": "Kuala Lumpur — Malaysia.",
+    "ru": "Kuala Lumpur — Малайзия.",
+    "ky": "Kuala Lumpur — Малайзия.",
+    "uz": "Kuala Lumpur — Malayziya."
+  },
+  "img": "https://flagcdn.com/w320/my.png",
+  "icon": "https://flagcdn.com/w320/my.png",
+  "dolh": "countries/malaysia",
+  "vil": "villages/city_my_kuala_lumpur",
+  "acctev": true,
+  "sorting": 1,
+  "iso_code": "MY-14",
+  "country_iso": "MY",
+  "geo_center": {
+    "lat": 3.139,
+    "lng": 101.6869
+  },
+  "geo_import_id": "region_my_kuala_lumpur",
+  "geo_import_source": "international_seven_2026"
+}

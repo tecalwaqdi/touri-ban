@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_pt_lisbon_jeronimos",
+  "__writtenAt": "2026-08-13T21:39:16.495Z",
+  "__target": "local-staging",
+  "naim": "دير Jerónimos",
+  "osf": "دير UNESCO manueline حيث يستريح Vasco da Gama.",
+  "names_i18n": {
+    "ar": "دير Jerónimos",
+    "en": "Jerónimos Monastery",
+    "ru": "Монастырь Жеронимуш",
+    "ky": "Jerónimos монастыри",
+    "uz": "Jerónimos monastiri"
+  },
+  "osf_i18n": {
+    "ar": "دير UNESCO manueline حيث يستريح Vasco da Gama.",
+    "en": "UNESCO Manueline monastery and resting place of Vasco da Gama.",
+    "ru": "Монастырь UNESCO в стиле мануэлин, место упokоения da Gama.",
+    "ky": "UNESCO манuelin монastыри.",
+    "uz": "UNESCO Manueline monastiri."
+  },
+  "content_locale": "ar",
+  "address": "دير Jerónimos، لشبونة، البرتغال",
+  "address_i18n": {
+    "ar": "دير Jerónimos, لشبونة, البرتغال",
+    "en": "Jerónimos Monastery, Lisbon, Portugal",
+    "ru": "Монастырь Жеронимуш, Лиссабон, Португалия",
+    "ky": "Jerónimos монастыри, Лиссабон, Португалия",
+    "uz": "Jerónimos monastiri, Lissabon, Portugaliya"
+  },
+  "Location": {
+    "latitude": 38.6979,
+    "longitude": -9.2067
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Jer%C3%B3nimos_Monastery_in_Bel%C3%A9m%2C_Lisbon%2C_20250604_1340_9252.jpg/960px-Jer%C3%B3nimos_Monastery_in_Bel%C3%A9m%2C_Lisbon%2C_20250604_1340_9252.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 2,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": true,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم دينية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_pt_lisbon",
+  "id_vill": "villages/city_pt_lisbon",
+  "Rev_dolh": "countries/portugal",
+  "country_iso": "PT",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_pt_lisbon_jeronimos",
+  "geo_import_slug": "jeronimos",
+  "geo_import_source": "international_seven_2026"
+}

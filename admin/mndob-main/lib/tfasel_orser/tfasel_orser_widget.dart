@@ -14,6 +14,7 @@ import '/components/driver_trip_actions_card.dart';
 import '/components/driver_trip_details_banner.dart';
 import '/core/toury_system_status_codes.dart';
 import '/components/driver_trip_map_panel.dart';
+import '/components/driver_live_tracking_banner.dart';
 import '/components/driver_trip_plan_panel.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
@@ -343,6 +344,9 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                               DriverTripActionsCard(
                                 order: columnOrderRecord,
                                 onChanged: () => safeSetState(() {}),
+                              ),
+                              DriverLiveTrackingBanner(
+                                order: columnOrderRecord,
                               ),
                               AuthUserStreamWidget(
                                 builder: (context) => DriverTripMapPanel(

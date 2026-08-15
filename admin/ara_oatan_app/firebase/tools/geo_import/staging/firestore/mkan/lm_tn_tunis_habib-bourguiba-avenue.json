@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_tn_tunis_habib-bourguiba-avenue",
+  "__writtenAt": "2026-08-13T21:39:16.497Z",
+  "__target": "local-staging",
+  "naim": "Avenue Habib Bourguiba",
+  "osf": "الشارع الرئيسي في تونس مع theatre وcafés.",
+  "names_i18n": {
+    "ar": "Avenue Habib Bourguiba",
+    "en": "Habib Bourguiba Avenue",
+    "ru": "Проспект Habib Bourguiba",
+    "ky": "Habib Bourguiba проспекti",
+    "uz": "Habib Bourguiba prospekti"
+  },
+  "osf_i18n": {
+    "ar": "الشارع الرئيسي في تونس مع theatre وcafés.",
+    "en": "Main avenue of Tunis lined with cafés and the national theatre.",
+    "ru": "Главный проспект Тunisа с театром и кafé.",
+    "ky": "Tunis негизги просpekti.",
+    "uz": "Tunisning asosiy prospekti."
+  },
+  "content_locale": "ar",
+  "address": "Avenue Habib Bourguiba، تونس، تونس",
+  "address_i18n": {
+    "ar": "Avenue Habib Bourguiba, تونس, تونس",
+    "en": "Habib Bourguiba Avenue, Tunis, Tunisia",
+    "ru": "Проспект Habib Bourguiba, Тунис, Тунис",
+    "ky": "Habib Bourguiba проспекti, Тунис, Тунис",
+    "uz": "Habib Bourguiba prospekti, Tunis, Tunis"
+  },
+  "Location": {
+    "latitude": 36.8,
+    "longitude": 10.1855
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Jasmine_Revolution_Avenue_Bouguiba.jpg/960px-Jasmine_Revolution_Avenue_Bouguiba.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم سياحية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_tn_tunis",
+  "id_vill": "villages/city_tn_tunis",
+  "Rev_dolh": "countries/tunisia",
+  "country_iso": "TN",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_tn_tunis_habib-bourguiba-avenue",
+  "geo_import_slug": "habib-bourguiba-avenue",
+  "geo_import_source": "international_seven_2026"
+}

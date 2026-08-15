@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -28,25 +29,82 @@ class TouryTripTrackingMap extends StatefulWidget {
   State<TouryTripTrackingMap> createState() => _TouryTripTrackingMapState();
 }
 
-class _TouryTripTrackingMapState extends State<TouryTripTrackingMap> {
+class _TouryTripTrackingMapState extends State<TouryTripTrackingMap>
+    with SingleTickerProviderStateMixin {
   final _controller = Completer<gmaps.GoogleMapController>();
   List<LatLng>? _roadPoints;
   bool _loadingRoute = false;
+  bool _routeApproximate = false;
+  int? _routeDurationSeconds;
+  int? _routeDistanceMeters;
   String? _routeKey;
   String? _destinationKey;
   LatLng? _lastRouteOrigin;
   DateTime? _lastRouteFetchAt;
 
-  @override
-  void didUpdateWidget(covariant TouryTripTrackingMap oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _syncRoute();
-  }
+  late final AnimationController _markerAnim;
+  LatLng? _displayDriver;
+  LatLng? _animFrom;
+  LatLng? _animTo;
+  double _displayHeading = 0;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _syncRoute());
+    _markerAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..addListener(() {
+        if (_animFrom == null || _animTo == null) return;
+        final t = Curves.easeInOut.transform(_markerAnim.value);
+        setState(() {
+          _displayDriver = LatLng(
+            _animFrom!.latitude +
+                (_animTo!.latitude - _animFrom!.latitude) * t,
+            _animFrom!.longitude +
+                (_animTo!.longitude - _animFrom!.longitude) * t,
+          );
+        });
+      });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncDriverMarker(animate: false);
+      _syncRoute();
+    });
+  }
+
+  @override
+  void dispose() {
+    _markerAnim.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant TouryTripTrackingMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncDriverMarker(animate: true);
+    _syncRoute();
+  }
+
+  void _syncDriverMarker({required bool animate}) {
+    final next = widget.order.driverLivePosition;
+    if (next == null) return;
+    final heading = widget.order.driverHeading;
+    if (heading != null && heading.isFinite) {
+      _displayHeading = heading;
+    } else if (_displayDriver != null) {
+      _displayHeading = _bearingDegrees(_displayDriver!, next);
+    }
+    if (!animate || _displayDriver == null) {
+      _displayDriver = next;
+      return;
+    }
+    if (TouryDirectionsService.distanceMeters(_displayDriver!, next) < 2) {
+      _displayDriver = next;
+      return;
+    }
+    _animFrom = _displayDriver;
+    _animTo = next;
+    _markerAnim.forward(from: 0);
   }
 
   Future<void> _syncRoute() async {
@@ -63,7 +121,7 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap> {
     );
     final now = DateTime.now();
     final recentlyFetched = _lastRouteFetchAt != null &&
-        now.difference(_lastRouteFetchAt!) < const Duration(seconds: 15);
+        now.difference(_lastRouteFetchAt!) < const Duration(seconds: 20);
     final originMoved = _lastRouteOrigin == null
         ? double.infinity
         : TouryDirectionsService.distanceMeters(
@@ -72,7 +130,7 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap> {
           );
     if (_destinationKey == destinationKey &&
         recentlyFetched &&
-        originMoved < 35) {
+        originMoved < 50) {
       return;
     }
     _routeKey = key;
@@ -81,15 +139,24 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap> {
     _lastRouteFetchAt = now;
     setState(() => _loadingRoute = true);
 
-    final route = await TouryDirectionsService.fetchRoadRoute(
+    final route = await TouryDirectionsService.fetchRoadRouteResult(
       waypoints,
       language: context.locale.toString(),
       region: 'sa',
+      optimal: true,
     );
     if (!mounted) return;
     setState(() {
       _loadingRoute = false;
-      _roadPoints = route ?? waypoints;
+      if (route != null && route.points.length >= 2) {
+        _roadPoints = route.points;
+        _routeApproximate = route.approximate || !route.trafficAware;
+        _routeDurationSeconds = route.durationSeconds;
+        _routeDistanceMeters = route.distanceMeters;
+      } else {
+        _roadPoints = waypoints;
+        _routeApproximate = true;
+      }
     });
 
     final visible = _roadPoints ?? waypoints;
@@ -130,10 +197,20 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap> {
     );
   }
 
+  double _bearingDegrees(LatLng from, LatLng to) {
+    final lat1 = from.latitude * math.pi / 180;
+    final lat2 = to.latitude * math.pi / 180;
+    final dLng = (to.longitude - from.longitude) * math.pi / 180;
+    final y = math.sin(dLng) * math.cos(lat2);
+    final x = math.cos(lat1) * math.sin(lat2) -
+        math.sin(lat1) * math.cos(lat2) * math.cos(dLng);
+    return (math.atan2(y, x) * 180 / math.pi + 360) % 360;
+  }
+
   @override
   Widget build(BuildContext context) {
     final order = widget.order;
-    final driver = order.driverLivePosition;
+    final driver = _displayDriver ?? order.driverLivePosition;
     final pickup = order.customerPickup;
     final destination = order.tripDestination;
     final waypoints = order.trackingRouteWaypoints();
@@ -142,16 +219,36 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap> {
     final initial =
         driver ?? pickup ?? destination ?? TouryMapsConfig.defaultCenter;
 
+    final liveEtaMin = order.etaMinutes;
+    final routeEtaMin = (_routeDurationSeconds ?? 0) <= 0
+        ? 0
+        : ((_routeDurationSeconds!) / 60).ceil();
+    final shownEtaMin = liveEtaMin > 0 ? liveEtaMin : routeEtaMin;
+    final distKm = order.distanceRemainingMeters > 0
+        ? order.distanceRemainingMeters / 1000.0
+        : (_routeDistanceMeters ?? 0) / 1000.0;
+    final etaApproximate =
+        order.etaApproximate || _routeApproximate || liveEtaMin <= 0;
+
     final markers = <gmaps.Marker>{};
     if (driver != null) {
-      markers.add(_marker(
-        id: 'driver',
-        point: driver,
-        hue: gmaps.BitmapDescriptor.hueAzure,
-        title: order.naimMndobText.isNotEmpty
-            ? order.naimMndobText
-            : 'map_driver'.tr(),
-      ));
+      markers.add(
+        gmaps.Marker(
+          markerId: const gmaps.MarkerId('driver'),
+          position: driver.toGoogleMaps(),
+          rotation: _displayHeading,
+          flat: true,
+          anchor: const Offset(0.5, 0.5),
+          icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(
+            gmaps.BitmapDescriptor.hueAzure,
+          ),
+          infoWindow: gmaps.InfoWindow(
+            title: order.naimMndobText.isNotEmpty
+                ? order.naimMndobText
+                : 'map_driver'.tr(),
+          ),
+        ),
+      );
     }
     if (pickup != null) {
       markers.add(_marker(
@@ -199,7 +296,9 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap> {
         children: [
           gmaps.GoogleMap(
             onMapCreated: (controller) async {
-              _controller.complete(controller);
+              if (!_controller.isCompleted) {
+                _controller.complete(controller);
+              }
               await controller.setMapStyle(
                 googleMapStyleStrings[
                     isDark ? GoogleMapStyle.dark : GoogleMapStyle.standard],
@@ -217,6 +316,8 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap> {
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
+            compassEnabled: false,
+            mapToolbarEnabled: false,
             trafficEnabled: true,
           ),
           if (_loadingRoute)
@@ -225,14 +326,22 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap> {
               left: 12,
               child: _MapBadge(label: 'map_calculating_route'.tr()),
             ),
-          if (order.etaMinutes > 0)
+          if (shownEtaMin > 0 || distKm > 0)
             Positioned(
               top: 12,
               right: 12,
               child: _MapBadge(
-                label: 'map_eta_minutes'.tr(
-                  namedArgs: {'minutes': order.etaMinutes.toString()},
-                ),
+                label: [
+                  if (distKm > 0) '${distKm.toStringAsFixed(1)} ${'map_km'.tr()}',
+                  if (shownEtaMin > 0)
+                    'map_eta_minutes'.tr(
+                      namedArgs: {'minutes': shownEtaMin.toString()},
+                    ),
+                  if (shownEtaMin > 0)
+                    etaApproximate
+                        ? 'map_eta_estimated'.tr()
+                        : 'map_eta_traffic'.tr(),
+                ].join(' · '),
               ),
             ),
           Positioned(
@@ -259,14 +368,6 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap> {
                           : const [],
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                _ActionButton(
-                  icon: Icons.my_location,
-                  label: 'map_driver'.tr(),
-                  onTap: () async {
-                    if (driver != null) await _fitBounds([driver]);
-                  },
                 ),
               ],
             ),
@@ -300,6 +401,7 @@ class _MapBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
+      constraints: const BoxConstraints(maxWidth: 220),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface.withValues(alpha: 0.94),
@@ -307,18 +409,15 @@ class _MapBadge extends StatelessWidget {
         boxShadow: const [
           BoxShadow(
             color: Color(0x22000000),
-            blurRadius: 6,
+            blurRadius: 8,
             offset: Offset(0, 2),
           ),
         ],
       ),
       child: Text(
         label,
-        style: TextStyle(
-          fontFamily: 'cairo',
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: theme.colorScheme.onSurface,
+        style: theme.textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -340,28 +439,26 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Material(
-      color: theme.colorScheme.surface.withValues(alpha: 0.96),
-      borderRadius: BorderRadius.circular(10),
-      elevation: 3,
+      color: theme.colorScheme.primary,
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 18, color: const Color(0xFF00897B)),
-              const SizedBox(width: 6),
+              Icon(icon, color: theme.colorScheme.onPrimary, size: 20),
+              const SizedBox(width: 8),
               Flexible(
                 child: Text(
                   label,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: 'cairo',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSurface,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: theme.colorScheme.onPrimary,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),

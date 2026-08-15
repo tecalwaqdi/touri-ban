@@ -360,5 +360,14 @@
   "The First Global Saudi Tourism App": "The First Global Saudi Tourism App",
   "Failed to open chat": "Failed to open chat",
   "Check your connection and try again.": "Check your connection and try again.",
-  "Trip ends in {time}. Completing early is not allowed.": "Trip ends in {time}. Completing early is not allowed."
+  "Trip ends in {time}. Completing early is not allowed.": "Trip ends in {time}. Completing early is not allowed.",
+  "Appearance": "Appearance",
+  "Light mode": "Light mode",
+  "Dark mode": "Dark mode",
+  "Choose light or dark appearance.": "Choose light or dark appearance.",
+  "Live tracking active — sharing your location during this trip": "Live tracking active — sharing your location during this trip",
+  "Trip active — enable Always location for background updates": "Trip active — enable Always location for background updates",
+  "Settings": "Settings",
+  "Location permission is required to share your position with the customer during an active trip. Enable Always location for background updates.": "Location permission is required to share your position with the customer during an active trip. Enable Always location for background updates.",
+  "Background location needs Always permission so the customer can follow you when the app is minimized.": "Background location needs Always permission so the customer can follow you when the app is minimized."
 }

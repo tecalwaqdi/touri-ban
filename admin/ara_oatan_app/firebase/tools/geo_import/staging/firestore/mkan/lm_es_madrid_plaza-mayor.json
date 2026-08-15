@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_es_madrid_plaza-mayor",
+  "__writtenAt": "2026-08-13T21:39:16.494Z",
+  "__target": "local-staging",
+  "naim": "Plaza Mayor",
+  "osf": "ساحة تاريخية من القرن السابع عشر في قلب مدريد القديمة.",
+  "names_i18n": {
+    "ar": "Plaza Mayor",
+    "en": "Plaza Mayor",
+    "ru": "Пласа-Майор",
+    "ky": "Пласа-Майор",
+    "uz": "Plaza Mayor"
+  },
+  "osf_i18n": {
+    "ar": "ساحة تاريخية من القرن السابع عشر في قلب مدريد القديمة.",
+    "en": "17th-century grand square in the heart of historic Madrid.",
+    "ru": "Грандиозная площадь XVII века в историческом центре Мадрида.",
+    "ky": "Мадриддин тарыхый борборундагы XVII кылым аянты.",
+    "uz": "Madridning tarixiy markazidagi XVII asr maydoni."
+  },
+  "content_locale": "ar",
+  "address": "Plaza Mayor، مدريد، إسبانيا",
+  "address_i18n": {
+    "ar": "Plaza Mayor, مدريد, إسبانيا",
+    "en": "Plaza Mayor, Madrid, Spain",
+    "ru": "Пласа-Майор, Мадрид, Испания",
+    "ky": "Пласа-Майор, Мадрид, Испания",
+    "uz": "Plaza Mayor, Madrid, Ispaniya"
+  },
+  "Location": {
+    "latitude": 40.4155,
+    "longitude": -3.7074
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Felipe_III_-_Plaza_Mayor_de_Madrid_-_01.jpg/960px-Felipe_III_-_Plaza_Mayor_de_Madrid_-_01.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 4,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_es_madrid",
+  "id_vill": "villages/city_es_madrid",
+  "Rev_dolh": "countries/spain",
+  "country_iso": "ES",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_es_madrid_plaza-mayor",
+  "geo_import_slug": "plaza-mayor",
+  "geo_import_source": "international_seven_2026"
+}

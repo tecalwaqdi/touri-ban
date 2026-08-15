@@ -1,0 +1,35 @@
+{
+  "__path": "cities/region_pt_lisbon",
+  "__writtenAt": "2026-08-13T21:39:16.495Z",
+  "__target": "local-staging",
+  "naim": "لشبونة",
+  "names_i18n": {
+    "ar": "لشبونة",
+    "en": "Lisbon",
+    "ru": "Лиссабон",
+    "ky": "Лиссабон",
+    "uz": "Lissabon"
+  },
+  "osf": "لشبونة — البرتغال.",
+  "osf_i18n": {
+    "ar": "لشبونة — البرتغال.",
+    "en": "Lisbon — Portugal.",
+    "ru": "Лиссабон — Португалия.",
+    "ky": "Лиссабон — Португалия.",
+    "uz": "Lissabon — Portugaliya."
+  },
+  "img": "https://flagcdn.com/w320/pt.png",
+  "icon": "https://flagcdn.com/w320/pt.png",
+  "dolh": "countries/portugal",
+  "vil": "villages/city_pt_lisbon",
+  "acctev": true,
+  "sorting": 1,
+  "iso_code": "PT-11",
+  "country_iso": "PT",
+  "geo_center": {
+    "lat": 38.7223,
+    "lng": -9.1393
+  },
+  "geo_import_id": "region_pt_lisbon",
+  "geo_import_source": "international_seven_2026"
+}

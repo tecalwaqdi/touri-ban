@@ -6,6 +6,11 @@ const int kAdminPageSize = 20;
 const int kAdminPageSizeLarge = 30;
 const int kAdminMaxPages = 80;
 
+/// Cascade delete/update scans — independent of list UI caps.
+/// Soft list caps must never silently truncate geo cascades.
+const int kAdminCascadePageSize = 250;
+const int kAdminCascadeMaxDocs = 100000;
+
 /// Landmark merge caps — keep mobile memory stable (avoid OOM / force-close).
 const int kAdminLandmarkMergePageSize = 80;
 const int kAdminLandmarkMergeMaxPerQuery = 280;

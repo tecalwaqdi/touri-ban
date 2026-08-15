@@ -53,15 +53,15 @@
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>يستخدم Touri Taxi Driver موقعك أثناء استخدام التطبيق لعرض موقعك على الخريطة، إسناد الطلبات القريبة، وتحديث مسار الرحلة أثناء تنفيذها.</string>
+		<string>Touri Taxi Driver uses your location while the app is open to show your position on the map, match nearby trip requests, and update trip progress during an active trip.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>Touri Taxi Driver uses your location in the background only during an active trip so the customer can follow your live position and trip progress when the app is backgrounded or the screen is locked. Tracking stops when the trip ends.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>Touri Taxi Driver uses your location in the background only during an active trip so the customer can follow your live position and trip progress when the app is backgrounded or the screen is locked. Tracking stops when the trip ends.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>Please allow camera access to update your profile picture.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Please allow access to photos to update your profile picture from the photo gallery.</string>
-		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>يستخدم Touri Taxi Driver موقعك أثناء استخدام التطبيق وفي الخلفية لتحديد موقعك أثناء توفرّك للطلبات، إسناد الرحلات المناسبة لك، وتحديث موقع الرحلة أثناء تنفيذها.</string>
-		<key>NSLocationAlwaysUsageDescription</key>
-		<string>يستخدم Touri Taxi Driver موقعك في الخلفية لتحديد موقعك أثناء توفرّك للطلبات، إسناد الرحلات المناسبة لك، وتحديث موقع الرحلة أثناء تنفيذها.</string>
 		<key>NSFaceIDUsageDescription</key>
 		<string>نستخدم Face ID لتأمين حسابك والتأكد من هوية المستخدم.</string>
 		<key>UIBackgroundModes</key>

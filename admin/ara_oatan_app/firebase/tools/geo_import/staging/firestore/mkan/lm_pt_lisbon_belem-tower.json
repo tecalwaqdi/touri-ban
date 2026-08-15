@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_pt_lisbon_belem-tower",
+  "__writtenAt": "2026-08-13T21:39:16.495Z",
+  "__target": "local-staging",
+  "naim": "برج Belém",
+  "osf": "برج manueline على Tagus يرمز لعصر الاستكشاف.",
+  "names_i18n": {
+    "ar": "برج Belém",
+    "en": "Belém Tower",
+    "ru": "Белémская башня",
+    "ky": "Belém башнясы",
+    "uz": "Belém minorasi"
+  },
+  "osf_i18n": {
+    "ar": "برج manueline على Tagus يرمز لعصر الاستكشاف.",
+    "en": "Manueline tower on the Tagus, symbol of the Age of Discovery.",
+    "ru": "Башня мануэлинского стиля на Тежу — символ эпохи открытий.",
+    "ky": "Тежу жээгиндегi манuelin башнясы.",
+    "uz": "Tagus bo‘yidagi Manueline minorasi."
+  },
+  "content_locale": "ar",
+  "address": "برج Belém، لشبونة، البرتغال",
+  "address_i18n": {
+    "ar": "برج Belém, لشبونة, البرتغال",
+    "en": "Belém Tower, Lisbon, Portugal",
+    "ru": "Белémская башня, Лиссабон, Португалия",
+    "ky": "Belém башнясы, Лиссабон, Португалия",
+    "uz": "Belém minorasi, Lissabon, Portugaliya"
+  },
+  "Location": {
+    "latitude": 38.6916,
+    "longitude": -9.216
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Torre_Bel%C3%A9m_April_2009-4a.jpg/960px-Torre_Bel%C3%A9m_April_2009-4a.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_pt_lisbon",
+  "id_vill": "villages/city_pt_lisbon",
+  "Rev_dolh": "countries/portugal",
+  "country_iso": "PT",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_pt_lisbon_belem-tower",
+  "geo_import_slug": "belem-tower",
+  "geo_import_source": "international_seven_2026"
+}

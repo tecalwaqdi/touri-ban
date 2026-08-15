@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_in_new_delhi_humayuns-tomb",
+  "__writtenAt": "2026-08-13T21:39:16.503Z",
+  "__target": "local-staging",
+  "naim": "Humayun's Tomb",
+  "osf": "Mughal garden tomb — precursor to Taj Mahal.",
+  "names_i18n": {
+    "ar": "Humayun's Tomb",
+    "en": "Humayun's Tomb",
+    "ru": "Tomb Humayun",
+    "ky": "Humayun мавзолейи",
+    "uz": "Humayun maqbarasi"
+  },
+  "osf_i18n": {
+    "ar": "Mughal garden tomb — precursor to Taj Mahal.",
+    "en": "Mughal garden tomb and precursor to the Taj Mahal.",
+    "ru": "Садовый мавзолей Mogul — предшественник Taj Mahal.",
+    "ky": "Taj Mahalга негиз болгон Mogul мavзолейи.",
+    "uz": "Taj Mahalga asos boʻlgan Mogʻul maqbarasi."
+  },
+  "content_locale": "ar",
+  "address": "Humayun's Tomb، نيودلهي، الهند",
+  "address_i18n": {
+    "ar": "Humayun's Tomb, نيودلهي, الهند",
+    "en": "Humayun's Tomb, New Delhi, India",
+    "ru": "Tomb Humayun, Нью-Дели, Индия",
+    "ky": "Humayun мавзолейи, New Delhi, Индия",
+    "uz": "Humayun maqbarasi, New Delhi, Hindiston"
+  },
+  "Location": {
+    "latitude": 28.5933,
+    "longitude": 77.2507
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Tomb_of_Humayun%2C_Delhi.jpg/960px-Tomb_of_Humayun%2C_Delhi.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_in_new_delhi",
+  "id_vill": "villages/city_in_new_delhi",
+  "Rev_dolh": "countries/india",
+  "country_iso": "IN",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_in_new_delhi_humayuns-tomb",
+  "geo_import_slug": "humayuns-tomb",
+  "geo_import_source": "international_seven_2026"
+}

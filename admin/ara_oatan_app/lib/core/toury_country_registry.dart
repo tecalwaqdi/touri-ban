@@ -39,8 +39,11 @@ abstract final class TouryCountryRegistry {
     'PK': {'country_pk', 'pakistan'},
     'ID': {'country_id', 'indonesia'},
     'MY': {'country_my', 'malaysia'},
+    'IN': {'country_in', 'india'},
+    'ES': {'country_es', 'spain'},
+    'PT': {'country_pt', 'portugal'},
     'MA': {'country_ma', 'morocco'},
-    'TN': {'country_tn'},
+    'TN': {'country_tn', 'tunisia'},
     'CN': {'country_cn'},
     'FR': {'country_fr'},
     'GE': {'country_ge', 'georgia'},
@@ -52,6 +55,13 @@ abstract final class TouryCountryRegistry {
     'KG': 'kyrgyzstan',
     'RU': 'russia',
     'UZ': 'uzbekistan',
+    'ES': 'spain',
+    'MA': 'morocco',
+    'PT': 'portugal',
+    'TN': 'tunisia',
+    'ID': 'indonesia',
+    'MY': 'malaysia',
+    'IN': 'india',
   };
 
   static const Map<String, LatLng> mapCenterByIso = {
@@ -62,6 +72,13 @@ abstract final class TouryCountryRegistry {
     'AE': LatLng(23.4241, 53.8478),
     'EG': LatLng(26.8206, 30.8025),
     'TR': LatLng(38.9637, 35.2433),
+    'ES': LatLng(40.4168, -3.7038),
+    'MA': LatLng(34.0209, -6.8416),
+    'PT': LatLng(38.7223, -9.1393),
+    'TN': LatLng(36.8065, 10.1815),
+    'ID': LatLng(-6.2088, 106.8456),
+    'MY': LatLng(3.139, 101.6869),
+    'IN': LatLng(28.6139, 77.209),
   };
 
   static const Map<String, double> mapZoomByIso = {
@@ -72,6 +89,13 @@ abstract final class TouryCountryRegistry {
     'AE': 6.5,
     'EG': 5.5,
     'TR': 5.5,
+    'ES': 6.0,
+    'MA': 6.0,
+    'PT': 6.5,
+    'TN': 6.5,
+    'ID': 5.0,
+    'MY': 6.0,
+    'IN': 5.0,
   };
 
   static const Map<String, ({LatLng sw, LatLng ne})> boundsByIso = {
@@ -90,6 +114,34 @@ abstract final class TouryCountryRegistry {
     'UZ': (
       sw: LatLng(37.1, 55.9),
       ne: LatLng(45.6, 73.2),
+    ),
+    'ES': (
+      sw: LatLng(36.0, -9.5),
+      ne: LatLng(43.8, 4.5),
+    ),
+    'MA': (
+      sw: LatLng(21.0, -17.0),
+      ne: LatLng(36.0, -1.0),
+    ),
+    'PT': (
+      sw: LatLng(36.9, -9.5),
+      ne: LatLng(42.2, -6.2),
+    ),
+    'TN': (
+      sw: LatLng(30.2, 7.5),
+      ne: LatLng(37.5, 11.6),
+    ),
+    'ID': (
+      sw: LatLng(-11.0, 95.0),
+      ne: LatLng(6.0, 141.0),
+    ),
+    'MY': (
+      sw: LatLng(0.8, 99.6),
+      ne: LatLng(7.4, 119.3),
+    ),
+    'IN': (
+      sw: LatLng(8.0, 68.0),
+      ne: LatLng(35.5, 97.5),
     ),
   };
 

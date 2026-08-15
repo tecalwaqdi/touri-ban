@@ -79,6 +79,29 @@ const RU_REGIONS = [
 /** @deprecated alias — use RU_REGIONS */
 const RU_REGIONS_CHECKPOINT = RU_REGIONS;
 
+/** Single-capital international expansion (2026) — additive catalog entries. */
+const ES_REGIONS = [
+  { code: 'ES-MD', slug: 'madrid', names: { ar: 'مدريد', en: 'Madrid', ru: 'Мадрид', ky: 'Мадрид', uz: 'Madrid' }, hub: { slug: 'madrid', names: { ar: 'مدريد', en: 'Madrid', ru: 'Мадрид', ky: 'Мадрид', uz: 'Madrid' }, lat: 40.4168, lng: -3.7038 } },
+];
+const MA_REGIONS = [
+  { code: 'MA-RAB', slug: 'rabat', names: { ar: 'الرباط', en: 'Rabat', ru: 'Рабат', ky: 'Рабат', uz: 'Rabat' }, hub: { slug: 'rabat', names: { ar: 'الرباط', en: 'Rabat', ru: 'Рабат', ky: 'Рабат', uz: 'Rabat' }, lat: 34.0209, lng: -6.8416 } },
+];
+const PT_REGIONS = [
+  { code: 'PT-11', slug: 'lisbon', names: { ar: 'لشبونة', en: 'Lisbon', ru: 'Лиссабон', ky: 'Лиссабон', uz: 'Lissabon' }, hub: { slug: 'lisbon', names: { ar: 'لشبونة', en: 'Lisbon', ru: 'Лиссабон', ky: 'Лиссабон', uz: 'Lissabon' }, lat: 38.7223, lng: -9.1393 } },
+];
+const TN_REGIONS = [
+  { code: 'TN-11', slug: 'tunis', names: { ar: 'تونس', en: 'Tunis', ru: 'Тунис', ky: 'Тунис', uz: 'Tunis' }, hub: { slug: 'tunis', names: { ar: 'تونس', en: 'Tunis', ru: 'Тунис', ky: 'Тунис', uz: 'Tunis' }, lat: 36.8065, lng: 10.1815 } },
+];
+const ID_REGIONS = [
+  { code: 'ID-JK', slug: 'jakarta', names: { ar: 'جاكرتا', en: 'Jakarta', ru: 'Джakarta', ky: 'Jakarta', uz: 'Jakarta' }, hub: { slug: 'jakarta', names: { ar: 'جاكرتا', en: 'Jakarta', ru: 'Джakarta', ky: 'Jakarta', uz: 'Jakarta' }, lat: -6.2088, lng: 106.8456 } },
+];
+const MY_REGIONS = [
+  { code: 'MY-14', slug: 'kuala_lumpur', names: { ar: 'Kuala Lumpur', en: 'Kuala Lumpur', ru: 'Kuala Lumpur', ky: 'Kuala Lumpur', uz: 'Kuala Lumpur' }, hub: { slug: 'kuala_lumpur', names: { ar: 'Kuala Lumpur', en: 'Kuala Lumpur', ru: 'Kuala Lumpur', ky: 'Kuala Lumpur', uz: 'Kuala Lumpur' }, lat: 3.139, lng: 101.6869 } },
+];
+const IN_REGIONS = [
+  { code: 'IN-DL', slug: 'new_delhi', names: { ar: 'نيودلهي', en: 'New Delhi', ru: 'Нью-Дели', ky: 'New Delhi', uz: 'New Delhi' }, hub: { slug: 'new_delhi', names: { ar: 'نيودلهي', en: 'New Delhi', ru: 'Нью-Дели', ky: 'New Delhi', uz: 'New Delhi' }, lat: 28.6139, lng: 77.209 } },
+];
+
 const COUNTRIES = {
   SA: {
     id: 'country_sa',
@@ -106,6 +129,90 @@ const COUNTRIES = {
     names: { ar: 'قيرغيزستان', en: 'Kyrgyzstan', ru: 'Кыргызстан', ky: 'Кыргызстан', uz: 'Qirgʻiziston' },
     regions: KG_REGIONS,
     curatedLandmarksFile: 'kyrgyzstan_landmarks_20.json',
+  },
+  ES: {
+    id: 'country_es',
+    iso2: 'ES',
+    iso3: 'ESP',
+    currencyCode: 'EUR',
+    currencySymbol: '€',
+    phoneCode: '+34',
+    timezone: 'Europe/Madrid',
+    firestoreDocId: 'spain',
+    names: { ar: 'إسبانيا', en: 'Spain', ru: 'Испания', ky: 'Испания', uz: 'Ispaniya' },
+    regions: ES_REGIONS,
+  },
+  MA: {
+    id: 'country_ma',
+    iso2: 'MA',
+    iso3: 'MAR',
+    currencyCode: 'MAD',
+    currencySymbol: 'د.م.',
+    phoneCode: '+212',
+    timezone: 'Africa/Casablanca',
+    firestoreDocId: 'morocco',
+    names: { ar: 'المغرب', en: 'Morocco', ru: 'Марокко', ky: 'Марокко', uz: 'Marokash' },
+    regions: MA_REGIONS,
+  },
+  PT: {
+    id: 'country_pt',
+    iso2: 'PT',
+    iso3: 'PRT',
+    currencyCode: 'EUR',
+    currencySymbol: '€',
+    phoneCode: '+351',
+    timezone: 'Europe/Lisbon',
+    firestoreDocId: 'portugal',
+    names: { ar: 'البرتغال', en: 'Portugal', ru: 'Португалия', ky: 'Португалия', uz: 'Portugaliya' },
+    regions: PT_REGIONS,
+  },
+  TN: {
+    id: 'country_tn',
+    iso2: 'TN',
+    iso3: 'TUN',
+    currencyCode: 'TND',
+    currencySymbol: 'د.ت',
+    phoneCode: '+216',
+    timezone: 'Africa/Tunis',
+    firestoreDocId: 'tunisia',
+    names: { ar: 'تونس', en: 'Tunisia', ru: 'Тунис', ky: 'Тунис', uz: 'Tunis' },
+    regions: TN_REGIONS,
+  },
+  ID: {
+    id: 'country_id',
+    iso2: 'ID',
+    iso3: 'IDN',
+    currencyCode: 'IDR',
+    currencySymbol: 'Rp',
+    phoneCode: '+62',
+    timezone: 'Asia/Jakarta',
+    firestoreDocId: 'indonesia',
+    names: { ar: 'إندونيسيا', en: 'Indonesia', ru: 'Индонезия', ky: 'Индонезия', uz: 'Indoneziya' },
+    regions: ID_REGIONS,
+  },
+  MY: {
+    id: 'country_my',
+    iso2: 'MY',
+    iso3: 'MYS',
+    currencyCode: 'MYR',
+    currencySymbol: 'RM',
+    phoneCode: '+60',
+    timezone: 'Asia/Kuala_Lumpur',
+    firestoreDocId: 'malaysia',
+    names: { ar: 'ماليزيا', en: 'Malaysia', ru: 'Малайзия', ky: 'Малайзия', uz: 'Malayziya' },
+    regions: MY_REGIONS,
+  },
+  IN: {
+    id: 'country_in',
+    iso2: 'IN',
+    iso3: 'IND',
+    currencyCode: 'INR',
+    currencySymbol: '₹',
+    phoneCode: '+91',
+    timezone: 'Asia/Kolkata',
+    firestoreDocId: 'india',
+    names: { ar: 'الهند', en: 'India', ru: 'Индия', ky: 'Индия', uz: 'Hindiston' },
+    regions: IN_REGIONS,
   },
 };
 
@@ -151,4 +258,11 @@ module.exports = {
   UZ_REGIONS,
   RU_REGIONS,
   RU_REGIONS_CHECKPOINT,
+  ES_REGIONS,
+  MA_REGIONS,
+  PT_REGIONS,
+  TN_REGIONS,
+  ID_REGIONS,
+  MY_REGIONS,
+  IN_REGIONS,
 };

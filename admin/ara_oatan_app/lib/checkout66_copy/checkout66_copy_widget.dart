@@ -108,19 +108,15 @@ class _Checkout66CopyWidgetState extends State<Checkout66CopyWidget> {
       title: FFLocalizations.of(context).getText(
         'hps58ox2' /* My trip list */,
       ),
-      leading: DsIconButton(
-        icon: Icons.menu_rounded,
-        tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-        onPressed: () async {
-          scaffoldKey.currentState!.openDrawer();
-        },
+      leading: DsBackButton(
+        onPressed: () => Navigator.pop(context),
       ),
       actions: [
         DsIconButton(
-          icon: DsIcons.back,
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () {
-            Navigator.pop(context);
+          icon: Icons.menu_rounded,
+          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+          onPressed: () async {
+            scaffoldKey.currentState!.openDrawer();
           },
         ),
         const SizedBox(width: DsSpacing.xxs),

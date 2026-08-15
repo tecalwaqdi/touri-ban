@@ -4,6 +4,7 @@ import '/backend/admin_audit_log.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_landmark_search.dart';
+import '/backend/admin_legacy_alias_filter.dart';
 import '/backend/admin_performance.dart';
 import '/backend/admin_resource_guard.dart';
 import '/backend/admin_role_service.dart';
@@ -123,9 +124,13 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
     final list = _isCountryScopedList
         ? items
         : AdminCountryScope.filterLandmarks(items);
+    final withoutAliases = AdminLegacyAliasFilter.keepWhereId(
+      list,
+      (m) => m.reference.id,
+    );
     final filtered = widget.partnersOnly
-        ? list.where((m) => m.isShrek).toList()
-        : list;
+        ? withoutAliases.where((m) => m.isShrek).toList()
+        : withoutAliases;
 
     final q = _searchQuery.trim().toLowerCase();
     if (q.isEmpty) return filtered;

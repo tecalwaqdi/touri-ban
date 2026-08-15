@@ -360,5 +360,14 @@
   "The First Global Saudi Tourism App": "Биринчи глобалдык саудиялык туристтик колдонмо",
   "Failed to open chat": "Чаты ачуу мүмкүн болбоду",
   "Check your connection and try again.": "Байланышты текшерип, кайра аракет кылыңыз.",
-  "Trip ends in {time}. Completing early is not allowed.": "Сапардын аягына {time} калды. Эрте бүтүрүүгө болбойт."
+  "Trip ends in {time}. Completing early is not allowed.": "Сапардын аягына {time} калды. Эрте бүтүрүүгө болбойт.",
+  "Appearance": "Көрүнүш",
+  "Light mode": "Күндүзгү режим",
+  "Dark mode": "Түнкү режим",
+  "Choose light or dark appearance.": "Күндүзгү же түнкү режимди тандаңыз.",
+  "Live tracking active — sharing your location during this trip": "Live tracking active — sharing your location during this trip",
+  "Trip active — enable Always location for background updates": "Trip active — enable Always location for background updates",
+  "Settings": "Settings",
+  "Location permission is required to share your position with the customer during an active trip. Enable Always location for background updates.": "Location permission is required to share your position with the customer during an active trip. Enable Always location for background updates.",
+  "Background location needs Always permission so the customer can follow you when the app is minimized.": "Background location needs Always permission so the customer can follow you when the app is minimized."
 }

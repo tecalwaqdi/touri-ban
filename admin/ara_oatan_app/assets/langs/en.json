@@ -968,5 +968,8 @@
   "payment_incomplete_title": "Payment not completed",
   "payment_incomplete_body": "Payment was not completed. Your order was saved and you can retry payment later.",
   "payment_incomplete_retry": "Retry payment",
-  "payment_incomplete_go_orders": "Back to my orders"
+  "payment_incomplete_go_orders": "Back to my orders",
+  "map_km": "km",
+  "map_eta_estimated": "estimated",
+  "map_eta_traffic": "based on traffic"
 }

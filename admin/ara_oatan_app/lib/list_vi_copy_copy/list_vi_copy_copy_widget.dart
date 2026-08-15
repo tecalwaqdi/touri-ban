@@ -146,19 +146,15 @@ class _ListViCopyCopyWidgetState extends State<ListViCopyCopyWidget>
     return DsAppBar(
       automaticallyImplyLeading: false,
       title: FFAppState().naimmdenh,
-      leading: DsIconButton(
-        icon: Icons.menu_rounded,
-        tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-        onPressed: () async {
-          scaffoldKey.currentState!.openDrawer();
-        },
+      leading: DsBackButton(
+        onPressed: () => Navigator.pop(context),
       ),
       actions: [
         DsIconButton(
-          icon: DsIcons.back,
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () {
-            Navigator.pop(context);
+          icon: Icons.menu_rounded,
+          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+          onPressed: () async {
+            scaffoldKey.currentState!.openDrawer();
           },
         ),
         const SizedBox(width: DsSpacing.xxs),

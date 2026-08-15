@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_tn_tunis_medina-tunis",
+  "__writtenAt": "2026-08-13T21:39:16.496Z",
+  "__target": "local-staging",
+  "naim": "Medina of Tunis",
+  "osf": "Medina UNESCO بأزقة تقليدية وأسواق.",
+  "names_i18n": {
+    "ar": "Medina of Tunis",
+    "en": "Medina of Tunis",
+    "ru": "Медина Тunisа",
+    "ky": "Tunis medinasy",
+    "uz": "Tunis medinasi"
+  },
+  "osf_i18n": {
+    "ar": "Medina UNESCO بأزقة تقليدية وأسواق.",
+    "en": "UNESCO medina with traditional souks and alleys.",
+    "ru": "Медина UNESCO с традиционными рынками.",
+    "ky": "UNESCO medinasy.",
+    "uz": "UNESCO medinasi."
+  },
+  "content_locale": "ar",
+  "address": "Medina of Tunis، تونس، تونس",
+  "address_i18n": {
+    "ar": "Medina of Tunis, تونس, تونس",
+    "en": "Medina of Tunis, Tunis, Tunisia",
+    "ru": "Медина Тunisа, Тунис, Тунис",
+    "ky": "Tunis medinasy, Тунис, Тунис",
+    "uz": "Tunis medinasi, Tunis, Tunis"
+  },
+  "Location": {
+    "latitude": 36.8065,
+    "longitude": 10.1715
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Door_in_the_medina_of_Tunis_03.jpg/960px-Door_in_the_medina_of_Tunis_03.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 1,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_tn_tunis",
+  "id_vill": "villages/city_tn_tunis",
+  "Rev_dolh": "countries/tunisia",
+  "country_iso": "TN",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_tn_tunis_medina-tunis",
+  "geo_import_slug": "medina-tunis",
+  "geo_import_source": "international_seven_2026"
+}

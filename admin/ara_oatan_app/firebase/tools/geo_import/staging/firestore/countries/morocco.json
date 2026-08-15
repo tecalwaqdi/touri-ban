@@ -1,0 +1,47 @@
+{
+  "__path": "countries/morocco",
+  "__writtenAt": "2026-08-13T21:39:16.494Z",
+  "__target": "local-staging",
+  "naim": "المغرب",
+  "naimEnglesh": "Morocco",
+  "names_i18n": {
+    "ar": "المغرب",
+    "en": "Morocco",
+    "ru": "Марокко",
+    "ky": "Марокко",
+    "uz": "Marokash"
+  },
+  "osf": "المغرب — عاصمة رسمية في الرباط وتراث أندلسي على المحيط.",
+  "osf_i18n": {
+    "ar": "المغرب — عاصمة رسمية في الرباط وتراث أندلسي على المحيط.",
+    "en": "Morocco — royal capital Rabat and Atlantic heritage.",
+    "ru": "Марокко — столица Рабат и атлантическое наследие.",
+    "ky": "Марокко — Рабат пoyтахты жана Атлантика мурасы.",
+    "uz": "Marokash — Rabat poytaxti va Atlantika merosi."
+  },
+  "img": "https://flagcdn.com/w320/ma.png",
+  "hederImg": "https://flagcdn.com/w1280/ma.png",
+  "iso_code": "MA",
+  "iso3": "MAR",
+  "CurrencySymbol": "د.م.",
+  "currency_code": "MAD",
+  "phone_code": "+212",
+  "timezone": "Africa/Casablanca",
+  "acctev": true,
+  "saudi": false,
+  "num_trteb": 4,
+  "geo_center": {
+    "lat": 34.0209,
+    "lng": -6.8416
+  },
+  "bounds_sw": {
+    "lat": 21,
+    "lng": -17
+  },
+  "bounds_ne": {
+    "lat": 36,
+    "lng": -1
+  },
+  "geo_import_id": "country_ma",
+  "geo_import_source": "international_seven_2026"
+}

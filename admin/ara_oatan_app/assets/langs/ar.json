@@ -968,5 +968,8 @@
   "payment_incomplete_title": "لم تكتمل عملية الدفع",
   "payment_incomplete_body": "لم تكتمل عملية الدفع. تم حفظ طلبك ويمكنك إعادة محاولة الدفع لاحقًا.",
   "payment_incomplete_retry": "إعادة محاولة الدفع",
-  "payment_incomplete_go_orders": "العودة إلى طلباتي"
+  "payment_incomplete_go_orders": "العودة إلى طلباتي",
+  "map_km": "كم",
+  "map_eta_estimated": "تقديري",
+  "map_eta_traffic": "حسب حركة المرور"
 }

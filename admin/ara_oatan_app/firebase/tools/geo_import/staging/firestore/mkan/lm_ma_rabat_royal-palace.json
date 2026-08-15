@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_ma_rabat_royal-palace",
+  "__writtenAt": "2026-08-13T21:39:16.495Z",
+  "__target": "local-staging",
+  "naim": "القصر الملكي بالرباط",
+  "osf": "مقر رسمي للملك المغربي في حي Mechouar.",
+  "names_i18n": {
+    "ar": "القصر الملكي بالرباط",
+    "en": "Royal Palace of Rabat",
+    "ru": "Королевский дворец Рабата",
+    "ky": "Рабат королдук сарайы",
+    "uz": "Rabat qirol saroyi"
+  },
+  "osf_i18n": {
+    "ar": "مقر رسمي للملك المغربي في حي Mechouar.",
+    "en": "Official residence of the King of Morocco in the Mechouar district.",
+    "ru": "Официальная резиденция короля Марокко в районе Mechouar.",
+    "ky": "Марокко королунун Mechouar районундагы резиденциясы.",
+    "uz": "Marokash qirolining Mechouar tumandagi qarorgohi."
+  },
+  "content_locale": "ar",
+  "address": "القصر الملكي بالرباط، الرباط، المغرب",
+  "address_i18n": {
+    "ar": "القصر الملكي بالرباط, الرباط, المغرب",
+    "en": "Royal Palace of Rabat, Rabat, Morocco",
+    "ru": "Королевский дворец Рабата, Рабат, Марокко",
+    "ky": "Рабат королдук сарайы, Рабат, Марокко",
+    "uz": "Rabat qirol saroyi, Rabat, Marokash"
+  },
+  "Location": {
+    "latitude": 34.0315,
+    "longitude": -6.8492
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Royal_Palace_%28Rabat%29_%285509106348%29.jpg/960px-Royal_Palace_%28Rabat%29_%285509106348%29.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 5,
+  "acctev": true,
+  "as_ads": false,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_ma_rabat",
+  "id_vill": "villages/city_ma_rabat",
+  "Rev_dolh": "countries/morocco",
+  "country_iso": "MA",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_ma_rabat_royal-palace",
+  "geo_import_slug": "royal-palace",
+  "geo_import_source": "international_seven_2026"
+}

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '/backend/backend.dart';
 import '/core/toury_firestore_cache.dart';
+import '/core/toury_landmark_display_order.dart';
 
 /// حجم صفحة المعالم موحّد بين Prefetch والكاش والـ Pagination.
 const int kTouryMkanPageSize = 24;
@@ -105,6 +106,7 @@ class TouryMkanPaginationController extends ChangeNotifier {
       items
         ..clear()
         ..addAll(cached.items);
+      TouryLandmarkDisplayOrder.sortInPlace(items);
       _lastDoc = cached.lastDoc;
       hasMore = cached.hasMore;
       isLoading = false;
@@ -205,6 +207,7 @@ class TouryMkanPaginationController extends ChangeNotifier {
       items
         ..clear()
         ..addAll(page.items);
+      TouryLandmarkDisplayOrder.sortInPlace(items);
       _lastDoc = page.lastDoc;
       hasMore = page.hasMore;
       TouryFirestoreCache.storeMkanPage(village, page);
@@ -256,6 +259,9 @@ class TouryMkanPaginationController extends ChangeNotifier {
     if (_villageRef?.path != village.path) return;
 
     final nextItems = snap.docs.map(MkanRecord.fromSnapshot).toList();
+    await _ensureMasjidAlHaramPinned(village, nextItems);
+    if (_disposed || generation != _bindGeneration) return;
+    TouryLandmarkDisplayOrder.sortInPlace(nextItems);
     final nextLast = snap.docs.isEmpty ? null : snap.docs.last;
     final nextHasMore = snap.docs.length >= pageSize;
 
@@ -294,6 +300,43 @@ class TouryMkanPaginationController extends ChangeNotifier {
     }
   }
 
+  Future<void> _ensureMasjidAlHaramPinned(
+    DocumentReference village,
+    List<MkanRecord> pageItems,
+  ) async {
+    if (pageItems.any(TouryLandmarkDisplayOrder.isMasjidAlHaram)) return;
+
+    for (final id in TouryLandmarkDisplayOrder.masjidAlHaramDocIds) {
+      try {
+        final snap = await MkanRecord.collection.doc(id).get(
+              const GetOptions(source: Source.serverAndCache),
+            );
+        if (_disposed) return;
+        if (!snap.exists) continue;
+        final rec = MkanRecord.fromSnapshot(snap);
+        if (rec.idVill?.path != village.path) continue;
+        if (!rec.acctev) continue;
+        pageItems.insert(0, rec);
+        return;
+      } catch (_) {}
+    }
+
+    try {
+      final snap = await MkanRecord.collection
+          .where('acctev', isEqualTo: true)
+          .where('id_vill', isEqualTo: village)
+          .where('naim', isEqualTo: 'المسجد الحرام')
+          .limit(1)
+          .get(const GetOptions(source: Source.serverAndCache));
+      if (_disposed || snap.docs.isEmpty) return;
+      final rec = MkanRecord.fromSnapshot(snap.docs.first);
+      if (pageItems.any((e) => e.reference.path == rec.reference.path)) return;
+      pageItems.insert(0, rec);
+    } catch (e) {
+      debugPrint('TouryMkanPagination.pinHaram: $e');
+    }
+  }
+
   Query _pageQuery(DocumentReference villageRef) {
     return MkanRecord.collection
         .where('acctev', isEqualTo: true)
@@ -329,6 +372,7 @@ class TouryMkanPaginationController extends ChangeNotifier {
             items.add(row);
           }
         }
+        TouryLandmarkDisplayOrder.sortInPlace(items);
         _lastDoc = snap.docs.last;
         hasMore = snap.docs.length >= pageSize;
       }

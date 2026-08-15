@@ -81,7 +81,11 @@ class _AdminDolWidgetState extends State<AdminDolWidget> {
     if (!confirmed) return;
 
     try {
-      await deleteCountryCascade(record.reference);
+      await AdminCrudFeedback.runWithBlockingProgress(
+        context: context,
+        message: uiTr(context, 'جاري الحذف… لا تغلق التطبيق'),
+        action: () => deleteCountryCascade(record.reference),
+      );
       await AdminAuditLog.recordDelete(
         targetType: 'country',
         targetId: record.reference.id,

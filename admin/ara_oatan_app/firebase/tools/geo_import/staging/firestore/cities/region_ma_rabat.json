@@ -1,0 +1,35 @@
+{
+  "__path": "cities/region_ma_rabat",
+  "__writtenAt": "2026-08-13T21:39:16.494Z",
+  "__target": "local-staging",
+  "naim": "الرباط",
+  "names_i18n": {
+    "ar": "الرباط",
+    "en": "Rabat",
+    "ru": "Рабат",
+    "ky": "Рабат",
+    "uz": "Rabat"
+  },
+  "osf": "الرباط — المغرب.",
+  "osf_i18n": {
+    "ar": "الرباط — المغرب.",
+    "en": "Rabat — Morocco.",
+    "ru": "Рабат — Марокко.",
+    "ky": "Рабат — Марокко.",
+    "uz": "Rabat — Marokash."
+  },
+  "img": "https://flagcdn.com/w320/ma.png",
+  "icon": "https://flagcdn.com/w320/ma.png",
+  "dolh": "countries/morocco",
+  "vil": "villages/city_ma_rabat",
+  "acctev": true,
+  "sorting": 1,
+  "iso_code": "MA-RAB",
+  "country_iso": "MA",
+  "geo_center": {
+    "lat": 34.0209,
+    "lng": -6.8416
+  },
+  "geo_import_id": "region_ma_rabat",
+  "geo_import_source": "international_seven_2026"
+}

@@ -949,5 +949,8 @@
   "payment_incomplete_title": "Төлөм аяктаган жок",
   "payment_incomplete_body": "Төлөм аяктаган жок. Заказыңыз сакталды, кийинчерээк кайталап төлөй аласыз.",
   "payment_incomplete_retry": "Төлөмдү кайталоо",
-  "payment_incomplete_go_orders": "Заказдарга кайтуу"
+  "payment_incomplete_go_orders": "Заказдарга кайтуу",
+  "map_km": "км",
+  "map_eta_estimated": "болжолдуу",
+  "map_eta_traffic": "трафик боюнча"
 }

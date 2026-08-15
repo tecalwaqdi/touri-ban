@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_es_madrid_retiro-park",
+  "__writtenAt": "2026-08-13T21:39:16.494Z",
+  "__target": "local-staging",
+  "naim": "حديقة El Retiro",
+  "osf": "حديقة تاريخية وسط مدريد مع بحيرة ومعبد Cristal.",
+  "names_i18n": {
+    "ar": "حديقة El Retiro",
+    "en": "El Retiro Park",
+    "ru": "Парк Ретиро",
+    "ky": "Ретиро парки",
+    "uz": "El Retiro bogʻi"
+  },
+  "osf_i18n": {
+    "ar": "حديقة تاريخية وسط مدريد مع بحيرة ومعبد Cristal.",
+    "en": "Historic park in central Madrid with a lake and the Crystal Palace.",
+    "ru": "Исторический парк в центре Мадрида с озером и Хрустальным дворцом.",
+    "ky": "Мадрид борборундагы тарыхый парк.",
+    "uz": "Madrid markazidagi tarixiy bogʻ."
+  },
+  "content_locale": "ar",
+  "address": "حديقة El Retiro، مدريد، إسبانيا",
+  "address_i18n": {
+    "ar": "حديقة El Retiro, مدريد, إسبانيا",
+    "en": "El Retiro Park, Madrid, Spain",
+    "ru": "Парк Ретиро, Мадрид, Испания",
+    "ky": "Ретиро парки, Мадрид, Испания",
+    "uz": "El Retiro bogʻi, Madrid, Ispaniya"
+  },
+  "Location": {
+    "latitude": 40.4153,
+    "longitude": -3.6844
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Palacio_de_Cristal_-_02.jpg/960px-Palacio_de_Cristal_-_02.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "أماكن ترفيهية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_es_madrid",
+  "id_vill": "villages/city_es_madrid",
+  "Rev_dolh": "countries/spain",
+  "country_iso": "ES",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_es_madrid_retiro-park",
+  "geo_import_slug": "retiro-park",
+  "geo_import_source": "international_seven_2026"
+}

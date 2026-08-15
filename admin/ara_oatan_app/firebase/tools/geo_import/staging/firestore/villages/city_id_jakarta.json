@@ -1,0 +1,33 @@
+{
+  "__path": "villages/city_id_jakarta",
+  "__writtenAt": "2026-08-13T21:39:16.497Z",
+  "__target": "local-staging",
+  "naim": "جاكرتا",
+  "names_i18n": {
+    "ar": "جاكرتا",
+    "en": "Jakarta",
+    "ru": "Джakarta",
+    "ky": "Jakarta",
+    "uz": "Jakarta"
+  },
+  "osf": "جاكرتا — عاصمة إندونيسيا.",
+  "osf_i18n": {
+    "ar": "جاكرتا — عاصمة إندونيسيا.",
+    "en": "Jakarta — capital of Indonesia.",
+    "ru": "Джakarta — capital of Indonesia.",
+    "ky": "Jakarta — capital of Indonesia.",
+    "uz": "Jakarta — capital of Indonesia."
+  },
+  "img": "https://flagcdn.com/w320/id.png",
+  "cities": "cities/region_id_jakarta",
+  "dolh": "countries/indonesia",
+  "lat_ling": {
+    "latitude": -6.2088,
+    "longitude": 106.8456
+  },
+  "acctev": true,
+  "country_iso": "ID",
+  "naimciteText": "Jakarta",
+  "geo_import_id": "city_id_jakarta",
+  "geo_import_source": "international_seven_2026"
+}

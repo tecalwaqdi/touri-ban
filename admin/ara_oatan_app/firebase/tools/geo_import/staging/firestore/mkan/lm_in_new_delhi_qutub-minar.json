@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_in_new_delhi_qutub-minar",
+  "__writtenAt": "2026-08-13T21:39:16.502Z",
+  "__target": "local-staging",
+  "naim": "Qutub Minar",
+  "osf": "Minaret 73m — UNESCO.",
+  "names_i18n": {
+    "ar": "Qutub Minar",
+    "en": "Qutub Minar",
+    "ru": "Qutub Minar",
+    "ky": "Qutub Minar",
+    "uz": "Qutub minorasi"
+  },
+  "osf_i18n": {
+    "ar": "Minaret 73m — UNESCO.",
+    "en": "73 m minaret and UNESCO World Heritage Site.",
+    "ru": "73-метровый минaret UNESCO.",
+    "ky": "73 м UNESCO minorasy.",
+    "uz": "73 m UNESCO minorasi."
+  },
+  "content_locale": "ar",
+  "address": "Qutub Minar، نيودلهي، الهند",
+  "address_i18n": {
+    "ar": "Qutub Minar, نيودلهي, الهند",
+    "en": "Qutub Minar, New Delhi, India",
+    "ru": "Qutub Minar, Нью-Дели, Индия",
+    "ky": "Qutub Minar, New Delhi, Индия",
+    "uz": "Qutub minorasi, New Delhi, Hindiston"
+  },
+  "Location": {
+    "latitude": 28.5244,
+    "longitude": 77.1855
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Qutub_Minar_in_Delhi_03-2016.jpg/960px-Qutub_Minar_in_Delhi_03-2016.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_in_new_delhi",
+  "id_vill": "villages/city_in_new_delhi",
+  "Rev_dolh": "countries/india",
+  "country_iso": "IN",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_in_new_delhi_qutub-minar",
+  "geo_import_slug": "qutub-minar",
+  "geo_import_source": "international_seven_2026"
+}

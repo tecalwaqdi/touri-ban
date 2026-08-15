@@ -1,0 +1,63 @@
+{
+  "__path": "mkan/lm_pt_lisbon_sao-jorge-castle",
+  "__writtenAt": "2026-08-13T21:39:16.495Z",
+  "__target": "local-staging",
+  "naim": "قلعة São Jorge",
+  "osf": "قلعة على تل Alfama بإطلالة بانorama على لشبونة.",
+  "names_i18n": {
+    "ar": "قلعة São Jorge",
+    "en": "São Jorge Castle",
+    "ru": "Замок São Jorge",
+    "ky": "São Jorge замогу",
+    "uz": "São Jorge qalʼasi"
+  },
+  "osf_i18n": {
+    "ar": "قلعة على تل Alfama بإطلالة بانorama على لشبونة.",
+    "en": "Hilltop castle in Alfama with panoramic views over Lisbon.",
+    "ru": "Замок на холme Alfama с панорамой Лиссабона.",
+    "ky": "Alfama тepesindegi замок.",
+    "uz": "Alfama tepasidagi qalʼa."
+  },
+  "content_locale": "ar",
+  "address": "قلعة São Jorge، لشبونة، البرتغال",
+  "address_i18n": {
+    "ar": "قلعة São Jorge, لشبونة, البرتغال",
+    "en": "São Jorge Castle, Lisbon, Portugal",
+    "ru": "Замок São Jorge, Лиссабон, Португалия",
+    "ky": "São Jorge замогу, Лиссабон, Португалия",
+    "uz": "São Jorge qalʼasi, Lissabon, Portugaliya"
+  },
+  "Location": {
+    "latitude": 38.7139,
+    "longitude": -9.1335
+  },
+  "img1": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Castelo_de_S%C3%A3o_Jorge%2C_Lisbon%2C_20250604_1706_9397.jpg/960px-Castelo_de_S%C3%A3o_Jorge%2C_Lisbon%2C_20250604_1706_9397.jpg",
+  "img2": "",
+  "img3": "",
+  "img_license": "CC BY-SA 4.0",
+  "img_attribution": "Wikimedia Commons",
+  "images_license_verified": true,
+  "img_source": "wikipedia_or_commons",
+  "sr": 3,
+  "acctev": true,
+  "as_ads": true,
+  "ismzod": true,
+  "isShrek": false,
+  "ismsgd": false,
+  "isfood": false,
+  "ishmam": true,
+  "tsnef": "معالم تاريخية",
+  "rate": 4.6,
+  "add_saat": 2,
+  "id_cit": "cities/region_pt_lisbon",
+  "id_vill": "villages/city_pt_lisbon",
+  "Rev_dolh": "countries/portugal",
+  "country_iso": "PT",
+  "wikidata_id": null,
+  "source_provider": "curated_international_seven",
+  "verification_status": "verified",
+  "verification_confidence": 0.92,
+  "geo_import_id": "lm_pt_lisbon_sao-jorge-castle",
+  "geo_import_slug": "sao-jorge-castle",
+  "geo_import_source": "international_seven_2026"
+}
