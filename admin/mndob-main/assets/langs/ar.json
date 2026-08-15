@@ -364,5 +364,10 @@
   "Appearance": "المظهر",
   "Light mode": "الوضع النهاري",
   "Dark mode": "الوضع الليلي",
-  "Choose light or dark appearance.": "اختر الوضع النهاري أو الليلي."
+  "Choose light or dark appearance.": "اختر الوضع النهاري أو الليلي.",
+  "Live tracking active — sharing your location during this trip": "التتبع المباشر نشط — تتم مشاركة موقعك أثناء هذه الرحلة",
+  "Trip active — enable Always location for background updates": "الرحلة نشطة — فعّل صلاحية الموقع دائماً لتحديثات الخلفية",
+  "Settings": "الإعدادات",
+  "Location permission is required to share your position with the customer during an active trip. Enable Always location for background updates.": "صلاحية الموقع مطلوبة لمشاركة موقعك مع العميل أثناء الرحلة النشطة. فعّل صلاحية الموقع دائماً لتحديثات الخلفية.",
+  "Background location needs Always permission so the customer can follow you when the app is minimized.": "تتبع الخلفية يحتاج صلاحية الموقع دائماً حتى يتمكن العميل من متابعتك عند تصغير التطبيق."
 }

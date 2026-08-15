@@ -364,5 +364,10 @@
   "Appearance": "Оформление",
   "Light mode": "Дневной режим",
   "Dark mode": "Ночной режим",
-  "Choose light or dark appearance.": "Выберите дневной или ночной режим."
+  "Choose light or dark appearance.": "Выберите дневной или ночной режим.",
+  "Live tracking active — sharing your location during this trip": "Live tracking active — sharing your location during this trip",
+  "Trip active — enable Always location for background updates": "Trip active — enable Always location for background updates",
+  "Settings": "Settings",
+  "Location permission is required to share your position with the customer during an active trip. Enable Always location for background updates.": "Location permission is required to share your position with the customer during an active trip. Enable Always location for background updates.",
+  "Background location needs Always permission so the customer can follow you when the app is minimized.": "Background location needs Always permission so the customer can follow you when the app is minimized."
 }
