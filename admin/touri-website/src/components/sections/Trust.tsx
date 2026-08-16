@@ -9,15 +9,15 @@ type Props = {
 
 export function Trust({ dict }: Props) {
   return (
-    <section id="safety" className="scroll-mt-24 bg-surface-muted px-4 py-20 sm:px-6">
-      <div className="mx-auto max-w-7xl space-y-16">
+    <section id="safety" className="bg-surface-muted px-4 py-12 sm:px-6 sm:py-16">
+      <div className="mx-auto max-w-7xl space-y-10 sm:space-y-16">
         <div>
           <SectionTitle
             eyebrow={dict.payment.eyebrow}
             title={dict.payment.title}
             subtitle={dict.payment.subtitle}
           />
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5">
             {dict.payment.items.map((item, index) => {
               const Icon = paymentIcons[index] ?? paymentIcons[0];
               return (
@@ -37,7 +37,7 @@ export function Trust({ dict }: Props) {
             title={dict.safety.title}
             subtitle={dict.safety.subtitle}
           />
-          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-8 grid gap-3 sm:mt-10 sm:gap-4 md:grid-cols-2 xl:grid-cols-3">
             {dict.safety.items.map((item, index) => {
               const Icon = safetyIcons[index] ?? safetyIcons[0];
               return (

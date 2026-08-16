@@ -29,24 +29,24 @@ export function LegalPage({
   sections,
 }: Props) {
   return (
-    <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+    <article className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16">
       <Link href={localePath(locale, "/")} className="text-sm font-semibold text-primary">
         {dict.legal.back}
       </Link>
       {badge ? (
-        <p className="mt-6 inline-flex rounded-full bg-accent-soft px-3 py-1 text-xs font-bold text-secondary">
+        <p className="mt-5 inline-flex rounded-full bg-accent-soft px-3 py-1 text-xs font-bold text-secondary sm:mt-6">
           {badge}
         </p>
       ) : null}
-      <h1 className="font-display mt-4 text-4xl leading-[1.3] font-bold tracking-normal">
+      <h1 className="font-display mt-3 text-[1.85rem] leading-[1.3] font-bold tracking-normal sm:mt-4 sm:text-4xl">
         {title}
       </h1>
       {updated ? <p className="mt-2 text-sm leading-6 text-muted">{updated}</p> : null}
-      <p className="mt-6 text-lg leading-8 text-muted">{intro}</p>
-      <div className="mt-10 space-y-8">
+      <p className="mt-4 text-base leading-7 text-muted sm:mt-6 sm:text-lg sm:leading-8">{intro}</p>
+      <div className="mt-8 space-y-5 sm:mt-10 sm:space-y-8">
         {sections.map((section) => (
-          <section key={section.title} className="premium-card p-6">
-            <h2 className="text-xl font-bold">{section.title}</h2>
+          <section key={section.title} className="premium-card p-4 sm:p-6">
+            <h2 className="text-lg font-bold sm:text-xl">{section.title}</h2>
             {section.paragraphs?.map((p) => (
               <p key={p} className="mt-3 text-sm leading-7 text-muted">
                 {p}

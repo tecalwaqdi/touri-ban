@@ -29,7 +29,7 @@ export function AppFeatureTile({
       whileHover={reduce ? undefined : { y: -3 }}
       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "group flex h-full items-start gap-3 rounded-2xl border bg-surface/90 px-3.5 py-3.5",
+        "group flex h-full items-start gap-2.5 rounded-xl border bg-surface/90 px-3 py-3 sm:gap-3 sm:rounded-2xl sm:px-3.5 sm:py-3.5",
         driver
           ? "border-border hover:border-accent-red/30"
           : "border-border hover:border-primary/30",

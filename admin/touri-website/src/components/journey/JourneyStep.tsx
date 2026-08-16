@@ -36,7 +36,7 @@ export function JourneyStep({
       whileHover={reduce ? undefined : { y: -2 }}
       transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "flex w-full items-start gap-3 rounded-2xl border px-4 py-3.5 text-start transition-[border-color,box-shadow,background-color] duration-300",
+        "flex w-full items-start gap-2.5 rounded-xl border px-3 py-3 text-start transition-[border-color,box-shadow,background-color] duration-300 sm:gap-3 sm:rounded-2xl sm:px-4 sm:py-3.5",
         active
           ? driver
             ? "border-[#c94b45]/40 bg-surface shadow-[0_10px_28px_rgba(201,75,69,0.12)]"

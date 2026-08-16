@@ -39,7 +39,7 @@ export function JourneySwitcher({
             role="tab"
             aria-selected={active}
             className={cn(
-              "relative z-0 flex-1 rounded-full px-2.5 py-2.5 text-sm leading-snug font-bold transition-colors sm:px-3",
+              "relative z-0 flex-1 rounded-full px-2 py-2 text-xs leading-snug font-bold transition-colors sm:px-3 sm:py-2.5 sm:text-sm",
               active ? "text-white" : "text-muted hover:text-foreground",
             )}
             onClick={() => onChange(item.id)}

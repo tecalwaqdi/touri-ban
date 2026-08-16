@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --nav-height: 4.75rem;
+  --nav-height: 3.75rem;
   --primary: #1f6f5f;
   --primary-hover: #185a4d;
   --primary-light: #4a9a87;
@@ -244,7 +244,7 @@ html[dir="ltr"] h3 {
   color: white;
   font-weight: 700;
   line-height: 1.35;
-  padding: 0.9rem 1.4rem;
+  padding: 0.75rem 1.15rem;
   white-space: normal;
   text-align: center;
   transition:
@@ -252,6 +252,12 @@ html[dir="ltr"] h3 {
     transform 0.25s ease,
     box-shadow 0.25s ease;
   box-shadow: 0 10px 24px rgba(31, 111, 95, 0.22);
+}
+
+@media (min-width: 640px) {
+  .btn-primary {
+    padding: 0.9rem 1.4rem;
+  }
 }
 
 .btn-primary:hover {
@@ -269,7 +275,7 @@ html[dir="ltr"] h3 {
   color: var(--text);
   font-weight: 700;
   line-height: 1.35;
-  padding: 0.9rem 1.4rem;
+  padding: 0.75rem 1.15rem;
   white-space: normal;
   text-align: center;
   border: 1px solid var(--border);
@@ -279,6 +285,12 @@ html[dir="ltr"] h3 {
     transform 0.25s ease;
 }
 
+@media (min-width: 640px) {
+  .btn-secondary {
+    padding: 0.9rem 1.4rem;
+  }
+}
+
 .btn-secondary:hover {
   background: var(--surface);
   border-color: var(--primary-light);
@@ -286,17 +298,41 @@ html[dir="ltr"] h3 {
 }
 
 .phone-frame {
-  border-radius: 2.35rem;
+  border-radius: 2rem;
   background: #0d1412;
-  padding: 0.45rem;
+  padding: 0.4rem;
   box-shadow:
     0 24px 56px rgba(10, 43, 36, 0.26),
     inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
+@media (min-width: 640px) {
+  .phone-frame {
+    border-radius: 2.35rem;
+    padding: 0.45rem;
+  }
+}
+
 .phone-screen {
-  border-radius: 1.9rem;
+  border-radius: 1.65rem;
   background: #050807;
+}
+
+@media (min-width: 640px) {
+  .phone-screen {
+    border-radius: 1.9rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .premium-card:hover {
+    transform: none;
+  }
+
+  .float-slow,
+  .float-slower {
+    animation: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

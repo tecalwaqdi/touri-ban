@@ -103,9 +103,9 @@ export function Contact({ dict }: Props) {
   return (
     <section
       id="contact"
-      className="scroll-mt-24 px-4 pt-14 pb-10 sm:px-6 sm:pt-16 sm:pb-12"
+      className="px-4 pt-10 pb-8 sm:px-6 sm:pt-16 sm:pb-12"
     >
-      <div className="mx-auto grid max-w-7xl items-start gap-8 lg:grid-cols-2 lg:gap-10">
+      <div className="mx-auto grid max-w-7xl items-start gap-7 lg:grid-cols-2 lg:gap-10">
         <div className="min-w-0">
           <SectionTitle
             eyebrow={dict.contact.eyebrow}
@@ -113,7 +113,7 @@ export function Contact({ dict }: Props) {
             subtitle={dict.contact.subtitle}
           />
 
-          <ul className="mt-7 grid gap-3 sm:gap-3.5">
+          <ul className="mt-6 grid gap-2.5 sm:mt-7 sm:gap-3.5">
             {cards.map((item) => {
               const Icon = item.icon;
               return (
@@ -121,7 +121,7 @@ export function Contact({ dict }: Props) {
                   <a
                     href={item.href}
                     className={cn(
-                      "premium-card group flex min-h-[4.5rem] items-center gap-4 p-4 sm:px-5 sm:py-4",
+                      "premium-card group flex min-h-[4.25rem] items-center gap-3 p-3.5 sm:min-h-[4.5rem] sm:gap-4 sm:px-5 sm:py-4",
                       "transition-colors hover:border-primary/30",
                     )}
                     target={item.external ? "_blank" : undefined}
@@ -130,7 +130,7 @@ export function Contact({ dict }: Props) {
                   >
                     <span
                       className={cn(
-                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:-translate-y-0.5",
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:-translate-y-0.5 sm:h-11 sm:w-11 sm:rounded-2xl",
                         item.tone === "whatsapp"
                           ? "bg-[color-mix(in_srgb,#25D366_16%,white)] text-[#128C7E] dark:bg-[color-mix(in_srgb,#25D366_22%,transparent)] dark:text-[#25D366]"
                           : "bg-[color-mix(in_srgb,var(--primary)_12%,white)] text-primary dark:bg-[color-mix(in_srgb,var(--primary)_18%,transparent)]",
@@ -166,18 +166,18 @@ export function Contact({ dict }: Props) {
         </div>
 
         <form
-          className="premium-card flex min-w-0 flex-col gap-5 p-5 sm:p-7"
+          className="premium-card flex min-w-0 flex-col gap-4 p-4 sm:gap-5 sm:p-7"
           onSubmit={onSubmit}
           noValidate={false}
         >
-          <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-4">
             <label className="block min-w-0 text-sm font-semibold text-foreground">
               <span className="mb-2 block leading-5">{dict.contact.name}</span>
               <input
                 required
                 name="name"
                 autoComplete="name"
-                className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-start text-[15px] leading-6 text-foreground outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full rounded-2xl border border-border bg-background px-3.5 py-2.5 text-start text-[15px] leading-6 text-foreground outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20 sm:px-4 sm:py-3"
                 placeholder={dict.contact.placeholderName}
               />
             </label>
@@ -189,7 +189,7 @@ export function Contact({ dict }: Props) {
                 name="email"
                 autoComplete="email"
                 dir="ltr"
-                className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-start text-[15px] leading-6 text-foreground outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full rounded-2xl border border-border bg-background px-3.5 py-2.5 text-start text-[15px] leading-6 text-foreground outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20 sm:px-4 sm:py-3"
                 placeholder={dict.contact.placeholderEmail}
                 style={{ unicodeBidi: "isolate" }}
               />
@@ -201,8 +201,8 @@ export function Contact({ dict }: Props) {
             <textarea
               required
               name="message"
-              rows={5}
-              className="min-h-[8.5rem] w-full resize-y rounded-2xl border border-border bg-background px-4 py-3 text-start text-[15px] leading-7 text-foreground outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20"
+              rows={4}
+              className="min-h-[7.5rem] w-full resize-y rounded-2xl border border-border bg-background px-3.5 py-2.5 text-start text-[15px] leading-7 text-foreground outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20 sm:min-h-[8.5rem] sm:px-4 sm:py-3"
               placeholder={dict.contact.placeholderMessage}
             />
           </label>

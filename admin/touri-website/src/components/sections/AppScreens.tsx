@@ -17,7 +17,7 @@ export function AppScreens({ dict }: Props) {
   const item = dict.screens.items[active];
 
   return (
-    <section className="px-4 py-20 sm:px-6">
+    <section className="overflow-x-clip px-4 py-12 sm:px-6 sm:py-16">
       <div className="mx-auto max-w-7xl">
         <SectionTitle
           eyebrow={dict.screens.eyebrow}
@@ -25,11 +25,11 @@ export function AppScreens({ dict }: Props) {
           subtitle={dict.screens.subtitle}
           align="center"
         />
-        <div className="mt-10 grid items-center gap-8 lg:grid-cols-[auto_1fr] lg:gap-12">
-          <Reveal className="mx-auto">
+        <div className="mt-8 grid items-center gap-6 sm:mt-10 sm:gap-8 lg:grid-cols-[auto_1fr] lg:gap-12">
+          <Reveal className="mx-auto w-full max-w-[13.5rem] sm:max-w-none">
             <PhoneMockup src={item.image} alt={item.alt} size="md" />
           </Reveal>
-          <div>
+          <div className="min-w-0">
             <div className="grid gap-3 sm:grid-cols-2">
               {dict.screens.items.map((screen, index) => (
                 <button
@@ -37,31 +37,37 @@ export function AppScreens({ dict }: Props) {
                   type="button"
                   onClick={() => setActive(index)}
                   className={cn(
-                    "overflow-hidden rounded-3xl border text-start transition",
+                    "min-w-0 overflow-hidden rounded-2xl border text-start transition sm:rounded-3xl",
                     active === index
                       ? "border-primary shadow-soft"
                       : "border-border hover:border-primary/40",
                   )}
                   aria-pressed={active === index}
                 >
-                  <div className="relative h-36 bg-[#0d1412]">
+                  <div className="relative h-28 bg-[#0d1412] sm:h-36">
                     <Image
                       src={screen.image}
                       alt={screen.alt}
                       fill
                       quality={85}
                       className="object-cover object-top"
-                      sizes="(max-width: 768px) 100vw, 280px"
+                      sizes="(max-width: 640px) 100vw, 280px"
                     />
                   </div>
-                  <div className="bg-surface p-4">
-                    <p className="leading-snug font-bold tracking-normal">{screen.title}</p>
-                    <p className="mt-1.5 text-sm leading-6 text-muted">{screen.text}</p>
+                  <div className="bg-surface p-3.5 sm:p-4">
+                    <p className="text-sm leading-snug font-bold tracking-normal sm:text-base">
+                      {screen.title}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-muted sm:mt-1.5 sm:text-sm sm:leading-6">
+                      {screen.text}
+                    </p>
                   </div>
                 </button>
               ))}
             </div>
-            <p className="mt-4 text-xs text-muted">{dict.screens.note}</p>
+            <p className="mt-3 text-xs leading-5 text-muted sm:mt-4">
+              {dict.screens.note}
+            </p>
           </div>
         </div>
       </div>

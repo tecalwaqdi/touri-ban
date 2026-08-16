@@ -130,7 +130,7 @@ function AppStoreRow({
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-[1.5rem] border p-4 sm:p-5",
+        "relative overflow-hidden rounded-[1.25rem] border p-3.5 sm:rounded-[1.5rem] sm:p-5",
         app === "customer"
           ? "border-primary/25 bg-gradient-to-br from-primary/15 via-surface to-surface"
           : "border-accent/30 bg-gradient-to-br from-accent/15 via-surface to-surface",
@@ -143,15 +143,17 @@ function AppStoreRow({
         )}
         aria-hidden
       />
-      <div className="relative">
-        <p className="text-xs font-bold tracking-[0.14em] text-muted uppercase">
+      <div className="relative min-w-0">
+        <p className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase sm:text-xs">
           {app === "customer" ? "01" : "02"} · {title}
         </p>
-        <h3 className="font-display mt-1 text-lg font-bold text-foreground sm:text-xl">
+        <h3 className="font-display mt-1 text-base font-bold text-foreground sm:text-xl">
           {app === "customer" ? siteConfig.customerApp : siteConfig.driverApp}
         </h3>
-        <p className="mt-1.5 max-w-md text-sm leading-6 text-muted">{blurb}</p>
-        <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
+        <p className="mt-1 max-w-md text-xs leading-5 text-muted sm:mt-1.5 sm:text-sm sm:leading-6">
+          {blurb}
+        </p>
+        <div className="mt-3 grid gap-2 sm:mt-4 sm:grid-cols-2 sm:gap-2.5">
           <StoreBadge
             store="apple"
             href={links.appStore}
@@ -229,25 +231,25 @@ export function DownloadChooserHost({ dict }: { dict: Dictionary }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative z-[81] flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-t-[1.75rem] border border-border bg-background shadow-soft sm:rounded-[1.75rem]"
+        className="relative z-[81] flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-t-[1.5rem] border border-border bg-background shadow-soft sm:rounded-[1.75rem]"
       >
-        <div className="relative overflow-hidden border-b border-border px-5 pt-5 pb-4 sm:px-6">
+        <div className="relative overflow-hidden border-b border-border px-4 pt-4 pb-3.5 sm:px-6 sm:pt-5 sm:pb-4">
           <div
             className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/15"
             aria-hidden
           />
-          <div className="relative flex items-start justify-between gap-4">
-            <div>
+          <div className="relative flex items-start justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
               <p className="text-xs font-bold tracking-[0.16em] text-accent uppercase">
                 Touri
               </p>
               <h2
                 id={titleId}
-                className="font-display mt-1 text-2xl font-black tracking-normal text-foreground"
+                className="font-display mt-1 text-xl font-black tracking-normal text-foreground sm:text-2xl"
               >
                 {dict.download.chooserTitle}
               </h2>
-              <p className="mt-1.5 max-w-sm text-sm leading-6 text-muted">
+              <p className="mt-1 max-w-sm text-sm leading-6 text-muted sm:mt-1.5">
                 {dict.download.chooserSubtitle}
               </p>
             </div>
@@ -255,7 +257,7 @@ export function DownloadChooserHost({ dict }: { dict: Dictionary }) {
               ref={closeRef}
               type="button"
               onClick={() => setOpen(false)}
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition hover:bg-surface-muted"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition hover:bg-surface-muted sm:h-10 sm:w-10"
               aria-label={dict.download.close}
             >
               <span aria-hidden className="text-lg leading-none">
@@ -264,7 +266,7 @@ export function DownloadChooserHost({ dict }: { dict: Dictionary }) {
             </button>
           </div>
         </div>
-        <div className="overflow-y-auto px-5 py-5 sm:px-6">
+        <div className="overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
           <DownloadStoreGrid dict={dict} />
         </div>
       </div>

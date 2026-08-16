@@ -60,7 +60,7 @@ export function ExploreDestinations({ dict }: Props) {
       </header>
 
       <motion.ul
-        className="mx-auto mt-8 grid max-w-5xl grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 lg:grid-cols-5 lg:gap-3"
+        className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-5"
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.15 }}

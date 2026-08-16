@@ -8,7 +8,6 @@ type Props = {
   dict: Dictionary;
   app?: AppKind;
   compact?: boolean;
-  tone?: "default" | "onDark";
 };
 
 function badgeCaption(label: string, storeName: "App Store" | "Google Play") {
@@ -55,7 +54,6 @@ export function DownloadButtons({
   dict,
   app = "customer",
   compact = false,
-  tone = "default",
 }: Props) {
   const links = siteConfig.store[app];
   const appStore = hasStoreLink(links.appStore);

@@ -105,14 +105,14 @@ function AppShowcase({
     <section
       id={id}
       className={cn(
-        "scroll-mt-24 px-4 py-14 sm:px-6 sm:py-16",
+        "overflow-x-clip px-4 py-12 sm:px-6 sm:py-16",
         driver && "bg-surface-muted",
       )}
     >
       <div className="mx-auto max-w-6xl">
         <SectionTitle eyebrow={eyebrow} title={title} subtitle={subtitle} align="center" />
 
-        <div className="mt-8 grid items-center gap-5 lg:grid-cols-[1fr_auto_1fr] lg:gap-6">
+        <div className="mt-7 grid items-center gap-5 sm:mt-8 lg:grid-cols-[1fr_auto_1fr] lg:gap-6">
           <FeatureColumn
             points={startPoints}
             icons={icons}
@@ -122,7 +122,7 @@ function AppShowcase({
           />
 
           <motion.div
-            className="relative order-first mx-auto lg:order-none"
+            className="relative order-first mx-auto w-full max-w-[14rem] sm:max-w-none lg:order-none"
             initial={reduce ? false : { opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
@@ -146,7 +146,7 @@ function AppShowcase({
           />
 
           <motion.ul
-            className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:hidden"
+            className="grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:hidden"
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: "-60px" }}

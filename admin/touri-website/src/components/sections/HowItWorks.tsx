@@ -33,18 +33,18 @@ export function HowItWorks({ dict }: Props) {
   return (
     <section
       id="how"
-      className="scroll-mt-24 overflow-x-clip border-y border-border/60 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--surface-muted)_72%,transparent)_0%,var(--background)_28%,var(--background)_100%)] px-4 py-12 sm:px-6 sm:py-14"
+      className="overflow-x-clip border-y border-border/60 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--surface-muted)_72%,transparent)_0%,var(--background)_28%,var(--background)_100%)] px-4 py-10 sm:px-6 sm:py-14"
     >
       <div className="mx-auto max-w-5xl">
         <header className="mx-auto max-w-2xl overflow-visible text-center">
-          <p className="text-sm font-semibold tracking-[0.14em] text-primary uppercase rtl:tracking-normal">
+          <p className="text-xs font-semibold tracking-[0.14em] text-primary uppercase sm:text-sm rtl:tracking-normal">
             {dict.how.eyebrow}
           </p>
-          <h2 className="font-display mt-2 text-3xl leading-[1.35] font-bold tracking-normal text-foreground sm:text-4xl sm:leading-[1.3]">
+          <h2 className="font-display mt-2 text-[1.65rem] leading-[1.35] font-bold tracking-normal text-foreground sm:text-3xl sm:leading-[1.3] md:text-4xl">
             {dict.how.title}
           </h2>
 
-          <div className="mt-5">
+          <div className="mt-4 sm:mt-5">
             <JourneySwitcher
               kind={kind}
               customerLabel={dict.how.customerTitle}

@@ -35,25 +35,25 @@ export function Footer({ locale, dict }: Props) {
 
   return (
     <footer className="mt-0 border-t border-white/10 bg-footer text-white">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 pt-12 pb-14 sm:px-6 lg:grid-cols-[1.3fr_1fr_1fr]">
-        <div>
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 pt-10 pb-10 sm:gap-10 sm:px-6 sm:pt-12 sm:pb-14 lg:grid-cols-[1.3fr_1fr_1fr]">
+        <div className="min-w-0">
           <Image
             src="/images/logo.png"
             alt={dict.a11y.logo}
             width={160}
             height={56}
-            className="h-12 w-auto"
+            className="h-10 w-auto sm:h-12"
             style={{ width: "auto" }}
           />
-          <p className="mt-4 max-w-sm text-sm leading-7 text-pretty text-white/70">
+          <p className="mt-3 max-w-sm text-sm leading-7 text-pretty text-white/70 sm:mt-4">
             {dict.footer.tagline}
           </p>
         </div>
-        <div>
-          <p className="mb-4 text-sm font-bold tracking-wide uppercase text-accent">
+        <div className="min-w-0">
+          <p className="mb-3 text-sm font-bold tracking-wide uppercase text-accent sm:mb-4">
             Touri
           </p>
-          <ul className="grid gap-2 text-sm text-white/80">
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-white/80 sm:grid-cols-1">
             {links.map((item) => (
               <li key={item.href}>
                 <Link className="hover:text-white" href={item.href}>
@@ -63,8 +63,8 @@ export function Footer({ locale, dict }: Props) {
             ))}
           </ul>
         </div>
-        <div>
-          <p className="mb-4 text-sm font-bold tracking-wide uppercase text-accent">
+        <div className="min-w-0">
+          <p className="mb-3 text-sm font-bold tracking-wide uppercase text-accent sm:mb-4">
             {dict.nav.contact}
           </p>
           <ul className="grid gap-2.5 text-sm leading-6 text-white/80">
@@ -106,7 +106,7 @@ export function Footer({ locale, dict }: Props) {
             ) : null}
           </ul>
           {social.length > 0 ? (
-            <ul className="mt-4 flex gap-3">
+            <ul className="mt-4 flex flex-wrap gap-3">
               {social.map((item) => (
                 <li key={item.label}>
                   <a
@@ -123,7 +123,7 @@ export function Footer({ locale, dict }: Props) {
           ) : null}
         </div>
       </div>
-      <div className="border-t border-white/10 px-4 py-5 text-center text-sm text-white/55">
+      <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-white/55 sm:py-5 sm:text-sm">
         {dict.footer.copyright} · {dict.footer.rights}
       </div>
     </footer>

@@ -9,14 +9,14 @@ type Props = {
 
 export function Features({ dict }: Props) {
   return (
-    <section id="features" className="scroll-mt-24 px-4 py-20 sm:px-6">
+    <section id="features" className="px-4 py-12 sm:px-6 sm:py-16">
       <div className="mx-auto max-w-7xl">
         <SectionTitle
           eyebrow={dict.features.eyebrow}
           title={dict.features.title}
           subtitle={dict.features.subtitle}
         />
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5">
           {dict.features.items.map((item, index) => {
             const Icon = featureIcons[index] ?? featureIcons[0];
             return (

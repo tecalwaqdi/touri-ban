@@ -189,14 +189,14 @@ export function Navbar({ locale, dict }: Props) {
           : "shadow-none",
       )}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 lg:px-6">
-        <Link href={home} className="shrink-0" aria-label={dict.a11y.logo}>
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 lg:px-6">
+        <Link href={home} className="min-w-0 shrink-0" aria-label={dict.a11y.logo}>
           <Image
             src="/images/logo.png"
             alt={dict.a11y.logo}
             width={148}
             height={52}
-            className="h-10 w-auto"
+            className="h-8 w-auto sm:h-10"
             style={{ width: "auto" }}
             priority
           />
@@ -219,10 +219,10 @@ export function Navbar({ locale, dict }: Props) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <Link
             href={swapLocalePath(pathname, other)}
-            className="rounded-full border border-border px-3 py-1.5 text-xs font-bold tracking-wide text-foreground transition hover:bg-surface-muted"
+            className="rounded-full border border-border px-2.5 py-1.5 text-xs font-bold tracking-wide text-foreground transition hover:bg-surface-muted sm:px-3"
             hrefLang={other}
             aria-label={dict.nav.language}
             onClick={() => {
@@ -234,7 +234,7 @@ export function Navbar({ locale, dict }: Props) {
           <button
             type="button"
             onClick={toggleTheme}
-            className="inline-flex items-center justify-center rounded-full border border-border p-2.5 text-foreground transition hover:bg-surface-muted"
+            className="inline-flex items-center justify-center rounded-full border border-border p-2 text-foreground transition hover:bg-surface-muted sm:p-2.5"
             aria-label={`${dict.nav.themeLight} / ${dict.nav.themeDark}`}
           >
             <IconSun size={16} className="hidden dark:block" />
@@ -249,7 +249,7 @@ export function Navbar({ locale, dict }: Props) {
           </button>
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-full border border-border p-2.5 text-foreground transition hover:bg-surface-muted lg:hidden"
+            className="inline-flex items-center justify-center rounded-full border border-border p-2 text-foreground transition hover:bg-surface-muted sm:p-2.5 lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? dict.nav.close : dict.nav.menu}
@@ -263,12 +263,12 @@ export function Navbar({ locale, dict }: Props) {
       {open ? (
         <div
           id="mobile-nav"
-          className="border-t border-border bg-background/95 px-4 py-4 backdrop-blur-xl lg:hidden"
+          className="max-h-[min(78vh,36rem)] overflow-y-auto border-t border-border bg-background/95 px-3 py-3 backdrop-blur-xl sm:px-4 sm:py-4 lg:hidden"
         >
-          <nav className="grid gap-1" aria-label={dict.a11y.nav}>
+          <nav className="grid gap-0.5" aria-label={dict.a11y.nav}>
             <Link
               href={home}
-              className="rounded-2xl px-3 py-3 text-base font-semibold text-foreground hover:bg-surface-muted"
+              className="rounded-xl px-3 py-2.5 text-[15px] font-semibold text-foreground hover:bg-surface-muted sm:rounded-2xl sm:py-3 sm:text-base"
               onClick={() => setOpen(false)}
             >
               {dict.nav.home}
@@ -278,7 +278,7 @@ export function Navbar({ locale, dict }: Props) {
                 key={item.id}
                 href={`${home}#${item.id}`}
                 className={cn(
-                  "rounded-2xl px-3 py-3 text-base font-semibold transition",
+                  "rounded-xl px-3 py-2.5 text-[15px] font-semibold transition sm:rounded-2xl sm:py-3 sm:text-base",
                   currentId === item.id
                     ? "bg-primary/10 text-primary"
                     : "text-foreground hover:bg-surface-muted",
