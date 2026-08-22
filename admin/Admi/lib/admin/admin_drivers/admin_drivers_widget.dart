@@ -1,7 +1,9 @@
 import '/backend/admin_agent_country_lock.dart';
+import '/backend/admin_audit_log.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
@@ -65,30 +67,31 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
   }
 
   Future<void> _deactivateDriver(UserRecord driver) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(uiTr(context, 'تأكيد الإيقاف')),
-            content: Text(appTrFormat(context, 'adm_stop_confirm_body', driver.displayName)),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(uiTr(context, 'نعم')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: uiTr(context, 'تأكيد الإيقاف'),
+      whatHappens: appTrFormat(context, 'adm_stop_confirm_body', driver.displayName),
+      subject: driver.displayName.isNotEmpty
+          ? driver.displayName
+          : driver.reference.id,
+      impact: uiTr(context, 'Driver will no longer receive bookings'),
+      confirmLabel: uiTr(context, 'نعم'),
+      cancelLabel: appTr(context, 'adm_no'),
+      destructive: true,
+      reference: driver.reference.id,
+    );
 
     if (!confirmed) return;
 
     try {
       await driver.reference.update(
         createUserRecordData(actevMndob: false),
+      );
+      await AdminAuditLog.recordToggle(
+        targetType: 'driver',
+        targetId: driver.reference.id,
+        targetLabel: driver.displayName,
+        activated: false,
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

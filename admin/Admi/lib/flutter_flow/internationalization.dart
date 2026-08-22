@@ -19,7 +19,8 @@ class FFLocalizations {
   static FFLocalizations of(BuildContext context) =>
       Localizations.of<FFLocalizations>(context, FFLocalizations)!;
 
-  static List<String> languages() => ['en', 'ar', 'ru', 'ky'];
+  static List<String> languages() =>
+      ['en', 'ar', 'ru', 'ky', 'fr', 'ur', 'pt'];
 
   static late SharedPreferences _prefs;
   static Future initialize() async =>
@@ -101,6 +102,8 @@ class FFLocalizations {
     String? azText = '',
     String? kaText = '',
     String? kyText = '',
+    String? frText = '',
+    String? ptText = '',
   }) {
     // Prefer language code over array index so locale list changes cannot
     // throw RangeError (H-01/H-02).
@@ -121,6 +124,10 @@ class FFLocalizations {
         return (trText != null && trText.isNotEmpty) ? trText : (enText ?? '');
       case 'ur':
         return (urText != null && urText.isNotEmpty) ? urText : (enText ?? '');
+      case 'fr':
+        return (frText != null && frText.isNotEmpty) ? frText : (enText ?? '');
+      case 'pt':
+        return (ptText != null && ptText.isNotEmpty) ? ptText : (enText ?? '');
       case 'az':
         return (azText != null && azText.isNotEmpty) ? azText : (enText ?? '');
       case 'ka':
@@ -406,7 +413,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'ka': 'Status: NO Active',
       'ru': 'Status: NO Active',
       'tr': 'Status: NO Active',
-      'ur': 'Status: NO Active',
+      'ur': 'حیثیت: غیر فعال',
       'zh_Hans': 'Status: NO Active',
     },
     'bf9yyk4f': {

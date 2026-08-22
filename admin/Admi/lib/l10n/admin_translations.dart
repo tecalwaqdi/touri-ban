@@ -3,6 +3,8 @@
 const kAdminTranslations = <String, Map<String, String>>{
   'adm_app_title': {
     'en': 'Control Panel',
+    'pt': 'Painel de controle',
+    'fr': 'Panneau de contrôle',
     'ar': 'لوحة التحكم',
     'zh_Hans': '控制面板',
     'tr': 'Kontrol Paneli',
@@ -14,6 +16,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_splash_title': {
     'en': 'Touri Taxi',
+    'pt': 'Touri Taxi',
+    'fr': 'Touri Taxi',
     'ar': 'توري تاكسي',
     'zh_Hans': 'Touri Taxi',
     'tr': 'Touri Taxi',
@@ -25,6 +29,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_splash_tagline': {
     'en': 'The First Global Saudi Tourism App',
+    'pt': 'O primeiro app global de turismo saudita',
+    'fr': 'La première application touristique saoudienne mondiale',
     'ar': 'أول تطبيق سعودي سياحي عالمي',
     'zh_Hans': '首个全球沙特旅游应用',
     'tr': 'İlk Küresel Suudi Turizm Uygulaması',
@@ -36,6 +42,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_theme_title': {
     'en': 'Appearance',
+    'pt': 'Aparência',
+    'fr': 'Apparence',
     'ar': 'المظهر',
     'zh_Hans': '外观',
     'tr': 'Görünüm',
@@ -47,6 +55,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_theme_subtitle': {
     'en': 'Switch between light and dark mode for the control panel.',
+    'pt': 'Alterne entre os modos claro e escuro do painel de controle.',
+    'fr': 'Basculez entre le mode clair et le mode sombre pour le panneau de contrôle.',
     'ar': 'بدّل بين الوضع العادي والليلي للوحة التحكم.',
     'zh_Hans': '在控制面板的浅色与深色模式之间切换。',
     'tr': 'Kontrol paneli için açık ve koyu mod arasında geçiş yapın.',
@@ -58,6 +68,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_theme_light': {
     'en': 'Light mode',
+    'pt': 'Modo claro',
+    'fr': 'Mode clair',
     'ar': 'الوضع العادي',
     'zh_Hans': '浅色模式',
     'tr': 'Açık mod',
@@ -69,6 +81,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_theme_dark': {
     'en': 'Dark mode',
+    'pt': 'Modo escuro',
+    'fr': 'Mode sombre',
     'ar': 'الوضع الليلي',
     'zh_Hans': '深色模式',
     'tr': 'Koyu mod',
@@ -82,6 +96,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // Actions
   'adm_cancel': {
     'en': 'Cancel',
+    'pt': 'Cancelar',
+    'fr': 'Annuler',
     'ar': 'إلغاء',
     'zh_Hans': '取消',
     'tr': 'İptal',
@@ -93,6 +109,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_no': {
     'en': 'No',
+    'pt': 'Não',
+    'fr': 'Non',
     'ar': 'لا',
     'zh_Hans': '否',
     'tr': 'Hayır',
@@ -104,6 +122,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_yes_delete': {
     'en': 'Yes, delete',
+    'pt': 'Sim, delete',
+    'fr': 'Oui, delete',
     'ar': 'نعم، احذف',
     'zh_Hans': '是，删除',
     'tr': 'Evet, sil',
@@ -115,6 +135,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_delete': {
     'en': 'Delete',
+    'pt': 'Excluir',
+    'fr': 'Supprimer',
     'ar': 'حذف',
     'zh_Hans': '删除',
     'tr': 'Sil',
@@ -126,6 +148,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_confirm': {
     'en': 'Confirm',
+    'pt': 'Confirmar',
+    'fr': 'Confirmer',
     'ar': 'تأكيد',
     'zh_Hans': '确认',
     'tr': 'Onayla',
@@ -137,6 +161,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_ok': {
     'en': 'OK',
+    'pt': 'OK',
+    'fr': 'OK',
     'ar': 'حسناً',
     'zh_Hans': '好的',
     'tr': 'Tamam',
@@ -148,6 +174,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_retry': {
     'en': 'Retry',
+    'pt': 'Tentar novamente',
+    'fr': 'Réessayer',
     'ar': 'إعادة المحاولة',
     'zh_Hans': '重试',
     'tr': 'Tekrar dene',
@@ -159,6 +187,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_refresh': {
     'en': 'Refresh',
+    'pt': 'Atualizar',
+    'fr': 'Actualiser',
     'ar': 'تحديث',
     'zh_Hans': '刷新',
     'tr': 'Yenile',
@@ -170,6 +200,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_load_more': {
     'en': 'Load more',
+    'pt': 'Carregar mais',
+    'fr': 'Charger plus',
     'ar': 'تحميل المزيد',
     'zh_Hans': '加载更多',
     'tr': 'Daha fazla yükle',
@@ -181,6 +213,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_save_edits': {
     'en': 'Save changes',
+    'pt': 'Salvar changes',
+    'fr': 'Enregistrer changes',
     'ar': 'حفظ التعديلات',
     'zh_Hans': '保存更改',
     'tr': 'Değişiklikleri kaydet',
@@ -192,6 +226,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_saving': {
     'en': 'Saving...',
+    'pt': 'Salvando...',
+    'fr': 'Enregistrement...',
     'ar': 'جاري الحفظ...',
     'zh_Hans': '正在保存...',
     'tr': 'Kaydediliyor...',
@@ -205,6 +241,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // CRUD success
   'adm_added_success': {
     'en': 'Added successfully',
+    'pt': 'Adicionared successfully',
+    'fr': 'Ajoutered successfully',
     'ar': 'تمت الإضافة بنجاح',
     'zh_Hans': '添加成功',
     'tr': 'Başarıyla eklendi',
@@ -216,6 +254,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_saved_success': {
     'en': 'Changes saved successfully',
+    'pt': 'Alterações salvas com sucesso',
+    'fr': 'Modifications enregistrées avec succès',
     'ar': 'تم حفظ التعديلات بنجاح',
     'zh_Hans': '更改已保存',
     'tr': 'Değişiklikler kaydedildi',
@@ -227,6 +267,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_deleted_success': {
     'en': 'Deleted successfully',
+    'pt': 'Excluird successfully',
+    'fr': 'Supprimerd successfully',
     'ar': 'تم الحذف بنجاح',
     'zh_Hans': '删除成功',
     'tr': 'Başarıyla silindi',
@@ -238,6 +280,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_image_selected': {
     'en': 'Image selected successfully',
+    'pt': 'Imagem selecionada com sucesso',
+    'fr': 'Image sélectionnée avec succès',
     'ar': 'تم اختيار الصورة بنجاح',
     'zh_Hans': '图片已选择',
     'tr': 'Görsel başarıyla seçildi',
@@ -251,6 +295,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // CRUD errors
   'adm_save_failed': {
     'en': 'Could not save',
+    'pt': 'Não foi possível salvar',
+    'fr': 'Échec de l\'enregistrement',
     'ar': 'تعذر الحفظ',
     'zh_Hans': '无法保存',
     'tr': 'Kaydedilemedi',
@@ -262,6 +308,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_delete_failed': {
     'en': 'Could not delete',
+    'pt': 'Não foi possível excluir',
+    'fr': 'Échec de la suppression',
     'ar': 'تعذر الحذف',
     'zh_Hans': '无法删除',
     'tr': 'Silinemedi',
@@ -273,6 +321,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_update_failed': {
     'en': 'Could not update',
+    'pt': 'Não foi possível atualizar',
+    'fr': 'Échec de la mise à jour',
     'ar': 'تعذر التحديث',
     'zh_Hans': '无法更新',
     'tr': 'Güncellenemedi',
@@ -284,6 +334,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_upload_failed': {
     'en': 'Could not upload image',
+    'pt': 'Não foi possível enviar a imagem',
+    'fr': 'Impossible de téléverser l\'image',
     'ar': 'تعذر رفع الصورة',
     'zh_Hans': '无法上传图片',
     'tr': 'Görsel yüklenemedi',
@@ -297,6 +349,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // Delete dialogs
   'adm_delete_confirm_title': {
     'en': 'Confirm deletion',
+    'pt': 'Confirmar deletion',
+    'fr': 'Confirmer deletion',
     'ar': 'تأكيد الحذف',
     'zh_Hans': '确认删除',
     'tr': 'Silmeyi onayla',
@@ -308,6 +362,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_delete_confirm_body': {
     'en': 'Are you sure you want to delete "%s"?',
+    'pt': 'Are you sure you want to delete "%s"?',
+    'fr': 'Are you sure you want to delete "%s"?',
     'ar': 'هل أنت متأكد من حذف "%s"؟',
     'zh_Hans': '确定要删除“%s”吗？',
     'tr': '"%s" öğesini silmek istediğinizden emin misiniz?',
@@ -319,6 +375,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_cannot_delete_self': {
     'en': 'You cannot delete your own account',
+    'pt': 'You cannot delete your own account',
+    'fr': 'You cannot delete your own account',
     'ar': 'لا يمكنك حذف حسابك الحالي',
     'zh_Hans': '您不能删除自己的账户',
     'tr': 'Kendi hesabınızı silemezsiniz',
@@ -332,6 +390,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // Validation
   'adm_select_country': {
     'en': 'Please select a country',
+    'pt': 'Por favor select a country',
+    'fr': 'Veuillez select a country',
     'ar': 'يرجى اختيار الدولة',
     'zh_Hans': '请选择国家',
     'tr': 'Lütfen bir ülke seçin',
@@ -343,6 +403,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_select_country_first': {
     'en': 'Please select a country first',
+    'pt': 'Por favor select a country first',
+    'fr': 'Veuillez select a country first',
     'ar': 'يرجى اختيار الدولة أولاً',
     'zh_Hans': '请先选择国家',
     'tr': 'Önce bir ülke seçin',
@@ -354,6 +416,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_select_region': {
     'en': 'Please select a region',
+    'pt': 'Por favor select a region',
+    'fr': 'Veuillez select a region',
     'ar': 'يرجى اختيار المنطقة',
     'zh_Hans': '请选择地区',
     'tr': 'Lütfen bir bölge seçin',
@@ -365,6 +429,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_select_city': {
     'en': 'Please select a city',
+    'pt': 'Por favor select a city',
+    'fr': 'Veuillez select a city',
     'ar': 'يرجى اختيار المدينة',
     'zh_Hans': '请选择城市',
     'tr': 'Lütfen bir şehir seçin',
@@ -376,6 +442,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_enter_region_name': {
     'en': 'Please enter the region name',
+    'pt': 'Por favor enter the region name',
+    'fr': 'Veuillez enter the region name',
     'ar': 'يرجى إدخال اسم المنطقة',
     'zh_Hans': '请输入地区名称',
     'tr': 'Bölge adını girin',
@@ -387,6 +455,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_enter_city_name': {
     'en': 'Please enter the city name',
+    'pt': 'Por favor enter the city name',
+    'fr': 'Veuillez enter the city name',
     'ar': 'يرجى إدخال اسم المدينة',
     'zh_Hans': '请输入城市名称',
     'tr': 'Şehir adını girin',
@@ -398,6 +468,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_wait_image_upload': {
     'en': 'Wait for the image upload to finish, then save',
+    'pt': 'Wait for the image upload to finish, then save',
+    'fr': 'Wait for the image upload to finish, then save',
     'ar': 'انتظر اكتمال رفع الصورة ثم احفظ',
     'zh_Hans': '请等待图片上传完成后再保存',
     'tr': 'Görsel yüklemesi bitene kadar bekleyin, sonra kaydedin',
@@ -409,6 +481,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_wait_images_upload': {
     'en': 'Wait for image uploads to finish, then save',
+    'pt': 'Wait for image uploads to finish, then save',
+    'fr': 'Wait for image uploads to finish, then save',
     'ar': 'انتظر اكتمال رفع الصور ثم احفظ',
     'zh_Hans': '请等待图片上传完成后再保存',
     'tr': 'Görsel yüklemeleri bitene kadar bekleyin, sonra kaydedin',
@@ -420,6 +494,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_password_mismatch': {
     'en': 'Passwords do not match',
+    'pt': 'As senhas não coincidem',
+    'fr': 'Les mots de passe ne correspondent pas',
     'ar': 'كلمتا المرور غير متطابقتين',
     'zh_Hans': '两次密码不一致',
     'tr': 'Şifreler eşleşmiyor',
@@ -431,6 +507,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_password_min_6': {
     'en': 'Password must be at least 6 characters',
+    'pt': 'Password must be at least 6 characters',
+    'fr': 'Password must be at least 6 characters',
     'ar': 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
     'zh_Hans': '密码至少6个字符',
     'tr': 'Şifre en az 6 karakter olmalı',
@@ -442,6 +520,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_confirm_password': {
     'en': 'Confirm password',
+    'pt': 'Confirmar password',
+    'fr': 'Confirmer password',
     'ar': 'تأكيد كلمة المرور',
     'zh_Hans': '确认密码',
     'tr': 'Şifreyi onayla',
@@ -453,6 +533,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_fix_red_fields': {
     'en': 'Please fix the fields highlighted in red',
+    'pt': 'Por favor fix the fields highlighted in red',
+    'fr': 'Veuillez fix the fields highlighted in red',
     'ar': 'يرجى تصحيح الحقول المحددة بالأحمر',
     'zh_Hans': '请修正标红的字段',
     'tr': 'Kırmızıyla işaretli alanları düzeltin',
@@ -466,6 +548,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // Labels
   'adm_country': {
     'en': 'Country',
+    'pt': 'País',
+    'fr': 'Pays',
     'ar': 'الدولة',
     'zh_Hans': '国家',
     'tr': 'Ülke',
@@ -477,6 +561,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_region': {
     'en': 'Region / province',
+    'pt': 'Região / província',
+    'fr': 'Région / province',
     'ar': 'المنطقة / المحافظة',
     'zh_Hans': '地区/省',
     'tr': 'Bölge / il',
@@ -488,6 +574,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_city': {
     'en': 'City',
+    'pt': 'Cidade',
+    'fr': 'Ville',
     'ar': 'المدينة',
     'zh_Hans': '城市',
     'tr': 'Şehir',
@@ -499,6 +587,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_email': {
     'en': 'Email',
+    'pt': 'E-mail',
+    'fr': 'E-mail',
     'ar': 'البريد الإلكتروني',
     'zh_Hans': '电子邮件',
     'tr': 'E-posta',
@@ -510,6 +600,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_full_name': {
     'en': 'Full name',
+    'pt': 'Nome completo',
+    'fr': 'Nom complet',
     'ar': 'الاسم الكامل',
     'zh_Hans': '全名',
     'tr': 'Ad soyad',
@@ -521,6 +613,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_phone': {
     'en': 'Mobile number',
+    'pt': 'Número de celular',
+    'fr': 'Numéro de mobile',
     'ar': 'رقم الجوال',
     'zh_Hans': '手机号',
     'tr': 'Cep telefonu',
@@ -532,6 +626,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_password': {
     'en': 'Password',
+    'pt': 'Senha',
+    'fr': 'Mot de passe',
     'ar': 'كلمة المرور',
     'zh_Hans': '密码',
     'tr': 'Şifre',
@@ -543,6 +639,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_basic_data': {
     'en': 'Basic information',
+    'pt': 'Informações básicas',
+    'fr': 'Informations de base',
     'ar': 'البيانات الأساسية',
     'zh_Hans': '基本信息',
     'tr': 'Temel bilgiler',
@@ -554,6 +652,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_location': {
     'en': 'Geographic location',
+    'pt': 'Localização geográfica',
+    'fr': 'Localisation géographique',
     'ar': 'الموقع الجغرافي',
     'zh_Hans': '地理位置',
     'tr': 'Coğrafi konum',
@@ -567,6 +667,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // Pickers
   'adm_pick_country': {
     'en': 'Select country',
+    'pt': 'Selecionar país',
+    'fr': 'Sélectionner un pays',
     'ar': 'اختر الدولة',
     'zh_Hans': '选择国家',
     'tr': 'Ülke seç',
@@ -578,6 +680,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_pick_region': {
     'en': 'Select region',
+    'pt': 'Selecionar região',
+    'fr': 'Sélectionner une région',
     'ar': 'اختر المنطقة',
     'zh_Hans': '选择地区',
     'tr': 'Bölge seç',
@@ -589,6 +693,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_pick_city': {
     'en': 'Select city',
+    'pt': 'Selecionar cidade',
+    'fr': 'Sélectionner une ville',
     'ar': 'اختر المدينة',
     'zh_Hans': '选择城市',
     'tr': 'Şehir seç',
@@ -600,6 +706,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_pick_work_city': {
     'en': 'Select work city',
+    'pt': 'Selecionar cidade de trabalho',
+    'fr': 'Sélectionner la ville de travail',
     'ar': 'اختر مدينة العمل',
     'zh_Hans': '选择工作城市',
     'tr': 'Çalışma şehri seç',
@@ -611,6 +719,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_pick_car_type': {
     'en': 'Select car type',
+    'pt': 'Selecionar tipo de carro',
+    'fr': 'Sélectionner le type de voiture',
     'ar': 'اختر نوع السيارة',
     'zh_Hans': '选择车型',
     'tr': 'Araç tipi seç',
@@ -622,6 +732,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_search_country': {
     'en': 'Search country...',
+    'pt': 'Pesquisar country...',
+    'fr': 'Rechercher country...',
     'ar': 'بحث عن دولة...',
     'zh_Hans': '搜索国家...',
     'tr': 'Ülke ara...',
@@ -633,6 +745,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_search_region': {
     'en': 'Search region...',
+    'pt': 'Pesquisar region...',
+    'fr': 'Rechercher region...',
     'ar': 'بحث عن منطقة...',
     'zh_Hans': '搜索地区...',
     'tr': 'Bölge ara...',
@@ -644,6 +758,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_search_city': {
     'en': 'Search city...',
+    'pt': 'Pesquisar city...',
+    'fr': 'Rechercher city...',
     'ar': 'بحث عن مدينة...',
     'zh_Hans': '搜索城市...',
     'tr': 'Şehir ara...',
@@ -655,6 +771,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_no_countries': {
     'en': 'No countries registered',
+    'pt': 'Não countries registered',
+    'fr': 'Non countries registered',
     'ar': 'لا توجد دول مسجلة',
     'zh_Hans': '没有注册的国家',
     'tr': 'Kayıtlı ülke yok',
@@ -666,6 +784,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_no_regions_country': {
     'en': 'No regions for this country',
+    'pt': 'Não regions for this country',
+    'fr': 'Non regions for this country',
     'ar': 'لا توجد مناطق لهذه الدولة',
     'zh_Hans': '该国家没有地区',
     'tr': 'Bu ülke için bölge yok',
@@ -677,6 +797,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_no_regions_pick_country': {
     'en': 'No regions — select a country first',
+    'pt': 'Não regions — select a country first',
+    'fr': 'Non regions — select a country first',
     'ar': 'لا توجد مناطق — اختر الدولة أولاً',
     'zh_Hans': '没有地区 — 请先选择国家',
     'tr': 'Bölge yok — önce ülke seçin',
@@ -688,6 +810,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_pick_country_filter_regions': {
     'en': 'Select a country first to filter regions',
+    'pt': 'Select a country first to filter regions',
+    'fr': 'Select a country first to filter regions',
     'ar': 'اختر الدولة أولاً لتصفية المناطق',
     'zh_Hans': '请先选择国家以筛选地区',
     'tr': 'Bölgeleri filtrelemek için önce ülke seçin',
@@ -699,6 +823,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_no_cities': {
     'en': 'No cities available',
+    'pt': 'Não cities available',
+    'fr': 'Non cities available',
     'ar': 'لا توجد مدن متاحة',
     'zh_Hans': '没有可用城市',
     'tr': 'Kullanılabilir şehir yok',
@@ -710,6 +836,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_agent_cities_only': {
     'en': 'Showing cities in the agent country only',
+    'pt': 'Showing cities in the agent country only',
+    'fr': 'Showing cities in the agent country only',
     'ar': 'عرض مدن الدولة المحددة للوكيل فقط',
     'zh_Hans': '仅显示代理所在国家的城市',
     'tr': 'Yalnızca acentenin ülkesindeki şehirler gösteriliyor',
@@ -721,6 +849,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_region_filter_cities': {
     'en': 'You can select a region first to filter cities',
+    'pt': 'You can select a region first to filter cities',
+    'fr': 'You can select a region first to filter cities',
     'ar': 'يمكنك اختيار منطقة أولاً لتصفية المدن',
     'zh_Hans': '可先选择地区以筛选城市',
     'tr': 'Şehirleri filtrelemek için önce bölge seçebilirsiniz',
@@ -734,6 +864,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // List / network
   'adm_server_refresh_failed': {
     'en': 'Could not refresh data from server',
+    'pt': 'Could not refresh data from server',
+    'fr': 'Could not refresh data from server',
     'ar': 'تعذر تحديث البيانات من الخادم',
     'zh_Hans': '无法从服务器刷新数据',
     'tr': 'Sunucudan veri yenilenemedi',
@@ -745,6 +877,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_load_failed_network': {
     'en': 'Could not load data. Check your connection and try again.',
+    'pt': 'Could not load data. Check your connection and try again.',
+    'fr': 'Could not load data. Check your connection and try again.',
     'ar': 'تعذر تحميل البيانات. تحقق من الاتصال وحاول مرة أخرى.',
     'zh_Hans': '无法加载数据。请检查网络后重试。',
     'tr': 'Veri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.',
@@ -757,6 +891,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_load_more_failed': {
     'en': 'Could not load more records',
+    'pt': 'Não foi possível carregar mais registros',
+    'fr': 'Impossible de charger plus d\'enregistrements',
     'ar': 'تعذر تحميل المزيد من السجلات',
     'zh_Hans': '无法加载更多记录',
     'tr': 'Daha fazla kayıt yüklenemedi',
@@ -768,6 +904,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_load_failed': {
     'en': 'Could not load data',
+    'pt': 'Não foi possível carregar os dados',
+    'fr': 'Impossible de charger les données',
     'ar': 'تعذر تحميل البيانات',
     'zh_Hans': '无法加载数据',
     'tr': 'Veri yüklenemedi',
@@ -779,6 +917,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_records_shown': {
     'en': 'Showing %s records',
+    'pt': 'Mostrando %s registros',
+    'fr': 'Affichage de %s enregistrements',
     'ar': 'تم عرض %s سجل',
     'zh_Hans': '已显示 %s 条记录',
     'tr': '%s kayıt gösteriliyor',
@@ -792,6 +932,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // Add screens
   'adm_add_region_title': {
     'en': 'Add new region',
+    'pt': 'Adicionar new region',
+    'fr': 'Ajouter new region',
     'ar': 'إضافة منطقة جديدة',
     'zh_Hans': '添加新地区',
     'tr': 'Yeni bölge ekle',
@@ -803,6 +945,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_add_region_subtitle_agent': {
     'en': 'Agent country is fixed — enter region details',
+    'pt': 'Agent country is fixed — enter region details',
+    'fr': 'Agent country is fixed — enter region details',
     'ar': 'دولة الوكيل ثابتة — أدخل بيانات المنطقة / المحافظة',
     'zh_Hans': '代理国家已固定 — 请输入地区信息',
     'tr': 'Acente ülkesi sabit — bölge bilgilerini girin',
@@ -814,6 +958,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_add_region_subtitle': {
     'en': 'Select a country, then enter region details',
+    'pt': 'Select a country, then enter region details',
+    'fr': 'Select a country, then enter region details',
     'ar': 'اختر الدولة ثم أدخل بيانات المنطقة / المحافظة',
     'zh_Hans': '选择国家后输入地区信息',
     'tr': 'Ülke seçin, ardından bölge bilgilerini girin',
@@ -825,6 +971,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_save_region': {
     'en': 'Save region',
+    'pt': 'Salvar region',
+    'fr': 'Enregistrer region',
     'ar': 'حفظ المنطقة',
     'zh_Hans': '保存地区',
     'tr': 'Bölgeyi kaydet',
@@ -836,6 +984,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_region_added': {
     'en': 'Region added successfully',
+    'pt': 'Região adicionada com sucesso',
+    'fr': 'Région ajoutée avec succès',
     'ar': 'تم إضافة المنطقة بنجاح',
     'zh_Hans': '地区添加成功',
     'tr': 'Bölge başarıyla eklendi',
@@ -847,6 +997,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_add_city_title': {
     'en': 'Add new city',
+    'pt': 'Adicionar new city',
+    'fr': 'Ajouter new city',
     'ar': 'إضافة مدينة جديدة',
     'zh_Hans': '添加新城市',
     'tr': 'Yeni şehir ekle',
@@ -858,6 +1010,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_add_city_subtitle_agent': {
     'en': 'Agent country is fixed — select a region, then enter city details',
+    'pt': 'Agent country is fixed — select a region, then enter city details',
+    'fr': 'Agent country is fixed — select a region, then enter city details',
     'ar': 'دولة الوكيل ثابتة — اختر المنطقة ثم أدخل بيانات المدينة',
     'zh_Hans': '代理国家已固定 — 选择地区后输入城市信息',
     'tr': 'Acente ülkesi sabit — bölge seçin, ardından şehir bilgilerini girin',
@@ -872,6 +1026,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_add_city_subtitle': {
     'en': 'Select country and region, then enter city details',
+    'pt': 'Select country and region, then enter city details',
+    'fr': 'Select country and region, then enter city details',
     'ar': 'اختر الدولة والمنطقة ثم أدخل بيانات المدينة',
     'zh_Hans': '选择国家和地区后输入城市信息',
     'tr': 'Ülke ve bölge seçin, ardından şehir bilgilerini girin',
@@ -883,6 +1039,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_save_city': {
     'en': 'Save city',
+    'pt': 'Salvar city',
+    'fr': 'Enregistrer city',
     'ar': 'حفظ المدينة',
     'zh_Hans': '保存城市',
     'tr': 'Şehri kaydet',
@@ -894,6 +1052,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_city_added': {
     'en': 'City added successfully',
+    'pt': 'Cidade added successfully',
+    'fr': 'Ville added successfully',
     'ar': 'تم إضافة المدينة بنجاح',
     'zh_Hans': '城市添加成功',
     'tr': 'Şehir başarıyla eklendi',
@@ -905,6 +1065,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_region_image': {
     'en': 'Region image',
+    'pt': 'Imagem da região',
+    'fr': 'Image de la région',
     'ar': 'صورة المنطقة',
     'zh_Hans': '地区图片',
     'tr': 'Bölge görseli',
@@ -916,6 +1078,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_city_image': {
     'en': 'City image',
+    'pt': 'Cidade image',
+    'fr': 'Ville image',
     'ar': 'صورة المدينة',
     'zh_Hans': '城市图片',
     'tr': 'Şehir görseli',
@@ -927,6 +1091,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_pick_region_image': {
     'en': 'Tap to choose a region image',
+    'pt': 'Tap to choose a region image',
+    'fr': 'Tap to choose a region image',
     'ar': 'اضغط لاختيار صورة المنطقة',
     'zh_Hans': '点击选择地区图片',
     'tr': 'Bölge görseli seçmek için dokunun',
@@ -938,6 +1104,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_pick_city_image': {
     'en': 'Tap to choose a city image',
+    'pt': 'Toque para escolher uma imagem da cidade',
+    'fr': 'Appuyez pour choisir une image de ville',
     'ar': 'اضغط لاختيار صورة المدينة',
     'zh_Hans': '点击选择城市图片',
     'tr': 'Şehir görseli seçmek için dokunun',
@@ -949,6 +1117,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_region_name_label': {
     'en': 'Region / province name',
+    'pt': 'Nome da região / província',
+    'fr': 'Nom de la région / province',
     'ar': 'اسم المنطقة / المحافظة',
     'zh_Hans': '地区/省名称',
     'tr': 'Bölge / il adı',
@@ -960,6 +1130,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_region_name_hint': {
     'en': 'e.g. Riyadh Region',
+    'pt': 'ex.: Região de Riade',
+    'fr': 'ex. Région de Riyad',
     'ar': 'مثال: منطقة الرياض',
     'zh_Hans': '例如：利雅得地区',
     'tr': 'örn. Riyad Bölgesi',
@@ -971,6 +1143,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_city_name_label': {
     'en': 'City name',
+    'pt': 'Cidade name',
+    'fr': 'Ville name',
     'ar': 'اسم المدينة',
     'zh_Hans': '城市名称',
     'tr': 'Şehir adı',
@@ -982,6 +1156,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_city_name_hint': {
     'en': 'e.g. Riyadh',
+    'pt': 'ex.: Riade',
+    'fr': 'ex. Riyad',
     'ar': 'مثال: الرياض',
     'zh_Hans': '例如：利雅得',
     'tr': 'örn. Riyad',
@@ -993,6 +1169,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_region_desc_label': {
     'en': 'Region description (optional)',
+    'pt': 'Region description (optional)',
+    'fr': 'Region description (optional)',
     'ar': 'وصف المنطقة (اختياري)',
     'zh_Hans': '地区描述（可选）',
     'tr': 'Bölge açıklaması (isteğe bağlı)',
@@ -1004,6 +1182,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_city_desc_label': {
     'en': 'City description (optional)',
+    'pt': 'Cidade description (optional)',
+    'fr': 'Ville description (optional)',
     'ar': 'وصف المدينة (اختياري)',
     'zh_Hans': '城市描述（可选）',
     'tr': 'Şehir açıklaması (isteğe bağlı)',
@@ -1015,6 +1195,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_activate_region': {
     'en': 'Activate region',
+    'pt': 'Ativar região',
+    'fr': 'Activer la région',
     'ar': 'تفعيل المنطقة',
     'zh_Hans': '启用地区',
     'tr': 'Bölgeyi etkinleştir',
@@ -1026,6 +1208,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_activate_city': {
     'en': 'Activate city',
+    'pt': 'Ativar cidade',
+    'fr': 'Activer la ville',
     'ar': 'تفعيل المدينة',
     'zh_Hans': '启用城市',
     'tr': 'Şehri etkinleştir',
@@ -1037,6 +1221,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_region_visible_hint': {
     'en': 'Region appears in the app when active',
+    'pt': 'Region appears in the app when active',
+    'fr': 'Region appears in the app when active',
     'ar': 'تظهر المنطقة في التطبيق عند التفعيل',
     'zh_Hans': '启用后地区将在应用中显示',
     'tr': 'Etkinleştirildiğinde bölge uygulamada görünür',
@@ -1048,6 +1234,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_city_visible_hint': {
     'en': 'City appears in the app when active',
+    'pt': 'Cidade appears in the app when active',
+    'fr': 'Ville appears in the app when active',
     'ar': 'تظهر المدينة في التطبيق عند التفعيل',
     'zh_Hans': '启用后城市将在应用中显示',
     'tr': 'Etkinleştirildiğinde şehir uygulamada görünür',
@@ -1059,6 +1247,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_no_cities_agent_country': {
     'en': 'No cities in the agent country',
+    'pt': 'Não cities in the agent country',
+    'fr': 'Non cities in the agent country',
     'ar': 'لا توجد مدن في دولة الوكيل',
     'zh_Hans': '代理所在国家没有城市',
     'tr': 'Acente ülkesinde şehir yok',
@@ -1070,6 +1260,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_no_cities_in_region': {
     'en': 'No cities in this region',
+    'pt': 'Não cities in this region',
+    'fr': 'Non cities in this region',
     'ar': 'لا توجد مدن في هذه المنطقة',
     'zh_Hans': '该地区没有城市',
     'tr': 'Bu bölgede şehir yok',
@@ -1081,6 +1273,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_search_work_city': {
     'en': 'Search work city...',
+    'pt': 'Pesquisar work city...',
+    'fr': 'Rechercher work city...',
     'ar': 'بحث عن مدينة عمل...',
     'zh_Hans': '搜索工作城市...',
     'tr': 'Çalışma şehri ara...',
@@ -1092,6 +1286,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_search_car_type': {
     'en': 'Search car type...',
+    'pt': 'Pesquisar car type...',
+    'fr': 'Rechercher car type...',
     'ar': 'بحث عن نوع سيارة...',
     'zh_Hans': '搜索车型...',
     'tr': 'Araç tipi ara...',
@@ -1103,6 +1299,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_no_car_types': {
     'en': 'No car types available',
+    'pt': 'Não car types available',
+    'fr': 'Non car types available',
     'ar': 'لا توجد أنواع سيارات متاحة',
     'zh_Hans': '没有可用车型',
     'tr': 'Kullanılabilir araç tipi yok',
@@ -1114,6 +1312,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_price_per_hour': {
     'en': '%s SAR / hour',
+    'pt': '%s SAR / hour',
+    'fr': '%s SAR / hour',
     'ar': '%s ريال / ساعة',
     'zh_Hans': '%s 沙特里亚尔/小时',
     'tr': '%s SAR / saat',
@@ -1125,6 +1325,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_short_desc': {
     'en': 'Short description',
+    'pt': 'Descrição curta',
+    'fr': 'Description courte',
     'ar': 'وصف مختصر',
     'zh_Hans': '简短描述',
     'tr': 'Kısa açıklama',
@@ -1136,6 +1338,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_city_desc_hint': {
     'en': 'Brief description of the city',
+    'pt': 'Brief description of the city',
+    'fr': 'Brief description of the city',
     'ar': 'وصف مختصر عن المدينة',
     'zh_Hans': '城市简要描述',
     'tr': 'Şehir hakkında kısa açıklama',
@@ -1147,6 +1351,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_data_refresh_failed': {
     'en': 'Could not refresh data',
+    'pt': 'Não foi possível atualizar os dados',
+    'fr': 'Impossible d\'actualiser les données',
     'ar': 'تعذر تحديث البيانات',
     'zh_Hans': '无法刷新数据',
     'tr': 'Veri yenilenemedi',
@@ -1158,6 +1364,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_stop_confirm_body': {
     'en': 'Are you sure you want to deactivate "%s"?',
+    'pt': 'Are you sure you want to deactivate "%s"?',
+    'fr': 'Are you sure you want to deactivate "%s"?',
     'ar': 'هل أنت متأكد من إيقاف "%s"؟',
     'zh_Hans': '确定要停用“%s”吗？',
     'tr': '"%s" devre dışı bırakılsın mı?',
@@ -1169,6 +1377,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_delete_agent_body': {
     'en': 'Are you sure you want to delete agent "%s"?',
+    'pt': 'Are you sure you want to delete agent "%s"?',
+    'fr': 'Are you sure you want to delete agent "%s"?',
     'ar': 'هل أنت متأكد من حذف الوكيل "%s"؟',
     'zh_Hans': '确定要删除代理“%s”吗？',
     'tr': '"%s" acentesini silmek istediğinizden emin misiniz?',
@@ -1180,6 +1390,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_phone_label': {
     'en': 'Phone: %s',
+    'pt': 'Telefone: %s',
+    'fr': 'Téléphone: %s',
     'ar': 'جوال: %s',
     'zh_Hans': '手机：%s',
     'tr': 'Telefon: %s',
@@ -1191,6 +1403,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_image_format_unsupported': {
     'en': 'Unsupported image format. Use JPG or PNG',
+    'pt': 'Unsupported image format. Use JPG or PNG',
+    'fr': 'Unsupported image format. Use JPG or PNG',
     'ar': 'صيغة الصورة غير مدعومة. استخدم JPG أو PNG',
     'zh_Hans': '不支持的图片格式，请使用 JPG 或 PNG',
     'tr': 'Desteklenmeyen görsel formatı. JPG veya PNG kullanın',
@@ -1202,6 +1416,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_load_courier_failed': {
     'en': 'Could not load courier data',
+    'pt': 'Não foi possível carregar dados do courier',
+    'fr': 'Impossible de charger les données du coursier',
     'ar': 'تعذر تحميل بيانات المندوب',
     'zh_Hans': '无法加载快递员数据',
     'tr': 'Kurye verileri yüklenemedi',
@@ -1213,6 +1429,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_save_account_failed': {
     'en': 'Could not save account data',
+    'pt': 'Não foi possível salvar os dados da conta',
+    'fr': 'Impossible d\'enregistrer les données du compte',
     'ar': 'تعذر حفظ بيانات الحساب',
     'zh_Hans': '无法保存账户数据',
     'tr': 'Hesap verileri kaydedilemedi',
@@ -1224,6 +1442,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_update_driver_status_failed': {
     'en': 'Could not update driver status',
+    'pt': 'Could not update driver status',
+    'fr': 'Could not update driver status',
     'ar': 'تعذر تحديث حالة السائق',
     'zh_Hans': '无法更新司机状态',
     'tr': 'Sürücü durumu güncellenemedi',
@@ -1235,6 +1455,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_update_ticket_failed': {
     'en': 'Could not update ticket',
+    'pt': 'Não foi possível atualizar o ticket',
+    'fr': 'Impossible de mettre à jour le ticket',
     'ar': 'تعذر تحديث التذكرة',
     'zh_Hans': '无法更新工单',
     'tr': 'Bilet güncellenemedi',
@@ -1246,6 +1468,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_update_city_status_failed': {
     'en': 'Could not update city status',
+    'pt': 'Não foi possível atualizar o status da cidade',
+    'fr': 'Impossible de mettre à jour le statut de la ville',
     'ar': 'تعذر تحديث حالة المدينة',
     'zh_Hans': '无法更新城市状态',
     'tr': 'Şehir durumu güncellenemedi',
@@ -1257,6 +1481,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_save_data_failed': {
     'en': 'Could not save data',
+    'pt': 'Não foi possível salvar os dados',
+    'fr': 'Impossible d\'enregistrer les données',
     'ar': 'تعذر حفظ البيانات',
     'zh_Hans': '无法保存数据',
     'tr': 'Veri kaydedilemedi',
@@ -1268,6 +1494,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_password_update_failed': {
     'en': 'Could not update password',
+    'pt': 'Não foi possível atualizar a senha',
+    'fr': 'Impossible de mettre à jour le mot de passe',
     'ar': 'تعذر تحديث كلمة المرور',
     'zh_Hans': '无法更新密码',
     'tr': 'Şifre güncellenemedi',
@@ -1279,6 +1507,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_deactivate_failed': {
     'en': 'Could not deactivate',
+    'pt': 'Não foi possível desativar',
+    'fr': 'Impossible de désactiver',
     'ar': 'تعذر الإيقاف',
     'zh_Hans': '无法停用',
     'tr': 'Devre dışı bırakılamadı',
@@ -1292,6 +1522,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // Driver activation / review
   'adm_drv_reason_hint': {
     'en': 'Write a clear reason for the driver',
+    'pt': 'Write a clear reason for the driver',
+    'fr': 'Write a clear reason for the driver',
     'ar': 'اكتب السبب بوضوح للمندوب',
     'zh_Hans': '请为司机填写明确原因',
     'tr': 'Sürücü için net bir neden yazın',
@@ -1303,6 +1535,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_reject_title': {
     'en': 'Reject driver application',
+    'pt': 'Recusar driver application',
+    'fr': 'Refuser driver application',
     'ar': 'رفض طلب المندوب',
     'zh_Hans': '拒绝司机申请',
     'tr': 'Sürücü başvurusunu reddet',
@@ -1314,6 +1548,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_request_changes_title': {
     'en': 'Request changes from driver',
+    'pt': 'Solicitar alterações ao motorista',
+    'fr': 'Demander des modifications au chauffeur',
     'ar': 'طلب تعديلات من المندوب',
     'zh_Hans': '要求司机修改资料',
     'tr': 'Sürücüden düzeltme iste',
@@ -1325,6 +1561,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_activated_title': {
     'en': 'Activated',
+    'pt': 'Ativado',
+    'fr': 'Activé',
     'ar': 'تم التفعيل',
     'zh_Hans': '已激活',
     'tr': 'Etkinleştirildi',
@@ -1336,6 +1574,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_activated_body': {
     'en': 'Driver activated successfully',
+    'pt': 'Motorista activated successfully',
+    'fr': 'Chauffeur activated successfully',
     'ar': 'تم تفعيل المندوب بنجاح',
     'zh_Hans': '司机已成功激活',
     'tr': 'Sürücü başarıyla etkinleştirildi',
@@ -1347,6 +1587,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_request_changes_btn': {
     'en': 'Request changes',
+    'pt': 'Solicitar alterações',
+    'fr': 'Demander des modifications',
     'ar': 'طلب تعديلات',
     'zh_Hans': '要求修改',
     'tr': 'Düzeltme iste',
@@ -1358,6 +1600,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_reject_btn': {
     'en': 'Reject application',
+    'pt': 'Recusar application',
+    'fr': 'Refuser application',
     'ar': 'رفض الطلب',
     'zh_Hans': '拒绝申请',
     'tr': 'Başvuruyu reddet',
@@ -1369,6 +1613,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_select_work_city': {
     'en': 'Please select work city',
+    'pt': 'Por favor select work city',
+    'fr': 'Veuillez select work city',
     'ar': 'يرجى تحديد مدينة العمل',
     'zh_Hans': '请选择工作城市',
     'tr': 'Lütfen çalışma şehrini seçin',
@@ -1380,6 +1626,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_select_car_type': {
     'en': 'Please select vehicle type',
+    'pt': 'Por favor select vehicle type',
+    'fr': 'Veuillez select vehicle type',
     'ar': 'يرجى تحديد نوع السيارة',
     'zh_Hans': '请选择车型',
     'tr': 'Lütfen araç tipini seçin',
@@ -1391,6 +1639,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_blocker_suspended': {
     'en': 'Account is suspended or blocked',
+    'pt': 'Account is suspended or blocked',
+    'fr': 'Account is suspended or blocked',
     'ar': 'الحساب موقوف أو محظور',
     'zh_Hans': '账户已停用或被封禁',
     'tr': 'Hesap askıya alınmış veya engellenmiş',
@@ -1402,6 +1652,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_blocker_work_area': {
     'en': 'Work area (city/village) is required',
+    'pt': 'Work area (city/village) is required',
+    'fr': 'Work area (city/village) is required',
     'ar': 'يجب تحديد منطقة العمل (القرية/المدينة)',
     'zh_Hans': '必须指定工作区域（城市/村庄）',
     'tr': 'Çalışma bölgesi (şehir/köy) zorunludur',
@@ -1413,6 +1665,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_blocker_vehicle_type': {
     'en': 'Vehicle type is required',
+    'pt': 'O tipo de veículo é obrigatório',
+    'fr': 'Le type de véhicule est requis',
     'ar': 'يجب تحديد نوع المركبة',
     'zh_Hans': '必须指定车型',
     'tr': 'Araç tipi zorunludur',
@@ -1424,6 +1678,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_blocker_photo': {
     'en': 'Profile photo is required',
+    'pt': 'Perfil photo is required',
+    'fr': 'Profil photo is required',
     'ar': 'صورة الملف الشخصي مطلوبة',
     'zh_Hans': '需要头像照片',
     'tr': 'Profil fotoğrafı zorunludur',
@@ -1435,6 +1691,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_blocker_id_doc': {
     'en': 'Identity document is required',
+    'pt': 'Identity document is required',
+    'fr': 'Identity document is required',
     'ar': 'مستند الهوية مطلوب',
     'zh_Hans': '需要身份证件',
     'tr': 'Kimlik belgesi zorunludur',
@@ -1446,6 +1704,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_blocker_open_changes': {
     'en': 'There are unresolved change requests',
+    'pt': 'There are unresolved change requests',
+    'fr': 'There are unresolved change requests',
     'ar': 'توجد طلبات تعديل مفتوحة',
     'zh_Hans': '仍有未处理的修改请求',
     'tr': 'Açık düzeltme talepleri var',
@@ -1459,6 +1719,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // Driver profile activate / suspend dialogs
   'adm_drv_suspend_title': {
     'en': 'Suspend driver',
+    'pt': 'Suspender motorista',
+    'fr': 'Suspendre le chauffeur',
     'ar': 'إيقاف المندوب',
     'zh_Hans': '停用司机',
     'tr': 'Sürücüyü askıya al',
@@ -1470,6 +1732,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_suspend_body': {
     'en': 'Are you sure you want to suspend this driver?',
+    'pt': 'Are you sure you want to suspend this driver?',
+    'fr': 'Are you sure you want to suspend this driver?',
     'ar': 'هل أنت متأكد من إيقاف المندوب؟',
     'zh_Hans': '确定要停用此司机吗？',
     'tr': 'Bu sürücüyü askıya almak istediğinize emin misiniz?',
@@ -1481,6 +1745,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_suspend_success': {
     'en': 'Driver suspended',
+    'pt': 'Motorista suspended',
+    'fr': 'Chauffeur suspended',
     'ar': 'تم إيقاف المندوب',
     'zh_Hans': '司机已停用',
     'tr': 'Sürücü askıya alındı',
@@ -1492,6 +1758,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_activate_profile_title': {
     'en': 'Activate driver',
+    'pt': 'Ativar motorista',
+    'fr': 'Activer le chauffeur',
     'ar': 'تفعيل المندوب',
     'zh_Hans': '激活司机',
     'tr': 'Sürücüyü etkinleştir',
@@ -1503,6 +1771,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_drv_activate_profile_body': {
     'en': 'Are you sure you want to activate this driver?',
+    'pt': 'Are you sure you want to activate this driver?',
+    'fr': 'Are you sure you want to activate this driver?',
     'ar': 'هل أنت متأكد من تفعيل المندوب؟',
     'zh_Hans': '确定要激活此司机吗？',
     'tr': 'Bu sürücüyü etkinleştirmek istediğinize emin misiniz?',
@@ -1516,6 +1786,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // Login / password reset
   'adm_login_enter_email_first': {
     'en': 'Please enter your email first',
+    'pt': 'Por favor enter your email first',
+    'fr': 'Veuillez enter your email first',
     'ar': 'يرجى إدخال البريد الإلكتروني أولاً',
     'zh_Hans': '请先输入邮箱',
     'tr': 'Lütfen önce e-postanızı girin',
@@ -1527,6 +1799,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_login_reset_sent': {
     'en': 'Password reset link sent to your email',
+    'pt': 'Password reset link sent to your email',
+    'fr': 'Password reset link sent to your email',
     'ar': 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك',
     'zh_Hans': '密码重置链接已发送到您的邮箱',
     'tr': 'Şifre sıfırlama bağlantısı e-postanıza gönderildi',
@@ -1538,6 +1812,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_login_profile_failed': {
     'en': 'Could not load account data. Check your connection and try again.',
+    'pt': 'Could not load account data. Check your connection and try again.',
+    'fr': 'Could not load account data. Check your connection and try again.',
     'ar': 'تعذر تحميل بيانات الحساب. تحقق من الاتصال وحاول مرة أخرى.',
     'zh_Hans': '无法加载账户数据。请检查网络后重试。',
     'tr':
@@ -1555,6 +1831,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   'adm_login_unauthorized': {
     'en':
         'This account is not authorized for the admin panel. The account must be activated with one of these roles: Super Admin, Country Agent, Partner, or Transport Company Manager.',
+    'pt': 'This account is not authorized for the admin panel. The account must be activated with one of these roles: Super Admin, País Agent, Partner, or Transport Company Manager.',
+    'fr': 'This account is not authorized for the admin panel. The account must be activated with one of these roles: Super Admin, Pays Agent, Partner, or Transport Company Manager.',
     'ar':
         'هذا الحساب لا يملك صلاحية الدخول للوحة الإدارة. يجب أن يكون الحساب مفعّلاً بأحد الأدوار: سوبر أدمن، وكيل دولة، شريك، أو مدير شركة نقل.',
     'zh_Hans': '此账户无权访问管理面板。账户须激活为以下角色之一：超级管理员、国家代理、合作伙伴或运输公司经理。',
@@ -1573,6 +1851,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_login_nav_failed': {
     'en': 'Could not open the control panel. Please try again.',
+    'pt': 'Could not open the control panel. Por favor try again.',
+    'fr': 'Could not open the control panel. Veuillez try again.',
     'ar': 'تعذر فتح لوحة التحكم. حاول مرة أخرى.',
     'zh_Hans': '无法打开控制面板。请重试。',
     'tr': 'Kontrol paneli açılamadı. Lütfen tekrar deneyin.',
@@ -1584,6 +1864,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_unauthorized_title': {
     'en': 'Unauthorized',
+    'pt': 'Não autorizado',
+    'fr': 'Non autorisé',
     'ar': 'غير مصرّح',
     'zh_Hans': '未授权',
     'tr': 'Yetkisiz',
@@ -1595,6 +1877,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_login_user_not_found': {
     'en': 'No account found with this email.',
+    'pt': 'Não account found with this email.',
+    'fr': 'Non account found with this email.',
     'ar': 'لا يوجد حساب بهذا البريد الإلكتروني.',
     'zh_Hans': '未找到使用此邮箱的账户。',
     'tr': 'Bu e-posta ile kayıtlı hesap bulunamadı.',
@@ -1606,6 +1890,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_login_wrong_password': {
     'en': 'Incorrect email or password.',
+    'pt': 'Incorrect email or password.',
+    'fr': 'Incorrect email or password.',
     'ar': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
     'zh_Hans': '邮箱或密码不正确。',
     'tr': 'E-posta veya şifre hatalı.',
@@ -1617,6 +1903,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_login_invalid_email': {
     'en': 'Invalid email address.',
+    'pt': 'Endereço de e-mail inválido.',
+    'fr': 'Adresse e-mail invalide.',
     'ar': 'البريد الإلكتروني غير صالح.',
     'zh_Hans': '邮箱地址无效。',
     'tr': 'Geçersiz e-posta adresi.',
@@ -1628,6 +1916,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_login_user_disabled': {
     'en': 'This account has been disabled.',
+    'pt': 'This account has been disabled.',
+    'fr': 'This account has been disabled.',
     'ar': 'تم تعطيل هذا الحساب.',
     'zh_Hans': '此账户已被禁用。',
     'tr': 'Bu hesap devre dışı bırakıldı.',
@@ -1639,6 +1929,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_login_too_many_requests': {
     'en': 'Too many attempts. Please try again later.',
+    'pt': 'Too many attempts. Por favor try again later.',
+    'fr': 'Too many attempts. Veuillez try again later.',
     'ar': 'محاولات كثيرة جداً. حاول لاحقاً.',
     'zh_Hans': '尝试次数过多。请稍后再试。',
     'tr': 'Çok fazla deneme. Lütfen daha sonra tekrar deneyin.',
@@ -1650,6 +1942,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_login_email_in_use': {
     'en': 'This email is already in use.',
+    'pt': 'This email is already in use.',
+    'fr': 'This email is already in use.',
     'ar': 'هذا البريد الإلكتروني مستخدم مسبقاً.',
     'zh_Hans': '此邮箱已被使用。',
     'tr': 'Bu e-posta zaten kullanılıyor.',
@@ -1661,6 +1955,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_login_weak_password': {
     'en': 'Password is too weak.',
+    'pt': 'A senha é muito fraca.',
+    'fr': 'Le mot de passe est trop faible.',
     'ar': 'كلمة المرور ضعيفة جداً.',
     'zh_Hans': '密码太弱。',
     'tr': 'Şifre çok zayıf.',
@@ -1674,6 +1970,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // Generic user-facing errors
   'adm_err_permission': {
     'en': 'Permission denied.',
+    'pt': 'Permissão negada.',
+    'fr': 'Permission refusée.',
     'ar': 'ليس لديك صلاحية.',
     'zh_Hans': '没有权限。',
     'tr': 'İzin reddedildi.',
@@ -1685,6 +1983,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_err_not_found': {
     'en': 'Not found.',
+    'pt': 'Nãot found.',
+    'fr': 'Nont found.',
     'ar': 'غير موجود.',
     'zh_Hans': '未找到。',
     'tr': 'Bulunamadı.',
@@ -1696,6 +1996,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_err_network': {
     'en': 'Network error. Check your connection.',
+    'pt': 'Network error. Check your connection.',
+    'fr': 'Network error. Check your connection.',
     'ar': 'خطأ في الشبكة. تحقق من الاتصال.',
     'zh_Hans': '网络错误。请检查连接。',
     'tr': 'Ağ hatası. Bağlantınızı kontrol edin.',
@@ -1707,6 +2009,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_err_unavailable': {
     'en': 'Service temporarily unavailable.',
+    'pt': 'Service temporarily unavailable.',
+    'fr': 'Service temporarily unavailable.',
     'ar': 'الخدمة غير متاحة مؤقتاً.',
     'zh_Hans': '服务暂时不可用。',
     'tr': 'Hizmet geçici olarak kullanılamıyor.',
@@ -1718,6 +2022,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_err_generic': {
     'en': 'Something went wrong. Please try again.',
+    'pt': 'Something went wrong. Por favor try again.',
+    'fr': 'Something went wrong. Veuillez try again.',
     'ar': 'حدث خطأ. حاول مرة أخرى.',
     'zh_Hans': '出了点问题。请重试。',
     'tr': 'Bir şeyler ters gitti. Lütfen tekrar deneyin.',
@@ -1729,6 +2035,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_err_already_exists': {
     'en': 'This record already exists.',
+    'pt': 'Este registro já existe.',
+    'fr': 'Cet enregistrement existe déjà.',
     'ar': 'هذا السجل موجود مسبقاً.',
     'zh_Hans': '该记录已存在。',
     'tr': 'Bu kayıt zaten mevcut.',
@@ -1740,6 +2048,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_err_invalid_argument': {
     'en': 'Invalid data. Please check the form.',
+    'pt': 'Invalid data. Por favor check the form.',
+    'fr': 'Invalid data. Veuillez check the form.',
     'ar': 'بيانات غير صالحة. تحقق من النموذج.',
     'zh_Hans': '数据无效。请检查表单。',
     'tr': 'Geçersiz veri. Lütfen formu kontrol edin.',
@@ -1751,6 +2061,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_err_unauthenticated': {
     'en': 'Please sign in before uploading.',
+    'pt': 'Por favor sign in before uploading.',
+    'fr': 'Veuillez sign in before uploading.',
     'ar': 'يجب تسجيل الدخول قبل رفع الصورة.',
     'zh_Hans': '请先登录再上传。',
     'tr': 'Yüklemeden önce giriş yapın.',
@@ -1762,6 +2074,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_err_canceled': {
     'en': 'Upload canceled.',
+    'pt': 'Upload cancelado.',
+    'fr': 'Téléversement annulé.',
     'ar': 'تم إلغاء الرفع.',
     'zh_Hans': '上传已取消。',
     'tr': 'Yükleme iptal edildi.',
@@ -1773,6 +2087,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_err_empty_file': {
     'en': 'Could not read the image. Try another file.',
+    'pt': 'Could not read the image. Try another file.',
+    'fr': 'Could not read the image. Try another file.',
     'ar': 'لم يتم قراءة الصورة من المعرض. جرّب صورة أخرى.',
     'zh_Hans': '无法读取图片，请换一张。',
     'tr': 'Görsel okunamadı. Başka bir dosya deneyin.',
@@ -1785,6 +2101,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   'adm_err_storage_quota': {
     'en':
         'Firebase Storage quota for this project is exceeded. Free this space in Firebase Console → Storage, or enable the Blaze plan. This is a project limit, not an app bug.',
+    'pt': 'Firebase Storage quota for this project is exceeded. Free this space in Firebase Console → Storage, or enable the Blaze plan. This is a project limit, not an app bug.',
+    'fr': 'Firebase Storage quota for this project is exceeded. Free this space in Firebase Console → Storage, or enable the Blaze plan. This is a project limit, not an app bug.',
     'ar':
         'تم تجاوز حصة Firebase Storage لهذا المشروع. حرّر مساحة من Console → Storage أو فعّل خطة Blaze. هذا حد على المشروع وليس خطأ في التطبيق.',
     'zh_Hans':
@@ -1805,6 +2123,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   'adm_err_storage_billing': {
     'en':
         'Firebase Storage billing is not active. Enable Blaze (pay as you go) for this Firebase project, then try again.',
+    'pt': 'Firebase Storage billing is not active. Enable Blaze (pay as you go) for this Firebase project, then try again.',
+    'fr': 'Firebase Storage billing is not active. Enable Blaze (pay as you go) for this Firebase project, then try again.',
     'ar':
         'فوترة Firebase Storage غير مفعّلة. فعّل خطة Blaze لهذا المشروع ثم أعد المحاولة.',
     'zh_Hans': '未启用 Firebase Storage 计费。请为此项目启用 Blaze，然后重试。',
@@ -1824,6 +2144,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   'adm_storage_fallback_saved': {
     'en':
         'Photo saved to your account (offline fallback). Cloud Storage quota/billing is blocking uploads — fix it in Firebase Console to use Storage URLs.',
+    'pt': 'Photo saved to your account (offline fallback). Cloud Storage quota/billing is blocking uploads — fix it in Firebase Console to use Storage URLs.',
+    'fr': 'Photo saved to your account (offline fallback). Cloud Storage quota/billing is blocking uploads — fix it in Firebase Console to use Storage URLs.',
     'ar':
         'تم حفظ الصورة في حسابك (وضع احتياطي). حصة/فوترة Firebase Storage تمنع الرفع السحابي — عالجها من Console لاستخدام روابط Storage.',
     'zh_Hans':
@@ -1845,6 +2167,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   // Car type form labels
   'adm_car_name_en': {
     'en': 'Car Name (English)',
+    'pt': 'Nome do carro (inglês)',
+    'fr': 'Nom de la voiture (anglais)',
     'ar': 'اسم السيارة (إنجليزي)',
     'zh_Hans': '车名（英语）',
     'tr': 'Araç adı (İngilizce)',
@@ -1856,6 +2180,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_car_name_ru': {
     'en': 'Car Name (Russian)',
+    'pt': 'Nome do carro (russo)',
+    'fr': 'Nom de la voiture (russe)',
     'ar': 'اسم السيارة (روسي)',
     'zh_Hans': '车名（俄语）',
     'tr': 'Araç adı (Rusça)',
@@ -1867,6 +2193,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_car_name_ky': {
     'en': 'Car Name (Kyrgyz)',
+    'pt': 'Nome do carro (quirguiz)',
+    'fr': 'Nom de la voiture (kirghize)',
     'ar': 'اسم السيارة (قرغيزي)',
     'zh_Hans': '车名（吉尔吉斯语）',
     'tr': 'Araç adı (Kırgızca)',
@@ -1878,6 +2206,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_vehicle_code': {
     'en': 'Vehicle Code',
+    'pt': 'Código do veículo',
+    'fr': 'Code véhicule',
     'ar': 'رمز المركبة',
     'zh_Hans': '车辆代码',
     'tr': 'Araç kodu',
@@ -1889,6 +2219,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_car_name_ar': {
     'en': 'Car Name (Arabic)',
+    'pt': 'Nome do carro (árabe)',
+    'fr': 'Nom de la voiture (arabe)',
     'ar': 'اسم السيارة (عربي)',
     'zh_Hans': '车名（阿拉伯语）',
     'tr': 'Araç adı (Arapça)',
@@ -1900,6 +2232,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_coords_example': {
     'en': 'Example: 24.713600, 46.675300',
+    'pt': 'Example: 24.713600, 46.675300',
+    'fr': 'Example: 24.713600, 46.675300',
     'ar': 'مثال: 24.713600, 46.675300',
     'zh_Hans': '示例：24.713600, 46.675300',
     'tr': 'Örnek: 24.713600, 46.675300',
@@ -1911,6 +2245,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_email_readonly_hint': {
     'en': 'Email cannot be changed here',
+    'pt': 'Email cannot be changed here',
+    'fr': 'Email cannot be changed here',
     'ar': 'لا يمكن تغيير البريد من هنا',
     'zh_Hans': '此处无法修改邮箱',
     'tr': 'E-posta buradan değiştirilemez',
@@ -1922,6 +2258,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_self_deactivate_warn': {
     'en': 'Avoid deactivating your own account while using the panel',
+    'pt': 'Avoid deactivating your own account while using the panel',
+    'fr': 'Avoid deactivating your own account while using the panel',
     'ar': 'لا يُنصح بإيقاف حسابك أثناء استخدام اللوحة',
     'zh_Hans': '使用面板时请勿停用自己的账户',
     'tr': 'Paneli kullanırken kendi hesabınızı devre dışı bırakmayın',
@@ -1933,6 +2271,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_user_deleted_fmt': {
     'en': 'Deleted data for %s from the database',
+    'pt': 'Excluird data for %s from the database',
+    'fr': 'Supprimerd data for %s from the database',
     'ar': 'تم حذف بيانات %s من قاعدة البيانات',
     'zh_Hans': '已从数据库删除 %s 的数据',
     'tr': '%s verileri veritabanından silindi',
@@ -1944,6 +2284,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_add_partner': {
     'en': 'Add partner',
+    'pt': 'Adicionar partner',
+    'fr': 'Ajouter partner',
     'ar': 'إضافة شريك',
     'zh_Hans': '添加合作伙伴',
     'tr': 'Ortak ekle',
@@ -1955,6 +2297,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_search_partners': {
     'en': 'Search partners...',
+    'pt': 'Pesquisar partners...',
+    'fr': 'Rechercher partners...',
     'ar': 'البحث في الشركاء...',
     'zh_Hans': '搜索合作伙伴...',
     'tr': 'Ortaklarda ara...',
@@ -1966,6 +2310,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_search_partners_hint': {
     'en': 'Search by partner name or description...',
+    'pt': 'Pesquisar by partner name or description...',
+    'fr': 'Rechercher by partner name or description...',
     'ar': 'ابحث باسم الشريك أو الوصف...',
     'zh_Hans': '按合作伙伴名称或描述搜索...',
     'tr': 'Ortak adı veya açıklama ile ara...',
@@ -1977,6 +2323,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_search_landmarks_hint': {
     'en': 'Search by name, description, or address...',
+    'pt': 'Pesquisar by name, description, or address...',
+    'fr': 'Rechercher by name, description, or address...',
     'ar': 'ابحث بالاسم أو الوصف أو العنوان...',
     'zh_Hans': '按名称、描述或地址搜索...',
     'tr': 'Ad, açıklama veya adres ile ara...',
@@ -1988,6 +2336,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_company_manager_section': {
     'en': 'Company manager account (optional)',
+    'pt': 'Company manager account (optional)',
+    'fr': 'Company manager account (optional)',
     'ar': 'حساب مدير الشركة (اختياري)',
     'zh_Hans': '公司管理员账户（可选）',
     'tr': 'Şirket yöneticisi hesabı (isteğe bağlı)',
@@ -1999,6 +2349,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_company_manager_login_hint': {
     'en': 'For signing in and managing drivers later',
+    'pt': 'For signing in and managing drivers later',
+    'fr': 'For signing in and managing drivers later',
     'ar': 'للدخول وإدارة السائقين لاحقاً',
     'zh_Hans': '用于之后登录并管理司机',
     'tr': 'Daha sonra giriş yapıp sürücüleri yönetmek için',
@@ -2010,6 +2362,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_partner_account_helper': {
     'en': 'A partner login is created when email and password are provided',
+    'pt': 'A partner login is created when email and password are provided',
+    'fr': 'A partner login is created when email and password are provided',
     'ar': 'يُنشأ حساب دخول للشريك عند إدخال البريد وكلمة المرور',
     'zh_Hans': '填写邮箱和密码后会创建合作伙伴登录账户',
     'tr': 'E-posta ve şifre girildiğinde ortak giriş hesabı oluşturulur',
@@ -2021,6 +2375,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_bookings_count': {
     'en': '%s bookings',
+    'pt': '%s reservas',
+    'fr': '%s réservations',
     'ar': '%s حجز',
     'zh_Hans': '%s 笔预订',
     'tr': '%s rezervasyon',
@@ -2032,6 +2388,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_auth_error': {
     'en': 'Error: %s',
+    'pt': 'Erro: %s',
+    'fr': 'Erreur: %s',
     'ar': 'خطأ: %s',
     'zh_Hans': '错误：%s',
     'tr': 'Hata: %s',
@@ -2044,6 +2402,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   'adm_auth_recent_login': {
     'en':
         'Too long since most recent sign in. Sign in again before updating your email.',
+    'pt': 'Too long since most recent sign in. Sign in again before updating your email.',
+    'fr': 'Too long since most recent sign in. Sign in again before updating your email.',
     'ar':
         'مر وقت طويل منذ آخر تسجيل دخول. سجّل الدخول مجدداً قبل تحديث البريد.',
     'zh_Hans': '距离上次登录过久。请重新登录后再更新邮箱。',
@@ -2061,6 +2421,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_choose_source': {
     'en': 'Choose Source',
+    'pt': 'Escolher origem',
+    'fr': 'Choisir la source',
     'ar': 'اختر المصدر',
     'zh_Hans': '选择来源',
     'tr': 'Kaynak seçin',

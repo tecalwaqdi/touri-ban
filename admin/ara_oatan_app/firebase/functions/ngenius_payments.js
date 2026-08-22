@@ -2,6 +2,9 @@ const crypto = require("crypto");
 const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 const axios = require("axios");
+const {
+  assertAndClaimActiveOrderSlot,
+} = require("./active_order_lock.js");
 
 const PROD_IDENTITY =
   "https://api-gateway.ngenius-payments.com/identity/auth/access-token";
@@ -913,6 +916,21 @@ exports.finalizeNGeniusBooking = functions
         );
       }
 
+      const claim = await assertAndClaimActiveOrderSlot({
+        transaction,
+        firestore: admin.firestore(),
+        userRef,
+        orderId: orderRef.id,
+        FieldValue: admin.firestore.FieldValue,
+      });
+      if (!claim.ok) {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          "ACTIVE_BOOKING_EXISTS",
+          { activeOrderId: claim.activeOrderId, code: "ACTIVE_BOOKING_EXISTS" },
+        );
+      }
+
       const orderData = {
         USER: userRef,
         total: session.amount_halalas / 100,
@@ -1063,6 +1081,20 @@ exports.createCashBooking = functions
       if (existing.exists) {
         alreadyExisted = true;
         return;
+      }
+      const claim = await assertAndClaimActiveOrderSlot({
+        transaction,
+        firestore,
+        userRef,
+        orderId,
+        FieldValue: admin.firestore.FieldValue,
+      });
+      if (!claim.ok) {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          "ACTIVE_BOOKING_EXISTS",
+          { activeOrderId: claim.activeOrderId, code: "ACTIVE_BOOKING_EXISTS" },
+        );
       }
       const orderData = {
         USER: userRef,

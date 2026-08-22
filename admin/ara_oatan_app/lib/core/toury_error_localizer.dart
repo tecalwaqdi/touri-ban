@@ -117,6 +117,9 @@ abstract final class ErrorLocalizer {
         return 'error_generic_user'.tr();
       case 'booking_price_inconsistent':
         return 'booking_save_failed'.tr();
+      case 'booking_active_exists':
+      case 'active_booking_exists':
+        return 'booking_active_exists'.tr();
       default:
         if (normalized.contains('unable to resolve') ||
             normalized.contains('failed host lookup') ||

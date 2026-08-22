@@ -372,12 +372,14 @@ class AdminMenuTile extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.isActive = false,
+    this.attentionCount,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
   final bool isActive;
+  final int? attentionCount;
 
   @override
   Widget build(BuildContext context) {
@@ -412,6 +414,23 @@ class AdminMenuTile extends StatelessWidget {
                     ),
                   ),
                 ),
+                if ((attentionCount ?? 0) > 0)
+                  Container(
+                    margin: const EdgeInsetsDirectional.only(end: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFB4B8),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '${attentionCount! > 99 ? '99+' : attentionCount}',
+                      style: const TextStyle(
+                        color: Color(0xFF5A1018),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
                 Icon(
                   Directionality.of(context) == ui.TextDirection.rtl
                       ? Icons.chevron_left_rounded

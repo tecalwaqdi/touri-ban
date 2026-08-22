@@ -1,7 +1,6 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_audit_log.dart';
-import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_landmark_search.dart';
 import '/backend/admin_legacy_alias_filter.dart';
@@ -10,6 +9,7 @@ import '/backend/admin_resource_guard.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_agent_landmark_list.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
@@ -225,24 +225,21 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
       return;
     }
 
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(appTr(context, 'adm_delete_confirm_title')),
-            content: Text(uiTr(context, 'هل أنت متأكد من حذف هذا المعلم؟')),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(appTr(context, 'adm_yes_delete')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: appTr(context, 'adm_delete_confirm_title'),
+      whatHappens: uiTr(
+        context,
+        'Soft-disable this landmark (acctev=false). Historical bookings keep their reference.',
+      ),
+      subject: record.naim.isNotEmpty ? record.naim : record.reference.id,
+      impact: uiTr(context, 'Landmark hidden from active lists; not hard-deleted'),
+      confirmLabel: uiTr(context, 'تعطيل المعلم'),
+      cancelLabel: appTr(context, 'adm_no'),
+      destructive: true,
+      irreversible: false,
+      reference: record.reference.id,
+    );
 
     if (!confirmed) return;
 
@@ -251,26 +248,26 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
       if (AdminRoleService.isCountryAgent) {
         await AdminAgentCountryLock.ensureCountryResolved();
       }
-      await AdminFirestoreDelete.deleteDocument(record.reference);
+      await record.reference.update(createMkanRecordData(acctev: false));
       AdminLandmarkIndex.removeRecord(record);
-      await AdminAuditLog.recordDelete(
+      await AdminAuditLog.recordToggle(
         targetType: 'landmark',
         targetId: record.reference.id,
         targetLabel: record.naim,
+        activated: false,
       );
       if (!mounted) return;
       await AdminCrudFeedback.success(
         context,
-        action: AdminCrudAction.delete,
-        message: AdminCrudFeedback.deleteSuccessMessage(context),
+        action: AdminCrudAction.edit,
+        message: uiTr(context, 'تم تعطيل المعلم (حذف ناعم)'),
         refreshScope: AdminListScope.landmarks,
-        removedDocumentId: record.reference.id,
         refresh: _refreshLandmarksAfterCrud,
         invalidateStats: true,
       );
     } catch (e) {
       if (!mounted) return;
-      AdminCrudFeedback.error(context, AdminCrudFeedback.deleteFailed(context, e));
+      AdminCrudFeedback.error(context, AdminCrudFeedback.updateFailed(context, e));
     }
   }
 

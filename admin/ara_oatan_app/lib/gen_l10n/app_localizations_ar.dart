@@ -1830,7 +1830,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String checkout_min_hours_hint(String hours) {
+  String checkout_min_hours_hint(String hours, Object horas) {
     return 'بناءً على الجولات المحددة، الحد الأدنى للساعات هو $hours ساعات';
   }
 
@@ -1841,7 +1841,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get checkout_order_status_pending => 'بانتظار قبول السائق';
 
   @override
-  String checkout_add_hours_prompt(String hours) {
+  String checkout_add_hours_prompt(String hours, Object horas) {
     return 'يرجى إضافة $hours ساعة إضافية على الأقل للمتابعة';
   }
 
@@ -2230,7 +2230,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get unit_kmh => 'كم/س';
 
   @override
-  String duration_hours_minutes(String hours, String minutes) {
+  String duration_hours_minutes(String hours, String minutes, Object horas) {
     return '$hours ساعة و$minutes دقيقة';
   }
 
@@ -2393,8 +2393,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notification_paid_order_admin_title => 'حجز مدفوع جديد';
 
   @override
-  String notification_paid_order_admin_body(
-      String bookingId, String hours, String amount, String currency) {
+  String notification_paid_order_admin_body(String bookingId, String hours,
+      String amount, String currency, Object horas) {
     return 'الحجز المدفوع الجديد #$bookingId: $hours ساعات، $amount $currency.';
   }
 
@@ -2411,7 +2411,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String notification_new_order_driver_body(
-      String hours, String amount, String currency) {
+      String hours, String amount, String currency, Object horas) {
     return 'حجز تاكسي Touri جديد متاح لمدة $hours ساعة مع أرباح $amount $currency. افتح تطبيق برنامج التشغيل لمراجعته.';
   }
 

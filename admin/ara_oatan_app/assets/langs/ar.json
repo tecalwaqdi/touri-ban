@@ -971,5 +971,18 @@
   "payment_incomplete_go_orders": "العودة إلى طلباتي",
   "map_km": "كم",
   "map_eta_estimated": "تقديري",
-  "map_eta_traffic": "حسب حركة المرور"
+  "map_eta_traffic": "حسب حركة المرور",
+  "landmark_removed_success": "تمت إزالة: {name}",
+  "landmark_not_in_cart": "{name} غير موجود في رحلتك",
+  "booking_active_exists": "لديك حجز نشط بالفعل. أنهِه أو ألغِه قبل إنشاء حجز جديد.",
+  "notification_order_accepted_title": "تم قبول الطلب",
+  "notification_order_accepted_body": "تم قبول طلب تاكسي توري بواسطة: {driver}",
+  "notification_order_cancelled_by_driver_title": "تم إلغاء الطلب",
+  "notification_order_cancelled_by_driver_body": "ألغى السائق طلب تاكسي توري الخاص بك.",
+  "notification_driver_arrived_title": "وصل السائق",
+  "notification_driver_arrived_body": "وصل السائق {driver} إلى نقطة الانطلاق.",
+  "landmark_remove": "حذف",
+  "notification_default_title": "إشعار جديد",
+  "notification_open_action": "فتح",
+  "open_app_settings": "فتح الإعدادات"
 }

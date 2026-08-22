@@ -40,78 +40,41 @@ void main() {
   });
 
   group('TouryCustomerCancelPolicy.canCustomerCancelBooking', () {
-    final createdLongAgo =
-        DateTime.now().toUtc().subtract(const Duration(hours: 2));
-    final createdRecently =
-        DateTime.now().toUtc().subtract(const Duration(minutes: 10));
-    final createdAlmostHour =
-        DateTime.now().toUtc().subtract(const Duration(minutes: 59));
-
-    test('waiting for driver + within 1h (10 min) → allowed', () {
+    test('waiting for driver → allowed immediately (no timer)', () {
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: TouryBookingStatusCodes.pendingDriver,
           halhText: 'بانتظار قبول السائق',
-          createdAt: createdRecently,
         ),
         isTrue,
       );
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: 'awaiting_driver',
-          createdAt: createdRecently,
         ),
         isTrue,
       );
     });
 
-    test('waiting for driver + 59 min → still allowed', () {
+    test('old booking still waiting → still allowed (no 1h window)', () {
+      final createdLongAgo =
+          DateTime.now().toUtc().subtract(const Duration(hours: 5));
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: TouryBookingStatusCodes.pendingDriver,
-          createdAt: createdAlmostHour,
+          createdAt: createdLongAgo,
         ),
         isTrue,
       );
     });
 
-    test('waiting for driver + after 1h → denied (window expired)', () {
-      expect(
-        TouryCustomerCancelPolicy.canCustomerCancelBooking(
-          statusCode: TouryBookingStatusCodes.pendingDriver,
-          createdAt: createdLongAgo,
-        ),
-        isFalse,
-      );
-      expect(
-        TouryCustomerCancelPolicy.denyReasonKey(
-          statusCode: TouryBookingStatusCodes.pendingDriver,
-          createdAt: createdLongAgo,
-        ),
-        'booking_cancel_window_expired',
-      );
-      final left = TouryCustomerCancelPolicy.remainingCancelWindow(
-        createdAt: createdLongAgo,
-      );
-      expect(left, Duration.zero);
-    });
-
-    test('within window remaining countdown is positive', () {
-      final left = TouryCustomerCancelPolicy.remainingCancelWindow(
-        createdAt: createdRecently,
-      );
-      expect(left, isNotNull);
-      expect(left!.inMinutes, greaterThan(0));
-      expect(left.inMinutes, lessThanOrEqualTo(50));
-    });
-
-    test('missing createdAt → denied (fail closed)', () {
+    test('missing createdAt → still allowed when awaiting driver', () {
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: TouryBookingStatusCodes.pendingDriver,
           createdAt: null,
         ),
-        isFalse,
+        isTrue,
       );
     });
 
@@ -119,7 +82,6 @@ void main() {
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: 'completed',
-          createdAt: createdRecently,
         ),
         isFalse,
       );
@@ -135,18 +97,16 @@ void main() {
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: 'cancelled',
-          createdAt: createdRecently,
         ),
         isFalse,
       );
     });
 
-    test('driver accepted / assigned → denied even within 1h', () {
+    test('driver accepted / assigned → denied', () {
       expect(
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: TouryBookingStatusCodes.driverAssigned,
           halhText: 'مقبول',
-          createdAt: createdRecently,
         ),
         isFalse,
       );
@@ -154,7 +114,6 @@ void main() {
         TouryCustomerCancelPolicy.canCustomerCancelBooking(
           statusCode: TouryBookingStatusCodes.pendingDriver,
           mndobUser: 'user/driver-1',
-          createdAt: createdRecently,
         ),
         isFalse,
       );
@@ -162,7 +121,6 @@ void main() {
         TouryCustomerCancelPolicy.denyReasonKey(
           statusCode: TouryBookingStatusCodes.pendingDriver,
           mndobUser: 'user/driver-1',
-          createdAt: createdRecently,
         ),
         'booking_cancel_after_driver',
       );

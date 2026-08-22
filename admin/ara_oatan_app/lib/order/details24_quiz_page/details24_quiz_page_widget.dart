@@ -1,6 +1,7 @@
 import '/auth/firebase_auth/auth_util.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '/backend/backend.dart';
+import '/core/toury_customer_cancel_policy.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,8 @@ class Details24QuizPageWidget extends StatefulWidget {
 class _Details24QuizPageWidgetState extends State<Details24QuizPageWidget> {
   late Details24QuizPageModel _model;
   bool _submitting = false;
+  bool _ownershipChecked = false;
+  bool _ownershipDenied = false;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -49,7 +52,50 @@ class _Details24QuizPageWidgetState extends State<Details24QuizPageWidget> {
     _model.textController ??= TextEditingController();
     _model.textFieldFocusNode ??= FocusNode();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _ensureOrderOwnership();
+      if (mounted) safeSetState(() {});
+    });
+  }
+
+  /// Rating is only for the customer who owns the order.
+  Future<void> _ensureOrderOwnership() async {
+    final orderRef = widget.idordeer;
+    if (orderRef == null || currentUserUid.isEmpty) {
+      _ownershipDenied = true;
+      _ownershipChecked = true;
+      if (mounted) context.safePop();
+      return;
+    }
+    try {
+      final snap = await orderRef.get();
+      if (!snap.exists) {
+        _ownershipDenied = true;
+        _ownershipChecked = true;
+        if (mounted) context.safePop();
+        return;
+      }
+      final data = snap.data() as Map<String, dynamic>?;
+      final ok = TouryCustomerCancelPolicy.isBookingOwner(
+        userField: data?['USER'],
+        authUid: currentUserUid,
+        currentUserRef: currentUserReference,
+      );
+      _ownershipDenied = !ok;
+      _ownershipChecked = true;
+      if (!ok && mounted) {
+        DsSnackBar.show(
+          context,
+          message: 'booking_permission_denied'.tr(),
+          tone: DsSnackTone.error,
+        );
+        context.safePop();
+      }
+    } catch (_) {
+      _ownershipDenied = true;
+      _ownershipChecked = true;
+      if (mounted) context.safePop();
+    }
   }
 
   @override
@@ -110,6 +156,19 @@ class _Details24QuizPageWidgetState extends State<Details24QuizPageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_ownershipChecked || _ownershipDenied) {
+      return DsScreenScaffold(
+        scaffoldKey: scaffoldKey,
+        appBar: DsAppBar(
+          automaticallyImplyLeading: true,
+          title: 'rating_driver_title'.tr(namedArgs: {
+            'driver': widget.naimMndob ?? '',
+          }),
+        ),
+        body: const Center(child: CircularProgressIndicator.adaptive()),
+      );
+    }
+
     return DsScreenScaffold(
       scaffoldKey: scaffoldKey,
       appBar: DsAppBar(

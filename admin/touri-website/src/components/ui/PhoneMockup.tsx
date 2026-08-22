@@ -11,10 +11,10 @@ type Props = {
   priority?: boolean;
 };
 
-/** Fluid widths: medium on phone, capped on desktop — never forces a huge floor. */
+/** Medium balanced widths — same look as before, tuned size only. */
 const sizeClass = {
-  md: "w-[min(13.25rem,58vw)] sm:w-[min(14.5rem,42vw)] lg:w-[15rem]",
-  sm: "w-[min(11.5rem,48vw)] sm:w-[min(12.75rem,36vw)] lg:w-[13.25rem]",
+  md: "w-[min(13.5rem,52vw)] sm:w-[13.75rem] lg:w-[14.25rem]",
+  sm: "w-[min(11.75rem,44vw)] sm:w-[12rem] lg:w-[12.5rem]",
 } as const;
 
 export function PhoneMockup({
@@ -34,9 +34,16 @@ export function PhoneMockup({
         float === "slower" && "float-slower",
         className,
       )}
-      style={{ aspectRatio: "1206 / 2622" }}
     >
-      <div className="phone-screen relative h-full w-full overflow-hidden">
+      {/*
+        Bezel = CSS padding on .phone-frame.
+        Aspect lives on the screen so Next/Image fill always has a real box,
+        and the screenshot cannot paint into the frame ring.
+      */}
+      <div
+        className="phone-screen relative w-full overflow-hidden"
+        style={{ aspectRatio: "1206 / 2622" }}
+      >
         <Image
           src={src}
           alt={alt}
@@ -44,7 +51,7 @@ export function PhoneMockup({
           priority={priority}
           quality={90}
           className="object-cover object-top"
-          sizes="(max-width: 640px) 58vw, (max-width: 1024px) 220px, 240px"
+          sizes="(max-width: 640px) 52vw, (max-width: 1024px) 220px, 228px"
         />
       </div>
     </div>

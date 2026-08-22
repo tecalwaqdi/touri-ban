@@ -1,5 +1,7 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/schema/structs/index.dart';
 import '/components/mmaapp_widget.dart';
+import '/core/toury_landmark_cart.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_count_controller.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -75,10 +77,12 @@ class _Checkout66Copy2WidgetState extends State<Checkout66Copy2Widget> {
     ).then((value) => safeSetState(() {}));
   }
 
-  void _removeCartPlace(dynamic mkssItem) {
-    FFAppState().removeFromCartmkss(mkssItem);
-    FFAppState().addcart = FFAppState().addcart + -1;
-    safeSetState(() {});
+  void _removeCartPlace(AmaknCostmStruct mkssItem) {
+    touryRemoveLandmarkFromCart(
+      context: context,
+      item: mkssItem,
+      onChanged: () => safeSetState(() {}),
+    );
   }
 
   /// Extra hours feed both the app-state counter and the derived totals.

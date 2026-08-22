@@ -1,6 +1,8 @@
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/core/toury_landmark_cart.dart';
 import '/index.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'listamak_model.dart';
@@ -46,106 +48,119 @@ class _ListamakWidgetState extends State<ListamakWidget> {
 
     return Stack(
       children: [
-        Stack(
-          children: [
-            Builder(
-              builder: (context) {
-                final mkss = FFAppState().cartmkss.toList();
+        Builder(
+          builder: (context) {
+            final mkss = FFAppState().cartmkss.toList();
 
-                return SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: List.generate(mkss.length, (mkssIndex) {
-                      final mkssItem = mkss[mkssIndex];
-                      return ListView(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                DsSpacing.sm, 6.0, DsSpacing.sm, 6.0),
-                            child: DsCard(
-                              elevated: true,
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  DsSpacing.sm, 10.0, DsSpacing.xs, 10.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    width: 34,
-                                    height: 34,
-                                    decoration: BoxDecoration(
-                                      color: colors.primarySoft,
-                                      borderRadius: DsRadius.extraSmall,
-                                    ),
-                                    child: Icon(
-                                      Icons.place_rounded,
-                                      color: colors.primary,
-                                      size: 19,
-                                    ),
+            return ListView.separated(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                DsSpacing.sm,
+                DsSpacing.sm,
+                DsSpacing.sm,
+                72,
+              ),
+              itemCount: mkss.length,
+              separatorBuilder: (_, __) => const SizedBox(height: DsSpacing.sm),
+              itemBuilder: (context, mkssIndex) {
+                final mkssItem = mkss[mkssIndex];
+                return DsCard(
+                  elevated: true,
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    DsSpacing.md,
+                    DsSpacing.sm + 2,
+                    DsSpacing.sm,
+                    DsSpacing.sm + 2,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: colors.primarySoft,
+                          borderRadius: DsRadius.medium,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${mkssIndex + 1}',
+                          style: typography.titleSmall.copyWith(
+                            color: colors.primary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: DsSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          mkssItem.naim,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: typography.titleSmall.copyWith(
+                            color: colors.textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: DsSpacing.xs),
+                      Material(
+                        color: colors.error.withValues(alpha: 0.10),
+                        borderRadius: DsRadius.medium,
+                        child: InkWell(
+                          borderRadius: DsRadius.medium,
+                          onTap: () async {
+                            touryRemoveLandmarkFromCart(
+                              context: context,
+                              item: mkssItem,
+                              onChanged: () => safeSetState(() {}),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.delete_outline_rounded,
+                                  color: colors.error,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'landmark_remove'.tr(),
+                                  style: typography.labelMedium.copyWith(
+                                    color: colors.error,
+                                    fontWeight: FontWeight.w700,
                                   ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      mkssItem.naim,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: typography.labelLarge.copyWith(
-                                        color: colors.textPrimary,
-                                        fontSize: 16.0,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 38,
-                                    height: 38,
-                                    decoration: BoxDecoration(
-                                      borderRadius: DsRadius.extraSmall,
-                                      border: Border.all(
-                                        color: colors.error,
-                                        width: 1.0,
-                                      ),
-                                    ),
-                                    child: DsIconButton(
-                                      icon: Icons.delete_outline_rounded,
-                                      foreground: colors.error,
-                                      size: 20.0,
-                                      onPressed: () async {
-                                        FFAppState()
-                                            .removeFromCartmkss(mkssItem);
-                                        FFAppState().addcart =
-                                            FFAppState().addcart + -1;
-                                        safeSetState(() {});
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      );
-                    }),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
-            ),
-          ],
+            );
+          },
         ),
         Align(
           alignment: const AlignmentDirectional(0.07, 1.0),
-          child: DsButton.primary(
-            label: FFLocalizations.of(context).getText(
-              'uakk50nl' /* Book now */,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: DsSpacing.md),
+            child: DsButton.primary(
+              label: FFLocalizations.of(context).getText(
+                'uakk50nl' /* Book now */,
+              ),
+              icon: Icons.done,
+              size: DsButtonSize.sm,
+              onPressed: () async {
+                context.pushNamed(DemoDWidget.routeName);
+              },
             ),
-            icon: Icons.done,
-            size: DsButtonSize.sm,
-            onPressed: () async {
-              context.pushNamed(DemoDWidget.routeName);
-            },
           ),
         ),
       ],

@@ -178,13 +178,17 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
                             .where('transport_company', isEqualTo: companyRef)
                             .orderBy(FieldPath.documentId),
                         builder: (context, drivers, listState) {
+                          final displayTotal = statsSnap.hasData
+                              ? totalDrivers
+                              : (listState.totalAvailable ?? drivers.length);
+
                           return AdminContentCard(
                             padding: const EdgeInsets.all(12),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Text(
-                                  '${uiTr(context, 'عدد السائقين')}: ${totalDrivers > 0 ? totalDrivers : drivers.length}',
+                                  '${uiTr(context, 'عدد السائقين')}: $displayTotal',
                               style: theme.labelLarge.override(
                                 fontFamily: theme.labelLargeFamily,
                                 color: theme.secondaryText,

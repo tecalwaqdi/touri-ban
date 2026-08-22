@@ -4,6 +4,9 @@ const List<String> touryI18nLocaleKeys = [
   'en',
   'ru',
   'ky',
+  'fr',
+  'ur',
+  'pt',
 ];
 
 Map<String, String> touryParseI18nMap(dynamic raw) {

@@ -12,7 +12,11 @@ service cloud.firestore {
     }
 
     function currentUserData() {
-      return signedIn() ? get(currentUserRef()).data : {};
+      // Missing profile must NOT error — OR-chains that call isDriver/isSuperAdmin
+      // would otherwise deny unrelated paths (e.g. consumer cancel).
+      return signedIn() && exists(currentUserRef())
+        ? get(currentUserRef()).data
+        : {};
     }
 
     function claimBool(name) {
@@ -152,6 +156,71 @@ service cloud.firestore {
 
     // Constrained client cash create when createCashBooking CF is down (IAM/billing).
     // Must stay aligned with touryCreateCashBookingViaFirestoreFallback fields.
+    function isTerminalCustomerOrderStatus(code) {
+      return code in [
+        'completed', 'trip_completed', 'cancelled', 'canceled',
+        'cancelled_by_customer', 'cancelled_by_driver', 'cancelled_by_admin',
+        'expired'
+      ];
+    }
+
+    // Claim lock when empty / terminal / missing previous order.
+    function customerCanClaimActiveOrder(newOrderId) {
+      let u = get(/databases/$(database)/documents/user/$(request.auth.uid)).data;
+      let aid = u.get('active_order_id', '');
+      return aid == null
+        || aid == ''
+        || aid == newOrderId
+        || (
+          exists(/databases/$(database)/documents/order/$(aid))
+          && isTerminalCustomerOrderStatus(
+            get(/databases/$(database)/documents/order/$(aid)).data.get('status_code', '')
+          )
+        )
+        || !exists(/databases/$(database)/documents/order/$(aid));
+    }
+
+    // Order create must see a *committed* lock for this order id.
+    // (Same-transaction claim+create is NOT visible to rules — that hole
+    // allowed parallel cash creates when active_order_id was empty.)
+    function customerActiveOrderAllowsCreate(newOrderId) {
+      let u = get(/databases/$(database)/documents/user/$(request.auth.uid)).data;
+      return u.get('active_order_id', '') == newOrderId;
+    }
+
+    function canClaimOrReleaseOwnActiveOrder(userId) {
+      let clearing = !('active_order_id' in request.resource.data)
+        || request.resource.data.active_order_id == null
+        || request.resource.data.active_order_id == '';
+      return signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['active_order_id', 'active_order_updated_at'])
+        && (
+          // Owner may always clear own lock (cancel / stale heal). Do NOT require
+          // the order to already be terminal — same-txn cancel would never pass.
+          clearing
+          || (
+            !clearing
+            && request.resource.data.active_order_id is string
+            && customerCanClaimActiveOrder(request.resource.data.active_order_id)
+          )
+        );
+    }
+
+    // Panel may clear a customer's booking lock after admin cancel (non-payment).
+    function panelCanClearActiveOrderLock(userId) {
+      return signedIn()
+        && (isSuperAdmin() || isCountryAdmin() || isSupport() || isAgent())
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['active_order_id', 'active_order_updated_at'])
+        && (
+          !('active_order_id' in request.resource.data)
+          || request.resource.data.active_order_id == null
+          || request.resource.data.active_order_id == ''
+        );
+    }
+
     function isValidClientCashOrderCreate() {
       let d = request.resource.data;
       return signedIn()
@@ -164,6 +233,7 @@ service cloud.firestore {
         && d.ActiveOrder == false
         && d.created_by_client_cash_fallback == true
         && d.pricing_authority == 'client_fallback_pending_cf'
+        && customerActiveOrderAllowsCreate(document)
         && d.keys().hasAll([
           'USER', 'total', 'amount_halalas', 'currency', 'carRev', 'Rev_dolh',
           'PaymentMethod', 'payment_status', 'status_code', 'idempotency_key',
@@ -285,71 +355,39 @@ service cloud.firestore {
         ]);
     }
 
-    // Customer cancel only within 1h from data_order while still unassigned.
-    // Blocked once a driver is assigned/accepted, trip advances, or the hour elapses.
-    // Payload must stay within hasOnly — keeps money/payment/owner immutable.
-    // Uses request.time (Firestore server clock), never the client device clock.
-    function consumerCancelWithinWindow(data) {
-      return data.keys().hasAll(['data_order'])
-        && data.data_order is timestamp
-        && request.time < data.data_order + duration.value(1, 'h');
-    }
-
-    function consumerUnpaidPaymentPending(data) {
-      return data.get('status_code', '') == 'payment_pending'
-        && data.get('payment_status', '') in ['unpaid', 'pending', 'failed', 'expired', 'cancelled', 'canceled', '']
-        && data.get('ALLNOW', false) != true;
-    }
-
-    function consumerOrderIsCancellable(data) {
-      // Unassigned: within 1h for pool orders, or immediately for unpaid drafts.
-      return orderUnassigned(data)
-        && (consumerUnpaidPaymentPending(data) || consumerCancelWithinWindow(data))
-        && !(data.get('halhOrderMndob', '') in ['Accepted', 'accepted'])
-        && !(data.get('halh_text', '') in [
-          'مقبول', 'وصل المندوب', 'وصل السائق',
-          'تم البدء في الرحلة', 'بدأت الرحلة', 'مكتمل', 'ملغي', 'ملغى'
-        ])
-        && (
-          !('status_code' in data)
-          || data.status_code == null
-          || data.status_code == ''
-          || data.status_code in [
-            'pending_driver', 'awaiting_driver', 'pending', 'payment_pending'
-          ]
-        )
-        && !(data.get('status_code', '') in [
+    // Customer cancel: own order, unassigned, not in active trip / already done.
+    // Intentionally avoids get() and brittle PaymentMethod equality (enum quirks).
+    // Includes payment_pending unpaid online drafts (retry-payment screen).
+    function consumerCanCancelOrder() {
+      return signedIn()
+        && orderBelongsToConsumer(resource.data)
+        && orderUnassigned(resource.data)
+        && !(resource.data.get('halhOrderMndob', '') in ['Accepted', 'accepted'])
+        && !(resource.data.get('status_code', '') in [
           'driver_assigned', 'driver_arriving', 'driver_arrived',
           'trip_started', 'trip_in_progress', 'completed', 'trip_completed',
           'cancelled', 'canceled',
           'cancelled_by_driver', 'cancelled_by_customer', 'cancelled_by_admin'
-        ]);
-    }
-
-    function consumerCanCancelOrder() {
-      return orderBelongsToConsumer(resource.data)
-        && consumerOrderIsCancellable(resource.data)
+        ])
+        && !(resource.data.get('halh_text', '') in [
+          'مقبول', 'وصل المندوب', 'وصل السائق',
+          'تم البدء في الرحلة', 'بدأت الرحلة', 'مكتمل', 'ملغي', 'ملغى'
+        ])
         && (
           request.resource.data.status_code == 'cancelled'
           || request.resource.data.status_code == 'cancelled_by_customer'
         )
         && request.resource.data.USER == resource.data.USER
-        && request.resource.data.get('PaymentMethod', null)
-          == resource.data.get('PaymentMethod', null)
-        && request.resource.data.get('payment_status', null)
-          == resource.data.get('payment_status', null)
-        && request.resource.data.get('mndob_user', null)
-          == resource.data.get('mndob_user', null)
-        && request.resource.data.get('mndob_user', null) == null
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'status_code', 'cancelled_by_code', 'cancelledAt', 'cancelledBy',
-          'cancelReason', 'cancellationReason', 'updatedAt',
-          'ActiveOrder', 'ALLNOW', 'halh_order', 'halh', 'halh_text', 'NotSestem'
-        ])
+        && (
+          !('mndob_user' in request.resource.data)
+          || request.resource.data.mndob_user == null
+        )
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
           'USER', 'total', 'amount_halalas', 'currency', 'mndob_user',
           'PaymentMethod', 'payment_session_id', 'ngeniusOrderId', 'idMoyser',
-          'payment_status', 'cash_collection_status'
+          'payment_status', 'cash_collection_status', 'pricing_quote_halalas',
+          'pricing_hourly_halalas', 'total_mndob', 'total_mndob2', 'total_app',
+          'total_vat', 'ksm', 'SrSAAH'
         ]);
     }
 
@@ -467,7 +505,12 @@ service cloud.firestore {
         && d.get('tour_guide_rejection_reason', prev.get('tour_guide_rejection_reason', '')) == prev.get('tour_guide_rejection_reason', '')
         && d.get('walletBalance', prev.get('walletBalance', null)) == prev.get('walletBalance', null)
         && d.get('currentBalance', prev.get('currentBalance', null)) == prev.get('currentBalance', null)
-        && d.get('total_app', prev.get('total_app', 0)) == prev.get('total_app', 0);
+        && d.get('total_app', prev.get('total_app', 0)) == prev.get('total_app', 0)
+        && d.get('finance', prev.get('finance', false)) == prev.get('finance', false)
+        && d.get('super_admin', prev.get('super_admin', false)) == prev.get('super_admin', false)
+        && d.get('active_order_id', prev.get('active_order_id', null)) == prev.get('active_order_id', null)
+        && d.get('active_order_updated_at', prev.get('active_order_updated_at', null))
+             == prev.get('active_order_updated_at', null);
     }
 
     function tourGuideSelfClaimOk() {
@@ -745,6 +788,8 @@ service cloud.firestore {
       allow update: if request.auth != null && (
         isSuperAdmin()
         || canDriverSetOnlineOffline(document)
+        || canClaimOrReleaseOwnActiveOrder(document)
+        || panelCanClearActiveOrderLock(document)
         || userSelfFieldsOnly(document)
         || canSelfRegisterAsPendingDriver(document)
         || panelCanManageTourGuide()
@@ -834,16 +879,17 @@ service cloud.firestore {
       // in canReadOrder make Firestore reject consumer/driver list queries.
       // rules-rev: order-list-simple-2026-08-01
       allow list: if signedIn() && canListOrder(resource.data);
+      // Consumer cancel FIRST as its own statement — must not share an OR-chain
+      // with driver/panel helpers that call get(user) (missing profile → deny all).
+      // rules-rev: consumer-cancel-standalone-2026-08-21
+      allow update: if consumerCanCancelOrder();
+      allow update: if consumerOrderFieldsOnly();
       allow update: if request.auth != null && (
-        // Keep the driver path first and independent from panel get()-heavy
-        // authorization branches; this also stays below emulator expression limits.
         driverCanClaimOrder()
         || driverAssignedCanPatchOrder()
         || driverCanUpdateLiveLocation()
         || driverCanAdvanceTrip()
         || driverCanCompleteCashCollection()
-        || consumerCanCancelOrder()
-        || consumerOrderFieldsOnly()
         || panelCanWriteOrder(resource.data)
       );
       allow delete: if false;
@@ -1120,6 +1166,108 @@ service cloud.firestore {
 
     match /ff_push_notifications/{id} {
       allow read, create, update, delete: if false;
+    }
+
+    // ── Settlement ledger V2 (Admin SDK writes only) ──
+    function canReadSettlement() {
+      return isSuperAdmin()
+        || claimBool('finance')
+        || (
+          isCountryAdmin()
+          && claimCountryPath() != null
+          && (
+            resource.data.countryId == claimCountryPath()
+            || resource.data.countryRef == claimCountryPath()
+          )
+        );
+    }
+
+    match /financial_settlements/{id} {
+      allow read: if signedIn() && canReadSettlement();
+      allow create, update, delete: if false;
+
+      match /lines/{lineId} {
+        allow read: if signedIn() && (
+          isSuperAdmin() || claimBool('finance') || isCountryAdmin()
+        );
+        allow create, update, delete: if false;
+      }
+
+      match /events/{eventId} {
+        allow read: if signedIn() && (
+          isSuperAdmin() || claimBool('finance') || isCountryAdmin()
+        );
+        allow create, update, delete: if false;
+      }
+    }
+
+    match /financial_settlement_claims/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow create, update, delete: if false;
+    }
+
+    match /financial_payment_allocations/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow create, update, delete: if false;
+    }
+
+    match /financial_payment_allocation_claims/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow create, update, delete: if false;
+    }
+
+    match /financial_settlement_idempotency/{id} {
+      allow read, write: if false;
+    }
+
+    match /financial_settlement_counters/{id} {
+      allow read, write: if false;
+    }
+
+    match /financial_settlement_payments/{id} {
+      allow read: if signedIn() && (
+        isSuperAdmin()
+        || claimBool('finance')
+        || (
+          isCountryAdmin()
+          && claimCountryPath() != null
+          && (
+            resource.data.countryId == claimCountryPath()
+            || resource.data.countryRef == claimCountryPath()
+          )
+        )
+      );
+      allow create, update, delete: if false;
+    }
+
+    match /financial_periods/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow create, update, delete: if false;
+    }
+
+    match /financial_adjustments/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow create, update, delete: if false;
+    }
+
+    match /financial_config/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow create, update, delete: if false;
+    }
+
+    match /financial_audit_events/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow create, update, delete: if false;
+    }
+
+    match /financial_aggregation_metrics/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow create, update, delete: if false;
+    }
+
+    match /financial_wallet_adjust_idempotency/{id} {
+      allow read: if signedIn() && isSuperAdmin();
+      allow create, update, delete: if false;
     }
   }
 }

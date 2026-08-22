@@ -1852,7 +1852,7 @@ class AppLocalizationsKy extends AppLocalizations {
   }
 
   @override
-  String checkout_min_hours_hint(String hours) {
+  String checkout_min_hours_hint(String hours, Object horas) {
     return 'Тандалган аялдамаларыңыздын негизинде сапардын минималдуу узактыгы $hours саат';
   }
 
@@ -1865,7 +1865,7 @@ class AppLocalizationsKy extends AppLocalizations {
       'Айдоочунун кабыл алуусун күтүүдө';
 
   @override
-  String checkout_add_hours_prompt(String hours) {
+  String checkout_add_hours_prompt(String hours, Object horas) {
     return 'Улантуу үчүн кеминде дагы $hours саат кошуңуз';
   }
 
@@ -2262,7 +2262,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get unit_kmh => 'км/саат';
 
   @override
-  String duration_hours_minutes(String hours, String minutes) {
+  String duration_hours_minutes(String hours, String minutes, Object horas) {
     return '$hours саат $minutes мүнөт';
   }
 
@@ -2428,8 +2428,8 @@ class AppLocalizationsKy extends AppLocalizations {
   String get notification_paid_order_admin_title => 'Жаңы төлөнүүчү ээлөө';
 
   @override
-  String notification_paid_order_admin_body(
-      String bookingId, String hours, String amount, String currency) {
+  String notification_paid_order_admin_body(String bookingId, String hours,
+      String amount, String currency, Object horas) {
     return 'Жаңы акы төлөнүүчү брондоо #$bookingId: $hours саат, $amount $currency.';
   }
 
@@ -2446,7 +2446,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String notification_new_order_driver_body(
-      String hours, String amount, String currency) {
+      String hours, String amount, String currency, Object horas) {
     return 'Жаңы Touri Taxi ээлөө $amount $currency кирешеси менен $hours саатка жеткиликтүү. Аны карап чыгуу үчүн айдоочу колдонмосун ачыңыз.';
   }
 

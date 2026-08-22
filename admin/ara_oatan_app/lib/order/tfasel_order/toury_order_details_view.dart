@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -36,7 +34,6 @@ class TouryOrderDetailsView extends StatefulWidget {
 class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
   bool _busy = false;
   String? _busyAction;
-  Timer? _cancelTicker;
 
   OrderRecord get order => widget.order;
 
@@ -131,51 +128,6 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
 
   bool get _isAwaitingPayment => order.isAwaitingPayment;
 
-  Duration? get _cancelRemaining =>
-      TouryCustomerCancelPolicy.remainingUntilCancelEligible(
-        createdAt: order.createdAtUtc,
-      );
-
-  @override
-  void initState() {
-    super.initState();
-    _syncCancelTicker();
-  }
-
-  @override
-  void didUpdateWidget(covariant TouryOrderDetailsView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.order.reference != order.reference ||
-        oldWidget.order.createdAtUtc != order.createdAtUtc ||
-        oldWidget.order.rawStatusCode != order.rawStatusCode) {
-      _syncCancelTicker();
-    }
-  }
-
-  @override
-  void dispose() {
-    _cancelTicker?.cancel();
-    super.dispose();
-  }
-
-  void _syncCancelTicker() {
-    _cancelTicker?.cancel();
-    _cancelTicker = null;
-    if (!_isOwner || !_awaitingUnassigned || _driverAccepted) return;
-    final remaining = _cancelRemaining;
-    // Countdown while cancel is still allowed (window not expired).
-    if (remaining == null || remaining <= Duration.zero) return;
-    _cancelTicker = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) return;
-      setState(() {});
-      final left = _cancelRemaining;
-      if (left == null || left <= Duration.zero || !_canCancelNow) {
-        _cancelTicker?.cancel();
-        _cancelTicker = null;
-      }
-    });
-  }
-
   Future<void> _runGuarded(
     String actionKey,
     Future<void> Function() action,
@@ -259,7 +211,7 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
         context,
         message: _driverAccepted
             ? 'order_cancel_after_driver_msg'.tr()
-            : 'order_cancel_window_expired_msg'.tr(),
+            : 'booking_cancel_not_allowed'.tr(),
         tone: DsSnackTone.warning,
       );
       return;
@@ -320,30 +272,13 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
     });
   }
 
-  String _formatRemaining(Duration d) {
-    final total = d.inSeconds;
-    if (total <= 0) return '00:00:00';
-    final h = total ~/ 3600;
-    final m = (total % 3600) ~/ 60;
-    final s = total % 60;
-    String two(int v) => v.toString().padLeft(2, '0');
-    return '${two(h)}:${two(m)}:${two(s)}';
-  }
-
   Widget _cancelSection() {
     final colors = context.dsColors;
     final typography = context.dsTypography;
-    final remaining = _cancelRemaining;
-    final windowOpen =
-        _awaitingUnassigned && _canCancelNow && !_driverAccepted;
-    final windowExpired =
-        _awaitingUnassigned && !_canCancelNow && !_driverAccepted;
 
     final hint = _driverAccepted
         ? 'order_cancel_after_driver_msg'.tr()
-        : windowExpired
-            ? 'order_cancel_window_expired_msg'.tr()
-            : 'order_cancel_ready_hint'.tr();
+        : 'order_cancel_ready_hint'.tr();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: DsSpacing.sm),
@@ -359,20 +294,6 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
                 height: 1.45,
               ),
             ),
-            if (windowOpen &&
-                remaining != null &&
-                remaining > Duration.zero) ...[
-              const SizedBox(height: DsSpacing.sm),
-              Text(
-                'order_cancel_remaining'.tr(
-                  namedArgs: {'time': _formatRemaining(remaining)},
-                ),
-                style: typography.labelLarge.copyWith(
-                  color: colors.primaryStrong,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
             const SizedBox(height: DsSpacing.md),
             DsButton.danger(
               label: 'order_cancel'.tr(),
@@ -727,7 +648,7 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
                   size: DsButtonSize.lg,
                 ),
                 const SizedBox(height: DsSpacing.sm),
-                DsButton.secondary(
+                DsButton.danger(
                   label: 'order_cancel'.tr(),
                   icon: Icons.cancel_outlined,
                   onPressed: (_canCancelNow && !_busy) ? _cancelOrder : null,

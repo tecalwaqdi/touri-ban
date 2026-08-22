@@ -48,11 +48,11 @@ void main() {
   });
 
   group('Cash book-now payment selection', () {
-    test('cash-only mode: unset is allowed; online still blocked', () {
-      // Default compile flag ENABLE_ONLINE_PAYMENT=false.
-      expect(TouryPaymentFlags.cashOnlyMode, isTrue);
-      expect(touryIsCashBookNowPayment(TouryPaymentKeys.unset), isTrue);
-      expect(touryRequiresPaymentMethodSelection(TouryPaymentKeys.unset), isFalse);
+    test('online mode: unset requires selection; online is not cash book-now', () {
+      // Default: ENABLE_ONLINE_PAYMENT=true + Render external_api.
+      expect(TouryPaymentFlags.cashOnlyMode, isFalse);
+      expect(touryIsCashBookNowPayment(TouryPaymentKeys.unset), isFalse);
+      expect(touryRequiresPaymentMethodSelection(TouryPaymentKeys.unset), isTrue);
       expect(touryIsCashBookNowPayment(TouryPaymentKeys.online), isFalse);
     });
 

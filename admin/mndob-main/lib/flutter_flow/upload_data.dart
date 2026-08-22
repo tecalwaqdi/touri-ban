@@ -9,6 +9,7 @@ import 'package:mime_type/mime_type.dart';
 import 'package:video_player/video_player.dart';
 
 import '../auth/firebase_auth/auth_util.dart';
+import '/core/driver_i18n.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow_util.dart';
 
@@ -236,7 +237,13 @@ bool validateFileFormat(String filePath, BuildContext context) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(
-      content: Text('Invalid file format: ${mime(filePath)}'),
+      content: Text(
+        driverTrNamed(
+          context,
+          'Invalid file format: {format}',
+          {'format': '${mime(filePath)}'},
+        ),
+      ),
     ));
   return false;
 }

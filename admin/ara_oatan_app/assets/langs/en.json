@@ -971,5 +971,18 @@
   "payment_incomplete_go_orders": "Back to my orders",
   "map_km": "km",
   "map_eta_estimated": "estimated",
-  "map_eta_traffic": "based on traffic"
+  "map_eta_traffic": "based on traffic",
+  "landmark_removed_success": "Removed: {name}",
+  "landmark_not_in_cart": "{name} is not in your trip",
+  "booking_active_exists": "You already have an active booking. Finish or cancel it before creating a new one.",
+  "notification_order_accepted_title": "Order accepted",
+  "notification_order_accepted_body": "Your Touri Taxi request was accepted by: {driver}",
+  "notification_order_cancelled_by_driver_title": "Order cancelled",
+  "notification_order_cancelled_by_driver_body": "Your Touri Taxi request was cancelled by the driver.",
+  "notification_driver_arrived_title": "Driver arrived",
+  "notification_driver_arrived_body": "Driver {driver} has arrived at the pickup location.",
+  "landmark_remove": "Remove",
+  "notification_default_title": "New notification",
+  "notification_open_action": "Open",
+  "open_app_settings": "Open settings"
 }

@@ -4,12 +4,30 @@ import 'serialization_util.dart';
 import '/backend/backend.dart';
 import '/design_system/colors/ds_color_scales.dart';
 import '../../flutter_flow/flutter_flow_util.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 
 final _handledMessageIds = <String?>{};
+
+/// Maps legacy / cross-app push page names onto routes that exist here.
+String? _resolveCustomerPushPageName(String? raw) {
+  if (raw == null || raw.isEmpty) return null;
+  switch (raw) {
+    case 'Dashbord':
+      return 'dashbord';
+    case 'Now':
+      // Driver-app home; in customer app land on bookings tab.
+      return 'List22TaskOverviewResponsive';
+    case 'Chat':
+      // Driver chat → customer chat2 with remapped params below.
+      return 'chat2';
+    default:
+      return raw;
+  }
+}
 
 class PushNotificationsHandler extends StatefulWidget {
   const PushNotificationsHandler({super.key, required this.child});
@@ -44,7 +62,9 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
 
     safeSetState(() => _loading = true);
     try {
-      final initialPageName = message.data['initialPageName'] as String;
+      final rawPageName = message.data['initialPageName'] as String?;
+      final initialPageName = _resolveCustomerPushPageName(rawPageName);
+      if (initialPageName == null) return;
       final initialParameterData = getInitialParameterData(message.data);
       final parametersBuilder = parametersBuilderMap[initialPageName];
       if (parametersBuilder != null) {
@@ -84,7 +104,7 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
     FirebaseMessaging.onMessage.listen((message) {
       final title = message.notification?.title ??
           message.data['notification_title'] as String? ??
-          'إشعار جديد';
+          'notification_default_title'.tr();
       final body = message.notification?.body ??
           message.data['notification_text'] as String? ??
           '';
@@ -100,7 +120,7 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 4),
           action: SnackBarAction(
-            label: 'فتح',
+            label: 'notification_open_action'.tr(),
             onPressed: () => _handlePushNotification(message),
           ),
         ),

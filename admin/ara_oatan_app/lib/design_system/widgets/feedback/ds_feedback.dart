@@ -176,7 +176,9 @@ abstract final class DsSnackBar {
         bg = colors.textPrimary;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.clearSnackBars();
+    messenger.showSnackBar(
       SnackBar(
         content: Text(
           message,

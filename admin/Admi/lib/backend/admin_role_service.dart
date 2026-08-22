@@ -100,6 +100,11 @@ class AdminRoleService {
 
   static bool get isFinance => _claims.isFinance || isSuperAdmin;
 
+  /// SuperAdmin / Finance-only writers. Country agents are read-only in Phase 6A.
+  static bool get canWriteSettlements =>
+      isSuperAdmin ||
+      (_claims.isFinance && !_claims.isCountryAdmin && !_claims.isAgent);
+
   static DocumentReference? get scopedCountryRef {
     final path = _claims.countryId;
     if (path != null && path.isNotEmpty) {
@@ -144,8 +149,15 @@ class AdminRoleService {
   static const _financeRoutes = {
     'AdminProfits',
     'AdminFinanceHub',
-    'AdminDriverWallets',
-    'AdminReportsHub',
+    // AdminDriverWallets is LEGACY_WALLET_TOOL — SuperAdmin only (not settlement V2).
+    'AdminSettlements',
+    'AdminSettlementDetails',
+    'AdminSettlementReceipt',
+    'AdminReconciliation',
+    'AdminFinancialPeriods',
+    'AdminFinanceReports',
+    'AdminFinanceAudit',
+    'AdminDiagnostics',
   };
 
   static bool canAccessRoute(String routeName) {
@@ -205,6 +217,14 @@ class AdminRoleService {
     'AdminBookingDetails',
     'AdminProfits',
     'AdminFinanceHub',
+    'AdminSettlements',
+    'AdminSettlementDetails',
+    'AdminSettlementReceipt',
+    'AdminReconciliation',
+    'AdminFinancialPeriods',
+    'AdminFinanceReports',
+    'AdminFinanceAudit',
+    'AdminDiagnostics',
     'AdminTourGuides',
     'AdminSuport',
     'Settings',

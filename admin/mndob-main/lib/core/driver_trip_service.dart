@@ -12,11 +12,14 @@ import '/backend/schema/structs/amakn_coistm_struct.dart';
 import '/core/driver_app_lifecycle_coordinator.dart';
 import '/core/driver_directions_service.dart';
 import '/core/driver_offline_queue.dart';
+import '/core/driver_order_availability.dart';
 import '/core/driver_order_meta.dart';
 import '/core/driver_payment_labels.dart';
 import '/core/driver_payment_status_mapper.dart';
 import '/core/driver_trip_constants.dart';
 import '/core/driver_wallet_service.dart';
+import '/core/toury_maps_config.dart';
+import '/core/toury_notification_localizer.dart';
 import '/core/toury_system_status_codes.dart';
 import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/flutter_flow_util.dart';
@@ -32,6 +35,8 @@ class DriverWalletGateResult {
 /// منطق الرحلة الموحّد للمندوب (مصدر الحقيقة لمسار القبول/الوصول/البدء/الإنهاء).
 abstract final class DriverTripService {
   DriverTripService._();
+
+  static String? _acceptInFlightOrderId;
 
   static const double arrivalRadiusMeters = 80.0;
   static const double dropoffRadiusMeters = 150.0;
@@ -72,7 +77,19 @@ abstract final class DriverTripService {
     PaymentMethod? paymentMethod,
   }) async {
     final method = paymentMethod ?? order?.paymentMethod;
-    if (!DriverPaymentLabels.isCash(method)) {
+    final fallbackRaw = order == null
+        ? null
+        : [
+            order.snapshotData['PaymentMethod'],
+            order.snapshotData['paymentMethod'],
+            order.snapshotData['payment_status'],
+          ].whereType<Object>().map((e) => e.toString()).join(' ');
+    if (!DriverPaymentLabels.isCash(method, fallbackRaw: fallbackRaw) &&
+        (order == null ||
+            (order.snapshotData['payment_status'] ?? '')
+                    .toString()
+                    .toLowerCase() !=
+                'pending_cash')) {
       return const DriverWalletGateResult(ok: true);
     }
 
@@ -94,7 +111,13 @@ abstract final class DriverTripService {
       balance = await DriverWalletService.availableBalance()
           .timeout(const Duration(seconds: 5));
     } catch (_) {
-      balance = 0;
+      // Fail closed for cash: never treat unread wallet as zero and accept.
+      return const DriverWalletGateResult(
+        ok: false,
+        code: 'BOOKING_SERVICE_UNAVAILABLE',
+        message:
+            'تعذّر التحقق من رصيد المحفظة. تحقق من الاتصال ثم حاول مرة أخرى.',
+      );
     }
     if (balance < minimum) {
       return DriverWalletGateResult(
@@ -107,8 +130,78 @@ abstract final class DriverTripService {
     return const DriverWalletGateResult(ok: true);
   }
 
+  static bool isCashOrder(OrderRecord order) {
+    final payStatus =
+        (order.snapshotData['payment_status'] ?? '').toString().toLowerCase();
+    if (payStatus == 'pending_cash') return true;
+    final fallbackRaw = [
+      order.snapshotData['PaymentMethod'],
+      order.snapshotData['paymentMethod'],
+      payStatus,
+    ].whereType<Object>().map((e) => e.toString()).join(' ');
+    return DriverPaymentLabels.isCash(
+      order.paymentMethod,
+      fallbackRaw: fallbackRaw,
+    );
+  }
+
+  /// Usable GPS only — never null-island (0,0).
+  static LatLng? usableDriverLocation(LatLng? value) {
+    return TouryMapsConfig.resolveLocationOrNull(value);
+  }
+
   /// Accept with server CF when available; falls back to Firestore transaction.
   static Future<DriverWalletGateResult> acceptOrder({
+    required OrderRecord order,
+    required LatLng? driverLocation,
+    required void Function() onStateChanged,
+  }) async {
+    final orderId = order.reference.id;
+    if (_acceptInFlightOrderId == orderId) {
+      return const DriverWalletGateResult(
+        ok: false,
+        code: 'ACCEPT_IN_PROGRESS',
+        message: 'جاري قبول الطلب، يرجى الانتظار.',
+      );
+    }
+    if (_acceptInFlightOrderId != null) {
+      return const DriverWalletGateResult(
+        ok: false,
+        code: 'ACCEPT_IN_PROGRESS',
+        message: 'عملية قبول أخرى قيد التنفيذ. حاول مرة أخرى.',
+      );
+    }
+    _acceptInFlightOrderId = orderId;
+    try {
+      // Client-side gate using Firestore document timestamps (not device create time).
+      if (DriverOrderAvailability.isAcceptanceExpiredOrder(order)) {
+        return DriverWalletGateResult(
+          ok: false,
+          code: 'BOOKING_EXPIRED',
+          message: _messageForCode('BOOKING_EXPIRED'),
+        );
+      }
+      if (order.mndobUser != null &&
+          order.mndobUser?.path != currentUserReference?.path) {
+        return DriverWalletGateResult(
+          ok: false,
+          code: 'BOOKING_ALREADY_ASSIGNED',
+          message: _messageForCode('BOOKING_ALREADY_ASSIGNED'),
+        );
+      }
+      return await _acceptOrderBody(
+        order: order,
+        driverLocation: driverLocation,
+        onStateChanged: onStateChanged,
+      );
+    } finally {
+      if (_acceptInFlightOrderId == orderId) {
+        _acceptInFlightOrderId = null;
+      }
+    }
+  }
+
+  static Future<DriverWalletGateResult> _acceptOrderBody({
     required OrderRecord order,
     required LatLng? driverLocation,
     required void Function() onStateChanged,
@@ -126,7 +219,7 @@ abstract final class DriverTripService {
       return DriverWalletGateResult(
         ok: false,
         code: 'OFFLINE',
-        message: net.message ?? 'Connection required to accept.',
+        message: _messageForCode('OFFLINE'),
       );
     }
 
@@ -149,14 +242,15 @@ abstract final class DriverTripService {
     _acceptLog('driver_loaded', sw, driverRef.id);
 
     // Prefer Admin SDK callable (wallet re-check + atomic claim).
+    final safeLocForCf = usableDriverLocation(driverLocation);
     final cf = await makeCloudCall(
       'acceptDriverOrder',
       {
         'orderId': order.reference.id,
         'orderPath': order.reference.path,
-        if (driverLocation != null) ...{
-          'lat': driverLocation.latitude,
-          'lng': driverLocation.longitude,
+        if (safeLocForCf != null) ...{
+          'lat': safeLocForCf.latitude,
+          'lng': safeLocForCf.longitude,
         },
         'displayName': currentUserDisplayName,
         'phone': valueOrDefault(currentUserDocument?.phoneN, 0),
@@ -172,7 +266,7 @@ abstract final class DriverTripService {
     if (cf['error'] == null && cf['ok'] == true) {
       FFAppState().revOrder = order.reference;
       onStateChanged();
-      unawaited(_postAcceptSideEffects(order, driverRef, driverLocation));
+      unawaited(_postAcceptSideEffects(order, driverRef, safeLocForCf));
       _acceptLog('accept_completed', sw, 'via_cf');
       return const DriverWalletGateResult(ok: true);
     }
@@ -189,6 +283,7 @@ abstract final class DriverTripService {
         errorCode == 'BOOKING_NOT_FOUND' ||
         errorCode == 'DRIVER_DISABLED' ||
         errorCode == 'insufficient-wallet' ||
+        errorCode == 'INTERNAL' ||
         (cfCode == 'failed-precondition' && errText.contains('محفظ')) ||
         (cfCode == 'already-exists');
     if (hardFail) {
@@ -199,24 +294,27 @@ abstract final class DriverTripService {
               : 'BOOKING_ASSIGNMENT_FAILED');
       final mappedCode = code == 'insufficient-wallet'
           ? 'DRIVER_WALLET_INSUFFICIENT'
-          : code;
+          : (code == 'INTERNAL' || code == 'internal'
+              ? 'INTERNAL'
+              : code);
       _acceptLog('accept_failed', sw, mappedCode);
       return DriverWalletGateResult(
         ok: false,
         code: mappedCode,
         message: mappedCode == 'DRIVER_WALLET_INSUFFICIENT'
             ? _messageForCode('DRIVER_WALLET_INSUFFICIENT')
-            : (errText.isNotEmpty && !errText.contains('_')
+            : (errText.isNotEmpty &&
+                    !_looksTechnicalError(errText)
                 ? errText
                 : _messageForCode(mappedCode)),
       );
     }
 
     // CF unavailable / IAM / timeout → client transactional claim (rules-gated).
+    // Do not soft-fallback on opaque `internal` — that often hides a real server fault.
     final softFail = cfCode == 'not-found' ||
         cfCode == 'unavailable' ||
         cfCode == 'unimplemented' ||
-        cfCode == 'internal' ||
         cfCode == 'deadline-exceeded' ||
         errorCode == 'BOOKING_SERVICE_UNAVAILABLE' ||
         cf.isEmpty;
@@ -230,6 +328,26 @@ abstract final class DriverTripService {
         ),
       );
     }
+
+    // Cash must go through server accept (wallet enforced in Admin SDK).
+    if (isCashOrder(order)) {
+      _acceptLog('accept_failed', sw, 'CASH_REQUIRES_CF');
+      return DriverWalletGateResult(
+        ok: false,
+        code: 'BOOKING_SERVICE_UNAVAILABLE',
+        message: _messageForCode('BOOKING_SERVICE_UNAVAILABLE'),
+      );
+    }
+
+    // Re-check wallet right before any non-cash fallback is unnecessary;
+    // still re-validate for safety if payment classification was ambiguous.
+    final walletAgain = await validateWalletForAccept(order: order);
+    if (!walletAgain.ok) {
+      _acceptLog('accept_failed', sw, walletAgain.code);
+      return walletAgain;
+    }
+
+    final safeDriverLoc = usableDriverLocation(driverLocation);
 
     _acceptLog('transaction_started', sw, 'client_fallback');
     try {
@@ -262,19 +380,7 @@ abstract final class DriverTripService {
           throw StateError('BOOKING_INVALID_STATE');
         }
 
-        final deadline = data['acceptanceDeadline'];
-        final deadlineMs = data['acceptance_deadline_ms'];
-        DateTime? deadlineAt;
-        if (deadline is Timestamp) {
-          deadlineAt = deadline.toDate();
-        } else if (deadlineMs is num) {
-          deadlineAt = DateTime.fromMillisecondsSinceEpoch(deadlineMs.toInt());
-        } else {
-          final created = data['data_order'];
-          if (created is Timestamp) {
-            deadlineAt = created.toDate().add(const Duration(hours: 1));
-          }
-        }
+        final deadlineAt = DriverOrderAvailability.acceptanceDeadlineAt(data);
         if (deadlineAt != null && DateTime.now().isAfter(deadlineAt)) {
           throw StateError('BOOKING_EXPIRED');
         }
@@ -296,15 +402,14 @@ abstract final class DriverTripService {
           'NameCar': valueOrDefault(currentUserDocument?.nameCar, ''),
           'ModelCar': valueOrDefault(currentUserDocument?.modelCar, ''),
         };
-        if (driverLocation != null &&
-            (driverLocation.latitude != 0 || driverLocation.longitude != 0)) {
+        if (safeDriverLoc != null) {
           claim['mapuser'] = GeoPoint(
-            driverLocation.latitude,
-            driverLocation.longitude,
+            safeDriverLoc.latitude,
+            safeDriverLoc.longitude,
           );
           claim['driver_accept_location'] = GeoPoint(
-            driverLocation.latitude,
-            driverLocation.longitude,
+            safeDriverLoc.latitude,
+            safeDriverLoc.longitude,
           );
         }
         tx.update(order.reference, claim);
@@ -325,7 +430,7 @@ abstract final class DriverTripService {
         code: e.code,
         message: e.code == 'permission-denied'
             ? _messageForCode('PERMISSION_DENIED')
-            : '${_messageForCode('BOOKING_ASSIGNMENT_FAILED')} (${e.code})',
+            : _messageForCode('BOOKING_ASSIGNMENT_FAILED'),
       );
     } catch (e) {
       _acceptLog('accept_failed', sw, e);
@@ -338,7 +443,7 @@ abstract final class DriverTripService {
 
     FFAppState().revOrder = order.reference;
     onStateChanged();
-    unawaited(_postAcceptSideEffects(order, driverRef, driverLocation));
+    unawaited(_postAcceptSideEffects(order, driverRef, safeDriverLoc));
     _acceptLog('accept_completed', sw, 'via_client_txn');
     return const DriverWalletGateResult(ok: true);
   }
@@ -362,12 +467,24 @@ abstract final class DriverTripService {
       await actions.startTrackingAndUpdateFirebase(order.reference);
     } catch (_) {}
     try {
-      if (order.user != null) {
+      final userRef = order.user;
+      if (userRef != null) {
+        final locale =
+            await TouryNotificationLocalizer.localeForUserRef(userRef);
+        final driverName = currentUserDisplayName.trim().isEmpty
+            ? 'Touri'
+            : currentUserDisplayName.trim();
         triggerPushNotification(
-          notificationTitle: 'Order accepted',
-          notificationText:
-              'Your Touri Taxi request was accepted by: $currentUserDisplayName',
-          userRefs: [order.user!],
+          notificationTitle: await TouryNotificationLocalizer.text(
+            locale,
+            'notification_order_accepted_title',
+          ),
+          notificationText: await TouryNotificationLocalizer.text(
+            locale,
+            'notification_order_accepted_body',
+            args: {'driver': driverName},
+          ),
+          userRefs: [userRef],
           initialPageName: 'tfasel_order',
           parameterData: {
             'idorder': order.reference,
@@ -392,21 +509,35 @@ abstract final class DriverTripService {
       throw StateError('BOOKING_INVALID_STATE');
     }
 
+    final startAt = getCurrentTimestamp;
+    final hours = order.totalTaim;
+    final endAt = hours > 0 ? startAt.add(Duration(hours: hours)) : null;
+    final safeLoc = usableDriverLocation(driverLocation);
+
     await order.reference.update({
       ...createOrderRecordData(
         halhText: DriverTripHalh.inProgress,
-        mapuser: driverLocation,
-        timestamp: getCurrentTimestamp,
-        start: getCurrentTimestamp,
+        mapuser: safeLoc,
+        timestamp: startAt,
+        start: startAt,
+        endTime: endAt,
         activeOrder: true,
       ),
       'status_code': TourySystemStatusCodes.tripInProgress,
       'trip_started_at': FieldValue.serverTimestamp(),
     });
+
+    FFAppState().startTime = startAt;
+    if (endAt != null) {
+      FFAppState().EndDate = endAt;
+    }
+    FFAppState().update(() {});
   }
 
-  /// Whether the driver may complete: in-progress + booked duration fully elapsed.
-  /// Near-dropoff / soft GPS overrides must NOT skip the booked trip time.
+  /// Whether the driver may complete:
+  /// 1) trip in progress
+  /// 2) booked duration fully elapsed
+  /// 3) near dropoff (نقطة التسليم) when destination + GPS are known
   static bool canCompleteTrip({
     required OrderRecord order,
     LatLng? driverLocation,
@@ -426,10 +557,54 @@ abstract final class DriverTripService {
     final required = bookedTripDuration(order);
     if (elapsed < required) return false;
 
-    // Duration gate passed. Optional remote override (unused in UI) skips
-    // further geo checks — none remain after the hard time rule.
     if (allowRemoteOverride) return true;
-    return true;
+
+    final dropoff = order.tripDestination;
+    final driver = usableDriverLocation(driverLocation) ??
+        usableDriverLocation(order.mapuser) ??
+        usableDriverLocation(currentUserDocument?.loceshnMndobNow);
+
+    // No known dropoff → time gate only (cannot prove proximity).
+    if (dropoff == null) return true;
+
+    // Dropoff known but GPS missing/invalid → block complete.
+    if (driver == null) return false;
+
+    final meters = haversineMeters(
+      driver.latitude,
+      driver.longitude,
+      dropoff.latitude,
+      dropoff.longitude,
+    );
+    return meters <= dropoffRadiusMeters;
+  }
+
+  /// Why complete is blocked (for UI). Null when allowed.
+  static String? completeBlockReason({
+    required OrderRecord order,
+    LatLng? driverLocation,
+  }) {
+    if (!isTripInProgress(order)) return 'BOOKING_INVALID_STATE';
+    final left = remainingBeforeComplete(order);
+    if (left == null) return 'BOOKING_INVALID_STATE';
+    if (left > Duration.zero) return 'BOOKING_TOO_FAR_OR_TOO_EARLY';
+
+    final dropoff = order.tripDestination;
+    if (dropoff == null) return null;
+
+    final driver = usableDriverLocation(driverLocation) ??
+        usableDriverLocation(order.mapuser) ??
+        usableDriverLocation(currentUserDocument?.loceshnMndobNow);
+    if (driver == null) return 'LOCATION_REQUIRED';
+
+    final meters = haversineMeters(
+      driver.latitude,
+      driver.longitude,
+      dropoff.latitude,
+      dropoff.longitude,
+    );
+    if (meters > dropoffRadiusMeters) return 'TOO_FAR_FROM_DROPOFF';
+    return null;
   }
 
   /// Booked length from `total_taim` (hours). Falls back to a short minimum.
@@ -442,6 +617,44 @@ abstract final class DriverTripService {
   static DateTime? tripStartedAt(OrderRecord order) {
     return order.start ??
         _asDateTime(order.snapshotData['trip_started_at']);
+  }
+
+  /// Booked trip end: prefer Firestore `endTime`, else start + total_taim.
+  static DateTime? tripEndsAt(OrderRecord order) {
+    if (order.endTime != null) return order.endTime;
+    final started = tripStartedAt(order);
+    if (started == null) return null;
+    return started.add(bookedTripDuration(order));
+  }
+
+  static bool isTripInProgress(OrderRecord order) {
+    final code =
+        (order.snapshotData['status_code'] ?? '').toString().trim();
+    return code == TourySystemStatusCodes.tripInProgress ||
+        code == TourySystemStatusCodes.tripStarted ||
+        order.halhText == DriverTripHalh.inProgress;
+  }
+
+  /// Remaining countdown ms for the trip timer UI (0 when elapsed/unknown).
+  static int remainingTripCountdownMs(
+    OrderRecord order, {
+    DateTime? now,
+  }) {
+    final left = remainingBeforeComplete(order, now: now);
+    if (left == null) return 0;
+    return left.inMilliseconds;
+  }
+
+  /// Sync local AppState timer anchors from the order document.
+  static void syncLocalTripTimerState(OrderRecord order) {
+    final started = tripStartedAt(order);
+    final ends = tripEndsAt(order);
+    if (started != null) {
+      FFAppState().startTime = started;
+    }
+    if (ends != null) {
+      FFAppState().EndDate = ends;
+    }
   }
 
   /// Remaining time before complete is allowed; `Duration.zero` when ready.
@@ -489,12 +702,19 @@ abstract final class DriverTripService {
       driverLocation: driverLocation,
       allowRemoteOverride: allowRemoteOverride,
     )) {
-      throw StateError('BOOKING_TOO_FAR_OR_TOO_EARLY');
+      final reason = completeBlockReason(
+            order: order,
+            driverLocation: driverLocation,
+          ) ??
+          'BOOKING_TOO_FAR_OR_TOO_EARLY';
+      throw StateError(reason);
     }
 
-    final isCash = DriverPaymentLabels.isCash(order.paymentMethod);
+    final isCash = isCashOrder(order);
+    final safeLoc = usableDriverLocation(driverLocation);
     // Cash is NOT auto-collected on complete — driver must confirm separately.
     // Electronic payment_status is never written by the driver app.
+    // Preserve booked endTime; completion instant lives in completedAt/dateend.
     await order.reference.update({
       ...createOrderRecordData(
         halhText: DriverTripHalh.completed,
@@ -502,8 +722,7 @@ abstract final class DriverTripService {
         dateend: getCurrentTimestamp,
         activeOrder: false,
         halhOrderMndob: HalhOrder.Completed,
-        endTime: getCurrentTimestamp,
-        mapuser: driverLocation,
+        mapuser: safeLoc,
       ),
       'status_code': TourySystemStatusCodes.completed,
       'halh_text_completed_alias': DriverTripHalh.completedAlias,
@@ -514,6 +733,10 @@ abstract final class DriverTripService {
       },
     });
 
+    FFAppState().EndDate = null;
+    FFAppState().startTime = null;
+    FFAppState().update(() {});
+
     final driverRef = currentUserReference;
     if (driverRef != null) {
       await driverRef.update(createUserRecordData(mndonNewacc: false));
@@ -523,6 +746,30 @@ abstract final class DriverTripService {
     }
     try {
       await actions.stopTracking();
+    } catch (_) {}
+    unawaited(_releaseCustomerActiveOrderLock(order));
+  }
+
+  /// Best-effort: clear customer `active_order_id` when this order ends.
+  static Future<void> _releaseCustomerActiveOrderLock(OrderRecord order) async {
+    final userRef = order.user;
+    if (userRef == null) return;
+    try {
+      await FirebaseFirestore.instance.runTransaction((txn) async {
+        final userSnap = await txn.get(userRef);
+        if (!userSnap.exists) return;
+        final data = userSnap.data() as Map<String, dynamic>? ?? {};
+        final currentId = (data['active_order_id'] ?? '').toString().trim();
+        if (currentId.isEmpty || currentId != order.reference.id) return;
+        txn.set(
+          userRef,
+          {
+            'active_order_id': FieldValue.delete(),
+            'active_order_updated_at': FieldValue.serverTimestamp(),
+          },
+          SetOptions(merge: true),
+        );
+      });
     } catch (_) {}
   }
 
@@ -656,10 +903,17 @@ abstract final class DriverTripService {
       }
 
       if (order.user != null) {
+        final locale =
+            await TouryNotificationLocalizer.localeForUserRef(order.user);
         triggerPushNotification(
-          notificationTitle: 'Order cancelled',
-          notificationText:
-              'Your Touri Taxi request was cancelled by the driver.',
+          notificationTitle: await TouryNotificationLocalizer.text(
+            locale,
+            'notification_order_cancelled_by_driver_title',
+          ),
+          notificationText: await TouryNotificationLocalizer.text(
+            locale,
+            'notification_order_cancelled_by_driver_body',
+          ),
           userRefs: [order.user!],
           initialPageName: 'tfasel_order',
           parameterData: {
@@ -667,6 +921,8 @@ abstract final class DriverTripService {
           },
         );
       }
+
+      unawaited(_releaseCustomerActiveOrderLock(order));
 
       return const DriverWalletGateResult(ok: true);
     } catch (e) {
@@ -713,12 +969,31 @@ abstract final class DriverTripService {
     required DocumentReference orderRef,
     LatLng? driverLocation,
     DocumentReference? customerRef,
+    OrderRecord? order,
   }) async {
     final now = getCurrentTimestamp;
+    final safeLoc = usableDriverLocation(driverLocation);
+
+    // Soft proximity check when we have pickup + GPS.
+    final pickup = order?.lokeshn ?? order?.customerPickup;
+    if (pickup != null && safeLoc != null) {
+      final meters = haversineMeters(
+        safeLoc.latitude,
+        safeLoc.longitude,
+        pickup.latitude,
+        pickup.longitude,
+      );
+      if (meters > arrivalRadiusMeters * 3) {
+        // Allow with warning path — still mark arrived but require being
+        // reasonably near pickup (3x radius soft gate for manual button).
+        throw StateError('TOO_FAR_FROM_PICKUP');
+      }
+    }
+
     await orderRef.update({
       ...createOrderRecordData(
         halhText: DriverTripHalh.driverArrived,
-        mapuser: driverLocation,
+        mapuser: safeLoc,
         timestamp: now,
         activeOrder: true,
       ),
@@ -747,10 +1022,20 @@ abstract final class DriverTripService {
         user = order.user;
       }
       if (user == null) return;
+      final locale = await TouryNotificationLocalizer.localeForUserRef(user);
+      final driverName = currentUserDisplayName.trim().isEmpty
+          ? 'Touri'
+          : currentUserDisplayName.trim();
       triggerPushNotification(
-        notificationTitle: 'Driver arrived',
-        notificationText:
-            'Driver $currentUserDisplayName has arrived at the pickup location.',
+        notificationTitle: await TouryNotificationLocalizer.text(
+          locale,
+          'notification_driver_arrived_title',
+        ),
+        notificationText: await TouryNotificationLocalizer.text(
+          locale,
+          'notification_driver_arrived_body',
+          args: {'driver': driverName},
+        ),
         userRefs: [user],
         initialPageName: 'tfasel_order',
         parameterData: {
@@ -782,7 +1067,9 @@ abstract final class DriverTripService {
     if (meters <= arrivalRadiusMeters) {
       await markDriverArrived(
         orderRef: order.reference,
-        driverLocation: driverPosition,
+        driverLocation: usableDriverLocation(driverPosition),
+        order: order,
+        customerRef: order.user,
       );
     }
   }
@@ -1111,12 +1398,23 @@ abstract final class DriverTripService {
 
   static String messageForCode(String code) => _messageForCode(code);
 
+  static bool _looksTechnicalError(String msg) {
+    final t = msg.trim();
+    if (t.isEmpty) return true;
+    final upper = t.toUpperCase();
+    return upper == 'INTERNAL' ||
+        upper.contains('STACK') ||
+        upper.contains('EXCEPTION') ||
+        upper.contains('FIREBASE') ||
+        RegExp(r'^[A-Z0-9_:-]+$').hasMatch(t);
+  }
+
   static String _messageForCode(String code) {
     switch (code) {
       case 'BOOKING_NOT_FOUND':
         return 'الطلب غير موجود.';
       case 'BOOKING_ALREADY_ASSIGNED':
-        return 'تم قبول هذا الطلب بواسطة مندوب آخر.';
+        return 'تم قبول هذه الرحلة بواسطة مندوب آخر.';
       case 'BOOKING_INVALID_STATE':
         return 'لا يمكن تحديث هذا الطلب في حالته الحالية.';
       case 'BOOKING_EXPIRED':
@@ -1131,8 +1429,18 @@ abstract final class DriverTripService {
         return 'خدمة القبول غير متاحة مؤقتًا. حاول مرة أخرى.';
       case 'BOOKING_TOO_FAR_OR_TOO_EARLY':
         return 'لا يمكن إنهاء الرحلة قبل انتهاء وقتها المحجوز.';
+      case 'TOO_FAR_FROM_DROPOFF':
+        return 'يجب أن تكون قريبًا من نقطة التسليم لإنهاء الرحلة.';
+      case 'TOO_FAR_FROM_PICKUP':
+        return 'يجب أن تكون قريبًا من موقع العميل لتأكيد الوصول.';
+      case 'LOCATION_REQUIRED':
+        return 'تعذّر تحديد موقعك. فعّل GPS ثم حاول مرة أخرى.';
       case 'PERMISSION_DENIED':
         return 'ليس لديك صلاحية لتنفيذ هذا الإجراء.';
+      case 'OFFLINE':
+        return 'لا يوجد اتصال بالإنترنت. تحقق من الشبكة ثم حاول مرة أخرى.';
+      case 'ACCEPT_IN_PROGRESS':
+        return 'جاري قبول الطلب، يرجى الانتظار.';
       case 'INTERNAL':
       case 'internal':
         return 'تعذّر القبول بسبب خطأ في الخادم. حاول مرة أخرى.';

@@ -155,6 +155,9 @@ class _MyAppState extends State<MyApp> {
         Locale('ar'),
         Locale('ru'),
         Locale('ky'),
+        Locale('fr'),
+        Locale('ur'),
+        Locale('pt'),
       ],
       theme: AdminUi.buildLightTheme(),
       darkTheme: AdminUi.buildDarkTheme(),
@@ -162,7 +165,8 @@ class _MyAppState extends State<MyApp> {
       themeAnimationDuration: const Duration(milliseconds: 280),
       themeAnimationCurve: Curves.easeInOut,
       builder: (context, child) {
-        final isRtl = _locale.languageCode.toLowerCase() == 'ar';
+        final code = _locale.languageCode.toLowerCase();
+        final isRtl = code == 'ar' || code == 'ur';
         return Directionality(
           textDirection:
               isRtl ? ui.TextDirection.rtl : ui.TextDirection.ltr,

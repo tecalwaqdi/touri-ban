@@ -153,6 +153,7 @@ class DriverGradientButton extends StatelessWidget {
     this.icon,
     this.height = 48,
     this.expanded = true,
+    this.loading = false,
   });
 
   final String label;
@@ -160,14 +161,17 @@ class DriverGradientButton extends StatelessWidget {
   final IconData? icon;
   final double height;
   final bool expanded;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
     return DsButton.primary(
       label: label,
-      onPressed: onPressed,
+      onPressed: loading ? null : onPressed,
       icon: icon,
       expanded: expanded,
+      loading: loading,
+      enabled: !loading && onPressed != null,
       size: height >= 52 ? DsButtonSize.lg : DsButtonSize.md,
     );
   }

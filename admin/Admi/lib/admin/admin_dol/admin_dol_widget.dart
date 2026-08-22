@@ -1,6 +1,6 @@
 import '/backend/admin_audit_log.dart';
-import '/backend/admin_cascade_delete.dart';
 import '/backend/backend.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
@@ -59,49 +59,42 @@ class _AdminDolWidgetState extends State<AdminDolWidget> {
   }
 
   Future<void> _deleteCountry(CountriesRecord record) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(appTr(context, 'adm_delete_confirm_title')),
-            content: Text(appTrFormat(context, 'adm_delete_confirm_body', record.naim)),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(appTr(context, 'adm_yes_delete')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: appTr(context, 'adm_delete_confirm_title'),
+      whatHappens: uiTr(
+        context,
+        'Soft-disable this country (acctev=false). Related data is preserved.',
+      ),
+      subject: record.naim.isNotEmpty ? record.naim : record.reference.id,
+      impact: uiTr(context, 'Country hidden from active lists; not cascade-deleted'),
+      confirmLabel: uiTr(context, 'تعطيل الدولة'),
+      cancelLabel: appTr(context, 'adm_no'),
+      destructive: true,
+      irreversible: false,
+      reference: record.reference.id,
+    );
 
     if (!confirmed) return;
 
     try {
-      await AdminCrudFeedback.runWithBlockingProgress(
-        context: context,
-        message: uiTr(context, 'جاري الحذف… لا تغلق التطبيق'),
-        action: () => deleteCountryCascade(record.reference),
-      );
-      await AdminAuditLog.recordDelete(
+      await record.reference.update(createCountriesRecordData(acctev: false));
+      await AdminAuditLog.recordToggle(
         targetType: 'country',
         targetId: record.reference.id,
         targetLabel: record.naim,
+        activated: false,
       );
       if (!mounted) return;
       await AdminCrudFeedback.success(
         context,
-        action: AdminCrudAction.delete,
-        message: uiTr(context, 'تم حذف الدولة وكل البيانات المرتبطة'),
+        action: AdminCrudAction.edit,
+        message: uiTr(context, 'تم تعطيل الدولة (حذف ناعم)'),
         refreshScope: AdminListScope.countries,
-        removedDocumentId: record.reference.id,
       );
     } catch (e) {
       if (!mounted) return;
-      AdminCrudFeedback.error(context, AdminCrudFeedback.deleteFailed(context, e));
+      AdminCrudFeedback.error(context, AdminCrudFeedback.updateFailed(context, e));
     }
   }
 

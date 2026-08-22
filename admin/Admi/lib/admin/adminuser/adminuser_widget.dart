@@ -1,17 +1,19 @@
 import '/backend/admin_audit_log.dart';
-import '/backend/admin_country_scope.dart';
+import '/backend/admin_ops_filters.dart';
+import '/backend/admin_ops_search.dart';
 import '/backend/backend.dart';
 import '/components/add_yser_widget.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
 import '/components/admin_layout_widget.dart';
+import '/components/admin_ops_filter_bar.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
-import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'adminuser_model.dart';
 export 'adminuser_model.dart';
@@ -30,16 +32,14 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
   late AdminuserModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  String _searchQuery = '';
+  AdminOpsFilterState _filters = const AdminOpsFilterState();
+  List<UserRecord>? _serverSearchHits;
+  int _searchGen = 0;
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AdminuserModel());
-
-    _model.textController ??= TextEditingController();
-    _model.textFieldFocusNode ??= FocusNode();
-
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -49,44 +49,64 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
     super.dispose();
   }
 
+  Future<void> _onFiltersChanged(AdminOpsFilterState next) async {
+    setState(() {
+      _filters = next;
+      _serverSearchHits = null;
+    });
+    final plan = AdminOpsSearch.classify(next.searchQuery);
+    if (!plan.isServerSide) return;
+    final gen = ++_searchGen;
+    final hits = await AdminOpsSearch.searchUsersServer(plan, next);
+    if (!mounted || gen != _searchGen) return;
+    setState(() => _serverSearchHits = hits);
+  }
+
   List<UserRecord> _filterUsers(List<UserRecord> users) {
+    if (_serverSearchHits != null) {
+      return _serverSearchHits!
+          .where((u) => !u.isagent && !u.ismndob)
+          .toList(growable: false);
+    }
+
     final appUsers = users
         .where((u) => !u.isagent && !u.ismndob)
         .toList(growable: false);
 
-    final q = _searchQuery.trim().toLowerCase();
+    final q = _filters.searchQuery.trim().toLowerCase();
     if (q.isEmpty) return appUsers;
+
+    final plan = AdminOpsSearch.classify(q);
+    if (plan.isServerSide) return appUsers;
 
     return appUsers.where((u) {
       return u.displayName.toLowerCase().contains(q) ||
           u.phoneNumber.toLowerCase().contains(q) ||
-          u.email.toLowerCase().contains(q);
+          u.email.toLowerCase().contains(q) ||
+          u.reference.id.toLowerCase().contains(q);
     }).toList();
   }
 
   Future<void> _toggleActivation(UserRecord user, {required bool activate}) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(activate ? uiTr(context, 'تأكيد تنشيط الحساب') : uiTr(context, 'تأكيد إيقاف الحساب')),
-            content: Text(
-              activate
-                  ? '${uiTr(context, 'هل أنت متأكد من تنشيط حساب')} "${user.displayName}"؟'
-                  : '${uiTr(context, 'هل أنت متأكد من إيقاف حساب')} "${user.displayName}"؟',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(activate ? uiTr(context, 'نعم، فعّل') : uiTr(context, 'نعم، أوقف')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: activate
+          ? uiTr(context, 'تأكيد تنشيط الحساب')
+          : uiTr(context, 'تأكيد إيقاف الحساب'),
+      whatHappens: activate
+          ? uiTr(context, 'هل أنت متأكد من تنشيط حساب')
+          : uiTr(context, 'هل أنت متأكد من إيقاف حساب'),
+      subject: user.displayName.isNotEmpty ? user.displayName : user.reference.id,
+      impact: activate
+          ? uiTr(context, 'User can sign in and book again')
+          : uiTr(context, 'User account will be disabled'),
+      confirmLabel: activate
+          ? uiTr(context, 'نعم، فعّل')
+          : uiTr(context, 'نعم، أوقف'),
+      cancelLabel: appTr(context, 'adm_no'),
+      destructive: !activate,
+      reference: user.reference.id,
+    );
 
     if (!confirmed) return;
 
@@ -169,32 +189,30 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
                           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-              AdminContentCard(
-                padding: const EdgeInsets.all(16),
-                child: isWide
-                    ? Row(
-                                  children: [
-                          Expanded(child: _buildSearch(l10n)),
-                          const SizedBox(width: 12),
-                          _buildAddButton(l10n),
-                        ],
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildSearch(l10n),
-                          const SizedBox(height: 12),
-                          _buildAddButton(l10n),
-                        ],
-                      ),
+              AdminOpsFilterBar(
+                value: _filters,
+                config: const AdminOpsFilterConfig(
+                  showDate: false,
+                  showCountry: true,
+                  showSearch: true,
+                  searchHint: 'بحث بالاسم / الهاتف / البريد',
+                ),
+                onChanged: _onFiltersChanged,
+              ),
+              const SizedBox(height: 12),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: _buildAddButton(l10n),
               ),
               const SizedBox(height: 16),
               AdminFirestoreList<UserRecord>(
+                key: ValueKey('users_${_filters.signature}'),
+                reloadKey: _filters.signature,
                 refreshScope: AdminListScope.users,
                 query: UserRecord.collection,
                 recordBuilder: UserRecord.fromSnapshot,
                 queryBuilder: (q) =>
-                    AdminCountryScope.applyAppUserQuery(q),
+                    AdminOpsQueryBuilder.applyUserFilters(q, _filters),
                 builder: (context, allUsers, listState) {
                   final users = _filterUsers(allUsers);
 
@@ -209,7 +227,7 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            _searchQuery.isEmpty
+                            _filters.searchQuery.isEmpty
                                 ? uiTr(context, 'لا يوجد مستخدمون مسجلون')
                                 : uiTr(context, 'لا توجد نتائج للبحث'),
                             style: theme.titleMedium,
@@ -264,31 +282,6 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
                                         ),
                                       ),
                                     ),
-    );
-  }
-
-  Widget _buildSearch(FFLocalizations l10n) {
-    return TextFormField(
-      controller: _model.textController,
-      focusNode: _model.textFieldFocusNode,
-      onChanged: (_) => EasyDebounce.debounce(
-        '_adminuser_search',
-        const Duration(milliseconds: 300),
-        () {
-          if (mounted) {
-            setState(() {
-              _searchQuery = _model.textController?.text ?? '';
-            });
-          }
-        },
-      ),
-      decoration: AdminUi.inputDecoration(
-        context,
-        label: uiTr(context, 'بحث'),
-        hint: uiTr(context, 'ابحث بالاسم أو البريد أو الجوال...'),
-        prefixIcon: Icons.search_rounded,
-      ),
-      validator: _model.textControllerValidator.asValidator(context),
     );
   }
 

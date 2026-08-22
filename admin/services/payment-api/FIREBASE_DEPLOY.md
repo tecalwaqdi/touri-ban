@@ -1,13 +1,16 @@
-# Firebase cutover — Payment API (`paymentApi`)
+# Firebase Payment Backend — Future / Legacy / Rollback only
 
-Same Express service as Render, hosted on Firebase Functions v2.
+Same Express service as Render, optionally hosted on Firebase Functions v2.
 
-**Current production (do not wait on this cutover for store releases):**  
-Render `https://touri-ban.onrender.com` — keep client `PAYMENT_API_BASE_URL` pointed here.
+**Current production Payment Backend:**  
+Render `https://touri-ban.onrender.com`  
+Customer App defaults: `PAYMENT_BACKEND=external_api` + that URL.
 
-**Optional later Firebase URL:**  
-`https://us-central1-tutorial-multi-language-70gx4j.cloudfunctions.net/paymentApi`  
-**Rollback:** keep Render until Firebase is verified.
+**Firebase `paymentApi`:** Future / Legacy / Rollback only. Do **not** point store
+builds here unless explicitly rolling back from Render.
+
+**Optional Firebase URL (rollback):**  
+`https://us-central1-tutorial-multi-language-70gx4j.cloudfunctions.net/paymentApi`
 
 ## 1) Login
 
@@ -52,36 +55,44 @@ Expect `ok: true` and `identityStatus: ok` (no secrets in JSON).
 
 ## 5) N-Genius webhook (portal)
 
-Point production webhook to:
+**Production webhook (Render):**
+
+```
+https://touri-ban.onrender.com/webhooks/ngenius
+```
+
+Header key/value = `NGENIUS_WEBHOOK_HEADER` / `NGENIUS_WEBHOOK_SECRET`.
+
+Firebase webhook URL is only for an explicit Firebase cutover later:
 
 ```
 https://us-central1-tutorial-multi-language-70gx4j.cloudfunctions.net/paymentApi/webhooks/ngenius
 ```
 
-Header key/value = `NGENIUS_WEBHOOK_HEADER` / `NGENIUS_WEBHOOK_SECRET` (same as Render).
+## 6) Flutter (production = Render)
 
-Keep Render webhook until one successful paid booking on Firebase.
-
-## 6) Flutter
-
-Defaults already target Firebase `paymentApi`. Run with:
+Defaults already target Render. Explicit defines (matches store scripts):
 
 ```bash
 cd admin/ara_oatan_app
 flutter run \
   --dart-define=ENABLE_ONLINE_PAYMENT=true \
   --dart-define=PAYMENT_BACKEND=external_api \
-  --dart-define=PAYMENT_API_BASE_URL=https://us-central1-tutorial-multi-language-70gx4j.cloudfunctions.net/paymentApi \
-  --dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=true
+  --dart-define=PAYMENT_API_BASE_URL=https://touri-ban.onrender.com \
+  --dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=true \
+  --dart-define=TOURY_CLIENT_CASH_FALLBACK=true
 ```
 
-## Rollback
+## Rollback to Firebase Payment Backend (legacy)
 
 ```bash
---dart-define=PAYMENT_API_BASE_URL=https://touri-ban.onrender.com
+--dart-define=PAYMENT_BACKEND=firebase_functions
+# or keep external_api and point URL at paymentApi:
+--dart-define=PAYMENT_BACKEND=external_api \
+--dart-define=PAYMENT_API_BASE_URL=https://us-central1-tutorial-multi-language-70gx4j.cloudfunctions.net/paymentApi
 ```
 
-Restore N-Genius webhook to Render `/webhooks/ngenius`.
+Point N-Genius webhook at Firebase only while that rollback is active; restore Render afterward.
 
 ## AUTH / CAPTURE
 

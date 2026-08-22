@@ -254,6 +254,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: Details24QuizPageWidget.routeName,
           path: Details24QuizPageWidget.routePath,
+          requireAuth: true,
           builder: (context, params) => Details24QuizPageWidget(
             usermndob: params.getParam(
               'usermndob',

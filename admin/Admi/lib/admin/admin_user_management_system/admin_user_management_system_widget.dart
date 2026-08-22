@@ -2,6 +2,7 @@ import '/backend/admin_audit_log.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/backend.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/add_yser_widget.dart';
 import '/components/admin_firestore_list.dart';
@@ -60,26 +61,22 @@ class _AdminUserManagementSystemWidgetState
 
   Future<void> _toggleActivation(UserRecord user,
       {required bool activate}) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(activate ? uiTr(context, 'تفعيل المستخدم') : uiTr(context, 'إيقاف المستخدم')),
-            content: Text(
-              '${uiTr(context, 'هل تريد')} ${activate ? uiTr(context, 'تفعيل') : uiTr(context, 'إيقاف')} "${user.displayName}"؟',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_cancel')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(uiTr(context, 'تأكيد')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: activate
+          ? uiTr(context, 'تفعيل المستخدم')
+          : uiTr(context, 'إيقاف المستخدم'),
+      whatHappens:
+          '${uiTr(context, 'هل تريد')} ${activate ? uiTr(context, 'تفعيل') : uiTr(context, 'إيقاف')}',
+      subject: user.displayName.isNotEmpty ? user.displayName : user.reference.id,
+      impact: activate
+          ? uiTr(context, 'User can sign in again')
+          : uiTr(context, 'User account will be disabled'),
+      confirmLabel: uiTr(context, 'تأكيد'),
+      cancelLabel: appTr(context, 'adm_cancel'),
+      destructive: !activate,
+      reference: user.reference.id,
+    );
 
     if (!confirmed) return;
 
@@ -110,24 +107,18 @@ class _AdminUserManagementSystemWidgetState
   }
 
   Future<void> _deleteUser(UserRecord user) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(uiTr(context, 'حذف مستخدم')),
-            content: Text(appTrFormat(context, 'adm_delete_confirm_body', user.displayName)),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_cancel')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(uiTr(context, 'تأكيد الحذف')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: uiTr(context, 'حذف مستخدم'),
+      whatHappens: appTrFormat(context, 'adm_delete_confirm_body', user.displayName),
+      subject: user.displayName.isNotEmpty ? user.displayName : user.reference.id,
+      impact: uiTr(context, 'User document will be permanently deleted'),
+      confirmLabel: uiTr(context, 'تأكيد الحذف'),
+      cancelLabel: appTr(context, 'adm_cancel'),
+      destructive: true,
+      irreversible: true,
+      reference: user.reference.id,
+    );
 
     if (!confirmed) return;
 

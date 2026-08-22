@@ -11,6 +11,7 @@ const List<String> touryI18nLocaleKeys = [
   'ky',
   'fr',
   'id',
+  'pt',
 ];
 
 const Map<String, String> touryI18nLocaleLabels = {
@@ -25,6 +26,7 @@ const Map<String, String> touryI18nLocaleLabels = {
   'ky': 'Кыргызча',
   'fr': 'Français',
   'id': 'Indonesia',
+  'pt': 'Português',
 };
 
 String touryI18nLabel(String localeKey) =>

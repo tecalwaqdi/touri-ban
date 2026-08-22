@@ -5,7 +5,23 @@ import '/core/toury_landmark_filter.dart';
 import '/core/toury_payment_flags.dart';
 import '/core/toury_payment_labels.dart';
 import '/core/toury_pricing.dart';
+import '/core/toury_route_metrics.dart';
 import '/flutter_flow/lat_lng.dart';
+
+/// Origin for drive distance / ETA / polyline.
+/// Prefer booking pickup, then city center — not live GPS (GPS caused
+/// «غير متاح» / rejected Makkah stops when the device was elsewhere).
+LatLng? touryResolveTripRouteOrigin([FFAppState? state]) {
+  final app = state ?? FFAppState();
+  for (final candidate in <LatLng?>[
+    app.mkanuserorder,
+    app.akrLoceshn,
+    app.latlngvill,
+  ]) {
+    if (touryIsValidCoordinate(candidate)) return candidate;
+  }
+  return null;
+}
 
 /// هل توجد بيانات موقع/دولة كافية لإكمال الحجز؟
 bool touryHasPersistedLocation([FFAppState? state]) {

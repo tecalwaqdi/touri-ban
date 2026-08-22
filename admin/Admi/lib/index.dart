@@ -21,8 +21,24 @@ export '/admin/admin_agent_report/admin_agent_report_widget.dart'
     show AdminAgentReportWidget;
 export '/admin/admin_profits/admin_profits_widget.dart'
     show AdminProfitsWidget;
+export '/admin/admin_settlements/admin_settlements_widget.dart'
+    show AdminSettlementsWidget;
+export '/admin/admin_settlements/admin_settlement_details_widget.dart'
+    show AdminSettlementDetailsWidget;
+export '/admin/admin_settlements/admin_settlement_receipt_widget.dart'
+    show AdminSettlementReceiptWidget;
 export '/admin/admin_finance_hub/admin_finance_hub_widget.dart'
     show AdminFinanceHubWidget;
+export '/admin/admin_reconciliation/admin_reconciliation_widget.dart'
+    show AdminReconciliationWidget;
+export '/admin/admin_financial_periods/admin_financial_periods_widget.dart'
+    show AdminFinancialPeriodsWidget;
+export '/admin/admin_finance_reports/admin_finance_reports_widget.dart'
+    show AdminFinanceReportsWidget;
+export '/admin/admin_finance_audit/admin_finance_audit_widget.dart'
+    show AdminFinanceAuditWidget;
+export '/admin/admin_diagnostics/admin_diagnostics_widget.dart'
+    show AdminDiagnosticsWidget;
 export '/admin/admin_driver_wallets/admin_driver_wallets_widget.dart'
     show AdminDriverWalletsWidget;
 export '/admin/admin_tour_guides/admin_tour_guides_widget.dart'

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -6,9 +7,7 @@ import 'package:just_audio/just_audio.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/components/driver_ride_request_sheet.dart';
-import '/core/driver_dialogs.dart';
 import '/core/driver_eligibility_service.dart';
-import '/core/driver_i18n.dart';
 import '/core/driver_online_state.dart';
 import '/core/driver_order_match.dart';
 import '/core/driver_trip_service.dart';
@@ -28,12 +27,15 @@ class DriverNewOrderListener extends StatefulWidget {
 class _DriverNewOrderListenerState extends State<DriverNewOrderListener> {
   final Set<String> _seenOrderIds = {};
   final Set<String> _dismissedOrderIds = {};
+  final Set<String> _presentedOrderIds = {};
+  final ListQueue<OrderRecord> _pendingQueue = ListQueue();
   StreamSubscription<List<OrderRecord>>? _sub;
   AudioPlayer? _player;
   bool _sheetOpen = false;
   bool _streamPrimed = false;
   bool _attachInFlight = false;
   bool? _lastReady;
+  LatLng? _lastDriverPos;
 
   @override
   void dispose() {
@@ -52,6 +54,7 @@ class _DriverNewOrderListenerState extends State<DriverNewOrderListener> {
         _sub?.cancel();
         _sub = null;
         _streamPrimed = false;
+        _pendingQueue.clear();
       }
       return;
     }
@@ -61,6 +64,7 @@ class _DriverNewOrderListenerState extends State<DriverNewOrderListener> {
       _sub?.cancel();
       _sub = null;
       _streamPrimed = false;
+      _pendingQueue.clear();
       return;
     }
 
@@ -91,6 +95,7 @@ class _DriverNewOrderListenerState extends State<DriverNewOrderListener> {
           try {
             driverPos = await getCurrentUserLocation(
               defaultLocation: const LatLng(0, 0),
+              cached: true,
             );
             if (driverPos.latitude == 0 && driverPos.longitude == 0) {
               driverPos = null;
@@ -98,6 +103,7 @@ class _DriverNewOrderListenerState extends State<DriverNewOrderListener> {
           } catch (_) {
             driverPos = null;
           }
+          _lastDriverPos = driverPos;
           final cityRef = await DriverOrderMatch.ensureDriverCity();
           final ranked = DriverOrderMatch.rankForDriver(
             orders,
@@ -114,12 +120,20 @@ class _DriverNewOrderListenerState extends State<DriverNewOrderListener> {
           }
           for (final order in ranked) {
             final id = order.reference.id;
-            if (_seenOrderIds.contains(id)) continue;
+            if (_dismissedOrderIds.contains(id)) {
+              _seenOrderIds.add(id);
+              continue;
+            }
+            if (_presentedOrderIds.contains(id) || _seenOrderIds.contains(id)) {
+              continue;
+            }
+            if (_sheetOpen) {
+              _enqueue(order);
+              continue;
+            }
             _seenOrderIds.add(id);
-            if (_dismissedOrderIds.contains(id)) continue;
-            if (_sheetOpen) continue;
             if (!mounted) return;
-            _present(order);
+            await _present(order);
             break;
           }
         });
@@ -129,51 +143,111 @@ class _DriverNewOrderListenerState extends State<DriverNewOrderListener> {
     }();
   }
 
+  void _enqueue(OrderRecord order) {
+    final id = order.reference.id;
+    if (_dismissedOrderIds.contains(id) || _presentedOrderIds.contains(id)) {
+      return;
+    }
+    final alreadyQueued =
+        _pendingQueue.any((o) => o.reference.id == id);
+    if (alreadyQueued) return;
+    _pendingQueue.add(order);
+  }
+
+  Future<void> _drainQueue() async {
+    while (!_sheetOpen && _pendingQueue.isNotEmpty && mounted) {
+      final next = _pendingQueue.removeFirst();
+      final id = next.reference.id;
+      if (_dismissedOrderIds.contains(id) || _presentedOrderIds.contains(id)) {
+        continue;
+      }
+      if (_seenOrderIds.contains(id) && !_presentedOrderIds.contains(id)) {
+        // Seen but never presented (edge) — still show once.
+      } else if (_seenOrderIds.contains(id)) {
+        continue;
+      }
+      _seenOrderIds.add(id);
+      await _present(next);
+      return;
+    }
+  }
+
   Future<void> _present(OrderRecord order) async {
+    final id = order.reference.id;
+    if (_sheetOpen || _presentedOrderIds.contains(id)) return;
     _sheetOpen = true;
+    _presentedOrderIds.add(id);
     _player ??= AudioPlayer();
     try {
       await _player!.setAsset('assets/audios/835880__matustrm__completed.wav');
       unawaited(_player!.play());
     } catch (_) {}
 
-    if (!mounted) return;
-    await DriverRideRequestSheet.show(
+    if (!mounted) {
+      _sheetOpen = false;
+      return;
+    }
+
+    final accepted = await DriverRideRequestSheet.show(
       context,
       order: order,
+      driverPosition: _lastDriverPos,
       onReject: (o) {
         _dismissedOrderIds.add(o.reference.id);
       },
       onAccept: (o) async {
-        final loc = await getCurrentUserLocation(
-          defaultLocation: const LatLng(0, 0),
-        );
+        // Accept immediately with last known GPS — never block on a fresh fix.
+        final loc = DriverTripService.usableDriverLocation(_lastDriverPos);
         final result = await DriverTripService.acceptOrder(
           order: o,
           driverLocation: loc,
           onStateChanged: () => safeSetState(() {}),
         );
-        if (!result.ok) {
-          if (result.message != null && mounted) {
-            await DriverDialogs.showAlert(
-              context,
-              title: driverTr(context, 'Unable to accept'),
-              message: driverTr(context, result.message!),
-              type: DriverMessageType.error,
-            );
-          }
-          return;
+        // Refresh GPS in background for tracking only (does not delay accept).
+        if (result.ok) {
+          unawaited(() async {
+            try {
+              final fresh = await getCurrentUserLocation(
+                defaultLocation: const LatLng(0, 0),
+                cached: true,
+              ).timeout(const Duration(seconds: 4));
+              final safe = DriverTripService.usableDriverLocation(fresh);
+              if (safe != null) _lastDriverPos = safe;
+            } catch (_) {}
+          }());
         }
-        if (!mounted) return;
-        context.pushNamed(
-          TfaselOrserWidget.routeName,
-          queryParameters: {
-            'id': serializeParam(o.reference, ParamType.DocumentReference),
-          }.withoutNulls,
-        );
+        return result;
       },
     );
+
     _sheetOpen = false;
+
+    if (accepted == true && mounted) {
+      _dismissedOrderIds.add(id);
+      _pendingQueue.removeWhere((o) => o.reference.id == id);
+      // Drop from available pool locally; accepted list filters by assignment.
+      FFAppState().revOrder = order.reference;
+      FFAppState().update(() {});
+
+      final idParam = serializeParam(
+        order.reference,
+        ParamType.DocumentReference,
+      );
+      if (idParam != null && idParam.isNotEmpty) {
+        context.pushNamed(
+          TfaselOrserWidget.routeName,
+          queryParameters: {'id': idParam}.withoutNulls,
+        );
+      } else {
+        // Fallback: open Accepted tab if serialization fails.
+        context.pushNamed(AcceptedWidget.routeName);
+      }
+      return;
+    }
+
+    if (mounted) {
+      unawaited(_drainQueue());
+    }
   }
 
   @override

@@ -11,8 +11,8 @@ type AppKind = "customer" | "driver";
 function AppleGlyph({ className }: { className?: string }) {
   return (
     <svg
-      width="22"
-      height="26"
+      width="18"
+      height="22"
       viewBox="0 0 18 22"
       aria-hidden="true"
       className={className}
@@ -28,8 +28,8 @@ function AppleGlyph({ className }: { className?: string }) {
 function PlayGlyph({ className }: { className?: string }) {
   return (
     <svg
-      width="22"
-      height="24"
+      width="18"
+      height="20"
       viewBox="0 0 18 20"
       aria-hidden="true"
       className={className}
@@ -48,12 +48,14 @@ function StoreBadge({
   caption,
   available,
   soonLabel,
+  compact = false,
 }: {
   href: string;
   store: "apple" | "play";
   caption: string;
   available: boolean;
   soonLabel: string;
+  compact?: boolean;
 }) {
   const isApple = store === "apple";
   const label = isApple ? "App Store" : "Google Play";
@@ -61,17 +63,32 @@ function StoreBadge({
     <>
       <span
         className={cn(
-          "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl",
+          "flex shrink-0 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-[1.03]",
+          compact ? "h-8 w-8" : "h-11 w-11 rounded-xl",
           isApple ? "bg-white text-black" : "bg-[#01875f] text-white",
         )}
       >
-        {isApple ? <AppleGlyph /> : <PlayGlyph />}
+        {isApple ? (
+          <AppleGlyph className={compact ? "h-4 w-3.5" : undefined} />
+        ) : (
+          <PlayGlyph className={compact ? "h-4 w-3.5" : undefined} />
+        )}
       </span>
       <span className="min-w-0 flex-1 text-start">
-        <span className="block text-[10px] leading-4 tracking-wide text-white/65">
+        <span
+          className={cn(
+            "block tracking-wide text-white/65",
+            compact ? "text-[9px] leading-3" : "text-[10px] leading-4",
+          )}
+        >
           {available ? caption : soonLabel}
         </span>
-        <span className="block text-[15px] leading-5 font-semibold tracking-tight text-white">
+        <span
+          className={cn(
+            "block font-semibold tracking-tight text-white",
+            compact ? "text-[13px] leading-4" : "text-[15px] leading-5",
+          )}
+        >
           {label}
         </span>
       </span>
@@ -79,10 +96,13 @@ function StoreBadge({
   );
 
   const className = cn(
-    "group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl border px-3.5 py-3 transition",
-    "border-white/12 bg-[#0c1210] shadow-[0_10px_30px_rgba(0,0,0,0.28)]",
+    "group relative flex w-full items-center overflow-hidden border transition duration-300",
+    "border-white/12 bg-[#0c1210]",
+    compact
+      ? "gap-2 rounded-xl px-2.5 py-2 shadow-[0_6px_18px_rgba(0,0,0,0.22)]"
+      : "gap-3 rounded-2xl px-3.5 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.28)]",
     available
-      ? "hover:-translate-y-0.5 hover:border-accent/50 hover:bg-[#151c19] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      ? "hover:-translate-y-0.5 hover:border-accent/45 hover:bg-[#151c19] hover:shadow-[0_10px_24px_rgba(0,0,0,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       : "cursor-not-allowed opacity-55",
   );
 
@@ -113,9 +133,11 @@ function StoreBadge({
 function AppStoreRow({
   dict,
   app,
+  compact = false,
 }: {
   dict: Dictionary;
   app: AppKind;
+  compact?: boolean;
 }) {
   const links = siteConfig.store[app];
   const appleOk = hasStoreLink(links.appStore);
@@ -130,36 +152,63 @@ function AppStoreRow({
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-[1.25rem] border p-3.5 sm:rounded-[1.5rem] sm:p-5",
+        "group/card relative overflow-hidden border transition duration-300",
+        compact
+          ? "rounded-xl p-3 hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(10,43,36,0.12)]"
+          : "rounded-[1.25rem] p-3.5 sm:rounded-[1.5rem] sm:p-5",
         app === "customer"
-          ? "border-primary/25 bg-gradient-to-br from-primary/15 via-surface to-surface"
-          : "border-accent/30 bg-gradient-to-br from-accent/15 via-surface to-surface",
+          ? "border-primary/25 bg-gradient-to-br from-primary/15 via-surface to-surface hover:border-primary/40"
+          : "border-accent/30 bg-gradient-to-br from-accent/15 via-surface to-surface hover:border-accent/45",
       )}
     >
       <div
         className={cn(
-          "pointer-events-none absolute -end-8 -top-10 h-28 w-28 rounded-full blur-2xl",
+          "pointer-events-none absolute -end-8 -top-10 rounded-full blur-2xl transition-opacity duration-300 group-hover/card:opacity-90",
+          compact ? "h-20 w-20" : "h-28 w-28",
           app === "customer" ? "bg-primary/25" : "bg-accent/30",
         )}
         aria-hidden
       />
       <div className="relative min-w-0">
-        <p className="text-[11px] font-bold tracking-[0.14em] text-muted uppercase sm:text-xs">
+        <p
+          className={cn(
+            "font-bold tracking-[0.14em] text-muted uppercase",
+            compact ? "text-[10px]" : "text-[11px] sm:text-xs",
+          )}
+        >
           {app === "customer" ? "01" : "02"} · {title}
         </p>
-        <h3 className="font-display mt-1 text-base font-bold text-foreground sm:text-xl">
+        <h3
+          className={cn(
+            "font-display font-bold text-foreground",
+            compact ? "mt-0.5 text-sm sm:text-[15px]" : "mt-1 text-base sm:text-xl",
+          )}
+        >
           {app === "customer" ? siteConfig.customerApp : siteConfig.driverApp}
         </h3>
-        <p className="mt-1 max-w-md text-xs leading-5 text-muted sm:mt-1.5 sm:text-sm sm:leading-6">
+        <p
+          className={cn(
+            "max-w-md text-muted",
+            compact
+              ? "mt-0.5 text-[11px] leading-4 sm:text-xs sm:leading-5"
+              : "mt-1 text-xs leading-5 sm:mt-1.5 sm:text-sm sm:leading-6",
+          )}
+        >
           {blurb}
         </p>
-        <div className="mt-3 grid gap-2 sm:mt-4 sm:grid-cols-2 sm:gap-2.5">
+        <div
+          className={cn(
+            "grid gap-2",
+            compact ? "mt-2.5 sm:grid-cols-2" : "mt-3 sm:mt-4 sm:grid-cols-2 sm:gap-2.5",
+          )}
+        >
           <StoreBadge
             store="apple"
             href={links.appStore}
             caption={dict.download.onApple}
             available={appleOk}
             soonLabel={dict.download.soon}
+            compact={compact}
           />
           <StoreBadge
             store="play"
@@ -167,6 +216,7 @@ function AppStoreRow({
             caption={dict.download.onGoogle}
             available={playOk}
             soonLabel={dict.download.soon}
+            compact={compact}
           />
         </div>
       </div>
@@ -178,14 +228,17 @@ function AppStoreRow({
 export function DownloadStoreGrid({
   dict,
   className,
+  density = "default",
 }: {
   dict: Dictionary;
   className?: string;
+  density?: "default" | "compact";
 }) {
+  const compact = density === "compact";
   return (
-    <div className={cn("grid gap-4", className)}>
-      <AppStoreRow dict={dict} app="customer" />
-      <AppStoreRow dict={dict} app="driver" />
+    <div className={cn("grid", compact ? "gap-2.5" : "gap-4", className)}>
+      <AppStoreRow dict={dict} app="customer" compact={compact} />
+      <AppStoreRow dict={dict} app="driver" compact={compact} />
     </div>
   );
 }

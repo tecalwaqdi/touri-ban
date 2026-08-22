@@ -583,6 +583,36 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => const AdminFinanceHubWidget(),
         ),
         FFRoute(
+          name: AdminReconciliationWidget.routeName,
+          path: AdminReconciliationWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminReconciliationWidget(),
+        ),
+        FFRoute(
+          name: AdminFinancialPeriodsWidget.routeName,
+          path: AdminFinancialPeriodsWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminFinancialPeriodsWidget(),
+        ),
+        FFRoute(
+          name: AdminFinanceReportsWidget.routeName,
+          path: AdminFinanceReportsWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminFinanceReportsWidget(),
+        ),
+        FFRoute(
+          name: AdminFinanceAuditWidget.routeName,
+          path: AdminFinanceAuditWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminFinanceAuditWidget(),
+        ),
+        FFRoute(
+          name: AdminDiagnosticsWidget.routeName,
+          path: AdminDiagnosticsWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminDiagnosticsWidget(),
+        ),
+        FFRoute(
           name: AdminDriverWalletsWidget.routeName,
           path: AdminDriverWalletsWidget.routePath,
           requireAuth: true,
@@ -617,6 +647,34 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           path: AdminProfitsWidget.routePath,
           requireAuth: true,
           builder: (context, params) => const AdminProfitsWidget(),
+        ),
+        FFRoute(
+          name: AdminSettlementsWidget.routeName,
+          path: AdminSettlementsWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminSettlementsWidget(),
+        ),
+        FFRoute(
+          name: AdminSettlementDetailsWidget.routeName,
+          path: AdminSettlementDetailsWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => AdminSettlementDetailsWidget(
+            settlementId: params.getParam(
+              'settlementId',
+              ParamType.String,
+            ),
+          ),
+        ),
+        FFRoute(
+          name: AdminSettlementReceiptWidget.routeName,
+          path: AdminSettlementReceiptWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => AdminSettlementReceiptWidget(
+            paymentId: params.getParam(
+              'paymentId',
+              ParamType.String,
+            ),
+          ),
         ),
         FFRoute(
           name: AdminAuditLogWidget.routeName,

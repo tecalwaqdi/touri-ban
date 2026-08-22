@@ -4,6 +4,7 @@ import '/app_state.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/core/driver_country_service.dart';
+import '/core/driver_order_availability.dart';
 import '/core/tour_guide_status.dart';
 import '/core/toury_country_registry.dart';
 import '/core/toury_maps_config.dart';
@@ -127,7 +128,9 @@ abstract final class DriverOrderMatch {
       if (me != null) {
         query = query.where('mndob_user', isEqualTo: me);
       }
-      return query.orderBy('data_order', descending: true);
+      // No orderBy: optional timestamp fields would drop docs from results.
+      // Client sorts by acceptedAt / data_order after the snapshot.
+      return query;
     };
   }
 
@@ -224,6 +227,7 @@ abstract final class DriverOrderMatch {
       // Pool UI: hide already-assigned rows (rules allow browse without
       // proving mndob_user==null on the list query).
       if (order.mndobUser != null) continue;
+      if (!DriverOrderAvailability.isOpenOffer(order)) continue;
       if (!isDispatchablePayment(
             Map<String, dynamic>.from(order.snapshotData))) {
         continue;
@@ -290,6 +294,6 @@ abstract final class DriverOrderMatch {
       if (c != 0) return c;
       return a.km.compareTo(b.km);
     });
-    return scored.map((e) => e.order).toList();
+    return DriverOrderAvailability.uniqueById(scored.map((e) => e.order));
   }
 }

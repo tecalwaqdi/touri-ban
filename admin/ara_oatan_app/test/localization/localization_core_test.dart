@@ -7,12 +7,14 @@ import 'package:ara_oatan_app/core/toury_resolve_locale.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('production locales are exactly ar/en/ru/ky', () {
+  test('production locales include ar/en/ru/ky/fr/ur/pt', () {
     expect(
       touryProductionLanguageCodes,
-      {'ar', 'en', 'ru', 'ky'},
+      {'ar', 'en', 'ru', 'ky', 'fr', 'ur', 'pt'},
     );
-    expect(touryMigrateLegacyLocale(const Locale('fr')).languageCode, 'en');
+    expect(touryMigrateLegacyLocale(const Locale('fr')).languageCode, 'fr');
+    expect(touryMigrateLegacyLocale(const Locale('ur')).languageCode, 'ur');
+    expect(touryMigrateLegacyLocale(const Locale('pt')).languageCode, 'pt');
     expect(touryMigrateLegacyLocale(const Locale('ar')).languageCode, 'ar');
   });
 

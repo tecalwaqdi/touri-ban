@@ -1,18 +1,17 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/cloud_functions/cloud_functions.dart';
 import '/core/driver_country_service.dart';
-import '/core/driver_i18n.dart';
 import '/core/driver_payment_api_client.dart';
 import '/core/driver_payment_flags.dart';
 import '/core/driver_trip_constants.dart';
 import '/core/driver_wallet_service.dart';
 import '/core/toury_country_registry.dart';
+import '/core/toury_money_display.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -31,17 +30,18 @@ class DriverWalletWidget extends StatefulWidget {
 
 class _DriverWalletWidgetState extends State<DriverWalletWidget> {
   late DriverWalletModel _model;
-  final _df = DateFormat('yyyy-MM-dd HH:mm');
   bool _busy = false;
 
   static const _topUpPackages = [100.0, 200.0, 300.0, 500.0];
 
-  static const _msgTopUpSuccess = 'تم شحن المحفظة بنجاح.';
-  static const _msgTopUpFailed = 'لم تكتمل عملية شحن المحفظة.';
-
   String get _fallbackCurrency {
     final iso = DriverCountryService.currentIso2();
-    return TouryCountryRegistry.currencySymbol(iso);
+    return TouryCountryRegistry.currencyForIso(iso);
+  }
+
+  DateFormat get _df {
+    final code = Localizations.localeOf(context).languageCode;
+    return DateFormat('yyyy-MM-dd HH:mm', code);
   }
 
   @override
@@ -82,7 +82,7 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
         packageId: packageId,
         email: currentUserEmail,
         description: 'Wallet top-up',
-        locale: 'ar',
+        locale: Localizations.localeOf(context).languageCode,
       );
       if (!mounted) return;
       await _openHostedPageAndWaitForCredit(client, res, amountSar);
@@ -161,7 +161,9 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
       if (mounted) {
         Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(_msgTopUpSuccess)),
+          SnackBar(
+            content: Text(driverTr(context, 'Wallet top-up succeeded')),
+          ),
         );
         safeSetState(() {});
       }
@@ -180,14 +182,13 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
 
   Future<void> _showTopUpFailed({double? retryAmount, String? detail}) async {
     if (!mounted) return;
+    final base = driverTr(context, 'Wallet top-up failed');
     final retry = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text(driverTr(context, 'Top up wallet')),
             content: Text(
-              detail == null || detail.isEmpty
-                  ? _msgTopUpFailed
-                  : '$_msgTopUpFailed\n($detail)',
+              detail == null || detail.isEmpty ? base : '$base\n($detail)',
             ),
             actions: [
               TextButton(
@@ -287,7 +288,7 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text(_msgTopUpSuccess)),
+      SnackBar(content: Text(driverTr(context, 'Wallet top-up succeeded'))),
     );
     safeSetState(() {});
   }
@@ -337,7 +338,10 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
             builder: (ctx) => AlertDialog(
               title: Text(driverTr(context, 'Confirm')),
               content: Text(
-                'بعد الدفع سيصبح رصيدك أقل من 200 ريال ولن تتمكن من استقبال الطلبات النقدية حتى تشحن المحفظة.',
+                driverTr(
+                  context,
+                  'After payment your balance will be below the cash-order minimum and you will not receive cash orders until you top up.',
+                ),
               ),
               actions: [
                 TextButton(
@@ -415,6 +419,25 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
     }
   }
 
+  String _txStatus(String status) {
+    final s = status.trim().toLowerCase();
+    switch (s) {
+      case 'completed':
+      case 'complete':
+      case 'success':
+      case 'succeeded':
+        return driverTr(context, 'completed');
+      case 'pending':
+        return driverTr(context, 'pending');
+      case 'failed':
+      case 'error':
+        return driverTr(context, 'failed');
+      default:
+        if (status.trim().isEmpty) return driverTr(context, 'completed');
+        return driverTr(context, status);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DsScreenShell(
@@ -459,51 +482,131 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
                               balanceLabel:
                                   driverTr(context, 'Current balance'),
                               balanceValue: balance.toStringAsFixed(2),
-                              currency: currency,
+                              balanceAmount: TouryMoneyAmount(
+                                amount: balance,
+                                currencyCode: currency,
+                                style: typography.displaySmall.copyWith(
+                                  color: colors.onPrimary,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                                symbolSize: 28,
+                              ),
                             ),
                             DsSpacing.gapSm,
-                            Text(
-                              cashOk
-                                  ? driverTr(
-                                      context,
-                                      'Eligible for cash orders',
-                                    )
-                                  : 'يجب أن يكون رصيد محفظتك 200 ريال على الأقل لقبول الطلبات النقدية.',
-                              style: typography.bodySmall.copyWith(
-                                color: cashOk
-                                    ? colors.success
-                                    : colors.error,
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: DsSpacing.sm,
+                                vertical: DsSpacing.xs,
+                              ),
+                              decoration: BoxDecoration(
+                                color: (cashOk ? colors.success : colors.error)
+                                    .withValues(alpha: 0.10),
+                                borderRadius: DsRadius.medium,
+                              ),
+                              child: Text(
+                                cashOk
+                                    ? driverTr(
+                                        context,
+                                        'Eligible for cash orders',
+                                      )
+                                    : driverTrNamed(
+                                        context,
+                                        'Wallet balance below cash minimum',
+                                        {
+                                          'amount':
+                                              TouryMoneyAmount.formatNumber(
+                                            DriverWalletRules
+                                                .minCashWalletBalance,
+                                            fractionDigits: 0,
+                                          ),
+                                        },
+                                      ),
+                                style: typography.bodySmall.copyWith(
+                                  color:
+                                      cashOk ? colors.success : colors.error,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.35,
+                                ),
                               ),
                             ),
                             if (unpaid > 0) ...[
                               DsSpacing.gapSm,
-                              Text(
-                                '${driverTr(context, 'Unpaid commissions')}: ${unpaid.toStringAsFixed(2)} $currency',
-                                style: typography.bodySmall.copyWith(
-                                  color: colors.textSecondary,
-                                ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      driverTr(context, 'Unpaid commissions'),
+                                      style: typography.bodySmall.copyWith(
+                                        color: colors.textSecondary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  TouryMoneyAmount(
+                                    amount: unpaid.toDouble(),
+                                    currencyCode: currency,
+                                    style: typography.bodySmall.copyWith(
+                                      color: colors.error,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    compact: true,
+                                  ),
+                                ],
                               ),
                             ],
-                            DsSpacing.gapMd,
+                            DsSpacing.gapLg,
                             Text(
                               driverTr(context, 'Top up wallet'),
-                              style: typography.titleSmall.copyWith(
-                                fontWeight: FontWeight.w700,
+                              style: typography.titleMedium.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: colors.textPrimary,
                               ),
                             ),
-                            DsSpacing.gapXs,
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: _topUpPackages
-                                  .map(
-                                    (p) => DsButton.secondary(
-                                      label: '${p.toInt()} $currency',
-                                      enabled: !_busy,
-                                      onPressed: () => _topUp(p),
-                                    ),
-                                  )
-                                  .toList(),
+                            DsSpacing.gapSm,
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                const gap = 8.0;
+                                final width =
+                                    (constraints.maxWidth - gap) / 2;
+                                return Wrap(
+                                  spacing: gap,
+                                  runSpacing: gap,
+                                  children: _topUpPackages.map((p) {
+                                    return SizedBox(
+                                      width: width,
+                                      child: Material(
+                                        color: colors.primarySoft
+                                            .withValues(alpha: 0.65),
+                                        borderRadius: DsRadius.medium,
+                                        child: InkWell(
+                                          borderRadius: DsRadius.medium,
+                                          onTap: _busy ? null : () => _topUp(p),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: DsSpacing.sm,
+                                              vertical: DsSpacing.md,
+                                            ),
+                                            child: Center(
+                                              child: TouryMoneyAmount(
+                                                amount: p,
+                                                currencyCode: currency,
+                                                fractionDigits: 0,
+                                                style:
+                                                    typography.titleSmall.copyWith(
+                                                  fontWeight: FontWeight.w800,
+                                                  color: colors.primaryStrong,
+                                                ),
+                                                symbolSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                );
+                              },
                             ),
                             DsSpacing.gapMd,
                             DsButton.primary(
@@ -519,10 +622,10 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
                               driverTr(context, 'Transactions'),
                               style: typography.titleMedium.copyWith(
                                 color: colors.textPrimary,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
-                            DsSpacing.gapXs,
+                            DsSpacing.gapSm,
                             if (txs.isEmpty)
                               DsEmptyState(
                                 title: driverTr(
@@ -536,46 +639,81 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
                                 final isCredit = t.type == 'credit' ||
                                     t.type == 'top_up' ||
                                     t.amount > 0;
+                                final amountColor =
+                                    isCredit ? colors.success : colors.error;
                                 return Padding(
                                   padding: const EdgeInsets.only(
                                     bottom: DsSpacing.sm,
                                   ),
                                   child: DsCard(
-                                    child: ListTile(
-                                      contentPadding: EdgeInsets.zero,
-                                      leading: Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: isCredit
-                                              ? colors.successContainer
-                                              : colors.errorContainer,
-                                          borderRadius: DsRadius.medium,
+                                    padding: const EdgeInsets.all(DsSpacing.sm),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          width: 36,
+                                          height: 36,
+                                          decoration: BoxDecoration(
+                                            color: isCredit
+                                                ? colors.successContainer
+                                                : colors.errorContainer,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            isCredit
+                                                ? Icons.arrow_downward_rounded
+                                                : Icons.arrow_upward_rounded,
+                                            size: 18,
+                                            color: amountColor,
+                                          ),
                                         ),
-                                        child: Icon(
-                                          isCredit
-                                              ? Icons.arrow_downward_rounded
-                                              : Icons.arrow_upward_rounded,
-                                          color: isCredit
-                                              ? colors.success
-                                              : colors.error,
+                                        const SizedBox(width: DsSpacing.sm),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                _txLabel(t.type),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: typography.titleSmall
+                                                    .copyWith(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: colors.textPrimary,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                t.createdAt == null
+                                                    ? _txStatus(t.status)
+                                                    : '${_df.format(t.createdAt!)} · ${_txStatus(t.status)}',
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: typography.bodySmall
+                                                    .copyWith(
+                                                  color: colors.textSecondary,
+                                                  height: 1.3,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      title: Text(_txLabel(t.type)),
-                                      subtitle: Text(
-                                        t.createdAt == null
-                                            ? t.status
-                                            : '${_df.format(t.createdAt!)} · ${t.status}',
-                                      ),
-                                      trailing: Text(
-                                        '${isCredit ? '+' : ''}${t.amount.toStringAsFixed(2)} $currency',
-                                        style: typography.titleSmall.copyWith(
-                                          color: isCredit
-                                              ? colors.success
-                                              : colors.error,
-                                          fontWeight: FontWeight.w700,
+                                        const SizedBox(width: DsSpacing.xs),
+                                        TouryMoneyAmount(
+                                          amount: t.amount.abs() *
+                                              (isCredit ? 1 : -1),
+                                          currencyCode: currency,
+                                          showPlusForPositive: isCredit,
+                                          style: typography.titleSmall.copyWith(
+                                            color: amountColor,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                          symbolSize: 14,
+                                          compact: true,
                                         ),
-                                      ),
+                                      ],
                                     ),
                                   ),
                                 );

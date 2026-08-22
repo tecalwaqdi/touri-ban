@@ -559,63 +559,28 @@ class _HomeWidgetState extends State<HomeWidget> {
                               children: [
                                 Text(
                                   FFLocalizations.of(context).getText(
-                                    'oadi4ucn' /* Financials */,
+                                    'oadi4ucn' /* Finance / Wallet */,
                                   ),
                                   style: context.dsTypography.titleLarge
                                       .copyWith(
                                     color: context.dsColors.textPrimary,
                                     fontSize: 17.0,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 4.0, 0.0, 8.0),
-                                  child: DriverGradientButton(
-                                    label: driverTr(
-                                        context, 'Wallet and transactions'),
-                                    icon: Icons.account_balance_wallet,
-                                    onPressed: () async {
-                                      context.pushNamed(
-                                          DriverWalletWidget.routeName);
-                                    },
+                                AuthUserStreamWidget(
+                                  builder: (context) => _FinanceMetricTile(
+                                    label: FFLocalizations.of(context).getText(
+                                      '5w1bmqit' /* Total Earnings */,
+                                    ),
+                                    value: valueOrDefault(
+                                            currentUserDocument?.totalMndob, 0)
+                                        .toString(),
+                                    valueColor: context.dsColors.success,
+                                    background: context.dsColors.success
+                                        .withValues(alpha: 0.08),
+                                    icon: Icons.trending_up_rounded,
                                   ),
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Flexible(
-                                      child: Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            7.0, 0.0, 7.0, 0.0),
-                                        child: Text(
-                                          FFLocalizations.of(context).getText(
-                                            '5w1bmqit' /* Total Earnings */,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: context.dsTypography.bodyLarge,
-                                        ),
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: AuthUserStreamWidget(
-                                        builder: (context) => Text(
-                                          valueOrDefault(
-                                                  currentUserDocument?.totalMndob,
-                                                  0)
-                                              .toString(),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: context
-                                              .dsTypography.titleMedium
-                                              .copyWith(
-                                            color: context.dsColors.success,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
                                 ),
                                 if (valueOrDefault(
                                         currentUserDocument
@@ -752,8 +717,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                 onPressed: () =>
                                                                     Navigator.pop(
                                                                         alertDialogContext),
-                                                                child:
-                                                                    Text('Ok'),
+                                                                child: Text(
+                                                                  driverTr(
+                                                                      context,
+                                                                      'Ok'),
+                                                                ),
                                                               ),
                                                             ],
                                                           );
@@ -833,84 +801,136 @@ class _HomeWidgetState extends State<HomeWidget> {
                                       ],
                                     ),
                                   ),
-                                Divider(
-                                  thickness: 2.0,
-                                  color: context.dsColors.border,
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Flexible(
-                                      child: Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            7.0, 0.0, 7.0, 0.0),
-                                        child: Text(
-                                          FFLocalizations.of(context).getText(
-                                            'p9lt26gd' /* Unpaid App Commissions */,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: context.dsTypography.bodyLarge
-                                              .copyWith(
-                                            color: context.dsColors.error,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: AuthUserStreamWidget(
-                                        builder: (context) => Text(
-                                          valueOrDefault(
-                                                  currentUserDocument?.totalApp,
-                                                  0)
-                                              .toString(),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: context
-                                              .dsTypography.titleMedium
-                                              .copyWith(
-                                            color: context.dsColors.error,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
                                 AuthUserStreamWidget(
-                                  builder: (context) => Text(
-                                    FFLocalizations.of(context).getText(
-                                      '7rctg8a4' /* This balance is due for paymen... */,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    maxLines: 3,
-                                    softWrap: true,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: context.dsTypography.bodyLarge
-                                        .copyWith(
-                                      color: context.dsColors.error,
-                                      fontSize: 11.0,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                ),
-                                if (valueOrDefault(
-                                        currentUserDocument?.totalApp, 0) >
-                                    0)
-                                  AuthUserStreamWidget(
-                                    builder: (context) => DsButton.danger(
-                                      label: FFLocalizations.of(context)
-                                          .getText(
-                                        '3hqugl0j' /* Pay App Commissions */,
+                                  builder: (context) {
+                                    final colors = context.dsColors;
+                                    final typography = context.dsTypography;
+                                    final unpaid = valueOrDefault(
+                                        currentUserDocument?.totalApp, 0);
+                                    final hasUnpaid = unpaid > 0;
+
+                                    if (!hasUnpaid) {
+                                      return _FinanceMetricTile(
+                                        label: FFLocalizations.of(context)
+                                            .getText(
+                                          'p9lt26gd' /* Unpaid app commissions */,
+                                        ),
+                                        value: '0',
+                                        valueColor: colors.textSecondary,
+                                        background: colors.primarySoft
+                                            .withValues(alpha: 0.55),
+                                        icon: Icons
+                                            .check_circle_outline_rounded,
+                                      );
+                                    }
+
+                                    return Container(
+                                      width: double.infinity,
+                                      padding:
+                                          const EdgeInsets.all(DsSpacing.sm),
+                                      decoration: BoxDecoration(
+                                        color: colors.error
+                                            .withValues(alpha: 0.08),
+                                        borderRadius: DsRadius.medium,
+                                        border: Border.all(
+                                          color: colors.error
+                                              .withValues(alpha: 0.28),
+                                        ),
                                       ),
-                                      icon: Icons.payments_sharp,
-                                      expanded: true,
-                                      onPressed: () async {
-                                        context
-                                            .pushNamed(SuportWidget.routeName);
-                                      },
-                                    ),
-                                  ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                Icons.warning_amber_rounded,
+                                                color: colors.error,
+                                                size: 22,
+                                              ),
+                                              const SizedBox(
+                                                  width: DsSpacing.xs),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      FFLocalizations.of(
+                                                              context)
+                                                          .getText(
+                                                        'p9lt26gd' /* Unpaid app commissions */,
+                                                      ),
+                                                      softWrap: true,
+                                                      style: typography
+                                                          .titleSmall
+                                                          .copyWith(
+                                                        color: colors.error,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        height: 1.3,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      unpaid.toString(),
+                                                      style: typography
+                                                          .headlineSmall
+                                                          .copyWith(
+                                                        color: colors.error,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: DsSpacing.xs),
+                                          Text(
+                                            FFLocalizations.of(context)
+                                                .getText(
+                                              '7rctg8a4' /* Due payment notice */,
+                                            ),
+                                            softWrap: true,
+                                            style:
+                                                typography.bodySmall.copyWith(
+                                              color: colors.error
+                                                  .withValues(alpha: 0.92),
+                                              height: 1.45,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          const SizedBox(height: DsSpacing.sm),
+                                          DsButton.danger(
+                                            label: FFLocalizations.of(context)
+                                                .getText(
+                                              '3hqugl0j' /* Pay commissions now */,
+                                            ),
+                                            icon: Icons.payments_rounded,
+                                            expanded: true,
+                                            onPressed: () async {
+                                              context.pushNamed(
+                                                  SuportWidget.routeName);
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                                DriverGradientButton(
+                                  label: driverTr(
+                                      context, 'Wallet and transactions'),
+                                  icon: Icons.account_balance_wallet_rounded,
+                                  onPressed: () async {
+                                    context.pushNamed(
+                                        DriverWalletWidget.routeName);
+                                  },
+                                ),
                               ].divide(SizedBox(height: 12.0)),
                             ),
                     ),
@@ -928,6 +948,66 @@ class _HomeWidgetState extends State<HomeWidget> {
       },
     );
         },
+      ),
+    );
+  }
+}
+
+class _FinanceMetricTile extends StatelessWidget {
+  const _FinanceMetricTile({
+    required this.label,
+    required this.value,
+    required this.valueColor,
+    required this.background,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final Color valueColor;
+  final Color background;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: DsSpacing.sm,
+        vertical: DsSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: DsRadius.medium,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(icon, color: valueColor, size: 22),
+          const SizedBox(width: DsSpacing.xs),
+          Expanded(
+            child: Text(
+              label,
+              softWrap: true,
+              style: typography.bodyMedium.copyWith(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.w600,
+                height: 1.3,
+              ),
+            ),
+          ),
+          const SizedBox(width: DsSpacing.xs),
+          Text(
+            value,
+            style: typography.titleLarge.copyWith(
+              color: valueColor,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
       ),
     );
   }

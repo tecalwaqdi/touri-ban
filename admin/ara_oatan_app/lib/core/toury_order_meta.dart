@@ -142,7 +142,7 @@ extension TouryOrderMeta on OrderRecord {
         snapshotData['data_order'] ?? dataOrder,
       );
 
-  /// Customer may cancel when awaiting driver (after 1h) or unpaid payment_pending.
+  /// Customer may cancel anytime before driver accept (no cancel timer).
   bool get canCancelByCustomer =>
       TouryCustomerCancelPolicy.canCustomerCancelBooking(
         statusCode: rawStatusCode,

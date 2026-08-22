@@ -8,6 +8,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/app_state.dart';
 import '/backend/backend.dart';
 import '/backend/cloud_functions/cloud_functions.dart';
+import '/core/toury_active_booking.dart';
 import '/core/toury_currency.dart';
 import '/core/toury_location_service.dart';
 import '/core/toury_order_integration.dart';
@@ -27,6 +28,9 @@ class TouryCashBookingResult {
   final String? error;
   final bool viaFallback;
 }
+
+/// Prevents double-tap / concurrent cash creates on the same client.
+bool _touryCashCreateInFlight = false;
 
 String touryCashOrderDocId(String uid, String idempotencyKey) {
   return sha256.convert(utf8.encode('$uid:cash:$idempotencyKey')).toString();
@@ -74,6 +78,21 @@ bool _shouldUseCashFirestoreFallback(Map<String, dynamic> data) {
 
 /// Creates a cash booking through the trusted Cloud Function only.
 Future<TouryCashBookingResult> touryCreateCashBookingFromCurrentState() async {
+  if (_touryCashCreateInFlight) {
+    return const TouryCashBookingResult(
+      success: false,
+      error: 'booking_active_exists',
+    );
+  }
+  _touryCashCreateInFlight = true;
+  try {
+    return await _touryCreateCashBookingFromCurrentStateImpl();
+  } finally {
+    _touryCashCreateInFlight = false;
+  }
+}
+
+Future<TouryCashBookingResult> _touryCreateCashBookingFromCurrentStateImpl() async {
   final app = FFAppState();
   // Ensure pickup exists before validating — GPS / village center as fallback.
   if (app.mkanuserorder == null) {
@@ -119,6 +138,16 @@ Future<TouryCashBookingResult> touryCreateCashBookingFromCurrentState() async {
     );
   }
 
+  // Block before CF/fallback when an active booking already exists.
+  final existingActive = await touryFindActiveBookingForCurrentUser();
+  if (existingActive != null) {
+    return TouryCashBookingResult(
+      success: false,
+      error: 'booking_active_exists',
+      orderId: existingActive.orderId,
+    );
+  }
+
   if (app.paymentIdempotencyKey.isEmpty) {
     app.paymentIdempotencyKey =
         'cash_${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}';
@@ -131,22 +160,9 @@ Future<TouryCashBookingResult> touryCreateCashBookingFromCurrentState() async {
     );
   }
 
-  // No-Billing / cash-only: skip missing CF and write Firestore directly.
-  if (TouryPaymentFlags.cashOnlyMode &&
-      TouryPaymentFlags.allowClientCashFallbackRuntime) {
-    debugPrint(
-      'createCashBooking skipped (cash-only / no-billing) — '
-      'using Firestore cash fallback.',
-    );
-    return touryCreateCashBookingViaFirestoreFallback(
-      app: app,
-      quote: quote,
-      userRef: userRef,
-      carRef: carRef,
-      countryRef: countryRef,
-    );
-  }
-
+  // Prefer createCashBooking CF (Admin SDK lock is authoritative).
+  // Client fallback is only for undeployed / IAM failures — never skip CF
+  // just because cash-only mode is on (that caused parallel creates).
   final data = await makeCloudCall('createCashBooking', {
     'idempotencyKey': app.paymentIdempotencyKey,
     'carPath': carRef.path,
@@ -165,6 +181,15 @@ Future<TouryCashBookingResult> touryCreateCashBookingFromCurrentState() async {
   }
 
   if (!_shouldUseCashFirestoreFallback(data)) {
+    final raw = '${data['code'] ?? ''} ${data['error'] ?? ''} ${data['message'] ?? ''}'
+        .toLowerCase();
+    if (raw.contains('active_booking_exists')) {
+      return TouryCashBookingResult(
+        success: false,
+        error: 'booking_active_exists',
+        orderId: (data['activeOrderId'])?.toString(),
+      );
+    }
     return TouryCashBookingResult(
       success: false,
       error: data['code']?.toString() ?? data['error']?.toString(),
@@ -231,11 +256,49 @@ Future<TouryCashBookingResult> touryCreateCashBookingViaFirestoreFallback({
   }
   final currencyFields = TouryCurrency.fieldsForCreate(country: countryDoc);
 
+  // Refuse if any active booking exists (lock field OR recent order scan).
+  final existingActive = await touryFindActiveBookingForCurrentUser();
+  if (existingActive != null && existingActive.orderId != orderId) {
+    return TouryCashBookingResult(
+      success: false,
+      error: 'booking_active_exists',
+      viaFallback: true,
+      orderId: existingActive.orderId,
+    );
+  }
+
   try {
+    // Phase 1 — commit lock first (rules require this before order create).
+    final blockingId = await touryClaimActiveOrderCommitted(
+      userRef: userRef,
+      orderId: orderId,
+    );
+    if (blockingId != null) {
+      return TouryCashBookingResult(
+        success: false,
+        error: 'booking_active_exists',
+        viaFallback: true,
+        orderId: blockingId,
+      );
+    }
+
     final alreadyExisted = await FirebaseFirestore.instance.runTransaction(
       (tx) async {
         final existing = await tx.get(orderRef);
         if (existing.exists) return true;
+
+        final userSnap = await tx.get(userRef);
+        final aid = ((userSnap.data() as Map<String, dynamic>?)?['active_order_id'] ??
+                '')
+            .toString()
+            .trim();
+        if (aid != orderId) {
+          throw FirebaseException(
+            plugin: 'cloud_firestore',
+            code: 'failed-precondition',
+            message: 'ACTIVE_BOOKING_EXISTS:$aid',
+          );
+        }
 
         final stops = (booking['stops'] as List?) ?? const [];
         final acceptanceDeadlineMs =
@@ -317,10 +380,20 @@ Future<TouryCashBookingResult> touryCreateCashBookingViaFirestoreFallback({
     );
   } on FirebaseException catch (e) {
     debugPrint('Cash Firestore fallback failed: ${e.code} ${e.message}');
+    final msg = (e.message ?? '').toLowerCase();
+    if (msg.contains('active_booking_exists')) {
+      return TouryCashBookingResult(
+        success: false,
+        error: 'booking_active_exists',
+        viaFallback: true,
+        orderId: msg.contains(':') ? msg.split(':').last : null,
+      );
+    }
     final mapped = switch (e.code) {
       'permission-denied' => 'booking_permission_denied',
       'unauthenticated' => 'booking_auth_required',
       'unavailable' || 'deadline-exceeded' => 'booking_service_unavailable',
+      'failed-precondition' => 'booking_active_exists',
       _ => 'booking_unknown_error',
     };
     return TouryCashBookingResult(

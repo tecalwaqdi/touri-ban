@@ -76,73 +76,54 @@ abstract final class TouryCustomerOrderActions {
     }
 
     try {
-      await FirebaseFirestore.instance.runTransaction((tx) async {
-        final snap = await tx.get(order.reference);
-        if (!snap.exists) {
-          throw FirebaseException(
-            plugin: 'cloud_firestore',
-            code: 'not-found',
-            message: 'order missing',
-          );
-        }
-        final raw = snap.data();
-        final data = raw is Map
-            ? Map<String, dynamic>.from(raw)
-            : <String, dynamic>{};
-        final liveUser = data['USER'];
-        if (!TouryCustomerCancelPolicy.isBookingOwner(
-          userField: liveUser,
-          authUid: uid,
-          currentUserRef: currentUserReference,
-        )) {
-          throw FirebaseException(
-            plugin: 'cloud_firestore',
-            code: 'permission-denied',
-            message: 'not booking owner',
-          );
-        }
+      // Read-validate-write with server rules as the race authority against
+      // driver accept. Avoid brittle same-txn lock clears.
+      final snap = await order.reference.get();
+      if (!snap.exists) {
+        return 'booking_unknown_error';
+      }
+      final raw = snap.data();
+      final data = raw is Map
+          ? Map<String, dynamic>.from(raw)
+          : <String, dynamic>{};
+      final liveUser = data['USER'];
+      if (!TouryCustomerCancelPolicy.isBookingOwner(
+        userField: liveUser,
+        authUid: uid,
+        currentUserRef: currentUserReference,
+      )) {
+        return 'booking_permission_denied';
+      }
 
-        final liveStatus = (data['status_code'] ?? '').toString();
-        final liveHalh = (data['halh_text'] ?? '').toString();
-        if (TouryCustomerCancelPolicy.isAlreadyCancelled(
-          statusCode: liveStatus,
-          halhText: liveHalh,
-        )) {
-          return;
-        }
+      final liveStatus = (data['status_code'] ?? '').toString();
+      final liveHalh = (data['halh_text'] ?? '').toString();
+      if (TouryCustomerCancelPolicy.isAlreadyCancelled(
+        statusCode: liveStatus,
+        halhText: liveHalh,
+      )) {
+        await _bestEffortClearActiveOrderLock(order.reference.id);
+        return null;
+      }
 
-        // Race guard: re-read live assignment + create time inside the txn.
-        final liveCreatedAt =
-            TouryCustomerCancelPolicy.createdAtFromField(data['data_order']);
-        if (!TouryCustomerCancelPolicy.canCustomerCancelBooking(
+      if (!TouryCustomerCancelPolicy.canCustomerCancelBooking(
+        statusCode: liveStatus,
+        halhText: liveHalh,
+        halhOrderName: (data['halh_order'] ?? '').toString(),
+        driverOrderStatus: (data['halhOrderMndob'] ?? '').toString(),
+        mndobUser: data['mndob_user'],
+        paymentStatus: (data['payment_status'] ?? '').toString(),
+      )) {
+        return TouryCustomerCancelPolicy.denyReasonKey(
           statusCode: liveStatus,
           halhText: liveHalh,
           halhOrderName: (data['halh_order'] ?? '').toString(),
           driverOrderStatus: (data['halhOrderMndob'] ?? '').toString(),
           mndobUser: data['mndob_user'],
-          createdAt: liveCreatedAt,
           paymentStatus: (data['payment_status'] ?? '').toString(),
-        )) {
-          throw FirebaseException(
-            plugin: 'cloud_firestore',
-            code: 'failed-precondition',
-            message: TouryCustomerCancelPolicy.denyReasonKey(
-              statusCode: liveStatus,
-              halhText: liveHalh,
-              halhOrderName: (data['halh_order'] ?? '').toString(),
-              driverOrderStatus: (data['halhOrderMndob'] ?? '').toString(),
-              mndobUser: data['mndob_user'],
-              createdAt: liveCreatedAt,
-              paymentStatus: (data['payment_status'] ?? '').toString(),
-            ),
-          );
-        }
-
-        tx.update(
-          order.reference,
-          customerCancelUpdatePayload(authUid: uid),
         );
-      });
+      }
+
+      await order.reference.update(customerCancelUpdatePayload(authUid: uid));
     } on FirebaseException catch (e) {
       debugPrint('cancelOrder FirebaseException: ${e.code} ${e.message}');
       return _mapFirebaseCancelError(e, order.reference);
@@ -150,6 +131,8 @@ abstract final class TouryCustomerOrderActions {
       debugPrint('cancelOrder error: $e');
       return 'booking_unknown_error';
     }
+
+    await _bestEffortClearActiveOrderLock(order.reference.id);
 
     // Cash / unpaid online — never invoke card refund.
     final unpaidPending = TouryCustomerCancelPolicy.isUnpaidPaymentPending(
@@ -170,6 +153,36 @@ abstract final class TouryCustomerOrderActions {
     }
 
     return null;
+  }
+
+  static Future<void> _bestEffortClearActiveOrderLock(String orderId) async {
+    final uref = currentUserReference;
+    if (uref == null || orderId.isEmpty) return;
+    try {
+      await FirebaseFirestore.instance.runTransaction((tx) async {
+        final userSnap = await tx.get(uref);
+        if (!userSnap.exists) return;
+        final udata = userSnap.data();
+        final map = udata is Map<String, dynamic>
+            ? udata
+            : (udata is Map
+                ? Map<String, dynamic>.from(udata)
+                : <String, dynamic>{});
+        final currentId = (map['active_order_id'] ?? '').toString().trim();
+        if (currentId.isEmpty || currentId == orderId) {
+          tx.set(
+            uref,
+            {
+              'active_order_id': FieldValue.delete(),
+              'active_order_updated_at': FieldValue.serverTimestamp(),
+            },
+            SetOptions(merge: true),
+          );
+        }
+      });
+    } catch (e) {
+      debugPrint('clear active_order_id after cancel failed: $e');
+    }
   }
 
   /// null = treat as success (e.g. already cancelled).
@@ -206,24 +219,22 @@ abstract final class TouryCustomerOrderActions {
               ? Map<String, dynamic>.from(raw)
               : <String, dynamic>{};
           final status = (data['status_code'] ?? '').toString();
-          final halh = (data['halh_text'] ?? '').toString();
+          final liveHalh = (data['halh_text'] ?? '').toString();
           if (TouryCustomerCancelPolicy.isAlreadyCancelled(
             statusCode: status,
-            halhText: halh,
+            halhText: liveHalh,
           )) {
             return null;
           }
-          return TouryCustomerCancelPolicy.denyReasonKey(
+          if (TouryCustomerCancelPolicy.hasDriverAccepted(
             statusCode: status,
-            halhText: halh,
+            halhText: liveHalh,
             halhOrderName: (data['halh_order'] ?? '').toString(),
             driverOrderStatus: (data['halhOrderMndob'] ?? '').toString(),
             mndobUser: data['mndob_user'],
-            createdAt: TouryCustomerCancelPolicy.createdAtFromField(
-              data['data_order'],
-            ),
-            paymentStatus: (data['payment_status'] ?? '').toString(),
-          );
+          )) {
+            return 'booking_cancel_after_driver';
+          }
         }
       } catch (_) {}
       return 'booking_permission_denied';

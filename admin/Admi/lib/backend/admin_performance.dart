@@ -19,8 +19,8 @@ const int kAdminLandmarkMergeTotalCap = 720;
 /// Picker / dropdown queries — capped, cache-friendly.
 const int kAdminPickerLimit = 150;
 
-/// Dashboard aggregate TTL.
-const Duration kAdminStatsTtl = Duration(minutes: 3);
+/// Dashboard aggregate TTL (near-real-time bundle).
+const Duration kAdminStatsTtl = Duration(minutes: 2);
 
 /// Per-country landmark count cache (count queries, not full collection scan).
 class AdminLandmarkCountCache {

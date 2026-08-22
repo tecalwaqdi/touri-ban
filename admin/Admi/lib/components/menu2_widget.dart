@@ -8,6 +8,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/l10n/nav_translations.dart';
 import '/index.dart';
 import '/components/profile_photo_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'menu2_model.dart';
 export 'menu2_model.dart';
@@ -68,6 +69,8 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     const map = {
       'overview': 'ent_section_overview',
       'operations': 'ent_section_operations',
+      'catalog': 'ent_section_catalog',
+      'partners': 'ent_section_partners',
       'geography': 'ent_section_geography',
       'finance': 'ent_section_finance',
       'system': 'ent_section_system',
@@ -93,6 +96,10 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     if (route == AdminSuperAdminsWidget.routeName) {
       return AdminRoleService.isSuperAdmin;
     }
+    if (route == AdminDriverWalletsWidget.routeName) {
+      // LEGACY_WALLET_TOOL — not settlement V2; SuperAdmin only.
+      return AdminRoleService.isSuperAdmin;
+    }
     return AdminRoleService.canAccessRoute(route);
   }
 
@@ -105,49 +112,55 @@ class _Menu2WidgetState extends State<Menu2Widget> {
 
     final sections = <({String key, List<({String route, IconData icon})> items})>[
       (
-        key: 'overview',
-        items: [
-          (route: Home22DashboardWidget.routeName, icon: Icons.dashboard_rounded),
-        ],
-      ),
-      (
         key: 'operations',
         items: [
+          (route: Home22DashboardWidget.routeName, icon: Icons.dashboard_rounded),
+          (route: AdminALLhgZWidget.routeName, icon: Icons.bookmark_added_rounded),
           (route: AdminuserWidget.routeName, icon: Icons.groups_rounded),
           (route: AdmindreverWidget.routeName, icon: Icons.directions_car_rounded),
-          (route: AdminTourGuidesWidget.routeName, icon: Icons.tour_rounded),
-          (route: AdminTransportCompaniesWidget.routeName, icon: Icons.local_shipping_rounded),
-          (route: CompanyDriversWidget.routeName, icon: Icons.directions_car_filled_rounded),
-          (route: AdminALLhgZWidget.routeName, icon: Icons.bookmark_added_rounded),
-          (route: PartnerBookingsWidget.routeName, icon: Icons.receipt_long_rounded),
-          (route: AdminPartnersWidget.routeName, icon: Icons.handshake_rounded),
-          (route: AdminM3almWidget.routeName, icon: Icons.place_rounded),
           (route: AdminSuportWidget.routeName, icon: Icons.support_agent_rounded),
         ],
       ),
       (
-        key: 'geography',
+        key: 'catalog',
         items: [
           (route: AdminDolWidget.routeName, icon: Icons.flag_rounded),
           (route: AdminregionWidget.routeName, icon: Icons.filter_hdr_rounded),
           (route: AdminvillWidget.routeName, icon: Icons.location_city_rounded),
+          (route: AdminM3almWidget.routeName, icon: Icons.place_rounded),
+        ],
+      ),
+      (
+        key: 'partners',
+        items: [
+          (route: AdminAgentWidget.routeName, icon: Icons.real_estate_agent_rounded),
+          (route: AdminTransportCompaniesWidget.routeName, icon: Icons.local_shipping_rounded),
+          (route: CompanyDriversWidget.routeName, icon: Icons.directions_car_filled_rounded),
+          (route: AdminTourGuidesWidget.routeName, icon: Icons.tour_rounded),
+          (route: AdminPartnersWidget.routeName, icon: Icons.handshake_rounded),
+          (route: PartnerBookingsWidget.routeName, icon: Icons.receipt_long_rounded),
         ],
       ),
       (
         key: 'finance',
         items: [
           (route: AdminFinanceHubWidget.routeName, icon: Icons.account_balance_rounded),
-          (route: AdminDriverWalletsWidget.routeName, icon: Icons.wallet_rounded),
           (route: AdminProfitsWidget.routeName, icon: Icons.account_balance_wallet_rounded),
-          (route: AdminReportsHubWidget.routeName, icon: Icons.assessment_rounded),
+          (route: AdminSettlementsWidget.routeName, icon: Icons.receipt_long_outlined),
+          (route: AdminReconciliationWidget.routeName, icon: Icons.rule_folder_outlined),
+          (route: AdminFinancialPeriodsWidget.routeName, icon: Icons.date_range_outlined),
+          (route: AdminFinanceReportsWidget.routeName, icon: Icons.table_chart_outlined),
+          (route: AdminFinanceAuditWidget.routeName, icon: Icons.manage_search_rounded),
+          (route: AdminDriverWalletsWidget.routeName, icon: Icons.wallet_rounded),
         ],
       ),
       (
         key: 'system',
         items: [
-          (route: AdminAgentWidget.routeName, icon: Icons.real_estate_agent_rounded),
+          (route: AdminDiagnosticsWidget.routeName, icon: Icons.monitor_heart_outlined),
           (route: AdminSuperAdminsWidget.routeName, icon: Icons.admin_panel_settings_rounded),
           (route: AdminAuditLogWidget.routeName, icon: Icons.history_rounded),
+          (route: AdminReportsHubWidget.routeName, icon: Icons.assessment_rounded),
           (route: SettingsWidget.routeName, icon: Icons.settings_rounded),
         ],
       ),
@@ -341,12 +354,42 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                     label: _sectionLabel(context, section.key),
                   ),
                   for (final item in section.items)
-                    AdminMenuTile(
-                      icon: item.icon,
-                      label: _menuLabel(context, item.route),
-                      isActive: _isActive(context, item.route),
-                      onTap: () => _navigate(context, item.route),
-                    ),
+                    item.route == AdminFinanceHubWidget.routeName
+                        ? StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                            stream: FirebaseFirestore.instance
+                                .collection('financial_settlement_payments')
+                                .where('status', isEqualTo: 'pending')
+                                .limit(50)
+                                .snapshots(),
+                            builder: (context, paySnap) {
+                              final pending = paySnap.data?.size ?? 0;
+                              return StreamBuilder<
+                                  QuerySnapshot<Map<String, dynamic>>>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('financial_settlements')
+                                    .where('status', isEqualTo: 'draft')
+                                    .limit(50)
+                                    .snapshots(),
+                                builder: (context, draftSnap) {
+                                  final drafts = draftSnap.data?.size ?? 0;
+                                  return AdminMenuTile(
+                                    icon: item.icon,
+                                    label: _menuLabel(context, item.route),
+                                    isActive: _isActive(context, item.route),
+                                    attentionCount: pending + drafts,
+                                    onTap: () =>
+                                        _navigate(context, item.route),
+                                  );
+                                },
+                              );
+                            },
+                          )
+                        : AdminMenuTile(
+                            icon: item.icon,
+                            label: _menuLabel(context, item.route),
+                            isActive: _isActive(context, item.route),
+                            onTap: () => _navigate(context, item.route),
+                          ),
                 ],
               ],
             ),

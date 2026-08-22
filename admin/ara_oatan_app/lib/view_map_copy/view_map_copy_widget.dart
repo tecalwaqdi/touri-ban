@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/schema/structs/index.dart';
+import '/core/toury_custom_place_cart.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_place_picker.dart';
@@ -59,36 +60,14 @@ class _ViewMapCopyWidgetState extends State<ViewMapCopyWidget> {
     final typography = context.dsTypography;
 
     if (_model.placePickerValue.city == FFAppState().naimvillatext) {
-      FFAppState().addToCartPriceSummary(0.0);
-      FFAppState().addcart = FFAppState().addcart + 1;
-      FFAppState().addToCartmkss(AmaknCostmStruct(
-        naim: _model.placePickerValue.name,
-        user: currentUserReference,
-        loceshn: _model.placePickerValue.latLng,
-        sr: 100.0,
-      ));
-      safeSetState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'landmark_added_success'.tr(namedArgs: {
-              'name': _model.placePickerValue.name,
-            }),
-            style: typography.labelMedium.copyWith(color: colors.onPrimary),
-          ),
-          duration: const Duration(milliseconds: 4000),
-          backgroundColor: colors.primary,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: DsRadius.medium),
-          action: SnackBarAction(
-            label: 'view_my_trip'.tr(),
-            textColor: colors.onPrimary,
-            onPressed: () async {
-              context.pushNamed(Checkout66Widget.routeName);
-            },
-          ),
-        ),
+      final place = _model.placePickerValue;
+      touryAddCustomPlaceToCart(
+        context: context,
+        name: place.name,
+        location: place.latLng,
+        address: place.address,
       );
+      safeSetState(() {});
       return;
     }
 

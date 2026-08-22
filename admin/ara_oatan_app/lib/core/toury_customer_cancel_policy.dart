@@ -6,9 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 abstract final class TouryCustomerCancelPolicy {
   TouryCustomerCancelPolicy._();
 
-  /// Customer may cancel only within this window from Firestore `data_order`.
-  static const Duration cancelWindowAfterCreate = Duration(hours: 1);
-
   /// Ownership field on `order` documents is `USER`.
   /// Accepts DocumentReference, path string, or bare uid (legacy).
   static bool isBookingOwner({
@@ -133,42 +130,6 @@ abstract final class TouryCustomerCancelPolicy {
     return null;
   }
 
-  /// Absolute UTC deadline after which customer cancel is closed.
-  static DateTime? cancelWindowEndsAt(DateTime? createdAt) {
-    if (createdAt == null) return null;
-    return createdAt.toUtc().add(cancelWindowAfterCreate);
-  }
-
-  /// Remaining time inside the cancel window. Zero when expired; null if unknown.
-  static Duration? remainingCancelWindow({
-    required DateTime? createdAt,
-    DateTime? now,
-  }) {
-    final endsAt = cancelWindowEndsAt(createdAt);
-    if (endsAt == null) return null;
-    final clock = (now ?? DateTime.now()).toUtc();
-    final left = endsAt.difference(clock);
-    return left.isNegative ? Duration.zero : left;
-  }
-
-  /// True while `createdAt + 1h > now` (strictly inside the window).
-  /// Fail closed without trusted create time.
-  static bool isWithinCancelWindow({
-    required DateTime? createdAt,
-    DateTime? now,
-  }) {
-    final left = remainingCancelWindow(createdAt: createdAt, now: now);
-    if (left == null) return false;
-    return left > Duration.zero;
-  }
-
-  /// Compatibility alias — remaining time until cancel window closes.
-  static Duration? remainingUntilCancelEligible({
-    required DateTime? createdAt,
-    DateTime? now,
-  }) =>
-      remainingCancelWindow(createdAt: createdAt, now: now);
-
   /// Unpaid online booking awaiting card payment (no refund on cancel).
   static bool isUnpaidPaymentPending({
     required String statusCode,
@@ -188,10 +149,8 @@ abstract final class TouryCustomerCancelPolicy {
 
   /// Same cancellable matrix as customer UI + Firestore `consumerCanCancelOrder`.
   ///
-  /// Requires for pool bookings:
-  /// - awaiting unassigned driver (no acceptance)
-  /// - still within [cancelWindowAfterCreate] from Firestore `data_order`
-  /// Unpaid payment drafts may cancel immediately (no driver pool).
+  /// Allowed anytime before driver accept (no cancel timer / device clock).
+  /// Blocked as soon as a driver is assigned or the booking is terminal.
   static bool canCustomerCancelBooking({
     required String statusCode,
     String? halhText,
@@ -206,24 +165,7 @@ abstract final class TouryCustomerCancelPolicy {
       return false;
     }
 
-    // Unpaid online draft: cancel immediately, no refund, never in driver pool.
-    if (isUnpaidPaymentPending(
-      statusCode: statusCode,
-      paymentStatus: paymentStatus,
-    )) {
-      if (hasDriverAccepted(
-        statusCode: statusCode,
-        halhText: halhText,
-        halhOrderName: halhOrderName,
-        driverOrderStatus: driverOrderStatus,
-        mndobUser: mndobUser,
-      )) {
-        return false;
-      }
-      return true;
-    }
-
-    if (!isAwaitingUnassignedDriver(
+    if (hasDriverAccepted(
       statusCode: statusCode,
       halhText: halhText,
       halhOrderName: halhOrderName,
@@ -233,11 +175,21 @@ abstract final class TouryCustomerCancelPolicy {
       return false;
     }
 
-    if (!isWithinCancelWindow(createdAt: createdAt, now: now)) {
-      return false;
+    // Unpaid online draft: cancel immediately (no driver pool yet).
+    if (isUnpaidPaymentPending(
+      statusCode: statusCode,
+      paymentStatus: paymentStatus,
+    )) {
+      return true;
     }
 
-    return true;
+    return isAwaitingUnassignedDriver(
+      statusCode: statusCode,
+      halhText: halhText,
+      halhOrderName: halhOrderName,
+      driverOrderStatus: driverOrderStatus,
+      mndobUser: mndobUser,
+    );
   }
 
   static bool _isTerminalOrInProgress({
@@ -332,13 +284,6 @@ abstract final class TouryCustomerCancelPolicy {
       mndobUser: mndobUser,
     )) {
       return 'booking_cancel_after_driver';
-    }
-    if (!isUnpaidPaymentPending(
-          statusCode: statusCode,
-          paymentStatus: paymentStatus,
-        ) &&
-        !isWithinCancelWindow(createdAt: createdAt, now: now)) {
-      return 'booking_cancel_window_expired';
     }
     return 'booking_cancel_not_allowed';
   }

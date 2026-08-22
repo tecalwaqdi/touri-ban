@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 import '/core/app_design_system.dart';
 import '/core/toury_country_registry.dart';
@@ -234,6 +235,16 @@ abstract final class TouryDialogs {
             ),
           ),
           actions: [
+            if (failure == TouryLocationFailure.permissionDeniedForever)
+              TextButton(
+                onPressed: () async {
+                  await Geolocator.openAppSettings();
+                  if (dialogContext.mounted) {
+                    Navigator.pop(dialogContext, 'settings');
+                  }
+                },
+                child: Text('open_app_settings'.tr()),
+              ),
             if (offerManualChoice)
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, 'manual'),

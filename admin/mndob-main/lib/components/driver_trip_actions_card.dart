@@ -80,7 +80,16 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
         driverLocation: currentUserDocument?.loceshnMndobNow,
       );
 
-  bool get _waitingForTripTime => _tripInProgress && !_canComplete;
+  /// Booked hours not finished yet.
+  bool get _waitingForTripTime {
+    if (!_tripInProgress) return false;
+    final left = DriverTripService.remainingBeforeComplete(order);
+    return left != null && left > Duration.zero;
+  }
+
+  /// Time done, but still not near dropoff / no GPS.
+  bool get _waitingForDropoff =>
+      _tripInProgress && !_waitingForTripTime && !_canComplete;
 
   bool get _hasAny =>
       _canAccept ||
@@ -88,7 +97,8 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
       _canArrive ||
       _canStart ||
       _canComplete ||
-      _waitingForTripTime;
+      _waitingForTripTime ||
+      _waitingForDropoff;
 
   @override
   void initState() {
@@ -208,23 +218,31 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
     });
   }
 
-  Future<LatLng> _driverLocationFast() {
-    return getCurrentUserLocation(
-      defaultLocation: const LatLng(0, 0),
-      cached: true,
-    ).timeout(
-      const Duration(seconds: 6),
-      onTimeout: () => const LatLng(0, 0),
-    );
+  Future<LatLng?> _driverLocationFast() async {
+    try {
+      final loc = await getCurrentUserLocation(
+        defaultLocation: const LatLng(0, 0),
+        cached: true,
+      ).timeout(const Duration(seconds: 6));
+      return DriverTripService.usableDriverLocation(loc);
+    } catch (_) {
+      return DriverTripService.usableDriverLocation(
+        currentUserDocument?.loceshnMndobNow,
+      );
+    }
   }
 
   Future<void> _arrive() async {
     await _run(() async {
       final loc = await _driverLocationFast();
+      if (loc == null) {
+        throw StateError('LOCATION_REQUIRED');
+      }
       await DriverTripService.markDriverArrived(
         orderRef: order.reference,
         driverLocation: loc,
         customerRef: order.user,
+        order: order,
       );
     });
   }
@@ -252,6 +270,13 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
     if (!ok || !mounted) return;
     await _run(() async {
       final loc = await _driverLocationFast();
+      final block = DriverTripService.completeBlockReason(
+        order: order,
+        driverLocation: loc,
+      );
+      if (block != null) {
+        throw StateError(block);
+      }
       await DriverTripService.completeTrip(
         order: order,
         driverLocation: loc,
@@ -405,6 +430,31 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
                       {'time': pretty},
                     );
                   }(),
+                  textAlign: TextAlign.center,
+                  style: typography.bodySmall.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+            if (_waitingForDropoff) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: DsButton.success(
+                  label: driverTr(context, 'Complete trip'),
+                  icon: Icons.flag_outlined,
+                  expanded: true,
+                  enabled: false,
+                  onPressed: null,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  DriverTripService.messageForCode(
+                    DriverTripService.completeBlockReason(order: order) ??
+                        'TOO_FAR_FROM_DROPOFF',
+                  ),
                   textAlign: TextAlign.center,
                   style: typography.bodySmall.copyWith(
                     color: colors.textSecondary,

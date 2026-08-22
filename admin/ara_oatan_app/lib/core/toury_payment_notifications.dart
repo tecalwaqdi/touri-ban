@@ -79,7 +79,7 @@ Future<void> touryNotifyAfterSuccessfulOrderPayment({
           },
         ),
         userRefs: entry.value.map((user) => user.reference).toList(),
-        initialPageName: 'Dashbord',
+        initialPageName: 'dashbord',
         parameterData: const {},
       );
     }

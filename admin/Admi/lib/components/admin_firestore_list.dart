@@ -21,6 +21,7 @@ class AdminFirestoreList<T> extends StatefulWidget {
     required this.query,
     required this.recordBuilder,
     this.queryBuilder,
+    this.reloadKey,
     this.pageSize = kAdminPageSize,
     this.liveUpdates = false,
     required this.builder,
@@ -32,6 +33,8 @@ class AdminFirestoreList<T> extends StatefulWidget {
   final Query query;
   final RecordBuilder<T> recordBuilder;
   final Query Function(Query)? queryBuilder;
+  /// When this changes, the list reloads (use filter signature).
+  final String? reloadKey;
   final int pageSize;
   /// Real-time listener on page 1 — off by default to cut Firestore reads.
   final bool liveUpdates;
@@ -90,6 +93,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   int _page = 1;
   int _loadAttempt = 0;
   int _syncGeneration = 0;
+  int _countGeneration = 0;
   int? _totalAvailable;
   late final void Function() _externalRefreshListener;
   late final Future<void> Function() _externalAsyncRefreshListener;
@@ -110,16 +114,15 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   }
 
   Future<void> _refreshTotalCount() async {
+    final gen = ++_countGeneration;
     try {
       // Drop orderBy for cheaper aggregate counts when present.
       var q = _baseQuery();
       final count = await queryCollectionCount(q);
-      if (!mounted) return;
-      if (count > 0 || _items.isEmpty) {
-        setState(() => _totalAvailable = count);
-      }
+      if (!mounted || gen != _countGeneration) return;
+      setState(() => _totalAvailable = count);
     } catch (_) {
-      // Keep pagination working even if aggregates fail.
+      // Keep previous totalAvailable — never invent 0 on Aggregate failure.
     }
   }
 
@@ -185,9 +188,10 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   void didUpdateWidget(covariant AdminFirestoreList<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Parents recreate queryBuilder lambdas on every setState — ignore identity.
-    // Reload only when the underlying collection / page size actually changes.
+    // Reload when collection, page size, or explicit filter reloadKey changes.
     if (oldWidget.query != widget.query ||
-        oldWidget.pageSize != widget.pageSize) {
+        oldWidget.pageSize != widget.pageSize ||
+        oldWidget.reloadKey != widget.reloadKey) {
       _resetAndLoad();
     }
   }

@@ -234,19 +234,49 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
               label: driverTr(context, 'Confirm arrival to customer'),
               icon: Icons.place,
               onPressed: () async {
-                final loc = await getCurrentUserLocation(
-                  defaultLocation: const LatLng(0, 0),
-                  cached: true,
-                ).timeout(
-                  const Duration(seconds: 6),
-                  onTimeout: () => const LatLng(0, 0),
-                );
-                await DriverTripService.markDriverArrived(
-                  orderRef: order.reference,
-                  driverLocation: loc,
-                  customerRef: order.user,
-                );
-                widget.onArrived?.call();
+                try {
+                  LatLng? loc;
+                  try {
+                    loc = await getCurrentUserLocation(
+                      defaultLocation: const LatLng(0, 0),
+                      cached: true,
+                    ).timeout(const Duration(seconds: 6));
+                  } catch (_) {
+                    loc = null;
+                  }
+                  loc = DriverTripService.usableDriverLocation(loc) ??
+                      DriverTripService.usableDriverLocation(
+                        currentUserDocument?.loceshnMndobNow,
+                      );
+                  if (loc == null) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          DriverTripService.messageForCode('LOCATION_REQUIRED'),
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+                  await DriverTripService.markDriverArrived(
+                    orderRef: order.reference,
+                    driverLocation: loc,
+                    customerRef: order.user,
+                    order: order,
+                  );
+                  widget.onArrived?.call();
+                } catch (e) {
+                  if (!context.mounted) return;
+                  final msg = e is StateError
+                      ? DriverTripService.messageForCode(e.message)
+                      : DriverTripService.messageForCode(
+                          'BOOKING_ASSIGNMENT_FAILED',
+                        );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(msg)),
+                  );
+                }
               },
               expanded: true,
             ),

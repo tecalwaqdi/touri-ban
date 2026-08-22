@@ -7,6 +7,7 @@ import '/core/toury_polyline.dart';
 import '/core/toury_route_metrics.dart';
 import '/core/toury_distance_format.dart';
 import '/core/toury_directions_service.dart';
+import '/core/toury_checkout_state.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -32,7 +33,7 @@ class MmaappWidget extends StatefulWidget {
 
 class _MmaappWidgetState extends State<MmaappWidget> {
   late MmaappModel _model;
-  LatLng? currentUserLocationValue;
+  LatLng? routeOrigin;
 
   double totalDistanceKm = 0;
   double totalTimeMinutes = 0;
@@ -48,31 +49,38 @@ class _MmaappWidgetState extends State<MmaappWidget> {
     super.initState();
     _model = createModel(context, () => MmaappModel());
 
-    TouryLocationService.getUserPositionOrNull().then((loc) {
+    () async {
+      LatLng? origin = touryResolveTripRouteOrigin();
+      origin ??= await TouryLocationService.getUserPositionOrNull();
+      if (!mounted) return;
       safeSetState(() {
-        currentUserLocationValue = loc;
-        if (loc != null) {
+        routeOrigin = origin;
+        if (origin != null) {
           _calculateRouteWithOSRM();
         } else {
           isLoading = false;
           errorMessage = 'dialog_location_error'.tr();
         }
       });
-    });
+    }();
   }
 
   /// 🗺️ Get driving distance and time from OSRM API
   Future<void> _calculateRouteWithOSRM() async {
-    if (currentUserLocationValue == null || FFAppState().cartmkss.isEmpty) {
+    final origin = routeOrigin ?? touryResolveTripRouteOrigin();
+    if (origin == null || FFAppState().cartmkss.isEmpty) {
       safeSetState(() {
         isLoading = false;
+        if (FFAppState().cartmkss.isEmpty) {
+          errorMessage = 'map_no_valid_destinations'.tr();
+        }
       });
       return;
     }
 
     try {
       final validation = touryValidateRoutePoints(
-        origin: currentUserLocationValue,
+        origin: origin,
         destinations: FFAppState().cartmkss.map((e) => e.loceshn),
         selectedAreaCenter: FFAppState().latlngvill,
       );
@@ -138,10 +146,9 @@ class _MmaappWidgetState extends State<MmaappWidget> {
       }
 
       // Build coordinates string for OSRM: "lon,lat;lon,lat;..."
-      final coordinates = [
-        '${currentUserLocationValue!.longitude},${currentUserLocationValue!.latitude}',
-        ...destinations.map((point) => '${point.longitude},${point.latitude}')
-      ].join(';');
+      final coordinates = validation.points
+          .map((point) => '${point.longitude},${point.latitude}')
+          .join(';');
 
       // OSRM API URL with waypoints optimization
       String url =
@@ -221,7 +228,7 @@ class _MmaappWidgetState extends State<MmaappWidget> {
       print('Error fetching OSRM route: $e');
       // Fallback to straight-line calculation
       final validation = touryValidateRoutePoints(
-        origin: currentUserLocationValue,
+        origin: routeOrigin,
         destinations: FFAppState().cartmkss.map((e) => e.loceshn),
         selectedAreaCenter: FFAppState().latlngvill,
       );
@@ -238,8 +245,8 @@ class _MmaappWidgetState extends State<MmaappWidget> {
       maps.Marker(
         markerId: maps.MarkerId('start'),
         position: maps.LatLng(
-          currentUserLocationValue!.latitude,
-          currentUserLocationValue!.longitude,
+          routeOrigin!.latitude,
+          routeOrigin!.longitude,
         ),
         icon: maps.BitmapDescriptor.defaultMarkerWithHue(
             maps.BitmapDescriptor.hueGreen),
@@ -288,11 +295,13 @@ class _MmaappWidgetState extends State<MmaappWidget> {
         .toList();
   }
 
-  /// 📏 Fallback: Straight-line distance calculation
+  /// 📏 Fallback when live road APIs fail.
+  /// Prefer existing checkout SoT (`osrmTotal*`) so map sheet never shows
+  /// different km/min than قائمة رحلاتي for the same booking.
   void _calculateStraightLineDistance([TouryRouteValidation? prepared]) {
     final validation = prepared ??
         touryValidateRoutePoints(
-          origin: currentUserLocationValue,
+          origin: routeOrigin,
           destinations: FFAppState().cartmkss.map((e) => e.loceshn),
           selectedAreaCenter: FFAppState().latlngvill,
         );
@@ -305,37 +314,56 @@ class _MmaappWidgetState extends State<MmaappWidget> {
       return;
     }
     final destinations = validation.points.skip(1).toList();
-    final estimate = touryEstimateRoute(validation.points);
-    totalDistanceKm = estimate.distanceKm;
-    totalTimeMinutes = estimate.durationHours * 60;
+    final cachedKm = FFAppState().osrmTotalDistance;
+    final cachedMin = FFAppState().osrmTotalTime;
+    final hasCheckoutSot = cachedKm > 0 && cachedMin > 0;
+    if (hasCheckoutSot) {
+      totalDistanceKm = cachedKm;
+      totalTimeMinutes = cachedMin;
+    } else {
+      final estimate = touryEstimateRoute(validation.points);
+      totalDistanceKm = estimate.distanceKm;
+      totalTimeMinutes = estimate.durationHours * 60;
+      FFAppState().update(() {
+        FFAppState().osrmTotalTime = totalTimeMinutes;
+        FFAppState().osrmTotalDistance = totalDistanceKm;
+        FFAppState().osrmCalculationTime = DateTime.now();
+      });
+    }
 
-    // Create markers for fallback too
     _createMarkers(destinations);
-
-    // Store fallback calculation in FFAppState too
-    FFAppState().update(() {
-      FFAppState().osrmTotalTime = totalTimeMinutes;
-      FFAppState().osrmTotalDistance = totalDistanceKm;
-      FFAppState().osrmCalculationTime = DateTime.now();
-    });
+    // Straight segments keep fitBounds useful when polyline decode is missing.
+    _createPolyline(
+      validation.points
+          .map((p) => maps.LatLng(p.latitude, p.longitude))
+          .toList(),
+    );
 
     safeSetState(() {
       isLoading = false;
-      errorMessage = validation.rejectedCount == 0
-          ? 'map_route_fallback'.tr()
-          : 'map_invalid_destinations'.tr(
-              namedArgs: {'count': '${validation.rejectedCount}'},
-            );
+      if (validation.rejectedCount > 0) {
+        errorMessage = 'map_invalid_destinations'.tr(
+          namedArgs: {'count': '${validation.rejectedCount}'},
+        );
+      } else if (hasCheckoutSot) {
+        // Numbers match checkout; warn only that live road redraw failed.
+        errorMessage = 'map_route_fallback'.tr();
+      } else {
+        errorMessage = 'map_route_fallback'.tr();
+      }
     });
   }
 
-  /// 🔄 Retry calculation
   /// 🔄 Retry calculation
   Future<void> _retryCalculation() async {
     safeSetState(() {
       isLoading = true;
       errorMessage = null;
     });
+    LatLng? origin = touryResolveTripRouteOrigin();
+    origin ??= await TouryLocationService.getUserPositionOrNull();
+    if (!mounted) return;
+    routeOrigin = origin;
     await _calculateRouteWithOSRM();
   }
 
@@ -351,7 +379,7 @@ class _MmaappWidgetState extends State<MmaappWidget> {
     final colors = context.dsColors;
     final typography = context.dsTypography;
 
-    if (currentUserLocationValue == null) {
+    if (routeOrigin == null) {
       return Container(
         color: colors.scaffold,
         child: Stack(
@@ -555,12 +583,17 @@ class _MmaappWidgetState extends State<MmaappWidget> {
                           ),
                           const SizedBox(height: DsSpacing.xxs),
                           Text(
-                            '${_formatNumber(totalDistanceKm, digits: 1)} ${'unit_km'.tr()}',
+                            isLoading
+                                ? '…'
+                                : (totalDistanceKm <= 0
+                                    ? 'ux_not_available'.tr()
+                                    : '${_formatNumber(totalDistanceKm, digits: 1)} ${'unit_km'.tr()}'),
                             style: typography.headlineSmall.copyWith(
                               color: DsInfoScale.shade700,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          if (!isLoading && totalDistanceKm > 0)
                           Text(
                             '(${_formatNumber((totalDistanceKm * 1000).round())} ${'unit_meter'.tr()})',
                             style: typography.bodySmall.copyWith(
@@ -595,12 +628,17 @@ class _MmaappWidgetState extends State<MmaappWidget> {
                           ),
                           const SizedBox(height: DsSpacing.xxs),
                           Text(
-                            _formatDuration(totalTimeMinutes),
+                            isLoading
+                                ? '…'
+                                : (totalTimeMinutes <= 0
+                                    ? 'ux_not_available'.tr()
+                                    : _formatDuration(totalTimeMinutes)),
                             style: typography.headlineSmall.copyWith(
                               color: DsSuccessScale.shade700,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          if (!isLoading && totalTimeMinutes > 0)
                           Text(
                             '(${_formatNumber(totalTimeMinutes.round())} ${'unit_minute'.tr()})',
                             style: typography.bodySmall.copyWith(
@@ -666,8 +704,8 @@ class _MmaappWidgetState extends State<MmaappWidget> {
       mapType: maps.MapType.normal,
       initialCameraPosition: maps.CameraPosition(
         target: maps.LatLng(
-          currentUserLocationValue!.latitude,
-          currentUserLocationValue!.longitude,
+          routeOrigin!.latitude,
+          routeOrigin!.longitude,
         ),
         zoom: 14,
       ),

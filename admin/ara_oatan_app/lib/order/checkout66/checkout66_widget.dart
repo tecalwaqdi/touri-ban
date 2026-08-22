@@ -8,9 +8,11 @@ import '/core/toury_brand_widgets.dart';
 import '/core/toury_location_service.dart';
 import '/core/toury_booking_agents.dart';
 import '/core/toury_booking_service.dart';
+import '/core/toury_active_booking_guard.dart';
 import '/core/toury_checkout_state.dart';
 import '/core/toury_payment_labels.dart';
 import '/core/toury_landmark_filter.dart';
+import '/core/toury_landmark_cart.dart';
 import '/core/toury_dialogs.dart';
 import '/core/toury_phone_util.dart';
 import '/core/toury_ngenius.dart';
@@ -52,9 +54,11 @@ import 'checkout66_model.dart';
 export 'checkout66_model.dart';
 
 Future<Map<String, double>?> calculateMinDistanceAndTime() async {
-  final currentLocation = await TouryLocationService.getUserPositionOrNull();
+  // Booking pickup / city center first; GPS only as last resort.
+  LatLng? origin = touryResolveTripRouteOrigin();
+  origin ??= await TouryLocationService.getUserPositionOrNull();
   final validation = touryValidateRoutePoints(
-    origin: currentLocation,
+    origin: origin,
     destinations: FFAppState().cartmkss.map((e) => e.loceshn),
     selectedAreaCenter: FFAppState().latlngvill,
   );
@@ -109,6 +113,9 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
   }
 
   String _formatTripDistance() {
+    if (isCalculating && (_tripDistanceKm == null || _tripDistanceKm! <= 0)) {
+      return '…';
+    }
     final raw = _tripDistanceKm;
     if (raw == null || raw <= 0) return 'ux_not_available'.tr();
     final formatted = touryFormatDistanceKm(
@@ -119,11 +126,15 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
   }
 
   String _formatTripTime() {
+    if (isCalculating && _tripTimeHours == null) {
+      return '…';
+    }
     final hours = _tripTimeHours;
-    if (hours == null) return 'ux_not_available'.tr();
+    if (hours == null || hours <= 0) return 'ux_not_available'.tr();
     if (hours < 1) {
       final minutes = (hours * 60).round();
-      return 'minutes_count'.tr(namedArgs: {'count': '$minutes'});
+      final shown = minutes < 1 ? 1 : minutes;
+      return 'minutes_count'.tr(namedArgs: {'count': '$shown'});
     }
     final wholeHours = hours.floor();
     final minutes = ((hours - wholeHours) * 60).round();
@@ -134,6 +145,62 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
       'hours': '$wholeHours',
       'minutes': '$minutes',
     });
+  }
+
+  String _routeFingerprint() {
+    final app = FFAppState();
+    final origin = touryResolveTripRouteOrigin(app);
+    final buf = StringBuffer()
+      ..write(origin?.latitude)
+      ..write(',')
+      ..write(origin?.longitude);
+    for (final stop in app.cartmkss) {
+      buf
+        ..write('|')
+        ..write(stop.loceshn?.latitude)
+        ..write(',')
+        ..write(stop.loceshn?.longitude);
+    }
+    return buf.toString();
+  }
+
+  String? _lastRouteFingerprint;
+
+  void _invalidateRouteMetrics() {
+    osrmDistance = 0;
+    osrmTime = 0;
+    previewDistance = null;
+    previewTime = null;
+    FFAppState().update(() {
+      FFAppState().osrmTotalDistance = 0;
+      FFAppState().osrmTotalTime = 0;
+    });
+  }
+
+  Future<void> _refreshRouteMetrics() async {
+    if (!mounted || _routeCalcCancelled) return;
+    _invalidateRouteMetrics();
+    if (mounted) setState(() => isCalculating = true);
+    await Future.wait<void>([
+      _calculateOsrm(),
+      calculateMinDistanceAndTime().then((result) {
+        if (!mounted || _routeCalcCancelled) return;
+        setState(() {
+          if (result != null) {
+            previewDistance = result['distance'];
+            previewTime = result['time'];
+            _rejectedRoutePoints = result['rejected']?.round() ?? 0;
+          }
+        });
+      }),
+    ]);
+  }
+
+  void _maybeRecalcRouteAfterCartChange() {
+    final next = _routeFingerprint();
+    if (_lastRouteFingerprint == next) return;
+    _lastRouteFingerprint = next;
+    unawaited(_refreshRouteMetrics());
   }
 
   String _formatMoney(num value) {
@@ -156,16 +223,16 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
     setState(() => isCalculating = true);
 
     try {
-      final currentLocation =
-          await TouryLocationService.getUserPositionOrNull();
+      LatLng? origin = touryResolveTripRouteOrigin();
+      origin ??= await TouryLocationService.getUserPositionOrNull();
       if (!mounted || _routeCalcCancelled) return;
-      if (currentLocation == null) {
+      if (origin == null) {
         setState(() => isCalculating = false);
         return;
       }
 
       final validation = touryValidateRoutePoints(
-        origin: currentLocation,
+        origin: origin,
         destinations: FFAppState().cartmkss.map((e) => e.loceshn),
         selectedAreaCenter: FFAppState().latlngvill,
       );
@@ -220,11 +287,10 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
         }
       }
 
-      // Build coordinates string
-      final coordinates = [
-        '${currentLocation.longitude},${currentLocation.latitude}',
-        ...destinations.map((point) => '${point.longitude},${point.latitude}')
-      ].join(';');
+      // Build coordinates from validated points (pickup → stops in cart order).
+      final coordinates = validation.points
+          .map((point) => '${point.longitude},${point.latitude}')
+          .join(';');
 
       final url =
           'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full&geometries=polyline&steps=false';
@@ -247,9 +313,12 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
             points: validation.points,
           )) {
             if (!mounted || _routeCalcCancelled) return;
+            final estimate = touryEstimateRoute(validation.points);
             setState(() {
+              previewDistance = estimate.distanceKm;
+              previewTime = estimate.durationHours;
               isCalculating = false;
-              _rejectedRoutePoints = validation.rejectedCount + 1;
+              _rejectedRoutePoints = validation.rejectedCount;
             });
             return;
           }
@@ -309,6 +378,7 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
         touryRecalculateCheckoutPrice();
         safeSetState(() {});
       }());
+      _lastRouteFingerprint = _routeFingerprint();
       unawaited(_calculateOsrm());
       unawaited(calculateMinDistanceAndTime().then((result) {
         if (!mounted || _routeCalcCancelled) return;
@@ -379,6 +449,105 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
     });
   }
 
+  Widget _extraHoursMetricTile({
+    required String label,
+    required Widget value,
+  }) {
+    final colors = DsColors.of(context);
+    final typography = DsTypography.of(context);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(DsSpacing.sm + 2),
+      decoration: BoxDecoration(
+        color: colors.background,
+        borderRadius: DsRadius.medium,
+        border: Border.all(color: colors.border.withValues(alpha: 0.85)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: typography.labelSmall.copyWith(
+              color: colors.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: DsSpacing.xs),
+          value,
+        ],
+      ),
+    );
+  }
+
+  Widget _extraHoursStepper() {
+    final colors = DsColors.of(context);
+    final typography = DsTypography.of(context);
+    return Container(
+      height: 44,
+      decoration: BoxDecoration(
+        color: colors.card,
+        borderRadius: DsRadius.medium,
+        border: Border.all(color: colors.primary.withValues(alpha: 0.35)),
+      ),
+      child: FlutterFlowCountController(
+        decrementIconBuilder: (enabled) => Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: enabled
+                ? colors.primarySoft
+                : colors.border.withValues(alpha: 0.35),
+            borderRadius: DsRadius.small,
+          ),
+          child: Icon(
+            Icons.remove_rounded,
+            color: enabled ? colors.primary : colors.textSecondary,
+            size: 18,
+          ),
+        ),
+        incrementIconBuilder: (enabled) => Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: enabled ? colors.primary : colors.border.withValues(alpha: 0.35),
+            borderRadius: DsRadius.small,
+          ),
+          child: Icon(
+            Icons.add_rounded,
+            color: enabled ? colors.onPrimary : colors.textSecondary,
+            size: 18,
+          ),
+        ),
+        countBuilder: (count) => Text(
+          NumberFormat.decimalPattern(context.locale.toString()).format(count),
+          style: typography.titleMedium.copyWith(
+            color: colors.primary,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        count: _model.countControllerValue ??= 0,
+        updateCount: (count) async {
+          final extra = count.clamp(0, 300);
+          safeSetState(() => _model.countControllerValue = extra);
+          FFAppState().update(() {
+            FFAppState().addhors = extra;
+            FFAppState().totalsaat = FFAppState().saatcar + extra;
+          });
+          touryRecalculateCheckoutPrice();
+          safeSetState(() {});
+        },
+        stepSize: 1,
+        minimum: 0,
+        maximum: 300,
+        contentPadding:
+            const EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _routeCalcCancelled = true;
@@ -403,6 +572,10 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
         s.addhors,
       ),
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _routeCalcCancelled) return;
+      _maybeRecalcRouteAfterCartChange();
+    });
 
     return DsScreenShell(
       child: GestureDetector(
@@ -1127,6 +1300,27 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                         ),
                                       ],
                                     ),
+                                    if (osrmTime > 0) ...[
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'map_eta_traffic'.tr(),
+                                        style: context.dsTypography.labelSmall
+                                            .copyWith(
+                                          color: context.dsColors.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                    if (FFAppState().cartmkss.isNotEmpty) ...[
+                                      const SizedBox(height: DsSpacing.xs),
+                                      Text(
+                                        '${'map_stops_count'.tr()}: ${FFAppState().cartmkss.length}',
+                                        style: context.dsTypography.labelMedium
+                                            .copyWith(
+                                          color: context.dsColors.textSecondary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
                                   ],
                                 ),
                               ),
@@ -1676,88 +1870,92 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                     (FFAppState().typecarRev != null))
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(
-                        7.0, 8.0, 7.0, 8.0),
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).secondaryBackground,
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(
-                          color: FlutterFlowTheme.of(context).alternate,
-                          width: 1.0,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                            12.0, 12.0, 12.0, 12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Need extra hours?'.tr(),
-                              style: FlutterFlowTheme.of(context)
-                                  .headlineSmall
-                                  .override(
-                                    fontFamily: FlutterFlowTheme.of(context)
-                                        .headlineSmallFamily,
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    fontSize: 18.0,
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.bold,
-                                    useGoogleFonts:
-                                        !FlutterFlowTheme.of(context)
-                                            .headlineSmallIsCustom,
+                        DsSpacing.sm, DsSpacing.sm, DsSpacing.sm, DsSpacing.sm),
+                    child: DsCard(
+                      elevated: true,
+                      padding: const EdgeInsets.all(DsSpacing.md),
+                      child: Builder(
+                        builder: (context) {
+                          final colors = DsColors.of(context);
+                          final typography = DsTypography.of(context);
+                          final baseHours = NumberFormat.decimalPattern(
+                            context.locale.toString(),
+                          ).format(FFAppState().saatcar);
+                          final totalHours = NumberFormat.decimalPattern(
+                            context.locale.toString(),
+                          ).format(FFAppState().totalsaat > 0
+                              ? FFAppState().totalsaat
+                              : FFAppState().saatcar +
+                                  (_model.countControllerValue ?? 0));
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 42,
+                                    height: 42,
+                                    decoration: BoxDecoration(
+                                      color: colors.primarySoft,
+                                      borderRadius: DsRadius.medium,
+                                    ),
+                                    child: Icon(
+                                      Icons.schedule_rounded,
+                                      color: colors.primary,
+                                      size: 22,
+                                    ),
                                   ),
-                            ),
-                            Text(
-                              'planning_for_a_longer_trip_Add_more_hours_and_enjoy_the_ride'
-                                  .tr(),
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    fontFamily: FlutterFlowTheme.of(context)
-                                        .bodyMediumFamily,
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryText,
-                                    fontSize: 13.0,
-                                    letterSpacing: 0.0,
-                                    useGoogleFonts:
-                                        !FlutterFlowTheme.of(context)
-                                            .bodyMediumIsCustom,
+                                  const SizedBox(width: DsSpacing.sm),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Need extra hours?'.tr(),
+                                          style: typography.titleMedium
+                                              .copyWith(
+                                            color: colors.primary,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'planning_for_a_longer_trip_Add_more_hours_and_enjoy_the_ride'
+                                              .tr(),
+                                          style: typography.bodySmall.copyWith(
+                                            color: colors.textSecondary,
+                                            height: 1.35,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                            ),
-                            // Drive time shorter than tour booking is normal —
-                            // show informational ETA, not a red blocker warning.
-                            if (_tripTimeHours != null)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 12.0, horizontal: 16),
-                                child: Container(
+                                ],
+                              ),
+                              if (_tripTimeHours != null) ...[
+                                const SizedBox(height: DsSpacing.sm),
+                                Container(
                                   width: double.infinity,
-                                  padding: const EdgeInsets.all(16),
+                                  padding: const EdgeInsets.all(DsSpacing.sm),
                                   decoration: BoxDecoration(
-                                    color: FlutterFlowTheme.of(context)
-                                        .primary
-                                        .withOpacity(0.08),
-                                    borderRadius: BorderRadius.circular(14),
+                                    color: colors.primarySoft,
+                                    borderRadius: DsRadius.medium,
                                     border: Border.all(
-                                      color: FlutterFlowTheme.of(context)
-                                          .primary
-                                          .withOpacity(0.35),
-                                      width: 1.0,
+                                      color: colors.primary
+                                          .withValues(alpha: 0.28),
                                     ),
                                   ),
                                   child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
                                     children: [
                                       Icon(
                                         Icons.route_outlined,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        size: 28,
+                                        color: colors.primary,
+                                        size: 20,
                                       ),
-                                      const SizedBox(width: 12),
+                                      const SizedBox(width: DsSpacing.sm),
                                       Expanded(
                                         child: Text(
                                           'checkout_estimated_drive_info'.tr(
@@ -1765,286 +1963,128 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                               'time': _formatTripTime(),
                                             },
                                           ),
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primaryText,
-                                              ),
+                                          style: typography.bodySmall.copyWith(
+                                            color: colors.textPrimary,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'checkout_base_booking_duration'.tr(),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodySmall
-                                          .override(
-                                            fontFamily:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodySmallFamily,
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryText,
-                                            fontSize: 11.0,
-                                            letterSpacing: 0.0,
-                                            useGoogleFonts:
-                                                !FlutterFlowTheme.of(context)
-                                                    .bodySmallIsCustom,
-                                          ),
-                                    ),
-                                    Text(
-                                      NumberFormat.decimalPattern(
-                                        context.locale.toString(),
-                                      ).format(FFAppState().saatcar),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge
-                                          .override(
-                                            fontFamily:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyLargeFamily,
-                                            color: FlutterFlowTheme.of(context)
-                                                .primary,
-                                            fontSize: 11.0,
-                                            letterSpacing: 0.0,
-                                            fontWeight: FontWeight.w600,
-                                            useGoogleFonts:
-                                                !FlutterFlowTheme.of(context)
-                                                    .bodyLargeIsCustom,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                                ),
-                                Flexible(
-                                  child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsetsDirectional.fromSTEB(
-                                              8.0, 0.0, 8.0, 0.0),
-                                      child: Text(
-                                        'checkout_extra_booking_duration'.tr(),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodySmall
-                                            .override(
-                                              fontFamily:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodySmallFamily,
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryText,
-                                              fontSize: 11.0,
-                                              letterSpacing: 0.0,
-                                              useGoogleFonts:
-                                                  !FlutterFlowTheme.of(context)
-                                                      .bodySmallIsCustom,
-                                            ),
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: 120.0,
-                                          height: 40.0,
-                                          decoration: BoxDecoration(
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryBackground,
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            shape: BoxShape.rectangle,
-                                          ),
-                                          child: FlutterFlowCountController(
-                                            decrementIconBuilder: (enabled) =>
-                                                Icon(
-                                              Icons.remove_rounded,
-                                              color: enabled
-                                                  ? FlutterFlowTheme.of(context)
-                                                      .secondaryText
-                                                  : FlutterFlowTheme.of(context)
-                                                      .alternate,
-                                              size: 18.0,
-                                            ),
-                                            incrementIconBuilder: (enabled) =>
-                                                Icon(
-                                              Icons.add_rounded,
-                                              color: enabled
-                                                  ? FlutterFlowTheme.of(context)
-                                                      .primary
-                                                  : FlutterFlowTheme.of(context)
-                                                      .alternate,
-                                              size: 18.0,
-                                            ),
-                                            countBuilder: (count) => Text(
-                                              count.toString(),
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .titleLarge
-                                                  .override(
-                                                    fontFamily:
-                                                        FlutterFlowTheme.of(
-                                                                context)
-                                                            .titleLargeFamily,
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primary,
-                                                    fontSize: 18.0,
-                                                    letterSpacing: 0.0,
-                                                    shadows: [
-                                                      Shadow(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .alternate,
-                                                        offset: const Offset(
-                                                            2.0, 2.0),
-                                                        blurRadius: 2.0,
-                                                      )
-                                                    ],
-                                                    useGoogleFonts:
-                                                        !FlutterFlowTheme.of(
-                                                                context)
-                                                            .titleLargeIsCustom,
-                                                  ),
-                                            ),
-                                            count: _model
-                                                .countControllerValue ??= 0,
-                                            updateCount: (count) async {
-                                              final extra = count.clamp(0, 300);
-                                              safeSetState(() =>
-                                                  _model.countControllerValue = extra);
-                                              // MUST set hours BEFORE recalculate — previous
-                                              // code called touryRecalculateCheckoutPrice with
-                                              // stale addhors then returned early when consistent.
-                                              FFAppState().update(() {
-                                                FFAppState().addhors = extra;
-                                                FFAppState().totalsaat =
-                                                    FFAppState().saatcar + extra;
-                                              });
-                                              touryRecalculateCheckoutPrice();
-                                              safeSetState(() {});
-                                            },
-stepSize: 1,
-                                            minimum: 0,
-                                            maximum: 300,
-                                            contentPadding:
-                                                const EdgeInsetsDirectional
-                                                    .fromSTEB(
-                                                    12.0, 0.0, 12.0, 0.0),
-                                          ),
-                                        ),
-                                      ].divide(const SizedBox(width: 8.0)),
-                                    ),
-                                  ],
-                                ),
-                                ),
-                              ].divide(const SizedBox(width: 12.0)),
-                            ),
-                            if (FFAppState().NsbhKsm >= 1.0)
+                              ],
+                              const SizedBox(height: DsSpacing.md),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Expanded(
-                                    flex: 1,
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsetsDirectional.fromSTEB(
-                                              4.0, 0.0, 4.0, 0.0),
-                                      child: Icon(
-                                        Icons.local_offer,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        size: 10.0,
+                                    child: _extraHoursMetricTile(
+                                      label: 'checkout_base_booking_duration'
+                                          .tr(),
+                                      value: Text(
+                                        baseHours,
+                                        style: typography.headlineSmall
+                                            .copyWith(
+                                          color: colors.primary,
+                                          fontWeight: FontWeight.w800,
+                                        ),
                                       ),
                                     ),
                                   ),
+                                  const SizedBox(width: DsSpacing.sm),
                                   Expanded(
-                                    flex: 7,
-                                    child: Text(
-                                      FFLocalizations.of(context)
-                                          .getVariableText(
-                                        enText: 'You get a  ${formatNumber(
-                                          FFAppState().NsbhKsm,
-                                          formatType: FormatType.percent,
-                                        )}  discount for each additional hour you add, up to a maximum of  ${FFAppState().UbKsm.toString()}${FFAppState().RMZCurrency}',
-                                        arText: 'checkout_extra_hour_discount'
-                                            .tr(namedArgs: {
-                                          'percent':
-                                              FFAppState().NsbhKsm.toString(),
-                                          'max': FFAppState().UbKsm.toString(),
-                                          'currency': FFAppState().RMZCurrency,
-                                        }),
-                                        zh_HansText: 'You get a  ${formatNumber(
-                                          FFAppState().NsbhKsm,
-                                          formatType: FormatType.percent,
-                                        )}  discount for each additional hour you add, up to a maximum of  ${FFAppState().UbKsm.toString()}${FFAppState().RMZCurrency}',
-                                        trText: 'You get a  ${formatNumber(
-                                          FFAppState().NsbhKsm,
-                                          formatType: FormatType.percent,
-                                        )}  discount for each additional hour you add, up to a maximum of  ${FFAppState().UbKsm.toString()}${FFAppState().RMZCurrency}',
-                                        urText: 'You get a  ${formatNumber(
-                                          FFAppState().NsbhKsm,
-                                          formatType: FormatType.percent,
-                                        )}  discount for each additional hour you add, up to a maximum of  ${FFAppState().UbKsm.toString()}${FFAppState().RMZCurrency}',
-                                        ruText: 'You get a  ${formatNumber(
-                                          FFAppState().NsbhKsm,
-                                          formatType: FormatType.percent,
-                                        )}  discount for each additional hour you add, up to a maximum of  ${FFAppState().UbKsm.toString()}${FFAppState().RMZCurrency}',
-                                        azText: 'You get a  ${formatNumber(
-                                          FFAppState().NsbhKsm,
-                                          formatType: FormatType.percent,
-                                        )}  discount for each additional hour you add, up to a maximum of  ${FFAppState().UbKsm.toString()}${FFAppState().RMZCurrency}',
-                                        kaText: 'You get a  ${formatNumber(
-                                          FFAppState().NsbhKsm,
-                                          formatType: FormatType.percent,
-                                        )}  discount for each additional hour you add, up to a maximum of  ${FFAppState().UbKsm.toString()}${FFAppState().RMZCurrency}',
-                                      ),
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .override(
-                                            fontFamily:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMediumFamily,
-                                            color: FlutterFlowTheme.of(context)
-                                                .primary,
-                                            fontSize: 10.0,
-                                            letterSpacing: 0.0,
-                                            useGoogleFonts:
-                                                !FlutterFlowTheme.of(context)
-                                                    .bodyMediumIsCustom,
-                                          ),
+                                    child: _extraHoursMetricTile(
+                                      label: 'checkout_extra_booking_duration'
+                                          .tr(),
+                                      value: _extraHoursStepper(),
                                     ),
                                   ),
                                 ],
                               ),
-                            Divider(
-                              thickness: 1.0,
-                              color: FlutterFlowTheme.of(context).alternate,
-                            ),
-                          ].divide(const SizedBox(height: 12.0)),
-                        ),
+                              const SizedBox(height: DsSpacing.sm),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: DsSpacing.md,
+                                  vertical: DsSpacing.sm,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.primary
+                                      .withValues(alpha: 0.08),
+                                  borderRadius: DsRadius.medium,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.timelapse_rounded,
+                                      size: 18,
+                                      color: colors.primary,
+                                    ),
+                                    const SizedBox(width: DsSpacing.xs),
+                                    Expanded(
+                                      child: Text(
+                                        'Total number of hours: '.tr(),
+                                        style: typography.labelMedium.copyWith(
+                                          color: colors.textSecondary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      totalHours,
+                                      style: typography.titleMedium.copyWith(
+                                        color: colors.primary,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (FFAppState().NsbhKsm >= 1.0) ...[
+                                const SizedBox(height: DsSpacing.sm),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(DsSpacing.sm),
+                                  decoration: BoxDecoration(
+                                    color: colors.primarySoft,
+                                    borderRadius: DsRadius.medium,
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        Icons.local_offer_rounded,
+                                        color: colors.primary,
+                                        size: 16,
+                                      ),
+                                      const SizedBox(width: DsSpacing.xs),
+                                      Expanded(
+                                        child: Text(
+                                          'checkout_extra_hour_discount'.tr(
+                                            namedArgs: {
+                                              'percent': FFAppState()
+                                                  .NsbhKsm
+                                                  .toString(),
+                                              'max':
+                                                  FFAppState().UbKsm.toString(),
+                                              'currency':
+                                                  FFAppState().RMZCurrency,
+                                            },
+                                          ),
+                                          style: typography.bodySmall.copyWith(
+                                            color: colors.primary,
+                                            fontWeight: FontWeight.w600,
+                                            height: 1.35,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ],
+                          );
+                        },
                       ),
                     ).animateOnPageLoad(
                         animationsMap['containerOnPageLoadAnimation1']!),
@@ -2052,18 +2092,50 @@ stepSize: 1,
                 if (FFAppState().addcart >= 1)
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(
-                        16.0, 10.0, 0.0, 0.0),
-                    child: Text(
-                      FFLocalizations.of(context).getText(
-                        '3im46sag' /* List of added locations. */,
-                      ),
-                      style: FlutterFlowTheme.of(context).labelMedium.override(
-                            fontFamily:
-                                FlutterFlowTheme.of(context).labelMediumFamily,
-                            letterSpacing: 0.0,
-                            useGoogleFonts: !FlutterFlowTheme.of(context)
-                                .labelMediumIsCustom,
+                        DsSpacing.md, DsSpacing.md, DsSpacing.md, DsSpacing.xs),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: DsColors.of(context).primarySoft,
+                            borderRadius: DsRadius.medium,
                           ),
+                          child: Icon(
+                            Icons.route_rounded,
+                            color: DsColors.of(context).primary,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: DsSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            FFLocalizations.of(context).getText(
+                              '3im46sag' /* List of added locations. */,
+                            ),
+                            style: DsTypography.of(context).titleSmall.copyWith(
+                                  color: DsColors.of(context).textPrimary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: DsColors.of(context).primarySoft,
+                            borderRadius: DsRadius.pill,
+                          ),
+                          child: Text(
+                            '${FFAppState().cartmkss.length}',
+                            style: DsTypography.of(context).labelMedium.copyWith(
+                                  color: DsColors.of(context).primary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 if ((FFAppState().addcart <= 0) && (FFAppState().typeHgz != 2))
@@ -2177,122 +2249,141 @@ stepSize: 1,
                   Builder(
                     builder: (context) {
                       final mkss = FFAppState().cartmkss.toList();
+                      final colors = DsColors.of(context);
+                      final typography = DsTypography.of(context);
 
-                      return SingleChildScrollView(
+                      return Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            DsSpacing.md, DsSpacing.xs, DsSpacing.md, 0),
                         child: Column(
                           children: List.generate(mkss.length, (mkssIndex) {
                             final mkssItem = mkss[mkssIndex];
-                            return ListView(
-                              padding: EdgeInsets.zero,
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      12.0, 8.0, 8.0, 8.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                        padding: const EdgeInsetsDirectional
-                                            .fromSTEB(12.0, 0.0, 0.0, 0.0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                      0.0, 0.0, 0.0, 8.0),
-                                              child: Text(
-                                                mkssItem.naim,
-                                                maxLines: 2,
-                                                overflow:
-                                                    TextOverflow.ellipsis,
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelLarge
-                                                        .override(
-                                                          fontFamily:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .labelLargeFamily,
-                                                          fontSize: 15.0,
-                                                          letterSpacing: 0.0,
-                                                          useGoogleFonts:
-                                                              !FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .labelLargeIsCustom,
-                                                        ),
-                                              ),
+                            final subtitle = mkssItem.textivill.trim();
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                bottom: mkssIndex == mkss.length - 1
+                                    ? 0
+                                    : DsSpacing.sm,
+                              ),
+                              child: DsCard(
+                                elevated: true,
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                  DsSpacing.md,
+                                  DsSpacing.sm + 2,
+                                  DsSpacing.sm,
+                                  DsSpacing.sm + 2,
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: colors.primarySoft,
+                                        borderRadius: DsRadius.medium,
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        '${mkssIndex + 1}',
+                                        style: typography.titleSmall.copyWith(
+                                          color: colors.primary,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: DsSpacing.sm),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            mkssItem.naim,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style:
+                                                typography.titleSmall.copyWith(
+                                              color: colors.textPrimary,
+                                              fontWeight: FontWeight.w700,
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                      0.0, 0.0, 0.0, 8.0),
-                                              child: Text(
-                                                mkssItem.textivill,
-                                                maxLines: 1,
-                                                overflow:
-                                                    TextOverflow.ellipsis,
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .labelLarge
-                                                        .override(
-                                                          fontFamily:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .labelLargeFamily,
-                                                          fontSize: 12.0,
-                                                          letterSpacing: 0.0,
-                                                          useGoogleFonts:
-                                                              !FlutterFlowTheme
-                                                                      .of(context)
-                                                                  .labelLargeIsCustom,
-                                                        ),
-                                              ),
+                                          ),
+                                          if (subtitle.isNotEmpty) ...[
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.place_outlined,
+                                                  size: 14,
+                                                  color: colors.textSecondary,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Expanded(
+                                                  child: Text(
+                                                    subtitle,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: typography.bodySmall
+                                                        .copyWith(
+                                                      color:
+                                                          colors.textSecondary,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
-                                        ),
+                                        ],
                                       ),
-                                      ),
-                                      FlutterFlowIconButton(
-                                        borderColor: Colors.transparent,
-                                        borderRadius: 30.0,
-                                        borderWidth: 1.0,
-                                        buttonSize: 40.0,
-                                        icon: Icon(
-                                          Icons.delete_outline_rounded,
-                                          color: FlutterFlowTheme.of(context)
-                                              .error,
-                                          size: 20.0,
-                                        ),
-                                        onPressed: () async {
-                                          FFAppState()
-                                              .removeFromCartmkss(mkssItem);
-                                          FFAppState().addcart =
-                                              FFAppState().addcart + -1;
-                                          FFAppState().Minimumhours =
-                                              (FFAppState().addcart / 2)
-                                                  .toInt();
-                                          final mkanRef = mkssItem.revmkan;
-                                          if (mkanRef != null) {
-                                            FFAppState()
-                                                .removeFromMkan(mkanRef);
-                                          }
-                                          FFAppState().update(() {});
+                                    ),
+                                    const SizedBox(width: DsSpacing.xs),
+                                    Material(
+                                      color: colors.error
+                                          .withValues(alpha: 0.10),
+                                      borderRadius: DsRadius.medium,
+                                      child: InkWell(
+                                        borderRadius: DsRadius.medium,
+                                        onTap: () async {
+                                          touryRemoveLandmarkFromCart(
+                                            context: context,
+                                            item: mkssItem,
+                                            onChanged: () {
+                                              safeSetState(() {});
+                                              _maybeRecalcRouteAfterCartChange();
+                                            },
+                                          );
                                         },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 10,
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.delete_outline_rounded,
+                                                color: colors.error,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                'landmark_remove'.tr(),
+                                                style: typography.labelMedium
+                                                    .copyWith(
+                                                  color: colors.error,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             );
                           }),
                         ),
@@ -2516,6 +2607,11 @@ stepSize: 1,
                                             return;
                                           }
 
+                                          if (await touryBlockIfActiveBooking(
+                                              context)) {
+                                            return;
+                                          }
+
                                           setState(() => _isPaying = true);
                                           try {
                                             final carRef =
@@ -2623,6 +2719,10 @@ stepSize: 1,
                                     if (!touryCheckoutReadyForBooking()) {
                                       await TouryDialogs.showSelectAllOptions(
                                           context);
+                                      return;
+                                    }
+                                    if (await touryBlockIfActiveBooking(
+                                        context)) {
                                       return;
                                     }
                                     await Future.wait([
@@ -2817,6 +2917,11 @@ stepSize: 1,
                                     if (!touryCheckoutReadyForBooking()) {
                                       await TouryDialogs.showSelectAllOptions(
                                           context);
+                                      return;
+                                    }
+
+                                    if (await touryBlockIfActiveBooking(
+                                        context)) {
                                       return;
                                     }
 

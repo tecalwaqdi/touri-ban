@@ -5,6 +5,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/core/toury_content_locale.dart';
 import '/core/toury_mkan_i18n.dart';
 import '/core/toury_landmark_filter.dart';
+import '/core/toury_landmark_cart.dart';
 import '/core/toury_landmark_categories.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
@@ -168,6 +169,61 @@ class _ListViWidgetState extends State<ListViWidget>
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (mounted) safeSetState(() {});
     });
+  }
+
+  Future<void> _addLandmarkToTrip(MkanRecord record) async {
+    touryAddLandmarkToCart(
+      context: context,
+      record: record,
+      onChanged: _refreshCartBadgeDeferred,
+    );
+  }
+
+  /// Compact, brand-styled Add control for landmark cards.
+  Widget _landmarkAddButton(Future<void> Function() onAdd) {
+    final colors = DsColors.of(context);
+    final typography = DsTypography.of(context);
+    return Material(
+      color: colors.primary,
+      elevation: 2,
+      shadowColor: colors.primary.withValues(alpha: 0.35),
+      borderRadius: DsRadius.medium,
+      child: InkWell(
+        borderRadius: DsRadius.medium,
+        onTap: () async => onAdd(),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(12, 9, 14, 9),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: colors.onPrimary.withValues(alpha: 0.18),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Icon(
+                  Icons.add_rounded,
+                  size: 16,
+                  color: colors.onPrimary,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Add'.tr(),
+                style: typography.labelMedium.copyWith(
+                  color: colors.onPrimary,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.1,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _onAppVillageChanged() {
@@ -2070,148 +2126,9 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                 ],
                                                                               ),
                                                                               ),
-                                                                              Row(
-                                                                                mainAxisSize:
-                                                                                    MainAxisSize.min,
-                                                                                children: [
-                                                                                  FlutterFlowIconButton(
-                                                                                    borderRadius: 6.0,
-                                                                                    buttonSize: 33.0,
-                                                                                    icon: Icon(
-                                                                                      Icons.add_circle,
-                                                                                      color: FlutterFlowTheme.of(context).error,
-                                                                                      size: 12.0,
-                                                                                    ),
-                                                                                    onPressed: () async {
-                                                                                      if (touryLandmarkAlreadyInCart(listViewMkanRecord.reference)) {
-                                                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                                                          SnackBar(
-                                                                                            content: Text(
-                                                                                              'landmark_already_in_cart'.tr(),
-                                                                                              style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                    fontFamily: 'cairo',
-                                                                                                    color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                    letterSpacing: 0.0,
-                                                                                                  ),
-                                                                                            ),
-                                                                                            duration: const Duration(milliseconds: 4000),
-                                                                                            backgroundColor: FlutterFlowTheme.of(context).error,
-                                                                                          ),
-                                                                                        );
-                                                                                      } else {
-                                                                                        FFAppState().addcart = FFAppState().addcart + 1;
-                                                                                        FFAppState().addToCartmkss(AmaknCostmStruct(
-                                                                                          naim: touryMkanName(context, listViewMkanRecord),
-                                                                                          textivill: touryLandmarkCartSubtitle(listViewMkanRecord),
-                                                                                          loceshn: listViewMkanRecord.location,
-                                                                                          revmkan: listViewMkanRecord.reference,
-                                                                                        ));
-                                                                                        FFAppState().dataSchedule = getCurrentTimestamp;
-                                                                                        FFAppState().fulltextSchedule = 'instant_booking'.tr();
-                                                                                        FFAppState().textallAlmdn = (String var1, String var2) {
-                                                                                          return "$var1 $var2";
-                                                                                        }(FFAppState().textallAlmdn, FFAppState().naimvillatext);
-                                                                                        FFAppState().addToMkan(listViewMkanRecord.reference);
-                                                                                        _refreshCartBadgeDeferred();
-                                                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                                                          SnackBar(
-                                                                                            content: Text(
-                                                                                              'landmark_added_success'.tr(namedArgs: {'name': touryMkanName(context, listViewMkanRecord)}),
-                                                                                              style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                    fontFamily: FlutterFlowTheme.of(context).labelMediumFamily,
-                                                                                                    color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                    letterSpacing: 0.0,
-                                                                                                    useGoogleFonts: !FlutterFlowTheme.of(context).labelMediumIsCustom,
-                                                                                                  ),
-                                                                                            ),
-                                                                                            duration: const Duration(milliseconds: 4000),
-                                                                                            backgroundColor: FlutterFlowTheme.of(context).primary,
-                                                                                            action: SnackBarAction(
-                                                                                              label: 'view_my_trip'.tr(),
-                                                                                              textColor: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                              onPressed: () async {
-                                                                                                touryOpenCheckout(context);
-                                                                                              },
-                                                                                            ),
-                                                                                          ),
-                                                                                        );
-                                                                                      }
-                                                                                    },
-                                                                                  ),
-                                                                                  InkWell(
-                                                                                    splashColor: Colors.transparent,
-                                                                                    focusColor: Colors.transparent,
-                                                                                    hoverColor: Colors.transparent,
-                                                                                    highlightColor: Colors.transparent,
-                                                                                    onTap: () async {
-                                                                                      if (touryLandmarkAlreadyInCart(listViewMkanRecord.reference)) {
-                                                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                                                          SnackBar(
-                                                                                            content: Text(
-                                                                                              'landmark_already_in_cart'.tr(),
-                                                                                              style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                    fontFamily: 'cairo',
-                                                                                                    color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                    letterSpacing: 0.0,
-                                                                                                  ),
-                                                                                            ),
-                                                                                            duration: const Duration(milliseconds: 4000),
-                                                                                            backgroundColor: FlutterFlowTheme.of(context).error,
-                                                                                          ),
-                                                                                        );
-                                                                                      } else {
-                                                                                        FFAppState().addcart = FFAppState().addcart + 1;
-                                                                                        FFAppState().addToCartmkss(AmaknCostmStruct(
-                                                                                          naim: touryMkanName(context, listViewMkanRecord),
-                                                                                          textivill: touryLandmarkCartSubtitle(listViewMkanRecord),
-                                                                                          loceshn: listViewMkanRecord.location,
-                                                                                          revmkan: listViewMkanRecord.reference,
-                                                                                        ));
-                                                                                        FFAppState().dataSchedule = getCurrentTimestamp;
-                                                                                        FFAppState().fulltextSchedule = 'instant_booking'.tr();
-                                                                                        FFAppState().textallAlmdn = (String var1, String var2) {
-                                                                                          return "$var1 $var2";
-                                                                                        }(FFAppState().textallAlmdn, FFAppState().naimvillatext);
-                                                                                        FFAppState().addToMkan(listViewMkanRecord.reference);
-                                                                                        _refreshCartBadgeDeferred();
-                                                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                                                          SnackBar(
-                                                                                            content: Text(
-                                                                                              'landmark_added_success'.tr(namedArgs: {'name': touryMkanName(context, listViewMkanRecord)}),
-                                                                                              style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                    fontFamily: FlutterFlowTheme.of(context).labelMediumFamily,
-                                                                                                    color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                    letterSpacing: 0.0,
-                                                                                                    useGoogleFonts: !FlutterFlowTheme.of(context).labelMediumIsCustom,
-                                                                                                  ),
-                                                                                            ),
-                                                                                            duration: const Duration(milliseconds: 4000),
-                                                                                            backgroundColor: FlutterFlowTheme.of(context).primary,
-                                                                                            action: SnackBarAction(
-                                                                                              label: 'view_my_trip'.tr(),
-                                                                                              textColor: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                              onPressed: () async {
-                                                                                                touryOpenCheckout(context);
-                                                                                              },
-                                                                                            ),
-                                                                                          ),
-                                                                                        );
-                                                                                        FFAppState().akrLoceshn = listViewMkanRecord.location;
-                                                                                        safeSetState(() {});
-                                                                                      }
-                                                                                    },
-                                                                                    child: Text(
-                                                                                    "Add".tr(),
-                                                                                      style: FlutterFlowTheme.of(context).bodyMedium.override(
-                                                                                            fontFamily: FlutterFlowTheme.of(context).bodyMediumFamily,
-                                                                                            color: FlutterFlowTheme.of(context).error,
-                                                                                            fontSize: 12.0,
-                                                                                            letterSpacing: 0.0,
-                                                                                            useGoogleFonts: !FlutterFlowTheme.of(context).bodyMediumIsCustom,
-                                                                                          ),
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
+                                                                              _landmarkAddButton(
+                                                                                () => _addLandmarkToTrip(
+                                                                                    listViewMkanRecord),
                                                                               ),
                                                                             ],
                                                                           ),
@@ -2932,168 +2849,9 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                     ],
                                                                                   ),
                                                                                 ),
-                                                                                InkWell(
-                                                                                  splashColor: Colors.transparent,
-                                                                                  focusColor: Colors.transparent,
-                                                                                  hoverColor: Colors.transparent,
-                                                                                  highlightColor: Colors.transparent,
-                                                                                  onTap: () async {
-                                                                                    if (touryLandmarkAlreadyInCart(listViewAllMkanRecord.reference)) {
-                                                                                      ScaffoldMessenger.of(context).showSnackBar(
-                                                                                        SnackBar(
-                                                                                          content: Text(
-                                                                                            'landmark_already_in_cart'.tr(),
-                                                                                            style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                  fontFamily: 'cairo',
-                                                                                                  color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                  letterSpacing: 0.0,
-                                                                                                ),
-                                                                                          ),
-                                                                                          duration: const Duration(milliseconds: 4000),
-                                                                                          backgroundColor: FlutterFlowTheme.of(context).error,
-                                                                                        ),
-                                                                                      );
-                                                                                    } else {
-                                                                                      FFAppState().addcart = FFAppState().addcart + 1;
-                                                                                      FFAppState().addToCartmkss(AmaknCostmStruct(
-                                                                                        naim: touryMkanName(context, listViewAllMkanRecord),
-                                                                                        textivill: touryLandmarkCartSubtitle(listViewAllMkanRecord),
-                                                                                        loceshn: listViewAllMkanRecord.location,
-                                                                                        revmkan: listViewAllMkanRecord.reference,
-                                                                                      ));
-                                                                                      FFAppState().dataSchedule = getCurrentTimestamp;
-                                                                                      FFAppState().fulltextSchedule = 'instant_booking'.tr();
-                                                                                      FFAppState().textallAlmdn = (String var1, String var2) {
-                                                                                        return "$var1 $var2";
-                                                                                      }(FFAppState().textallAlmdn, FFAppState().naimvillatext);
-                                                                                      FFAppState().addToMkan(listViewAllMkanRecord.reference);
-                                                                                      _refreshCartBadgeDeferred();
-                                                                                      ScaffoldMessenger.of(context).showSnackBar(
-                                                                                        SnackBar(
-                                                                                          content: Text(
-                                                                                            'landmark_added_success'.tr(namedArgs: {'name': touryMkanName(context, listViewAllMkanRecord)}),
-                                                                                            style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                  fontFamily: FlutterFlowTheme.of(context).labelMediumFamily,
-                                                                                                  color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                  letterSpacing: 0.0,
-                                                                                                  useGoogleFonts: !FlutterFlowTheme.of(context).labelMediumIsCustom,
-                                                                                                ),
-                                                                                          ),
-                                                                                          duration: const Duration(milliseconds: 4000),
-                                                                                          backgroundColor: FlutterFlowTheme.of(context).primary,
-                                                                                          action: SnackBarAction(
-                                                                                            label: 'view_my_trip'.tr(),
-                                                                                            textColor: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                            onPressed: () async {
-                                                                                              touryOpenCheckout(context);
-                                                                                            },
-                                                                                          ),
-                                                                                        ),
-                                                                                      );
-                                                                                    }
-                                                                                  },
-                                                                                  child: Container(
-                                                                                    height: 35.0,
-                                                                                    constraints: const BoxConstraints(minWidth: 72, maxWidth: 110),
-                                                                                    decoration: BoxDecoration(
-                                                                                      color: FlutterFlowTheme.of(context).error,
-                                                                                      borderRadius: BorderRadius.circular(12.0),
-                                                                                    ),
-                                                                                    alignment: const AlignmentDirectional(0.0, 0.0),
-                                                                                    child: Padding(
-                                                                                      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 10.0, 0.0),
-                                                                                      child: Row(
-                                                                                        mainAxisSize: MainAxisSize.max,
-                                                                                        children: [
-                                                                                          FlutterFlowIconButton(
-                                                                                            borderRadius: 8.0,
-                                                                                            borderWidth: 1.0,
-                                                                                            buttonSize: 31.7,
-                                                                                            fillColor: FlutterFlowTheme.of(context).error,
-                                                                                            icon: Icon(
-                                                                                              Icons.add,
-                                                                                              color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                              size: 12.0,
-                                                                                            ),
-                                                                                            onPressed: () async {
-                                                                                              if (touryLandmarkAlreadyInCart(listViewAllMkanRecord.reference)) {
-                                                                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                                                                  SnackBar(
-                                                                                                    content: Text(
-                                                                                                      'landmark_already_in_cart'.tr(),
-                                                                                                      style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                            fontFamily: 'cairo',
-                                                                                                            color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                            letterSpacing: 0.0,
-                                                                                                          ),
-                                                                                                    ),
-                                                                                                    duration: const Duration(milliseconds: 4000),
-                                                                                                    backgroundColor: FlutterFlowTheme.of(context).error,
-                                                                                                  ),
-                                                                                                );
-                                                                                              } else {
-                                                                                                FFAppState().addcart = FFAppState().addcart + 1;
-                                                                                                FFAppState().addToCartmkss(AmaknCostmStruct(
-                                                                                                  naim: touryMkanName(context, listViewAllMkanRecord),
-                                                                                                  textivill: touryLandmarkCartSubtitle(listViewAllMkanRecord),
-                                                                                                  loceshn: listViewAllMkanRecord.location,
-                                                                                                  revmkan: listViewAllMkanRecord.reference,
-                                                                                                ));
-                                                                                                FFAppState().dataSchedule = getCurrentTimestamp;
-                                                                                                FFAppState().fulltextSchedule = 'instant_booking'.tr();
-                                                                                                FFAppState().textallAlmdn = (String var1, String var2) {
-                                                                                                  return "$var1 $var2";
-                                                                                                }(FFAppState().textallAlmdn, FFAppState().naimvillatext);
-                                                                                                FFAppState().addToMkan(listViewAllMkanRecord.reference);
-                                                                                                _refreshCartBadgeDeferred();
-                                                                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                                                                  SnackBar(
-                                                                                                    content: Text(
-                                                                                                      'landmark_added_success'.tr(namedArgs: {'name': touryMkanName(context, listViewAllMkanRecord)}),
-                                                                                                      style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                            fontFamily: FlutterFlowTheme.of(context).labelMediumFamily,
-                                                                                                            color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                            letterSpacing: 0.0,
-                                                                                                            useGoogleFonts: !FlutterFlowTheme.of(context).labelMediumIsCustom,
-                                                                                                          ),
-                                                                                                    ),
-                                                                                                    duration: const Duration(milliseconds: 4000),
-                                                                                                    backgroundColor: FlutterFlowTheme.of(context).primary,
-                                                                                                    action: SnackBarAction(
-                                                                                                      label: 'view_my_trip'.tr(),
-                                                                                                      textColor: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                      onPressed: () async {
-                                                                                                        touryOpenCheckout(context);
-                                                                                                      },
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                );
-                                                                                              }
-                                                                                            },
-                                                                                          ),
-                                                                                          Flexible(
-                                                                                            child: Padding(
-                                                                                            padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 2.0, 0.0),
-                                                                                            child: Text(
-                                                                                              FFLocalizations.of(context).getText(
-                                                                                                'y1rt0m4k' /* Add */,
-                                                                                              ),
-                                                                                              maxLines: 1,
-                                                                                              overflow: TextOverflow.ellipsis,
-                                                                                              style: FlutterFlowTheme.of(context).bodyMedium.override(
-                                                                                                    fontFamily: FlutterFlowTheme.of(context).bodyMediumFamily,
-                                                                                                    color: FlutterFlowTheme.of(context).info,
-                                                                                                    fontSize: 11.0,
-                                                                                                    letterSpacing: 0.0,
-                                                                                                    useGoogleFonts: !FlutterFlowTheme.of(context).bodyMediumIsCustom,
-                                                                                                  ),
-                                                                                            ),
-                                                                                          ),
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
+                                                                                _landmarkAddButton(
+                                                                                  () => _addLandmarkToTrip(
+                                                                                      listViewAllMkanRecord),
                                                                                 ),
                                                                               ],
                                                                             ),
@@ -3331,147 +3089,9 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                     ],
                                                                                   ),
                                                                                 ),
-                                                                                InkWell(
-                                                                                  splashColor: Colors.transparent,
-                                                                                  focusColor: Colors.transparent,
-                                                                                  hoverColor: Colors.transparent,
-                                                                                  highlightColor: Colors.transparent,
-                                                                                  onTap: () async {
-                                                                                    if (touryLandmarkAlreadyInCart(listViewMkanRecord.reference)) {
-                                                                                      ScaffoldMessenger.of(context).showSnackBar(
-                                                                                        SnackBar(
-                                                                                          content: Text(
-                                                                                            'landmark_already_in_cart'.tr(),
-                                                                                            style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                  fontFamily: 'cairo',
-                                                                                                  color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                  letterSpacing: 0.0,
-                                                                                                ),
-                                                                                          ),
-                                                                                          duration: const Duration(milliseconds: 4000),
-                                                                                          backgroundColor: FlutterFlowTheme.of(context).error,
-                                                                                        ),
-                                                                                      );
-                                                                                    } else {
-                                                                                      FFAppState().addcart = FFAppState().addcart + 1;
-                                                                                      FFAppState().addToCartmkss(AmaknCostmStruct(
-                                                                                        naim: touryMkanName(context, listViewMkanRecord),
-                                                                                        textivill: touryLandmarkCartSubtitle(listViewMkanRecord),
-                                                                                        loceshn: listViewMkanRecord.location,
-                                                                                        revmkan: listViewMkanRecord.reference,
-                                                                                      ));
-                                                                                      FFAppState().dataSchedule = getCurrentTimestamp;
-                                                                                      FFAppState().fulltextSchedule = 'instant_booking'.tr();
-                                                                                      FFAppState().textallAlmdn = (String var1, String var2) {
-                                                                                        return "$var1 $var2";
-                                                                                      }(FFAppState().textallAlmdn, FFAppState().naimvillatext);
-                                                                                      FFAppState().addToMkan(listViewMkanRecord.reference);
-                                                                                      _refreshCartBadgeDeferred();
-                                                                                      ScaffoldMessenger.of(context).showSnackBar(
-                                                                                        SnackBar(
-                                                                                          content: Text(
-                                                                                            'landmark_added_success'.tr(namedArgs: {'name': touryMkanName(context, listViewMkanRecord)}),
-                                                                                            style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                  fontFamily: FlutterFlowTheme.of(context).labelMediumFamily,
-                                                                                                  color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                  letterSpacing: 0.0,
-                                                                                                  useGoogleFonts: !FlutterFlowTheme.of(context).labelMediumIsCustom,
-                                                                                                ),
-                                                                                          ),
-                                                                                          duration: const Duration(milliseconds: 4000),
-                                                                                          backgroundColor: FlutterFlowTheme.of(context).primary,
-                                                                                          action: SnackBarAction(
-                                                                                            label: 'view_my_trip'.tr(),
-                                                                                            textColor: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                            onPressed: () async {
-                                                                                              touryOpenCheckout(context);
-                                                                                            },
-                                                                                          ),
-                                                                                        ),
-                                                                                      );
-                                                                                    }
-                                                                                  },
-                                                                                  child: Container(
-                                                                                    height: 35.0,
-                                                                                    constraints: const BoxConstraints(minWidth: 72, maxWidth: 110),
-                                                                                    decoration: BoxDecoration(
-                                                                                      color: FlutterFlowTheme.of(context).error,
-                                                                                      borderRadius: BorderRadius.circular(12.0),
-                                                                                    ),
-                                                                                    alignment: const AlignmentDirectional(0.0, 0.0),
-                                                                                    child: Padding(
-                                                                                      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 10.0, 0.0),
-                                                                                      child: Row(
-                                                                                        mainAxisSize: MainAxisSize.max,
-                                                                                        children: [
-                                                                                          FlutterFlowIconButton(
-                                                                                            borderRadius: 8.0,
-                                                                                            borderWidth: 1.0,
-                                                                                            buttonSize: 31.7,
-                                                                                            fillColor: FlutterFlowTheme.of(context).error,
-                                                                                            icon: Icon(
-                                                                                              Icons.add,
-                                                                                              color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                              size: 12.0,
-                                                                                            ),
-                                                                                            onPressed: () async {
-                                                                                              FFAppState().addcart = FFAppState().addcart + 1;
-                                                                                              FFAppState().addToCartmkss(AmaknCostmStruct(
-                                                                                                naim: touryMkanName(context, listViewMkanRecord),
-                                                                                                textivill: touryLandmarkCartSubtitle(listViewMkanRecord),
-                                                                                                loceshn: listViewMkanRecord.location,
-                                                                                              ));
-                                                                                              FFAppState().textallAlmdn = (String var1, String var2) {
-                                                                                                return "$var1 $var2";
-                                                                                              }(FFAppState().textallAlmdn, FFAppState().naimvillatext);
-                                                                                              safeSetState(() {});
-                                                                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                                                                SnackBar(
-                                                                                                  content: Text(
-                                                                                                    'landmark_added_success'.tr(namedArgs: {'name': touryMkanName(context, listViewMkanRecord)}),
-                                                                                                    style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                          fontFamily: FlutterFlowTheme.of(context).labelMediumFamily,
-                                                                                                          color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                          letterSpacing: 0.0,
-                                                                                                          useGoogleFonts: !FlutterFlowTheme.of(context).labelMediumIsCustom,
-                                                                                                        ),
-                                                                                                  ),
-                                                                                                  duration: const Duration(milliseconds: 4000),
-                                                                                                  backgroundColor: FlutterFlowTheme.of(context).primary,
-                                                                                                  action: SnackBarAction(
-                                                                                                    label: 'view_my_trip'.tr(),
-                                                                                                    textColor: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                    onPressed: () async {
-                                                                                                      touryOpenCheckout(context);
-                                                                                                    },
-                                                                                                  ),
-                                                                                                ),
-                                                                                              );
-                                                                                            },
-                                                                                          ),
-                                                                                          Flexible(
-                                                                                            child: Padding(
-                                                                                            padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 2.0, 0.0),
-                                                                                            child: Text(
-                                                                                              FFLocalizations.of(context).getText(
-                                                                                                '3xvjxer6' /* Add */,
-                                                                                              ),
-                                                                                              maxLines: 1,
-                                                                                              overflow: TextOverflow.ellipsis,
-                                                                                              style: FlutterFlowTheme.of(context).bodyMedium.override(
-                                                                                                    fontFamily: FlutterFlowTheme.of(context).bodyMediumFamily,
-                                                                                                    color: FlutterFlowTheme.of(context).info,
-                                                                                                    fontSize: 11.0,
-                                                                                                    letterSpacing: 0.0,
-                                                                                                    useGoogleFonts: !FlutterFlowTheme.of(context).bodyMediumIsCustom,
-                                                                                                  ),
-                                                                                            ),
-                                                                                          ),
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
+                                                                                _landmarkAddButton(
+                                                                                  () => _addLandmarkToTrip(
+                                                                                      listViewMkanRecord),
                                                                                 ),
                                                                               ],
                                                                             ),
@@ -3675,147 +3295,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                                     ],
                                                                                   ),
                                                                                 ),
-                                                                                InkWell(
-                                                                                  splashColor: Colors.transparent,
-                                                                                  focusColor: Colors.transparent,
-                                                                                  hoverColor: Colors.transparent,
-                                                                                  highlightColor: Colors.transparent,
-                                                                                  onTap: () async {
-                                                                                    if (touryLandmarkAlreadyInCart(ssItem.reference)) {
-                                                                                      ScaffoldMessenger.of(context).showSnackBar(
-                                                                                        SnackBar(
-                                                                                          content: Text(
-                                                                                            'landmark_already_in_cart'.tr(),
-                                                                                            style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                  fontFamily: 'cairo',
-                                                                                                  color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                  letterSpacing: 0.0,
-                                                                                                ),
-                                                                                          ),
-                                                                                          duration: const Duration(milliseconds: 4000),
-                                                                                          backgroundColor: FlutterFlowTheme.of(context).error,
-                                                                                        ),
-                                                                                      );
-                                                                                    } else {
-                                                                                      FFAppState().addcart = FFAppState().addcart + 1;
-                                                                                      FFAppState().addToCartmkss(AmaknCostmStruct(
-                                                                                        naim: touryMkanName(context, ssItem),
-                                                                                        textivill: touryLandmarkCartSubtitle(ssItem),
-                                                                                        loceshn: ssItem.location,
-                                                                                        revmkan: ssItem.reference,
-                                                                                      ));
-                                                                                      FFAppState().dataSchedule = getCurrentTimestamp;
-                                                                                      FFAppState().fulltextSchedule = 'instant_booking'.tr();
-                                                                                      FFAppState().textallAlmdn = (String var1, String var2) {
-                                                                                        return "$var1 $var2";
-                                                                                      }(FFAppState().textallAlmdn, FFAppState().naimvillatext);
-                                                                                      FFAppState().addToMkan(ssItem.reference);
-                                                                                      _refreshCartBadgeDeferred();
-                                                                                      ScaffoldMessenger.of(context).showSnackBar(
-                                                                                        SnackBar(
-                                                                                          content: Text(
-                                                                                            'landmark_added_success'.tr(namedArgs: {'name': touryMkanName(context, ssItem)}),
-                                                                                            style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                  fontFamily: FlutterFlowTheme.of(context).labelMediumFamily,
-                                                                                                  color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                  letterSpacing: 0.0,
-                                                                                                  useGoogleFonts: !FlutterFlowTheme.of(context).labelMediumIsCustom,
-                                                                                                ),
-                                                                                          ),
-                                                                                          duration: const Duration(milliseconds: 4000),
-                                                                                          backgroundColor: FlutterFlowTheme.of(context).primary,
-                                                                                          action: SnackBarAction(
-                                                                                            label: 'view_my_trip'.tr(),
-                                                                                            textColor: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                            onPressed: () async {
-                                                                                              touryOpenCheckout(context);
-                                                                                            },
-                                                                                          ),
-                                                                                        ),
-                                                                                      );
-                                                                                    }
-                                                                                  },
-                                                                                  child: Container(
-                                                                                    height: 35.0,
-                                                                                    constraints: const BoxConstraints(minWidth: 72, maxWidth: 110),
-                                                                                    decoration: BoxDecoration(
-                                                                                      color: FlutterFlowTheme.of(context).error,
-                                                                                      borderRadius: BorderRadius.circular(12.0),
-                                                                                    ),
-                                                                                    alignment: const AlignmentDirectional(0.0, 0.0),
-                                                                                    child: Padding(
-                                                                                      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 10.0, 0.0),
-                                                                                      child: Row(
-                                                                                        mainAxisSize: MainAxisSize.max,
-                                                                                        children: [
-                                                                                          FlutterFlowIconButton(
-                                                                                            borderRadius: 8.0,
-                                                                                            borderWidth: 1.0,
-                                                                                            buttonSize: 31.7,
-                                                                                            fillColor: FlutterFlowTheme.of(context).error,
-                                                                                            icon: Icon(
-                                                                                              Icons.add,
-                                                                                              color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                              size: 12.0,
-                                                                                            ),
-                                                                                            onPressed: () async {
-                                                                                              FFAppState().addcart = FFAppState().addcart + 1;
-                                                                                              FFAppState().addToCartmkss(AmaknCostmStruct(
-                                                                                                naim: touryMkanName(context, ssItem),
-                                                                                                textivill: touryLandmarkCartSubtitle(ssItem),
-                                                                                                loceshn: ssItem.location,
-                                                                                              ));
-                                                                                              FFAppState().textallAlmdn = (String var1, String var2) {
-                                                                                                return "$var1 $var2";
-                                                                                              }(FFAppState().textallAlmdn, FFAppState().naimvillatext);
-                                                                                              safeSetState(() {});
-                                                                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                                                                SnackBar(
-                                                                                                  content: Text(
-                                                                                                    'landmark_added_success'.tr(namedArgs: {'name': touryMkanName(context, ssItem)}),
-                                                                                                    style: FlutterFlowTheme.of(context).labelMedium.override(
-                                                                                                          fontFamily: FlutterFlowTheme.of(context).labelMediumFamily,
-                                                                                                          color: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                          letterSpacing: 0.0,
-                                                                                                          useGoogleFonts: !FlutterFlowTheme.of(context).labelMediumIsCustom,
-                                                                                                        ),
-                                                                                                  ),
-                                                                                                  duration: const Duration(milliseconds: 4000),
-                                                                                                  backgroundColor: FlutterFlowTheme.of(context).primary,
-                                                                                                  action: SnackBarAction(
-                                                                                                    label: 'view_my_trip'.tr(),
-                                                                                                    textColor: FlutterFlowTheme.of(context).secondaryBackground,
-                                                                                                    onPressed: () async {
-                                                                                                      touryOpenCheckout(context);
-                                                                                                    },
-                                                                                                  ),
-                                                                                                ),
-                                                                                              );
-                                                                                            },
-                                                                                          ),
-                                                                                          Flexible(
-                                                                                            child: Padding(
-                                                                                            padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 2.0, 0.0),
-                                                                                            child: Text(
-                                                                                              FFLocalizations.of(context).getText(
-                                                                                                'lpknsr86' /* Add */,
-                                                                                              ),
-                                                                                              maxLines: 1,
-                                                                                              overflow: TextOverflow.ellipsis,
-                                                                                              style: FlutterFlowTheme.of(context).bodyMedium.override(
-                                                                                                    fontFamily: FlutterFlowTheme.of(context).bodyMediumFamily,
-                                                                                                    color: FlutterFlowTheme.of(context).info,
-                                                                                                    fontSize: 11.0,
-                                                                                                    letterSpacing: 0.0,
-                                                                                                    useGoogleFonts: !FlutterFlowTheme.of(context).bodyMediumIsCustom,
-                                                                                                  ),
-                                                                                            ),
-                                                                                          ),
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
+                                                                                _landmarkAddButton(
+                                                                                  () => _addLandmarkToTrip(ssItem),
                                                                                 ),
                                                                               ],
                                                                             ),

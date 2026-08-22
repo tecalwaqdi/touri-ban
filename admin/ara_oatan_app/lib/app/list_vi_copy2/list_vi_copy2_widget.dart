@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import '/core/toury_mkan_i18n.dart';
+import '/core/toury_landmark_cart.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/design_system/design_system.dart';
@@ -67,25 +68,10 @@ class _ListViCopy2WidgetState extends State<ListViCopy2Widget> {
   }
 
   void _addLandmarkToCart(MkanRecord record) {
-    FFAppState().addcart = FFAppState().addcart + 1;
-    FFAppState().addToCartmkss(AmaknCostmStruct(
-      naim: touryMkanName(context, record),
-      textivill: '${FFAppState().naimdolh}- ${FFAppState().naimvillatext}',
-      loceshn: record.location,
-    ));
-    FFAppState().textallAlmdn = (String var1, String var2) {
-      return "$var1 $var2";
-    }(FFAppState().textallAlmdn, FFAppState().naimvillatext);
-    safeSetState(() {});
-
-    DsSnackBar.show(
-      context,
-      message: 'landmark_added_success'.tr(namedArgs: {
-        'name': touryMkanName(context, record),
-      }),
-      tone: DsSnackTone.success,
-      actionLabel: 'view_my_trip'.tr(),
-      onAction: () => context.pushNamed(Checkout66Widget.routeName),
+    touryAddLandmarkToCart(
+      context: context,
+      record: record,
+      onChanged: () => safeSetState(() {}),
     );
   }
 

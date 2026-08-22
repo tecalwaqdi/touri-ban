@@ -1,14 +1,15 @@
-import '/backend/admin_country_scope.dart';
+import '/backend/admin_ops_filters.dart';
 import '/backend/backend.dart';
 import '/backend/schema/enums/enums.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_layout_widget.dart';
+import '/components/admin_ops_filter_bar.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'admin_suport_model.dart';
 import '/core/admin_user_facing_errors.dart';
@@ -28,16 +29,12 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
   late AdminSuportModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  String _searchQuery = '';
+  AdminOpsFilterState _filters = const AdminOpsFilterState();
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AdminSuportModel());
-
-    _model.textController ??= TextEditingController();
-    _model.textFieldFocusNode ??= FocusNode();
-
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -48,7 +45,7 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
   }
 
   List<SupportRecord> _filterTickets(List<SupportRecord> tickets) {
-    final q = _searchQuery.trim().toLowerCase();
+    final q = _filters.searchQuery.trim().toLowerCase();
     if (q.isEmpty) return tickets;
 
     return tickets.where((t) {
@@ -66,24 +63,14 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
     required String confirmMessage,
     required String successMessage,
   }) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(uiTr(context, 'تأكيد')),
-            content: Text(confirmMessage),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(uiTr(context, 'نعم')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: uiTr(context, 'تأكيد'),
+      whatHappens: confirmMessage,
+      subject: ticket.naim.isNotEmpty ? ticket.naim : ticket.reference.id,
+      impact: uiTr(context, 'Support ticket status will change.'),
+      destructive: status == HalhSupport.Closed,
+    );
 
     if (!confirmed) return;
 
@@ -128,20 +115,25 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AdminContentCard(
-                padding: const EdgeInsets.all(16),
-                child: _buildSearch(l10n),
+              AdminOpsFilterBar(
+                value: _filters,
+                config: const AdminOpsFilterConfig(
+                  showDate: true,
+                  showSupportStatus: true,
+                  showCountry: true,
+                  showSearch: true,
+                ),
+                onChanged: (next) => setState(() => _filters = next),
               ),
               const SizedBox(height: 16),
               AdminFirestoreList<SupportRecord>(
+                key: ValueKey('support_${_filters.signature}'),
+                reloadKey: _filters.signature,
                 refreshScope: AdminListScope.support,
                 query: SupportRecord.collection,
                 recordBuilder: SupportRecord.fromSnapshot,
-                queryBuilder: (q) {
-                  var query = AdminCountryScope.applySupportQuery(q)
-                      as Query<Map<String, dynamic>>;
-                  return query.orderBy('data', descending: true);
-                },
+                queryBuilder: (q) =>
+                    AdminOpsQueryBuilder.applySupportFilters(q, _filters),
                 builder: (context, allTickets, listState) {
                   final tickets = _filterTickets(allTickets);
 
@@ -173,7 +165,7 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
-                                  _searchQuery.isEmpty
+                                  _filters.searchQuery.isEmpty
                                       ? uiTr(context, 'لا توجد تذاكر دعم')
                                       : uiTr(context, 'لا توجد نتائج للبحث'),
                                   style: theme.titleMedium,
@@ -236,31 +228,6 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSearch(FFLocalizations l10n) {
-    return TextFormField(
-      controller: _model.textController,
-      focusNode: _model.textFieldFocusNode,
-      onChanged: (_) => EasyDebounce.debounce(
-        '_admin_support_search',
-        const Duration(milliseconds: 300),
-        () {
-          if (mounted) {
-            setState(() {
-              _searchQuery = _model.textController?.text ?? '';
-            });
-          }
-        },
-      ),
-      decoration: AdminUi.inputDecoration(
-        context,
-        label: uiTr(context, 'بحث'),
-        hint: l10n.getText('olbmog91'),
-        prefixIcon: Icons.search_rounded,
-      ),
-      validator: _model.textControllerValidator.asValidator(context),
     );
   }
 }

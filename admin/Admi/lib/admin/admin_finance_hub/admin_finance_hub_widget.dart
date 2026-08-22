@@ -6,6 +6,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/finance_ledger_service.dart';
+import '/core/finance/finance_controls_client.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -26,6 +27,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   late Menu2Model _menu2Model;
   String _period = 'month';
   Future<FinanceHubSnapshot>? _future;
+  Future<Map<String, dynamic>>? _home;
 
   @override
   void initState() {
@@ -64,6 +66,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
         to: r.$2,
         periodLabel: r.$3,
       );
+      _home = FinanceControlsClient.accountantHome();
     });
   }
 
@@ -96,6 +99,159 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                       AdminProfitsWidget.routeName,
                     ),
                   ),
+                ),
+                const SizedBox(height: 8),
+                FutureBuilder<Map<String, dynamic>>(
+                  future: _home,
+                  builder: (context, homeSnap) {
+                    if (!homeSnap.hasData) {
+                      return const SizedBox.shrink();
+                    }
+                    final h = homeSnap.data!;
+                    final today = Map<String, dynamic>.from(h['today'] as Map? ?? {});
+                    final action = Map<String, dynamic>.from(
+                      h['actionRequired'] as Map? ?? {},
+                    );
+                    final dq = Map<String, dynamic>.from(
+                      h['dataQuality'] as Map? ?? {},
+                    );
+                    final exposure = Map<String, dynamic>.from(
+                      h['exposure'] as Map? ?? {},
+                    );
+                    final warnings = (h['warnings'] as List?) ?? [];
+                    final flags = Map<String, dynamic>.from(
+                      h['featureFlags'] as Map? ?? {},
+                    );
+                    final approverOk = h['independentApproverConfigured'] == true;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (!approverOk)
+                          Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: theme.error.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: theme.error),
+                            ),
+                            child: Text(
+                              uiTr(
+                                context,
+                                'Financial pilot blocked: no independent approver configured',
+                              ),
+                              style: theme.titleSmall.copyWith(
+                                color: theme.error,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                        Text(uiTr(context, 'Accountant Home'), style: theme.titleMedium),
+                        if (warnings.isNotEmpty) ...[
+                          for (final w in warnings)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 6),
+                              child: AdminStatusBadge(
+                                label: '$w',
+                                tone: AdminBadgeTone.warning,
+                              ),
+                            ),
+                        ],
+                        Text(
+                          uiTr(context, 'Action Required'),
+                          style: theme.titleSmall.copyWith(
+                            color: theme.error,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        Text(
+                          'Pending approvals ${action['settlementsAwaitingApproval']}/${action['paymentsAwaitingConfirmation']} · '
+                          'Critical recon ${action['criticalReconciliation']} · '
+                          'Unallocated ${action['unallocatedPayments']} · '
+                          'Period blockers ${action['periodCloseBlockers']} · '
+                          'Missing statuses ${action['missingStatuses'] ?? dq['missingStatuses']}',
+                          softWrap: true,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(uiTr(context, 'Cash / Online Position'), style: theme.titleSmall),
+                        Text(
+                          'Today completed ${today['newCompletedTrips']} · '
+                          'cash ${today['cashCollectedMinor']} · '
+                          'online ${today['onlineCollectedMinor']}',
+                        ),
+                        const SizedBox(height: 8),
+                        Text(uiTr(context, 'Receivables / Payables'), style: theme.titleSmall),
+                        Text('$exposure'),
+                        const SizedBox(height: 8),
+                        Text(uiTr(context, 'Aging'), style: theme.titleSmall),
+                        Text(uiTr(context, 'See exposure aging buckets above (per currency).')),
+                        const SizedBox(height: 8),
+                        Text(uiTr(context, 'Data Quality'), style: theme.titleSmall),
+                        Text(
+                          'Incomplete ${dq['incomplete']} · missing statuses ${dq['missingStatuses']}',
+                        ),
+                        Text(
+                          'Flags: settlementWrites=${flags['FINANCIAL_SETTLEMENT_WRITES_ENABLED']} · '
+                          'paymentConfirm=${flags['FINANCIAL_PAYMENT_CONFIRM_ENABLED']} · '
+                          'wallet=${flags['WALLET_SETTLEMENT_ENABLED']} · '
+                          'payout=${flags['AUTOMATIC_PAYOUT_ENABLED']}',
+                          style: theme.labelSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            AdminPrimaryButton(
+                              label: uiTr(context, 'التسويات'),
+                              outlined: true,
+                              icon: Icons.receipt_long_outlined,
+                              onPressed: () => context.pushNamed(
+                                AdminSettlementsWidget.routeName,
+                              ),
+                            ),
+                            AdminPrimaryButton(
+                              label: uiTr(context, 'Reconciliation'),
+                              outlined: true,
+                              onPressed: () => context.pushNamed(
+                                AdminReconciliationWidget.routeName,
+                              ),
+                            ),
+                            AdminPrimaryButton(
+                              label: uiTr(context, 'Periods'),
+                              outlined: true,
+                              onPressed: () => context.pushNamed(
+                                AdminFinancialPeriodsWidget.routeName,
+                              ),
+                            ),
+                            AdminPrimaryButton(
+                              label: uiTr(context, 'Reports'),
+                              outlined: true,
+                              onPressed: () => context.pushNamed(
+                                AdminFinanceReportsWidget.routeName,
+                              ),
+                            ),
+                            AdminPrimaryButton(
+                              label: uiTr(context, 'Finance Audit'),
+                              outlined: true,
+                              onPressed: () => context.pushNamed(
+                                AdminFinanceAuditWidget.routeName,
+                              ),
+                            ),
+                            AdminPrimaryButton(
+                              label: uiTr(context, 'Diagnostics'),
+                              outlined: true,
+                              onPressed: () => context.pushNamed(
+                                AdminDiagnosticsWidget.routeName,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                    );
+                  },
                 ),
                 AdminFilterBar(
                   hint: appTr(context, 'ent_period'),

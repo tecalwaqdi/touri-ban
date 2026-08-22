@@ -82,5 +82,6 @@ void triggerPushNotification({
   FirebaseFirestore.instance
       .collection(kUserPushNotificationsCollectionName)
       .doc()
-      .set(pushNotificationData);
+      .set(pushNotificationData)
+      .catchError((Object _) {});
 }

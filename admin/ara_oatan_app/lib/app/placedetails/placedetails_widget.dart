@@ -8,6 +8,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart'
     as smooth_page_indicator;
 
 import '/backend/backend.dart';
+import '/core/toury_landmark_cart.dart';
 import '/core/toury_landmark_filter.dart';
 import '/core/toury_mkan_i18n.dart';
 import '/design_system/design_system.dart';
@@ -67,39 +68,11 @@ class _PlacedetailsWidgetState extends State<PlacedetailsWidget> {
     BuildContext context,
     MkanRecord columnMkanRecord,
   ) async {
-    if (touryLandmarkAlreadyInCart(columnMkanRecord.reference)) {
-      DsSnackBar.show(
-        context,
-        message: 'ui_text_71995f6f4a'.tr(),
-        tone: DsSnackTone.error,
-      );
-    } else {
-      FFAppState().addcart = FFAppState().addcart + 1;
-      FFAppState().addToCartmkss(AmaknCostmStruct(
-        naim: touryMkanName(context, columnMkanRecord),
-        textivill: touryLandmarkCartSubtitle(columnMkanRecord),
-        loceshn: columnMkanRecord.location,
-        revmkan: columnMkanRecord.reference,
-      ));
-      FFAppState().dataSchedule = getCurrentTimestamp;
-      FFAppState().fulltextSchedule = 'instant_booking'.tr();
-      FFAppState().textallAlmdn = (String var1, String var2) {
-        return "$var1 $var2";
-      }(FFAppState().textallAlmdn, FFAppState().naimvillatext);
-      FFAppState().addToMkan(columnMkanRecord.reference);
-      safeSetState(() {});
-      DsSnackBar.show(
-        context,
-        message: 'landmark_added_success'.tr(namedArgs: {
-          'name': touryMkanName(context, columnMkanRecord),
-        }),
-        tone: DsSnackTone.success,
-        actionLabel: 'view_my_trip'.tr(),
-        onAction: () {
-          touryOpenCheckout(context);
-        },
-      );
-    }
+    touryAddLandmarkToCart(
+      context: context,
+      record: columnMkanRecord,
+      onChanged: () => safeSetState(() {}),
+    );
   }
 
   @override

@@ -26,7 +26,7 @@ export function AppScreens({ dict }: Props) {
           align="center"
         />
         <div className="mt-8 grid items-center gap-6 sm:mt-10 sm:gap-8 lg:grid-cols-[auto_1fr] lg:gap-12">
-          <Reveal className="mx-auto w-full max-w-[13.5rem] sm:max-w-none">
+          <Reveal className="mx-auto w-full max-w-[14rem] sm:max-w-none">
             <PhoneMockup src={item.image} alt={item.alt} size="md" />
           </Reveal>
           <div className="min-w-0">

@@ -386,6 +386,199 @@ exports.aggregateFinancialSummary = functions.https.onCall(async (data, context)
   return summary;
 });
 
+// ── Financial Accounting V2 (read-only, full-dataset) ───────────────────────
+const financialV2 = require('./financial_accounting_v2');
+const aggMetrics = require('./finance_aggregation_metrics');
+const {loadFinanceFeatureFlags, assertFlag} = require('./finance_feature_flags');
+const {normalizeErrorCode} = require('./finance_error_codes');
+
+exports.aggregateFinancialAccountingV2 = functions
+  .runWith({timeoutSeconds: 300, memory: '1GB'})
+  .https.onCall(async (data, context) => {
+    const startedAtMs = Date.now();
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
+    }
+    const token = context.auth.token || {};
+    if (!token.super_admin && !token.finance && !token.country_admin) {
+      throw new functions.https.HttpsError('permission-denied', 'PERMISSION_DENIED');
+    }
+
+    const countryPath = data.countryPath || null;
+    const periodStart = data.periodStart ? new Date(data.periodStart) : null;
+    const periodEnd = data.periodEnd ? new Date(data.periodEnd) : null;
+    const driverId = data.driverId ? String(data.driverId) : null;
+    const mode = data.mode || 'totals'; // totals | settlement_preview
+
+    // Agents/country_admin: force country scope server-side.
+    let effectiveCountry = countryPath;
+    if (token.country_admin && token.country_id && !token.super_admin && !token.finance) {
+      effectiveCountry = token.country_id.startsWith('countries/')
+        ? token.country_id
+        : `countries/${token.country_id}`;
+      if (countryPath && countryPath !== effectiveCountry) {
+        throw new functions.https.HttpsError(
+          'permission-denied',
+          'PERMISSION_DENIED',
+          {reason: 'Country agent cannot query another country.'},
+        );
+      }
+    }
+
+    const filters = {
+      channel: data.channel || null,
+      lifecycle: data.lifecycle || null,
+      payment: data.payment || null,
+      confidence: data.confidence || null,
+      currency: data.currency || null,
+      driverId,
+    };
+
+    let query = db.collection('order').orderBy('data_order', 'descending');
+    let applyDateInMemory = false;
+
+    if (driverId) {
+      // Prefer driver-scoped query; apply date filters in memory to avoid missing composites.
+      query = db
+        .collection('order')
+        .where('mndob_user', '==', db.doc(`user/${driverId}`))
+        .orderBy('data_order', 'descending');
+      applyDateInMemory = true;
+    } else if (effectiveCountry) {
+      query = db
+        .collection('order')
+        .where('Rev_dolh', '==', db.doc(effectiveCountry))
+        .orderBy('data_order', 'descending');
+      if (periodStart) {
+        query = query.where('data_order', '>=', periodStart);
+      }
+      if (periodEnd) {
+        query = query.where('data_order', '<', periodEnd);
+      }
+    } else {
+      if (periodStart) {
+        query = query.where('data_order', '>=', periodStart);
+      }
+      if (periodEnd) {
+        query = query.where('data_order', '<', periodEnd);
+      }
+    }
+
+    let orders = await paginateOrders(query, 400);
+    if (applyDateInMemory) {
+      orders = orders.filter((o) => {
+        const ts = o.data_order;
+        if (!ts) return false;
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        if (periodStart && d < periodStart) return false;
+        if (periodEnd && !(d < periodEnd)) return false;
+        if (effectiveCountry) {
+          const path = o.Rev_dolh && o.Rev_dolh.path ? o.Rev_dolh.path : '';
+          if (path !== effectiveCountry) return false;
+        }
+        return true;
+      });
+    }
+    const byCurrency = {};
+    const lines = [];
+    let missingPaymentStatus = 0;
+    let missingLifecycle = 0;
+    let missingDriver = 0;
+    let unsupportedCurrency = 0;
+
+    for (const order of orders) {
+      const line = financialV2.analyzeOrder(order.id, order);
+      if (!order.payment_status) missingPaymentStatus++;
+      if (!order.status_code) missingLifecycle++;
+      if (!line.driverId) missingDriver++;
+      if (!line.currencySupported) unsupportedCurrency++;
+      if (!financialV2.matchesFilters(line, filters)) continue;
+      lines.push(line);
+      financialV2.accumulate(byCurrency, line);
+    }
+
+    // Exposure across currencies
+    const exposure = {};
+    for (const [code, t] of Object.entries(byCurrency)) {
+      exposure[code] = {
+        driversOweCompanyMinor: t.cashDriversOweCompanyMinor,
+        companyOwesDriversMinor:
+          t.cashCompanyOwesDriversMinor + t.onlineCompanyOwesDriversMinor,
+        netTripExposureMinor:
+          t.cashDriversOweCompanyMinor -
+          t.cashCompanyOwesDriversMinor -
+          t.onlineCompanyOwesDriversMinor,
+        incompleteLines: t.incompleteLines,
+      };
+    }
+
+    const quality = {
+      totalLines: lines.length,
+      high: lines.filter((l) => l.confidence === 'high').length,
+      derived: lines.filter((l) => l.confidence === 'derived').length,
+      incomplete: lines.filter((l) => l.confidence === 'incomplete').length,
+      reconciled: lines.filter((l) => l.reconStatus === 'reconciled').length,
+      reconciliationDifference: lines.filter((l) => l.reconStatus === 'difference').length,
+      unsupportedCurrency,
+      missingPaymentStatus,
+      missingLifecycle,
+      missingDriver,
+      docsScanned: orders.length,
+    };
+
+    const result = {
+      source: 'server_v2',
+      filterSignature: [
+        effectiveCountry || 'all',
+        periodStart ? periodStart.toISOString() : '',
+        periodEnd ? periodEnd.toISOString() : '',
+        driverId || '',
+        filters.channel || '',
+        filters.lifecycle || '',
+        filters.payment || '',
+        filters.confidence || '',
+        filters.currency || '',
+      ].join('|'),
+      byCurrency,
+      exposure,
+      quality,
+      loadedAt: new Date().toISOString(),
+      // Read-only: never write cache/orders/wallets.
+    };
+
+    if (mode === 'settlement_preview') {
+      if (!driverId) {
+        throw new functions.https.HttpsError(
+          'invalid-argument',
+          'driverId required for settlement_preview',
+        );
+      }
+      const currency =
+        financialV2.normalizeCode(data.currency || Object.keys(byCurrency)[0] || 'SAR');
+      result.settlementPreview = financialV2.settlePreviewForDriver(lines, currency);
+    }
+
+    const metrics = aggMetrics.buildAggregationMetrics({
+      startedAtMs,
+      ordersScanned: orders.length,
+      filters: {
+        country: effectiveCountry || 'all',
+        periodStart: periodStart ? periodStart.toISOString() : null,
+        periodEnd: periodEnd ? periodEnd.toISOString() : null,
+        ...filters,
+        mode,
+      },
+      resultCurrencyCount: Object.keys(byCurrency).length,
+      cacheHit: false,
+      token,
+      op: 'aggregateFinancialAccountingV2',
+    });
+    result.metrics = metrics;
+    await aggMetrics.writeAggregationMetric(db, metrics);
+
+    return result;
+  });
+
 // ── Audit log (server-only writes) ──────────────────────────────────────────
 
 exports.recordAuditLog = functions.https.onCall(async (data, context) => {
@@ -615,21 +808,33 @@ async function cleanupInvalidTokens(adminDocs, invalidTokens) {
   if (writes > 0) await batch.commit();
 }
 
-// ── Admin wallet adjustment (finance / super_admin only) ────────────────────
+// ── LEGACY_WALLET_TOOL — not part of settlement V2 ──────────────────────────
+// SuperAdmin-only escape hatch. Finance must use settlement ledger / payments.
+// Gated by WALLET_SETTLEMENT_ENABLED (default OFF). Optional idempotencyKey.
 
 exports.adminAdjustDriverWallet = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError("unauthenticated", "Sign in required.");
   }
   const token = context.auth.token || {};
-  if (!token.super_admin && !token.finance) {
-    throw new functions.https.HttpsError("permission-denied", "Not authorized.");
+  // Least privilege: finance removed — settlement V2 is the finance path.
+  if (!token.super_admin) {
+    throw new functions.https.HttpsError("permission-denied", "PERMISSION_DENIED");
+  }
+  const flags = await loadFinanceFeatureFlags(db);
+  if (!flags.WALLET_SETTLEMENT_ENABLED) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "FEATURE_FLAG_DISABLED",
+      {flag: "WALLET_SETTLEMENT_ENABLED"},
+    );
   }
 
   const driverId = String((data && data.driverId) || "").trim();
   const amount = Number(data && data.amount);
   const note = String((data && data.note) || "").trim().slice(0, 500);
   const currency = String((data && data.currency) || "SAR").trim().toUpperCase() || "SAR";
+  const idempotencyKey = String((data && data.idempotencyKey) || "").trim();
 
   if (!driverId) {
     throw new functions.https.HttpsError("invalid-argument", "driverId required.");
@@ -639,6 +844,16 @@ exports.adminAdjustDriverWallet = functions.https.onCall(async (data, context) =
       "invalid-argument",
       "amount must be a non-zero number within ±50000.",
     );
+  }
+
+  if (idempotencyKey) {
+    const priorSnap = await db
+      .collection("financial_wallet_adjust_idempotency")
+      .doc(idempotencyKey)
+      .get();
+    if (priorSnap.exists && priorSnap.data() && priorSnap.data().result) {
+      return priorSnap.data().result;
+    }
   }
 
   const userRef = db.collection("user").doc(driverId);
@@ -653,12 +868,24 @@ exports.adminAdjustDriverWallet = functions.https.onCall(async (data, context) =
 
   const ledgerId = `admin_adj_${driverId.slice(0, 8)}_${Date.now()}`;
   const ledgerRef = db.collection("transactions").doc(ledgerId);
+  const idempRef = idempotencyKey
+    ? db.collection("financial_wallet_adjust_idempotency").doc(idempotencyKey)
+    : null;
 
   let balanceBefore = 0;
   let balanceAfter = 0;
+  let result = null;
 
   try {
     await db.runTransaction(async (tx) => {
+      if (idempRef) {
+        const prior = await tx.get(idempRef);
+        if (prior.exists && prior.data() && prior.data().result) {
+          result = prior.data().result;
+          return;
+        }
+      }
+
       const wallet = await tx.get(walletRef);
       balanceBefore = wallet.exists ? Number(wallet.data().currentBalance || 0) : 0;
       balanceAfter = balanceBefore + amount;
@@ -699,7 +926,29 @@ exports.adminAdjustDriverWallet = functions.https.onCall(async (data, context) =
         actorUid: context.auth.uid,
         actorEmail: (context.auth.token && context.auth.token.email) || "",
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        ...(idempotencyKey ? {idempotencyKey} : {}),
       });
+
+      result = {
+        ok: true,
+        driverId,
+        walletId: walletRef.id,
+        amount,
+        balanceBefore,
+        balanceAfter,
+        ledgerId,
+        ...(idempotencyKey ? {idempotencyKey} : {}),
+      };
+
+      if (idempRef) {
+        tx.set(idempRef, {
+          result,
+          actorUid: context.auth.uid,
+          driverId,
+          amount,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
     });
   } catch (e) {
     if (String((e && e.message) || e).includes("INSUFFICIENT_BALANCE")) {
@@ -719,21 +968,137 @@ exports.adminAdjustDriverWallet = functions.https.onCall(async (data, context) =
     details: JSON.stringify({
       driverId,
       amount,
-      balanceBefore,
-      balanceAfter,
+      balanceBefore: result.balanceBefore,
+      balanceAfter: result.balanceAfter,
       note,
-      ledgerId,
+      ledgerId: result.ledgerId,
+      idempotencyKey: idempotencyKey || null,
+      legacyTool: "LEGACY_WALLET_TOOL",
     }),
     created_at: admin.firestore.FieldValue.serverTimestamp(),
   });
 
-  return {
-    ok: true,
-    driverId,
-    walletId: walletRef.id,
-    amount,
-    balanceBefore,
-    balanceAfter,
-    ledgerId,
-  };
+  return result;
 });
+
+// ── Settlement Ledger V2 (accounting records only; no wallet/order writes) ──
+const settlementLedger = require('./settlement_ledger');
+
+function wrapSettlement(fn) {
+  return async (data, context) => {
+    try {
+      return await fn({
+        db,
+        auth: context.auth,
+        data: data || {},
+        now: new Date(),
+      });
+    } catch (e) {
+      if (e instanceof settlementLedger.SettlementError) {
+        const code = normalizeErrorCode(e.message) || e.code;
+        throw new functions.https.HttpsError(
+          e.code || 'failed-precondition',
+          e.message,
+          {...(e.details || {}), errorCode: code},
+        );
+      }
+      throw e;
+    }
+  };
+}
+
+exports.createSettlementDraftV2 = functions
+  .runWith({timeoutSeconds: 120, memory: '512MB'})
+  .https.onCall(wrapSettlement(settlementLedger.createSettlementDraft));
+
+exports.refreshSettlementDraftV2 = functions
+  .runWith({timeoutSeconds: 120, memory: '512MB'})
+  .https.onCall(wrapSettlement(settlementLedger.refreshSettlementDraft));
+
+exports.lockSettlementV2 = functions
+  .runWith({timeoutSeconds: 180, memory: '1GB'})
+  .https.onCall(wrapSettlement(settlementLedger.lockSettlement));
+
+exports.markSettlementSettledV2 = functions
+  .https.onCall(wrapSettlement(settlementLedger.markSettlementSettled));
+
+exports.voidSettlementV2 = functions
+  .runWith({timeoutSeconds: 120, memory: '512MB'})
+  .https.onCall(wrapSettlement(settlementLedger.voidSettlement));
+
+exports.allocateLegacyPaymentV2 = functions
+  .https.onCall(wrapSettlement(settlementLedger.allocateLegacyPayment));
+
+const settlementPayments = require('./settlement_payments');
+
+exports.createSettlementPaymentV2 = functions
+  .https.onCall(wrapSettlement(settlementPayments.createSettlementPayment));
+
+exports.confirmSettlementPaymentV2 = functions
+  .runWith({timeoutSeconds: 60, memory: '256MB'})
+  .https.onCall(wrapSettlement(settlementPayments.confirmSettlementPayment));
+
+exports.reverseSettlementPaymentV2 = functions
+  .https.onCall(wrapSettlement(settlementPayments.reverseSettlementPayment));
+
+exports.allocateExistingPaymentV2 = functions
+  .https.onCall(wrapSettlement(settlementPayments.allocateExistingPayment));
+
+exports.aggregateSettlementExposureV2 = functions
+  .runWith({timeoutSeconds: 120, memory: '512MB'})
+  .https.onCall(wrapSettlement(settlementPayments.aggregateSettlementExposure));
+
+const financeControls = require('./finance_controls');
+
+exports.createFinancialPeriodV2 = functions
+  .https.onCall(wrapSettlement(financeControls.createFinancialPeriod));
+exports.closeFinancialPeriodV2 = functions
+  .runWith({timeoutSeconds: 180, memory: '1GB'})
+  .https.onCall(wrapSettlement(financeControls.closeFinancialPeriod));
+exports.reopenFinancialPeriodV2 = functions
+  .https.onCall(wrapSettlement(financeControls.reopenFinancialPeriod));
+exports.periodCloseChecklistV2 = functions
+  .runWith({timeoutSeconds: 180, memory: '1GB'})
+  .https.onCall(wrapSettlement(financeControls.buildPeriodCloseChecklist));
+exports.scanFinancialExceptionsV2 = functions
+  .runWith({timeoutSeconds: 180, memory: '1GB'})
+  .https.onCall(wrapSettlement(financeControls.scanFinancialExceptions));
+exports.listIncompleteOrdersV2 = functions
+  .runWith({timeoutSeconds: 180, memory: '1GB'})
+  .https.onCall(wrapSettlement(financeControls.listIncompleteOrders));
+exports.detectFinanceOrphansV2 = functions
+  .runWith({timeoutSeconds: 180, memory: '1GB'})
+  .https.onCall(wrapSettlement(financeControls.detectOrphans));
+exports.createAdjustmentDraftV2 = functions
+  .https.onCall(wrapSettlement(financeControls.createAdjustmentDraft));
+exports.approveAdjustmentV2 = functions
+  .https.onCall(wrapSettlement(financeControls.approveAdjustment));
+exports.reverseAdjustmentV2 = functions
+  .https.onCall(wrapSettlement(financeControls.reverseAdjustment));
+exports.createOpeningBalanceV2 = functions
+  .https.onCall(wrapSettlement(financeControls.createOpeningBalance));
+exports.loadDriverStatementV2 = functions
+  .runWith({timeoutSeconds: 120, memory: '512MB'})
+  .https.onCall(wrapSettlement(financeControls.loadDriverStatement));
+exports.aggregateCompanyPositionV2 = functions
+  .runWith({timeoutSeconds: 180, memory: '1GB'})
+  .https.onCall(wrapSettlement(financeControls.aggregateCompanyPosition));
+exports.periodDashboardV2 = functions
+  .runWith({timeoutSeconds: 180, memory: '1GB'})
+  .https.onCall(wrapSettlement(financeControls.periodDashboard));
+exports.accountantHomeV2 = functions
+  .runWith({timeoutSeconds: 180, memory: '1GB'})
+  .https.onCall(wrapSettlement(financeControls.accountantHome));
+exports.verifySettlementSourceV2 = functions
+  .runWith({timeoutSeconds: 120, memory: '512MB'})
+  .https.onCall(wrapSettlement(financeControls.verifySettlementAgainstSource));
+exports.searchFinanceAuditV2 = functions
+  .runWith({timeoutSeconds: 60, memory: '256MB'})
+  .https.onCall(wrapSettlement(financeControls.searchFinanceAudit));
+exports.financialReportV2 = functions
+  .runWith({timeoutSeconds: 180, memory: '1GB'})
+  .https.onCall(wrapSettlement(financeControls.financialReport));
+exports.financeApprovalPolicyV2 = functions
+  .https.onCall(wrapSettlement(financeControls.financeApprovalPolicy));
+exports.requestExistingPaymentAllocationV2 = functions
+  .https.onCall(wrapSettlement(settlementPayments.requestExistingPaymentAllocation));

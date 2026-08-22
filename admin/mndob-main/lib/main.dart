@@ -167,7 +167,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final locale = _locale ?? context.locale;
-    final isRtl = locale.languageCode.toLowerCase() == 'ar';
+    final isRtl = locale.languageCode.toLowerCase() == 'ar' ||
+        locale.languageCode.toLowerCase() == 'ur';
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'MNDOB',

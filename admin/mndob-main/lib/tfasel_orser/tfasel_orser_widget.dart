@@ -69,6 +69,38 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
 
   final animationsMap = <String, AnimationInfo>{};
   String? _destFingerprint;
+  String? _tripTimerOrderId;
+  bool _tripTimerRunning = false;
+
+  void _ensureTripTimer(OrderRecord order) {
+    final mine = order.mndobUser?.path == currentUserReference?.path;
+    final inProgress = DriverTripService.isTripInProgress(order);
+    if (!mine || !inProgress) return;
+
+    DriverTripService.syncLocalTripTimerState(order);
+    final ms = DriverTripService.remainingTripCountdownMs(order);
+    final sameOrder = _tripTimerOrderId == order.reference.id;
+    if (sameOrder && _tripTimerRunning) {
+      return;
+    }
+
+    _tripTimerOrderId = order.reference.id;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      try {
+        _model.timer1Controller.timer.setPresetTime(mSec: ms, add: false);
+        _model.timer1Controller.onResetTimer();
+        if (ms > 0) {
+          _model.timer1Controller.onStartTimer();
+          _tripTimerRunning = true;
+        } else {
+          _tripTimerRunning = false;
+        }
+        FFAppState().update(() {});
+        safeSetState(() {});
+      } catch (_) {}
+    });
+  }
 
   @override
   void initState() {
@@ -263,6 +295,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
         }
 
         onDestinationMaybeChanged(tfaselOrserOrderRecord);
+        _ensureTripTimer(tfaselOrserOrderRecord);
 
         final keepAwake = DriverTripService.isActiveTripForCurrentDriver(
             tfaselOrserOrderRecord);
@@ -1349,30 +1382,37 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                             driverLocation:
                                                                 currentUserLocationValue,
                                                           );
-                                                          if (columnOrderRecord
-                                                                  .totalTaim >
-                                                              0) {
-                                                            await orderRef
-                                                                .update(
-                                                                    createOrderRecordData(
-                                                              endTime: functions
-                                                                  .calculateEndTime(
-                                                                      getCurrentTimestamp,
-                                                                      columnOrderRecord
-                                                                          .totalTaim),
-                                                            ));
-                                                            FFAppState()
-                                                                    .EndDate =
-                                                                functions.calculateEndTime(
-                                                                    getCurrentTimestamp,
-                                                                    columnOrderRecord
-                                                                        .totalTaim);
+                                                          final end =
+                                                              FFAppState()
+                                                                  .EndDate;
+                                                          final ms = end == null
+                                                              ? 0
+                                                              : functions
+                                                                  .calculateRemainingMs(
+                                                                  getCurrentTimestamp,
+                                                                  end,
+                                                                );
+                                                          _model
+                                                              .timer1Controller
+                                                              .timer
+                                                              .setPresetTime(
+                                                            mSec: ms,
+                                                            add: false,
+                                                          );
+                                                          _model
+                                                              .timer1Controller
+                                                              .onResetTimer();
+                                                          if (ms > 0) {
+                                                            _model
+                                                                .timer1Controller
+                                                                .onStartTimer();
                                                           }
-                                                          FFAppState()
-                                                                  .startTime =
-                                                              getCurrentTimestamp;
-                                                          FFAppState()
-                                                              .update(() {});
+                                                          _tripTimerRunning =
+                                                              ms > 0;
+                                                          _tripTimerOrderId =
+                                                              columnOrderRecord
+                                                                  .reference
+                                                                  .id;
                                                           final customerRef =
                                                               columnOrderRecord
                                                                   .user;
@@ -1404,13 +1444,6 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                               },
                                                             );
                                                           }
-                                                          _model
-                                                              .timer1Controller
-                                                              .onResetTimer();
-
-                                                          _model
-                                                              .timer1Controller
-                                                              .onStartTimer();
                                                           _model.soundPlayer1 ??=
                                                               AudioPlayer();
                                                           if (_model
@@ -1781,10 +1814,19 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                               fontSize: 10.0,
                                             ),
                                           ),
-                                        if (((columnOrderRecord.halhText ==
-                                                    'تم البدء في الرحلة') ||
-                                                (columnOrderRecord.halhText ==
-                                                    'مكتمل')) &&
+                                        if ((DriverTripService.isTripInProgress(
+                                                    columnOrderRecord) ||
+                                                columnOrderRecord.halhText ==
+                                                    'مكتمل' ||
+                                                DriverTripActionGates
+                                                    .isCompletedListItem(
+                                                  (columnOrderRecord
+                                                              .snapshotData[
+                                                          'status_code'] ??
+                                                      '')
+                                                      .toString(),
+                                                  columnOrderRecord.halhText,
+                                                )) &&
                                             (columnOrderRecord.mndobUser ==
                                                 currentUserReference))
                                           Padding(
@@ -1850,7 +1892,13 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                         ),
                                                       ],
                                                     ),
-                                                    if (currentUserEmail == '1')
+                                                    if (DriverTripService
+                                                            .isTripInProgress(
+                                                          columnOrderRecord,
+                                                        ) ||
+                                                        columnOrderRecord
+                                                                .halhText ==
+                                                            'مكتمل')
                                                       Row(
                                                         mainAxisSize:
                                                             MainAxisSize.max,
@@ -1923,16 +1971,36 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                             ),
                                                           ),
                                                           FlutterFlowTimer(
-                                                            initialTime: getCurrentTimestamp
-                                                                        .millisecondsSinceEpoch <
-                                                                    FFAppState()
-                                                                        .EndDate!
-                                                                        .millisecondsSinceEpoch
-                                                                ? functions.calculateRemainingMs(
-                                                                    getCurrentTimestamp,
-                                                                    FFAppState()
-                                                                        .EndDate!)
-                                                                : 0,
+                                                            initialTime: () {
+                                                              final fromOrder =
+                                                                  DriverTripService
+                                                                      .remainingTripCountdownMs(
+                                                                columnOrderRecord,
+                                                              );
+                                                              if (fromOrder >
+                                                                      0 ||
+                                                                  DriverTripService
+                                                                      .isTripInProgress(
+                                                                    columnOrderRecord,
+                                                                  )) {
+                                                                return fromOrder;
+                                                              }
+                                                              final end =
+                                                                  FFAppState()
+                                                                      .EndDate;
+                                                              if (end == null) {
+                                                                return 0;
+                                                              }
+                                                              return getCurrentTimestamp
+                                                                          .millisecondsSinceEpoch <
+                                                                      end.millisecondsSinceEpoch
+                                                                  ? functions
+                                                                      .calculateRemainingMs(
+                                                                      getCurrentTimestamp,
+                                                                      end,
+                                                                    )
+                                                                  : 0;
+                                                            }(),
                                                             getDisplayTime: (value) =>
                                                                 StopWatchTimer
                                                                     .getDisplayTime(
@@ -2017,9 +2085,37 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                   Colors
                                                                       .transparent,
                                                               onTap: () async {
+                                                                DriverTripService
+                                                                    .syncLocalTripTimerState(
+                                                                  columnOrderRecord,
+                                                                );
+                                                                final ms =
+                                                                    DriverTripService
+                                                                        .remainingTripCountdownMs(
+                                                                  columnOrderRecord,
+                                                                );
                                                                 _model
                                                                     .timer1Controller
-                                                                    .onStartTimer();
+                                                                    .timer
+                                                                    .setPresetTime(
+                                                                  mSec: ms,
+                                                                  add: false,
+                                                                );
+                                                                _model
+                                                                    .timer1Controller
+                                                                    .onResetTimer();
+                                                                if (ms > 0) {
+                                                                  _model
+                                                                      .timer1Controller
+                                                                      .onStartTimer();
+                                                                  _tripTimerRunning =
+                                                                      true;
+                                                                }
+                                                                FFAppState()
+                                                                    .update(
+                                                                        () {});
+                                                                safeSetState(
+                                                                    () {});
                                                               },
                                                               child: Icon(
                                                                 Icons

@@ -7,8 +7,11 @@ import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_ar.dart';
 import 'app_localizations_en.dart';
+import 'app_localizations_fr.dart';
 import 'app_localizations_ky.dart';
+import 'app_localizations_pt.dart';
 import 'app_localizations_ru.dart';
+import 'app_localizations_ur.dart';
 
 // ignore_for_file: type=lint
 
@@ -99,7 +102,10 @@ abstract class AppLocalizations {
     Locale('en'),
     Locale('ar'),
     Locale('ru'),
-    Locale('ky')
+    Locale('ky'),
+    Locale('fr'),
+    Locale('ur'),
+    Locale('pt')
   ];
 
   /// UI string (source key: 1)
@@ -3582,7 +3588,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Based on your selected stops, the minimum trip length is {hours} hours'**
-  String checkout_min_hours_hint(String hours);
+  String checkout_min_hours_hint(String hours, Object horas);
 
   /// UI string (source key: checkout_payment_card_error)
   ///
@@ -3600,7 +3606,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Please add at least {hours} more hour(s) to continue'**
-  String checkout_add_hours_prompt(String hours);
+  String checkout_add_hours_prompt(String hours, Object horas);
 
   /// UI string (source key: checkout_complete_options_prompt)
   ///
@@ -4290,7 +4296,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{hours} h {minutes} min'**
-  String duration_hours_minutes(String hours, String minutes);
+  String duration_hours_minutes(String hours, String minutes, Object horas);
 
   /// UI string (source key: location_city_unresolved)
   ///
@@ -4572,8 +4578,8 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'New paid booking #{bookingId}: {hours} hours, {amount} {currency}.'**
-  String notification_paid_order_admin_body(
-      String bookingId, String hours, String amount, String currency);
+  String notification_paid_order_admin_body(String bookingId, String hours,
+      String amount, String currency, Object horas);
 
   /// UI string (source key: notification_wallet_topup_title)
   ///
@@ -4598,7 +4604,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A new Touri Taxi booking is available for {hours} hours with earnings of {amount} {currency}. Open the driver app to review it.'**
   String notification_new_order_driver_body(
-      String hours, String amount, String currency);
+      String hours, String amount, String currency, Object horas);
 
   /// UI string (source key: notification_private_message_title)
   ///
@@ -4833,8 +4839,15 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['ar', 'en', 'ky', 'ru'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+        'ar',
+        'en',
+        'fr',
+        'ky',
+        'pt',
+        'ru',
+        'ur'
+      ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -4847,10 +4860,16 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsAr();
     case 'en':
       return AppLocalizationsEn();
+    case 'fr':
+      return AppLocalizationsFr();
     case 'ky':
       return AppLocalizationsKy();
+    case 'pt':
+      return AppLocalizationsPt();
     case 'ru':
       return AppLocalizationsRu();
+    case 'ur':
+      return AppLocalizationsUr();
   }
 
   throw FlutterError(

@@ -8,6 +8,9 @@ const List<Locale> driverSupportedLocales = [
   Locale('ar'),
   Locale('ru'),
   Locale('ky'),
+  Locale('fr'),
+  Locale('ur'),
+  Locale('pt'),
 ];
 
 const Locale driverFallbackLocale = Locale('en');

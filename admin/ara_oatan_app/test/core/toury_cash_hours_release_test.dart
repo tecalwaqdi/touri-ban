@@ -76,30 +76,36 @@ void main() {
     });
   });
 
-  group('cash-only flags', () {
-    test('online payment disabled by default', () {
-      expect(TouryPaymentFlags.enableOnlinePayment, isFalse);
-      expect(TouryPaymentFlags.cashOnlyMode, isTrue);
+  group('payment flags (Render online + cash)', () {
+    test('online payment enabled; Render is default backend', () {
+      expect(TouryPaymentFlags.enableOnlinePayment, isTrue);
+      expect(TouryPaymentFlags.cashOnlyMode, isFalse);
+      expect(
+        TouryPaymentFlags.paymentApiBaseUrl,
+        'https://touri-ban.onrender.com',
+      );
+      expect(TouryPaymentFlags.useFirebasePaymentFunctions, isFalse);
     });
 
-    test('cash visible even when remote OKcash false', () {
+    test('cash visible when remote OKcash true', () {
       expect(
-        TouryPaymentFlags.cashOptionVisible(remoteOkCash: false),
+        TouryPaymentFlags.cashOptionVisible(remoteOkCash: true),
         isTrue,
       );
     });
 
-    test('online option hidden', () {
-      expect(TouryPaymentFlags.onlineOptionVisible(), isFalse);
+    test('online option visible', () {
+      expect(TouryPaymentFlags.onlineOptionVisible(), isTrue);
     });
 
-    test('cash book-now accepts unset when cash-only', () {
-      expect(touryIsCashBookNowPayment(TouryPaymentKeys.unset), isTrue);
-      expect(touryRequiresPaymentMethodSelection(TouryPaymentKeys.unset), isFalse);
+    test('cash book-now requires explicit cash when online enabled', () {
+      expect(touryIsCashBookNowPayment(TouryPaymentKeys.cash), isTrue);
+      expect(touryIsCashBookNowPayment(TouryPaymentKeys.unset), isFalse);
+      expect(touryRequiresPaymentMethodSelection(TouryPaymentKeys.unset), isTrue);
     });
 
-    test('client cash fallback disabled by default (production)', () {
-      expect(TouryPaymentFlags.allowClientCashFallback, isFalse);
+    test('client cash fallback enabled by default', () {
+      expect(TouryPaymentFlags.allowClientCashFallback, isTrue);
     });
 
     test('online payment value detection', () {

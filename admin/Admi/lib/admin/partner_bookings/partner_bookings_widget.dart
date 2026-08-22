@@ -105,8 +105,7 @@ class _PartnerBookingsWidgetState extends State<PartnerBookingsWidget> {
                           countryRef: AdminPanelDataBootstrap.partnerCountryRef,
                         ),
                         builder: (context, bookings, listState) {
-                          final totalBookings =
-                              statsSnap.data?.activeBookings ?? bookings.length;
+                          final statsTotal = statsSnap.data?.activeBookings;
 
                           return AdminContentCard(
                             padding: const EdgeInsets.all(12),
@@ -114,7 +113,14 @@ class _PartnerBookingsWidgetState extends State<PartnerBookingsWidget> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Text(
-                                  '${uiTr(context, 'عدد الحجوزات')}: $totalBookings',
+                                  statsTotal != null
+                                      ? '${uiTr(context, 'عدد الحجوزات')}: $statsTotal'
+                                      : adminListCountLabel(
+                                          context,
+                                          listState,
+                                          visibleCount: bookings.length,
+                                          pageFetched: bookings.length,
+                                        ),
                                   style: theme.labelLarge.override(
                                     fontFamily: theme.labelLargeFamily,
                                     color: theme.secondaryText,

@@ -60,7 +60,7 @@ abstract final class TouryNotificationLocalizer {
   static String _assetLocale(String locale) {
     final normalized = locale.replaceAll('_', '-');
     final code = normalized.split('-').first.toLowerCase();
-    const production = {'ar', 'en', 'ru', 'ky'};
+    const production = {'ar', 'en', 'ru', 'ky', 'fr', 'ur', 'pt'};
     if (production.contains(code)) return code;
     return 'en';
   }

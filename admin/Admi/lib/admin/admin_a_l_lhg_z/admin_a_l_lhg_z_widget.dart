@@ -1,19 +1,26 @@
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_ops_filters.dart';
+import '/backend/admin_ops_search.dart';
+import '/backend/admin_stats_coordinator.dart';
+import '/backend/admin_dashboard_invalidate.dart';
 import '/backend/backend.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/schema/enums/enums.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_layout_widget.dart';
+import '/components/admin_ops_filter_bar.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_booking_status_label.dart';
+import '/core/toury_system_status_codes.dart';
 import '/core/finance/financial_engine.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/core/admin_currency.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
-import 'package:easy_debounce/easy_debounce.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'admin_a_l_lhg_z_model.dart';
 export 'admin_a_l_lhg_z_model.dart';
@@ -32,16 +39,16 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
   late AdminALLhgZModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  String _searchQuery = '';
+  AdminOpsFilterState _filters = const AdminOpsFilterState(
+    orderLifecycle: AdminOrderLifecycleFilter.active,
+  );
+  List<OrderRecord>? _serverSearchHits;
+  int _searchGen = 0;
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AdminALLhgZModel());
-
-    _model.textController ??= TextEditingController();
-    _model.textFieldFocusNode ??= FocusNode();
-
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -51,9 +58,29 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
     super.dispose();
   }
 
+  Future<void> _onFiltersChanged(AdminOpsFilterState next) async {
+    setState(() {
+      _filters = next;
+      _serverSearchHits = null;
+    });
+    final plan = AdminOpsSearch.classify(next.searchQuery);
+    if (!plan.isServerSide) return;
+    final gen = ++_searchGen;
+    final hits = await AdminOpsSearch.searchOrdersServer(plan, next);
+    if (!mounted || gen != _searchGen) return;
+    setState(() => _serverSearchHits = hits);
+  }
+
   List<OrderRecord> _filterBookings(List<OrderRecord> bookings) {
-    final q = _searchQuery.trim().toLowerCase();
+    if (_serverSearchHits != null) return _serverSearchHits!;
+    final q = _filters.searchQuery.trim().toLowerCase();
     if (q.isEmpty) return bookings;
+
+    final plan = AdminOpsSearch.classify(q);
+    if (plan.isServerSide) {
+      // Waiting for server hits — don't claim "not found" on page text.
+      return bookings;
+    }
 
     return bookings.where((b) {
       final statusLabel = AdminBookingStatusLabel.of(b).toLowerCase();
@@ -69,37 +96,52 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
   Future<void> _cancelBooking(OrderRecord order) async {
     if (OrderStatusHelper.isCanceled(order)) return;
 
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(uiTr(context, 'تأكيد الإلغاء')),
-            content: Text(
-              '${uiTr(context, 'هل أنت متأكد من إلغاء الحجز')} #${order.iDorder}؟',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(uiTr(context, 'نعم، ألغِ')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: uiTr(context, 'تأكيد الإلغاء'),
+      whatHappens: uiTr(context, 'هل أنت متأكد من إلغاء الحجز'),
+      subject: '#${order.iDorder}',
+      impact: uiTr(context, 'Customer can book again; order marked cancelled'),
+      confirmLabel: uiTr(context, 'نعم، ألغِ'),
+      cancelLabel: appTr(context, 'adm_no'),
+      destructive: true,
+      irreversible: true,
+      reference: order.reference.id,
+    );
 
     if (!confirmed) return;
 
     try {
-      await order.reference.update(
-        createOrderRecordData(
+      await order.reference.update({
+        ...createOrderRecordData(
           halhText: 'ملغي',
           halhOrder: Halh.Canceled,
           allnow: false,
         ),
-      );
+        'status_code': TourySystemStatusCodes.cancelledByAdmin,
+        'cancelled_by_code': TourySystemStatusCodes.cancelledByAdmin,
+        'cancelledAt': FieldValue.serverTimestamp(),
+        'NotSestem': 'admin_cancelled',
+      });
+      AdminStatsCoordinator.instance.invalidateAfterBookingChange();
+      flushAdminDashboardStatsNow();
+
+      // Release single-active lock so the customer can book again.
+      final customerRef = order.user;
+      if (customerRef != null) {
+        try {
+          await customerRef.set(
+            {
+              'active_order_id': FieldValue.delete(),
+              'active_order_updated_at': FieldValue.serverTimestamp(),
+            },
+            SetOptions(merge: true),
+          );
+        } catch (_) {
+          // Rules may deny non-superadmin; terminal status_code still allows
+          // backend reclaim on next booking create.
+        }
+      }
 
       await AdminAuditLog.recordCancel(
         targetType: 'booking',
@@ -158,18 +200,27 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AdminContentCard(
-                padding: const EdgeInsets.all(16),
-                child: _buildSearch(l10n),
+              AdminOpsFilterBar(
+                value: _filters,
+                config: const AdminOpsFilterConfig(
+                  showDate: true,
+                  showOrderLifecycle: true,
+                  showCountry: true,
+                  showCity: true,
+                  showSearch: true,
+                  searchHint: 'بحث برقم الحجز / الاسم',
+                ),
+                onChanged: _onFiltersChanged,
               ),
               const SizedBox(height: 16),
               AdminFirestoreList<OrderRecord>(
+                key: ValueKey('bookings_${_filters.signature}'),
+                reloadKey: _filters.signature,
                 refreshScope: AdminListScope.bookings,
                 query: OrderRecord.collection,
                 recordBuilder: OrderRecord.fromSnapshot,
-                queryBuilder: (q) => AdminCountryScope.applyOrderQuery(q)
-                    .where('ALLNOW', isEqualTo: true)
-                    .orderBy('data_order', descending: true),
+                queryBuilder: (q) =>
+                    AdminOpsQueryBuilder.applyOrderFilters(q, _filters),
                 builder: (context, allBookings, listState) {
                   final bookings =
                       _filterBookings(AdminCountryScope.filterOrders(allBookings));
@@ -202,7 +253,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
-                                  _searchQuery.isEmpty
+                                  _filters.searchQuery.isEmpty
                                       ? uiTr(context, 'لا توجد حجوزات حالية')
                                       : uiTr(context, 'لا توجد نتائج للبحث'),
                                   style: theme.titleMedium,
@@ -241,31 +292,6 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSearch(FFLocalizations l10n) {
-    return TextFormField(
-      controller: _model.textController,
-      focusNode: _model.textFieldFocusNode,
-      onChanged: (_) => EasyDebounce.debounce(
-        '_admin_bookings_search',
-        const Duration(milliseconds: 300),
-        () {
-          if (mounted) {
-            setState(() {
-              _searchQuery = _model.textController?.text ?? '';
-            });
-          }
-        },
-      ),
-      decoration: AdminUi.inputDecoration(
-        context,
-        label: l10n.getText('97vbpavm'),
-        hint: l10n.getText('aa34zq8w'),
-        prefixIcon: Icons.search_rounded,
-      ),
-      validator: _model.textControllerValidator.asValidator(context),
     );
   }
 }

@@ -17,7 +17,7 @@ void main() {
 
     setUpAll(() {
       langs = {};
-      for (final code in ['en', 'ar', 'ru', 'ky']) {
+      for (final code in ['en', 'ar', 'ru', 'ky', 'fr', 'ur', 'pt']) {
         final file = File('assets/langs/$code.json');
         expect(file.existsSync(), isTrue, reason: '$code.json missing');
         langs[code] =
@@ -25,11 +25,11 @@ void main() {
       }
     });
 
-    test('all four locales share the same key set', () {
+    test('all production locales share the same key set', () {
       final enKeys = langs['en']!.keys.toSet();
-      expect(langs['ar']!.keys.toSet(), enKeys);
-      expect(langs['ru']!.keys.toSet(), enKeys);
-      expect(langs['ky']!.keys.toSet(), enKeys);
+      for (final code in ['ar', 'ru', 'ky', 'fr', 'ur', 'pt']) {
+        expect(langs[code]!.keys.toSet(), enKeys, reason: code);
+      }
       expect(enKeys.length, greaterThan(200));
     });
 
@@ -48,7 +48,7 @@ void main() {
       for (final key in langs['en']!.keys) {
         final enPh =
             ph.allMatches(langs['en']![key].toString()).map((m) => m.group(0)!).toSet();
-        for (final code in ['ar', 'ru', 'ky']) {
+        for (final code in ['ar', 'ru', 'ky', 'fr', 'ur', 'pt']) {
           final other = ph
               .allMatches(langs[code]![key].toString())
               .map((m) => m.group(0)!)
@@ -60,19 +60,24 @@ void main() {
   });
 
   group('locale resolve / RTL', () {
-    test('supported locales are ar/en/ru/ky', () {
+    test('supported locales include fr/ur/pt', () {
       expect(
         driverSupportedLocales.map((e) => e.languageCode).toSet(),
-        {'ar', 'en', 'ru', 'ky'},
+        {'ar', 'en', 'ru', 'ky', 'fr', 'ur', 'pt'},
       );
       expect(driverFallbackLocale.languageCode, 'en');
     });
 
-    test('RTL only for Arabic', () {
+    test('RTL for Arabic and Urdu', () {
       ui.TextDirection dirFor(String code) =>
-          code == 'ar' ? ui.TextDirection.rtl : ui.TextDirection.ltr;
+          (code == 'ar' || code == 'ur')
+              ? ui.TextDirection.rtl
+              : ui.TextDirection.ltr;
       expect(dirFor('ar'), ui.TextDirection.rtl);
+      expect(dirFor('ur'), ui.TextDirection.rtl);
       expect(dirFor('en'), ui.TextDirection.ltr);
+      expect(dirFor('fr'), ui.TextDirection.ltr);
+      expect(dirFor('pt'), ui.TextDirection.ltr);
       expect(dirFor('ru'), ui.TextDirection.ltr);
       expect(dirFor('ky'), ui.TextDirection.ltr);
     });

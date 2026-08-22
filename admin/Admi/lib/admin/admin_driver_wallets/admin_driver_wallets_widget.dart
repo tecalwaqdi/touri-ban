@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '/backend/admin_role_service.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/menu2_model.dart';
@@ -12,6 +13,8 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 /// Admin view: driver wallets, top-ups, company payments, ledger.
+///
+/// LEGACY wallet tool — NOT settlement. Adjust is SuperAdmin-only.
 class AdminDriverWalletsWidget extends StatefulWidget {
   const AdminDriverWalletsWidget({super.key});
 
@@ -30,7 +33,8 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
   String _tab = 'wallets';
   bool _adjusting = false;
 
-  bool get _canAdjust => AdminRoleService.isFinance || AdminRoleService.isSuperAdmin;
+  /// LEGACY wallet adjust — SuperAdmin only (not Finance / settlement).
+  bool get _canAdjust => AdminRoleService.isSuperAdmin;
 
   @override
   void initState() {
@@ -53,7 +57,7 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
 
     final amountCtrl = TextEditingController();
     final noteCtrl = TextEditingController();
-    final confirmed = await showDialog<bool>(
+    final formOk = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(uiTr(context, 'تعديل رصيد المحفظة')),
@@ -98,13 +102,13 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(uiTr(context, 'تأكيد التعديل')),
+            child: Text(uiTr(context, 'متابعة')),
           ),
         ],
       ),
     );
 
-    if (confirmed != true || !mounted) {
+    if (formOk != true || !mounted) {
       amountCtrl.dispose();
       noteCtrl.dispose();
       return;
@@ -121,6 +125,26 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
       );
       return;
     }
+
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: uiTr(context, 'تأكيد تعديل المحفظة'),
+      whatHappens: uiTr(
+        context,
+        'LEGACY wallet adjust — NOT a settlement. Changes driver wallet balance directly.',
+      ),
+      subject: driverId,
+      impact:
+          '${uiTr(context, 'الرصيد الحالي')}: ${currentBalance.toStringAsFixed(2)} $currency',
+      confirmLabel: uiTr(context, 'تأكيد التعديل'),
+      destructive: amount < 0,
+      irreversible: true,
+      currency: currency,
+      amount: '${amount.toStringAsFixed(2)} $currency',
+      direction: amount >= 0 ? 'credit' : 'debit',
+      reference: note.isEmpty ? driverId : note,
+    );
+    if (!confirmed || !mounted) return;
 
     setState(() => _adjusting = true);
     try {
@@ -164,6 +188,41 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Material(
+            color: theme.warning.withValues(alpha: 0.12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  Icon(Icons.warning_amber_rounded, color: theme.warning),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      uiTr(
+                        context,
+                        'LEGACY wallet tool — NOT settlement. Only SuperAdmin can adjust.',
+                      ),
+                      style: theme.bodySmall.override(
+                        fontFamily: 'Cairo',
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (!_canAdjust)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+              child: Text(
+                uiTr(context, 'Wallet adjust is disabled for your role.'),
+                style: theme.bodySmall.override(
+                  fontFamily: 'Cairo',
+                  color: theme.secondaryText,
+                ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.all(12),
             child: Wrap(
@@ -305,20 +364,20 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
                           color: bal >= 200 ? Colors.green.shade700 : Colors.red,
                         ),
                       ),
-                      if (_canAdjust) ...[
-                        const SizedBox(width: 4),
-                        IconButton(
-                          tooltip: uiTr(context, 'تعديل رصيد المحفظة'),
-                          onPressed: _adjusting
-                              ? null
-                              : () => _adjustWallet(
-                                    driverId: uid,
-                                    currency: currency,
-                                    currentBalance: bal,
-                                  ),
-                          icon: const Icon(Icons.edit_rounded),
-                        ),
-                      ],
+                      const SizedBox(width: 4),
+                      IconButton(
+                        tooltip: _canAdjust
+                            ? uiTr(context, 'تعديل رصيد المحفظة')
+                            : uiTr(context, 'Wallet adjust disabled'),
+                        onPressed: (!_canAdjust || _adjusting)
+                            ? null
+                            : () => _adjustWallet(
+                                  driverId: uid,
+                                  currency: currency,
+                                  currentBalance: bal,
+                                ),
+                        icon: const Icon(Icons.edit_rounded),
+                      ),
                     ],
                   ),
                 );

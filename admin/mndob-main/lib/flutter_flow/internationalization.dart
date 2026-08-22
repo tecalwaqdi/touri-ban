@@ -20,6 +20,9 @@ class FFLocalizations {
         'ar',
         'ru',
         'ky',
+        'fr',
+        'ur',
+        'pt',
       ];
 
   static late SharedPreferences _prefs;
@@ -78,6 +81,9 @@ class FFLocalizations {
     String? arText = '',
     String? ruText = '',
     String? kyText = '',
+    String? frText = '',
+    String? urText = '',
+    String? ptText = '',
   }) {
     // Never index [en, ar] by languageIndex — ru/ky are 2/3 and throw RangeError.
     switch (languageCode) {
@@ -90,6 +96,12 @@ class FFLocalizations {
         if (kyText != null && kyText.isNotEmpty) return kyText;
         if (ruText != null && ruText.isNotEmpty) return ruText;
         return (enText ?? '');
+      case 'fr':
+        return (frText != null && frText.isNotEmpty) ? frText : (enText ?? '');
+      case 'ur':
+        return (urText != null && urText.isNotEmpty) ? urText : (enText ?? '');
+      case 'pt':
+        return (ptText != null && ptText.isNotEmpty) ? ptText : (enText ?? '');
       default:
         return enText ?? '';
     }
@@ -1422,8 +1434,8 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'ar': 'مكتمل',
     },
     'oadi4ucn': {
-      'en': 'Financials',
-      'ar': ' المالية/المحفظة',
+      'en': 'Finance / Wallet',
+      'ar': 'المالية / المحفظة',
     },
     '5w1bmqit': {
       'en': 'Total Earnings',
@@ -1439,25 +1451,25 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
     },
     'xvmvyd3d': {
       'en': 'Please add a bank account to request your payouts.',
-      'ar': 'يرجى إضافة حساب بنكي لطلب مستحقاتك المالية.\n',
+      'ar': 'يرجى إضافة حساب بنكي لطلب مستحقاتك المالية.',
     },
     '7hlqu0xi': {
       'en': 'Bank account update',
       'ar': 'تحديث الحساب البنكي',
     },
     'p9lt26gd': {
-      'en': 'Unpaid App Commissions',
+      'en': 'Unpaid app commissions',
       'ar': 'عمولات التطبيق غير المدفوعة',
     },
     '7rctg8a4': {
       'en':
-          'This balance is due for payment. You must transfer the outstanding amount to the Ara Watan app.',
+          'This amount is due. Please pay the outstanding commissions in the Touri Driver app.',
       'ar':
-          'هذا الرصيد مستحق الدفع.\n يجب عليك تحويل المبلغ المستحق إلى تطبيق \"أرى وطن\"',
+          'هذا المبلغ مستحق الدفع. يرجى سداد عمولات التطبيق المستحقة عبر تطبيق مندوب توري.',
     },
     '3hqugl0j': {
-      'en': 'Pay App Commissions',
-      'ar': 'دفع المستحقات الآن',
+      'en': 'Pay commissions now',
+      'ar': 'ادفع العمولات الآن',
     },
     'jnbn4mww': {
       'en': 'Home',

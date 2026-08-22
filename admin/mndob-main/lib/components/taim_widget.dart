@@ -19,6 +19,14 @@ class TaimWidget extends StatefulWidget {
 class _TaimWidgetState extends State<TaimWidget> {
   late TaimModel _model;
 
+  int get _remainingMs {
+    final end = FFAppState().EndDate;
+    if (end == null) return 0;
+    final now = getCurrentTimestamp;
+    if (now.millisecondsSinceEpoch >= end.millisecondsSinceEpoch) return 0;
+    return functions.calculateRemainingMs(now, end);
+  }
+
   @override
   void setState(VoidCallback callback) {
     super.setState(callback);
@@ -31,7 +39,12 @@ class _TaimWidgetState extends State<TaimWidget> {
     _model = createModel(context, () => TaimModel());
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.timerController.onStartTimer();
+      final ms = _remainingMs;
+      _model.timerController.timer.setPresetTime(mSec: ms, add: false);
+      _model.timerController.onResetTimer();
+      if (ms > 0) {
+        _model.timerController.onStartTimer();
+      }
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -48,6 +61,8 @@ class _TaimWidgetState extends State<TaimWidget> {
     context.watch<FFAppState>();
     final colors = context.dsColors;
     final typography = context.dsTypography;
+    final end = FFAppState().EndDate;
+    final start = FFAppState().startTime;
 
     return Align(
       alignment: AlignmentDirectional.center,
@@ -79,11 +94,7 @@ class _TaimWidgetState extends State<TaimWidget> {
               ),
               DsSpacing.gapSm,
               FlutterFlowTimer(
-                initialTime: getCurrentTimestamp.millisecondsSinceEpoch <
-                        FFAppState().EndDate!.millisecondsSinceEpoch
-                    ? functions.calculateRemainingMs(
-                        getCurrentTimestamp, FFAppState().EndDate!)
-                    : 0,
+                initialTime: _remainingMs,
                 getDisplayTime: (value) =>
                     StopWatchTimer.getDisplayTime(value, milliSecond: false),
                 controller: _model.timerController,
@@ -114,31 +125,35 @@ class _TaimWidgetState extends State<TaimWidget> {
                 children: [
                   Expanded(
                     child: _timeColumn(
-                    context,
-                    label: FFLocalizations.of(context).getText('r0d4t29u'),
-                    icon: Icons.timer_outlined,
-                    iconColor: colors.success,
-                    value: dateTimeFormat(
-                      'd/M/y',
-                      FFAppState().startTime,
-                      locale: FFLocalizations.of(context).languageCode,
+                      context,
+                      label: FFLocalizations.of(context).getText('r0d4t29u'),
+                      icon: Icons.timer_outlined,
+                      iconColor: colors.success,
+                      value: start == null
+                          ? '—'
+                          : dateTimeFormat(
+                              'd/M/y',
+                              start,
+                              locale: FFLocalizations.of(context).languageCode,
+                            ),
+                      valueColor: colors.success,
                     ),
-                    valueColor: colors.success,
-                  ),
                   ),
                   Expanded(
                     child: _timeColumn(
-                    context,
-                    label: FFLocalizations.of(context).getText('n5kxjaax'),
-                    icon: Icons.timer_off_outlined,
-                    iconColor: colors.error,
-                    value: dateTimeFormat(
-                      'd/M/y',
-                      FFAppState().EndDate,
-                      locale: FFLocalizations.of(context).languageCode,
+                      context,
+                      label: FFLocalizations.of(context).getText('n5kxjaax'),
+                      icon: Icons.timer_off_outlined,
+                      iconColor: colors.error,
+                      value: end == null
+                          ? '—'
+                          : dateTimeFormat(
+                              'd/M/y',
+                              end,
+                              locale: FFLocalizations.of(context).languageCode,
+                            ),
+                      valueColor: colors.error,
                     ),
-                    valueColor: colors.error,
-                  ),
                   ),
                 ],
               ),
@@ -148,31 +163,35 @@ class _TaimWidgetState extends State<TaimWidget> {
                 children: [
                   Expanded(
                     child: _timeColumn(
-                    context,
-                    label: FFLocalizations.of(context).getText('ipd61kmc'),
-                    icon: Icons.timer_outlined,
-                    iconColor: colors.success,
-                    value: dateTimeFormat(
-                      'jm',
-                      FFAppState().startTime,
-                      locale: FFLocalizations.of(context).languageCode,
+                      context,
+                      label: FFLocalizations.of(context).getText('r0d4t29u'),
+                      icon: Icons.timer_outlined,
+                      iconColor: colors.success,
+                      value: start == null
+                          ? '—'
+                          : dateTimeFormat(
+                              'Hm',
+                              start,
+                              locale: FFLocalizations.of(context).languageCode,
+                            ),
+                      valueColor: colors.success,
                     ),
-                    valueColor: colors.success,
-                  ),
                   ),
                   Expanded(
                     child: _timeColumn(
-                    context,
-                    label: FFLocalizations.of(context).getText('an8ejy50'),
-                    icon: Icons.timer_off_outlined,
-                    iconColor: colors.error,
-                    value: dateTimeFormat(
-                      'jm',
-                      FFAppState().EndDate,
-                      locale: FFLocalizations.of(context).languageCode,
+                      context,
+                      label: FFLocalizations.of(context).getText('n5kxjaax'),
+                      icon: Icons.timer_off_outlined,
+                      iconColor: colors.error,
+                      value: end == null
+                          ? '—'
+                          : dateTimeFormat(
+                              'Hm',
+                              end,
+                              locale: FFLocalizations.of(context).languageCode,
+                            ),
+                      valueColor: colors.error,
                     ),
-                    valueColor: colors.error,
-                  ),
                   ),
                 ],
               ),
@@ -191,30 +210,16 @@ class _TaimWidgetState extends State<TaimWidget> {
     required String value,
     required Color valueColor,
   }) {
-    final colors = context.dsColors;
     final typography = context.dsTypography;
-
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
+        Text(label, style: typography.labelMedium),
+        const SizedBox(height: 4),
+        Icon(icon, color: iconColor, size: 22),
+        const SizedBox(height: 4),
         Text(
-          label,
-          style: typography.bodyMedium.copyWith(color: colors.textSecondary),
-        ),
-        DsSpacing.gapXxs,
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: iconColor, size: 13),
-            DsSpacing.gapXs,
-            Text(
-              value,
-              style: typography.bodyLarge.copyWith(
-                color: valueColor,
-                fontSize: 12,
-              ),
-            ),
-          ],
+          value,
+          style: typography.titleSmall.copyWith(color: valueColor),
         ),
       ],
     );

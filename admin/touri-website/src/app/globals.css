@@ -298,9 +298,12 @@ html[dir="ltr"] h3 {
 }
 
 .phone-frame {
+  /* Padding = visible bezel; screenshot must never paint into this ring */
   border-radius: 2rem;
   background: #0d1412;
   padding: 0.4rem;
+  overflow: hidden;
+  isolation: isolate;
   box-shadow:
     0 24px 56px rgba(10, 43, 36, 0.26),
     inset 0 0 0 1px rgba(255, 255, 255, 0.08);
@@ -316,12 +319,23 @@ html[dir="ltr"] h3 {
 .phone-screen {
   border-radius: 1.65rem;
   background: #050807;
+  overflow: hidden;
+  isolation: isolate;
+  transform: translateZ(0);
+  /* Safari-only: force clip of replaced <img> to rounded corners */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 
 @media (min-width: 640px) {
   .phone-screen {
     border-radius: 1.9rem;
   }
+}
+
+.phone-screen img {
+  border-radius: inherit;
+  /* Next/Image fill — pin to glass, never bleed into bezel */
+  max-width: none;
 }
 
 @media (max-width: 639px) {

@@ -183,10 +183,16 @@ exports.acceptDriverOrder = functions
           deadlineAt = order.acceptanceDeadline.toDate();
         } else if (typeof order.acceptance_deadline_ms === "number") {
           deadlineAt = new Date(order.acceptance_deadline_ms);
-        } else if (order.data_order && order.data_order.toDate) {
-          deadlineAt = new Date(
-            order.data_order.toDate().getTime() + 60 * 60 * 1000,
-          );
+        } else {
+          const created = order.data_order || order.createdAt || order.created_at;
+          if (created && created.toDate) {
+            deadlineAt = new Date(created.toDate().getTime() + 60 * 60 * 1000);
+          } else if (created) {
+            const ms = new Date(created).getTime();
+            if (!Number.isNaN(ms)) {
+              deadlineAt = new Date(ms + 60 * 60 * 1000);
+            }
+          }
         }
         if (deadlineAt && Date.now() > deadlineAt.getTime()) {
           throw new functions.https.HttpsError(

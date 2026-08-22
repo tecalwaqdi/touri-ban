@@ -3,6 +3,7 @@ import '/backend/admin_cascade_delete.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_legacy_alias_filter.dart';
 import '/backend/backend.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
@@ -76,25 +77,20 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
   }
 
   Future<void> _deleteRegion(CitiesRecord record) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(appTr(context, 'adm_delete_confirm_title')),
-            content: Text(uiTr(context, 'عند حذف المنطقة سيتم حذف كل المعالم المرتبطة. هل أنت متأكد من الحذف؟'),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(appTr(context, 'adm_yes_delete')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: appTr(context, 'adm_delete_confirm_title'),
+      whatHappens: uiTr(
+        context,
+        'Deleting this region removes linked landmarks. This may break historical order references.',
+      ),
+      subject: record.naim.isNotEmpty ? record.naim : record.reference.id,
+      impact: uiTr(context, 'Cascade delete on region and landmarks.'),
+      destructive: true,
+      irreversible: true,
+      confirmLabel: appTr(context, 'adm_yes_delete'),
+      cancelLabel: appTr(context, 'adm_no'),
+    );
 
     if (!confirmed) return;
 

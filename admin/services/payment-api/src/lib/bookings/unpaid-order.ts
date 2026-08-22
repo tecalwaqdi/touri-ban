@@ -6,6 +6,7 @@ import {
   buildUnpaidOnlineOrderData,
   SessionQuote,
 } from "@/lib/bookings/build-order";
+import { assertAndClaimActiveOrderSlot } from "@/lib/bookings/active-order";
 import { logger } from "@/lib/logging/logger";
 
 function isAlreadyPaidOrder(data: Record<string, unknown>): boolean {
@@ -61,6 +62,13 @@ export async function ensureUnpaidBookingOrder(params: {
       if (isAlreadyPaidOrder(existing)) {
         throw new ApiError(PaymentErrorCode.PAYMENT_ALREADY_EXISTS, 409);
       }
+      // Same unpaid draft — claim/refresh lock for this order id.
+      await assertAndClaimActiveOrderSlot({
+        tx,
+        db: db(),
+        userId,
+        orderId,
+      });
       // Keep existing unpaid draft; refresh session link + latest ngenius ref.
       tx.set(
         orderRef,
@@ -76,6 +84,12 @@ export async function ensureUnpaidBookingOrder(params: {
         { merge: true },
       );
     } else {
+      await assertAndClaimActiveOrderSlot({
+        tx,
+        db: db(),
+        userId,
+        orderId,
+      });
       tx.create(orderRef, unpaidData);
       created = true;
     }

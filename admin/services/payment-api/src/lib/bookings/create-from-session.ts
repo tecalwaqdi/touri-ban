@@ -10,6 +10,7 @@ import {
   parseBookingDraft,
   SessionQuote,
 } from "@/lib/bookings/build-order";
+import { assertAndClaimActiveOrderSlot } from "@/lib/bookings/active-order";
 
 function isPaidTerminal(session: Record<string, unknown>): boolean {
   return (
@@ -125,6 +126,15 @@ export async function createBookingFromPaidSession(
       }
 
       if (isUnpaidDraftOrder(existing)) {
+        const userId = String(session.user_id || latest.user_id || "");
+        if (userId) {
+          await assertAndClaimActiveOrderSlot({
+            tx,
+            db: db(),
+            userId,
+            orderId: orderRef.id,
+          });
+        }
         tx.set(
           orderRef,
           paidActivationPatch(latest as SessionQuote, sessionId),
@@ -150,6 +160,16 @@ export async function createBookingFromPaidSession(
       throw new ApiError(PaymentErrorCode.PAYMENT_ALREADY_EXISTS, 409);
     }
 
+    const userId = String(session.user_id || latest.user_id || "");
+    if (!userId) {
+      throw new ApiError(PaymentErrorCode.AUTH_REQUIRED, 401);
+    }
+    await assertAndClaimActiveOrderSlot({
+      tx,
+      db: db(),
+      userId,
+      orderId: orderRef.id,
+    });
     tx.create(orderRef, paidCreateData);
     tx.set(
       sessionRef,

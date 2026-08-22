@@ -3,6 +3,7 @@ import '/backend/admin_audit_log.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_performance.dart';
 import '/backend/backend.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
@@ -64,24 +65,17 @@ class _AdminAgentWidgetState extends State<AdminAgentWidget> {
   }
 
   Future<void> _deleteAgent(UserRecord agent) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(appTr(context, 'adm_delete_confirm_title')),
-            content: Text(appTrFormat(context, 'adm_delete_agent_body', agent.displayName)),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(appTr(context, 'adm_yes_delete')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: appTr(context, 'adm_delete_confirm_title'),
+      whatHappens: appTrFormat(context, 'adm_delete_agent_body', agent.displayName),
+      subject: agent.displayName.isNotEmpty ? agent.displayName : agent.reference.id,
+      impact: uiTr(context, 'Agent account will be removed from the panel.'),
+      destructive: true,
+      irreversible: true,
+      confirmLabel: appTr(context, 'adm_yes_delete'),
+      cancelLabel: appTr(context, 'adm_no'),
+    );
 
     if (!confirmed) return;
 

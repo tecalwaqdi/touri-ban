@@ -9,4 +9,7 @@ preferred-supported-locales:
   - ar
   - ru
   - ky
+  - fr
+  - ur
+  - pt
 use-escaping: false

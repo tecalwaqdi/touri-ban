@@ -3,6 +3,7 @@ import '/backend/admin_performance.dart';
 import '/backend/admin_resource_guard.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
+import '/components/admin_driver_financial_panel.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_region_picker.dart';
 import '/components/admin_ui.dart';
@@ -369,6 +370,17 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
                                 ].divide(SizedBox(width: 24.0)),
                               ),
                             ].divide(SizedBox(height: 16.0)),
+                          ),
+                        ),
+                      ),
+                      Card(
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        elevation: 0.0,
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: AdminDriverFinancialPanel(
+                            driverRef: driverProfileUserRecord.reference,
+                            countryRef: driverProfileUserRecord.revDolh,
                           ),
                         ),
                       ),

@@ -133,6 +133,7 @@ class FFLocalizations {
     String? kyText = '',
     String? frText = '',
     String? idText = '',
+    String? ptText = '',
   }) {
     final byLang = <String, String?>{
       'en': enText,
@@ -146,6 +147,7 @@ class FFLocalizations {
       'ky': kyText,
       'fr': frText,
       'id': idText,
+      'pt': ptText,
     };
     final text = _cleanLocalizedText(byLang[locale.toString()] ?? '');
     if (text.isNotEmpty) {

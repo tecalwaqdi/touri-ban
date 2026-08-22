@@ -5,8 +5,10 @@ import 'package:geolocator/geolocator.dart';
 import '/app_state.dart';
 import '/backend/schema/structs/index.dart';
 import '/core/toury_checkout_state.dart';
-import '/core/toury_dialogs.dart';
+import '/core/toury_landmark_cart.dart';
+import '/core/toury_landmark_filter.dart';
 import '/core/toury_navigation.dart';
+import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 /// مسافة بالأمتار تُعتبر نفس الموقع المخصص.
@@ -41,25 +43,24 @@ bool touryAddCustomPlaceToCart({
 }) {
   final trimmedName = name.trim();
   if (trimmedName.isEmpty) {
-    TouryDialogs.showSnackBar(
+    touryClearThenShowSnackBar(
       context,
-      'custom_place_name_required'.tr(),
-      type: TouryMessageType.warning,
+      message: 'custom_place_name_required'.tr(),
+      tone: DsSnackTone.warning,
     );
     return false;
   }
 
   if (touryCustomPlaceAlreadyInCart(location)) {
-    TouryDialogs.showSnackBar(
+    touryClearThenShowSnackBar(
       context,
-      'custom_place_duplicate'.tr(),
-      type: TouryMessageType.warning,
+      message: 'custom_place_duplicate'.tr(),
+      tone: DsSnackTone.warning,
     );
     return false;
   }
 
   final app = FFAppState();
-  app.addcart = app.addcart + 1;
   app.addToCartmkss(
     AmaknCostmStruct(
       naim: trimmedName,
@@ -74,10 +75,12 @@ bool touryAddCustomPlaceToCart({
   if (app.naimvillatext.trim().isNotEmpty) {
     app.textallAlmdn = '${app.textallAlmdn} ${app.naimvillatext}'.trim();
   }
+  app.addcart = app.cartmkss.length;
   app.Minimumhours = touryMinimumBookingHours(
     landmarkCount: app.cartmkss.length,
     driverGuide: app.DriverGuideState,
   );
+  tourySyncCartMkanRefs(app);
   tourySyncBookingFlags();
   app.update(() {});
 
@@ -85,15 +88,12 @@ bool touryAddCustomPlaceToCart({
     return true;
   }
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text('custom_place_added'.tr(namedArgs: {'name': trimmedName})),
-      duration: const Duration(seconds: 4),
-      action: SnackBarAction(
-        label: 'view_my_trip'.tr(),
-        onPressed: () => touryOpenCheckout(context),
-      ),
-    ),
+  touryClearThenShowSnackBar(
+    context,
+    message: 'custom_place_added'.tr(namedArgs: {'name': trimmedName}),
+    tone: DsSnackTone.success,
+    actionLabel: 'view_my_trip'.tr(),
+    onAction: () => touryOpenCheckout(context),
   );
   return true;
 }

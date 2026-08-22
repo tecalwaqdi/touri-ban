@@ -105,6 +105,11 @@ abstract final class DriverTripActionGates {
 
   static bool isActiveListItem(String statusCode, String halhText) {
     final c = statusCode.trim().toLowerCase();
+    if (TourySystemStatusCodes.isTerminalBooking(c)) return false;
+    if (c == TourySystemStatusCodes.pendingDriver ||
+        c == TourySystemStatusCodes.legacyAwaitingDriver) {
+      return false;
+    }
     if (c == TourySystemStatusCodes.driverAssigned ||
         c == TourySystemStatusCodes.driverArriving ||
         c == TourySystemStatusCodes.driverArrived ||
@@ -113,6 +118,24 @@ abstract final class DriverTripActionGates {
       return true;
     }
     return DriverTripHalh.isActiveTrip(halhText);
+  }
+
+  /// Active accepted trip for the current driver (list + badges).
+  static bool isAcceptedActiveOrder(OrderRecord order) {
+    final data = order.snapshotData;
+    if (!isAssignedToCurrentDriver(order.mndobUser)) return false;
+    final status = (data['status_code'] ?? '').toString();
+    final halh = order.halhText;
+    if (isActiveListItem(status, halh)) return true;
+    // Recover edge docs where ActiveOrder stuck true after accept claim.
+    if (data['ActiveOrder'] == true &&
+        !TourySystemStatusCodes.isTerminalBooking(status) &&
+        status.trim().toLowerCase() != TourySystemStatusCodes.pendingDriver) {
+      return DriverTripHalh.isActiveTrip(halh) ||
+          status.trim().isEmpty ||
+          (data['halhOrderMndob'] ?? '').toString().toLowerCase() == 'accepted';
+    }
+    return false;
   }
 
   static bool isCompletedListItem(String statusCode, String halhText) {
@@ -130,7 +153,8 @@ abstract final class DriverTripActionGates {
         c == TourySystemStatusCodes.cancelledByCustomer ||
         c == TourySystemStatusCodes.cancelledByAdmin ||
         c == TourySystemStatusCodes.legacyCancelled ||
-        c == TourySystemStatusCodes.legacyCanceled) {
+        c == TourySystemStatusCodes.legacyCanceled ||
+        c == TourySystemStatusCodes.expired) {
       return true;
     }
     return halhText == DriverTripHalh.cancelled;

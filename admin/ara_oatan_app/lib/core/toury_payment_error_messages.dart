@@ -46,6 +46,7 @@ String touryPaymentApiErrorKey(String? rawCode) {
 
   if (upper == 'PAYMENT_CANCELLED') return 'PAYMENT_CANCELLED';
   if (upper == 'PAYMENT_EXPIRED') return 'PAYMENT_EXPIRED';
+  if (upper == 'ACTIVE_BOOKING_EXISTS') return 'booking_active_exists';
 
   const passThrough = <String>{
     'AUTH_REQUIRED',

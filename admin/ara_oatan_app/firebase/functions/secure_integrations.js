@@ -2,15 +2,38 @@ const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 const axios = require("axios");
 
-const runtime = {
+// Secret Manager bindings require secrets to exist in the project.
+// Deploy without TOURY_USE_SM_SECRETS (default) and inject keys via
+// `firebase functions:secrets:set` only when ready, or process.env.
+// Enable with TOURY_USE_SM_SECRETS=true after all secrets exist.
+const useSecretManager =
+  String(process.env.TOURY_USE_SM_SECRETS || "").toLowerCase() === "true";
+
+const whatsappRuntime = {
   timeoutSeconds: 60,
-  secrets: [
-    "ULTRAMSG_TOKEN",
-    "OPENCAGE_API_KEY",
-    "GOOGLE_MAPS_SERVER_API_KEY",
-    "WASL_DISPATCH_CREDENTIALS",
-    "WASL_TRACKING_CREDENTIALS",
-  ],
+  ...(useSecretManager ? {secrets: ["ULTRAMSG_TOKEN"]} : {}),
+};
+
+const geocodeRuntime = {
+  timeoutSeconds: 60,
+  ...(useSecretManager ? {secrets: ["OPENCAGE_API_KEY"]} : {}),
+};
+
+const mapsRuntime = {
+  timeoutSeconds: 60,
+  ...(useSecretManager ? {secrets: ["GOOGLE_MAPS_SERVER_API_KEY"]} : {}),
+};
+
+const waslRuntime = {
+  timeoutSeconds: 60,
+  ...(useSecretManager
+    ? {
+        secrets: [
+          "WASL_DISPATCH_CREDENTIALS",
+          "WASL_TRACKING_CREDENTIALS",
+        ],
+      }
+    : {}),
 };
 
 function requireTrustedClient(context) {
@@ -20,8 +43,9 @@ function requireTrustedClient(context) {
       "Authentication required.",
     );
   }
+  // Default off until App Check is rolled out on customer/driver clients.
   const requireAppCheck =
-    String(process.env.INTEGRATIONS_REQUIRE_APP_CHECK || "true") !== "false";
+    String(process.env.INTEGRATIONS_REQUIRE_APP_CHECK || "false") === "true";
   if (requireAppCheck && !process.env.FUNCTIONS_EMULATOR && !context.app) {
     throw new functions.https.HttpsError(
       "failed-precondition",
@@ -73,7 +97,7 @@ async function enforceMessageRateLimit(uid) {
 
 exports.sendWhatsAppMessage = functions
   .region("us-central1")
-  .runWith(runtime)
+  .runWith(whatsappRuntime)
   .https.onCall(async (data, context) => {
     requireTrustedClient(context);
     const to = text(data.to, 32).replace(/[^0-9+]/g, "");
@@ -110,7 +134,7 @@ exports.sendWhatsAppMessage = functions
 
 exports.reverseGeocode = functions
   .region("us-central1")
-  .runWith(runtime)
+  .runWith(geocodeRuntime)
   .https.onCall(async (data, context) => {
     requireTrustedClient(context);
     const latitude = Number(data.latitude);
@@ -149,7 +173,7 @@ exports.reverseGeocode = functions
 
 exports.getRoadRoute = functions
   .region("us-central1")
-  .runWith(runtime)
+  .runWith(mapsRuntime)
   .https.onCall(async (data, context) => {
     requireTrustedClient(context);
     if (!Array.isArray(data.points) || data.points.length < 2 ||
@@ -171,7 +195,20 @@ exports.getRoadRoute = functions
       }
       return {latitude, longitude};
     });
-    const apiKey = process.env.GOOGLE_MAPS_SERVER_API_KEY || "";
+    const apiKey =
+      process.env.GOOGLE_MAPS_SERVER_API_KEY ||
+      (() => {
+        try {
+          const cfg = functions.config();
+          return (
+            (cfg.google && cfg.google.maps_server_api_key) ||
+            (cfg.integrations && cfg.integrations.google_maps_server_api_key) ||
+            ""
+          );
+        } catch (_) {
+          return "";
+        }
+      })();
     if (!apiKey) {
       throw new functions.https.HttpsError(
         "failed-precondition",
@@ -433,7 +470,7 @@ const waslActions = {
 
 exports.waslRequest = functions
   .region("us-central1")
-  .runWith(runtime)
+  .runWith(waslRuntime)
   .https.onCall(async (data, context) => {
     requireTrustedClient(context);
     const action = text(data.action, 40);

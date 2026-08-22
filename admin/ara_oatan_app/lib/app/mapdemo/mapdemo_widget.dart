@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 import '/backend/schema/structs/index.dart';
 import '/components/listamak_widget.dart';
+import '/core/toury_custom_place_cart.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_place_picker.dart';
@@ -47,64 +48,31 @@ class _MapdemoWidgetState extends State<MapdemoWidget> {
   }
 
   // ---------------------------------------------------------------------------
-  // Business logic — unchanged behaviour, DS-styled surfaces only.
+  // Business logic — cart updates go through the shared custom-place helper.
   // ---------------------------------------------------------------------------
-
-  void _showAddedSnackBar(String message) {
-    final colors = context.dsColors;
-    final typography = context.dsTypography;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: typography.labelMedium.copyWith(color: colors.onPrimary),
-        ),
-        duration: const Duration(milliseconds: 4000),
-        backgroundColor: colors.primary,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: DsRadius.medium),
-        action: SnackBarAction(
-          label: 'view_my_trip'.tr(),
-          textColor: colors.onPrimary,
-          onPressed: () async {
-            context.pushNamed(Checkout66Widget.routeName);
-          },
-        ),
-      ),
-    );
-  }
 
   /// Drops the current map centre into the cart as a manually picked stop.
   Future<void> _addMapCentre() async {
-    FFAppState().addcart = FFAppState().addcart + 1;
-    FFAppState().addToCartmkss(AmaknCostmStruct(
-      naim: 'محدد يدوي من الخريطة ',
-      loceshn: _model.googleMapsCenter,
-    ));
+    final center = _model.googleMapsCenter;
+    if (center == null) return;
+    touryAddCustomPlaceToCart(
+      context: context,
+      name: 'ui_text_17db754851'.tr(),
+      location: center,
+    );
     safeSetState(() {});
-    _showAddedSnackBar('ui_text_17db754851'.tr());
   }
 
   /// Adds the place returned by the search picker, keeping the city trail.
   Future<void> _addSearchedPlace() async {
-    FFAppState().addcart = FFAppState().addcart + 1;
-    FFAppState().addToCartmkss(AmaknCostmStruct(
-      naim: _model.placePickerValue.name,
-      address: _model.placePickerValue.address,
-      textivill: _model.placePickerValue.city,
-      loceshn: _model.placePickerValue.latLng,
-      dolh: FFAppState().dolh,
-    ));
-    FFAppState().textallAlmdn = (String var1, String var2) {
-      return "$var1 $var2";
-    }(FFAppState().textallAlmdn, _model.placePickerValue.city);
-    safeSetState(() {});
-    _showAddedSnackBar(
-      'landmark_added_success'.tr(namedArgs: {
-        'name': _model.placePickerValue.name,
-      }),
+    final place = _model.placePickerValue;
+    touryAddCustomPlaceToCart(
+      context: context,
+      name: place.name,
+      location: place.latLng,
+      address: place.address,
     );
+    safeSetState(() {});
   }
 
   Future<void> _openAddedTripsSheet() async {

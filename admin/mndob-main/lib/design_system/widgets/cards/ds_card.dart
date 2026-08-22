@@ -261,12 +261,15 @@ class DsWalletCard extends StatelessWidget {
     required this.balanceValue,
     this.action,
     this.currency,
+    this.balanceAmount,
   });
 
   final String balanceLabel;
   final String balanceValue;
   final String? currency;
   final Widget? action;
+  /// When set, replaces the default `balanceValue + currency` text row.
+  final Widget? balanceAmount;
 
   @override
   Widget build(BuildContext context) {
@@ -275,7 +278,12 @@ class DsWalletCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: DsSpacing.cardPadding,
+      padding: const EdgeInsets.fromLTRB(
+        DsSpacing.lg,
+        DsSpacing.lg,
+        DsSpacing.lg,
+        DsSpacing.lg,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -290,15 +298,18 @@ class DsWalletCard extends StatelessWidget {
         children: [
           Text(
             balanceLabel,
-            style: typography.labelMedium.copyWith(
-              color: colors.onPrimary.withValues(alpha: 0.85),
+            style: typography.labelLarge.copyWith(
+              color: colors.onPrimary.withValues(alpha: 0.88),
+              fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: DsSpacing.xs),
-          Text(
-            currency == null ? balanceValue : '$balanceValue $currency',
-            style: typography.displaySmall.copyWith(color: colors.onPrimary),
-          ),
+          const SizedBox(height: DsSpacing.sm),
+          balanceAmount ??
+              Text(
+                currency == null ? balanceValue : '$balanceValue $currency',
+                style:
+                    typography.displaySmall.copyWith(color: colors.onPrimary),
+              ),
           if (action != null) ...[
             const SizedBox(height: DsSpacing.md),
             action!,

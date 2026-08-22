@@ -113,6 +113,7 @@ abstract final class TourySystemStatusCodes {
       case cancelledByAdmin:
       case legacyCancelled:
       case legacyCanceled:
+      case expired:
         return 'Cancelled';
       default:
         return '';
@@ -142,6 +143,7 @@ abstract final class TourySystemStatusCodes {
       case cancelledByAdmin:
       case legacyCancelled:
       case legacyCanceled:
+      case expired:
         return 'ملغي';
       default:
         return '';

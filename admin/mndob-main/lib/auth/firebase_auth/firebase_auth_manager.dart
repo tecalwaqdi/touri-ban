@@ -18,6 +18,7 @@ import 'google_auth.dart';
 import 'jwt_token_auth.dart';
 import 'github_auth.dart';
 import '/core/driver_auth_errors.dart';
+import '/core/driver_i18n.dart';
 
 export '../base_auth_user_provider.dart';
 
@@ -123,7 +124,15 @@ class FirebaseAuthManager extends AuthManager
       if (e.code == 'requires-recent-login') {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.message!}')),
+          SnackBar(
+            content: Text(
+              driverTrNamed(
+                context,
+                'Error: {message}',
+                {'message': e.message!},
+              ),
+            ),
+          ),
         );
       }
     }
@@ -139,12 +148,20 @@ class FirebaseAuthManager extends AuthManager
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.message!}')),
+        SnackBar(
+          content: Text(
+            driverTrNamed(
+              context,
+              'Error: {message}',
+              {'message': e.message!},
+            ),
+          ),
+        ),
       );
       return null;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Password reset email sent')),
+      SnackBar(content: Text(driverTr(context, 'Password reset email sent'))),
     );
   }
 
@@ -212,7 +229,13 @@ class FirebaseAuthManager extends AuthManager
       } else if (phoneAuthManager.phoneAuthError != null) {
         final e = phoneAuthManager.phoneAuthError!;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: ${e.message!}'),
+          content: Text(
+            driverTrNamed(
+              context,
+              'Error: {message}',
+              {'message': e.message!},
+            ),
+          ),
         ));
         phoneAuthManager.update(() => phoneAuthManager.phoneAuthError = null);
       }

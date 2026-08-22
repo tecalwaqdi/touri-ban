@@ -135,6 +135,18 @@ class OrderFinancials {
   final bool isPending;
   final bool isCanceled;
 
+  /// Correct label: Driver Net (`total_mndob`).
+  double get driverNet => repCommission;
+
+  /// Correct label: Gross Base Fare (`total_mndob2`).
+  double get grossBaseFare => deliveryFees;
+
+  /// Correct label: Platform Fee (`total_app`).
+  double get platformFee => appProfit;
+
+  /// Correct label: Recorded VAT (`total_vat`).
+  double get recordedVat => vat;
+
   double get platformFees => appProfit + vat;
 
   double get partnerPayouts => repCommission + deliveryFees;
@@ -188,6 +200,8 @@ class FinancialTotals {
 abstract final class FinancialEngine {
   FinancialEngine._();
 
+  /// Legacy field aliases — prefer FinancialAccountingEngine labels:
+  /// `repCommission` ≡ Driver Net, `deliveryFees` ≡ Gross Base Fare.
   static OrderFinancials orderFinancials(OrderRecord order) {
     final paid = OrderStatusHelper.isPaid(order);
     final pending = OrderStatusHelper.isPending(order);
@@ -197,7 +211,9 @@ abstract final class FinancialEngine {
       totalSales: paid ? order.total.toDouble() : 0,
       appProfit: paid ? order.totalApp.toDouble() : 0,
       vat: paid ? order.totalVat.toDouble() : 0,
+      // Driver Net (legacy name repCommission — misleading).
       repCommission: paid ? order.totalMndob.toDouble() : 0,
+      // Gross Base Fare (legacy name deliveryFees — misleading).
       deliveryFees: paid ? order.totalMndob2.toDouble() : 0,
       isPaid: paid,
       isPending: pending,

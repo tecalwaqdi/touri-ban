@@ -1,19 +1,17 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'serialization_util.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '../../flutter_flow/flutter_flow_util.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import '../../index.dart';
-import '../../main.dart';
 
 final _handledMessageIds = <String?>{};
+final _handledOrderNavKeys = <String>{};
 
 class PushNotificationsHandler extends StatefulWidget {
   const PushNotificationsHandler({Key? key, required this.child})
@@ -41,42 +39,136 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
     FirebaseMessaging.onMessageOpenedApp.listen(_handlePushNotification);
   }
 
+  DocumentReference? _resolveOrderRef(Map<String, dynamic> data) {
+    const keys = [
+      'id',
+      'idorder',
+      'orderId',
+      'order_id',
+      'orderPath',
+      'bookingId',
+      'booking_id',
+    ];
+    for (final key in keys) {
+      final fromParam = getParameter<DocumentReference>(data, key);
+      if (fromParam != null) return fromParam;
+      final raw = data[key];
+      if (raw == null) continue;
+      final text = raw.toString().trim();
+      if (text.isEmpty) continue;
+      try {
+        if (text.contains('/')) {
+          return FirebaseFirestore.instance.doc(text);
+        }
+        return OrderRecord.collection.doc(text);
+      } catch (_) {}
+    }
+    return null;
+  }
+
   Future _handlePushNotification(RemoteMessage message) async {
-    if (_handledMessageIds.contains(message.messageId)) {
+    final dedupeKey = message.messageId ??
+        '${message.data['initialPageName']}|${message.data['parameterData']}|${message.sentTime?.millisecondsSinceEpoch}';
+    if (_handledMessageIds.contains(dedupeKey)) {
       return;
     }
-    _handledMessageIds.add(message.messageId);
+    _handledMessageIds.add(dedupeKey);
 
-    safeSetState(() => _loading = true);
+    // Soft loading overlay only — do not replace the whole app tree (blank/logo flash).
+    if (mounted) safeSetState(() => _loading = true);
     try {
-      final rawPageName = message.data['initialPageName'] as String;
-      final initialPageName = switch (rawPageName) {
-        'tfasel_order' || 'tfaselOrser' || 'tfasel_orser' => 'TfaselOrser',
+      final data = Map<String, dynamic>.from(message.data);
+      final initialParameterData = {
+        ...getInitialParameterData(data),
+        ...data,
+      };
+
+      final rawPageName =
+          (data['initialPageName'] ?? data['initial_page_name'] ?? '')
+              .toString()
+              .trim();
+      if (rawPageName.isEmpty && _resolveOrderRef(initialParameterData) == null) {
+        return;
+      }
+
+      final orderRef = _resolveOrderRef(initialParameterData);
+      var initialPageName = switch (rawPageName) {
+        'tfasel_order' ||
+        'tfaselOrser' ||
+        'tfasel_orser' ||
+        'TfaselOrser' =>
+          'TfaselOrser',
+        'Now' || 'neworder' || 'new_order' => 'Now',
         _ => rawPageName,
       };
-      final initialParameterData = getInitialParameterData(message.data);
+      // Prefer opening the exact order when payload includes an id.
+      if (orderRef != null &&
+          (initialPageName.isEmpty ||
+              initialPageName == 'Now' ||
+              initialPageName == 'home' ||
+              initialPageName == 'Dashboard5')) {
+        initialPageName = 'TfaselOrser';
+      }
+      if (initialPageName.isEmpty && orderRef != null) {
+        initialPageName = 'TfaselOrser';
+      }
+      if (initialPageName.isEmpty) {
+        return;
+      }
+
+      if (orderRef != null) {
+        final navKey = '${initialPageName}:${orderRef.path}';
+        if (_handledOrderNavKeys.contains(navKey)) {
+          return;
+        }
+        _handledOrderNavKeys.add(navKey);
+      }
+
       final parametersBuilder = parametersBuilderMap[initialPageName] ??
           parametersBuilderMap[rawPageName];
       if (parametersBuilder != null) {
         final parameterData = await parametersBuilder(initialParameterData);
-        if (mounted) {
-          context.pushNamed(
-            initialPageName,
+        final extra = Map<String, dynamic>.from(parameterData.extra);
+        if (orderRef != null &&
+            (initialPageName == 'TfaselOrser' ||
+                initialPageName == 'tfasel_order')) {
+          extra['id'] = orderRef;
+        }
+        final navContext = appNavigatorKey.currentContext;
+        if (navContext != null && navContext.mounted) {
+          navContext.pushNamed(
+            initialPageName == 'tfasel_order' ||
+                    initialPageName == 'tfaselOrser' ||
+                    initialPageName == 'tfasel_orser'
+                ? 'TfaselOrser'
+                : initialPageName,
             pathParameters: parameterData.pathParameters,
-            extra: parameterData.extra,
+            queryParameters: orderRef != null
+                ? {
+                    'id': serializeParam(
+                      orderRef,
+                      ParamType.DocumentReference,
+                    ),
+                  }.withoutNulls
+                : const <String, String>{},
+            extra: extra,
           );
-        } else {
-          appNavigatorKey.currentContext?.pushNamed(
-            initialPageName,
-            pathParameters: parameterData.pathParameters,
-            extra: parameterData.extra,
+        }
+      } else if (orderRef != null) {
+        final navContext = appNavigatorKey.currentContext;
+        if (navContext != null && navContext.mounted) {
+          navContext.pushNamed(
+            TfaselOrserWidget.routeName,
+            queryParameters: {
+              'id': serializeParam(orderRef, ParamType.DocumentReference),
+            }.withoutNulls,
           );
         }
       }
     } catch (e) {
-      print('Error: $e');
+      debugPrint('Push open error: $e');
     } finally {
-      safeSetState(() => _loading = false);
+      if (mounted) safeSetState(() => _loading = false);
     }
   }
 
@@ -99,7 +191,7 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
           message.data['notification_text'] as String? ??
           '';
       final ctx = appNavigatorKey.currentContext;
-      if (ctx == null) return;
+      if (ctx == null || !ctx.mounted) return;
       ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
       ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(
@@ -110,7 +202,7 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 4),
           action: SnackBarAction(
-            label: 'Open',
+            label: 'فتح',
             onPressed: () => _handlePushNotification(message),
           ),
         ),
@@ -119,15 +211,31 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
   }
 
   @override
-  Widget build(BuildContext context) => _loading
-      ? Container(
-          color: FlutterFlowTheme.of(context).secondaryBackground,
-          child: Image.asset(
-            'assets/images/logoTory.png',
-            fit: BoxFit.contain,
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        widget.child,
+        if (_loading)
+          Positioned.fill(
+            child: AbsorbPointer(
+              child: ColoredBox(
+                color: FlutterFlowTheme.of(context)
+                    .secondaryBackground
+                    .withValues(alpha: 0.55),
+                child: const Center(
+                  child: SizedBox(
+                    width: 28,
+                    height: 28,
+                    child: CircularProgressIndicator(strokeWidth: 2.4),
+                  ),
+                ),
+              ),
+            ),
           ),
-        )
-      : widget.child;
+      ],
+    );
+  }
 }
 
 class ParameterData {
@@ -178,20 +286,24 @@ final parametersBuilderMap =
   'TfaselOrser': (data) async => ParameterData(
         allParams: {
           'id': getParameter<DocumentReference>(data, 'id') ??
-              getParameter<DocumentReference>(data, 'idorder'),
+              getParameter<DocumentReference>(data, 'idorder') ??
+              getParameter<DocumentReference>(data, 'orderId') ??
+              getParameter<DocumentReference>(data, 'order_id'),
         },
       ),
   // Customer/driver legacy push routes
   'tfasel_order': (data) async => ParameterData(
         allParams: {
           'id': getParameter<DocumentReference>(data, 'id') ??
-              getParameter<DocumentReference>(data, 'idorder'),
+              getParameter<DocumentReference>(data, 'idorder') ??
+              getParameter<DocumentReference>(data, 'orderId'),
         },
       ),
   'tfaselOrser': (data) async => ParameterData(
         allParams: {
           'id': getParameter<DocumentReference>(data, 'id') ??
-              getParameter<DocumentReference>(data, 'idorder'),
+              getParameter<DocumentReference>(data, 'idorder') ??
+              getParameter<DocumentReference>(data, 'orderId'),
         },
       ),
   'dfddf': ParameterData.none(),
@@ -215,7 +327,7 @@ final parametersBuilderMap =
 
 Map<String, dynamic> getInitialParameterData(Map<String, dynamic> data) {
   try {
-    final parameterDataStr = data['parameterData'];
+    final parameterDataStr = data['parameterData'] ?? data['parameter_data'];
     if (parameterDataStr == null ||
         parameterDataStr is! String ||
         parameterDataStr.isEmpty) {
@@ -223,7 +335,7 @@ Map<String, dynamic> getInitialParameterData(Map<String, dynamic> data) {
     }
     return jsonDecode(parameterDataStr) as Map<String, dynamic>;
   } catch (e) {
-    print('Error parsing parameter data: $e');
+    debugPrint('Error parsing parameter data: $e');
     return {};
   }
 }

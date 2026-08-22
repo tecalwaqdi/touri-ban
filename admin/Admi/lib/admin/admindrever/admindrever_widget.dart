@@ -1,18 +1,24 @@
 import '/backend/admin_agent_country_lock.dart';
-import '/backend/admin_country_scope.dart';
+import '/backend/admin_audit_log.dart';
+import '/backend/admin_dashboard_invalidate.dart';
+import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
+import '/backend/admin_stats_coordinator.dart';
+import '/backend/admin_unknown_drivers_loader.dart';
 import '/backend/backend.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
-import '/components/admin_enterprise_kit.dart';
+import '/components/admin_enterprise_kit.dart' hide showAdminConfirmDialog;
 import '/components/admin_layout_widget.dart';
+import '/components/admin_ops_filter_bar.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
-import 'package:easy_debounce/easy_debounce.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'admindrever_model.dart';
 export 'admindrever_model.dart';
@@ -31,15 +37,12 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
   late AdmindreverModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  String _searchQuery = '';
+  AdminOpsFilterState _filters = const AdminOpsFilterState();
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AdmindreverModel());
-
-    _model.textController ??= TextEditingController();
-    _model.textFieldFocusNode ??= FocusNode();
 
     if (AdminRoleService.isCountryAgent) {
       AdminAgentCountryLock.applyToAppState();
@@ -55,14 +58,15 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
   }
 
   List<UserRecord> _filterReps(List<UserRecord> reps) {
-    final q = _searchQuery.trim().toLowerCase();
+    final q = _filters.searchQuery.trim().toLowerCase();
     if (q.isEmpty) return reps;
     return reps.where((r) {
       return r.displayName.toLowerCase().contains(q) ||
           r.phoneNumber.toLowerCase().contains(q) ||
           r.mndobVillText.toLowerCase().contains(q) ||
           r.transportCompanyText.toLowerCase().contains(q) ||
-          r.email.toLowerCase().contains(q);
+          r.email.toLowerCase().contains(q) ||
+          r.reference.id.toLowerCase().contains(q);
     }).toList();
   }
 
@@ -72,30 +76,34 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
         ? uiTr(context, 'هل أنت متأكد من تفعيل المندوب؟')
         : uiTr(context, 'هل أنت متأكد من إيقاف المندوب؟');
 
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(title),
-            content: Text(content),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(uiTr(context, 'نعم')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: title,
+      whatHappens: content,
+      subject: user.displayName.isNotEmpty ? user.displayName : user.reference.id,
+      impact: activate
+          ? uiTr(context, 'Driver can receive bookings again')
+          : uiTr(context, 'Driver will no longer receive bookings'),
+      confirmLabel: uiTr(context, 'نعم'),
+      cancelLabel: appTr(context, 'adm_no'),
+      destructive: !activate,
+      irreversible: false,
+      reference: user.reference.id,
+    );
 
     if (!confirmed) return;
 
     try {
       await user.reference.update(
         createUserRecordData(actevMndob: activate),
+      );
+      AdminStatsCoordinator.instance.invalidateAfterUserChange();
+      flushAdminDashboardStatsNow();
+      await AdminAuditLog.recordToggle(
+        targetType: 'driver',
+        targetId: user.reference.id,
+        targetLabel: user.displayName,
+        activated: activate,
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -137,120 +145,104 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AdminContentCard(
-                padding: const EdgeInsets.all(16),
-                child: isWide
-                    ? Row(
-                        children: [
-                          Expanded(child: _buildSearchField(l10n, theme)),
-                          const SizedBox(width: 12),
-                          _buildAddButton(l10n),
-                        ],
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildSearchField(l10n, theme),
-                          const SizedBox(height: 12),
-                          _buildAddButton(l10n),
-                        ],
-                      ),
+              AdminOpsFilterBar(
+                value: _filters,
+                config: const AdminOpsFilterConfig(
+                  showDate: false,
+                  showDriverActivation: true,
+                  showCountry: true,
+                  showCity: true,
+                  showSearch: true,
+                  searchHint: 'بحث بالاسم / الهاتف / البريد',
+                ),
+                onChanged: (next) => setState(() => _filters = next),
+              ),
+              const SizedBox(height: 12),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: _buildAddButton(l10n),
               ),
               const SizedBox(height: 16),
-              AdminFirestoreList<UserRecord>(
-                refreshScope: AdminListScope.representatives,
-                query: UserRecord.collection,
-                recordBuilder: UserRecord.fromSnapshot,
-                queryBuilder: (q) =>
-                    AdminCountryScope.applyRepresentativeQuery(q),
-                builder: (context, allReps, listState) {
-                  final reps = _filterReps(allReps);
+              if (_filters.driverActivation ==
+                  AdminDriverActivationFilter.unknown)
+                _UnknownDriversPanel(
+                  filters: _filters,
+                  l10n: l10n,
+                  isWide: isWide,
+                  onToggle: _toggleActivation,
+                )
+              else
+                AdminFirestoreList<UserRecord>(
+                  key: ValueKey('drivers_${_filters.signature}'),
+                  reloadKey: _filters.signature,
+                  refreshScope: AdminListScope.representatives,
+                  query: UserRecord.collection,
+                  recordBuilder: UserRecord.fromSnapshot,
+                  queryBuilder: (q) =>
+                      AdminOpsQueryBuilder.applyDriverFilters(q, _filters),
+                  builder: (context, allReps, listState) {
+                    final reps = _filterReps(allReps);
 
-                  return AdminContentCard(
-                    padding: reps.isEmpty
-                        ? const EdgeInsets.all(16)
-                        : const EdgeInsets.fromLTRB(12, 12, 12, 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (reps.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
-                            child: Text(
-                              adminListCountLabel(context, listState, visibleCount: reps.length, pageFetched: allReps.length),
-                              style: theme.labelLarge.override(
-                                fontFamily: theme.labelLargeFamily,
-                                color: theme.secondaryText,
-                                useGoogleFonts: !theme.labelLargeIsCustom,
+                    return AdminContentCard(
+                      padding: reps.isEmpty
+                          ? const EdgeInsets.all(16)
+                          : const EdgeInsets.fromLTRB(12, 12, 12, 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (reps.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+                              child: Text(
+                                adminListCountLabel(context, listState, visibleCount: reps.length, pageFetched: allReps.length),
+                                style: theme.labelLarge.override(
+                                  fontFamily: theme.labelLargeFamily,
+                                  color: theme.secondaryText,
+                                  useGoogleFonts: !theme.labelLargeIsCustom,
+                                ),
                               ),
                             ),
-                          ),
-                        if (reps.isEmpty)
-                          AdminEmptyState(
-                            title: _searchQuery.isEmpty
-                                ? uiTr(context, 'لا يوجد مناديب مسجلون')
-                                : uiTr(context, 'لا توجد نتائج للبحث'),
-                            message: _searchQuery.isEmpty
-                                ? uiTr(context, 'أضف مندوبًا جديدًا أو راجع فلتر الدولة')
-                                : uiTr(context, 'جرّب كلمة بحث أخرى'),
-                            icon: Icons.directions_car_outlined,
-                          )
-                        else if (isWide)
-                          _RepresentativesTable(
-                            reps: reps,
-                            l10n: l10n,
-                            onToggle: _toggleActivation,
-                          )
-                        else
-                          ListView.separated(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: const EdgeInsets.all(12),
-                            itemCount: reps.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 10),
-                            itemBuilder: (context, index) => _RepresentativeCard(
-                              user: reps[index],
+                          if (reps.isEmpty)
+                            AdminEmptyState(
+                              title: _filters.searchQuery.isEmpty
+                                  ? uiTr(context, 'لا يوجد مناديب مسجلون')
+                                  : uiTr(context, 'لا توجد نتائج للبحث'),
+                              message: _filters.searchQuery.isEmpty
+                                  ? uiTr(context, 'أضف مندوبًا جديدًا أو راجع فلتر الدولة')
+                                  : uiTr(context, 'جرّب كلمة بحث أخرى'),
+                              icon: Icons.directions_car_outlined,
+                            )
+                          else if (isWide)
+                            _RepresentativesTable(
+                              reps: reps,
                               l10n: l10n,
                               onToggle: _toggleActivation,
+                            )
+                          else
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: const EdgeInsets.all(12),
+                              itemCount: reps.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 10),
+                              itemBuilder: (context, index) => _RepresentativeCard(
+                                user: reps[index],
+                                l10n: l10n,
+                                onToggle: _toggleActivation,
+                              ),
                             ),
-                          ),
-                        if (reps.isNotEmpty)
-                          AdminListLoadMoreFooter(state: listState),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                          if (reps.isNotEmpty)
+                            AdminListLoadMoreFooter(state: listState),
+                        ],
+                      ),
+                    );
+                  },
+                ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSearchField(FFLocalizations l10n, FlutterFlowTheme theme) {
-    return TextFormField(
-      controller: _model.textController,
-      focusNode: _model.textFieldFocusNode,
-      onChanged: (_) => EasyDebounce.debounce(
-        '_admindrever_search',
-        const Duration(milliseconds: 300),
-        () {
-          if (mounted) {
-            setState(() {
-              _searchQuery = _model.textController?.text ?? '';
-            });
-          }
-        },
-      ),
-      decoration: AdminUi.inputDecoration(
-        context,
-        label: l10n.getText('wvm3crco'),
-        hint: uiTr(context, 'ابحث بالاسم أو الجوال أو المدينة...'),
-        prefixIcon: Icons.search_rounded,
-      ),
-      validator: _model.textControllerValidator.asValidator(context),
     );
   }
 
@@ -259,6 +251,203 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
       label: uiTr(context, 'إضافة مندوب جديد'),
       icon: Icons.person_add_rounded,
       onPressed: () => context.pushNamed(AddDrevWidget.routeName),
+    );
+  }
+}
+
+/// Scans drivers missing `actev_mndob` with correct [totalUnknown] Aggregate.
+class _UnknownDriversPanel extends StatefulWidget {
+  const _UnknownDriversPanel({
+    required this.filters,
+    required this.l10n,
+    required this.isWide,
+    required this.onToggle,
+  });
+
+  final AdminOpsFilterState filters;
+  final FFLocalizations l10n;
+  final bool isWide;
+  final Future<void> Function(UserRecord user, {required bool activate}) onToggle;
+
+  @override
+  State<_UnknownDriversPanel> createState() => _UnknownDriversPanelState();
+}
+
+class _UnknownDriversPanelState extends State<_UnknownDriversPanel> {
+  final List<UserRecord> _items = [];
+  DocumentSnapshot? _cursor;
+  int _scanned = 0;
+  int _totalUnknown = 0;
+  bool _loading = true;
+  bool _loadingMore = false;
+  bool _hasMore = true;
+  bool _hitCap = false;
+  Object? _error;
+  int _generation = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _reload();
+  }
+
+  @override
+  void didUpdateWidget(covariant _UnknownDriversPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.filters.signature != widget.filters.signature) {
+      _reload();
+    }
+  }
+
+  Future<void> _reload() async {
+    final gen = ++_generation;
+    setState(() {
+      _loading = true;
+      _error = null;
+      _items.clear();
+      _cursor = null;
+      _scanned = 0;
+      _hasMore = true;
+      _hitCap = false;
+    });
+    try {
+      final page = await AdminUnknownDriversLoader.loadPage(
+        filters: widget.filters,
+      );
+      if (!mounted || gen != _generation) return;
+      setState(() {
+        _items
+          ..clear()
+          ..addAll(page.drivers);
+        _cursor = page.scanCursor;
+        _scanned = page.docsScanned;
+        _totalUnknown = page.totalUnknown;
+        _hasMore = page.hasMore;
+        _hitCap = page.hitScanCap;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted || gen != _generation) return;
+      setState(() {
+        _error = e;
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (_loadingMore || !_hasMore || _hitCap) return;
+    final gen = _generation;
+    setState(() => _loadingMore = true);
+    try {
+      final page = await AdminUnknownDriversLoader.loadPage(
+        filters: widget.filters,
+        after: _cursor,
+        alreadyScanned: _scanned,
+      );
+      if (!mounted || gen != _generation) return;
+      setState(() {
+        _items.addAll(page.drivers);
+        _cursor = page.scanCursor;
+        _scanned = page.docsScanned;
+        _totalUnknown = page.totalUnknown;
+        _hasMore = page.hasMore;
+        _hitCap = page.hitScanCap;
+        _loadingMore = false;
+      });
+    } catch (e) {
+      if (!mounted || gen != _generation) return;
+      setState(() {
+        _error = e;
+        _loadingMore = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    if (_loading) {
+      return AdminContentCard(
+        child: const Padding(
+          padding: EdgeInsets.all(32),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+    if (_error != null && _items.isEmpty) {
+      return AdminContentCard(
+        child: Column(
+          children: [
+            Text(uiTr(context, 'تعذر تحميل المناديب غير المحددين')),
+            TextButton(onPressed: _reload, child: Text(appTr(context, 'adm_retry'))),
+          ],
+        ),
+      );
+    }
+
+    return AdminContentCard(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            '${uiTr(context, 'حالة غير محددة')}: ${_items.length} / $_totalUnknown',
+            style: theme.labelLarge.override(
+              fontFamily: theme.labelLargeFamily,
+              color: theme.secondaryText,
+              useGoogleFonts: !theme.labelLargeIsCustom,
+            ),
+          ),
+          if (_hitCap)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                uiTr(context, 'تم بلوغ حد المسح — راجع لاحقًا أو صفّ الحقل actev_mndob'),
+                style: theme.labelSmall,
+              ),
+            ),
+          const SizedBox(height: 10),
+          if (_items.isEmpty)
+            AdminEmptyState(
+              title: uiTr(context, 'لا يوجد مناديب بحالة غير محددة'),
+              message: uiTr(context, 'جميع المندوبين لديهم actev_mndob'),
+              icon: Icons.verified_outlined,
+            )
+          else if (widget.isWide)
+            _RepresentativesTable(
+              reps: _items,
+              l10n: widget.l10n,
+              onToggle: widget.onToggle,
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _items.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (context, index) => _RepresentativeCard(
+                user: _items[index],
+                l10n: widget.l10n,
+                onToggle: widget.onToggle,
+              ),
+            ),
+          if (_hasMore && !_hitCap)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: TextButton(
+                onPressed: _loadingMore ? null : _loadMore,
+                child: _loadingMore
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(uiTr(context, 'تحميل المزيد')),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

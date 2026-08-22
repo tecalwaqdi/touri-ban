@@ -81,6 +81,11 @@ class _Chat2WidgetState extends State<Chat2Widget> {
         );
         final recipientLocale =
             TouryNotificationLocalizer.localeForUser(recipient);
+        // Deep-link the driver app into Chat with this order (not the
+        // unrelated customer `List` route). Customer app also accepts
+        // `chat2` via push alias → same thread when opened there.
+        final phoneDigits =
+            currentPhoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
         triggerPushNotification(
           notificationTitle: await TouryNotificationLocalizer.text(
             recipientLocale,
@@ -88,8 +93,17 @@ class _Chat2WidgetState extends State<Chat2Widget> {
           ),
           notificationText: _model.textController.text,
           userRefs: [widget.idmndob!],
-          initialPageName: 'List',
-          parameterData: const {},
+          initialPageName: 'Chat',
+          parameterData: {
+            'idorder': widget.idorder,
+            'iduserclent': currentUserReference,
+            'phoneClent': int.tryParse(phoneDigits),
+            // Customer-app chat2 aliases (ignored by driver Chat route).
+            'naimMndob': widget.naimMndob,
+            'phoneMndob': widget.phoneMndob,
+            'imgMndob': widget.imgMndob,
+            'idmndob': widget.idmndob,
+          },
         );
         await WatcCall.call(
           to: widget.phoneMndob?.toString(),

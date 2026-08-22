@@ -4,22 +4,27 @@ import '/flutter_flow/flutter_flow_util.dart';
 
 /// Optional extra fields on `order` documents (read safely).
 extension DriverOrderMeta on OrderRecord {
-  String get cartext =>
-      (snapshotData['cartext'] as String?)?.trim() ?? '';
+  /// Firestore may store text fields as String or num (payment/API paths).
+  static String _asTrimmedString(dynamic value) {
+    final text = castToType<String>(value)?.trim() ?? '';
+    return text;
+  }
+
+  String get cartext => _asTrimmedString(snapshotData['cartext']);
 
   bool get driverGuide => snapshotData['DriverGuide'] == true;
 
-  String get tripTypeRaw =>
-      (snapshotData['trip_type'] as String?)?.trim() ?? '';
+  String get tripTypeRaw => _asTrimmedString(snapshotData['trip_type']);
 
+  /// Piece count (int) from payment-api / ngenius, or label string from app booking.
   String get luggageEstimate =>
-      (snapshotData['luggage_estimate'] as String?)?.trim() ?? '';
+      _asTrimmedString(snapshotData['luggage_estimate']);
 
   DateTime? get driverArrivedAt =>
-      snapshotData['driverArrivedAt'] as DateTime?;
+      castToType<DateTime>(snapshotData['driverArrivedAt']);
 
   DateTime? get waitingStartedAt =>
-      snapshotData['waitingStartedAt'] as DateTime?;
+      castToType<DateTime>(snapshotData['waitingStartedAt']);
 
   double get waitingCharges =>
       castToType<double>(snapshotData['waitingCharges']) ?? 0.0;
@@ -30,8 +35,15 @@ extension DriverOrderMeta on OrderRecord {
   double get distanceRemainingMeters =>
       castToType<double>(snapshotData['distanceRemainingMeters']) ?? 0.0;
 
+  /// Planned trip length from booking (meters), when available.
+  double get plannedDistanceMeters =>
+      castToType<double>(snapshotData['plannedDistanceMeters']) ?? 0.0;
+
+  int get plannedDurationSeconds =>
+      castToType<int>(snapshotData['plannedDurationSeconds']) ?? 0;
+
   DateTime? get destinationUpdatedAt =>
-      snapshotData['destinationUpdatedAt'] as DateTime?;
+      castToType<DateTime>(snapshotData['destinationUpdatedAt']);
 
   /// English phrase key for EasyLocalization (never Arabic UI literal).
   String tripTypeLabelKey() {
@@ -53,6 +65,16 @@ extension DriverOrderMeta on OrderRecord {
   String luggageLabelKey() {
     final raw = luggageEstimate.toLowerCase();
     if (raw.isEmpty) return '—';
+
+    // Numeric piece counts from payment/API order builders.
+    final pieces = int.tryParse(raw);
+    if (pieces != null) {
+      if (pieces <= 0) return 'No luggage';
+      if (pieces == 1) return 'Small luggage';
+      if (pieces == 2) return 'Medium luggage';
+      return 'Large luggage';
+    }
+
     if (raw.contains('none') || raw.contains('لا')) return 'No luggage';
     if (raw.contains('small') || raw.contains('صغير')) return 'Small luggage';
     if (raw.contains('medium') || raw.contains('متوسط')) {

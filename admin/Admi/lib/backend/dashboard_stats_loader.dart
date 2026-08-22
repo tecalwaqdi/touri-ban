@@ -3,6 +3,7 @@ import '/app_state.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_landmark_count.dart';
+import '/backend/admin_ops_counters.dart';
 import '/backend/admin_panel_data_bootstrap.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_partner_orders.dart';
@@ -11,8 +12,12 @@ import '/backend/admin_saudi_country.dart';
 import '/backend/backend.dart';
 import '/backend/admin_performance.dart';
 import '/backend/schema/enums/enums.dart';
+import '/core/toury_system_status_codes.dart';
 
-/// Aggregated dashboard metrics aligned with admin list pages.
+/// Unified operational dashboard metrics (Firestore Aggregate Count).
+///
+/// Single source of truth for admin home + partner/company shells.
+/// Do not derive these from capped list `.length`.
 class DashboardStats {
   const DashboardStats({
     required this.attractions,
@@ -23,11 +28,23 @@ class DashboardStats {
     required this.appUsers,
     required this.agents,
     required this.representatives,
+    required this.driversActive,
+    required this.driversInactive,
+    required this.driversUnknown,
+    required this.tourGuides,
     required this.transportCompanies,
+    required this.bookingsTotal,
     required this.activeBookings,
+    required this.bookingsCompleted,
+    required this.bookingsCancelled,
+    required this.bookingsExpired,
     required this.supportTickets,
+    required this.supportOpenTickets,
     required this.loadedAt,
     this.loadComplete = true,
+    this.fromCache = false,
+    this.countsReliable = true,
+    this.loadError,
   });
 
   final int attractions;
@@ -37,17 +54,40 @@ class DashboardStats {
   final int cities;
   final int appUsers;
   final int agents;
+  /// All drivers (`ismndob == true`).
   final int representatives;
+  final int driversActive;
+  final int driversInactive;
+  /// `actev_mndob` missing / null — not assumed inactive.
+  final int driversUnknown;
+  final int tourGuides;
   final int transportCompanies;
+  final int bookingsTotal;
+  /// Open pool / in-flight (`ALLNOW == true`).
   final int activeBookings;
+  final int bookingsCompleted;
+  final int bookingsCancelled;
+  final int bookingsExpired;
   final int supportTickets;
+  final int supportOpenTickets;
   final DateTime loadedAt;
   final bool loadComplete;
+  final bool fromCache;
+  /// When true, at least one Aggregate failed — do not treat zeros as SoT.
+  final bool countsReliable;
+  final String? loadError;
 
   bool get isExpired =>
       DateTime.now().difference(loadedAt) > kAdminStatsTtl;
 
-  static DashboardStats empty() => DashboardStats(
+  Duration get age => DateTime.now().difference(loadedAt);
+
+  /// Active + Inactive + Unknown must equal [representatives].
+  bool get driversActivationBalanced =>
+      representatives ==
+      (driversActive + driversInactive + driversUnknown);
+
+  static DashboardStats empty({String? loadError}) => DashboardStats(
         attractions: 0,
         partners: 0,
         countries: 0,
@@ -56,11 +96,22 @@ class DashboardStats {
         appUsers: 0,
         agents: 0,
         representatives: 0,
+        driversActive: 0,
+        driversInactive: 0,
+        driversUnknown: 0,
+        tourGuides: 0,
         transportCompanies: 0,
+        bookingsTotal: 0,
         activeBookings: 0,
+        bookingsCompleted: 0,
+        bookingsCancelled: 0,
+        bookingsExpired: 0,
         supportTickets: 0,
+        supportOpenTickets: 0,
         loadedAt: DateTime.now(),
         loadComplete: false,
+        countsReliable: loadError == null,
+        loadError: loadError,
       );
 
   bool get hasLoadedData => loadComplete;
@@ -110,9 +161,18 @@ void patchDashboardStatsCache({
   int appUsersDelta = 0,
   int agentsDelta = 0,
   int representativesDelta = 0,
+  int driversActiveDelta = 0,
+  int driversInactiveDelta = 0,
+  int driversUnknownDelta = 0,
+  int tourGuidesDelta = 0,
   int transportCompaniesDelta = 0,
+  int bookingsTotalDelta = 0,
   int activeBookingsDelta = 0,
+  int bookingsCompletedDelta = 0,
+  int bookingsCancelledDelta = 0,
+  int bookingsExpiredDelta = 0,
   int supportTicketsDelta = 0,
+  int supportOpenTicketsDelta = 0,
 }) {
   final scopeKey = dashboardStatsScopeKey();
   if (scopeKey.startsWith('none:') || scopeKey.contains(':no-country')) {
@@ -129,13 +189,29 @@ void patchDashboardStatsCache({
     cities: _clampStat(cached.cities + citiesDelta),
     appUsers: _clampStat(cached.appUsers + appUsersDelta),
     agents: _clampStat(cached.agents + agentsDelta),
-    representatives: _clampStat(cached.representatives + representativesDelta),
+    representatives:
+        _clampStat(cached.representatives + representativesDelta),
+    driversActive: _clampStat(cached.driversActive + driversActiveDelta),
+    driversInactive:
+        _clampStat(cached.driversInactive + driversInactiveDelta),
+    driversUnknown: _clampStat(cached.driversUnknown + driversUnknownDelta),
+    tourGuides: _clampStat(cached.tourGuides + tourGuidesDelta),
     transportCompanies:
         _clampStat(cached.transportCompanies + transportCompaniesDelta),
+    bookingsTotal: _clampStat(cached.bookingsTotal + bookingsTotalDelta),
     activeBookings: _clampStat(cached.activeBookings + activeBookingsDelta),
+    bookingsCompleted:
+        _clampStat(cached.bookingsCompleted + bookingsCompletedDelta),
+    bookingsCancelled:
+        _clampStat(cached.bookingsCancelled + bookingsCancelledDelta),
+    bookingsExpired:
+        _clampStat(cached.bookingsExpired + bookingsExpiredDelta),
     supportTickets: _clampStat(cached.supportTickets + supportTicketsDelta),
+    supportOpenTickets:
+        _clampStat(cached.supportOpenTickets + supportOpenTicketsDelta),
     loadedAt: DateTime.now(),
     loadComplete: true,
+    fromCache: true,
   );
 }
 
@@ -246,6 +322,39 @@ Future<DashboardStats> loadDashboardStats({
       )
       .then((stats) {
         final prior = _dashboardStatsCacheByScope[scopeKey];
+        // Never replace a reliable cache with a failed all-zero aggregate.
+        if (!stats.countsReliable &&
+            prior != null &&
+            prior.countsReliable &&
+            prior.loadComplete) {
+          return DashboardStats(
+            attractions: prior.attractions,
+            partners: prior.partners,
+            countries: prior.countries,
+            regions: prior.regions,
+            cities: prior.cities,
+            appUsers: prior.appUsers,
+            agents: prior.agents,
+            representatives: prior.representatives,
+            driversActive: prior.driversActive,
+            driversInactive: prior.driversInactive,
+            driversUnknown: prior.driversUnknown,
+            tourGuides: prior.tourGuides,
+            transportCompanies: prior.transportCompanies,
+            bookingsTotal: prior.bookingsTotal,
+            activeBookings: prior.activeBookings,
+            bookingsCompleted: prior.bookingsCompleted,
+            bookingsCancelled: prior.bookingsCancelled,
+            bookingsExpired: prior.bookingsExpired,
+            supportTickets: prior.supportTickets,
+            supportOpenTickets: prior.supportOpenTickets,
+            loadedAt: prior.loadedAt,
+            loadComplete: true,
+            fromCache: true,
+            countsReliable: true,
+            loadError: stats.loadError ?? 'stale_kept_after_error',
+          );
+        }
         final merged = prior != null && !stats.loadComplete
             ? _mergeStats(prior, stats)
             : stats;
@@ -280,7 +389,8 @@ DashboardStats _mergeStats(DashboardStats prior, DashboardStats incoming) {
       incoming.representatives == 0 &&
       incoming.transportCompanies == 0 &&
       incoming.activeBookings == 0 &&
-      incoming.supportTickets == 0;
+      incoming.supportTickets == 0 &&
+      incoming.bookingsTotal == 0;
 
   if (isLandmarkPartial) {
     return DashboardStats(
@@ -292,9 +402,18 @@ DashboardStats _mergeStats(DashboardStats prior, DashboardStats incoming) {
       appUsers: prior.appUsers,
       agents: prior.agents,
       representatives: prior.representatives,
+      driversActive: prior.driversActive,
+      driversInactive: prior.driversInactive,
+      driversUnknown: prior.driversUnknown,
+      tourGuides: prior.tourGuides,
       transportCompanies: prior.transportCompanies,
+      bookingsTotal: prior.bookingsTotal,
       activeBookings: prior.activeBookings,
+      bookingsCompleted: prior.bookingsCompleted,
+      bookingsCancelled: prior.bookingsCancelled,
+      bookingsExpired: prior.bookingsExpired,
       supportTickets: prior.supportTickets,
+      supportOpenTickets: prior.supportOpenTickets,
       loadedAt: incoming.loadedAt,
       loadComplete: false,
     );
@@ -346,9 +465,14 @@ Future<int> _count(Future<int> Function() load) async {
   try {
     return await load().timeout(const Duration(seconds: 18));
   } catch (_) {
-    return 0;
+    // Sentinel: callers must treat negative as failure (never display as 0).
+    return -1;
   }
 }
+
+bool _isCountFailed(int v) => v < 0;
+
+int _orZero(int v) => v < 0 ? 0 : v;
 
 Future<int> _recordCount(
   Query collection, {
@@ -438,7 +562,12 @@ Future<int> _scopedAppUserCount(DocumentReference? country) async {
   final agents = results[1];
   final reps = results[2];
   final both = results[3];
-  return (total - agents - reps + both).clamp(0, 1 << 30);
+  return AdminOpsCounters.appUsersFromParts(
+    totalUsers: total,
+    agents: agents,
+    drivers: reps,
+    agentAndDriver: both,
+  );
 }
 
 Future<int> _scopedSupportCount(DocumentReference? country) async {
@@ -492,7 +621,166 @@ Future<DashboardStats> _fetchSuperAdminStats() async {
     () => _count(() => _recordCount(SupportRecord.collection)),
   ], batchSize: 3);
 
-  return _buildStatsFromResults(results);
+  final extended = await _fetchExtendedOpsCounts(country: null);
+  return _buildStatsFromResults(results, extended: extended);
+}
+
+/// Extra operational aggregates (drivers split, guides, booking lifecycle).
+Future<_ExtendedOpsCounts> _fetchExtendedOpsCounts({
+  DocumentReference? country,
+  List<DocumentReference>? countryRefs,
+}) async {
+  final refs = countryRefs ??
+      (country != null ? <DocumentReference>[country] : <DocumentReference>[]);
+
+  Future<int> driversWhere({required bool active}) {
+    return _count(
+      () => queryUserRecordCount(
+        queryBuilder: (q) {
+          var qq = q
+              .where('ismndob', isEqualTo: true)
+              .where('actev_mndob', isEqualTo: active);
+          if (refs.length == 1) {
+            qq = qq.where('Rev_dolh', isEqualTo: refs.first);
+          } else if (refs.length > 1) {
+            qq = qq.where(
+              'Rev_dolh',
+              whereIn: refs.take(30).toList(growable: false),
+            );
+          }
+          return qq;
+        },
+      ),
+    );
+  }
+
+  Future<int> guides() => _count(
+        () => queryUserRecordCount(
+          queryBuilder: (q) {
+            var qq = q.where('is_tour_guide', isEqualTo: true);
+            if (refs.length == 1) {
+              qq = qq.where('Rev_dolh', isEqualTo: refs.first);
+            } else if (refs.length > 1) {
+              qq = qq.where(
+                'Rev_dolh',
+                whereIn: refs.take(30).toList(growable: false),
+              );
+            }
+            return qq;
+          },
+        ),
+      );
+
+  Future<int> bookingsTotal() => _count(
+        () => queryOrderRecordCount(
+          queryBuilder: (q) {
+            if (refs.length == 1) {
+              return q.where('Rev_dolh', isEqualTo: refs.first);
+            }
+            if (refs.length > 1) {
+              return q.where(
+                'Rev_dolh',
+                whereIn: refs.take(30).toList(growable: false),
+              );
+            }
+            return q;
+          },
+        ),
+      );
+
+  Future<int> statusSum(Iterable<String> codes) =>
+      AdminOpsCounters.sumStatusCodeCounts(
+        codes: codes,
+        countForCode: (code) => _count(
+          () => queryOrderRecordCount(
+            queryBuilder: (q) {
+              var qq = q.where('status_code', isEqualTo: code);
+              if (refs.length == 1) {
+                qq = qq.where('Rev_dolh', isEqualTo: refs.first);
+              } else if (refs.length > 1) {
+                qq = qq.where(
+                  'Rev_dolh',
+                  whereIn: refs.take(30).toList(growable: false),
+                );
+              }
+              return qq;
+            },
+          ),
+        ),
+      );
+
+  Future<int> supportOpen() => _count(
+        () => querySupportRecordCount(
+          queryBuilder: (q) {
+            var qq =
+                q.where('halh', isEqualTo: AdminOpsCounters.supportOpenHalh);
+            if (refs.length == 1) {
+              qq = qq.where('Rev_dolh', isEqualTo: refs.first);
+            } else if (refs.length > 1) {
+              qq = qq.where(
+                'Rev_dolh',
+                whereIn: refs.take(30).toList(growable: false),
+              );
+            }
+            return qq;
+          },
+        ),
+      );
+
+  final parts = await _parallelCounts<int>([
+    () => driversWhere(active: true),
+    () => driversWhere(active: false),
+    guides,
+    bookingsTotal,
+    () => statusSum(AdminOpsCounters.completedStatusCodes),
+    () => statusSum(AdminOpsCounters.cancelledStatusCodes),
+    () => statusSum([TourySystemStatusCodes.expired]),
+    supportOpen,
+  ], batchSize: 3);
+
+  return _ExtendedOpsCounts(
+    driversActive: parts[0],
+    driversInactive: parts[1],
+    tourGuides: parts[2],
+    bookingsTotal: parts[3],
+    bookingsCompleted: parts[4],
+    bookingsCancelled: parts[5],
+    bookingsExpired: parts[6],
+    supportOpenTickets: parts[7],
+  );
+}
+
+class _ExtendedOpsCounts {
+  const _ExtendedOpsCounts({
+    required this.driversActive,
+    required this.driversInactive,
+    required this.tourGuides,
+    required this.bookingsTotal,
+    required this.bookingsCompleted,
+    required this.bookingsCancelled,
+    required this.bookingsExpired,
+    required this.supportOpenTickets,
+  });
+
+  final int driversActive;
+  final int driversInactive;
+  final int tourGuides;
+  final int bookingsTotal;
+  final int bookingsCompleted;
+  final int bookingsCancelled;
+  final int bookingsExpired;
+  final int supportOpenTickets;
+
+  static const zero = _ExtendedOpsCounts(
+    driversActive: 0,
+    driversInactive: 0,
+    tourGuides: 0,
+    bookingsTotal: 0,
+    bookingsCompleted: 0,
+    bookingsCancelled: 0,
+    bookingsExpired: 0,
+    supportOpenTickets: 0,
+  );
 }
 
 Future<DashboardStats> _fetchCountryAgentStats({
@@ -539,9 +827,18 @@ Future<DashboardStats> _fetchCountryAgentStats({
       appUsers: 0,
       agents: 0,
       representatives: 0,
+      driversActive: 0,
+      driversInactive: 0,
+      driversUnknown: 0,
+      tourGuides: 0,
       transportCompanies: 0,
+      bookingsTotal: 0,
       activeBookings: 0,
+      bookingsCompleted: 0,
+      bookingsCancelled: 0,
+      bookingsExpired: 0,
       supportTickets: 0,
+      supportOpenTickets: 0,
       loadedAt: DateTime.now(),
       loadComplete: false,
     );
@@ -561,7 +858,8 @@ Future<DashboardStats> _fetchCountryAgentStats({
     () => _countSupportTicketsForAgent(countryRefs),
   ], batchSize: 3);
 
-  return _buildStatsFromResults(results);
+  final extended = await _fetchExtendedOpsCounts(countryRefs: countryRefs);
+  return _buildStatsFromResults(results, extended: extended);
 }
 
 Future<int> _countRegionsForAgent(
@@ -754,9 +1052,18 @@ Future<DashboardStats> _fetchPartnerStats() async {
     appUsers: 0,
     agents: 0,
     representatives: 0,
+    driversActive: 0,
+    driversInactive: 0,
+    driversUnknown: 0,
+    tourGuides: 0,
     transportCompanies: 0,
+    bookingsTotal: bookings,
     activeBookings: bookings,
+    bookingsCompleted: 0,
+    bookingsCancelled: 0,
+    bookingsExpired: 0,
     supportTickets: 0,
+    supportOpenTickets: 0,
     loadedAt: DateTime.now(),
   );
 }
@@ -774,6 +1081,23 @@ Future<DashboardStats> _fetchTransportCompanyStats() async {
           .where('transport_company', isEqualTo: company),
     ),
   );
+  final active = await _count(
+    () => queryUserRecordCount(
+      queryBuilder: (q) => q
+          .where('ismndob', isEqualTo: true)
+          .where('transport_company', isEqualTo: company)
+          .where('actev_mndob', isEqualTo: true),
+    ),
+  );
+
+  final inactive = await _count(
+    () => queryUserRecordCount(
+      queryBuilder: (q) => q
+          .where('ismndob', isEqualTo: true)
+          .where('transport_company', isEqualTo: company)
+          .where('actev_mndob', isEqualTo: false),
+    ),
+  );
 
   return DashboardStats(
     attractions: 0,
@@ -784,27 +1108,78 @@ Future<DashboardStats> _fetchTransportCompanyStats() async {
     appUsers: 0,
     agents: 0,
     representatives: drivers,
+    driversActive: active,
+    driversInactive: inactive,
+    driversUnknown: AdminOpsCounters.driversUnknown(
+      totalDrivers: drivers,
+      active: active,
+      inactive: inactive,
+    ),
+    tourGuides: 0,
     transportCompanies: 1,
+    bookingsTotal: 0,
     activeBookings: 0,
+    bookingsCompleted: 0,
+    bookingsCancelled: 0,
+    bookingsExpired: 0,
     supportTickets: 0,
+    supportOpenTickets: 0,
     loadedAt: DateTime.now(),
   );
 }
 
-DashboardStats _buildStatsFromResults(List<dynamic> results) {
+DashboardStats _buildStatsFromResults(
+  List<dynamic> results, {
+  _ExtendedOpsCounts extended = _ExtendedOpsCounts.zero,
+}) {
+  final raw = results.map((e) => e as int).toList(growable: false);
+  final failed = raw.any(_isCountFailed) ||
+      [
+        extended.driversActive,
+        extended.driversInactive,
+        extended.tourGuides,
+        extended.bookingsTotal,
+        extended.bookingsCompleted,
+        extended.bookingsCancelled,
+        extended.bookingsExpired,
+        extended.supportOpenTickets,
+      ].any(_isCountFailed);
+
+  final safe = raw.map(_orZero).toList(growable: false);
+  final reps = safe[6];
+  final active = _orZero(extended.driversActive);
+  final inactive = _orZero(extended.driversInactive);
+
   return DashboardStats(
-    attractions: results[0] as int,
-    partners: results[1] as int,
-    countries: results[2] as int,
-    regions: results[3] as int,
-    cities: results[4] as int,
-    agents: results[5] as int,
-    representatives: results[6] as int,
-    appUsers: results[7] as int,
-    transportCompanies: results[8] as int,
-    activeBookings: results[9] as int,
-    supportTickets: results[10] as int,
+    attractions: safe[0],
+    partners: safe[1],
+    countries: safe[2],
+    regions: safe[3],
+    cities: safe[4],
+    agents: safe[5],
+    representatives: reps,
+    appUsers: safe[7],
+    transportCompanies: safe[8],
+    activeBookings: safe[9],
+    supportTickets: safe[10],
+    driversActive: active,
+    driversInactive: inactive,
+    driversUnknown: failed
+        ? 0
+        : AdminOpsCounters.driversUnknown(
+            totalDrivers: reps,
+            active: active,
+            inactive: inactive,
+          ),
+    tourGuides: _orZero(extended.tourGuides),
+    bookingsTotal: _orZero(extended.bookingsTotal),
+    bookingsCompleted: _orZero(extended.bookingsCompleted),
+    bookingsCancelled: _orZero(extended.bookingsCancelled),
+    bookingsExpired: _orZero(extended.bookingsExpired),
+    supportOpenTickets: _orZero(extended.supportOpenTickets),
     loadedAt: DateTime.now(),
+    countsReliable: !failed,
+    loadError: failed ? 'aggregate_count_failed' : null,
   );
 }
 
@@ -845,7 +1220,12 @@ Future<int> queryAppUserCount({bool forceServer = false}) async {
   final agents = results[1];
   final reps = results[2];
   final both = results[3];
-  return (total - agents - reps + both).clamp(0, 1 << 30);
+  return AdminOpsCounters.appUsersFromParts(
+    totalUsers: total,
+    agents: agents,
+    drivers: reps,
+    agentAndDriver: both,
+  );
 }
 
 /// App users excluding agents/reps; [country] null = all countries.

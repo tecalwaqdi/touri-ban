@@ -9,6 +9,7 @@ import '/core/toury_country_registry.dart';
 import '/core/toury_firestore_cache.dart';
 import '/core/toury_geo_display.dart';
 import '/core/toury_i18n_text.dart';
+import '/core/toury_route_metrics.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/flutter_flow/internationalization.dart';
 import '/flutter_flow/lat_lng.dart';
@@ -867,6 +868,11 @@ abstract final class TouryLocationService {
         app.naimvillatext = touryLocalizedVillageLabel(village, localeKey);
         app.villtextnow = app.naimvillatext;
         app.naimmdenh = touryLocalizedCityCiteLabel(village, localeKey);
+        // Keep map camera aligned with the village label (avoids Makkah text
+        // while camera sits on stale GPS / ocean fallback).
+        if (touryIsValidCoordinate(village.latLing)) {
+          app.latlngvill = village.latLing;
+        }
       }
       app.update(() {});
     } catch (e) {

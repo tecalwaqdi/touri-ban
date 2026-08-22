@@ -5,6 +5,7 @@ import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_agent_session_ready.dart';
 import '/backend/admin_panel_session.dart';
 import '/backend/admin_panel_data_bootstrap.dart';
+import '/backend/admin_performance.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_stats_coordinator.dart';
 import '/backend/backend.dart';
@@ -489,12 +490,74 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdmindreverWidget.routeName,
           ),
           _DashboardStatItem(
+            title: appTr(context, 'dash_sub_drivers_active'),
+            subtitle: appTr(context, 'dash_sub_drivers_active'),
+            icon: Icons.verified_user_rounded,
+            count: stats.driversActive,
+            colors: const [Color(0xFF66BB6A), Color(0xFF43A047)],
+            route: AdmindreverWidget.routeName,
+          ),
+          _DashboardStatItem(
+            title: appTr(context, 'dash_sub_drivers_inactive'),
+            subtitle: appTr(context, 'dash_sub_drivers_inactive'),
+            icon: Icons.person_off_rounded,
+            count: stats.driversInactive,
+            colors: const [Color(0xFF90A4AE), Color(0xFF607D8B)],
+            route: AdminDriversWidget.routeName,
+          ),
+          _DashboardStatItem(
+            title: appTr(context, 'dash_sub_drivers_unknown'),
+            subtitle: appTr(context, 'dash_sub_drivers_unknown_hint'),
+            icon: Icons.help_outline_rounded,
+            count: stats.driversUnknown,
+            colors: const [Color(0xFFFFB74D), Color(0xFFF57C00)],
+            route: AdmindreverWidget.routeName,
+          ),
+          _DashboardStatItem(
+            title: appTr(context, 'nav_tour_guides'),
+            subtitle: appTr(context, 'dash_sub_tour_guides'),
+            icon: Icons.tour_rounded,
+            count: stats.tourGuides,
+            colors: const [Color(0xFF7E57C2), Color(0xFF5E35B1)],
+            route: AdminTourGuidesWidget.routeName,
+          ),
+          _DashboardStatItem(
             title: appTr(context, 'nav_transport_companies'),
             subtitle: appTr(context, 'dash_sub_transport_cos'),
             icon: Icons.local_shipping_rounded,
             count: stats.transportCompanies,
             colors: const [Color(0xFF6D4C41), Color(0xFF4E342E)],
             route: AdminTransportCompaniesWidget.routeName,
+          ),
+          _DashboardStatItem(
+            title: l10n.getText('8d66hs1w'),
+            subtitle: appTr(context, 'dash_sub_support_tickets'),
+            icon: Icons.support_agent_rounded,
+            count: stats.supportTickets,
+            colors: const [Color(0xFFFF8A65), Color(0xFFE64A19)],
+            route: AdminSuportWidget.routeName,
+          ),
+          _DashboardStatItem(
+            title: appTr(context, 'dash_sub_support_open'),
+            subtitle: appTr(context, 'dash_sub_support_open'),
+            icon: Icons.mark_email_unread_rounded,
+            count: stats.supportOpenTickets,
+            colors: const [Color(0xFFFF7043), Color(0xFFE64A19)],
+            route: AdminSuportWidget.routeName,
+          ),
+        ].where((item) => AdminRoleService.canAccessRoute(item.route)).toList(),
+      ),
+      _DashboardStatGroup(
+        title: appTr(context, 'dash_section_bookings'),
+        icon: Icons.event_note_rounded,
+        items: [
+          _DashboardStatItem(
+            title: appTr(context, 'dash_sub_bookings_total'),
+            subtitle: appTr(context, 'dash_sub_bookings_total'),
+            icon: Icons.receipt_long_rounded,
+            count: stats.bookingsTotal,
+            colors: const [Color(0xFF5C6BC0), Color(0xFF3949AB)],
+            route: AdminALLhgZWidget.routeName,
           ),
           _DashboardStatItem(
             title: l10n.getText('kw5c519x'),
@@ -505,12 +568,28 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminALLhgZWidget.routeName,
           ),
           _DashboardStatItem(
-            title: l10n.getText('8d66hs1w'),
-            subtitle: appTr(context, 'dash_sub_support_tickets'),
-            icon: Icons.support_agent_rounded,
-            count: stats.supportTickets,
-            colors: const [Color(0xFFFF8A65), Color(0xFFE64A19)],
-            route: AdminSuportWidget.routeName,
+            title: appTr(context, 'dash_sub_bookings_completed'),
+            subtitle: appTr(context, 'dash_sub_bookings_completed'),
+            icon: Icons.check_circle_rounded,
+            count: stats.bookingsCompleted,
+            colors: const [Color(0xFF26A69A), Color(0xFF00897B)],
+            route: AdminALLhgZWidget.routeName,
+          ),
+          _DashboardStatItem(
+            title: appTr(context, 'dash_sub_bookings_cancelled'),
+            subtitle: appTr(context, 'dash_sub_bookings_cancelled'),
+            icon: Icons.cancel_rounded,
+            count: stats.bookingsCancelled,
+            colors: const [Color(0xFFEF5350), Color(0xFFC62828)],
+            route: AdminALLhgZWidget.routeName,
+          ),
+          _DashboardStatItem(
+            title: appTr(context, 'dash_sub_bookings_expired'),
+            subtitle: appTr(context, 'dash_sub_bookings_expired'),
+            icon: Icons.timer_off_rounded,
+            count: stats.bookingsExpired,
+            colors: const [Color(0xFFFFA726), Color(0xFFEF6C00)],
+            route: AdminALLhgZWidget.routeName,
           ),
         ].where((item) => AdminRoleService.canAccessRoute(item.route)).toList(),
       ),
@@ -524,6 +603,43 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             padding: EdgeInsets.only(bottom: 10),
             child: LinearProgressIndicator(minHeight: 2),
           ),
+        if (!stats.countsReliable && stats.loadComplete)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Material(
+              color: Colors.red.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(10),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    const Icon(Icons.error_outline, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        uiTr(
+                          context,
+                          'تعذر التحقق من بعض العدادات — ليست أصفارًا مؤكدة',
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => _scheduleLoad(force: true),
+                      child: Text(uiTr(context, 'تحديث')),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: TextButton.icon(
+            onPressed: _loading ? null : () => _scheduleLoad(force: true),
+            icon: const Icon(Icons.refresh_rounded, size: 18),
+            label: Text(uiTr(context, 'تحديث الآن')),
+          ),
+        ),
         _DashboardSummaryStrip(
           stats: stats,
           loading: _loading || !stats.loadComplete,
@@ -539,7 +655,10 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
           if (g < contentSections.length - 1) const SizedBox(height: 20),
         ],
         const SizedBox(height: 12),
-        _DashboardSyncNote(loadedAt: stats.loadedAt),
+        _DashboardSyncNote(
+          loadedAt: stats.loadedAt,
+          reliable: stats.countsReliable,
+        ),
       ],
     );
   }
@@ -875,18 +994,29 @@ class _DashboardStatCard extends StatelessWidget {
 }
 
 class _DashboardSyncNote extends StatelessWidget {
-  const _DashboardSyncNote({required this.loadedAt});
+  const _DashboardSyncNote({
+    required this.loadedAt,
+    this.reliable = true,
+  });
 
   final DateTime loadedAt;
+  final bool reliable;
 
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
+    final ageMin = DateTime.now().difference(loadedAt).inMinutes;
     final label = dateTimeFormat(
       'Hm',
       loadedAt,
       locale: FFLocalizations.of(context).languageCode,
     );
+    final ttlMin = kAdminStatsTtl.inMinutes;
+    final staleHint = ageMin >= ttlMin
+        ? ' · ${uiTr(context, 'قديمة — حدّث')}'
+        : '';
+    final reliableHint =
+        reliable ? '' : ' · ${uiTr(context, 'غير مؤكد')}';
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -897,12 +1027,15 @@ class _DashboardSyncNote extends StatelessWidget {
           color: theme.secondaryText.withValues(alpha: 0.7),
         ),
         const SizedBox(width: 6),
-        Text(
-          '${uiTr(context, 'آخر تحديث')} $label',
-          style: theme.labelSmall.override(
-            fontFamily: theme.labelSmallFamily,
-            color: theme.secondaryText,
-            useGoogleFonts: !theme.labelSmallIsCustom,
+        Flexible(
+          child: Text(
+            '${uiTr(context, 'آخر تحديث')} $label$staleHint$reliableHint',
+            textAlign: TextAlign.center,
+            style: theme.labelSmall.override(
+              fontFamily: theme.labelSmallFamily,
+              color: theme.secondaryText,
+              useGoogleFonts: !theme.labelSmallIsCustom,
+            ),
           ),
         ),
       ],

@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const { releaseActiveOrderSlot } = require("./active_order_lock.js");
 
 if (!admin.apps.length) {
   admin.initializeApp();
@@ -16,10 +17,15 @@ function deadlineMs(data) {
   if (typeof data.acceptance_deadline_ms === "number") {
     return data.acceptance_deadline_ms;
   }
-  if (data.data_order) {
-    const orderTimeMs = data.data_order.toMillis
-      ? data.data_order.toMillis()
-      : new Date(data.data_order).getTime();
+  const created =
+    data.data_order ||
+    data.createdAt ||
+    data.created_at ||
+    null;
+  if (created) {
+    const orderTimeMs = created.toMillis
+      ? created.toMillis()
+      : new Date(created).getTime();
     if (!isNaN(orderTimeMs)) return orderTimeMs + ONE_HOUR_MS;
   }
   return null;
@@ -118,6 +124,26 @@ exports.autoCancelOrders = functions.pubsub
               admin.firestore.FieldValue.serverTimestamp();
             patch.originalPaymentId =
               data.payment_session_id || data.ngeniusOrderId || null;
+          }
+
+          // USER may be a DocumentReference or path string.
+          let userRef = null;
+          const userField = data.USER;
+          if (userField && typeof userField === "object" && userField.path) {
+            userRef = admin.firestore().doc(userField.path);
+          } else if (typeof userField === "string" && userField.length > 0) {
+            const path = userField.replace(/^\//, "");
+            userRef = admin.firestore().doc(
+              path.startsWith("user/") ? path : `user/${path}`,
+            );
+          }
+          if (userRef) {
+            await releaseActiveOrderSlot({
+              transaction: tx,
+              userRef,
+              orderId: doc.id,
+              FieldValue: admin.firestore.FieldValue,
+            });
           }
 
           tx.update(doc.ref, patch);

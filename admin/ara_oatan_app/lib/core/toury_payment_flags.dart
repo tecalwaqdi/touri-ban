@@ -1,33 +1,31 @@
 import 'package:flutter/foundation.dart';
 
-/// Unified payment feature flags for cash-only release + Payment API.
+/// Unified payment feature flags — **Render is the production Payment Backend**.
 ///
-/// Firebase paymentApi (preferred — Express on Cloud Functions):
+/// Customer App → Render (`touri-ban.onrender.com`) → N-Genius.
+///
+/// Production / store defaults (override only for explicit rollback):
 /// ```
 /// flutter run \
 ///   --dart-define=ENABLE_ONLINE_PAYMENT=true \
 ///   --dart-define=PAYMENT_BACKEND=external_api \
-///   --dart-define=PAYMENT_API_BASE_URL=https://us-central1-tutorial-multi-language-70gx4j.cloudfunctions.net/paymentApi
+///   --dart-define=PAYMENT_API_BASE_URL=https://touri-ban.onrender.com \
+///   --dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=true \
+///   --dart-define=TOURY_CLIENT_CASH_FALLBACK=true
 /// ```
 ///
-/// Browser/Safari HPP test (avoids simulator WebView 3DS issues):
-/// ```
-///   --dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=true
-/// ```
-///
-/// `vercel_api` remains accepted as a legacy alias of `external_api`.
-/// Render (`touri-ban.onrender.com`) remains a rollback URL only.
+/// Firebase `paymentApi` / CF callables remain in-repo as **Future / Legacy /
+/// Rollback only**. They are never selected unless
+/// `PAYMENT_BACKEND=firebase_functions` is set explicitly.
 ///
 /// N-Genius **production** is controlled by the backend `NGENIUS_ENV`
-/// (Firebase Function / Render), not by Flutter.
-///
-/// Does **not** delete N-Genius code, payment_sessions, webhooks, or CFs.
+/// (Render), not by Flutter. Do not change PURCHASE / HPP / webhook logic here.
 abstract final class TouryPaymentFlags {
-  /// Compile-time opt-in: `--dart-define=TOURY_CLIENT_CASH_FALLBACK=true`
-  /// **Release default is false** — create via CF only.
+  /// Compile-time: `--dart-define=TOURY_CLIENT_CASH_FALLBACK=true`
+  /// Default **true** — constrained client cash create when CF IAM is down.
   static const bool allowClientCashFallback = bool.fromEnvironment(
     'TOURY_CLIENT_CASH_FALLBACK',
-    defaultValue: false,
+    defaultValue: true,
   );
 
   /// Runtime gate used by booking. Debug builds also allow the constrained
@@ -35,39 +33,37 @@ abstract final class TouryPaymentFlags {
   static bool get allowClientCashFallbackRuntime =>
       allowClientCashFallback || kDebugMode;
 
-  /// Compile-time flag. Default **false** = cash on delivery only.
+  /// Compile-time flag. Default **true** — card + cash (Render for card).
   static const bool enableOnlinePayment = bool.fromEnvironment(
     'ENABLE_ONLINE_PAYMENT',
-    defaultValue: false,
+    defaultValue: true,
   );
 
-  /// `firebase_functions` | `external_api` | `vercel_api` (alias) | `cash_only`
-  /// Prefer `external_api` + [paymentApiBaseUrl] pointing at Firebase `paymentApi`.
+  /// `external_api` (Render) | `vercel_api` (alias) | `firebase_functions`
+  /// (legacy/rollback only) | `cash_only`
   static const String paymentBackend = String.fromEnvironment(
     'PAYMENT_BACKEND',
     defaultValue: 'external_api',
   );
 
   /// Public Payment API base URL — no trailing slash.
-  /// Default: Firebase `paymentApi` (same Express app previously on Render).
+  /// Default: Render production Payment Backend.
   static const String paymentApiBaseUrl = String.fromEnvironment(
     'PAYMENT_API_BASE_URL',
-    defaultValue:
-        'https://us-central1-tutorial-multi-language-70gx4j.cloudfunctions.net/paymentApi',
+    defaultValue: 'https://touri-ban.onrender.com',
   );
 
   /// When true, open Hosted Payment Page in the system browser (Safari)
-  /// instead of the in-app WebView. Useful to isolate simulator WebView/3DS issues:
-  /// `--dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=true`
+  /// instead of the in-app WebView (avoids simulator WebView/3DS issues).
   static const bool openPaymentInExternalBrowser = bool.fromEnvironment(
     'OPEN_PAYMENT_IN_EXTERNAL_BROWSER',
-    defaultValue: false,
+    defaultValue: true,
   );
 
   static bool get cashOnlyMode =>
       !enableOnlinePayment || paymentBackend == 'cash_only';
 
-  /// HTTP Payment API (Firebase `paymentApi` or Render rollback).
+  /// HTTP Payment API on Render (production). Never falls back to Firebase.
   static bool get useExternalPaymentApi {
     if (!enableOnlinePayment || paymentApiBaseUrl.isEmpty) return false;
     return paymentBackend == 'external_api' || paymentBackend == 'vercel_api';
@@ -76,10 +72,10 @@ abstract final class TouryPaymentFlags {
   /// Legacy alias — prefer [useExternalPaymentApi].
   static bool get useVercelPaymentApi => useExternalPaymentApi;
 
+  /// Firebase CF payment callables — **opt-in rollback only**.
+  /// Requires explicit `PAYMENT_BACKEND=firebase_functions`.
   static bool get useFirebasePaymentFunctions =>
-      enableOnlinePayment &&
-      !useExternalPaymentApi &&
-      paymentBackend != 'cash_only';
+      enableOnlinePayment && paymentBackend == 'firebase_functions';
 
   /// When online is disabled, cash must remain selectable even if remote
   /// `Settings.OKcash` is unset/false (local cash-only wave).

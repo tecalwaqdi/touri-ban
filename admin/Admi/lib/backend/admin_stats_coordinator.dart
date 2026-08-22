@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '/backend/admin_cache_policy.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 
 /// Domains that expose admin statistics UIs.
@@ -11,9 +13,15 @@ enum StatsDomain {
   reports,
   profits,
   agent,
+  bookings,
+  support,
 }
 
 /// Broadcasts stat invalidation so every stats screen reloads together.
+///
+/// Live sync: **one** scoped order listener (limit 8) for near-real-time
+/// booking metrics — not a full-collection stream. Other domains rely on
+/// CRUD hooks via [invalidate] / [invalidateAdminDashboardStats].
 class AdminStatsCoordinator {
   AdminStatsCoordinator._();
 
@@ -30,6 +38,12 @@ class AdminStatsCoordinator {
 
   StreamSubscription<QuerySnapshot>? _orderWatch;
   Timer? _orderWatchDebounce;
+  int _requestEpoch = 0;
+
+  /// Monotonic epoch for stale-request protection across loaders.
+  int nextRequestEpoch() => ++_requestEpoch;
+
+  int get requestEpoch => _requestEpoch;
 
   int generation(StatsDomain domain) => _generation[domain] ?? 0;
 
@@ -48,7 +62,39 @@ class AdminStatsCoordinator {
     }
   }
 
-  /// Listen to recent order changes and debounce stat refresh.
+  /// After booking CRUD — refresh dashboard + bookings surfaces quickly.
+  void invalidateAfterBookingChange() {
+    invalidate(domains: const [
+      StatsDomain.dashboard,
+      StatsDomain.bookings,
+      StatsDomain.reports,
+      StatsDomain.profits,
+      StatsDomain.agent,
+    ]);
+  }
+
+  void invalidateAfterUserChange() {
+    invalidate(domains: const [
+      StatsDomain.dashboard,
+      StatsDomain.reports,
+    ]);
+  }
+
+  void invalidateAfterSupportChange() {
+    invalidate(domains: const [
+      StatsDomain.dashboard,
+      StatsDomain.support,
+    ]);
+  }
+
+  void invalidateAfterGeoChange() {
+    invalidate(domains: const [
+      StatsDomain.dashboard,
+      StatsDomain.reports,
+    ]);
+  }
+
+  /// Listen to recent order changes (scoped) and debounce stat refresh.
   void startLiveSync() {
     stopLiveSync();
 
@@ -56,16 +102,27 @@ class AdminStatsCoordinator {
         .orderBy('data_order', descending: true)
         .limit(8);
 
-    final countryRef = AdminCountryScope.activeCountryRef;
+    // Prefer role lock, then active country scope — never global for agents.
+    final countryRef = AdminRoleService.scopedCountryRef ??
+        AdminCountryScope.activeCountryRef;
     if (countryRef != null) {
-      query = query.where('Rev_dolh', isEqualTo: countryRef);
+      query = OrderRecord.collection
+          .where('Rev_dolh', isEqualTo: countryRef)
+          .orderBy('data_order', descending: true)
+          .limit(8);
+    } else if (AdminRoleService.isCountryAgent) {
+      // Agent without country — do not attach a global listener.
+      return;
     }
 
     _orderWatch = query.snapshots().listen((_) {
       _orderWatchDebounce?.cancel();
-      _orderWatchDebounce = Timer(const Duration(milliseconds: 1500), () {
-        invalidate();
-      });
+      _orderWatchDebounce = Timer(
+        AdminCachePolicy.liveInvalidateDebounce,
+        () {
+          invalidateAfterBookingChange();
+        },
+      );
     });
   }
 

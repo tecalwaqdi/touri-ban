@@ -344,6 +344,7 @@ Future<AdminReportsSummary> _loadCounts({
           queryBuilder: (q) => q.where('ALLNOW', isEqualTo: true),
         ),
       ),
+      () => applyCount('totalBookings', () => queryOrderRecordCount()),
       () => applyCount(
         'agents',
         () => queryUserRecordCount(
@@ -411,6 +412,12 @@ Future<AdminReportsSummary> _loadCounts({
           queryBuilder: (q) => q
               .where('ALLNOW', isEqualTo: true)
               .where('Rev_dolh', isEqualTo: countryRef),
+        ),
+      ),
+      () => applyCount(
+        'totalBookings',
+        () => queryOrderRecordCount(
+          queryBuilder: (q) => q.where('Rev_dolh', isEqualTo: countryRef),
         ),
       ),
       () => applyCount(

@@ -13,6 +13,7 @@ import {
   IconMoon,
   IconSun,
 } from "@/components/icons";
+import { useActiveSection } from "@/hooks/useActiveSection";
 import { openDownloadChooser } from "@/lib/download";
 import { cn, swapLocalePath } from "@/lib/utils";
 
@@ -21,7 +22,7 @@ type Props = {
   dict: Dictionary;
 };
 
-const SECTION_IDS = [
+const NAV_SECTION_IDS = [
   "customer",
   "driver",
   "features",
@@ -29,10 +30,13 @@ const SECTION_IDS = [
   "safety",
   "faq",
   "contact",
-  "download",
 ] as const;
 
-type SectionId = (typeof SECTION_IDS)[number];
+type SectionId = (typeof NAV_SECTION_IDS)[number];
+
+function isSectionId(id: string): id is SectionId {
+  return (NAV_SECTION_IDS as readonly string[]).includes(id);
+}
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id);
@@ -53,7 +57,6 @@ export function Navbar({ locale, dict }: Props) {
   const headerRef = useRef<HTMLElement>(null);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [activeId, setActiveId] = useState<SectionId | "">("");
   const other = locale === "ar" ? "en" : "ar";
   const home = localePath(locale, "/");
   const isHome = pathname === home;
@@ -70,6 +73,8 @@ export function Navbar({ locale, dict }: Props) {
     ],
     [dict],
   );
+
+  const { activeId, lockTo } = useActiveSection(NAV_SECTION_IDS, isHome);
 
   useEffect(() => {
     const header = headerRef.current;
@@ -95,8 +100,15 @@ export function Navbar({ locale, dict }: Props) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const homeBootRef = useRef(false);
+
   useEffect(() => {
-    if (!isHome) return;
+    if (!isHome) {
+      homeBootRef.current = false;
+      return;
+    }
+    if (homeBootRef.current) return;
+    homeBootRef.current = true;
 
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
@@ -105,45 +117,27 @@ export function Navbar({ locale, dict }: Props) {
     const pending = sessionStorage.getItem("touri-scroll-to");
     if (pending) {
       sessionStorage.removeItem("touri-scroll-to");
+      if (isSectionId(pending)) lockTo(pending);
       scrollToSectionWhenReady(pending);
-    } else {
-      // Open / refresh home at the hero — ignore leftover hashes from earlier browsing.
-      if (window.location.hash) {
-        window.history.replaceState(
-          null,
-          "",
-          `${window.location.pathname}${window.location.search}`,
-        );
-      }
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      return;
     }
 
-    const onScroll = () => {
-      const offset =
-        Number.parseFloat(
-          getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
-        ) || headerRef.current?.offsetHeight || 76;
+    const hashId = window.location.hash.replace(/^#/, "");
+    if (isSectionId(hashId) || hashId === "download") {
+      if (isSectionId(hashId)) lockTo(hashId);
+      scrollToSectionWhenReady(hashId);
+      return;
+    }
 
-      let current: SectionId | "" = "";
-      for (const id of SECTION_IDS) {
-        if (id === "download") continue;
-        const el = document.getElementById(id);
-        if (!el) continue;
-        if (el.getBoundingClientRect().top - offset <= 12) {
-          current = id;
-        }
-      }
-      setActiveId(current);
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, [isHome]);
+    if (window.location.hash) {
+      window.history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}${window.location.search}`,
+      );
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [isHome, lockTo]);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -160,6 +154,7 @@ export function Navbar({ locale, dict }: Props) {
 
   function goToSection(id: SectionId) {
     setOpen(false);
+    lockTo(id);
     if (isHome) {
       scrollToSection(id);
       return;

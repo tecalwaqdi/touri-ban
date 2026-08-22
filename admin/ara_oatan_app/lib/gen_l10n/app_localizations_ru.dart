@@ -1863,7 +1863,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String checkout_min_hours_hint(String hours) {
+  String checkout_min_hours_hint(String hours, Object horas) {
     return 'С учетом выбранных вами остановок минимальная продолжительность поездки составляет $hours часов.';
   }
 
@@ -1874,7 +1874,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get checkout_order_status_pending => 'Ожидает подтверждения водителя';
 
   @override
-  String checkout_add_hours_prompt(String hours) {
+  String checkout_add_hours_prompt(String hours, Object horas) {
     return 'Пожалуйста, добавьте еще как минимум $hours часов, чтобы продолжить';
   }
 
@@ -2268,7 +2268,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get unit_kmh => 'км/ч';
 
   @override
-  String duration_hours_minutes(String hours, String minutes) {
+  String duration_hours_minutes(String hours, String minutes, Object horas) {
     return '$hours ч $minutes мин';
   }
 
@@ -2433,8 +2433,8 @@ class AppLocalizationsRu extends AppLocalizations {
       'Новое платное бронирование';
 
   @override
-  String notification_paid_order_admin_body(
-      String bookingId, String hours, String amount, String currency) {
+  String notification_paid_order_admin_body(String bookingId, String hours,
+      String amount, String currency, Object horas) {
     return 'Новое платное бронирование №$bookingId: $hours часов, $amount $currency.';
   }
 
@@ -2451,7 +2451,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String notification_new_order_driver_body(
-      String hours, String amount, String currency) {
+      String hours, String amount, String currency, Object horas) {
     return 'Новое бронирование Touri Taxi доступно на $hours часов с доходом $amount $currency. Откройте приложение для водителя, чтобы просмотреть его.';
   }
 

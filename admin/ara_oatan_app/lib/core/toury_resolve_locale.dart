@@ -5,13 +5,15 @@ import '/flutter_flow/internationalization.dart';
 
 const Locale touryFallbackLocale = Locale('en');
 
-/// Production UI languages only. French and other locales are archived and
-/// must not appear in the language picker until fully reviewed.
+/// Production UI languages (EasyLocalization + picker).
 const Set<String> touryProductionLanguageCodes = {
   'ar',
   'en',
   'ru',
   'ky',
+  'fr',
+  'ur',
+  'pt',
 };
 
 const List<Locale> touryProductionLocales = [
@@ -19,6 +21,9 @@ const List<Locale> touryProductionLocales = [
   Locale('ar'),
   Locale('ru'),
   Locale('ky'),
+  Locale('fr'),
+  Locale('ur'),
+  Locale('pt'),
 ];
 
 /// Discovers translation assets, then keeps only production locales.
@@ -48,7 +53,7 @@ Future<List<Locale>> touryDiscoverSupportedLocales([
   if (locales.isEmpty) {
     throw FlutterError(
       'No production translation files found in assets/langs '
-      '(expected ar/en/ru/ky).',
+      '(expected ar/en/ru/ky/fr/ur/pt).',
     );
   }
   return List.unmodifiable(locales);

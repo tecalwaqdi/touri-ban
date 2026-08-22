@@ -3,6 +3,7 @@ import '/backend/backend.dart';
 import '/core/driver_country_service.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_online_state.dart';
+import '/core/driver_order_availability.dart';
 import '/core/driver_order_match.dart';
 import '/core/driver_ux_widgets.dart';
 import '/core/driver_i18n.dart';
@@ -159,15 +160,26 @@ class _AcceptedWidgetState extends State<AcceptedWidget>
                           );
                         }
                         List<OrderRecord> listViewOrderRecordList =
-                            snapshot.data!
-                                .where(
-                                  (o) => DriverTripActionGates.isActiveListItem(
-                                    (o.snapshotData['status_code'] ?? '')
-                                        .toString(),
-                                    o.halhText,
-                                  ),
-                                )
-                                .toList();
+                            DriverOrderAvailability.uniqueById(
+                          snapshot.data!.where(
+                            DriverTripActionGates.isAcceptedActiveOrder,
+                          ),
+                        );
+                        listViewOrderRecordList.sort((a, b) {
+                          DateTime? stamp(OrderRecord o) {
+                            final raw = o.snapshotData['acceptedAt'];
+                            if (raw is Timestamp) return raw.toDate();
+                            if (raw is DateTime) return raw;
+                            return o.dataOrder;
+                          }
+
+                          final ta = stamp(a);
+                          final tb = stamp(b);
+                          if (ta == null && tb == null) return 0;
+                          if (ta == null) return 1;
+                          if (tb == null) return -1;
+                          return tb.compareTo(ta);
+                        });
 
                         if (listViewOrderRecordList.isEmpty) {
                           return DriverEmptyState(
@@ -198,24 +210,8 @@ class _AcceptedWidgetState extends State<AcceptedWidget>
                                   ),
                                 ),
                                 builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return SizedBox(
-                                      height: 24,
-                                      child: Center(
-                                        child: SizedBox(
-                                          width: 16,
-                                          height: 16,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor: AlwaysStoppedAnimation(
-                                              colors.primary,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  int containerCount = snapshot.data!;
+                                  // Never block the accepted card on chat count.
+                                  final containerCount = snapshot.data ?? 0;
 
                                   return DriverOrderCardShell(
                                     onTap: () async {
