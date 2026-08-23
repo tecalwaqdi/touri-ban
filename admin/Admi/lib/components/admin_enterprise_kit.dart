@@ -352,8 +352,9 @@ class AdminDataTable extends StatelessWidget {
       padding: EdgeInsets.zero,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: tableMin),
+        child: SizedBox(
+          // Bounded width required so Expanded columns don't collapse/overlap.
+          width: tableMin,
           child: Column(
             children: [
                 Container(
@@ -374,13 +375,18 @@ class AdminDataTable extends StatelessWidget {
                     for (final col in columns)
                       Expanded(
                         flex: col.flex,
-                        child: Text(
-                          col.label,
-                          style: theme.labelMedium.override(
-                            fontFamily: theme.labelMediumFamily,
-                            color: AdminUi.brandTeal,
-                            fontWeight: FontWeight.w700,
-                            useGoogleFonts: !theme.labelMediumIsCustom,
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.only(end: 8),
+                          child: Text(
+                            col.label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.labelMedium.override(
+                              fontFamily: theme.labelMediumFamily,
+                              color: AdminUi.brandTeal,
+                              fontWeight: FontWeight.w700,
+                              useGoogleFonts: !theme.labelMediumIsCustom,
+                            ),
                           ),
                         ),
                       ),
@@ -406,16 +412,19 @@ class AdminDataTable extends StatelessWidget {
                       for (var c = 0; c < columns.length; c++)
                         Expanded(
                           flex: columns[c].flex,
-                          child: DefaultTextStyle(
-                            style: theme.bodyMedium.override(
-                              fontFamily: theme.bodyMediumFamily,
-                              color: theme.primaryText,
-                              fontSize: 13,
-                              useGoogleFonts: !theme.bodyMediumIsCustom,
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.only(end: 8),
+                            child: DefaultTextStyle(
+                              style: theme.bodyMedium.override(
+                                fontFamily: theme.bodyMediumFamily,
+                                color: theme.primaryText,
+                                fontSize: 13,
+                                useGoogleFonts: !theme.bodyMediumIsCustom,
+                              ),
+                              child: c < rows[i].length
+                                  ? rows[i][c]
+                                  : const SizedBox.shrink(),
                             ),
-                            child: c < rows[i].length
-                                ? rows[i][c]
-                                : const SizedBox.shrink(),
                           ),
                         ),
                     ],

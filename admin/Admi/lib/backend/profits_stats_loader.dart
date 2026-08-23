@@ -210,10 +210,13 @@ Future<ProfitsSummary> loadProfitsStats({
           (remote['repCommission'] as num?)?.toDouble() ?? totals.repCommission,
       deliveryFees:
           (remote['deliveryFees'] as num?)?.toDouble() ?? totals.deliveryFees,
-      orderCount: (remote['orderCount'] as int?) ?? totals.activeOrderCount,
-      paidCount: (remote['paidCount'] as int?) ?? totals.paidCount,
-      pendingCount: (remote['pendingCount'] as int?) ?? totals.pendingCount,
-      canceledCount: (remote['canceledCount'] as int?) ?? totals.canceledCount,
+      orderCount: (remote['orderCount'] as num?)?.round() ??
+          totals.activeOrderCount,
+      paidCount: (remote['paidCount'] as num?)?.round() ?? totals.paidCount,
+      pendingCount:
+          (remote['pendingCount'] as num?)?.round() ?? totals.pendingCount,
+      canceledCount:
+          (remote['canceledCount'] as num?)?.round() ?? totals.canceledCount,
       monthlyTrend: _buildMonthlyTrend(sample),
       recentOrders: sample
           .where(OrderStatusHelper.countsTowardRevenue)

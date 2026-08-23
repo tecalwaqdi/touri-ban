@@ -5,6 +5,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/finance_controls_client.dart';
+import '/core/finance/finance_runtime_gate.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -101,14 +102,35 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
           Text(uiTr(context, 'Admin Diagnostics'), style: theme.headlineSmall),
           Text(
             uiTr(context, 'No environment secrets are shown here.'),
+            softWrap: true,
             style: theme.bodySmall,
           ),
           const SizedBox(height: 12),
-          Text('Firestore: ${_status == 'ok' ? 'reachable' : _status}'),
-          Text('Finance functions: ${_home != null ? 'reachable' : '—'}'),
-          Text('Aggregation metric samples: $_metricCount'),
+          Text(
+            'Firestore: ${_status == 'ok' ? 'reachable' : _status}',
+            softWrap: true,
+          ),
+          Text(
+            'Finance functions: ${_home != null ? 'reachable' : '—'}',
+            softWrap: true,
+          ),
+          Text(
+            'Authenticated role: ${AdminRoleService.roleLabel(AdminRoleService.currentRole)}'
+            '${AdminRoleService.isRoleResolving ? ' (resolving…)' : ''}',
+            softWrap: true,
+          ),
+          Text(
+            'Authoritative backend data: ${FinanceRuntimeGate.authoritativeBackendData}',
+            softWrap: true,
+          ),
+          Text(
+            'Approximate / fallback mode: ${!FinanceRuntimeGate.authoritativeBackendData}',
+            softWrap: true,
+          ),
+          Text('Aggregation metric samples: $_metricCount', softWrap: true),
           Text(
             'Independent approver (accountantHome): $approverOk',
+            softWrap: true,
           ),
           if (!approverOk)
             Padding(
@@ -118,6 +140,7 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
                   context,
                   'Financial pilot blocked: no independent approver configured',
                 ),
+                softWrap: true,
                 style: theme.bodyMedium.override(
                   fontFamily: 'Cairo',
                   color: theme.error,
@@ -129,6 +152,7 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
             approverOk
                 ? uiTr(context, 'Approver availability: configured')
                 : uiTr(context, 'Approver availability: missing / not configured'),
+            softWrap: true,
             style: theme.bodyMedium.override(
               fontFamily: 'Cairo',
               color: approverOk ? Colors.green.shade700 : theme.error,
@@ -138,11 +162,11 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
           if (_lastMetric != null) ...[
             const SizedBox(height: 8),
             Text(uiTr(context, 'Last aggregation metric'), style: theme.titleSmall),
-            Text('op: ${_lastMetric!['op'] ?? '—'}'),
-            Text('ordersScanned: $ordersScanned'),
-            Text('durationMs: ${_lastMetric!['durationMs'] ?? '—'}'),
-            Text('cacheHit: ${_lastMetric!['cacheHit'] ?? '—'}'),
-            Text('at: ${_lastMetric!['at'] ?? '—'}'),
+            Text('op: ${_lastMetric!['op'] ?? '—'}', softWrap: true),
+            Text('ordersScanned: $ordersScanned', softWrap: true),
+            Text('durationMs: ${_lastMetric!['durationMs'] ?? '—'}', softWrap: true),
+            Text('cacheHit: ${_lastMetric!['cacheHit'] ?? '—'}', softWrap: true),
+            Text('at: ${_lastMetric!['at'] ?? '—'}', softWrap: true),
             if (expensive)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
@@ -151,6 +175,7 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
                     context,
                     'Expensive query warning: ordersScanned > 5000. Prefer narrower filters or cache.',
                   ),
+                  softWrap: true,
                   style: theme.bodyMedium.override(
                     fontFamily: 'Cairo',
                     color: theme.error,
@@ -161,11 +186,13 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
           ],
           const SizedBox(height: 8),
           Text(uiTr(context, 'Feature flags'), style: theme.titleSmall),
-          for (final e in flags.entries) Text('${e.key}=${e.value}'),
+          for (final e in flags.entries)
+            Text('${e.key}=${e.value}', softWrap: true),
           if ((_home?['warnings'] as List?)?.isNotEmpty == true) ...[
             const SizedBox(height: 8),
             Text(uiTr(context, 'Warnings'), style: theme.titleSmall),
-            for (final w in (_home!['warnings'] as List)) Text('• $w'),
+            for (final w in (_home!['warnings'] as List))
+              Text('• $w', softWrap: true),
           ],
           if (AdminRoleService.isSuperAdmin || AdminRoleService.isFinance)
             TextButton(

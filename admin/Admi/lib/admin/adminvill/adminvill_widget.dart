@@ -3,6 +3,7 @@ import '/backend/admin_audit_log.dart';
 import '/backend/admin_cascade_delete.dart';
 import '/backend/admin_legacy_alias_filter.dart';
 import '/backend/backend.dart';
+import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
@@ -77,26 +78,20 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
   }
 
   Future<void> _deleteCity(VillagesRecord record) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(appTr(context, 'adm_delete_confirm_title')),
-            content: Text(
-              '${uiTr(context, 'هل أنت متأكد من حذف')} "${record.naim}"؟',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(appTr(context, 'adm_yes_delete')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: appTr(context, 'adm_delete_confirm_title'),
+      whatHappens: uiTr(
+        context,
+        'Deleting this city removes linked landmarks and may break historical order references.',
+      ),
+      subject: record.naim.isNotEmpty ? record.naim : record.reference.id,
+      impact: uiTr(context, 'Cascade delete on city and landmarks.'),
+      destructive: true,
+      irreversible: true,
+      confirmLabel: appTr(context, 'adm_yes_delete'),
+      cancelLabel: appTr(context, 'adm_no'),
+    );
 
     if (!confirmed) return;
 
@@ -126,28 +121,22 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
   }
 
   Future<void> _toggleActive(VillagesRecord record, bool activate) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(activate ? uiTr(context, 'تأكيد التنشيط') : uiTr(context, 'تأكيد إيقاف التنشيط')),
-            content: Text(
-              activate
-                  ? '${uiTr(context, 'هل أنت متأكد من تنشيط')} "${record.naim}"؟'
-                  : '${uiTr(context, 'هل أنت متأكد من إيقاف تنشيط')} "${record.naim}"؟',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(activate ? uiTr(context, 'نعم، فعّل') : uiTr(context, 'نعم، أوقف')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: activate
+          ? uiTr(context, 'تأكيد التنشيط')
+          : uiTr(context, 'تأكيد إيقاف التنشيط'),
+      whatHappens: activate
+          ? uiTr(context, 'City and linked landmarks will become active.')
+          : uiTr(context, 'City and linked landmarks will be deactivated.'),
+      subject: record.naim.isNotEmpty ? record.naim : record.reference.id,
+      impact: uiTr(context, 'Visibility change for catalog and booking flows.'),
+      destructive: !activate,
+      confirmLabel: activate
+          ? uiTr(context, 'نعم، فعّل')
+          : uiTr(context, 'نعم، أوقف'),
+      cancelLabel: appTr(context, 'adm_no'),
+    );
 
     if (!confirmed) return;
 

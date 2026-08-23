@@ -75,6 +75,21 @@ class AdminRoleService {
       _claims.hasPanelAccess ||
       _roleFromUserDoc(_boundProfile) != AdminRole.none;
 
+  /// True while signed-in but profile/claims have not arrived yet.
+  /// UI must not show "Unauthorized" during this window.
+  static bool get isRoleResolving {
+    if (_claims.hasPanelAccess) return false;
+    if (_boundProfile != null) return false;
+    // Bound profile null + no claims: either still loading or signed out.
+    // Callers should also check FirebaseAuth.currentUser != null.
+    return true;
+  }
+
+  static bool get hasClaimsPanelAccess => _claims.hasPanelAccess;
+
+  /// Profile-doc role without considering claims (for claims-sync decisions).
+  static AdminRole get profileRole => _roleFromUserDoc(_boundProfile);
+
   static bool get isSuperAdmin =>
       _claims.isSuperAdmin ||
       _roleFromUserDoc(_boundProfile) == AdminRole.superAdmin;

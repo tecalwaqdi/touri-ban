@@ -185,10 +185,10 @@ T? castToType<T>(dynamic value) {
       // Doubles may be stored as ints in some cases.
       return value.toDouble() as T;
     case int:
-      // Likewise, ints may be stored as doubles. If this is the case
-      // (i.e. no decimal value), return the value as an int.
-      if (value is num && value.toInt() == value) {
-        return value.toInt() as T;
+      // Ints may be stored as doubles in Firestore (e.g. 67.5 money fields).
+      // Coerce rather than throwing — fractional values round to nearest int.
+      if (value is num) {
+        return value.round() as T;
       }
       break;
     default:

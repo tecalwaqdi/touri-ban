@@ -92,6 +92,7 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
               context,
               'Internal reports only — not a tax invoice. CSV copy. PDF: DEFERRED_PDF (no pdf package).',
             ),
+            softWrap: true,
             style: theme.bodySmall,
           ),
           const SizedBox(height: 12),
@@ -117,7 +118,7 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
           ),
           const SizedBox(height: 8),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerStart,
             child: FilledButton(
               onPressed: _busy ? null : _run,
               child: Text(uiTr(context, 'تشغيل')),
@@ -127,9 +128,14 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
             const SizedBox(height: 12),
             Text(
               'Generated at ${_report!['generatedAt']} · Prepared by ${_report!['preparedBy']}',
+              softWrap: true,
               style: theme.labelSmall,
             ),
-            Text('${_report!['disclaimer']}', style: theme.labelSmall),
+            Text(
+              '${_report!['disclaimer']}',
+              softWrap: true,
+              style: theme.labelSmall,
+            ),
             TextButton(
               onPressed: () async {
                 final csv = '${_report!['csv'] ?? ''}';
@@ -150,21 +156,33 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
               },
               child: Text(uiTr(context, 'Export CSV')),
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: [
-                  for (final c in cols) DataColumn(label: Text('$c')),
-                ],
-                rows: [
-                  for (final r in rows)
-                    DataRow(
-                      cells: [
-                        for (final c in (r as List)) DataCell(Text('$c')),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: constraints.maxWidth,
+                    ),
+                    child: DataTable(
+                      columns: [
+                        for (final c in cols) DataColumn(label: Text('$c')),
+                      ],
+                      rows: [
+                        for (final r in rows)
+                          DataRow(
+                            cells: [
+                              for (final c in (r as List))
+                                DataCell(
+                                  Text('$c', softWrap: false),
+                                ),
+                            ],
+                          ),
                       ],
                     ),
-                ],
-              ),
+                  ),
+                );
+              },
             ),
           ],
         ],

@@ -2,12 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '/backend/admin_role_service.dart';
 import '/components/admin_confirm_dialog.dart';
+import '/components/admin_enterprise_kit.dart' show AdminStatusBadge, AdminBadgeTone;
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_error_messages.dart';
+import '/core/finance/finance_runtime_gate.dart';
 import '/core/finance/money_amount.dart';
 import '/core/finance/settlement_ledger_client.dart';
 import '/core/finance/finance_controls_client.dart';
+import '/core/finance/settlement_visual_fixture.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -51,7 +54,7 @@ class _AdminSettlementDetailsWidgetState
 
   String _money(int? minor, String currency) {
     final m = MoneyAmount(currency: currency, minorUnits: minor ?? 0);
-    return '${m.majorUnits.toStringAsFixed(2)} ${m.code}';
+    return m.displayLabel;
   }
 
   void _snackError(Object e) {
@@ -62,6 +65,20 @@ class _AdminSettlementDetailsWidgetState
   }
 
   Future<void> _lock(Map<String, dynamic> data) async {
+    if (!FinanceRuntimeGate.canAttemptFinanceWrites) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            uiTr(
+              context,
+              'Financial data is approximate — financial writes unavailable',
+            ),
+          ),
+        ),
+      );
+      return;
+    }
     final derived = (data['derivedCount'] as num?)?.toInt() ?? 0;
     final cur = data['currency'] as String? ?? 'SAR';
     final due = data['absoluteSettlementAmountMinor'] as int?;
@@ -253,6 +270,20 @@ class _AdminSettlementDetailsWidgetState
   }
 
   Future<void> _confirmPayment(Map<String, dynamic> settlement, Map<String, dynamic> pay) async {
+    if (!FinanceRuntimeGate.canAttemptFinanceWrites) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            uiTr(
+              context,
+              'Financial data is approximate — financial writes unavailable',
+            ),
+          ),
+        ),
+      );
+      return;
+    }
     final cur = settlement['currency'] as String? ?? 'SAR';
     final due = (settlement['absoluteSettlementAmountMinor'] as num?)?.toInt() ?? 0;
     final paid = (settlement['paidConfirmedMinor'] as num?)?.toInt() ?? 0;
@@ -408,7 +439,8 @@ class _AdminSettlementDetailsWidgetState
   Widget build(BuildContext context) {
     final id = widget.settlementId;
     final theme = FlutterFlowTheme.of(context);
-    final canWrite = AdminRoleService.canWriteSettlements;
+    final canWrite = AdminRoleService.canWriteSettlements &&
+        FinanceRuntimeGate.canAttemptFinanceWrites;
     if (id == null || id.isEmpty) {
       return AdminLayoutWidget(
         scaffoldKey: scaffoldKey,
@@ -416,6 +448,122 @@ class _AdminSettlementDetailsWidgetState
         updateCallback: () => safeSetState(() {}),
         title: uiTr(context, 'التسوية'),
         child: Text(uiTr(context, 'معرّف التسوية مفقود')),
+      );
+    }
+
+    final fixture = SettlementVisualFixture.dataFor(id);
+    if (fixture != null) {
+      return AdminLayoutWidget(
+        scaffoldKey: scaffoldKey,
+        menu2Model: _model.menu2Model,
+        updateCallback: () => safeSetState(() {}),
+        title: uiTr(context, 'تفاصيل التسوية'),
+        child: ListView(
+          padding: AdminUi.pagePadding(context),
+          children: [
+            AdminStatusBadge(
+              label: uiTr(context, 'Visual fixture — not production data'),
+              tone: AdminBadgeTone.info,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${fixture['settlementCode']} · ${fixture['status']}',
+              style: theme.headlineSmall,
+            ),
+            Text(
+              'Driver ${fixture['driverId']} · ${fixture['countryId']} · '
+              '${fixture['currency']} · ${fixture['direction']}',
+              softWrap: true,
+            ),
+            Text(
+              '${fixture['periodStart']} → ${fixture['periodEnd']}',
+              softWrap: true,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '${uiTr(context, 'Amount Due')}: '
+              '${_money(fixture['amountDueMinor'] as int?, 'SAR')}',
+            ),
+            Text(
+              '${uiTr(context, 'Paid')}: '
+              '${_money(fixture['paidMinor'] as int?, 'SAR')}',
+            ),
+            Text(
+              '${uiTr(context, 'Outstanding')}: '
+              '${_money(fixture['outstandingMinor'] as int?, 'SAR')}',
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                OutlinedButton(
+                  onPressed: () => _lock(fixture),
+                  child: Text(uiTr(context, 'Lock Settlement')),
+                ),
+                OutlinedButton(
+                  onPressed: () async {
+                    await showAdminConfirmDialog(
+                      context: context,
+                      title: uiTr(context, 'Confirm Payment'),
+                      whatHappens: uiTr(
+                        context,
+                        'Fixture only — Cancel to dismiss',
+                      ),
+                      subject: fixture['settlementCode'] as String,
+                      currency: 'SAR',
+                      amount: _money(50000, 'SAR'),
+                      direction: 'DRIVER_PAYS_COMPANY',
+                      reference: id,
+                      confirmLabel: uiTr(context, 'Confirm Payment'),
+                    );
+                  },
+                  child: Text(uiTr(context, 'Confirm Payment')),
+                ),
+                OutlinedButton(
+                  onPressed: () async {
+                    await showAdminConfirmDialog(
+                      context: context,
+                      title: uiTr(context, 'Reverse Payment'),
+                      whatHappens: uiTr(
+                        context,
+                        'Fixture only — Cancel to dismiss',
+                      ),
+                      subject: fixture['settlementCode'] as String,
+                      currency: 'SAR',
+                      amount: _money(50000, 'SAR'),
+                      direction: 'DRIVER_PAYS_COMPANY',
+                      reference: id,
+                      destructive: true,
+                      irreversible: true,
+                    );
+                  },
+                  child: Text(uiTr(context, 'Reverse Payment')),
+                ),
+                OutlinedButton(
+                  onPressed: () async {
+                    await showAdminConfirmDialog(
+                      context: context,
+                      title: uiTr(context, 'Void Settlement'),
+                      whatHappens: uiTr(
+                        context,
+                        'Fixture only — Cancel to dismiss',
+                      ),
+                      subject: fixture['settlementCode'] as String,
+                      currency: 'SAR',
+                      amount: _money(80400, 'SAR'),
+                      direction: 'DRIVER_PAYS_COMPANY',
+                      reference: id,
+                      destructive: true,
+                      irreversible: true,
+                    );
+                  },
+                  child: Text(uiTr(context, 'Void Settlement')),
+                ),
+              ],
+            ),
+          ],
+        ),
       );
     }
 
@@ -444,31 +592,36 @@ class _AdminSettlementDetailsWidgetState
               Text('${d['settlementCode']} · ${d['status']}', style: theme.headlineSmall),
               Text(
                 'Driver ${d['driverId']} · ${d['countryId']} · $cur · ${d['direction']}',
+                softWrap: true,
               ),
-              Text('${d['periodStart']} → ${d['periodEnd']}'),
+              Text('${d['periodStart']} → ${d['periodEnd']}', softWrap: true),
               const SizedBox(height: 12),
               Text(uiTr(context, 'الإجماليات'), style: theme.titleMedium),
-              Text('Cash collected ${_money(d['cashCustomerCollectedMinor'] as int?, cur)}'),
-              Text('Cash entitlement ${_money(d['cashDriverEntitlementMinor'] as int?, cur)}'),
-              Text('Driver cash liability ${_money(d['driverCashLiabilityMinor'] as int?, cur)}'),
-              Text('Online collected ${_money(d['onlineCustomerCollectedMinor'] as int?, cur)}'),
-              Text('Company online liability ${_money(d['companyOnlineLiabilityMinor'] as int?, cur)}'),
-              Text('Platform ${_money(d['platformFeeMinor'] as int?, cur)}'),
-              Text('VAT ${_money(d['recordedVatMinor'] as int?, cur)}'),
-              Text('Discount ${_money(d['recordedDiscountMinor'] as int?, cur)}'),
-              Text('Net ${_money(d['netTripPositionMinor'] as int?, cur)}'),
+              Text('Cash collected ${_money(d['cashCustomerCollectedMinor'] as int?, cur)}', softWrap: true),
+              Text('Cash entitlement ${_money(d['cashDriverEntitlementMinor'] as int?, cur)}', softWrap: true),
+              Text('Driver cash liability ${_money(d['driverCashLiabilityMinor'] as int?, cur)}', softWrap: true),
+              Text('Online collected ${_money(d['onlineCustomerCollectedMinor'] as int?, cur)}', softWrap: true),
+              Text('Company online liability ${_money(d['companyOnlineLiabilityMinor'] as int?, cur)}', softWrap: true),
+              Text('Platform ${_money(d['platformFeeMinor'] as int?, cur)}', softWrap: true),
+              Text('VAT ${_money(d['recordedVatMinor'] as int?, cur)}', softWrap: true),
+              Text('Discount ${_money(d['recordedDiscountMinor'] as int?, cur)}', softWrap: true),
+              Text('Net ${_money(d['netTripPositionMinor'] as int?, cur)}', softWrap: true),
               const SizedBox(height: 12),
               Text(uiTr(context, 'Amount Due'), style: theme.titleMedium),
-              Text(_money(d['absoluteSettlementAmountMinor'] as int?, cur)),
-              Text('${uiTr(context, 'Paid')}: ${_money(d['paidConfirmedMinor'] as int?, cur)}'),
-              Text('${uiTr(context, 'Outstanding')}: ${_money(d['outstandingMinor'] as int?, cur)}'),
-              Text('${uiTr(context, 'Direction')}: ${d['direction']}'),
-              Text('Eligible ${d['eligibleTripCount']} · Excluded ${d['excludedTripCount']} · DERIVED ${d['derivedCount']}'),
+              Text(_money(d['absoluteSettlementAmountMinor'] as int?, cur), softWrap: true),
+              Text('${uiTr(context, 'Paid')}: ${_money(d['paidConfirmedMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'Outstanding')}: ${_money(d['outstandingMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'Direction')}: ${d['direction']}', softWrap: true),
+              Text(
+                'Eligible ${d['eligibleTripCount']} · Excluded ${d['excludedTripCount']} · DERIVED ${d['derivedCount']}',
+                softWrap: true,
+              ),
               const SizedBox(height: 12),
               if (canWrite && !_busy) ...[
                 if (d['status'] == 'draft')
                   Wrap(
                     spacing: 8,
+                    runSpacing: 8,
                     children: [
                       FilledButton(
                         onPressed: () async {
@@ -489,6 +642,7 @@ class _AdminSettlementDetailsWidgetState
                 if (d['status'] == 'locked' || d['status'] == 'partially_paid')
                   Wrap(
                     spacing: 8,
+                    runSpacing: 8,
                     children: [
                       FilledButton(
                         onPressed: () => _recordPayment(d),
@@ -511,62 +665,77 @@ class _AdminSettlementDetailsWidgetState
                 builder: (context, paySnap) {
                   if (!paySnap.hasData) return const SizedBox.shrink();
                   return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       for (final p in paySnap.data!.docs)
-                        ListTile(
-                          dense: true,
-                          title: Text(
-                            '${p.data()['method']} · ${_money(p.data()['amountMinor'] as int?, cur)} · ${p.data()['status']}',
-                          ),
-                          subtitle: Text(
-                            '${p.data()['externalReference'] ?? ''} · ${p.data()['createdBy']} · ${p.data()['receiptNumber'] ?? ''}',
-                          ),
-                          trailing: canWrite && !_busy
-                              ? (p.data()['status'] == 'pending'
-                                  ? TextButton(
-                                      onPressed: () => _confirmPayment(
-                                        d,
-                                        {...p.data(), 'paymentId': p.id},
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                '${p.data()['method']} · ${_money(p.data()['amountMinor'] as int?, cur)} · ${p.data()['status']}',
+                                softWrap: true,
+                              ),
+                              Text(
+                                '${p.data()['externalReference'] ?? ''} · ${p.data()['createdBy']} · ${p.data()['receiptNumber'] ?? ''}',
+                                softWrap: true,
+                                style: theme.bodySmall,
+                              ),
+                              if (canWrite && !_busy)
+                                Wrap(
+                                  spacing: 4,
+                                  children: [
+                                    if (p.data()['status'] == 'pending')
+                                      TextButton(
+                                        onPressed: () => _confirmPayment(
+                                          d,
+                                          {...p.data(), 'paymentId': p.id},
+                                        ),
+                                        child: Text(uiTr(context, 'Confirm')),
                                       ),
-                                      child: Text(uiTr(context, 'Confirm')),
-                                    )
-                                  : p.data()['status'] == 'confirmed'
-                                      ? TextButton(
-                                          onPressed: () => _reversePayment(
-                                            d,
-                                            {...p.data(), 'paymentId': p.id},
-                                            cur,
-                                          ),
-                                          child: Text(uiTr(context, 'Reverse')),
-                                        )
-                                      : (p.data()['receiptNumber'] != null
-                                          ? TextButton(
-                                              onPressed: () => context.pushNamed(
-                                                AdminSettlementReceiptWidget.routeName,
-                                                queryParameters: {
-                                                  'paymentId': serializeParam(
-                                                    p.id,
-                                                    ParamType.String,
-                                                  ),
-                                                }.withoutNulls,
-                                              ),
-                                              child: Text(uiTr(context, 'Receipt')),
-                                            )
-                                          : null))
-                              : (p.data()['receiptNumber'] != null
-                                  ? TextButton(
-                                      onPressed: () => context.pushNamed(
-                                        AdminSettlementReceiptWidget.routeName,
-                                        queryParameters: {
-                                          'paymentId': serializeParam(
-                                            p.id,
-                                            ParamType.String,
-                                          ),
-                                        }.withoutNulls,
+                                    if (p.data()['status'] == 'confirmed')
+                                      TextButton(
+                                        onPressed: () => _reversePayment(
+                                          d,
+                                          {...p.data(), 'paymentId': p.id},
+                                          cur,
+                                        ),
+                                        child: Text(uiTr(context, 'Reverse')),
                                       ),
-                                      child: Text(uiTr(context, 'Receipt')),
-                                    )
-                                  : null),
+                                    if (p.data()['receiptNumber'] != null)
+                                      TextButton(
+                                        onPressed: () => context.pushNamed(
+                                          AdminSettlementReceiptWidget.routeName,
+                                          queryParameters: {
+                                            'paymentId': serializeParam(
+                                              p.id,
+                                              ParamType.String,
+                                            ),
+                                          }.withoutNulls,
+                                        ),
+                                        child: Text(uiTr(context, 'Receipt')),
+                                      ),
+                                  ],
+                                )
+                              else if (p.data()['receiptNumber'] != null)
+                                Align(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: TextButton(
+                                    onPressed: () => context.pushNamed(
+                                      AdminSettlementReceiptWidget.routeName,
+                                      queryParameters: {
+                                        'paymentId': serializeParam(
+                                          p.id,
+                                          ParamType.String,
+                                        ),
+                                      }.withoutNulls,
+                                    ),
+                                    child: Text(uiTr(context, 'Receipt')),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                     ],
                   );
@@ -583,14 +752,22 @@ class _AdminSettlementDetailsWidgetState
                 builder: (context, lines) {
                   if (!lines.hasData) return const SizedBox.shrink();
                   return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       for (final l in lines.data!.docs)
-                        ListTile(
-                          dense: true,
-                          title: Text(l.id),
-                          subtitle: Text(
-                            '${l.data()['paymentMethod']} · ${l.data()['confidence']} · '
-                            'paid ${l.data()['customerPaidMinor']} · net ${l.data()['driverNetMinor']}',
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(l.id, softWrap: true),
+                              Text(
+                                '${l.data()['paymentMethod']} · ${l.data()['confidence']} · '
+                                'paid ${l.data()['customerPaidMinor']} · net ${l.data()['driverNetMinor']}',
+                                softWrap: true,
+                                style: theme.bodySmall,
+                              ),
+                            ],
                           ),
                         ),
                     ],
@@ -599,7 +776,10 @@ class _AdminSettlementDetailsWidgetState
               ),
               Text(uiTr(context, 'مستبعد'), style: theme.titleMedium),
               for (final e in (d['excluded'] as List? ?? []))
-                Text('• ${e is Map ? e['orderId'] : e} ${e is Map ? e['reason'] : ''}'),
+                Text(
+                  '• ${e is Map ? e['orderId'] : e} ${e is Map ? e['reason'] : ''}',
+                  softWrap: true,
+                ),
               const SizedBox(height: 12),
               Text(uiTr(context, 'Unallocated Payments'), style: theme.titleMedium),
               Text(
@@ -607,18 +787,19 @@ class _AdminSettlementDetailsWidgetState
                   context,
                   'Legacy company_payments stay UNALLOCATED until an admin selects them explicitly. No heuristic matching.',
                 ),
+                softWrap: true,
                 style: theme.bodySmall,
               ),
               if (d['paymentEvidence'] is Map) ...[
                 const SizedBox(height: 12),
                 Text(uiTr(context, 'Payment Evidence'), style: theme.titleMedium),
-                Text('${d['paymentEvidence']}'),
+                Text('${d['paymentEvidence']}', softWrap: true),
               ],
               const SizedBox(height: 12),
               Text(uiTr(context, 'Audit Timeline'), style: theme.titleMedium),
               if (d['status'] != 'draft')
                 Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: AlignmentDirectional.centerStart,
                   child: TextButton(
                     onPressed: _busy ? null : _verifySource,
                     child: Text(uiTr(context, 'Verify Against Current Source')),
@@ -638,13 +819,21 @@ class _AdminSettlementDetailsWidgetState
                       return ta.compareTo(tb);
                     });
                   return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       for (final e in docs)
-                        ListTile(
-                          dense: true,
-                          title: Text('${e.data()['type']}'),
-                          subtitle: Text(
-                            '${e.data()['actorRole']} · ${e.data()['beforeStatus']} → ${e.data()['afterStatus']}',
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${e.data()['type']}', softWrap: true),
+                              Text(
+                                '${e.data()['actorRole']} · ${e.data()['beforeStatus']} → ${e.data()['afterStatus']}',
+                                softWrap: true,
+                                style: theme.bodySmall,
+                              ),
+                            ],
                           ),
                         ),
                     ],

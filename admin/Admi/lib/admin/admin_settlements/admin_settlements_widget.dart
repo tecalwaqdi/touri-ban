@@ -56,11 +56,13 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
               context,
               'Accounting ledger only — no wallet or payment movement',
             ),
+            softWrap: true,
             style: theme.bodySmall,
           ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
+            runSpacing: 8,
             children: [
               for (final s in [null, 'draft', 'locked', 'settled', 'voided'])
                 ChoiceChip(
@@ -86,7 +88,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
             }(),
             builder: (context, snap) {
               if (snap.hasError) {
-                return Text('${snap.error}');
+                return Text('${snap.error}', softWrap: true);
               }
               if (!snap.hasData) {
                 return const Center(child: CircularProgressIndicator());
@@ -118,6 +120,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                 children: [
                   Wrap(
                     spacing: 16,
+                    runSpacing: 8,
                     children: [
                       Text('Draft ${n('draft')}'),
                       Text('Locked ${n('locked')}'),
@@ -131,7 +134,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text('By currency: $byCur', style: theme.labelSmall),
+                  Text('By currency: $byCur', softWrap: true, style: theme.labelSmall),
                   const SizedBox(height: 8),
                   Builder(
                     builder: (context) {
@@ -168,12 +171,12 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                         children: [
                           Text(uiTr(context, 'Receivables / Payables'),
                               style: theme.titleSmall),
-                          Text('Receivables outstanding: $recv'),
-                          Text('Payables outstanding: $pay'),
-                          Text('Collected: $collected'),
-                          Text('Partially paid ${n('partially_paid')}'),
+                          Text('Receivables outstanding: $recv', softWrap: true),
+                          Text('Payables outstanding: $pay', softWrap: true),
+                          Text('Collected: $collected', softWrap: true),
+                          Text('Partially paid ${n('partially_paid')}', softWrap: true),
                           Text('Receivables aging: $agingRecv',
-                              style: theme.labelSmall),
+                              softWrap: true, style: theme.labelSmall),
                         ],
                       );
                     },
@@ -183,13 +186,16 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                     Text(uiTr(context, 'لا توجد تسويات')),
                   for (final d in docs)
                     ListTile(
+                      contentPadding: EdgeInsets.zero,
                       title: Text(
                         '${d.data()['settlementCode'] ?? d.id} · ${d.data()['status']}',
+                        softWrap: true,
                       ),
                       subtitle: Text(
                         '${d.data()['currency']} · ${d.data()['direction']} · '
                         'net ${(d.data()['netTripPositionMinor'] ?? 0)} minor · '
                         'driver ${d.data()['driverId']}',
+                        softWrap: true,
                       ),
                       onTap: () => context.pushNamed(
                         AdminSettlementDetailsWidget.routeName,

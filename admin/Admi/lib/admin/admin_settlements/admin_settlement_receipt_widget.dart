@@ -41,7 +41,7 @@ class _AdminSettlementReceiptWidgetState
 
   String _money(int? minor, String currency) {
     final m = MoneyAmount(currency: currency, minorUnits: minor ?? 0);
-    return '${m.majorUnits.toStringAsFixed(2)} ${m.code}';
+    return m.displayLabel;
   }
 
   @override
@@ -77,22 +77,36 @@ class _AdminSettlementReceiptWidgetState
                       Text(
                         uiTr(context, 'Settlement Payment Receipt'),
                         style: theme.headlineSmall,
+                        softWrap: true,
                       ),
                       Text(
                         uiTr(context, 'ليست فاتورة ضريبية / Not a tax invoice'),
                         style: theme.labelSmall,
+                        softWrap: true,
                       ),
                       const SizedBox(height: 16),
-                      Text('${uiTr(context, 'الرقم')}: ${p['receiptNumber'] ?? '—'}'),
-                      Text('Settlement: ${p['settlementCode']}'),
-                      Text('Driver: ${p['driverId']}'),
-                      Text('Direction: ${p['direction']}'),
-                      Text('Amount: ${_money(p['amountMinor'] as int?, cur)}'),
-                      Text('Method: ${p['method']}'),
-                      Text('Reference: ${p['externalReference'] ?? '—'}'),
-                      Text('Paid: ${p['paidAt']}'),
-                      Text('Confirmed: ${p['confirmedAt']}'),
-                      Text('Confirmed by: ${p['confirmedBy'] ?? '—'}'),
+                      Text(
+                        '${uiTr(context, 'الرقم')}: ${p['receiptNumber'] ?? '—'}',
+                        softWrap: true,
+                      ),
+                      Text('Settlement: ${p['settlementCode']}', softWrap: true),
+                      Text('Driver: ${p['driverId']}', softWrap: true),
+                      Text('Direction: ${p['direction']}', softWrap: true),
+                      Text(
+                        'Amount: ${_money(p['amountMinor'] as int?, cur)}',
+                        softWrap: true,
+                      ),
+                      Text('Method: ${p['method']}', softWrap: true),
+                      Text(
+                        'Reference: ${p['externalReference'] ?? '—'}',
+                        softWrap: true,
+                      ),
+                      Text('Paid: ${p['paidAt']}', softWrap: true),
+                      Text('Confirmed: ${p['confirmedAt']}', softWrap: true),
+                      Text(
+                        'Confirmed by: ${p['confirmedBy'] ?? '—'}',
+                        softWrap: true,
+                      ),
                     ],
                   ),
                 );

@@ -81,6 +81,12 @@ final authenticatedUserStream = FirebaseAuth.instance
     } else if (prevRole != newRole && AdminRoleService.hasPanelAccess) {
       unawaited(AdminPanelSession.ensureScopeReady(force: true));
     }
+    // JWT may lack custom claims after session restore / Playwright inject.
+    // Sync from Firestore via refreshMyClaims when profile says panel access.
+    if (newRole != AdminRole.none &&
+        !AdminRoleService.hasClaimsPanelAccess) {
+      unawaited(refreshAuthClaims());
+    }
   }
   return currentUserDocument;
 }).asBroadcastStream();

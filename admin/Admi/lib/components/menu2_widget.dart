@@ -107,10 +107,16 @@ class _Menu2WidgetState extends State<Menu2Widget> {
   Widget build(BuildContext context) {
     final l10n = FFLocalizations.of(context);
     final theme = FlutterFlowTheme.of(context);
-    final role = AdminRoleService.currentRole;
-    final countryLabel = AdminRoleService.scopedCountryName;
 
-    final sections = <({String key, List<({String route, IconData icon})> items})>[
+    return AuthUserStreamWidget(
+      builder: (context) {
+        final role = AdminRoleService.currentRole;
+        final countryLabel = AdminRoleService.scopedCountryName;
+        final rolePending = loggedIn &&
+            AdminRoleService.isRoleResolving &&
+            currentUserDocument == null;
+
+        final sections = <({String key, List<({String route, IconData icon})> items})>[
       (
         key: 'operations',
         items: [
@@ -166,13 +172,15 @@ class _Menu2WidgetState extends State<Menu2Widget> {
       ),
     ];
 
-    final visibleSections = sections
-        .map((s) => (
-              key: s.key,
-              items: s.items.where((i) => _canShow(i.route)).toList(),
-            ))
-        .where((s) => s.items.isNotEmpty)
-        .toList();
+    final visibleSections = rolePending
+        ? <({String key, List<({String route, IconData icon})> items})>[]
+        : sections
+            .map((s) => (
+                  key: s.key,
+                  items: s.items.where((i) => _canShow(i.route)).toList(),
+                ))
+            .where((s) => s.items.isNotEmpty)
+            .toList();
 
     return Container(
       width: double.infinity,
@@ -274,10 +282,12 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                countryLabel.isNotEmpty
-                                    ? '${AdminRoleService.roleLabelL10n(context, role)} · $countryLabel'
-                                    : AdminRoleService.roleLabelL10n(
-                                        context, role),
+                                rolePending
+                                    ? uiTr(context, 'Resolving role…')
+                                    : (countryLabel.isNotEmpty
+                                        ? '${AdminRoleService.roleLabelL10n(context, role)} · $countryLabel'
+                                        : AdminRoleService.roleLabelL10n(
+                                            context, role)),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: theme.labelSmall.override(
@@ -408,6 +418,8 @@ class _Menu2WidgetState extends State<Menu2Widget> {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

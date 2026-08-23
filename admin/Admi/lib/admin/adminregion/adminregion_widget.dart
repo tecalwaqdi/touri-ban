@@ -121,28 +121,27 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
   }
 
   Future<void> _toggleActive(CitiesRecord record, bool activate) async {
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(activate ? uiTr(context, 'تأكيد التنشيط') : uiTr(context, 'تأكيد إخفاء المنطقة')),
-            content: Text(
-              activate
-                  ? uiTr(context, 'عند تنشيط هذه المنطقة سيتم إظهار كل المعالم المرتبطة. هل أنت متأكد؟')
-                  : uiTr(context, 'عند إخفاء هذه المنطقة سيتم إخفاء كل المعالم المرتبطة. هل أنت متأكد؟'),
+    final confirmed = await showAdminConfirmDialog(
+      context: context,
+      title: activate
+          ? uiTr(context, 'تأكيد التنشيط')
+          : uiTr(context, 'تأكيد إخفاء المنطقة'),
+      whatHappens: activate
+          ? uiTr(
+              context,
+              'عند تنشيط هذه المنطقة سيتم إظهار كل المعالم المرتبطة. هل أنت متأكد؟',
+            )
+          : uiTr(
+              context,
+              'عند إخفاء هذه المنطقة سيتم إخفاء كل المعالم المرتبطة. هل أنت متأكد؟',
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(appTr(context, 'adm_no')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: Text(activate ? uiTr(context, 'نعم، فعّل') : uiTr(context, 'نعم، أخفِ')),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+      subject: record.naim.isNotEmpty ? record.naim : record.reference.id,
+      impact: uiTr(context, 'Visibility change for region and landmarks.'),
+      destructive: !activate,
+      confirmLabel:
+          activate ? uiTr(context, 'نعم، فعّل') : uiTr(context, 'نعم، أخفِ'),
+      cancelLabel: appTr(context, 'adm_no'),
+    );
 
     if (!confirmed) return;
 

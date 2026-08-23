@@ -163,13 +163,15 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
         children: [
           Row(
             children: [
-              Text(
-                f.activeFilterCount == 0
-                    ? uiTr(context, 'Filters')
-                    : '${uiTr(context, 'Filters')} (${f.activeFilterCount})',
-                style: theme.titleSmall,
+              Expanded(
+                child: Text(
+                  f.activeFilterCount == 0
+                      ? uiTr(context, 'Filters')
+                      : '${uiTr(context, 'Filters')} (${f.activeFilterCount})',
+                  softWrap: true,
+                  style: theme.titleSmall,
+                ),
               ),
-              const Spacer(),
               if (f.activeFilterCount > 0)
                 TextButton(
                   onPressed: () {
@@ -357,7 +359,10 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
                     }
                   : null,
               icon: const Icon(Icons.filter_alt_off_rounded, size: 18),
-              label: Text(uiTr(context, 'إعادة ضبط الفلاتر')),
+              label: Text(
+                uiTr(context, 'إعادة ضبط الفلاتر'),
+                softWrap: true,
+              ),
             ),
           ),
         ],

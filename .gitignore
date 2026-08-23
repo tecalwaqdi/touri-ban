@@ -57,3 +57,11 @@ desktop.ini
 # Local Android release artifacts
 admin/release-builds/
 
+# Admin Phase 8+ local QA artifacts (never commit screenshots / sessions)
+admin/Admi/visual_qa_*/
+admin/Admi/.qa_auth_state/
+admin/Admi/.qa-tools/
+admin/Admi/**/storage.json
+admin/Admi/**/*.bak-before-*
+admin/Admi/firebase/firestore.rules.bak*
+

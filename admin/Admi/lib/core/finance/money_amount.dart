@@ -129,6 +129,13 @@ class MoneyAmount {
   @override
   int get hashCode => Object.hash(code, minorUnits);
 
+  /// Major units + currency code, wrapped in an LTR isolate so RTL UIs
+  /// do not reorder digits / the minus sign / the ISO code.
+  String get displayLabel {
+    final raw = '${majorUnits.toStringAsFixed(exponent)} $code';
+    return '\u2066$raw\u2069';
+  }
+
   @override
   String toString() => 'MoneyAmount($code, $minorUnits)';
 }

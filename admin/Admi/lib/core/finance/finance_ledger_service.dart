@@ -4,6 +4,7 @@ import '/backend/admin_country_scope.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/schema/order_record.dart';
 import '/core/cloud_functions/cloud_functions_client.dart';
+import '/core/finance/finance_runtime_gate.dart';
 import '/core/finance/financial_engine.dart';
 
 /// Aggregated finance snapshot for the Enterprise Finance Hub.
@@ -84,21 +85,17 @@ abstract final class FinanceLedgerService {
     final ledger = await _loadTransactionLedger();
 
     if (remote != null) {
+      FinanceRuntimeGate.setAuthoritativeBackendData(true);
       return FinanceHubSnapshot(
         revenue: (remote['totalSales'] as num?)?.toDouble() ?? 0,
         appProfit: (remote['appProfit'] as num?)?.toDouble() ?? 0,
         commissions: (remote['repCommission'] as num?)?.toDouble() ?? 0,
         pendingSettlements:
             (remote['pendingSettlements'] as num?)?.toDouble() ?? 0,
-        paidOrders: (remote['paidCount'] as int?) ??
-            (remote['paidCount'] as num?)?.toInt() ??
-            0,
-        pendingOrders: (remote['pendingCount'] as int?) ??
-            (remote['pendingCount'] as num?)?.toInt() ??
-            0,
-        canceledOrders: (remote['canceledCount'] as int?) ??
-            (remote['canceledCount'] as num?)?.toInt() ??
-            0,
+        // Cloud Functions may return doubles (e.g. 67.5); never cast with `as int`.
+        paidOrders: (remote['paidCount'] as num?)?.round() ?? 0,
+        pendingOrders: (remote['pendingCount'] as num?)?.round() ?? 0,
+        canceledOrders: (remote['canceledCount'] as num?)?.round() ?? 0,
         driverBalances: driverBal,
         companyBalances: const {},
         agentBalances: const {},
@@ -109,6 +106,7 @@ abstract final class FinanceLedgerService {
     }
 
     // Fallback: limited client sample — marked approximate in UI.
+    FinanceRuntimeGate.setAuthoritativeBackendData(false);
     return _loadApproximateFromOrders(
       from: from,
       to: to,

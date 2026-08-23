@@ -322,7 +322,7 @@ exports.aggregateFinancialSummary = functions.https.onCall(async (data, context)
   const countryPath = data.countryPath || null;
   const periodStart = data.periodStart ? new Date(data.periodStart) : null;
 
-  let query = db.collection("order").orderBy("data_order", "descending");
+  let query = db.collection("order").orderBy("data_order", "desc");
   if (countryPath) {
     query = query.where("Rev_dolh", "==", db.doc(countryPath));
   } else if (token.country_admin && token.country_id && !token.super_admin) {
@@ -434,7 +434,7 @@ exports.aggregateFinancialAccountingV2 = functions
       driverId,
     };
 
-    let query = db.collection('order').orderBy('data_order', 'descending');
+    let query = db.collection('order').orderBy('data_order', 'desc');
     let applyDateInMemory = false;
 
     if (driverId) {
@@ -442,13 +442,13 @@ exports.aggregateFinancialAccountingV2 = functions
       query = db
         .collection('order')
         .where('mndob_user', '==', db.doc(`user/${driverId}`))
-        .orderBy('data_order', 'descending');
+        .orderBy('data_order', 'desc');
       applyDateInMemory = true;
     } else if (effectiveCountry) {
       query = db
         .collection('order')
         .where('Rev_dolh', '==', db.doc(effectiveCountry))
-        .orderBy('data_order', 'descending');
+        .orderBy('data_order', 'desc');
       if (periodStart) {
         query = query.where('data_order', '>=', periodStart);
       }

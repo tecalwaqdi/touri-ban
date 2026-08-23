@@ -34,9 +34,11 @@ class AdminLayoutWidget extends StatelessWidget {
 
   double _sidebarWidth(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
+    // Keep content usable at 1280×800 / tablet landscape with inline sidebar.
     if (w >= 1400) return 280;
-    if (w >= 1100) return 270;
-    return 252;
+    if (w >= 1280) return 260;
+    if (w >= 1100) return 240;
+    return 220;
   }
 
   Widget _buildSidebar(BuildContext context) {

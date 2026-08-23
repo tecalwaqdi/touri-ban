@@ -70,7 +70,8 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
     });
   }
 
-  String _fmt(double v) => v.toStringAsFixed(2);
+  /// LTR isolate keeps decimals/minus stable under Arabic/Urdu RTL.
+  String _fmt(double v) => '\u2066${v.toStringAsFixed(2)}\u2069';
 
   @override
   Widget build(BuildContext context) {
@@ -91,14 +92,20 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                 AdminPageHeader(
                   title: appTr(context, 'ent_finance_title'),
                   subtitle: appTr(context, 'ent_finance_subtitle'),
-                  trailing: AdminPrimaryButton(
-                    label: appTr(context, 'ent_finance_detailed_profits'),
-                    outlined: true,
-                    icon: Icons.open_in_new_rounded,
-                    onPressed: () => context.pushNamed(
-                      AdminProfitsWidget.routeName,
+                ),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    AdminPrimaryButton(
+                      label: appTr(context, 'ent_finance_detailed_profits'),
+                      outlined: true,
+                      icon: Icons.open_in_new_rounded,
+                      onPressed: () => context.pushNamed(
+                        AdminProfitsWidget.routeName,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 FutureBuilder<Map<String, dynamic>>(
@@ -141,6 +148,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                                 context,
                                 'Financial pilot blocked: no independent approver configured',
                               ),
+                              softWrap: true,
                               style: theme.titleSmall.copyWith(
                                 color: theme.error,
                                 fontWeight: FontWeight.w800,
@@ -179,23 +187,29 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                           'Today completed ${today['newCompletedTrips']} · '
                           'cash ${today['cashCollectedMinor']} · '
                           'online ${today['onlineCollectedMinor']}',
+                          softWrap: true,
                         ),
                         const SizedBox(height: 8),
                         Text(uiTr(context, 'Receivables / Payables'), style: theme.titleSmall),
-                        Text('$exposure'),
+                        Text('$exposure', softWrap: true),
                         const SizedBox(height: 8),
                         Text(uiTr(context, 'Aging'), style: theme.titleSmall),
-                        Text(uiTr(context, 'See exposure aging buckets above (per currency).')),
+                        Text(
+                          uiTr(context, 'See exposure aging buckets above (per currency).'),
+                          softWrap: true,
+                        ),
                         const SizedBox(height: 8),
                         Text(uiTr(context, 'Data Quality'), style: theme.titleSmall),
                         Text(
                           'Incomplete ${dq['incomplete']} · missing statuses ${dq['missingStatuses']}',
+                          softWrap: true,
                         ),
                         Text(
                           'Flags: settlementWrites=${flags['FINANCIAL_SETTLEMENT_WRITES_ENABLED']} · '
                           'paymentConfirm=${flags['FINANCIAL_PAYMENT_CONFIRM_ENABLED']} · '
                           'wallet=${flags['WALLET_SETTLEMENT_ENABLED']} · '
                           'payout=${flags['AUTOMATIC_PAYOUT_ENABLED']}',
+                          softWrap: true,
                           style: theme.labelSmall,
                         ),
                         const SizedBox(height: 8),
@@ -325,7 +339,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                             AdminStatusBadge(
                               label: uiTr(
                                 context,
-                                'بيانات تقريبية (عيّنة محلية — تعذر الاتصال بالخادم)',
+                                'Financial data is approximate — financial writes unavailable',
                               ),
                               tone: AdminBadgeTone.warning,
                             ),

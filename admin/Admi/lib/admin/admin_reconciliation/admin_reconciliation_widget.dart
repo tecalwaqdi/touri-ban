@@ -78,13 +78,14 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                     final o = Map<String, dynamic>.from(orders[i] as Map);
                     final missing = (o['missingFields'] as List?) ?? [];
                     return ListTile(
-                      title: Text('${o['orderId']}'),
+                      title: Text('${o['orderId']}', softWrap: true),
                       subtitle: Text(
                         '${o['reason']} · ${o['currency']} · '
                         'driver ${o['driverId'] ?? '—'} · '
                         '${o['paymentMethod']} · ${o['lifecycle']}\n'
                         'missing: ${missing.join(', ')}\n'
                         'blocks settlement: ${o['blocksSettlement']}',
+                        softWrap: true,
                       ),
                       isThreeLine: true,
                     );
@@ -119,10 +120,12 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
               Text(
                 uiTr(context, 'مركز مراجعة المحاسب — مشاكل فقط'),
                 style: theme.headlineSmall,
+                softWrap: true,
               ),
               Text(
                 uiTr(context, 'Read-only. Orders are not edited from this page.'),
                 style: theme.bodySmall,
+                softWrap: true,
               ),
               const SizedBox(height: 12),
               if (items.isEmpty)
@@ -134,10 +137,11 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                     final code = '${it['code']}';
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text(code),
+                      title: Text(code, softWrap: true),
                       subtitle: Text(
                         '${it['severity']} · ${it['count']}'
                         '${it['blocksClose'] == true ? ' · close blocker' : ''}',
+                        softWrap: true,
                       ),
                       leading: Icon(
                         Icons.warning_amber_rounded,
@@ -149,15 +153,26 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                               final sample = (it['sample'] as List?) ?? [];
                               showDialog<void>(
                                 context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: Text(code),
-                                  content: SizedBox(
-                                    width: 480,
-                                    child: SingleChildScrollView(
-                                      child: Text(sample.join('\n')),
+                                builder: (ctx) {
+                                  final maxW =
+                                      MediaQuery.sizeOf(ctx).width - 48;
+                                  return AlertDialog(
+                                    title: Text(code),
+                                    content: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxWidth: maxW.clamp(280.0, 480.0),
+                                        maxHeight:
+                                            MediaQuery.sizeOf(ctx).height * 0.7,
+                                      ),
+                                      child: SingleChildScrollView(
+                                        child: Text(
+                                          sample.join('\n'),
+                                          softWrap: true,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
+                                  );
+                                },
                               );
                             },
                     );
@@ -172,13 +187,24 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                     final items = (o['items'] as List?) ?? [];
                     showDialog<void>(
                       context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: Text(uiTr(ctx, 'Orphan Detection')),
-                        content: Text(
-                          'Report only — no auto-repair.\n'
-                          '${items.map((e) => e is Map ? '${e['code']}: ${e['count']}' : e).join('\n')}',
-                        ),
-                      ),
+                      builder: (ctx) {
+                        final maxW = MediaQuery.sizeOf(ctx).width - 48;
+                        return AlertDialog(
+                          title: Text(uiTr(ctx, 'Orphan Detection')),
+                          content: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: maxW.clamp(280.0, 480.0),
+                            ),
+                            child: SingleChildScrollView(
+                              child: Text(
+                                'Report only — no auto-repair.\n'
+                                '${items.map((e) => e is Map ? '${e['code']}: ${e['count']}' : e).join('\n')}',
+                                softWrap: true,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                   child: Text(uiTr(context, 'Orphan report')),

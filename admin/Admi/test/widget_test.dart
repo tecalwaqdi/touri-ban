@@ -16,9 +16,15 @@ void main() {
     expect(FFLocalizations.getStoredLocale(), isNull);
     expect(FFLocalizations.languages(), isNotEmpty);
     expect(FFLocalizations.resolveInitialLocale().languageCode, isNotEmpty);
+    // Unsupported device language falls back to English.
+    expect(
+      FFLocalizations.resolveDeviceLocale(const Locale('de')).languageCode,
+      'en',
+    );
+    // Supported languages (including fr) map through.
     expect(
       FFLocalizations.resolveDeviceLocale(const Locale('fr')).languageCode,
-      'en',
+      'fr',
     );
     expect(
       FFLocalizations.resolveDeviceLocale(const Locale('ar')).languageCode,

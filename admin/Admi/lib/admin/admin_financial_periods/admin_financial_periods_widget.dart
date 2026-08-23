@@ -7,6 +7,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_error_messages.dart';
+import '/core/finance/finance_runtime_gate.dart';
 import '/core/finance/finance_controls_client.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -87,6 +88,20 @@ class _AdminFinancialPeriodsWidgetState
   }
 
   Future<void> _close(String id, Map<String, dynamic> data) async {
+    if (!FinanceRuntimeGate.canAttemptFinanceWrites) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            uiTr(
+              context,
+              'Financial data is approximate — financial writes unavailable',
+            ),
+          ),
+        ),
+      );
+      return;
+    }
     final confirmed = await showAdminConfirmDialog(
       context: context,
       title: uiTr(context, 'Period Close Checklist'),
@@ -158,6 +173,20 @@ class _AdminFinancialPeriodsWidgetState
   }
 
   Future<void> _reopen(String id, Map<String, dynamic> data) async {
+    if (!FinanceRuntimeGate.canAttemptFinanceWrites) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            uiTr(
+              context,
+              'Financial data is approximate — financial writes unavailable',
+            ),
+          ),
+        ),
+      );
+      return;
+    }
     final confirmed = await showAdminConfirmDialog(
       context: context,
       title: uiTr(context, 'Reopen period'),
@@ -218,13 +247,14 @@ class _AdminFinancialPeriodsWidgetState
             padding: AdminUi.pagePadding(context),
             children: [
               Text(uiTr(context, 'الفترات المالية'), style: theme.headlineSmall),
-              Text(
-                uiTr(context, 'Closed periods block backdated postings. Reopen requires SuperAdmin + reason.'),
-                style: theme.bodySmall,
-              ),
+          Text(
+            uiTr(context, 'Closed periods block backdated postings. Reopen requires SuperAdmin + reason.'),
+            softWrap: true,
+            style: theme.bodySmall,
+          ),
               if (AdminRoleService.canWriteSettlements)
                 Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: AlignmentDirectional.centerStart,
                   child: TextButton(
                     onPressed: _busy ? null : _create,
                     child: Text(uiTr(context, 'فترة جديدة')),
@@ -232,39 +262,68 @@ class _AdminFinancialPeriodsWidgetState
                 ),
               if (docs.isEmpty) Text(uiTr(context, 'لا توجد فترات')),
               for (final d in docs)
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text('${d.data()['name']} · ${d.data()['status']}'),
-                  subtitle: Text(
-                    '${d.data()['currency']} · ${d.data()['startAt']} → ${d.data()['endAt']}',
-                  ),
-                  trailing: Wrap(
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      TextButton(
-                        onPressed: () async {
-                          final dash = await FinanceControlsClient.periodDashboard(d.id);
-                          if (!context.mounted) return;
-                          showDialog<void>(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              title: Text(uiTr(ctx, 'Period dashboard')),
-                              content: SingleChildScrollView(child: Text('$dash')),
-                            ),
-                          );
-                        },
-                        child: Text(uiTr(context, 'لوحة')),
+                      Text(
+                        '${d.data()['name']} · ${d.data()['status']}',
+                        softWrap: true,
+                        style: theme.titleSmall,
                       ),
-                      if (d.data()['status'] != 'closed')
-                        TextButton(
-                          onPressed: _busy ? null : () => _close(d.id, d.data()),
-                          child: Text(uiTr(context, 'Close')),
-                        ),
-                      if (d.data()['status'] == 'closed' &&
-                          AdminRoleService.isSuperAdmin)
-                        TextButton(
-                          onPressed: () => _reopen(d.id, d.data()),
-                          child: Text(uiTr(context, 'Reopen')),
-                        ),
+                      Text(
+                        '${d.data()['currency']} · ${d.data()['startAt']} → ${d.data()['endAt']}',
+                        softWrap: true,
+                        style: theme.bodySmall,
+                      ),
+                      Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: [
+                          TextButton(
+                            onPressed: () async {
+                              final dash =
+                                  await FinanceControlsClient.periodDashboard(
+                                      d.id);
+                              if (!context.mounted) return;
+                              showDialog<void>(
+                                context: context,
+                                builder: (ctx) {
+                                  final maxW =
+                                      MediaQuery.sizeOf(ctx).width - 48;
+                                  return AlertDialog(
+                                    title: Text(uiTr(ctx, 'Period dashboard')),
+                                    content: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxWidth: maxW.clamp(280.0, 560.0),
+                                        maxHeight:
+                                            MediaQuery.sizeOf(ctx).height * 0.7,
+                                      ),
+                                      child: SingleChildScrollView(
+                                        child: Text('$dash', softWrap: true),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child: Text(uiTr(context, 'لوحة')),
+                          ),
+                          if (d.data()['status'] != 'closed')
+                            TextButton(
+                              onPressed:
+                                  _busy ? null : () => _close(d.id, d.data()),
+                              child: Text(uiTr(context, 'Close')),
+                            ),
+                          if (d.data()['status'] == 'closed' &&
+                              AdminRoleService.isSuperAdmin)
+                            TextButton(
+                              onPressed: () => _reopen(d.id, d.data()),
+                              child: Text(uiTr(context, 'Reopen')),
+                            ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

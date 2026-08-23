@@ -70,3 +70,11 @@ desktop.ini
 # Cursor / local assets from chat
 assets/c__Users_*/
 .vercel
+
+# Phase 8+ local QA artifacts (screenshots, auth state, probes)
+visual_qa_*/
+.qa_auth_state/
+.qa-tools/
+**/storage.json
+*.bak-before-*
+firestore.rules.bak*
