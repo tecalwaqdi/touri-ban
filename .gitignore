@@ -65,3 +65,6 @@ admin/Admi/**/storage.json
 admin/Admi/**/*.bak-before-*
 admin/Admi/firebase/firestore.rules.bak*
 
+# Master A-Z audit local manifests (never commit)
+qa_master_audit/
+
