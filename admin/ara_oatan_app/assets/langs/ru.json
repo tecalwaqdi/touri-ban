@@ -886,6 +886,7 @@
   "error_operation_not_allowed": "Этот способ входа отключён. Выберите другой.",
   "error_too_many_requests": "Слишком много попыток. Подождите и повторите.",
   "error_invalid_verification_code": "Неверный код подтверждения. Попробуйте снова.",
+  "ui_text_email_verification_sent": "Письмо для подтверждения отправлено. Проверьте почту.",
   "error_session_expired": "Сессия истекла. Войдите снова.",
   "error_cancelled": "Операция отменена.",
   "error_resource_exhausted": "Сервис перегружен. Попробуйте чуть позже.",

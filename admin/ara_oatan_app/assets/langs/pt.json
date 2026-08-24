@@ -886,6 +886,7 @@
   "error_operation_not_allowed": "This sign-in method is not enabled. Try another option.",
   "error_too_many_requests": "Too many attempts. Por favor wait and try again.",
   "error_invalid_verification_code": "Invalid verification code. Por favor try again.",
+  "ui_text_email_verification_sent": "Verification email sent. Check your inbox to verify your account.",
   "error_session_expired": "Your session expired. Sign in again.",
   "error_cancelled": "A operação foi cancelada.",
   "error_resource_exhausted": "Service is busy. Por favor try again shortly.",

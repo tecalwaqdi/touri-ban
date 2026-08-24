@@ -886,6 +886,7 @@
   "error_operation_not_allowed": "طريقة تسجيل الدخول هذه غير مفعّلة. جرّب خياراً آخر.",
   "error_too_many_requests": "محاولات كثيرة جداً. انتظر ثم حاول مرة أخرى.",
   "error_invalid_verification_code": "رمز التحقق غير صالح. حاول مرة أخرى.",
+  "ui_text_email_verification_sent": "تم إرسال رسالة التحقق. راجع بريدك الإلكتروني لتفعيل حسابك.",
   "error_session_expired": "انتهت جلستك. سجّل الدخول مرة أخرى.",
   "error_cancelled": "تم إلغاء العملية.",
   "error_resource_exhausted": "الخدمة مشغولة. حاول مرة أخرى بعد قليل.",

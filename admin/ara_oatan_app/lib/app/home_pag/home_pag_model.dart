@@ -1,4 +1,6 @@
 import '/flutter_flow/flutter_flow_util.dart';
+import '/core/toury_phone_util.dart';
+import '/core/toury_signup_policy.dart';
 import '/index.dart';
 import 'home_pag_widget.dart' show HomePagWidget;
 import 'package:flutter/material.dart';
@@ -58,6 +60,21 @@ class HomePagModel extends FlutterFlowModel<HomePagWidget> {
     return null;
   }
 
+
+  // State field(s) for phone widget.
+  FocusNode? phoneFocusNode;
+  TextEditingController? phoneTextController;
+  String? Function(BuildContext, String?)? phoneTextControllerValidator;
+  String? _phoneTextControllerValidator(BuildContext context, String? val) {
+    final code = touryValidateSignupPhone((val ?? '').trim());
+    if (code == 'PHONE_REQUIRED') {
+      return FFLocalizations.of(context).getText(
+        'enter_phone_number' /* Enter phone number * */,
+      );
+    }
+    return null;
+  }
+
   // State field(s) for pass widget.
   FocusNode? passFocusNode;
   TextEditingController? passTextController;
@@ -96,6 +113,7 @@ class HomePagModel extends FlutterFlowModel<HomePagWidget> {
     passwordLoginVisibility = false;
     naimTextControllerValidator = _naimTextControllerValidator;
     emailTextControllerValidator = _emailTextControllerValidator;
+    phoneTextControllerValidator = _phoneTextControllerValidator;
     passVisibility = false;
     passTextControllerValidator = _passTextControllerValidator;
     confpassVisibility = false;
@@ -116,6 +134,9 @@ class HomePagModel extends FlutterFlowModel<HomePagWidget> {
 
     emailFocusNode?.dispose();
     emailTextController?.dispose();
+
+    phoneFocusNode?.dispose();
+    phoneTextController?.dispose();
 
     passFocusNode?.dispose();
     passTextController?.dispose();

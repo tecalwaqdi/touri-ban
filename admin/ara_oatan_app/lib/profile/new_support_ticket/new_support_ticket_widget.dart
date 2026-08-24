@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
+import '/backend/schema/enums/enums.dart';
+import '/core/toury_error_localizer.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/form_field_controller.dart';
@@ -33,6 +38,7 @@ class _NewSupportTicketWidgetState extends State<NewSupportTicketWidget> {
   late NewSupportTicketModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -67,8 +73,70 @@ class _NewSupportTicketWidgetState extends State<NewSupportTicketWidget> {
           }),
       ];
 
-  void _createTicket() {
-    debugPrint('Button pressed ...');
+  Future<void> _createTicket() async {
+    if (_isSubmitting) return;
+
+    final description = (_model.textController1.text).trim();
+    final message = (_model.textController2.text).trim();
+    final category = (_model.dropDownValue ?? '').trim();
+    final userRef = currentUserReference;
+
+    if (description.isEmpty || message.isEmpty || category.isEmpty) {
+      DsSnackBar.show(
+        context,
+        message: FFLocalizations.of(context).getText(
+          'tjrl68rw' /* Please fill in all fields to r... */,
+        ),
+        tone: DsSnackTone.warning,
+      );
+      return;
+    }
+
+    if (userRef == null) {
+      DsSnackBar.show(
+        context,
+        message: ErrorLocalizer.fromCode('booking_auth_required'),
+        tone: DsSnackTone.error,
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+    try {
+      final phone = int.tryParse(currentPhoneNumber.replaceAll(RegExp(r'[^0-9]'), ''));
+      final ticketId = DateTime.now().millisecondsSinceEpoch;
+      await SupportRecord.collection.doc().set(
+            createSupportRecordData(
+              id: ticketId,
+              naim: currentUserDisplayName,
+              osf: '$description\n\n$message',
+              tsnef: category,
+              refUser: userRef,
+              data: getCurrentTimestamp,
+              phone: phone,
+              halh: Halhsupport.Open,
+            ),
+          );
+
+      if (!mounted) return;
+      DsSnackBar.show(
+        context,
+        message: FFLocalizations.of(context).getText(
+          '3mjks8fo' /* Create New Ticket */,
+        ),
+        tone: DsSnackTone.success,
+      );
+      context.safePop();
+    } catch (e) {
+      if (!mounted) return;
+      DsSnackBar.show(
+        context,
+        message: ErrorLocalizer.fromObject(e),
+        tone: DsSnackTone.error,
+      );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
   @override
@@ -272,7 +340,8 @@ class _NewSupportTicketWidgetState extends State<NewSupportTicketWidget> {
                             icon: Icons.add_task_rounded,
                             expanded: true,
                             size: DsButtonSize.lg,
-                            onPressed: _createTicket,
+                            loading: _isSubmitting,
+                            onPressed: _isSubmitting ? null : _createTicket,
                           ),
                         ],
                       ),

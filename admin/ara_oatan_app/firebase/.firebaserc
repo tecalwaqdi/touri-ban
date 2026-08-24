@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "tutorial-multi-language-70gx4j"
+  },
+  "targets": {
+    "tutorial-multi-language-70gx4j": {
+      "storage": {
+        "default": ["tutorial-multi-language-70gx4j.firebasestorage.app"]
+      }
+    },
+    "demo-touri-taxi": {
+      "storage": {
+        "default": ["demo-touri-taxi.appspot.com"]
+      }
+    }
   }
 }

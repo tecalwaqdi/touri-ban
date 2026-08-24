@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
@@ -8,6 +9,9 @@ import '/backend/backend.dart';
 import '/core/toury_auth_navigation.dart';
 import '/core/toury_brand_widgets.dart';
 import '/core/toury_google_sign_in.dart';
+import '/core/toury_email_verification_gate.dart';
+import '/core/toury_phone_util.dart';
+import '/core/toury_signup_policy.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_language_selector.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -75,6 +79,16 @@ class _HomePagWidgetState extends State<HomePagWidget>
       if (user == null) {
         return;
       }
+      await user.refreshUser();
+      if (touryShouldBlockUnverifiedCustomer(emailVerified: user.emailVerified)) {
+        DsSnackBar.show(
+          context,
+          message: 'ui_text_email_verification_sent'.tr(),
+          tone: DsSnackTone.warning,
+        );
+        await authManager.signOut();
+        return;
+      }
       await touryFinishSignIn(context, user);
     } finally {
       if (mounted) {
@@ -117,16 +131,51 @@ class _HomePagWidgetState extends State<HomePagWidget>
           return;
         }
 
+        final fullName = _model.naimTextController.text.trim();
+        final normalizedPhone = TouryPhoneUtil.normalizeForSave(
+          _model.phoneTextController.text,
+        );
+        if (touryValidateSignupPhone(normalizedPhone.phoneNumber) ==
+            'PHONE_REQUIRED') {
+          DsSnackBar.show(
+            context,
+            message: 'enter_phone_number'.tr(),
+            tone: DsSnackTone.error,
+          );
+          return;
+        }
+
+        if (fullName.isNotEmpty) {
+          try {
+            final firebaseUser = FirebaseAuth.instance.currentUser;
+            if (firebaseUser != null) {
+              await firebaseUser.updateDisplayName(fullName);
+              await firebaseUser.reload();
+            }
+          } catch (e) {
+            debugPrint('home signup displayName update: $e');
+          }
+        }
+
+        try {
+          await user.sendEmailVerification();
+        } catch (e) {
+          debugPrint('home signup verification email: $e');
+        }
+
         try {
           // Do not write role flags (ismndob/actev_mndob/ngl) — Firestore
           // create rules reject those keys for self-provisioned customers.
           await UserRecord.collection.doc(user.uid).set(
                 createUserRecordData(
                   email: user.email,
-                  displayName: user.displayName,
+                  displayName:
+                      fullName.isNotEmpty ? fullName : user.displayName,
                   photoUrl: user.photoUrl,
                   uid: user.uid,
                   createdTime: getCurrentTimestamp,
+                  phoneNumber: normalizedPhone.phoneNumber,
+                  phoneN: normalizedPhone.phoneN,
                   actevUser: true,
                 ),
                 SetOptions(merge: true),
@@ -135,13 +184,33 @@ class _HomePagWidgetState extends State<HomePagWidget>
           debugPrint('home signup profile sync: $e');
         }
 
+        if (context.mounted) {
+          DsSnackBar.show(
+            context,
+            message: 'ui_text_email_verification_sent'.tr(),
+            tone: DsSnackTone.success,
+          );
+        }
+
         await tourySyncAuthState(context, user);
 
-        navigate = () => context.pushNamedAuth(
-              DemoDWidget.routeName,
-              context.mounted,
-              ignoreRedirect: true,
+        await user.refreshUser();
+        if (touryShouldBlockUnverifiedCustomer(emailVerified: user.emailVerified)) {
+          if (context.mounted) {
+            DsSnackBar.show(
+              context,
+              message: 'ui_text_email_verification_sent'.tr(),
+              tone: DsSnackTone.warning,
             );
+          }
+          navigate = () {};
+        } else {
+          navigate = () => context.pushNamedAuth(
+                DemoDWidget.routeName,
+                context.mounted,
+                ignoreRedirect: true,
+              );
+        }
       } else {
         await _showTermsRequiredDialog();
       }
@@ -241,6 +310,9 @@ class _HomePagWidgetState extends State<HomePagWidget>
     _model.emailTextController ??= TextEditingController();
     _model.emailFocusNode ??= FocusNode();
 
+    _model.phoneTextController ??= TextEditingController();
+    _model.phoneFocusNode ??= FocusNode();
+
     _model.passTextController ??= TextEditingController();
     _model.passFocusNode ??= FocusNode();
 
@@ -313,6 +385,24 @@ class _HomePagWidgetState extends State<HomePagWidget>
                                 onLanguageChanged: (lang) =>
                                     setAppLanguage(context, lang),
                               ),
+                              if (loggedIn && !currentUserEmailVerified)
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    DsSpacing.md,
+                                    DsSpacing.xs,
+                                    DsSpacing.md,
+                                    0,
+                                  ),
+                                  child: Semantics(
+                                    identifier: 'qa-customer-email-verification',
+                                    label: 'qa-customer-email-verification',
+                                    child: DsInformationCard(
+                                      title: 'Email verification required',
+                                      message: 'Please verify your email before continuing.',
+                                      icon: Icons.mark_email_unread_outlined,
+                                    ),
+                                  ),
+                                ),
                               const Padding(
                                 padding: EdgeInsets.fromLTRB(
                                   DsSpacing.md,
@@ -796,6 +886,7 @@ class _SignUpTabView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _DsFormField(
+                      semanticsId: 'qa-customer-signup-name',
                       controller: model.naimTextController,
                       focusNode: model.naimFocusNode,
                       label: FFLocalizations.of(context).getText(
@@ -809,6 +900,7 @@ class _SignUpTabView extends StatelessWidget {
                     ),
                     const SizedBox(height: DsSpacing.md),
                     _DsFormField(
+                      semanticsId: 'qa-customer-signup-email',
                       controller: model.emailTextController,
                       focusNode: model.emailFocusNode,
                       label: FFLocalizations.of(context).getText(
@@ -819,6 +911,19 @@ class _SignUpTabView extends StatelessWidget {
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.email],
                       validator: model.emailTextControllerValidator
+                          .asValidator(context),
+                    ),
+                    const SizedBox(height: DsSpacing.md),
+                    _DsFormField(
+                      semanticsId: 'qa-customer-signup-phone',
+                      controller: model.phoneTextController,
+                      focusNode: model.phoneFocusNode,
+                      label: 'Phone *'.tr(),
+                      prefixIcon: Icons.phone_outlined,
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.next,
+                      autofillHints: const [AutofillHints.telephoneNumber],
+                      validator: model.phoneTextControllerValidator
                           .asValidator(context),
                     ),
                     const SizedBox(height: DsSpacing.md),
@@ -882,15 +987,20 @@ class _SignUpTabView extends StatelessWidget {
                       onChanged: onTermsChanged,
                     ),
                     const SizedBox(height: DsSpacing.xl),
-                    DsButton.primary(
-                      label: FFLocalizations.of(context).getText(
-                        'y6zcycni' /* Register */,
-                      ),
+                    Semantics(
+                      identifier: 'qa-customer-signup-submit',
+                      label: 'qa-customer-signup-submit',
+                      button: true,
+                      child: DsButton.primary(
+                        label: FFLocalizations.of(context).getText(
+                          'y6zcycni' /* Register */,
+                        ),
                       size: DsButtonSize.md,
                       expanded: true,
                       loading: loading,
                       icon: Icons.person_add_alt_1_rounded,
-                      onPressed: onSubmit,
+                        onPressed: onSubmit,
+                      ),
                     ),
                   ],
                 ),
@@ -1143,6 +1253,7 @@ class _VisibilityToggle extends StatelessWidget {
 /// drives the sign-up validators declared in [HomePagModel].
 class _DsFormField extends StatelessWidget {
   const _DsFormField({
+    this.semanticsId,
     required this.controller,
     required this.focusNode,
     required this.label,
@@ -1155,6 +1266,7 @@ class _DsFormField extends StatelessWidget {
     this.autofillHints,
   });
 
+  final String? semanticsId;
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final String label;
@@ -1178,7 +1290,7 @@ class _DsFormField extends StatelessWidget {
       );
     }
 
-    return TextFormField(
+    final field = TextFormField(
       controller: controller,
       focusNode: focusNode,
       validator: validator,
@@ -1209,6 +1321,13 @@ class _DsFormField extends StatelessWidget {
         focusedErrorBorder: border(colors.error, 1.6),
         disabledBorder: border(colors.disabled),
       ),
+    );
+    if (semanticsId == null || semanticsId!.isEmpty) return field;
+    return Semantics(
+      identifier: semanticsId!,
+      label: semanticsId!,
+      textField: true,
+      child: field,
     );
   }
 }
