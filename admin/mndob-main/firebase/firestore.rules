@@ -1,4 +1,9 @@
 rules_version = '2';
+// TOURi CANONICAL Firestore rules — keep BYTE-IDENTICAL across:
+//   admin/Admi/firebase/firestore.rules
+//   admin/ara_oatan_app/firebase/firestore.rules  (emulator suite + preferred deploy source)
+//   admin/mndob-main/firebase/firestore.rules
+// AUD-B-002 local fix: do not diverge these three copies.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -12,7 +17,11 @@ service cloud.firestore {
     }
 
     function currentUserData() {
-      return signedIn() ? get(currentUserRef()).data : {};
+      // Missing profile must NOT error — OR-chains that call isDriver/isSuperAdmin
+      // would otherwise deny unrelated paths (e.g. consumer cancel).
+      return signedIn() && exists(currentUserRef())
+        ? get(currentUserRef()).data
+        : {};
     }
 
     function claimBool(name) {
@@ -150,8 +159,105 @@ service cloud.firestore {
         );
     }
 
-    // List-only: no get(otherDoc) on resource fields (those break queries).
-    // Query constraints must prove one of these branches for every result.
+    // Constrained client cash create when createCashBooking CF is down (IAM/billing).
+    // Must stay aligned with touryCreateCashBookingViaFirestoreFallback fields.
+    function isTerminalCustomerOrderStatus(code) {
+      return code in [
+        'completed', 'trip_completed', 'cancelled', 'canceled',
+        'cancelled_by_customer', 'cancelled_by_driver', 'cancelled_by_admin',
+        'expired'
+      ];
+    }
+
+    // Claim lock when empty / terminal / missing previous order.
+    function customerCanClaimActiveOrder(newOrderId) {
+      let u = get(/databases/$(database)/documents/user/$(request.auth.uid)).data;
+      let aid = u.get('active_order_id', '');
+      return aid == null
+        || aid == ''
+        || aid == newOrderId
+        || (
+          exists(/databases/$(database)/documents/order/$(aid))
+          && isTerminalCustomerOrderStatus(
+            get(/databases/$(database)/documents/order/$(aid)).data.get('status_code', '')
+          )
+        )
+        || !exists(/databases/$(database)/documents/order/$(aid));
+    }
+
+    // Order create must see a *committed* lock for this order id.
+    // (Same-transaction claim+create is NOT visible to rules — that hole
+    // allowed parallel cash creates when active_order_id was empty.)
+    function customerActiveOrderAllowsCreate(newOrderId) {
+      let u = get(/databases/$(database)/documents/user/$(request.auth.uid)).data;
+      return u.get('active_order_id', '') == newOrderId;
+    }
+
+    function canClaimOrReleaseOwnActiveOrder(userId) {
+      let clearing = !('active_order_id' in request.resource.data)
+        || request.resource.data.active_order_id == null
+        || request.resource.data.active_order_id == '';
+      return signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['active_order_id', 'active_order_updated_at'])
+        && (
+          // Owner may always clear own lock (cancel / stale heal). Do NOT require
+          // the order to already be terminal — same-txn cancel would never pass.
+          clearing
+          || (
+            !clearing
+            && request.resource.data.active_order_id is string
+            && customerCanClaimActiveOrder(request.resource.data.active_order_id)
+          )
+        );
+    }
+
+    function panelCanClearActiveOrderLock(userId) {
+      return signedIn()
+        && (isSuperAdmin() || isCountryAdmin() || isSupport() || isAgent())
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['active_order_id', 'active_order_updated_at'])
+        && (
+          !('active_order_id' in request.resource.data)
+          || request.resource.data.active_order_id == null
+          || request.resource.data.active_order_id == ''
+        );
+    }
+
+    function isValidClientCashOrderCreate() {
+      let d = request.resource.data;
+      return signedIn()
+        && d.USER == currentUserRef()
+        && d.PaymentMethod == 'Cash'
+        && d.halh_order == 'Cash'
+        && d.payment_status in ['cash_pending', 'pending_cash']
+        && d.cash_collection_status == 'uncollected'
+        && d.status_code == 'pending_driver'
+        && d.ActiveOrder == false
+        && d.created_by_client_cash_fallback == true
+        && d.pricing_authority == 'client_fallback_pending_cf'
+        && customerActiveOrderAllowsCreate(document)
+        && d.keys().hasAll([
+          'USER', 'total', 'amount_halalas', 'currency', 'carRev', 'Rev_dolh',
+          'PaymentMethod', 'payment_status', 'status_code', 'idempotency_key',
+          'created_by_client_cash_fallback', 'pricing_authority',
+          'pricing_quote_halalas'
+        ])
+        && d.total is number && d.total > 0 && d.total < 1000000
+        && d.amount_halalas is number && d.amount_halalas > 0
+        && d.amount_halalas == d.pricing_quote_halalas
+        && d.currency is string
+        && d.idempotency_key is string
+        && d.idempotency_key.size() >= 8
+        && d.idempotency_key.size() <= 96
+        && !(d.payment_status in ['paid', 'captured', 'authorized'])
+        && !('ngeniusOrderId' in d)
+        && !('payment_session_id' in d);
+    }
+
+    // Prefer consumer ownership first — avoids get()-heavy driver branches
+    // breaking customer list queries (USER == auth) with permission-denied.
     function canListOrder(data) {
       return orderBelongsToConsumer(data)
         || orderAssignedToDriver(data)
@@ -182,12 +288,16 @@ service cloud.firestore {
     }
 
     // Broad assigned-driver patch (location / arrive / start) without money edits.
+    // Broad assigned-driver patch (location / ETA fields) without money edits.
+    // Status transitions MUST go through driverCanAdvanceTrip (AUD-B-003).
     function driverAssignedCanPatchOrder() {
       return orderAssignedToDriver(resource.data)
         && request.resource.data.mndob_user == currentUserRef()
+        && request.resource.data.status_code == resource.data.status_code
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
           'USER', 'total', 'amount_halalas', 'currency', 'PaymentMethod',
-          'payment_session_id', 'ngeniusOrderId', 'idMoyser'
+          'payment_session_id', 'ngeniusOrderId', 'idMoyser',
+          'status_code', 'ActiveOrder'
         ]);
     }
 
@@ -215,6 +325,8 @@ service cloud.firestore {
     }
 
     // Participant / driver-pool reads — must stay free of panel get() calls.
+    // OR-ing these with transportCompanyMatches/isSuperAdmin in one expression
+    // caused get() evaluation to deny assigned drivers opening order details.
     function canReadOrder(data) {
       return orderAssignedToDriver(data)
         || orderBelongsToConsumer(data)
@@ -251,64 +363,39 @@ service cloud.firestore {
         ]);
     }
 
-    // Customer cancel only after 1h from data_order while still unassigned.
-    // Blocked once a driver is assigned/accepted or trip advances.
-    // Payload must stay within hasOnly — keeps money/payment/owner immutable.
-    function consumerCancelWaitElapsed(data) {
-      return data.keys().hasAll(['data_order'])
-        && data.data_order is timestamp
-        && request.time >= data.data_order + duration.value(1, 'h');
-    }
-
-    function consumerOrderIsCancellable(data) {
-      // Only while still unassigned / awaiting a driver, and after 1h from create.
-      return orderUnassigned(data)
-        && consumerCancelWaitElapsed(data)
-        && !(data.get('halhOrderMndob', '') in ['Accepted', 'accepted'])
-        && !(data.get('halh_text', '') in [
-          'مقبول', 'وصل المندوب', 'وصل السائق',
-          'تم البدء في الرحلة', 'بدأت الرحلة', 'مكتمل', 'ملغي', 'ملغى'
-        ])
-        && (
-          !('status_code' in data)
-          || data.status_code == null
-          || data.status_code == ''
-          || data.status_code in [
-            'pending_driver', 'awaiting_driver', 'pending', 'payment_pending'
-          ]
-        )
-        && !(data.get('status_code', '') in [
+    // Customer cancel: own order, unassigned, not in active trip / already done.
+    // Intentionally avoids get() and brittle PaymentMethod equality (enum quirks).
+    // Includes payment_pending unpaid online drafts (retry-payment screen).
+    function consumerCanCancelOrder() {
+      return signedIn()
+        && orderBelongsToConsumer(resource.data)
+        && orderUnassigned(resource.data)
+        && !(resource.data.get('halhOrderMndob', '') in ['Accepted', 'accepted'])
+        && !(resource.data.get('status_code', '') in [
           'driver_assigned', 'driver_arriving', 'driver_arrived',
           'trip_started', 'trip_in_progress', 'completed', 'trip_completed',
           'cancelled', 'canceled',
           'cancelled_by_driver', 'cancelled_by_customer', 'cancelled_by_admin'
-        ]);
-    }
-
-    function consumerCanCancelOrder() {
-      return orderBelongsToConsumer(resource.data)
-        && consumerOrderIsCancellable(resource.data)
+        ])
+        && !(resource.data.get('halh_text', '') in [
+          'مقبول', 'وصل المندوب', 'وصل السائق',
+          'تم البدء في الرحلة', 'بدأت الرحلة', 'مكتمل', 'ملغي', 'ملغى'
+        ])
         && (
           request.resource.data.status_code == 'cancelled'
           || request.resource.data.status_code == 'cancelled_by_customer'
         )
         && request.resource.data.USER == resource.data.USER
-        && request.resource.data.get('PaymentMethod', null)
-          == resource.data.get('PaymentMethod', null)
-        && request.resource.data.get('payment_status', null)
-          == resource.data.get('payment_status', null)
-        && request.resource.data.get('mndob_user', null)
-          == resource.data.get('mndob_user', null)
-        && request.resource.data.get('mndob_user', null) == null
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'status_code', 'cancelled_by_code', 'cancelledAt', 'cancelledBy',
-          'cancelReason', 'cancellationReason', 'updatedAt',
-          'ActiveOrder', 'ALLNOW', 'halh_order', 'halh', 'halh_text', 'NotSestem'
-        ])
+        && (
+          !('mndob_user' in request.resource.data)
+          || request.resource.data.mndob_user == null
+        )
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
           'USER', 'total', 'amount_halalas', 'currency', 'mndob_user',
           'PaymentMethod', 'payment_session_id', 'ngeniusOrderId', 'idMoyser',
-          'payment_status', 'cash_collection_status'
+          'payment_status', 'cash_collection_status', 'pricing_quote_halalas',
+          'pricing_hourly_halalas', 'total_mndob', 'total_mndob2', 'total_app',
+          'total_vat', 'ksm', 'SrSAAH'
         ]);
     }
 
@@ -426,7 +513,42 @@ service cloud.firestore {
         && d.get('tour_guide_rejection_reason', prev.get('tour_guide_rejection_reason', '')) == prev.get('tour_guide_rejection_reason', '')
         && d.get('walletBalance', prev.get('walletBalance', null)) == prev.get('walletBalance', null)
         && d.get('currentBalance', prev.get('currentBalance', null)) == prev.get('currentBalance', null)
-        && d.get('total_app', prev.get('total_app', 0)) == prev.get('total_app', 0);
+        && d.get('total_app', prev.get('total_app', 0)) == prev.get('total_app', 0)
+        && d.get('finance', prev.get('finance', false)) == prev.get('finance', false)
+        && d.get('super_admin', prev.get('super_admin', false)) == prev.get('super_admin', false)
+        && d.get('active_order_id', prev.get('active_order_id', null)) == prev.get('active_order_id', null)
+        && d.get('active_order_updated_at', prev.get('active_order_updated_at', null))
+             == prev.get('active_order_updated_at', null)
+        // Registration V2 review metadata — client cannot self-approve.
+        && d.get('registration_status', prev.get('registration_status', ''))
+             == prev.get('registration_status', '')
+        && d.get('submission_status', prev.get('submission_status', ''))
+             == prev.get('submission_status', '')
+        && d.get('approvedAt', prev.get('approvedAt', null)) == prev.get('approvedAt', null)
+        && d.get('approvedBy', prev.get('approvedBy', null)) == prev.get('approvedBy', null)
+        && d.get('approved_at', prev.get('approved_at', null)) == prev.get('approved_at', null)
+        && d.get('rejectedAt', prev.get('rejectedAt', null)) == prev.get('rejectedAt', null)
+        && d.get('rejectedBy', prev.get('rejectedBy', null)) == prev.get('rejectedBy', null)
+        && d.get('rejectionReason', prev.get('rejectionReason', ''))
+             == prev.get('rejectionReason', '')
+        && d.get('changesRequestedAt', prev.get('changesRequestedAt', null))
+             == prev.get('changesRequestedAt', null)
+        && d.get('changesRequestedBy', prev.get('changesRequestedBy', null))
+             == prev.get('changesRequestedBy', null)
+        && d.get('changeRequestReason', prev.get('changeRequestReason', ''))
+             == prev.get('changeRequestReason', '')
+        && d.get('reviewVersion', prev.get('reviewVersion', 0))
+             == prev.get('reviewVersion', 0)
+        && d.get('reviewAttemptCount', prev.get('reviewAttemptCount', 0))
+             == prev.get('reviewAttemptCount', 0)
+        && d.get('phone_verified', prev.get('phone_verified', false))
+             == prev.get('phone_verified', false)
+        && d.get('phone_present', prev.get('phone_present', false))
+             == prev.get('phone_present', false)
+        && d.get('email_verified_mirror', prev.get('email_verified_mirror', false))
+             == prev.get('email_verified_mirror', false)
+        && d.get('registration_documents_status', prev.get('registration_documents_status', ''))
+             == prev.get('registration_documents_status', '');
     }
 
     function tourGuideSelfClaimOk() {
@@ -518,6 +640,13 @@ service cloud.firestore {
         && !('partner_mkan' in d)
         && companyOk
         && tourGuideSelfClaimOk()
+        // Registration V2: client may only keep draft/needs_changes (submit is CF).
+        && (
+          d.get('registration_flow_version', 0) != 2
+          || d.get('registration_status', 'draft') in
+            ['draft', 'needs_changes', 'changes_requested', '']
+        )
+        && d.get('registration_status', '') != 'approved'
         // First claim OR refresh of an already-pending (inactive) driver profile.
         && (prev.get('ismndob', false) == false
             || prev.get('ismndob', false) == true);
@@ -533,6 +662,10 @@ service cloud.firestore {
       return signedIn()
         && request.auth.uid == userId
         && resource.data.get('actev_mndob', false) == true
+        && (
+          resource.data.get('registration_flow_version', 0) != 2
+          || resource.data.get('registration_status', '') == 'approved'
+        )
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'ngl', 'loceshnMndobNow', 'operational_status', 'is_online',
           'last_online_at', 'last_offline_at', 'last_seen_at'
@@ -650,6 +783,12 @@ service cloud.firestore {
           'operational_status', 'rejection_reason', 'requested_changes',
           'vehicle_review_status', 'document_review_status',
           'reviewed_at', 'reviewed_by', 'approved_at',
+          'approvedAt', 'approvedBy', 'rejectedAt', 'rejectedBy',
+          'rejectionReason', 'changesRequestedAt', 'changesRequestedBy',
+          'changeRequestReason', 'fieldsToFix', 'reviewVersion',
+          'reviewAttemptCount', 'submittedAt', 'resubmittedAt',
+          'phone_verified', 'phone_present', 'email_verified_mirror',
+          'registration_documents_status',
           'suspended_at', 'suspended_by', 'auto_activated', 'auto_activated_at'
         ]);
     }
@@ -690,6 +829,8 @@ service cloud.firestore {
         )
         || panelCanProvisionUser()
       );
+      // Own profile first (separate statement) — avoids recursive isSuperAdmin()
+      // get() while evaluating currentUserData() from other rules.
       allow read: if signedIn() && request.auth.uid == document;
       allow read: if request.auth != null && (
         isSuperAdmin()
@@ -702,6 +843,8 @@ service cloud.firestore {
       allow update: if request.auth != null && (
         isSuperAdmin()
         || canDriverSetOnlineOffline(document)
+        || canClaimOrReleaseOwnActiveOrder(document)
+        || panelCanClearActiveOrderLock(document)
         || userSelfFieldsOnly(document)
         || canSelfRegisterAsPendingDriver(document)
         || panelCanManageTourGuide()
@@ -773,14 +916,16 @@ service cloud.firestore {
     // rules-rev: order-create-cf-only-2026-08-09
 
     match /order/{document} {
-      // Prefer createCashBooking CF (Admin SDK). Client cash create is disabled
-      // for production — enable only with temporary rules + TOURY_CLIENT_CASH_FALLBACK.
-      // rules-rev: order-create-cf-only-2026-08-09
-      allow create: if false;
+      // Prefer createCashBooking CF; when CF Admin IAM fails, constrained client
+      // cash create is allowed (isValidClientCashOrderCreate + fallback flag).
+      // rules-rev: cash-fallback-2026-08-10
+      allow create: if isValidClientCashOrderCreate();
       // Idempotent cash create uses a transaction get() on a new doc id.
       // Missing docs have resource == null — must allow that get, else the
       // whole create fails as permission-denied (looks like "no internet").
       // Drivers need get on open-pool docs inside accept transactions.
+      // Scoped get — split participant vs panel so get()-heavy panel roles
+      // cannot poison assigned-driver / consumer order detail reads.
       // rules-rev: order-get-split-participant-2026-08-10
       allow get: if resource == null;
       allow get: if canReadOrder(resource.data);
@@ -789,16 +934,17 @@ service cloud.firestore {
       // in canReadOrder make Firestore reject consumer/driver list queries.
       // rules-rev: order-list-simple-2026-08-01
       allow list: if signedIn() && canListOrder(resource.data);
+      // Consumer cancel FIRST as its own statement — must not share an OR-chain
+      // with driver/panel helpers that call get(user) (missing profile → deny all).
+      // rules-rev: consumer-cancel-standalone-2026-08-21
+      allow update: if consumerCanCancelOrder();
+      allow update: if consumerOrderFieldsOnly();
       allow update: if request.auth != null && (
-        // Keep the driver path first and independent from panel get()-heavy
-        // authorization branches; this also stays below emulator expression limits.
         driverCanClaimOrder()
         || driverAssignedCanPatchOrder()
         || driverCanUpdateLiveLocation()
         || driverCanAdvanceTrip()
         || driverCanCompleteCashCollection()
-        || consumerCanCancelOrder()
-        || consumerOrderFieldsOnly()
         || panelCanWriteOrder(resource.data)
       );
       allow delete: if false;
@@ -903,7 +1049,30 @@ service cloud.firestore {
     }
 
     match /admin_audit_log/{document} {
-      allow read: if isSuperAdmin();
+      allow read: if isSuperAdmin() || isCountryAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /driver_vehicle_plate_claims/{document} {
+      allow read: if isSuperAdmin() || isCountryAdmin();
+      allow create, update, delete: if false;
+    }
+
+    // Stage C — persistent admin notifications (server-written).
+    match /admin_panel_notifications/{document} {
+      allow read: if isSuperAdmin()
+        || (isCountryAdmin()
+            && resource.data.countryRef != null
+            && countriesMatchAdminScope(resource.data.countryRef));
+      allow update: if (isSuperAdmin() || isCountryAdmin())
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['unread', 'read', 'readAt']);
+      allow create, delete: if false;
+    }
+
+    match /driver_registration_notifications/{document} {
+      allow read: if signedIn()
+        && resource.data.driverId == request.auth.uid;
       allow create, update, delete: if false;
     }
 
@@ -1024,6 +1193,7 @@ service cloud.firestore {
     }
 
     match /chat/{document} {
+      // Split so participant paths do not depend on panel get() side-effects.
       allow read: if signedIn() && resource.data.user1 == currentUserRef();
       allow read: if signedIn()
         && resource.data.participants is list
@@ -1074,6 +1244,109 @@ service cloud.firestore {
 
     match /ff_push_notifications/{id} {
       allow read, create, update, delete: if false;
+    }
+
+    // ── Settlement ledger V2 (Admin SDK writes only) ──
+    function canReadSettlement() {
+      return isSuperAdmin()
+        || claimBool('finance')
+        || (
+          isCountryAdmin()
+          && claimCountryPath() != null
+          && (
+            resource.data.countryId == claimCountryPath()
+            || resource.data.countryRef == claimCountryPath()
+          )
+        );
+    }
+
+    match /financial_settlements/{id} {
+      allow read: if signedIn() && canReadSettlement();
+      allow create, update, delete: if false;
+
+      match /lines/{lineId} {
+        allow read: if signedIn() && (
+          isSuperAdmin() || claimBool('finance') || isCountryAdmin()
+        );
+        allow create, update, delete: if false;
+      }
+
+      match /events/{eventId} {
+        allow read: if signedIn() && (
+          isSuperAdmin() || claimBool('finance') || isCountryAdmin()
+        );
+        allow create, update, delete: if false;
+      }
+    }
+
+    match /financial_settlement_claims/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow create, update, delete: if false;
+    }
+
+    match /financial_payment_allocations/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow create, update, delete: if false;
+    }
+
+    match /financial_payment_allocation_claims/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow create, update, delete: if false;
+    }
+
+    match /financial_settlement_idempotency/{id} {
+      allow read, write: if false;
+    }
+
+    match /financial_settlement_counters/{id} {
+      allow read, write: if false;
+    }
+
+    match /financial_settlement_payments/{id} {
+      allow read: if signedIn() && (
+        isSuperAdmin()
+        || claimBool('finance')
+        || (
+          isCountryAdmin()
+          && claimCountryPath() != null
+          && (
+            resource.data.countryId == claimCountryPath()
+            || resource.data.countryRef == claimCountryPath()
+          )
+        )
+      );
+      allow create, update, delete: if false;
+    }
+
+    match /financial_periods/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow create, update, delete: if false;
+    }
+
+    match /financial_adjustments/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow create, update, delete: if false;
+    }
+
+    match /financial_config/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow create, update, delete: if false;
+    }
+
+    match /financial_audit_events/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow create, update, delete: if false;
+    }
+
+    match /financial_aggregation_metrics/{id} {
+      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow create, update, delete: if false;
+    }
+
+    // LEGACY wallet adjust idempotency — Admin SDK only
+    match /financial_wallet_adjust_idempotency/{id} {
+      allow read: if signedIn() && isSuperAdmin();
+      allow create, update, delete: if false;
     }
   }
 }

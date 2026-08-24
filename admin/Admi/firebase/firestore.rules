@@ -1,6 +1,9 @@
 rules_version = '2';
-// Canonical copy: keep in sync with
-// admin/ara_oatan_app/firebase/firestore.rules (deploy from customer app).
+// TOURi CANONICAL Firestore rules — keep BYTE-IDENTICAL across:
+//   admin/Admi/firebase/firestore.rules
+//   admin/ara_oatan_app/firebase/firestore.rules  (emulator suite + preferred deploy source)
+//   admin/mndob-main/firebase/firestore.rules
+// AUD-B-002 local fix: do not diverge these three copies.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -285,12 +288,16 @@ service cloud.firestore {
     }
 
     // Broad assigned-driver patch (location / arrive / start) without money edits.
+    // Broad assigned-driver patch (location / ETA fields) without money edits.
+    // Status transitions MUST go through driverCanAdvanceTrip (AUD-B-003).
     function driverAssignedCanPatchOrder() {
       return orderAssignedToDriver(resource.data)
         && request.resource.data.mndob_user == currentUserRef()
+        && request.resource.data.status_code == resource.data.status_code
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
           'USER', 'total', 'amount_halalas', 'currency', 'PaymentMethod',
-          'payment_session_id', 'ngeniusOrderId', 'idMoyser'
+          'payment_session_id', 'ngeniusOrderId', 'idMoyser',
+          'status_code', 'ActiveOrder'
         ]);
     }
 
@@ -511,7 +518,37 @@ service cloud.firestore {
         && d.get('super_admin', prev.get('super_admin', false)) == prev.get('super_admin', false)
         && d.get('active_order_id', prev.get('active_order_id', null)) == prev.get('active_order_id', null)
         && d.get('active_order_updated_at', prev.get('active_order_updated_at', null))
-             == prev.get('active_order_updated_at', null);
+             == prev.get('active_order_updated_at', null)
+        // Registration V2 review metadata — client cannot self-approve.
+        && d.get('registration_status', prev.get('registration_status', ''))
+             == prev.get('registration_status', '')
+        && d.get('submission_status', prev.get('submission_status', ''))
+             == prev.get('submission_status', '')
+        && d.get('approvedAt', prev.get('approvedAt', null)) == prev.get('approvedAt', null)
+        && d.get('approvedBy', prev.get('approvedBy', null)) == prev.get('approvedBy', null)
+        && d.get('approved_at', prev.get('approved_at', null)) == prev.get('approved_at', null)
+        && d.get('rejectedAt', prev.get('rejectedAt', null)) == prev.get('rejectedAt', null)
+        && d.get('rejectedBy', prev.get('rejectedBy', null)) == prev.get('rejectedBy', null)
+        && d.get('rejectionReason', prev.get('rejectionReason', ''))
+             == prev.get('rejectionReason', '')
+        && d.get('changesRequestedAt', prev.get('changesRequestedAt', null))
+             == prev.get('changesRequestedAt', null)
+        && d.get('changesRequestedBy', prev.get('changesRequestedBy', null))
+             == prev.get('changesRequestedBy', null)
+        && d.get('changeRequestReason', prev.get('changeRequestReason', ''))
+             == prev.get('changeRequestReason', '')
+        && d.get('reviewVersion', prev.get('reviewVersion', 0))
+             == prev.get('reviewVersion', 0)
+        && d.get('reviewAttemptCount', prev.get('reviewAttemptCount', 0))
+             == prev.get('reviewAttemptCount', 0)
+        && d.get('phone_verified', prev.get('phone_verified', false))
+             == prev.get('phone_verified', false)
+        && d.get('phone_present', prev.get('phone_present', false))
+             == prev.get('phone_present', false)
+        && d.get('email_verified_mirror', prev.get('email_verified_mirror', false))
+             == prev.get('email_verified_mirror', false)
+        && d.get('registration_documents_status', prev.get('registration_documents_status', ''))
+             == prev.get('registration_documents_status', '');
     }
 
     function tourGuideSelfClaimOk() {
@@ -603,6 +640,13 @@ service cloud.firestore {
         && !('partner_mkan' in d)
         && companyOk
         && tourGuideSelfClaimOk()
+        // Registration V2: client may only keep draft/needs_changes (submit is CF).
+        && (
+          d.get('registration_flow_version', 0) != 2
+          || d.get('registration_status', 'draft') in
+            ['draft', 'needs_changes', 'changes_requested', '']
+        )
+        && d.get('registration_status', '') != 'approved'
         // First claim OR refresh of an already-pending (inactive) driver profile.
         && (prev.get('ismndob', false) == false
             || prev.get('ismndob', false) == true);
@@ -618,6 +662,10 @@ service cloud.firestore {
       return signedIn()
         && request.auth.uid == userId
         && resource.data.get('actev_mndob', false) == true
+        && (
+          resource.data.get('registration_flow_version', 0) != 2
+          || resource.data.get('registration_status', '') == 'approved'
+        )
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'ngl', 'loceshnMndobNow', 'operational_status', 'is_online',
           'last_online_at', 'last_offline_at', 'last_seen_at'
@@ -735,6 +783,12 @@ service cloud.firestore {
           'operational_status', 'rejection_reason', 'requested_changes',
           'vehicle_review_status', 'document_review_status',
           'reviewed_at', 'reviewed_by', 'approved_at',
+          'approvedAt', 'approvedBy', 'rejectedAt', 'rejectedBy',
+          'rejectionReason', 'changesRequestedAt', 'changesRequestedBy',
+          'changeRequestReason', 'fieldsToFix', 'reviewVersion',
+          'reviewAttemptCount', 'submittedAt', 'resubmittedAt',
+          'phone_verified', 'phone_present', 'email_verified_mirror',
+          'registration_documents_status',
           'suspended_at', 'suspended_by', 'auto_activated', 'auto_activated_at'
         ]);
     }
@@ -995,7 +1049,30 @@ service cloud.firestore {
     }
 
     match /admin_audit_log/{document} {
-      allow read: if isSuperAdmin();
+      allow read: if isSuperAdmin() || isCountryAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /driver_vehicle_plate_claims/{document} {
+      allow read: if isSuperAdmin() || isCountryAdmin();
+      allow create, update, delete: if false;
+    }
+
+    // Stage C — persistent admin notifications (server-written).
+    match /admin_panel_notifications/{document} {
+      allow read: if isSuperAdmin()
+        || (isCountryAdmin()
+            && resource.data.countryRef != null
+            && countriesMatchAdminScope(resource.data.countryRef));
+      allow update: if (isSuperAdmin() || isCountryAdmin())
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['unread', 'read', 'readAt']);
+      allow create, delete: if false;
+    }
+
+    match /driver_registration_notifications/{document} {
+      allow read: if signedIn()
+        && resource.data.driverId == request.auth.uid;
       allow create, update, delete: if false;
     }
 

@@ -1,4 +1,6 @@
 rules_version = '2';
+// Country-scoped driver document reads — Firestore lookup (server-enforced).
+// Canonical: keep Admi + mndob-main + ara_oatan_app copies in sync.
 service firebase.storage {
   match /b/{bucket}/o {
     function signedIn() {
@@ -6,23 +8,98 @@ service firebase.storage {
     }
 
     function claimBool(name) {
-      return signedIn() && request.auth.token[name] == true;
+      return signedIn()
+        && name in request.auth.token
+        && request.auth.token[name] == true;
+    }
+
+    function docRefPath(value) {
+      return value == null ? null : (value is string ? value : value.path);
+    }
+
+    function adminUserDoc() {
+      return firestore.get(/databases/(default)/documents/user/$(request.auth.uid));
+    }
+
+    function driverUserDoc(uid) {
+      return firestore.get(/databases/(default)/documents/user/$(uid));
+    }
+
+    function adminData() {
+      return adminUserDoc().data;
     }
 
     function isSuperAdmin() {
-      return claimBool('super_admin');
+      return claimBool('super_admin')
+        || (
+          adminData() != null
+          && (
+            adminData().get('IsAdmin', false) == true
+            || adminData().get('isAdmin', false) == true
+            || adminData().get('isAdminRule', 0) == 1
+            || adminData().get('IsAdminRule', 0) == 1
+          )
+        );
     }
 
-    function isCountryAdmin() {
-      return claimBool('country_admin');
+    function claimCountryPath() {
+      return signedIn() && request.auth.token.country_id != null
+        ? request.auth.token.country_id
+        : null;
     }
 
-    function isPanelWriter() {
-      return isSuperAdmin()
-        || isCountryAdmin()
+    function adminCountryPath() {
+      return claimCountryPath() != null
+        ? claimCountryPath()
+        : (
+            adminData() != null && adminData().get('Rev_dloh_agent', null) != null
+              ? docRefPath(adminData().get('Rev_dloh_agent', null))
+              : (
+                  adminData() != null && adminData().get('Rev_dolh', null) != null
+                    ? docRefPath(adminData().get('Rev_dolh', null))
+                    : null
+                )
+          );
+    }
+
+    function driverCountryPath(uid) {
+      let d = driverUserDoc(uid).data;
+      return d != null && d.get('Rev_dolh', null) != null
+        ? docRefPath(d.get('Rev_dolh', null))
+        : (
+            d != null && d.get('Rev_dloh_agent', null) != null
+              ? docRefPath(d.get('Rev_dloh_agent', null))
+              : null
+          );
+    }
+
+    function countriesMatchDriver(uid) {
+      let ac = adminCountryPath();
+      let dc = driverCountryPath(uid);
+      return ac != null && dc != null && ac == dc;
+    }
+
+    function isCountryScopedPanel() {
+      return claimBool('country_admin')
         || claimBool('agent')
-        || claimBool('partner')
-        || claimBool('transport_manager');
+        || (
+          adminData() != null
+          && (
+            adminData().get('isAdminRule', 0) == 2
+            || adminData().get('IsAdminRule', 0) == 2
+            || adminData().get('Isagent', false) == true
+            || adminData().get('isagent', false) == true
+          )
+        );
+    }
+
+    function canReadUserUploads(userId) {
+      return signedIn()
+        && (
+          request.auth.uid == userId
+          || isSuperAdmin()
+          || (isCountryScopedPanel() && countriesMatchDriver(userId))
+        );
     }
 
     function isImage() {
@@ -50,12 +127,8 @@ service firebase.storage {
           || request.resource.contentType.matches('video/.*'));
     }
 
-    // Profile photos: owner always; signed-in panel staff may read for lists.
     match /users/{userId}/{allPaths=**} {
-      allow read: if signedIn()
-        && (request.auth.uid == userId
-          || isSuperAdmin()
-          || isPanelWriter());
+      allow read: if canReadUserUploads(userId);
       allow create, update: if signedIn()
         && request.auth.uid == userId
         && validUserUpload();
@@ -64,43 +137,43 @@ service firebase.storage {
 
     match /landmarks/{allPaths=**} {
       allow read: if true;
-      allow create, update: if isPanelWriter() && validContentImage();
+      allow create, update: if isSuperAdmin() && validContentImage();
       allow delete: if isSuperAdmin();
     }
 
     match /countries/{allPaths=**} {
       allow read: if true;
-      allow create, update: if isPanelWriter() && validContentImage();
+      allow create, update: if isSuperAdmin() && validContentImage();
       allow delete: if isSuperAdmin();
     }
 
     match /regions/{allPaths=**} {
       allow read: if true;
-      allow create, update: if isPanelWriter() && validContentImage();
+      allow create, update: if isSuperAdmin() && validContentImage();
       allow delete: if isSuperAdmin();
     }
 
     match /cities/{allPaths=**} {
       allow read: if true;
-      allow create, update: if isPanelWriter() && validContentImage();
+      allow create, update: if isSuperAdmin() && validContentImage();
       allow delete: if isSuperAdmin();
     }
 
     match /type_car/{allPaths=**} {
       allow read: if true;
-      allow create, update: if isPanelWriter() && validContentImage();
+      allow create, update: if isSuperAdmin() && validContentImage();
       allow delete: if isSuperAdmin();
     }
 
     match /representatives/{allPaths=**} {
       allow read: if true;
-      allow create, update: if isPanelWriter() && validContentImage();
+      allow create, update: if isSuperAdmin() && validContentImage();
       allow delete: if isSuperAdmin();
     }
 
     match /places/{allPaths=**} {
       allow read: if true;
-      allow create, update: if isPanelWriter() && validContentImage();
+      allow create, update: if isSuperAdmin() && validContentImage();
       allow delete: if isSuperAdmin();
     }
 

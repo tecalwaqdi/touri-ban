@@ -3,12 +3,15 @@
  *
  * Usage:
  *   cd firebase/functions
- *   node ../scripts/create_super_admin.js
+ *   ADMIN_EMAIL=... ADMIN_PASSWORD=... node ../scripts/create_super_admin.js
  *
- * Optional env:
- *   ADMIN_EMAIL=alwaqdi@gmail.com
- *   ADMIN_PASSWORD=alwaqdi@2026
- *   ADMIN_NAME="الواقدي"
+ * Required env:
+ *   ADMIN_EMAIL
+ *   ADMIN_PASSWORD
+ * Optional:
+ *   ADMIN_NAME
+ *
+ * AUD-B-001: no hardcoded credential defaults — fail closed if env missing.
  */
 
 const path = require("path");
@@ -21,9 +24,17 @@ const admin = require(path.join(
 ));
 
 const PROJECT_ID = "tutorial-multi-language-70gx4j";
-const EMAIL = process.env.ADMIN_EMAIL || "alwaqdi@gmail.com";
-const PASSWORD = process.env.ADMIN_PASSWORD || "alwaqdi@2026";
-const DISPLAY_NAME = process.env.ADMIN_NAME || "الواقدي - سوبر أدمن";
+const EMAIL = String(process.env.ADMIN_EMAIL || "").trim();
+const PASSWORD = String(process.env.ADMIN_PASSWORD || "");
+const DISPLAY_NAME =
+  String(process.env.ADMIN_NAME || "").trim() || "Super Admin";
+
+if (!EMAIL || !PASSWORD) {
+  console.error(
+    "Refusing to run: set ADMIN_EMAIL and ADMIN_PASSWORD in the environment (no defaults).",
+  );
+  process.exit(1);
+}
 
 function initAdmin() {
   if (admin.apps.length) return;
@@ -110,7 +121,7 @@ async function main() {
 
   console.log("\n=== Super admin ready ===");
   console.log("Email:   ", EMAIL);
-  console.log("Password:", PASSWORD);
+  console.log("Password: [REDACTED]");
   console.log("UID:     ", uid);
 }
 
