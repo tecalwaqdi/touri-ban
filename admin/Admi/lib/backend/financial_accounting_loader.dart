@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_ops_filters.dart';
@@ -234,7 +233,7 @@ abstract final class FinancialAccountingLoader {
     );
 
     return FinancialReportResult(
-      byCurrency: byCurrency ?? {},
+      byCurrency: byCurrency,
       quality: quality,
       tableRows: table,
       loadedAt: DateTime.now(),

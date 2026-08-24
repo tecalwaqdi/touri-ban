@@ -1,7 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:admin_arawatan/core/finance/csv_export.dart';
-import 'package:admin_arawatan/core/admin_error_messages.dart';
-import 'package:flutter/widgets.dart';
 
 void main() {
   test('finance CSV is UTF-8 friendly and not a tax invoice', () {

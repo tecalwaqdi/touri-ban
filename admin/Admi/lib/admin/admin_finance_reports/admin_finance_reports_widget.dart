@@ -90,7 +90,7 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
           Text(
             uiTr(
               context,
-              'Internal reports only — not a tax invoice. CSV copy. PDF: DEFERRED_PDF (no pdf package).',
+              'Internal reports only — not a tax invoice. Copies CSV to clipboard (not a file download). PDF: DEFERRED_PDF (no pdf package).',
             ),
             softWrap: true,
             style: theme.bodySmall,
@@ -154,7 +154,7 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
                   SnackBar(content: Text(uiTr(context, 'CSV copied'))),
                 );
               },
-              child: Text(uiTr(context, 'Export CSV')),
+              child: Text(uiTr(context, 'Copy CSV')),
             ),
             LayoutBuilder(
               builder: (context, constraints) {

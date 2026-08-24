@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +15,9 @@ class AdminOpsFilterConfig {
     this.showDate = true,
     this.showOrderLifecycle = false,
     this.showDriverActivation = false,
+    this.showDriverReview = false,
+    this.showDriverDocuments = false,
+    this.showDriverVehicleType = false,
     this.showSupportStatus = false,
     this.showCountry = true,
     this.showRegion = false,
@@ -27,6 +29,9 @@ class AdminOpsFilterConfig {
   final bool showDate;
   final bool showOrderLifecycle;
   final bool showDriverActivation;
+  final bool showDriverReview;
+  final bool showDriverDocuments;
+  final bool showDriverVehicleType;
   final bool showSupportStatus;
   final bool showCountry;
   final bool showRegion;
@@ -57,6 +62,7 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
   List<CountriesRecord> _countries = const [];
   List<CitiesRecord> _regions = const [];
   List<VillagesRecord> _cities = const [];
+  List<TypeCarRecord> _vehicleTypes = const [];
   bool _loadingGeo = false;
 
   bool get _lockCountry => AdminRoleService.isCountryAgent;
@@ -66,6 +72,9 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
     super.initState();
     _searchController = TextEditingController(text: widget.value.searchQuery);
     _loadCountries();
+    if (widget.config.showDriverVehicleType) {
+      _loadVehicleTypes();
+    }
     if (widget.value.effectiveCountryRef != null) {
       _loadRegions(widget.value.effectiveCountryRef!);
     }
@@ -88,6 +97,16 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
     EasyDebounce.cancel('admin_ops_filter_search');
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadVehicleTypes() async {
+    try {
+      final docs = await queryTypeCarRecordOnce(limit: 80);
+      if (!mounted) return;
+      setState(() => _vehicleTypes = docs);
+    } catch (_) {
+      if (mounted) setState(() => _vehicleTypes = const []);
+    }
   }
 
   Future<void> _loadCountries() async {
@@ -156,7 +175,10 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
     final f = widget.value;
     final cfg = widget.config;
 
-    return AdminContentCard(
+    return Semantics(
+      identifier: 'qa-driver-filter',
+      label: 'qa-driver-filter',
+      child: AdminContentCard(
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -259,6 +281,9 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
                           clearCustomDates: true,
                         ),
                       ),
+                      qaIdentifier: preset == AdminDatePreset.last30Days
+                          ? 'qa-filter-date-last30days'
+                          : null,
                     ),
                 _chip(
                   label: uiTr(context, 'مخصص'),
@@ -308,8 +333,94 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
                     label: _driverActLabel(context, s),
                     selected: f.driverActivation == s,
                     onTap: () => _emit(f.copyWith(driverActivation: s)),
+                    qaIdentifier: s == AdminDriverActivationFilter.activated
+                        ? 'qa-filter-activation-activated'
+                        : null,
                   ),
               ],
+            ),
+            const SizedBox(height: 10),
+          ],
+          if (cfg.showDriverReview) ...[
+            Text(uiTr(context, 'حالة المراجعة'), style: theme.labelMedium),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final s in AdminDriverReviewFilter.values)
+                  _chip(
+                    label: _driverReviewLabel(context, s),
+                    selected: f.driverReview == s,
+                    onTap: () => _emit(f.copyWith(driverReview: s)),
+                    qaIdentifier: s == AdminDriverReviewFilter.pendingReview
+                        ? 'qa-filter-review-pending'
+                        : null,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 10),
+          ],
+          if (cfg.showDriverDocuments) ...[
+            Text(uiTr(context, 'الوثائق'), style: theme.labelMedium),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final s in AdminDriverDocumentsFilter.values)
+                  _chip(
+                    label: _driverDocsLabel(context, s),
+                    selected: f.driverDocuments == s,
+                    onTap: () => _emit(f.copyWith(driverDocuments: s)),
+                    qaIdentifier: s == AdminDriverDocumentsFilter.missing
+                        ? 'qa-filter-documents-missing'
+                        : null,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 10),
+          ],
+          if (cfg.showDriverVehicleType && _vehicleTypes.isNotEmpty) ...[
+            Text(uiTr(context, 'تصنيف السيارة'), style: theme.labelMedium),
+            const SizedBox(height: 6),
+            Semantics(
+              identifier: 'qa-filter-vehicle-type',
+              label: 'qa-filter-vehicle-type',
+              child: InputDecorator(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                isDense: true,
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<DocumentReference?>(
+                  isExpanded: true,
+                  value: f.vehicleTypeRef,
+                  hint: Text(uiTr(context, 'الكل')),
+                  items: [
+                    DropdownMenuItem<DocumentReference?>(
+                      value: null,
+                      child: Text(uiTr(context, 'الكل')),
+                    ),
+                    for (final t in _vehicleTypes)
+                      DropdownMenuItem<DocumentReference?>(
+                        value: t.reference,
+                        child: Text(
+                          t.naim.isNotEmpty ? t.naim : t.reference.id,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
+                  onChanged: (v) => _emit(
+                    v == null
+                        ? f.copyWith(clearVehicleType: true)
+                        : f.copyWith(vehicleTypeRef: v),
+                  ),
+                ),
+              ),
+            ),
             ),
             const SizedBox(height: 10),
           ],
@@ -367,11 +478,15 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
           ),
         ],
       ),
+    ),
     );
   }
 
   Widget _dropdownCountry(FlutterFlowTheme theme) {
-    return InputDecorator(
+    return Semantics(
+      identifier: 'qa-filter-country',
+      label: 'qa-filter-country',
+      child: InputDecorator(
       decoration: InputDecoration(
         labelText: uiTr(context, 'الدولة'),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -411,6 +526,7 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
           },
         ),
       ),
+    ),
     );
   }
 
@@ -519,13 +635,21 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
     required String label,
     required bool selected,
     required VoidCallback onTap,
+    String? qaIdentifier,
   }) {
-    return FilterChip(
+    final chip = FilterChip(
       label: Text(label),
       selected: selected,
       onSelected: (_) => onTap(),
       selectedColor: AdminUi.brandTeal.withValues(alpha: 0.25),
       checkmarkColor: AdminUi.brandTeal,
+    );
+    if (qaIdentifier == null) return chip;
+    return Semantics(
+      identifier: qaIdentifier,
+      label: qaIdentifier,
+      button: true,
+      child: chip,
     );
   }
 
@@ -561,6 +685,32 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
         AdminDriverActivationFilter.deactivated => uiTr(context, 'غير مفعّل'),
         AdminDriverActivationFilter.unknown =>
           uiTr(context, 'حالة غير محددة'),
+      };
+
+  String _driverReviewLabel(BuildContext context, AdminDriverReviewFilter s) =>
+      switch (s) {
+        AdminDriverReviewFilter.all => uiTr(context, 'الكل'),
+        AdminDriverReviewFilter.pendingReview => uiTr(context, 'تحت المراجعة'),
+        AdminDriverReviewFilter.approved => uiTr(context, 'معتمد'),
+        AdminDriverReviewFilter.rejected => uiTr(context, 'مرفوض'),
+        AdminDriverReviewFilter.needsChanges =>
+          uiTr(context, 'يحتاج استكمال'),
+        AdminDriverReviewFilter.inactive => uiTr(context, 'غير مفعّل'),
+        AdminDriverReviewFilter.unknownLegacy =>
+          uiTr(context, 'حالة غير محددة'),
+      };
+
+  String _driverDocsLabel(BuildContext context, AdminDriverDocumentsFilter s) =>
+      switch (s) {
+        AdminDriverDocumentsFilter.all => uiTr(context, 'الكل'),
+        AdminDriverDocumentsFilter.complete =>
+          uiTr(context, 'وثائق مكتملة'),
+        AdminDriverDocumentsFilter.missing =>
+          uiTr(context, 'وثائق ناقصة'),
+        AdminDriverDocumentsFilter.needsReupload =>
+          uiTr(context, 'تحتاج إعادة رفع'),
+        AdminDriverDocumentsFilter.unknownLegacy =>
+          uiTr(context, 'وثائق غير محددة (قديم)'),
       };
 
   String _supportLabel(BuildContext context, AdminSupportStatusFilter s) =>

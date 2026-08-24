@@ -35,7 +35,6 @@ class _CarTypeAdditionWidgetState extends State<CarTypeAdditionWidget> {
   late final TextEditingController _codeController;
   DocumentReference? _selectedCountryRef;
   String _selectedCountryIso = '';
-  String _selectedCountryLabel = '';
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -246,8 +245,6 @@ class _CarTypeAdditionWidgetState extends State<CarTypeAdditionWidget> {
                                           (match?.isoCode ?? '')
                                               .trim()
                                               .toUpperCase();
-                                      _selectedCountryLabel =
-                                          match?.naim ?? '';
                                     });
                                   },
                                 ),
@@ -672,7 +669,7 @@ class _CarTypeAdditionWidgetState extends State<CarTypeAdditionWidget> {
                                 safeSetState(
                                     () => _model.switchValue1 = newValue);
                               },
-                              activeColor: FlutterFlowTheme.of(context).primary,
+                              activeThumbColor: FlutterFlowTheme.of(context).primary,
                               activeTrackColor:
                                   FlutterFlowTheme.of(context).secondaryText,
                               inactiveTrackColor:
@@ -707,7 +704,7 @@ class _CarTypeAdditionWidgetState extends State<CarTypeAdditionWidget> {
                                 safeSetState(
                                     () => _model.switchValue2 = newValue);
                               },
-                              activeColor: FlutterFlowTheme.of(context).primary,
+                              activeThumbColor: FlutterFlowTheme.of(context).primary,
                               activeTrackColor:
                                   FlutterFlowTheme.of(context).secondaryText,
                               inactiveTrackColor:
@@ -742,7 +739,7 @@ class _CarTypeAdditionWidgetState extends State<CarTypeAdditionWidget> {
                                 safeSetState(
                                     () => _model.switchValue3 = newValue);
                               },
-                              activeColor: FlutterFlowTheme.of(context).primary,
+                              activeThumbColor: FlutterFlowTheme.of(context).primary,
                               activeTrackColor:
                                   FlutterFlowTheme.of(context).secondaryText,
                               inactiveTrackColor:

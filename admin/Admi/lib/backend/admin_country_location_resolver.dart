@@ -1,6 +1,5 @@
 import '/backend/backend.dart';
 import '/backend/admin_country_geo_service.dart';
-import '/flutter_flow/lat_lng.dart';
 
 /// يحدد الدولة من إحداثيات GPS باستخدام الحدود المخزنة.
 abstract final class AdminCountryLocationResolver {

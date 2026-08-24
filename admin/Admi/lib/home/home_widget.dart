@@ -1,3 +1,4 @@
+import '/components/admin_driver_notifications_sheet.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -66,20 +67,19 @@ class _HomeWidgetState extends State<HomeWidget> {
           actions: [
             Padding(
               padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-              child: FlutterFlowIconButton(
-                borderRadius: 20.0,
-                buttonSize: 40.0,
-                fillColor: FlutterFlowTheme.of(context).info,
-                icon: Icon(
-                  Icons.notifications,
-                  color: FlutterFlowTheme.of(context).primary,
-                  size: 24.0,
+              child: AdminPendingDriverReviewBadge(
+                onTap: () => AdminDriverNotificationsSheet.open(context),
+                child: FlutterFlowIconButton(
+                  borderRadius: 20.0,
+                  buttonSize: 40.0,
+                  fillColor: FlutterFlowTheme.of(context).info,
+                  icon: Icon(
+                    Icons.notifications,
+                    color: FlutterFlowTheme.of(context).primary,
+                    size: 24.0,
+                  ),
+                  onPressed: () => AdminDriverNotificationsSheet.open(context),
                 ),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(uiTr(context, 'لا توجد إشعارات'))),
-                  );
-                },
               ),
             ),
           ],

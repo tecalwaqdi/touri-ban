@@ -5,7 +5,6 @@ import '/components/admin_crud_feedback.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/core/admin_currency.dart';
 import '/flutter_flow/flutter_flow_util.dart';

@@ -20,7 +20,6 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/core/admin_currency.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'admin_a_l_lhg_z_model.dart';
 export 'admin_a_l_lhg_z_model.dart';

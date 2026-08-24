@@ -13,10 +13,12 @@ import '/backend/admin_route_guard.dart';
 import '/backend/admin_role_service.dart';
 
 import '/core/admin_splash_screen.dart';
+import '/core/admin_qa_fixtures.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 import '/index.dart';
+import '/admin/admin_driver_review_fixture/admin_qa_fixture_unavailable_widget.dart';
 
 export 'package:go_router/go_router.dart';
 export 'serialization_util.dart';
@@ -96,7 +98,11 @@ class _PanelSessionGateState extends State<_PanelSessionGate> {
     if (!_ready) {
       return const _AuthLoadingScreen();
     }
-    return widget.child;
+    return Semantics(
+      identifier: 'qa-panel-ready',
+      label: 'qa-panel-ready',
+      child: widget.child,
+    );
   }
 }
 
@@ -508,6 +514,23 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               collectionNamePath: ['user'],
             ),
           ),
+        ),
+        FFRoute(
+          name: AdminDriverReviewFixtureWidget.routeName,
+          path: AdminDriverReviewFixtureWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) {
+            if (!AdminQaFixtures.enabled) {
+              return const AdminQaFixtureUnavailableWidget();
+            }
+            return AdminDriverReviewFixtureWidget(
+              reviewState: params.getParam(
+                    'state',
+                    ParamType.String,
+                  ) ??
+                  'pending_review',
+            );
+          },
         ),
         FFRoute(
           name: CarTypeAdditionWidget.routeName,

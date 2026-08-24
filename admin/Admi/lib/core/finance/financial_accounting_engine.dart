@@ -642,7 +642,7 @@ abstract final class FinancialAccountingEngine {
         netResult.net != null;
 
     if (collected && channel == FinancialPaymentChannel.cash) {
-      final held = customerPaid as MoneyAmount;
+      final held = customerPaid;
       final net = netResult.net as MoneyAmount;
       cashHeld = held;
       signedCash = MoneyAmount(
@@ -670,7 +670,7 @@ abstract final class FinancialAccountingEngine {
     }
 
     if (collected && channel == FinancialPaymentChannel.online) {
-      final held = customerPaid as MoneyAmount;
+      final held = customerPaid;
       final net = netResult.net as MoneyAmount;
       onlineHeld = held;
       onlineRemain = MoneyAmount(

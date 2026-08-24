@@ -3,11 +3,14 @@ import '/backend/admin_performance.dart';
 import '/backend/admin_resource_guard.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
+import '/components/admin_driver_documents_panel.dart';
 import '/components/admin_driver_financial_panel.dart';
+import '/components/admin_driver_review_history_panel.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_region_picker.dart';
 import '/components/admin_ui.dart';
 import '/components/profile_photo_image.dart';
+import '/core/admin_driver_profile_view.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/core/admin_currency.dart';
@@ -372,6 +375,102 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
                             ].divide(SizedBox(height: 16.0)),
                           ),
                         ),
+                      ),
+                      Builder(
+                        builder: (context) {
+                          final u = driverProfileUserRecord;
+                          // Business policy: Email Verified (Auth SoT via mirror
+                          // written on submit) + Phone Present (profile field).
+                          // Never show Phone Verified / OTP.
+                          final emailVerified =
+                              u.snapshotData['email_verified_mirror'] == true;
+                          final phoneRaw = u.phoneNumber.trim();
+                          final phonePresent = phoneRaw.isNotEmpty &&
+                              phoneRaw.replaceAll(RegExp(r'[^0-9]'), '').length >=
+                                  7;
+                          return AdminContentCard(
+                            padding: const EdgeInsets.all(14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  'Email: ${emailVerified ? 'Verified ✓' : 'Not verified'}',
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .override(
+                                        fontFamily: FlutterFlowTheme.of(context)
+                                            .bodyMediumFamily,
+                                        fontWeight: FontWeight.w600,
+                                        useGoogleFonts:
+                                            !FlutterFlowTheme.of(context)
+                                                .bodyMediumIsCustom,
+                                      ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Phone: ${phonePresent ? 'Present ✓' : 'Missing'}',
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .override(
+                                        fontFamily: FlutterFlowTheme.of(context)
+                                            .bodyMediumFamily,
+                                        fontWeight: FontWeight.w600,
+                                        useGoogleFonts:
+                                            !FlutterFlowTheme.of(context)
+                                                .bodyMediumIsCustom,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      AdminDriverDocumentsPanel(user: driverProfileUserRecord),
+                      AdminDriverReviewHistoryPanel(
+                        driverId: driverProfileUserRecord.reference.id,
+                      ),
+                      Builder(
+                        builder: (context) {
+                          final v = AdminDriverProfileView.vehicle(
+                            driverProfileUserRecord,
+                          );
+                          final review = AdminDriverProfileView.reviewBucket(
+                            driverProfileUserRecord,
+                          );
+                          return AdminContentCard(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  uiTr(context, 'بيانات السيارة'),
+                                  style: FlutterFlowTheme.of(context)
+                                      .titleSmall
+                                      .override(
+                                        fontFamily: FlutterFlowTheme.of(context)
+                                            .titleSmallFamily,
+                                        fontWeight: FontWeight.w800,
+                                        useGoogleFonts:
+                                            !FlutterFlowTheme.of(context)
+                                                .titleSmallIsCustom,
+                                      ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  v.isLegacyIncomplete
+                                      ? uiTr(context, 'Missing / Legacy')
+                                      : v.oneLine,
+                                  softWrap: true,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '${uiTr(context, 'حالة المراجعة')}: ${AdminDriverProfileView.reviewLabel(context, review)}',
+                                  softWrap: true,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                       Card(
                         clipBehavior: Clip.antiAliasWithSaveLayer,

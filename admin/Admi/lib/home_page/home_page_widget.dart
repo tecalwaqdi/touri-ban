@@ -170,7 +170,11 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                           0.0, 20.0, 0.0, 0.0),
                                       child: SizedBox(
                                         width: double.infinity,
-                                        child: TextFormField(
+                                        child: Semantics(
+                                          identifier: 'qa-login-email',
+                                          label: 'qa-login-email',
+                                          textField: true,
+                                          child: TextFormField(
                                           controller: _model
                                               .emailAddressLoginTextController,
                                           focusNode:
@@ -275,6 +279,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                               .emailAddressLoginTextControllerValidator
                                               .asValidator(context),
                                         ),
+                                        ),
                                       ),
                                     ),
                                     Padding(
@@ -282,7 +287,11 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                           0.0, 12.0, 0.0, 0.0),
                                       child: SizedBox(
                                         width: double.infinity,
-                                        child: TextFormField(
+                                        child: Semantics(
+                                          identifier: 'qa-login-password',
+                                          label: 'qa-login-password',
+                                          textField: true,
+                                          child: TextFormField(
                                           controller: _model
                                               .passwordLoginTextController,
                                           focusNode:
@@ -407,6 +416,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                               .passwordLoginTextControllerValidator
                                               .asValidator(context),
                                         ),
+                                        ),
                                       ),
                                     ),
                                     Padding(
@@ -472,7 +482,11 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                     Padding(
                                       padding: EdgeInsetsDirectional.fromSTEB(
                                           0.0, 24.0, 0.0, 0.0),
-                                      child: FFButtonWidget(
+                                      child: Semantics(
+                                        identifier: 'qa-login-submit',
+                                        label: 'qa-login-submit',
+                                        button: true,
+                                        child: FFButtonWidget(
                                         onPressed: () async {
                                           GoRouter.of(context)
                                               .prepareAuthEvent(true);
@@ -586,6 +600,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                           borderRadius:
                                               BorderRadius.circular(12.0),
                                         ),
+                                      ),
                                       ),
                                     ),
                                     TextButton(

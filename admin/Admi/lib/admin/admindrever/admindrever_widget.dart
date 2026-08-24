@@ -6,19 +6,23 @@ import '/backend/admin_role_service.dart';
 import '/backend/admin_stats_coordinator.dart';
 import '/backend/admin_unknown_drivers_loader.dart';
 import '/backend/backend.dart';
+import '/backend/driver_admin_stats_loader.dart';
 import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
+import '/components/admin_driver_counters_strip.dart';
+import '/components/admin_driver_documents_panel.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
 import '/components/admin_enterprise_kit.dart' hide showAdminConfirmDialog;
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ops_filter_bar.dart';
+import '/components/admin_status_badge.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_driver_profile_view.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'admindrever_model.dart';
 export 'admindrever_model.dart';
@@ -38,6 +42,18 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   AdminOpsFilterState _filters = const AdminOpsFilterState();
+  DriverAdminStats _stats = DriverAdminStats.empty;
+  bool _statsLoading = true;
+  bool _statsError = false;
+  String _tableQaLabel = 'visible:0 total:0 empty:false loading:true';
+
+  void _syncTableQaLabel(String next) {
+    if (_tableQaLabel == next || !mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _tableQaLabel == next) return;
+      setState(() => _tableQaLabel = next);
+    });
+  }
 
   @override
   void initState() {
@@ -48,26 +64,72 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
       AdminAgentCountryLock.applyToAppState();
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      safeSetState(() {});
+      _loadStats();
+    });
+  }
+
+  Future<void> _loadStats() async {
+    setState(() {
+      _statsLoading = true;
+      _statsError = false;
+      _tableQaLabel = 'visible:0 total:0 empty:false loading:true';
+    });
+    try {
+      final s = await DriverAdminStatsLoader.load(
+        filters: _filters,
+      );
+      if (!mounted) return;
+      setState(() {
+        _stats = s;
+        _statsLoading = false;
+        _tableQaLabel =
+            'visible:0 total:${s.total} empty:${s.total == 0}';
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _statsError = true;
+        _statsLoading = false;
+      });
+    }
+  }
+
+  List<UserRecord> _filterReps(List<UserRecord> reps) {
+    var out = reps;
+
+    // Unknown legacy review remains client-side (no single equality query).
+    if (_filters.driverReview == AdminDriverReviewFilter.unknownLegacy) {
+      out = out
+          .where(
+            (r) =>
+                AdminDriverProfileView.reviewBucket(r) ==
+                AdminDriverReviewBucket.unknownLegacy,
+          )
+          .toList(growable: false);
+    }
+
+    final q = _filters.searchQuery.trim().toLowerCase();
+    if (q.isEmpty) return out;
+    return out.where((r) {
+      final vehicle = AdminDriverProfileView.vehicle(r);
+      return r.displayName.toLowerCase().contains(q) ||
+          r.phoneNumber.toLowerCase().contains(q) ||
+          r.mndobVillText.toLowerCase().contains(q) ||
+          r.transportCompanyText.toLowerCase().contains(q) ||
+          r.email.toLowerCase().contains(q) ||
+          r.reference.id.toLowerCase().contains(q) ||
+          r.driverid.toLowerCase().contains(q) ||
+          vehicle.plate.toLowerCase().contains(q) ||
+          vehicle.name.toLowerCase().contains(q);
+    }).toList();
   }
 
   @override
   void dispose() {
     _model.dispose();
     super.dispose();
-  }
-
-  List<UserRecord> _filterReps(List<UserRecord> reps) {
-    final q = _filters.searchQuery.trim().toLowerCase();
-    if (q.isEmpty) return reps;
-    return reps.where((r) {
-      return r.displayName.toLowerCase().contains(q) ||
-          r.phoneNumber.toLowerCase().contains(q) ||
-          r.mndobVillText.toLowerCase().contains(q) ||
-          r.transportCompanyText.toLowerCase().contains(q) ||
-          r.email.toLowerCase().contains(q) ||
-          r.reference.id.toLowerCase().contains(q);
-    }).toList();
   }
 
   Future<void> _toggleActivation(UserRecord user, {required bool activate}) async {
@@ -142,20 +204,86 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
           title: l10n.getText('xqeazwes'),
           subtitle: appTr(context, 'scr_reps_subtitle'),
           scrollable: true,
-          child: Column(
+          child: Semantics(
+            identifier: 'qa-driver-list',
+            label: 'qa-driver-list',
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               AdminOpsFilterBar(
                 value: _filters,
                 config: const AdminOpsFilterConfig(
-                  showDate: false,
+                  showDate: true,
                   showDriverActivation: true,
+                  showDriverReview: true,
+                  showDriverDocuments: true,
+                  showDriverVehicleType: true,
                   showCountry: true,
+                  showRegion: true,
                   showCity: true,
                   showSearch: true,
-                  searchHint: 'بحث بالاسم / الهاتف / البريد',
+                  searchHint:
+                      'بحث: اسم / هاتف / بريد / معرف / لوحة (الاسم على الصفحة الحالية)',
                 ),
-                onChanged: (next) => setState(() => _filters = next),
+                onChanged: (next) {
+                  setState(() => _filters = next);
+                  _loadStats();
+                },
+              ),
+              Semantics(
+                identifier: 'qa-driver-filter-signature',
+                container: true,
+                label: _filters.qaEvidenceSignature,
+                child: const SizedBox.shrink(),
+              ),
+              Semantics(
+                identifier: 'qa-driver-filter-country',
+                container: true,
+                label: _filters.qaCountryToken,
+                child: const SizedBox.shrink(),
+              ),
+              Semantics(
+                identifier: 'qa-driver-filter-status',
+                container: true,
+                label: _filters.qaStatusToken,
+                child: const SizedBox.shrink(),
+              ),
+              Semantics(
+                identifier: 'qa-driver-filter-vehicle',
+                container: true,
+                label: _filters.qaVehicleToken,
+                child: const SizedBox.shrink(),
+              ),
+              Semantics(
+                identifier: 'qa-driver-filter-documents',
+                container: true,
+                label: _filters.qaDocumentsToken,
+                child: const SizedBox.shrink(),
+              ),
+              Semantics(
+                identifier: 'qa-driver-filter-date',
+                container: true,
+                label: _filters.qaDateToken,
+                child: const SizedBox.shrink(),
+              ),
+              Semantics(
+                identifier: 'qa-driver-filter-activation',
+                container: true,
+                label: _filters.qaActivationToken,
+                child: const SizedBox.shrink(),
+              ),
+              const SizedBox(height: 12),
+              AdminDriverCountersStrip(
+                stats: _stats,
+                loading: _statsLoading,
+                error: _statsError,
+                onRetry: _loadStats,
+              ),
+              Semantics(
+                identifier: 'qa-driver-table-total',
+                container: true,
+                label: _tableQaLabel,
+                child: const SizedBox.shrink(),
               ),
               const SizedBox(height: 12),
               Align(
@@ -180,8 +308,29 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                   recordBuilder: UserRecord.fromSnapshot,
                   queryBuilder: (q) =>
                       AdminOpsQueryBuilder.applyDriverFilters(q, _filters),
+                  loading: Semantics(
+                    identifier: 'qa-driver-table-total',
+                    container: true,
+                    label: 'visible:0 total:0 empty:false loading:true',
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 48),
+                      child: Center(
+                        child: SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: CircularProgressIndicator(strokeWidth: 2.5),
+                        ),
+                      ),
+                    ),
+                  ),
                   builder: (context, allReps, listState) {
                     final reps = _filterReps(allReps);
+
+                    final serverTotal =
+                        listState.totalAvailable ?? allReps.length;
+                    final tableSemanticsLabel =
+                        'visible:${reps.length} total:$serverTotal empty:${reps.isEmpty}';
+                    _syncTableQaLabel(tableSemanticsLabel);
 
                     return AdminContentCard(
                       padding: reps.isEmpty
@@ -190,11 +339,19 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (reps.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+                            child: Semantics(
+                              identifier: 'qa-driver-table-total',
+                              container: true,
+                              label: tableSemanticsLabel,
                               child: Text(
-                                adminListCountLabel(context, listState, visibleCount: reps.length, pageFetched: allReps.length),
+                                adminListCountLabel(
+                                  context,
+                                  listState,
+                                  visibleCount: reps.length,
+                                  pageFetched: allReps.length,
+                                ),
                                 style: theme.labelLarge.override(
                                   fontFamily: theme.labelLargeFamily,
                                   color: theme.secondaryText,
@@ -202,15 +359,24 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                                 ),
                               ),
                             ),
+                          ),
                           if (reps.isEmpty)
-                            AdminEmptyState(
-                              title: _filters.searchQuery.isEmpty
-                                  ? uiTr(context, 'لا يوجد مناديب مسجلون')
-                                  : uiTr(context, 'لا توجد نتائج للبحث'),
-                              message: _filters.searchQuery.isEmpty
-                                  ? uiTr(context, 'أضف مندوبًا جديدًا أو راجع فلتر الدولة')
-                                  : uiTr(context, 'جرّب كلمة بحث أخرى'),
-                              icon: Icons.directions_car_outlined,
+                            Semantics(
+                              identifier: 'qa-driver-empty-state',
+                              container: true,
+                              label: 'qa-driver-empty-state=true',
+                              child: AdminEmptyState(
+                                title: _filters.searchQuery.isEmpty
+                                    ? uiTr(context, 'لا يوجد مناديب مسجلون')
+                                    : uiTr(context, 'لا توجد نتائج للبحث'),
+                                message: _filters.searchQuery.isEmpty
+                                    ? uiTr(
+                                        context,
+                                        'أضف مندوبًا جديدًا أو راجع فلتر الدولة',
+                                      )
+                                    : uiTr(context, 'جرّب كلمة بحث أخرى'),
+                                icon: Icons.directions_car_outlined,
+                              ),
                             )
                           else if (isWide)
                             _RepresentativesTable(
@@ -240,6 +406,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                   },
                 ),
             ],
+          ),
           ),
         ),
       ),
@@ -507,12 +674,13 @@ class _TableHeaderRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: Row(
         children: [
-          _HeaderCell(l10n.getText('1s8f4tb9'), flex: 3, theme: theme),
-          _HeaderCell(l10n.getText('py60u4hw'), flex: 2, theme: theme),
-          _HeaderCell(l10n.getText('u207wx5e'), flex: 2, theme: theme),
-          _HeaderCell(l10n.getText('qrv84p3x'), flex: 2, theme: theme),
-          _HeaderCell(uiTr(context, 'الحالة'), flex: 2, theme: theme),
-          _HeaderCell(l10n.getText('a4euyls3'), flex: 2, theme: theme),
+          _HeaderCell(uiTr(context, 'المندوب'), flex: 3, theme: theme),
+          _HeaderCell(uiTr(context, 'الهاتف'), flex: 2, theme: theme),
+          _HeaderCell(uiTr(context, 'المدينة'), flex: 2, theme: theme),
+          _HeaderCell(uiTr(context, 'السيارة'), flex: 3, theme: theme),
+          _HeaderCell(uiTr(context, 'المراجعة'), flex: 2, theme: theme),
+          _HeaderCell(uiTr(context, 'التفعيل'), flex: 2, theme: theme),
+          _HeaderCell(uiTr(context, 'إجراءات'), flex: 2, theme: theme),
         ],
       ),
     );
@@ -561,6 +729,8 @@ class _TableDataRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final vehicle = AdminDriverProfileView.vehicle(user);
+    final review = AdminDriverProfileView.reviewBucket(user);
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -580,24 +750,32 @@ class _TableDataRow extends StatelessWidget {
           Expanded(
             flex: 2,
             child: _DataCell(
+              user.phoneNumber.isNotEmpty ? user.phoneNumber : '—',
+              theme: theme,
+              monospace: true,
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: _DataCell(
               user.mndobVillText.isNotEmpty ? user.mndobVillText : '—',
               theme: theme,
             ),
           ),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: _DataCell(
-              user.totalApp.toStringAsFixed(0),
+              vehicle.isLegacyIncomplete
+                  ? uiTr(context, 'Missing / Legacy')
+                  : vehicle.oneLine,
               theme: theme,
-              bold: true,
             ),
           ),
           Expanded(
             flex: 2,
-            child: _DataCell(
-              user.phoneNumber.isNotEmpty ? user.phoneNumber : '—',
-              theme: theme,
-              monospace: true,
+            child: AdminStatusBadgeUnified(
+              kind: AdminDriverProfileView.reviewBadgeKind(review),
+              label: AdminDriverProfileView.reviewLabel(context, review),
             ),
           ),
           Expanded(
@@ -795,9 +973,8 @@ class _DataCell extends StatelessWidget {
   const _DataCell(
     this.text, {
     required this.theme,
-    this.bold = false,
     this.monospace = false,
-  });
+  }) : bold = false;
 
   final String text;
   final FlutterFlowTheme theme;
@@ -949,6 +1126,51 @@ class _ActionButtons extends StatelessWidget {
               DriverProfileWidget.routeName,
               queryParameters: {
                 'iduser': serializeParam(
+                  user.reference,
+                  ParamType.DocumentReference,
+                ),
+              }.withoutNulls,
+            );
+          },
+        ),
+        FlutterFlowIconButton(
+          borderRadius: 8,
+          buttonSize: 36,
+          fillColor: const Color(0xFFFFF3E0),
+          icon: const Icon(
+            Icons.folder_open_outlined,
+            color: Color(0xFFEF6C00),
+            size: 18,
+          ),
+          onPressed: () {
+            showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              builder: (ctx) => SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: SingleChildScrollView(
+                    child: AdminDriverDocumentsPanel(user: user),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+        FlutterFlowIconButton(
+          borderRadius: 8,
+          buttonSize: 36,
+          fillColor: const Color(0xFFE8EAF6),
+          icon: const Icon(
+            Icons.fact_check_outlined,
+            color: Color(0xFF3949AB),
+            size: 18,
+          ),
+          onPressed: () {
+            context.pushNamed(
+              DriverActivationWidget.routeName,
+              queryParameters: {
+                'dre': serializeParam(
                   user.reference,
                   ParamType.DocumentReference,
                 ),

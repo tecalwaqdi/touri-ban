@@ -1619,7 +1619,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                                     safeSetState(
                                         () => _model.switchValue = newValue);
                                   },
-                                  activeColor:
+                                  activeThumbColor:
                                       FlutterFlowTheme.of(context).primary,
                                   activeTrackColor: FlutterFlowTheme.of(context)
                                       .secondaryText,

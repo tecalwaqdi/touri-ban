@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '/core/driver_registration_document_status.dart';
+
 /// Admin-side dual-write patches for driver registration review.
 /// Mirrors mndob-main `DriverLegacyFieldCompat` (no cross-package import).
 ///
@@ -20,7 +22,26 @@ abstract final class AdminDriverReviewActions {
     if (data['mndob_type_car'] == null && data['car_rev_mndob'] == null) {
       blockers.add('adm_drv_blocker_vehicle_type');
     }
-    // Photo + ID docs are optional for cash-wave auto-activate.
+    // Registration V2: require dedicated docs (or legacy dual-write).
+    final flow = data['registration_flow_version'];
+    final isV2 = flow is num ? flow.toInt() == 2 : int.tryParse('$flow') == 2;
+    if (isV2) {
+      if (DriverRegistrationDocumentStatus.statusForType(
+              data, 'national_id') !=
+          DriverRegistrationDocStatus.complete) {
+        blockers.add('adm_drv_blocker_national_id');
+      }
+      if (DriverRegistrationDocumentStatus.statusForType(
+              data, 'vehicle_registration') !=
+          DriverRegistrationDocStatus.complete) {
+        blockers.add('adm_drv_blocker_vehicle_reg');
+      }
+      if (DriverRegistrationDocumentStatus.statusForType(
+              data, 'driver_license') !=
+          DriverRegistrationDocStatus.complete) {
+        blockers.add('adm_drv_blocker_driver_license');
+      }
+    }
     final open = (data['requested_changes'] as List?)
             ?.whereType<Map>()
             .where((e) => e['resolved'] != true) ??
@@ -29,6 +50,22 @@ abstract final class AdminDriverReviewActions {
       blockers.add('adm_drv_blocker_open_changes');
     }
     return blockers;
+  }
+
+  static const fieldsToFixAllowlist = <String>[
+    'personal_info',
+    'vehicle',
+    'national_id',
+    'vehicle_registration',
+    'driver_license',
+    'plate',
+    'other',
+  ];
+
+  static bool isRegistrationV2(Map<String, dynamic> data) {
+    final flow = data['registration_flow_version'];
+    if (flow is num) return flow.toInt() == 2;
+    return int.tryParse('$flow') == 2;
   }
 
   static Map<String, dynamic> approvePatch({required String adminUid}) => {
@@ -72,11 +109,13 @@ abstract final class AdminDriverReviewActions {
       {
         'actev_mndob': false,
         'ngl': false,
-        'registration_status': 'changes_requested',
+        'registration_status': 'needs_changes',
         'submission_status': 'changesRequested',
         'account_status': 'inactive',
         'operational_status': 'offline',
         'rejection_reason': reason,
+        'changeRequestReason': reason,
+        'fieldsToFix': [section],
         'requested_changes': [
           {
             'section': section,

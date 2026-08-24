@@ -7,7 +7,6 @@ import '/backend/admin_country_bounds_backfill.dart';
 import '/backend/admin_country_backfill.dart';
 import '/backend/admin_landmark_country_backfill.dart';
 import '/backend/admin_partner_order_backfill.dart';
-import '/backend/admin_production_landmark_seed.dart';
 import '/backend/admin_role_service.dart';
 
 /// One-time post-login maintenance for production readiness.
@@ -18,7 +17,6 @@ class AdminPanelSetup {
   static const _countryFieldsKey = 'admin_setup_country_fields_v3';
   static const _landmarkCountryKey = 'admin_setup_landmark_country_v4';
   static const _i18nBackfillKey = 'admin_setup_i18n_backfill_v1';
-  static const _productionSeedKey = 'admin_production_landmark_seed_v3';
 
   /// Runs background setup after login (non-blocking).
   static Future<void> runPostLoginTasks() async {
@@ -27,7 +25,6 @@ class AdminPanelSetup {
     if (AdminRoleService.isSuperAdmin) {
       // Production seed must be launched manually from Settings — never auto
       // mutate live geography/orders on every super-admin login.
-      // await AdminProductionLandmarkSeed.runAuthenticated();
 
       await _runOncePerUser(_partnerMkansKey, () async {
         await AdminPartnerOrderBackfill.run(activeOnly: true);

@@ -113,7 +113,32 @@ class CloudFunctionsClient {
     required String driverId,
     String reason = '',
     String section = 'general',
+    List<String>? fieldsToFix,
+    int? reviewVersion,
+    String? idempotencyKey,
+    bool useRegistrationV2 = false,
   }) async {
+    if (useRegistrationV2) {
+      final v2Action = switch (action) {
+        'approved' => 'approve',
+        'rejected' => 'reject',
+        'changes_requested' => 'request_changes',
+        'approve' || 'reject' || 'request_changes' => action,
+        _ => throw ArgumentError('Unsupported driver review action: $action'),
+      };
+      final result =
+          await _functions.httpsCallable('reviewDriverApplicationV2').call({
+        'action': v2Action,
+        'driverId': driverId,
+        if (reason.isNotEmpty) 'reason': reason,
+        if (fieldsToFix != null && fieldsToFix.isNotEmpty)
+          'fieldsToFix': fieldsToFix,
+        if (reviewVersion != null) 'reviewVersion': reviewVersion,
+        'idempotencyKey': idempotencyKey ??
+            'rev_${driverId}_${v2Action}_${DateTime.now().millisecondsSinceEpoch}',
+      });
+      return Map<String, dynamic>.from(result.data as Map);
+    }
     final functionName = switch (action) {
       'approved' => 'approveDriverRegistration',
       'rejected' => 'rejectDriverRegistration',

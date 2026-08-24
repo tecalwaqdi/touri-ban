@@ -39,6 +39,26 @@ enum AdminDriverActivationFilter {
   unknown,
 }
 
+/// Driver registration / review pipeline (`registration_status` SoT).
+enum AdminDriverReviewFilter {
+  all,
+  pendingReview,
+  approved,
+  rejected,
+  needsChanges,
+  inactive,
+  unknownLegacy,
+}
+
+/// Document completeness — authoritative `registration_documents_status` SoT.
+enum AdminDriverDocumentsFilter {
+  all,
+  complete,
+  missing,
+  needsReupload,
+  unknownLegacy,
+}
+
 /// Support ticket status (`halh` string).
 enum AdminSupportStatusFilter {
   all,
@@ -55,6 +75,9 @@ class AdminOpsFilterState {
     this.customEnd,
     this.orderLifecycle = AdminOrderLifecycleFilter.all,
     this.driverActivation = AdminDriverActivationFilter.all,
+    this.driverReview = AdminDriverReviewFilter.all,
+    this.driverDocuments = AdminDriverDocumentsFilter.all,
+    this.vehicleTypeRef,
     this.supportStatus = AdminSupportStatusFilter.all,
     this.countryRef,
     this.regionRef,
@@ -67,6 +90,9 @@ class AdminOpsFilterState {
   final DateTime? customEnd;
   final AdminOrderLifecycleFilter orderLifecycle;
   final AdminDriverActivationFilter driverActivation;
+  final AdminDriverReviewFilter driverReview;
+  final AdminDriverDocumentsFilter driverDocuments;
+  final DocumentReference? vehicleTypeRef;
   final AdminSupportStatusFilter supportStatus;
   final DocumentReference? countryRef;
   final DocumentReference? regionRef;
@@ -85,6 +111,9 @@ class AdminOpsFilterState {
       end,
       orderLifecycle.name,
       driverActivation.name,
+      driverReview.name,
+      driverDocuments.name,
+      vehicleTypeRef?.path ?? '',
       supportStatus.name,
       countryRef?.path ?? '',
       regionRef?.path ?? '',
@@ -93,12 +122,68 @@ class AdminOpsFilterState {
     ].join('|');
   }
 
+  /// PII-safe filter evidence for QA semantics (ids only, no names/emails).
+  ///
+  /// Example: `country=sa|status=pending_review|activation=all|vehicle=all|docs=missing|date=30d`
+  String get qaEvidenceSignature => [
+        'country=$qaCountryToken',
+        'status=$qaStatusToken',
+        'activation=$qaActivationToken',
+        'vehicle=$qaVehicleToken',
+        'docs=$qaDocumentsToken',
+        'date=$qaDateToken',
+      ].join('|');
+
+  String get qaCountryToken => effectiveCountryRef?.id ?? 'all';
+
+  String get qaStatusToken => switch (driverReview) {
+        AdminDriverReviewFilter.all => 'all',
+        AdminDriverReviewFilter.pendingReview => 'pending_review',
+        AdminDriverReviewFilter.approved => 'approved',
+        AdminDriverReviewFilter.rejected => 'rejected',
+        AdminDriverReviewFilter.needsChanges => 'needs_changes',
+        AdminDriverReviewFilter.inactive => 'inactive',
+        AdminDriverReviewFilter.unknownLegacy => 'unknown_legacy',
+      };
+
+  String get qaActivationToken => switch (driverActivation) {
+        AdminDriverActivationFilter.all => 'all',
+        AdminDriverActivationFilter.activated => 'activated',
+        AdminDriverActivationFilter.deactivated => 'deactivated',
+        AdminDriverActivationFilter.unknown => 'unknown',
+      };
+
+  String get qaVehicleToken => vehicleTypeRef?.id ?? 'all';
+
+  String get qaDocumentsToken => switch (driverDocuments) {
+        AdminDriverDocumentsFilter.all => 'all',
+        AdminDriverDocumentsFilter.complete => 'complete',
+        AdminDriverDocumentsFilter.missing => 'missing',
+        AdminDriverDocumentsFilter.needsReupload => 'needs_reupload',
+        AdminDriverDocumentsFilter.unknownLegacy => 'unknown_legacy',
+      };
+
+  String get qaDateToken => switch (datePreset) {
+        AdminDatePreset.all => 'all',
+        AdminDatePreset.today => 'today',
+        AdminDatePreset.yesterday => 'yesterday',
+        AdminDatePreset.last7Days => '7d',
+        AdminDatePreset.last30Days => '30d',
+        AdminDatePreset.thisMonth => 'this_month',
+        AdminDatePreset.lastMonth => 'last_month',
+        AdminDatePreset.thisYear => 'this_year',
+        AdminDatePreset.custom => 'custom',
+      };
+
   /// Count of non-default filters (for chip / badge UX).
   int get activeFilterCount {
     var n = 0;
     if (datePreset != AdminDatePreset.all) n++;
     if (orderLifecycle != AdminOrderLifecycleFilter.all) n++;
     if (driverActivation != AdminDriverActivationFilter.all) n++;
+    if (driverReview != AdminDriverReviewFilter.all) n++;
+    if (driverDocuments != AdminDriverDocumentsFilter.all) n++;
+    if (vehicleTypeRef != null) n++;
     if (supportStatus != AdminSupportStatusFilter.all) n++;
     if (countryRef != null && !AdminRoleService.isCountryAgent) n++;
     if (regionRef != null) n++;
@@ -114,6 +199,10 @@ class AdminOpsFilterState {
     bool clearCustomDates = false,
     AdminOrderLifecycleFilter? orderLifecycle,
     AdminDriverActivationFilter? driverActivation,
+    AdminDriverReviewFilter? driverReview,
+    AdminDriverDocumentsFilter? driverDocuments,
+    DocumentReference? vehicleTypeRef,
+    bool clearVehicleType = false,
     AdminSupportStatusFilter? supportStatus,
     DocumentReference? countryRef,
     DocumentReference? regionRef,
@@ -129,6 +218,10 @@ class AdminOpsFilterState {
       customEnd: clearCustomDates ? null : (customEnd ?? this.customEnd),
       orderLifecycle: orderLifecycle ?? this.orderLifecycle,
       driverActivation: driverActivation ?? this.driverActivation,
+      driverReview: driverReview ?? this.driverReview,
+      driverDocuments: driverDocuments ?? this.driverDocuments,
+      vehicleTypeRef:
+          clearVehicleType ? null : (vehicleTypeRef ?? this.vehicleTypeRef),
       supportStatus: supportStatus ?? this.supportStatus,
       countryRef: clearCountry ? null : (countryRef ?? this.countryRef),
       regionRef: clearRegion ? null : (regionRef ?? this.regionRef),
@@ -159,6 +252,9 @@ class AdminOpsFilterState {
       datePreset != AdminDatePreset.all ||
       orderLifecycle != AdminOrderLifecycleFilter.all ||
       driverActivation != AdminDriverActivationFilter.all ||
+      driverReview != AdminDriverReviewFilter.all ||
+      driverDocuments != AdminDriverDocumentsFilter.all ||
+      vehicleTypeRef != null ||
       supportStatus != AdminSupportStatusFilter.all ||
       effectiveCountryRef != null ||
       regionRef != null ||
@@ -306,8 +402,126 @@ abstract final class AdminOpsQueryBuilder {
     return q.orderBy('data_order', descending: true);
   }
 
-  /// Drivers (`ismndob`) with activation + geo + optional date on `created_time`.
+  /// Drivers (`ismndob`) with activation + review + geo + optional date.
   static Query applyDriverFilters(Query q, AdminOpsFilterState filters) {
+    q = applyDriverFiltersCore(q, filters);
+
+    final range = filters.resolvedDateRange;
+    if (range != null) {
+      q = q
+          .where('created_time', isGreaterThanOrEqualTo: range.startTimestamp)
+          .where('created_time', isLessThan: range.endTimestamp)
+          .orderBy('created_time', descending: true);
+    } else {
+      q = q.orderBy(FieldPath.documentId);
+    }
+
+    return q;
+  }
+
+  /// Human-readable Firestore constraints for QA evidence (no live Query needed).
+  ///
+  /// Documents use authoritative [registration_documents_status] (server-side).
+  static List<String> describeDriverFilterConstraints(
+    AdminOpsFilterState filters,
+  ) {
+    return describeDriverFilterPaths(
+      countryPath: filters.effectiveCountryRef?.path,
+      vehiclePath: filters.vehicleTypeRef?.path,
+      cityPath: filters.cityRef?.path,
+      driverActivation: filters.driverActivation,
+      driverReview: filters.driverReview,
+      driverDocuments: filters.driverDocuments,
+      dateRange: filters.resolvedDateRange,
+    );
+  }
+
+  /// Path-based variant for unit tests (no DocumentReference required).
+  static List<String> describeDriverFilterPaths({
+    String? countryPath,
+    String? vehiclePath,
+    String? cityPath,
+    AdminDriverActivationFilter driverActivation =
+        AdminDriverActivationFilter.all,
+    AdminDriverReviewFilter driverReview = AdminDriverReviewFilter.all,
+    AdminDriverDocumentsFilter driverDocuments =
+        AdminDriverDocumentsFilter.all,
+    AdminDateRange? dateRange,
+  }) {
+    final out = <String>['ismndob==true'];
+    if (countryPath != null && countryPath.isNotEmpty) {
+      out.add('Rev_dolh==$countryPath');
+    }
+    switch (driverActivation) {
+      case AdminDriverActivationFilter.all:
+        break;
+      case AdminDriverActivationFilter.activated:
+        out.add('actev_mndob==true');
+        break;
+      case AdminDriverActivationFilter.deactivated:
+        out.add('actev_mndob==false');
+        break;
+      case AdminDriverActivationFilter.unknown:
+        out.add('client_side:activation_unknown');
+        break;
+    }
+    switch (driverReview) {
+      case AdminDriverReviewFilter.all:
+        break;
+      case AdminDriverReviewFilter.pendingReview:
+        out.add('registration_status==pending_review');
+        break;
+      case AdminDriverReviewFilter.approved:
+        out.add('registration_status==approved');
+        break;
+      case AdminDriverReviewFilter.rejected:
+        out.add('registration_status==rejected');
+        break;
+      case AdminDriverReviewFilter.needsChanges:
+        out.add('registration_status in [needs_changes,changes_requested]');
+        break;
+      case AdminDriverReviewFilter.inactive:
+        out.add('actev_mndob==false');
+        break;
+      case AdminDriverReviewFilter.unknownLegacy:
+        out.add('client_side:review_unknown_legacy');
+        break;
+    }
+    if (vehiclePath != null && vehiclePath.isNotEmpty) {
+      out.add('mndob_type_car==$vehiclePath');
+    }
+    if (cityPath != null && cityPath.isNotEmpty) {
+      out.add('mndob_vill==$cityPath');
+    }
+    if (dateRange != null) {
+      out.add(
+        'created_time>=${dateRange.startInclusive.toUtc().toIso8601String()}',
+      );
+      out.add(
+        'created_time<${dateRange.endExclusive.toUtc().toIso8601String()}',
+      );
+    }
+    switch (driverDocuments) {
+      case AdminDriverDocumentsFilter.all:
+        break;
+      case AdminDriverDocumentsFilter.complete:
+        out.add('registration_documents_status==complete');
+        break;
+      case AdminDriverDocumentsFilter.missing:
+        out.add('registration_documents_status==missing');
+        break;
+      case AdminDriverDocumentsFilter.needsReupload:
+        out.add('registration_documents_status==needs_reupload');
+        break;
+      case AdminDriverDocumentsFilter.unknownLegacy:
+        out.add('registration_documents_status==unknown_legacy');
+        break;
+    }
+    return out;
+  }
+
+  /// Same predicates as [applyDriverFilters] without `orderBy` (for aggregates).
+  static Query applyDriverFiltersCore(Query q, AdminOpsFilterState filters) {
     q = q.where('ismndob', isEqualTo: true);
 
     final country = filters.effectiveCountryRef;
@@ -325,18 +539,73 @@ abstract final class AdminOpsQueryBuilder {
         q = q.where('actev_mndob', isEqualTo: false);
         break;
       case AdminDriverActivationFilter.unknown:
-        // Firestore cannot query "field missing" with equality alone.
-        // Unknown is handled client-side on the page + aggregate via
-        // total − active − inactive. Keep server query as all drivers
-        // when unknown is selected (parent must client-filter).
         break;
+    }
+
+    switch (filters.driverReview) {
+      case AdminDriverReviewFilter.all:
+        break;
+      case AdminDriverReviewFilter.pendingReview:
+        q = q.where('registration_status', isEqualTo: 'pending_review');
+        break;
+      case AdminDriverReviewFilter.approved:
+        q = q.where('registration_status', isEqualTo: 'approved');
+        break;
+      case AdminDriverReviewFilter.rejected:
+        q = q.where('registration_status', isEqualTo: 'rejected');
+        break;
+      case AdminDriverReviewFilter.needsChanges:
+        q = q.where(
+          'registration_status',
+          whereIn: const ['needs_changes', 'changes_requested'],
+        );
+        break;
+      case AdminDriverReviewFilter.inactive:
+        q = q.where('actev_mndob', isEqualTo: false);
+        break;
+      case AdminDriverReviewFilter.unknownLegacy:
+        break;
+    }
+
+    if (filters.vehicleTypeRef != null) {
+      q = q.where('mndob_type_car', isEqualTo: filters.vehicleTypeRef);
     }
 
     if (filters.cityRef != null) {
       q = q.where('mndob_vill', isEqualTo: filters.cityRef);
     }
 
-    return q.orderBy(FieldPath.documentId);
+    switch (filters.driverDocuments) {
+      case AdminDriverDocumentsFilter.all:
+        break;
+      case AdminDriverDocumentsFilter.complete:
+        q = q.where('registration_documents_status', isEqualTo: 'complete');
+        break;
+      case AdminDriverDocumentsFilter.missing:
+        q = q.where('registration_documents_status', isEqualTo: 'missing');
+        break;
+      case AdminDriverDocumentsFilter.needsReupload:
+        q = q.where(
+          'registration_documents_status',
+          isEqualTo: 'needs_reupload',
+        );
+        break;
+      case AdminDriverDocumentsFilter.unknownLegacy:
+        q = q.where(
+          'registration_documents_status',
+          isEqualTo: 'unknown_legacy',
+        );
+        break;
+    }
+
+    final range = filters.resolvedDateRange;
+    if (range != null) {
+      q = q
+          .where('created_time', isGreaterThanOrEqualTo: range.startTimestamp)
+          .where('created_time', isLessThan: range.endTimestamp);
+    }
+
+    return q;
   }
 
   /// True when unknown activation needs a client-side pass.

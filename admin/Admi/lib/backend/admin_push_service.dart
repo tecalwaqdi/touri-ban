@@ -14,13 +14,16 @@ import '/index.dart';
 
 const _bookingChannelId = 'admin_bookings';
 const _bookingChannelName = 'حجوزات جديدة';
+const _driverReviewChannelId = 'admin_driver_reviews';
+const _driverReviewChannelName = 'مراجعات المناديب';
 
 @pragma('vm:entry-point')
-Future<void> adminFirebaseMessagingBackgroundHandler(RemoteMessage message) async {
+Future<void> adminFirebaseMessagingBackgroundHandler(
+    RemoteMessage message) async {
   await Firebase.initializeApp();
 }
 
-/// Push notifications for admin users when a new booking is created.
+/// Push notifications for admin: bookings + driver registration reviews.
 class AdminPushService {
   AdminPushService._();
 
@@ -30,6 +33,7 @@ class AdminPushService {
 
   static bool _initialized = false;
   static String? _pendingOrderId;
+  static String? _pendingDriverId;
   static StreamSubscription<User?>? _authSub;
   static StreamSubscription<UserRecord?>? _userDocSub;
   static Timer? _syncDebounce;
@@ -82,7 +86,6 @@ class AdminPushService {
     scheduleTokenSync();
   }
 
-  /// Debounced FCM token sync — avoids Firestore write loops on profile stream.
   static void scheduleTokenSync() {
     _syncDebounce?.cancel();
     _syncDebounce = Timer(const Duration(seconds: 3), () {
@@ -106,10 +109,15 @@ class AdminPushService {
     await _localNotifications.initialize(
       const InitializationSettings(android: android, iOS: ios),
       onDidReceiveNotificationResponse: (response) {
-        final orderId = response.payload;
-        if (orderId != null && orderId.isNotEmpty) {
-          _pendingOrderId = orderId;
-          _tryOpenPendingBooking();
+        final payload = response.payload ?? '';
+        if (payload.startsWith('driver:')) {
+          _pendingDriverId = payload.substring('driver:'.length);
+          _tryOpenPending();
+          return;
+        }
+        if (payload.isNotEmpty) {
+          _pendingOrderId = payload;
+          _tryOpenPending();
         }
       },
     );
@@ -122,6 +130,14 @@ class AdminPushService {
         _bookingChannelId,
         _bookingChannelName,
         description: 'إشعارات الحجوزات الجديدة لمدير التطبيق',
+        importance: Importance.high,
+      ),
+    );
+    await androidPlugin?.createNotificationChannel(
+      const AndroidNotificationChannel(
+        _driverReviewChannelId,
+        _driverReviewChannelName,
+        description: 'إشعارات طلبات تسجيل المناديب',
         importance: Importance.high,
       ),
     );
@@ -140,7 +156,12 @@ class AdminPushService {
         }
       } catch (_) {}
     }
-    if (doc == null || !AdminRoleService.isSuperAdminUser(doc)) return;
+    if (doc == null) return;
+    final canReceiveDriverReviewPush =
+        AdminRoleService.isSuperAdminUser(doc) ||
+            AdminRoleService.isCountryAgent ||
+            AdminRoleService.isSuperAdmin;
+    if (!canReceiveDriverReviewPush) return;
 
     _syncInFlight = true;
     try {
@@ -166,7 +187,10 @@ class AdminPushService {
         data['isAdmin'] == true ||
         _firestoreAdminRule(data['isAdminRule']) == 1 ||
         _firestoreAdminRule(data['IsAdminRule']) == 1;
-    if (!isSuperAdmin) return;
+    final isCountryAdmin = data['isagent'] == true ||
+        data['Isagent'] == true ||
+        AdminRoleService.isCountryAgent;
+    if (!isSuperAdmin && !isCountryAdmin) return;
 
     final existing = List<String>.from(
       (data['fcm_tokens'] as List<dynamic>? ?? const [])
@@ -217,6 +241,12 @@ class AdminPushService {
   }
 
   static void flushPendingNavigation(BuildContext context) {
+    final driverId = _pendingDriverId;
+    if (driverId != null && driverId.isNotEmpty) {
+      _pendingDriverId = null;
+      _openDriverReview(context, driverId);
+      return;
+    }
     final orderId = _pendingOrderId;
     if (orderId == null || orderId.isEmpty) return;
     _pendingOrderId = null;
@@ -224,24 +254,42 @@ class AdminPushService {
   }
 
   static void _onForegroundMessage(RemoteMessage message) {
+    final type = (message.data['type'] ?? '').toString();
+    final driverId = _extractDriverId(message);
     final orderId = _extractOrderId(message);
-    final title = message.notification?.title ?? 'حجز جديد';
+    final title = message.notification?.title ??
+        (driverId != null ? 'طلب مندوب' : 'حجز جديد');
     final body = message.notification?.body ??
-        'يوجد حجز جديد بانتظار المراجعة والموافقة';
+        (driverId != null
+            ? 'طلب تسجيل مندوب بانتظار المراجعة'
+            : 'يوجد حجز جديد بانتظار المراجعة والموافقة');
 
     _showLocalNotification(
       title: title,
       body: body,
-      orderId: orderId,
+      payload: driverId != null
+          ? 'driver:$driverId'
+          : (orderId ?? ''),
+      channelId: type.contains('driver_application')
+          ? _driverReviewChannelId
+          : _bookingChannelId,
+      channelName: type.contains('driver_application')
+          ? _driverReviewChannelName
+          : _bookingChannelName,
     );
   }
 
   static void _onNotificationOpened(RemoteMessage message) {
     _storePendingFromMessage(message);
-    _tryOpenPendingBooking();
+    _tryOpenPending();
   }
 
   static void _storePendingFromMessage(RemoteMessage message) {
+    final driverId = _extractDriverId(message);
+    if (driverId != null && driverId.isNotEmpty) {
+      _pendingDriverId = driverId;
+      return;
+    }
     final orderId = _extractOrderId(message);
     if (orderId != null && orderId.isNotEmpty) {
       _pendingOrderId = orderId;
@@ -255,40 +303,61 @@ class AdminPushService {
         : data['order_id']?.toString();
   }
 
+  static String? _extractDriverId(RemoteMessage message) {
+    final data = message.data;
+    final type = (data['type'] ?? '').toString();
+    if (!type.startsWith('driver_application') &&
+        data['target']?.toString() != 'driver_review') {
+      // Still allow explicit driverId + DriverActivation page.
+      if ((data['initialPageName'] ?? '') != 'DriverActivation') {
+        return null;
+      }
+    }
+    final id = data['driverId']?.toString().trim();
+    if (id != null && id.isNotEmpty) return id;
+    return null;
+  }
+
   static Future<void> _showLocalNotification({
     required String title,
     required String body,
-    String? orderId,
+    required String payload,
+    String channelId = _bookingChannelId,
+    String channelName = _bookingChannelName,
   }) async {
-    const androidDetails = AndroidNotificationDetails(
-      _bookingChannelId,
-      _bookingChannelName,
-      channelDescription: 'إشعارات الحجوزات الجديدة لمدير التطبيق',
+    final androidDetails = AndroidNotificationDetails(
+      channelId,
+      channelName,
+      channelDescription: 'إشعارات لوحة الإدارة',
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/launcher_icon',
     );
     const iosDetails = DarwinNotificationDetails();
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
     await _localNotifications.show(
-      orderId?.hashCode ?? DateTime.now().millisecondsSinceEpoch,
+      payload.hashCode,
       title,
       body,
       details,
-      payload: orderId,
+      payload: payload,
     );
   }
 
-  static void _tryOpenPendingBooking() {
+  static void _tryOpenPending() {
     final context = appNavigatorKey.currentContext;
     if (context == null || !loggedIn) return;
 
     final doc = currentUserDocument;
-    if (doc == null || !AdminRoleService.isSuperAdminUser(doc)) return;
+    if (doc == null) return;
+    final ok = AdminRoleService.isSuperAdminUser(doc) ||
+        AdminRoleService.isCountryAgent ||
+        AdminRoleService.isSuperAdmin;
+    if (!ok) return;
 
     flushPendingNavigation(context);
   }
@@ -302,6 +371,16 @@ class AdminPushService {
           ref,
           ParamType.DocumentReference,
         ),
+      }.withoutNulls,
+    );
+  }
+
+  static void _openDriverReview(BuildContext context, String driverId) {
+    final ref = FirebaseFirestore.instance.collection('user').doc(driverId);
+    context.pushNamed(
+      DriverActivationWidget.routeName,
+      queryParameters: {
+        'dre': serializeParam(ref, ParamType.DocumentReference),
       }.withoutNulls,
     );
   }

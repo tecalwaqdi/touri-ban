@@ -1035,7 +1035,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                         safeSetState(() => _model
                                             .switchMosqueValue = newValue);
                                       },
-                                      activeColor:
+                                      activeThumbColor:
                                           FlutterFlowTheme.of(context).primary,
                                       activeTrackColor:
                                           FlutterFlowTheme.of(context)
@@ -1075,7 +1075,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                         safeSetState(() => _model
                                             .switchRestroomValue = newValue);
                                       },
-                                      activeColor:
+                                      activeThumbColor:
                                           FlutterFlowTheme.of(context).primary,
                                       activeTrackColor:
                                           FlutterFlowTheme.of(context)
@@ -1115,7 +1115,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                         safeSetState(() => _model
                                             .switchrestaurantValue = newValue);
                                       },
-                                      activeColor:
+                                      activeThumbColor:
                                           FlutterFlowTheme.of(context).primary,
                                       activeTrackColor:
                                           FlutterFlowTheme.of(context)
@@ -1155,7 +1155,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                         safeSetState(() =>
                                             _model.switchValue = newValue);
                                       },
-                                      activeColor:
+                                      activeThumbColor:
                                           FlutterFlowTheme.of(context).primary,
                                       activeTrackColor:
                                           FlutterFlowTheme.of(context)
@@ -1303,7 +1303,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                           safeSetState(() => _model
                                               .switchACCTEVValue = newValue);
                                         },
-                                        activeColor:
+                                        activeThumbColor:
                                             FlutterFlowTheme.of(context)
                                                 .primary,
                                         activeTrackColor:

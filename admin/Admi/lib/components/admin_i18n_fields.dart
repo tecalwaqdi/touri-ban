@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '/components/admin_edit_shell.dart';
-import '/components/admin_ui.dart';
 import '/core/admin_content_locale.dart';
 import '/core/i18n/admin_i18n_translate_service.dart';
 import '/core/i18n/toury_i18n_locales.dart';

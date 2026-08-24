@@ -697,6 +697,71 @@
         { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "startAt", "order": "DESCENDING" }
       ]
+                    },
+                    {
+      "collectionGroup": "user",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "ismndob", "order": "ASCENDING" },
+        { "fieldPath": "registration_status", "order": "ASCENDING" }
+      ]
+                    },
+                    {
+      "collectionGroup": "user",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "ismndob", "order": "ASCENDING" },
+        { "fieldPath": "Rev_dolh", "order": "ASCENDING" },
+        { "fieldPath": "registration_status", "order": "ASCENDING" }
+      ]
+                    },
+                    {
+      "collectionGroup": "user",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "ismndob", "order": "ASCENDING" },
+        { "fieldPath": "registration_flow_version", "order": "ASCENDING" }
+      ]
+                    },
+                    {
+      "collectionGroup": "user",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "ismndob", "order": "ASCENDING" },
+        { "fieldPath": "registration_documents_status", "order": "ASCENDING" }
+      ]
+                    },
+                    {
+      "collectionGroup": "user",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "ismndob", "order": "ASCENDING" },
+        { "fieldPath": "mndob_type_car", "order": "ASCENDING" }
+      ]
+                    },
+                    {
+      "collectionGroup": "user",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "ismndob", "order": "ASCENDING" },
+        { "fieldPath": "created_time", "order": "DESCENDING" }
+      ]
+                    },
+                    {
+      "collectionGroup": "admin_audit_log",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "driverId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+                    },
+                    {
+      "collectionGroup": "admin_panel_notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "countryRef", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
                     }
                 ],
   "fieldOverrides": [

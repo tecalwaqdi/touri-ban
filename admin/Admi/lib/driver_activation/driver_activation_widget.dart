@@ -1,4 +1,3 @@
-import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
@@ -10,7 +9,6 @@ import '/core/cloud_functions/cloud_functions_client.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -94,7 +92,35 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
         );
         return;
       }
-      final adminUid = currentUserUid;
+
+      final isV2 = AdminDriverReviewActions.isRegistrationV2(data);
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(appTr(context, 'adm_drv_approve_confirm_title')),
+          content: Text(
+            [
+              '${appTr(context, 'adm_drv_driver')}: ${_model.naimTextController.text}',
+              '${appTr(context, 'adm_drv_vehicle')}: ${data['text_type_car_mndob'] ?? data['mdenh_aml'] ?? ''}',
+              'Email verified (Auth): server-checked',
+              'Phone provided: profile field (no OTP)',
+              'Documents: ${isV2 ? 'V2 required' : 'legacy'}',
+            ].join('\n'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(appTr(context, 'adm_cancel')),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(appTr(context, 'adm_confirm')),
+            ),
+          ],
+        ),
+      );
+      if (confirm != true) return;
+
       await widget.dre!.update({
         ...createUserRecordData(
           displayName: _model.naimTextController.text,
@@ -106,6 +132,8 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
       await CloudFunctionsClient.reviewDriver(
         action: 'approved',
         driverId: widget.dre!.id,
+        useRegistrationV2: isV2,
+        reviewVersion: (data['reviewVersion'] as num?)?.toInt(),
       );
       await AdminAuditLog.record(
         action: 'driver_approve',
@@ -147,10 +175,15 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
     if (reason == null) return;
     setState(() => _busy = true);
     try {
+      final snap = await widget.dre!.get();
+      final data = snap.data() as Map<String, dynamic>? ?? {};
+      final isV2 = AdminDriverReviewActions.isRegistrationV2(data);
       await CloudFunctionsClient.reviewDriver(
         action: 'rejected',
         driverId: widget.dre!.id,
         reason: reason,
+        useRegistrationV2: isV2,
+        reviewVersion: (data['reviewVersion'] as num?)?.toInt(),
       );
       await AdminAuditLog.record(
         action: 'driver_reject',
@@ -178,10 +211,16 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
     if (reason == null) return;
     setState(() => _busy = true);
     try {
+      final snap = await widget.dre!.get();
+      final data = snap.data() as Map<String, dynamic>? ?? {};
+      final isV2 = AdminDriverReviewActions.isRegistrationV2(data);
       await CloudFunctionsClient.reviewDriver(
         action: 'changes_requested',
         driverId: widget.dre!.id,
         reason: reason,
+        useRegistrationV2: isV2,
+        fieldsToFix: const ['other'],
+        reviewVersion: (data['reviewVersion'] as num?)?.toInt(),
       );
       await AdminAuditLog.record(
         action: 'driver_request_changes',
@@ -255,7 +294,10 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
 
         final driverActivationUserRecord = snapshot.data!;
 
-        return GestureDetector(
+        return Semantics(
+          identifier: 'qa-driver-review',
+          label: 'qa-driver-review',
+          child: GestureDetector(
           onTap: () {
             FocusScope.of(context).unfocus();
             FocusManager.instance.primaryFocus?.unfocus();
@@ -697,7 +739,11 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
                               ),
                               if ((FFAppState().RefTepeCar != null) &&
                                   (FFAppState().workcite != null))
-                                FFButtonWidget(
+                                Semantics(
+                                  identifier: 'qa-driver-approve',
+                                  label: 'qa-driver-approve',
+                                  button: true,
+                                  child: FFButtonWidget(
                                   onPressed: _busy ? null : _approve,
                                   text: FFLocalizations.of(context).getText(
                                     'nzykcws9' /* Activate Driver Account */,
@@ -728,13 +774,23 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                 ),
-                              OutlinedButton(
+                                ),
+                              Semantics(
+                                identifier: 'qa-driver-request-changes',
+                                label: 'qa-driver-request-changes',
+                                button: true,
+                                child: OutlinedButton(
                                 onPressed: _busy ? null : _requestChanges,
                                 child: Text(
                                   appTr(context, 'adm_drv_request_changes_btn'),
                                 ),
                               ),
-                              OutlinedButton(
+                              ),
+                              Semantics(
+                                identifier: 'qa-driver-reject',
+                                label: 'qa-driver-reject',
+                                button: true,
+                                child: OutlinedButton(
                                 onPressed: _busy ? null : _reject,
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.red,
@@ -742,6 +798,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
                                 child: Text(
                                   appTr(context, 'adm_drv_reject_btn'),
                                 ),
+                              ),
                               ),
                               Text(
                                 FFLocalizations.of(context).getText(
@@ -770,6 +827,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
                 ),
             ),
           ),
+        ),
         );
       },
     );

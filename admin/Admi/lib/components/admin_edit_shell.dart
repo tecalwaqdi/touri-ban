@@ -310,7 +310,7 @@ class AdminEditSwitchRow extends StatelessWidget {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeColor: AdminUi.brandTeal,
+            activeThumbColor: AdminUi.brandTeal,
           ),
         ],
       ),
