@@ -131,18 +131,11 @@ exports.acceptDriverOrder = functions
           );
         }
         const driver = driverSnap.data() || {};
-        const active =
-          driver.actev_mndob === true ||
-          driver.actevMndob === true ||
-          driver.ismndob === true;
-        const suspended =
-          driver.suspended === true ||
-          driver.is_suspended === true ||
-          driver.blocked === true;
-        if (!active || suspended) {
+        const {driverIsOperationallyApproved} = require('./driver_registration_notifications.js');
+        if (!driverIsOperationallyApproved(driver)) {
           throw new functions.https.HttpsError(
-            "failed-precondition",
-            "driver-disabled",
+            'failed-precondition',
+            'driver-disabled',
           );
         }
 

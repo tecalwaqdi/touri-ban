@@ -1102,3 +1102,13 @@ exports.financeApprovalPolicyV2 = functions
   .https.onCall(wrapSettlement(financeControls.financeApprovalPolicy));
 exports.requestExistingPaymentAllocationV2 = functions
   .https.onCall(wrapSettlement(settlementPayments.requestExistingPaymentAllocation));
+
+// Driver Registration V2 (shared Firebase project) — also exported from
+// ara_oatan_app; keep both deployable without losing callables.
+const driverRegistrationV2 = require('./driver_registration_v2.js');
+exports.submitDriverApplicationV2 = functions
+  .region('us-central1')
+  .https.onCall(driverRegistrationV2.submitDriverApplicationV2);
+exports.reviewDriverApplicationV2 = functions
+  .region('us-central1')
+  .https.onCall(driverRegistrationV2.reviewDriverApplicationV2);

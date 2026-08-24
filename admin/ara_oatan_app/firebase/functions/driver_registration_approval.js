@@ -132,7 +132,10 @@ function autoActivationBlockingReasons(data) {
   return blockers;
 }
 
-/** Temporary cash-wave path: driver self-activates after registration submit. */
+/** Temporary cash-wave path: driver self-activates after registration submit.
+ * Registration V2 (`registration_flow_version === 2`) MUST NOT call this —
+ * activation is only via reviewDriverApplicationV2 approve.
+ */
 exports.autoActivateDriver = async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'Sign in required.');
@@ -148,6 +151,13 @@ exports.autoActivateDriver = async (data, context) => {
     const driver = snap.data() || {};
     if (driver.ismndob !== true && driver.ismndom !== true) {
       throw new functions.https.HttpsError('failed-precondition', 'Target is not a driver.');
+    }
+    // Hard isolation: Registration V2 never auto-activates.
+    if (Number(driver.registration_flow_version || 0) === 2) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        'AUTO_ACTIVATE_DISABLED_FOR_REGISTRATION_V2',
+      );
     }
     const status = driver.registration_status || '';
     if (driver.actev_mndob === true && status === 'approved') {

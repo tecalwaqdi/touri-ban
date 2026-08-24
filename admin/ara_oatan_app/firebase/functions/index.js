@@ -5,6 +5,7 @@ admin.initializeApp();
 const ngeniusPayments = require("./ngenius_payments.js");
 const secureIntegrations = require("./secure_integrations.js");
 const driverApproval = require("./driver_registration_approval.js");
+const driverRegistrationV2 = require("./driver_registration_v2.js");
 exports.createNGeniusPayment = ngeniusPayments.createNGeniusPayment;
 exports.getNGeniusPayment = ngeniusPayments.getNGeniusPayment;
 exports.finalizeNGeniusBooking = ngeniusPayments.finalizeNGeniusBooking;
@@ -29,6 +30,10 @@ exports.requestDriverChanges = functions.region("us-central1")
   .https.onCall(driverApproval.requestDriverChanges);
 exports.autoActivateDriver = functions.region("us-central1")
   .https.onCall(driverApproval.autoActivateDriver);
+exports.submitDriverApplicationV2 = functions.region("us-central1")
+  .https.onCall(driverRegistrationV2.submitDriverApplicationV2);
+exports.reviewDriverApplicationV2 = functions.region("us-central1")
+  .https.onCall(driverRegistrationV2.reviewDriverApplicationV2);
 const driverWalletOps = require("./driver_wallet_ops.js");
 exports.acceptDriverOrder = driverWalletOps.acceptDriverOrder;
 exports.payCompanyFromWallet = driverWalletOps.payCompanyFromWallet;
