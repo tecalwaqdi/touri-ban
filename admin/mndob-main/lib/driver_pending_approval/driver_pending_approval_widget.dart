@@ -35,7 +35,14 @@ class _DriverPendingApprovalWidgetState
     if (currentUserReference == null) return;
     setState(() => _refreshing = true);
     try {
-      await DriverAutoActivationService.tryAutoActivate();
+      // V2 accounts must wait for admin review — do not call autoActivate.
+      final flow = currentUserDocument?.snapshotData['registration_flow_version'];
+      final isV2 = flow is num
+          ? flow.toInt() == 2
+          : int.tryParse('$flow') == 2;
+      if (!isV2) {
+        await DriverAutoActivationService.tryAutoActivate();
+      }
       await currentUserReference!.get(const GetOptions(source: Source.server));
       try {
         currentUserDocument =
@@ -76,8 +83,13 @@ class _DriverPendingApprovalWidgetState
       });
       return;
     }
-    // Auto-activate once while waiting (temporary until admin review is enabled).
-    if (!_repairAttempted &&
+    // Auto-activate once while waiting — Legacy only (not Registration V2).
+    final flow = doc.snapshotData['registration_flow_version'];
+    final isV2 = flow is num
+        ? flow.toInt() == 2
+        : int.tryParse('$flow') == 2;
+    if (!isV2 &&
+        !_repairAttempted &&
         (doc.registrationStatus.trim().toLowerCase() != 'approved' ||
             life == DriverLifecycle.pendingApproval)) {
       _repairAttempted = true;
@@ -91,6 +103,37 @@ class _DriverPendingApprovalWidgetState
   Future<void> _openRegistration() async {
     if (!mounted) return;
     context.pushNamed(RegdreverWidget.routeName);
+  }
+
+  List<String> _fieldsToFixLabels(BuildContext context, dynamic raw) {
+    final codes = <String>[];
+    if (raw is List) {
+      for (final e in raw) {
+        final s = e.toString().trim();
+        if (s.isNotEmpty) codes.add(s);
+      }
+    }
+    if (codes.isEmpty) {
+      return [driverTr(context, 'other')];
+    }
+    return codes.map((c) {
+      switch (c) {
+        case 'personal_info':
+          return driverTr(context, 'Personal information');
+        case 'vehicle':
+          return driverTr(context, 'Vehicle');
+        case 'national_id':
+          return driverTr(context, 'National ID');
+        case 'vehicle_registration':
+          return driverTr(context, 'Vehicle registration');
+        case 'driver_license':
+          return driverTr(context, 'Driver license');
+        case 'plate':
+          return driverTr(context, 'Plate number');
+        default:
+          return driverTr(context, 'Other');
+      }
+    }).toList();
   }
 
   @override
@@ -278,6 +321,86 @@ class _DriverPendingApprovalWidgetState
                                 reason,
                                 style: typography.bodyMedium.copyWith(
                                   color: colors.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      if (pending) ...[
+                        const SizedBox(height: DsSpacing.md),
+                        DsCard(
+                          padding: DsSpacing.cardPadding,
+                          child: Column(
+                            children: [
+                              _InfoRow(
+                                label: driverTr(context, 'Email'),
+                                value: currentUserEmailVerified
+                                    ? '${driverTr(context, 'Verified')} ✓'
+                                    : driverTr(context, 'Not verified'),
+                              ),
+                              const DsDivider(),
+                              _InfoRow(
+                                label: driverTr(context, 'Phone number'),
+                                value: doc.phoneNumber.trim().isNotEmpty
+                                    ? '${driverTr(context, 'Added')} ✓'
+                                    : driverTr(context, 'Missing'),
+                              ),
+                              const DsDivider(),
+                              _InfoRow(
+                                label: driverTr(context, 'Documents'),
+                                value: (() {
+                                  final raw = '${doc.snapshotData['registration_documents_status'] ?? ''}'
+                                      .trim();
+                                  if (raw == 'complete') {
+                                    return '${driverTr(context, 'Complete')} ✓';
+                                  }
+                                  if (raw == 'needs_reupload') {
+                                    return driverTr(context, 'Needs reupload');
+                                  }
+                                  if (raw == 'missing') {
+                                    return driverTr(context, 'Missing');
+                                  }
+                                  return driverTr(context, 'Unknown');
+                                })(),
+                              ),
+                              const DsDivider(),
+                              _InfoRow(
+                                label: driverTr(context, 'Status'),
+                                value: driverTr(context, 'Pending review'),
+                              ),
+                              const DsDivider(),
+                              _InfoRow(
+                                label: driverTr(context, 'Review attempt'),
+                                value:
+                                    '${doc.snapshotData['reviewAttemptCount'] ?? 1}',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      if (changes) ...[
+                        const SizedBox(height: DsSpacing.md),
+                        DsCard(
+                          padding: DsSpacing.cardPadding,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                driverTr(context, 'Fields to fix'),
+                                style: typography.titleSmall.copyWith(
+                                  color: colors.warning,
+                                ),
+                              ),
+                              const SizedBox(height: DsSpacing.xs),
+                              ..._fieldsToFixLabels(
+                                context,
+                                doc.snapshotData['fieldsToFix'],
+                              ).map(
+                                (label) => Padding(
+                                  padding:
+                                      const EdgeInsets.only(bottom: DsSpacing.xs),
+                                  child: Text('• $label'),
                                 ),
                               ),
                             ],

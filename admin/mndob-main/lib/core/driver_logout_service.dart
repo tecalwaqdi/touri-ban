@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -36,6 +37,30 @@ abstract final class DriverLogoutService {
       await actions.stopTracking();
     } catch (e) {
       debugPrint('DriverLogoutService stopTracking: $e');
+    }
+
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      if (uid != null && uid.isNotEmpty && token != null && token.isNotEmpty) {
+        final tokensSnap = await FirebaseFirestore.instance
+            .collection('user')
+            .doc(uid)
+            .collection('fcm_tokens')
+            .where('fcm_token', isEqualTo: token)
+            .get();
+        for (final doc in tokensSnap.docs) {
+          await doc.reference.delete();
+        }
+        try {
+          await currentUserReference?.update({
+            'fcm_token': FieldValue.delete(),
+          });
+        } catch (e) {
+          debugPrint('DriverLogoutService clear user fcm_token: $e');
+        }
+      }
+    } catch (e) {
+      debugPrint('DriverLogoutService purge FCM docs: $e');
     }
 
     try {

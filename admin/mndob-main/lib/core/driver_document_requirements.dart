@@ -1,37 +1,44 @@
-/// Document requirements by country — compatibility layer (no new Firestore
-/// collection / no Deploy). Maps to existing upload slots on `user/{uid}`.
+/// Document requirements by country — Registration V2 + Legacy dual-write.
+/// Maps to `user/{uid}` slots (legacy + V2 document maps).
 abstract final class DriverDocumentRequirementsRepository {
   DriverDocumentRequirementsRepository._();
 
   static const supportedIso = {'SA', 'KG', 'RU', 'UZ'};
 
   static List<DriverDocumentRequirement> forCountry(String? iso2) {
-    // Same baseline for SA/KG/RU/UZ until Admin per-country config exists.
-    // Keep iso2 in the API so callers pass country without a parallel path.
     if ((iso2 ?? '').isNotEmpty && !isSupportedIso(iso2)) {
-      // Unknown ISO: still return safe baseline (do not hard-fail registration).
+      // Unknown ISO: still return safe baseline.
     }
     return const [
       DriverDocumentRequirement(
         type: 'profilePhoto',
         firestoreField: 'photo_url',
-        required: false,
+        required: true,
         expiryRequired: false,
         localizedTitleKey: 'Profile photo',
       ),
       DriverDocumentRequirement(
         type: 'nationalId',
-        firestoreField: 'img_id_rksh',
-        required: false,
+        firestoreField: 'doc_national_id',
+        legacyField: 'img_id_rksh',
+        required: true,
         expiryRequired: false,
-        localizedTitleKey: 'ID document',
+        localizedTitleKey: 'National ID',
       ),
       DriverDocumentRequirement(
-        type: 'vehiclePhoto',
-        firestoreField: 'img_id_car',
-        required: false,
+        type: 'vehicleRegistration',
+        firestoreField: 'doc_vehicle_registration',
+        legacyField: 'img_id_car',
+        required: true,
         expiryRequired: false,
-        localizedTitleKey: 'Vehicle photo',
+        localizedTitleKey: 'Vehicle registration',
+      ),
+      DriverDocumentRequirement(
+        type: 'driverLicense',
+        firestoreField: 'doc_driver_license',
+        required: true,
+        expiryRequired: false,
+        localizedTitleKey: 'Driver license',
       ),
     ];
   }
@@ -47,10 +54,12 @@ class DriverDocumentRequirement {
     required this.required,
     required this.expiryRequired,
     required this.localizedTitleKey,
+    this.legacyField = '',
   });
 
   final String type;
   final String firestoreField;
+  final String legacyField;
   final bool required;
   final bool expiryRequired;
   final String localizedTitleKey;

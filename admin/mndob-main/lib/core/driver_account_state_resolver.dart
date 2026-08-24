@@ -119,10 +119,14 @@ abstract final class DriverAccountStateResolver {
     if (status == 'rejected') {
       return DriverLifecycle.rejected;
     }
-    if (status == 'changes_requested') {
+    if (status == 'changes_requested' || status == 'needs_changes') {
       return DriverLifecycle.changesRequested;
     }
     if (!approved) {
+      // Registration V2 draft → continue registration, not pending queue.
+      if (status == 'draft') {
+        return DriverLifecycle.incompleteProfile;
+      }
       final submitted = status == 'pending_review' ||
           status == 'submitted';
       if (submitted || (isDriver && name.isNotEmpty && hasCar)) {

@@ -1,14 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '/backend/backend.dart';
-import '/core/driver_auto_activation_service.dart';
+import '/backend/cloud_functions/cloud_functions.dart';
 import '/core/driver_registration_validators.dart';
 import '/core/tour_guide_status.dart';
 import '/core/toury_country_registry.dart';
 import '/core/toury_maps_config.dart';
-import '/flutter_flow/flutter_flow_util.dart';
 
 /// Structured admin change request (stored on user doc + compatibility).
 class DriverRequestedChange {
@@ -257,6 +255,7 @@ abstract final class DriverRegistrationSubmissionService {
           (data['registration_status'] == 'pending_review' ||
               data['registration_status'] == 'submitted' ||
               data['registration_status'] == 'changes_requested' ||
+              data['registration_status'] == 'needs_changes' ||
               data['actev_mndob'] == true)) {
         return true;
       }
@@ -328,24 +327,32 @@ abstract final class DriverRegistrationSubmissionService {
       }
 
       final nextVersion = existingVersion + 1;
-      final isResubmit = model.isResubmit ||
-          existingStatus == 'changes_requested' ||
-          existingStatus == 'rejected';
 
       final openChanges =
           DriverRequestedChange.listFrom(data['requested_changes'])
               .map((c) => c.toMap()..['resolved'] = true)
               .toList();
 
-      // Never allow client payload to self-approve.
+      // Never allow client payload to self-approve or set review metadata.
       final cleanedProfile = Map<String, dynamic>.from(profileFields)
         ..remove('actev_mndob')
         ..remove('registration_status')
         ..remove('submission_status')
         ..remove('ismndob')
         ..remove('auto_activated')
-        ..remove('approved_at');
+        ..remove('approved_at')
+        ..remove('approvedAt')
+        ..remove('approvedBy')
+        ..remove('rejectedAt')
+        ..remove('rejectedBy')
+        ..remove('rejectionReason')
+        ..remove('changesRequestedAt')
+        ..remove('changesRequestedBy')
+        ..remove('changeRequestReason')
+        ..remove('reviewVersion')
+        ..remove('reviewAttemptCount');
 
+      // Registration V2: write draft profile first; server sets pending_review.
       final payload = <String, dynamic>{
         ...cleanedProfile,
         'uid': model.uid,
@@ -353,14 +360,13 @@ abstract final class DriverRegistrationSubmissionService {
         'ismndom': true,
         'actev_mndob': false,
         'ngl': false,
-        'registration_status': 'pending_review',
-        'submission_status': 'pending_review',
+        'registration_flow_version': 2,
+        'registration_status':
+            (existingStatus == 'pending_review') ? 'pending_review' : 'draft',
+        'submission_status': 'draft',
         'rejection_reason': '',
         'submission_id': submissionId,
         'registration_version': nextVersion,
-        'submitted_at': FieldValue.serverTimestamp(),
-        if (isResubmit) 'resubmitted_at': FieldValue.serverTimestamp(),
-        if (isResubmit) 'resubmission_id': submissionId,
         'requested_changes': openChanges,
         'vehicle_review_status': 'pending',
         'document_review_status': 'pending',
@@ -419,18 +425,30 @@ abstract final class DriverRegistrationSubmissionService {
         );
       }
 
-      final activation = await DriverAutoActivationService.tryAutoActivate();
-      if (!activation.ok) {
+      // Server-side submit: email/phone/docs gates + pending_review.
+      // Never call autoActivateDriver for Registration V2.
+      final server = await makeCloudCall('submitDriverApplicationV2', {
+        'idempotencyKey': submissionId,
+      });
+      if (server['ok'] != true) {
+        final code =
+            server['code']?.toString() ?? server['error']?.toString() ?? '';
         debugPrint(
-          'DriverRegistrationSubmissionService: auto-activate skipped: '
-          '${activation.code}',
+          'DriverRegistrationSubmissionService: submit V2 failed: $code',
+        );
+        return DriverSubmissionResult.fail(
+          code.isNotEmpty
+              ? code
+              : 'Could not complete registration. Please try again.',
         );
       }
 
       return DriverSubmissionResult.ok(
         uid: model.uid,
         submissionId: submissionId,
-        registrationVersion: nextVersion,
+        registrationVersion:
+            (server['reviewVersion'] as num?)?.toInt() ?? nextVersion,
+        idempotentReplay: server['idempotent'] == true,
       );
     } catch (e) {
       debugPrint('DriverRegistrationSubmissionService.submit failed: $e');
@@ -440,7 +458,7 @@ abstract final class DriverRegistrationSubmissionService {
     }
   }
 
-  /// Claims ismndob as pending — never self-approves.
+  /// Claims ismndob as pending V2 draft — never self-approves.
   static Future<void> _claimPendingDriver(DocumentReference ref) async {
     try {
       await ref.update({
@@ -448,8 +466,9 @@ abstract final class DriverRegistrationSubmissionService {
         'ismndom': true,
         'actev_mndob': false,
         'ngl': false,
-        'registration_status': 'pending_review',
-        'submission_status': 'pending_review',
+        'registration_flow_version': 2,
+        'registration_status': 'draft',
+        'submission_status': 'draft',
         'account_status': 'inactive',
         'operational_status': 'offline',
         'auto_activated': false,

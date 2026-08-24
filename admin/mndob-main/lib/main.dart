@@ -175,12 +175,12 @@ class _MyAppState extends State<MyApp> {
       scrollBehavior: MyAppScrollBehavior(),
       localizationsDelegates: [
         ...context.localizationDelegates,
-        FFLocalizationsDelegate(),
+        const FFLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
-        FallbackMaterialLocalizationDelegate(),
-        FallbackCupertinoLocalizationDelegate(),
+        const FallbackMaterialLocalizationDelegate(),
+        const FallbackCupertinoLocalizationDelegate(),
       ],
       locale: locale,
       supportedLocales: context.supportedLocales,
@@ -231,12 +231,12 @@ class _NavBarPageState extends State<NavBarPage> {
   @override
   Widget build(BuildContext context) {
     final tabs = {
-      'home': HomeWidget(),
-      'Now': NowWidget(),
-      'Accepted': AcceptedWidget(),
-      'Completed': CompletedWidget(),
-      'cansel': CanselWidget(),
-      'Profile07': Profile07Widget(),
+      'home': const HomeWidget(),
+      'Now': const NowWidget(),
+      'Accepted': const AcceptedWidget(),
+      'Completed': const CompletedWidget(),
+      'cansel': const CanselWidget(),
+      'Profile07': const Profile07Widget(),
     };
     final currentIndex = tabs.keys.toList().indexOf(_currentPageName);
 

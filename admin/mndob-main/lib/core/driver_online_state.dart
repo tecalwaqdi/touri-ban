@@ -7,7 +7,6 @@ import '/core/driver_legacy_field_compat.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_live_location_service.dart';
 import '/core/driver_offline_queue.dart';
-import '/flutter_flow/lat_lng.dart';
 
 /// Single definition of "driver is online and can receive work".
 abstract final class DriverOnlineState {

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/schema/order_record.dart';
-import '/core/driver_i18n.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_trip_constants.dart';
 import '/core/driver_trip_service.dart';

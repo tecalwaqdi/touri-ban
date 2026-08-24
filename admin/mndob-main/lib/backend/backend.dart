@@ -19,8 +19,6 @@ import 'schema/chat_record.dart';
 import 'schema/settings_record.dart';
 import 'schema/e_paymentduerequests_record.dart';
 import 'schema/locations_record.dart';
-import 'schema/wallet_record.dart';
-import 'schema/transaction_record.dart';
 
 export 'dart:async' show StreamSubscription;
 export 'package:cloud_firestore/cloud_firestore.dart' hide Order;

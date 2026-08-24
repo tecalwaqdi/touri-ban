@@ -1,4 +1,3 @@
-import '/app_state.dart';
 import '/backend/backend.dart';
 import '/backend/schema/countries_record.dart';
 import '/core/driver_country_service.dart';
@@ -168,7 +167,7 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
       return const Center(child: DsLoading(size: 48));
     }
     if (_countries.isEmpty) {
-      return DsEmptyState(
+      return const DsEmptyState(
         title: 'لا توجد دول متاحة',
         icon: Icons.public_off_outlined,
       );
@@ -315,7 +314,7 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
         final villages = snapshot.data!.toList()
           ..sort((a, b) => a.naim.compareTo(b.naim));
         if (villages.isEmpty) {
-          return DsEmptyState(
+          return const DsEmptyState(
             title: 'لا توجد مناطق متاحة لهذه المحافظة حالياً',
             icon: Icons.map_outlined,
           );

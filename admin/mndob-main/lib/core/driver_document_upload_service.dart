@@ -1,7 +1,9 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/firebase_storage/storage.dart';
+import '/core/driver_document_upload_result.dart';
 import '/core/driver_registration_validators.dart';
 import '/flutter_flow/upload_data.dart';
 
@@ -12,8 +14,8 @@ abstract final class DriverDocumentUploadService {
 
   static String storageRootForUid(String uid) => 'users/$uid/uploads';
 
-  /// Uploads selected media; returns HTTPS download URL or null.
-  static Future<String?> uploadSelectedFile({
+  /// Uploads selected media; returns storagePath (SoT) + optional preview URL.
+  static Future<DriverDocumentUploadResult?> uploadSelectedFile({
     required SelectedFile selected,
     String? uid,
   }) async {
@@ -40,11 +42,17 @@ abstract final class DriverDocumentUploadService {
       throw StateError('You are not allowed to perform this action.');
     }
 
-    final url = await uploadData(path, bytes);
-    final urlCheck = DriverDocumentValidator.validateUploadedUrl(url);
-    if (!urlCheck.isValid) {
-      throw StateError(urlCheck.errorKey ?? 'Document upload is incomplete');
+    await uploadBytes(path, bytes);
+    String? previewUrl;
+    try {
+      previewUrl =
+          await FirebaseStorage.instance.ref(path).getDownloadURL();
+    } catch (_) {
+      previewUrl = null;
     }
-    return url;
+    return DriverDocumentUploadResult(
+      storagePath: path,
+      previewUrl: previewUrl,
+    );
   }
 }

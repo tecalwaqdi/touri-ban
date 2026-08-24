@@ -4,7 +4,6 @@ import 'dart:math' as math;
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 import '/flutter_flow/flutter_flow_google_map.dart';
-import '/flutter_flow/flutter_flow_util.dart';
 
 abstract final class DriverMapUtils {
   DriverMapUtils._();

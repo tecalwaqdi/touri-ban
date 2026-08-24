@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '/core/driver_i18n.dart';
 import '/core/driver_navigation_service.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 

@@ -8,7 +8,6 @@ import '/backend/backend.dart';
 import '/backend/cloud_functions/cloud_functions.dart';
 import '/backend/push_notifications/push_notifications_util.dart';
 import '/backend/schema/enums/enums.dart';
-import '/backend/schema/structs/amakn_coistm_struct.dart';
 import '/core/driver_app_lifecycle_coordinator.dart';
 import '/core/driver_directions_service.dart';
 import '/core/driver_offline_queue.dart';

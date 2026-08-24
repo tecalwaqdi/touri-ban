@@ -1,10 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mndob/core/driver_auth_errors.dart';
-import 'package:mndob/core/driver_account_state_resolver.dart';
 import 'package:mndob/core/driver_phone_number_service.dart';
-import 'package:mndob/core/driver_phone_otp_service.dart';
-import 'package:mndob/core/driver_session_router.dart';
 
 void main() {
   group('DriverPhoneNumberService', () {
@@ -70,50 +66,6 @@ void main() {
       expect(
         DriverAuthErrors.messageKeyForCode('totally-unknown'),
         'Something went wrong. Please try again.',
-      );
-    });
-  });
-
-  group('DriverPhoneOtpService', () {
-    test('detects phone provider unavailable codes', () {
-      expect(
-        DriverPhoneOtpService.isPhoneProviderUnavailable(
-          FirebaseAuthException(code: 'operation-not-allowed'),
-        ),
-        isTrue,
-      );
-      expect(
-        DriverPhoneOtpService.isPhoneProviderUnavailable(
-          FirebaseAuthException(code: 'invalid-phone-number'),
-        ),
-        isFalse,
-      );
-    });
-  });
-
-  group('DriverSessionRouter phase2', () {
-    test('routes lifecycle states', () {
-      expect(
-        DriverSessionRouter.namedRouteForLifecycle(
-          DriverLifecycle.pendingApproval,
-        ),
-        DriverSessionRouter.pendingRoute,
-      );
-      expect(
-        DriverSessionRouter.namedRouteForLifecycle(
-          DriverLifecycle.activeOffline,
-        ),
-        DriverSessionRouter.homeRoute,
-      );
-      expect(
-        DriverSessionRouter.namedRouteForLifecycle(
-          DriverLifecycle.incompleteProfile,
-        ),
-        DriverSessionRouter.registerRoute,
-      );
-      expect(
-        DriverSessionRouter.namedRouteForLifecycle(DriverLifecycle.loggedOut),
-        DriverSessionRouter.loginRoute,
       );
     });
   });

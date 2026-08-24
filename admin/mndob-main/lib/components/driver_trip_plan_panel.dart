@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '/backend/schema/order_record.dart';
 import '/backend/schema/structs/amakn_coistm_struct.dart';
-import '/core/driver_i18n.dart';
 import '/core/driver_map_actions.dart';
 import '/core/driver_navigation_service.dart';
 import '/core/driver_order_meta.dart';

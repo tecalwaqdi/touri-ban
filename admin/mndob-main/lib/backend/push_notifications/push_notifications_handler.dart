@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'serialization_util.dart';
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '../../flutter_flow/flutter_flow_util.dart';
@@ -92,6 +93,25 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
       }
 
       final orderRef = _resolveOrderRef(initialParameterData);
+      // Registration review payloads — refresh profile then route via AuthGate.
+      final notifType = (message.data['type'] ?? '').toString();
+      if (notifType.startsWith('driver_application_')) {
+        try {
+          final uid = currentUserUid;
+          if (uid.isNotEmpty) {
+            currentUserDocument = await UserRecord.getDocumentOnce(
+              UserRecord.collection.doc(uid),
+            );
+          }
+        } catch (_) {}
+        final navContext = appNavigatorKey.currentContext;
+        if (navContext != null && navContext.mounted) {
+          // Re-bootstrap: AuthGate resolves approved → home, else status screen.
+          navContext.go('/');
+        }
+        return;
+      }
+
       var initialPageName = switch (rawPageName) {
         'tfasel_order' ||
         'tfaselOrser' ||
@@ -99,6 +119,8 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
         'TfaselOrser' =>
           'TfaselOrser',
         'Now' || 'neworder' || 'new_order' => 'Now',
+        'DriverPendingApproval' => 'DriverPendingApproval',
+        'home' => 'home',
         _ => rawPageName,
       };
       // Prefer opening the exact order when payload includes an id.
@@ -254,7 +276,7 @@ class ParameterData {
       );
 
   static Future<ParameterData> Function(Map<String, dynamic>) none() =>
-      (data) async => ParameterData();
+      (data) async => const ParameterData();
 }
 
 final parametersBuilderMap =
@@ -280,6 +302,7 @@ final parametersBuilderMap =
   'Accepted': ParameterData.none(),
   'Completed': ParameterData.none(),
   'regdrever': ParameterData.none(),
+  'DriverPendingApproval': ParameterData.none(),
   'listvill': ParameterData.none(),
   'home': ParameterData.none(),
   'suport': ParameterData.none(),

@@ -10,22 +10,22 @@ abstract final class DriverDialogs {
   DriverDialogs._();
 
   static _Style _style(DriverMessageType type) => switch (type) {
-        DriverMessageType.success => _Style(
+        DriverMessageType.success => const _Style(
               icon: DsIcons.success,
               color: DsSuccessScale.shade500,
               bg: DsSuccessScale.shade50,
             ),
-        DriverMessageType.error => _Style(
+        DriverMessageType.error => const _Style(
               icon: DsIcons.error,
               color: DsErrorScale.shade500,
               bg: DsErrorScale.shade50,
             ),
-        DriverMessageType.warning => _Style(
+        DriverMessageType.warning => const _Style(
               icon: DsIcons.warning,
               color: DsWarningScale.shade700,
               bg: DsWarningScale.shade50,
             ),
-        DriverMessageType.info => _Style(
+        DriverMessageType.info => const _Style(
               icon: DsIcons.info,
               color: DsPrimaryScale.shade700,
               bg: DsPrimaryScale.shade50,

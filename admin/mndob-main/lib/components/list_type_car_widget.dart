@@ -2,9 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '/app_state.dart';
 import '/backend/backend.dart';
-import '/core/driver_i18n.dart';
 import '/core/driver_ux_widgets.dart';
 import '/core/toury_country_registry.dart';
 import '/design_system/design_system.dart';

@@ -2,7 +2,6 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/backend/schema/enums/enums.dart';
-import '/backend/schema/structs/index.dart';
 import '/components/review_screen_widget.dart';
 import '/core/driver_trip_service.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
@@ -11,18 +10,13 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/instant_timer.dart';
-import 'dart:math';
-import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'tfasel_copy_model.dart';
 export 'tfasel_copy_model.dart';
@@ -60,7 +54,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       currentUserLocationValue =
-          await getCurrentUserLocation(defaultLocation: LatLng(0.0, 0.0));
+          await getCurrentUserLocation(defaultLocation: const LatLng(0.0, 0.0));
 
       await currentUserReference!.update(createUserRecordData(
         loceshnMndobNow: currentUserLocationValue,
@@ -107,8 +101,8 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
             curve: Curves.easeInOut,
             delay: 0.0.ms,
             duration: 600.0.ms,
-            begin: Offset(-38.0, 0.0),
-            end: Offset(0.0, 0.0),
+            begin: const Offset(-38.0, 0.0),
+            end: const Offset(0.0, 0.0),
           ),
         ],
       ),
@@ -135,12 +129,12 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
     // On page dispose action.
     () async {
       currentUserLocationValue =
-          await getCurrentUserLocation(defaultLocation: LatLng(0.0, 0.0));
+          await getCurrentUserLocation(defaultLocation: const LatLng(0.0, 0.0));
       _model.instantDi = InstantTimer.periodic(
-        duration: Duration(milliseconds: 6000),
+        duration: const Duration(milliseconds: 6000),
         callback: (timer) async {
           currentUserLocationValue =
-              await getCurrentUserLocation(defaultLocation: LatLng(0.0, 0.0));
+              await getCurrentUserLocation(defaultLocation: const LatLng(0.0, 0.0));
 
           await currentUserReference!.update(createUserRecordData(
             loceshnMndobNow: currentUserLocationValue,
@@ -177,7 +171,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
             borderRadius: 30.0,
             borderWidth: 1.0,
             buttonSize: 60.0,
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_rounded,
               color: Colors.white,
               size: 30.0,
@@ -199,7 +193,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                       !FlutterFlowTheme.of(context).headlineMediumIsCustom,
                 ),
           ).animateOnPageLoad(animationsMap['textOnPageLoadAnimation1']!),
-          actions: [],
+          actions: const [],
           centerTitle: true,
           elevation: 2.0,
         ),
@@ -210,11 +204,11 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
             builder: (context, snapshot) {
               // Customize what your widget looks like when it's loading.
               if (!snapshot.hasData) {
-                return Center(
+                return const Center(
                   child: SizedBox(
                     width: 50.0,
                     height: 50.0,
-                    child: const DsLoading(),
+                    child: DsLoading(),
                   ),
                 );
               }
@@ -227,7 +221,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                   children: [
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                          const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
                       child: Material(
                         color: Colors.transparent,
                         elevation: 2.0,
@@ -242,7 +236,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                             borderRadius: BorderRadius.circular(12.0),
                           ),
                           child: Padding(
-                            padding: EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(16.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,7 +245,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                     (columnOrderRecord.mndobUser ==
                                         currentUserReference))
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         16.0, 0.0, 16.0, 0.0),
                                     child: Material(
                                       color: Colors.transparent,
@@ -273,7 +267,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                               'مكتمل',
                                           child: Padding(
                                             padding:
-                                                EdgeInsetsDirectional.fromSTEB(
+                                                const EdgeInsetsDirectional.fromSTEB(
                                                     16.0, 16.0, 16.0, 16.0),
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
@@ -328,7 +322,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                       ),
                                                       child: Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     16.0,
                                                                     16.0,
@@ -378,15 +372,15 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                                             .bodyLargeIsCustom,
                                                                   ),
                                                             ),
-                                                          ].divide(SizedBox(
+                                                          ].divide(const SizedBox(
                                                               height: 8.0)),
                                                         ),
                                                       ),
                                                     ),
                                                   ].divide(
-                                                      SizedBox(width: 16.0)),
+                                                      const SizedBox(width: 16.0)),
                                                 ),
-                                              ].divide(SizedBox(height: 12.0)),
+                                              ].divide(const SizedBox(height: 12.0)),
                                             ),
                                           ),
                                         ),
@@ -423,7 +417,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                   padding:
                                                       MediaQuery.viewInsetsOf(
                                                           context),
-                                                  child: Container(
+                                                  child: SizedBox(
                                                     height: MediaQuery.sizeOf(
                                                                 context)
                                                             .height *
@@ -449,15 +443,15 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                             FFLocalizations.of(context).getText(
                                           '1fhe8dnl' /* Customer Rating */,
                                         ),
-                                        icon: Icon(
+                                        icon: const Icon(
                                           Icons.rate_review_outlined,
                                           size: 15.0,
                                         ),
                                         options: FFButtonOptions(
                                           height: 45.0,
-                                          padding: EdgeInsets.all(8.0),
+                                          padding: const EdgeInsets.all(8.0),
                                           iconPadding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 0.0, 0.0, 0.0),
                                           iconColor:
                                               FlutterFlowTheme.of(context)
@@ -487,7 +481,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                           ),
                                         ),
                                       ),
-                                    ].divide(SizedBox(width: 8.0)),
+                                    ].divide(const SizedBox(width: 8.0)),
                                   ),
                                 Text(
                                   FFLocalizations.of(context).getText(
@@ -518,16 +512,16 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                           currentUserLocationValue =
                                               await getCurrentUserLocation(
                                                   defaultLocation:
-                                                      LatLng(0.0, 0.0));
+                                                      const LatLng(0.0, 0.0));
                                           var confirmDialogResponse =
                                               await showDialog<bool>(
                                                     context: context,
                                                     builder:
                                                         (alertDialogContext) {
                                                       return AlertDialog(
-                                                        title: Text(
+                                                        title: const Text(
                                                             'تأكيد القبول'),
-                                                        content: Text(
+                                                        content: const Text(
                                                             'هل أنت متأكد من قبول هذا الطلب؟'),
                                                         actions: [
                                                           TextButton(
@@ -535,14 +529,14 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     false),
-                                                            child: Text('لا'),
+                                                            child: const Text('لا'),
                                                           ),
                                                           TextButton(
                                                             onPressed: () =>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     true),
-                                                            child: Text(
+                                                            child: const Text(
                                                                 'تأكيد القبول'),
                                                           ),
                                                         ],
@@ -600,16 +594,16 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                             FFLocalizations.of(context).getText(
                                           '4tuynkyb' /* Accept Order */,
                                         ),
-                                        icon: Icon(
+                                        icon: const Icon(
                                           Icons.file_download_done_outlined,
                                           size: 15.0,
                                         ),
                                         options: FFButtonOptions(
                                           width: 150.0,
                                           height: 45.0,
-                                          padding: EdgeInsets.all(8.0),
+                                          padding: const EdgeInsets.all(8.0),
                                           iconPadding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 0.0, 0.0, 0.0),
                                           color: FlutterFlowTheme.of(context)
                                               .primary,
@@ -638,16 +632,16 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                       text: FFLocalizations.of(context).getText(
                                         'qjcxve5z' /* Customer Location */,
                                       ),
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.location_pin,
                                         size: 15.0,
                                       ),
                                       options: FFButtonOptions(
                                         width: 150.0,
                                         height: 45.0,
-                                        padding: EdgeInsets.all(8.0),
+                                        padding: const EdgeInsets.all(8.0),
                                         iconPadding:
-                                            EdgeInsetsDirectional.fromSTEB(
+                                            const EdgeInsetsDirectional.fromSTEB(
                                                 0.0, 0.0, 0.0, 0.0),
                                         color: FlutterFlowTheme.of(context)
                                             .secondary,
@@ -667,7 +661,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                       ),
                                     ).animateOnPageLoad(animationsMap[
                                         'buttonOnPageLoadAnimation']!),
-                                  ].divide(SizedBox(width: 8.0)),
+                                  ].divide(const SizedBox(width: 8.0)),
                                 ),
                                 if ((columnOrderRecord.halhText == 'مقبول') &&
                                     (currentUserReference ==
@@ -706,7 +700,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                         ).animateOnPageLoad(animationsMap[
                                             'textOnPageLoadAnimation2']!),
                                         ),
-                                    ].divide(SizedBox(width: 8.0)),
+                                    ].divide(const SizedBox(width: 8.0)),
                                   ),
                                 Row(
                                   mainAxisSize: MainAxisSize.max,
@@ -722,9 +716,9 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                   builder:
                                                       (alertDialogContext) {
                                                     return AlertDialog(
-                                                      title: Text(
+                                                      title: const Text(
                                                           'هل أنت متأكد من بدء هذه الرحلة؟'),
-                                                      content: Text(
+                                                      content: const Text(
                                                           'يرجى التأكد من وصولك إلى موقع العميل قبل تأكيد البدء.'),
                                                       actions: [
                                                         TextButton(
@@ -732,14 +726,14 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                               Navigator.pop(
                                                                   alertDialogContext,
                                                                   false),
-                                                          child: Text('لا'),
+                                                          child: const Text('لا'),
                                                         ),
                                                         TextButton(
                                                           onPressed: () =>
                                                               Navigator.pop(
                                                                   alertDialogContext,
                                                                   true),
-                                                          child: Text(
+                                                          child: const Text(
                                                               'تأكيد البداية'),
                                                         ),
                                                       ],
@@ -767,16 +761,16 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                       text: FFLocalizations.of(context).getText(
                                         'gudsdr7r' /* Start Trip */,
                                       ),
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.timer,
                                         size: 15.0,
                                       ),
                                       options: FFButtonOptions(
                                         width: double.infinity,
                                         height: 45.0,
-                                        padding: EdgeInsets.all(8.0),
+                                        padding: const EdgeInsets.all(8.0),
                                         iconPadding:
-                                            EdgeInsetsDirectional.fromSTEB(
+                                            const EdgeInsetsDirectional.fromSTEB(
                                                 0.0, 0.0, 0.0, 0.0),
                                         color: FlutterFlowTheme.of(context)
                                             .success,
@@ -807,8 +801,8 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                     builder:
                                                         (alertDialogContext) {
                                                       return AlertDialog(
-                                                        title: Text('تأكيد'),
-                                                        content: Text(
+                                                        title: const Text('تأكيد'),
+                                                        content: const Text(
                                                             'هل أنت متأكد ان هذه الرحلة مكتملة؟'),
                                                         actions: [
                                                           TextButton(
@@ -816,14 +810,14 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     false),
-                                                            child: Text('لا'),
+                                                            child: const Text('لا'),
                                                           ),
                                                           TextButton(
                                                             onPressed: () =>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     true),
-                                                            child: Text('نعم'),
+                                                            child: const Text('نعم'),
                                                           ),
                                                         ],
                                                       );
@@ -870,8 +864,8 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                     builder:
                                                         (alertDialogContext) {
                                                       return AlertDialog(
-                                                        title: Text('تأكيد'),
-                                                        content: Text(
+                                                        title: const Text('تأكيد'),
+                                                        content: const Text(
                                                             'هل أنت متأكد ان هذه الرحلة مكتملة؟'),
                                                         actions: [
                                                           TextButton(
@@ -879,14 +873,14 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     false),
-                                                            child: Text('لا'),
+                                                            child: const Text('لا'),
                                                           ),
                                                           TextButton(
                                                             onPressed: () =>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     true),
-                                                            child: Text('نعم'),
+                                                            child: const Text('نعم'),
                                                           ),
                                                         ],
                                                       );
@@ -939,16 +933,16 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                       text: FFLocalizations.of(context).getText(
                                         'bk9pyb5l' /* End Trip */,
                                       ),
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.clear_rounded,
                                         size: 15.0,
                                       ),
                                       options: FFButtonOptions(
                                         width: double.infinity,
                                         height: 45.0,
-                                        padding: EdgeInsets.all(8.0),
+                                        padding: const EdgeInsets.all(8.0),
                                         iconPadding:
-                                            EdgeInsetsDirectional.fromSTEB(
+                                            const EdgeInsetsDirectional.fromSTEB(
                                                 0.0, 0.0, 0.0, 0.0),
                                         color:
                                             FlutterFlowTheme.of(context).error,
@@ -968,7 +962,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                       ),
                                     ),
                                     ),
-                                  ].divide(SizedBox(width: 8.0)),
+                                  ].divide(const SizedBox(width: 8.0)),
                                 ),
                                 Row(
                                   mainAxisSize: MainAxisSize.max,
@@ -1066,9 +1060,9 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                             .bodyLargeIsCustom,
                                                   ),
                                             ),
-                                          ].divide(SizedBox(width: 8.0)),
+                                          ].divide(const SizedBox(width: 8.0)),
                                         ),
-                                      ].divide(SizedBox(height: 4.0)),
+                                      ].divide(const SizedBox(height: 4.0)),
                                     ),
                                     Column(
                                       mainAxisSize: MainAxisSize.min,
@@ -1138,13 +1132,13 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                             .bodyLargeIsCustom,
                                                   ),
                                             ),
-                                          ].divide(SizedBox(width: 8.0)),
+                                          ].divide(const SizedBox(width: 8.0)),
                                         ),
-                                      ].divide(SizedBox(height: 4.0)),
+                                      ].divide(const SizedBox(height: 4.0)),
                                     ),
-                                  ].divide(SizedBox(width: 8.0)),
+                                  ].divide(const SizedBox(width: 8.0)),
                                 ),
-                              ].divide(SizedBox(height: 12.0)),
+                              ].divide(const SizedBox(height: 12.0)),
                             ),
                           ),
                         ),
@@ -1152,7 +1146,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                     ),
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                          const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
                       child: Material(
                         color: Colors.transparent,
                         elevation: 2.0,
@@ -1167,7 +1161,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                             borderRadius: BorderRadius.circular(12.0),
                           ),
                           child: Padding(
-                            padding: EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(16.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1286,7 +1280,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                               itemCount: 5,
                                               itemSize: 14.0,
                                             ),
-                                          ].divide(SizedBox(width: 4.0)),
+                                          ].divide(const SizedBox(width: 4.0)),
                                         ),
                                         InkWell(
                                           splashColor: Colors.transparent,
@@ -1348,7 +1342,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                       ),
                                                 ),
                                               ),
-                                            ].divide(SizedBox(width: 8.0)),
+                                            ].divide(const SizedBox(width: 8.0)),
                                           ),
                                         ),
                                         FutureBuilder<int>(
@@ -1370,11 +1364,11 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                           builder: (context, snapshot) {
                                             // Customize what your widget looks like when it's loading.
                                             if (!snapshot.hasData) {
-                                              return Center(
+                                              return const Center(
                                                 child: SizedBox(
                                                   width: 50.0,
                                                   height: 50.0,
-                                                  child: const DsLoading(),
+                                                  child: DsLoading(),
                                                 ),
                                               );
                                             }
@@ -1446,11 +1440,11 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                   if (rowCount >= 1)
                                                     Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.0, 0.0),
                                                       child: Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     0.0,
@@ -1484,17 +1478,17 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                                 'textOnPageLoadAnimation3']!),
                                                       ),
                                                     ),
-                                                ].divide(SizedBox(width: 8.0)),
+                                                ].divide(const SizedBox(width: 8.0)),
                                               ),
                                             );
                                           },
                                         ),
-                                      ].divide(SizedBox(height: 4.0)),
+                                      ].divide(const SizedBox(height: 4.0)),
                                     ),
                                     ),
-                                  ].divide(SizedBox(width: 16.0)),
+                                  ].divide(const SizedBox(width: 16.0)),
                                 ),
-                              ].divide(SizedBox(height: 12.0)),
+                              ].divide(const SizedBox(height: 12.0)),
                             ),
                           ),
                         ),
@@ -1502,7 +1496,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                     ),
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                          const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
                       child: Material(
                         color: Colors.transparent,
                         elevation: 2.0,
@@ -1517,7 +1511,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                             borderRadius: BorderRadius.circular(12.0),
                           ),
                           child: Padding(
-                            padding: EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(16.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1544,7 +1538,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           6.0, 0.0, 6.0, 0.0),
                                       child: Text(
                                         FFLocalizations.of(context).getText(
@@ -1593,7 +1587,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           6.0, 0.0, 6.0, 0.0),
                                       child: Text(
                                         FFLocalizations.of(context).getText(
@@ -1645,7 +1639,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           6.0, 0.0, 6.0, 0.0),
                                       child: Text(
                                         FFLocalizations.of(context).getText(
@@ -1694,7 +1688,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           6.0, 0.0, 6.0, 0.0),
                                       child: Text(
                                         FFLocalizations.of(context).getText(
@@ -1739,7 +1733,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           6.0, 0.0, 6.0, 0.0),
                                       child: Text(
                                         FFLocalizations.of(context).getText(
@@ -1784,7 +1778,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           6.0, 0.0, 6.0, 0.0),
                                       child: Text(
                                         FFLocalizations.of(context).getText(
@@ -1826,7 +1820,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                     ),
                                   ],
                                 ),
-                              ].divide(SizedBox(height: 12.0)),
+                              ].divide(const SizedBox(height: 12.0)),
                             ),
                           ),
                         ),
@@ -1834,7 +1828,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                     ),
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                          const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
                       child: Material(
                         color: Colors.transparent,
                         elevation: 2.0,
@@ -1849,7 +1843,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                             borderRadius: BorderRadius.circular(12.0),
                           ),
                           child: Padding(
-                            padding: EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(16.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1886,7 +1880,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                         final mkanItem = mkan[mkanIndex];
                                         return Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   8.0, 8.0, 8.0, 8.0),
                                           child: Container(
                                             width: double.infinity,
@@ -1904,7 +1898,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                               ),
                                             ),
                                             child: Padding(
-                                              padding: EdgeInsets.all(12.0),
+                                              padding: const EdgeInsets.all(12.0),
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.max,
                                                 mainAxisAlignment:
@@ -1939,7 +1933,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                                         .bodyLargeIsCustom,
                                                               ),
                                                         ),
-                                                      ].divide(SizedBox(
+                                                      ].divide(const SizedBox(
                                                           height: 4.0)),
                                                     ),
                                                   ),
@@ -1957,9 +1951,9 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                       width: 65.6,
                                                       height: 37.48,
                                                       padding:
-                                                          EdgeInsets.all(8.0),
+                                                          const EdgeInsets.all(8.0),
                                                       iconPadding:
-                                                          EdgeInsetsDirectional
+                                                          const EdgeInsetsDirectional
                                                               .fromSTEB(
                                                                   0.0,
                                                                   0.0,
@@ -1989,7 +1983,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                       elevation: 1.0,
                                                     ),
                                                   ),
-                                                ].divide(SizedBox(width: 8.0)),
+                                                ].divide(const SizedBox(width: 8.0)),
                                               ),
                                             ),
                                           ),
@@ -1998,7 +1992,7 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                     );
                                   },
                                 ),
-                              ].divide(SizedBox(height: 12.0)),
+                              ].divide(const SizedBox(height: 12.0)),
                             ),
                           ),
                         ),

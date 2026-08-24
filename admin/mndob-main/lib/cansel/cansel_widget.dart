@@ -6,7 +6,6 @@ import '/core/driver_online_state.dart';
 import '/core/driver_ux_widgets.dart';
 import '/core/toury_country_registry.dart';
 import '/design_system/design_system.dart';
-import '/core/driver_i18n.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

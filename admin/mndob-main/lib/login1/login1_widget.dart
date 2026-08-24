@@ -8,7 +8,6 @@ import '/core/driver_auth_errors.dart';
 import '/core/driver_auth_validation_service.dart';
 import '/core/driver_bootstrap.dart';
 import '/core/driver_dialogs.dart';
-import '/core/driver_i18n.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_language_selector.dart';

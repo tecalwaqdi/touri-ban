@@ -2,13 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '/backend/backend.dart';
 import '/backend/schema/structs/index.dart';
-import '/backend/schema/enums/enums.dart';
 
 import '/auth/base_auth_user_provider.dart';
 
@@ -16,13 +12,9 @@ import '/backend/push_notifications/push_notifications_handler.dart'
     show PushNotificationsHandler;
 import '/components/driver_auth_gate.dart';
 import '/main.dart';
-import '/flutter_flow/lat_lng.dart';
-import '/flutter_flow/place.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'serialization_util.dart';
 
 import '/index.dart';
-import '/driver_pending_approval/driver_pending_approval_widget.dart';
 import '/components/driver_new_order_listener.dart';
 import '/components/driver_location_wake_scope.dart';
 import '/core/driver_splash_screen.dart';
@@ -106,7 +98,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: Login1Widget.routeName,
           path: Login1Widget.routePath,
-          builder: (context, params) => Login1Widget(),
+          builder: (context, params) => const Login1Widget(),
         ),
         FFRoute(
           name: DriverPendingApprovalWidget.routeName,
@@ -117,12 +109,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: HgzCopyWidget.routeName,
           path: HgzCopyWidget.routePath,
-          builder: (context, params) => HgzCopyWidget(),
+          builder: (context, params) => const HgzCopyWidget(),
         ),
         FFRoute(
           name: Dashboard5Widget.routeName,
           path: Dashboard5Widget.routePath,
-          builder: (context, params) => Dashboard5Widget(),
+          builder: (context, params) => const Dashboard5Widget(),
         ),
         FFRoute(
           name: Profile07Widget.routeName,
@@ -130,13 +122,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           requireAuth: true,
           builder: (context, params) => params.isEmpty
               ? NavBarPage(initialPage: 'Profile07')
-              : Profile07Widget(),
+              : const Profile07Widget(),
         ),
         FFRoute(
           name: MktmlhWidget.routeName,
           path: MktmlhWidget.routePath,
           requireAuth: true,
-          builder: (context, params) => MktmlhWidget(),
+          builder: (context, params) => const MktmlhWidget(),
         ),
         FFRoute(
           // LEGACY trip screen — redirect to canonical DriverTripService UI.
@@ -161,42 +153,42 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: HgzmgbolWidget.routeName,
           path: HgzmgbolWidget.routePath,
-          builder: (context, params) => HgzmgbolWidget(),
+          builder: (context, params) => const HgzmgbolWidget(),
         ),
         FFRoute(
           name: HgzmktmlWidget.routeName,
           path: HgzmktmlWidget.routePath,
-          builder: (context, params) => HgzmktmlWidget(),
+          builder: (context, params) => const HgzmktmlWidget(),
         ),
         FFRoute(
           name: RegCompneWidget.routeName,
           path: RegCompneWidget.routePath,
-          builder: (context, params) => RegCompneWidget(),
+          builder: (context, params) => const RegCompneWidget(),
         ),
         FFRoute(
           // LEGACY demo AI — redirect home.
           name: DemoAI1Widget.routeName,
           path: DemoAI1Widget.routePath,
           builder: (context, params) =>
-              params.isEmpty ? NavBarPage(initialPage: 'home') : HomeWidget(),
+              params.isEmpty ? NavBarPage(initialPage: 'home') : const HomeWidget(),
         ),
         FFRoute(
           // DEPRECATED — Wasl legacy registration. Redirect to production `regdrever`.
           name: NewDriverRegistrationWidget.routeName,
           path: NewDriverRegistrationWidget.routePath,
-          builder: (context, params) => RegdreverWidget(),
+          builder: (context, params) => const RegdreverWidget(),
         ),
         FFRoute(
           name: SfdfWidget.routeName,
           path: SfdfWidget.routePath,
-          builder: (context, params) => SfdfWidget(),
+          builder: (context, params) => const SfdfWidget(),
         ),
         FFRoute(
           name: NowWidget.routeName,
           path: NowWidget.routePath,
           requireAuth: true,
           builder: (context, params) =>
-              params.isEmpty ? NavBarPage(initialPage: 'Now') : NowWidget(),
+              params.isEmpty ? NavBarPage(initialPage: 'Now') : const NowWidget(),
         ),
         FFRoute(
           name: AcceptedWidget.routeName,
@@ -204,7 +196,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           requireAuth: true,
           builder: (context, params) => params.isEmpty
               ? NavBarPage(initialPage: 'Accepted')
-              : AcceptedWidget(),
+              : const AcceptedWidget(),
         ),
         FFRoute(
           name: CompletedWidget.routeName,
@@ -212,29 +204,29 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           requireAuth: true,
           builder: (context, params) => params.isEmpty
               ? NavBarPage(initialPage: 'Completed')
-              : CompletedWidget(),
+              : const CompletedWidget(),
         ),
         FFRoute(
           name: RegdreverWidget.routeName,
           path: RegdreverWidget.routePath,
-          builder: (context, params) => RegdreverWidget(),
+          builder: (context, params) => const RegdreverWidget(),
         ),
         FFRoute(
           name: ListvillWidget.routeName,
           path: ListvillWidget.routePath,
-          builder: (context, params) => ListvillWidget(),
+          builder: (context, params) => const ListvillWidget(),
         ),
         FFRoute(
           name: HomeWidget.routeName,
           path: HomeWidget.routePath,
           requireAuth: true,
           builder: (context, params) =>
-              params.isEmpty ? NavBarPage(initialPage: 'home') : HomeWidget(),
+              params.isEmpty ? NavBarPage(initialPage: 'home') : const HomeWidget(),
         ),
         FFRoute(
           name: SuportWidget.routeName,
           path: SuportWidget.routePath,
-          builder: (context, params) => SuportWidget(),
+          builder: (context, params) => const SuportWidget(),
         ),
         FFRoute(
           name: TfaselOrserWidget.routeName,
@@ -252,7 +244,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: DfddfWidget.routeName,
           path: DfddfWidget.routePath,
-          builder: (context, params) => DfddfWidget(),
+          builder: (context, params) => const DfddfWidget(),
         ),
         FFRoute(
           name: ChatWidget.routeName,
@@ -280,7 +272,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: UpdetBankWidget.routeName,
           path: UpdetBankWidget.routePath,
-          builder: (context, params) => UpdetBankWidget(),
+          builder: (context, params) => const UpdetBankWidget(),
         ),
         FFRoute(
           name: DriverWalletWidget.routeName,
@@ -291,7 +283,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: TaimrDemoWidget.routeName,
           path: TaimrDemoWidget.routePath,
-          builder: (context, params) => TaimrDemoWidget(),
+          builder: (context, params) => const TaimrDemoWidget(),
         ),
         FFRoute(
           name: Ttb3Widget.routeName,
@@ -311,12 +303,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           requireAuth: true,
           builder: (context, params) => params.isEmpty
               ? NavBarPage(initialPage: 'cansel')
-              : CanselWidget(),
+              : const CanselWidget(),
         ),
         FFRoute(
           name: ProfileUpdatePageWidget.routeName,
           path: ProfileUpdatePageWidget.routePath,
-          builder: (context, params) => ProfileUpdatePageWidget(),
+          builder: (context, params) => const ProfileUpdatePageWidget(),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
@@ -550,7 +542,7 @@ class TransitionInfo {
   final Duration duration;
   final Alignment? alignment;
 
-  static TransitionInfo appDefault() => TransitionInfo(hasTransition: false);
+  static TransitionInfo appDefault() => const TransitionInfo(hasTransition: false);
 }
 
 class RootPageContext {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '/core/driver_i18n.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 import '/backend/schema/order_record.dart';
-import '/core/driver_i18n.dart';
 import '/core/driver_navigation_service.dart';
 import '/core/driver_live_route_controller.dart';
 import '/core/driver_map_utils.dart';

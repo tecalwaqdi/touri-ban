@@ -69,6 +69,37 @@ void main() {
       );
     });
 
+    test('needs_changes → changesRequested', () {
+      expect(
+        DriverAccountStateResolver.resolveFromLegacyFields(
+          hasAuthUser: true,
+          isAnonymous: false,
+          driverDocumentExists: true,
+          ismndob: true,
+          actevMndob: false,
+          registrationStatus: 'needs_changes',
+          displayName: 'Ali',
+        ),
+        DriverLifecycle.changesRequested,
+      );
+    });
+
+    test('draft → incompleteProfile', () {
+      expect(
+        DriverAccountStateResolver.resolveFromLegacyFields(
+          hasAuthUser: true,
+          isAnonymous: false,
+          driverDocumentExists: true,
+          ismndob: true,
+          actevMndob: false,
+          registrationStatus: 'draft',
+          displayName: 'Ali',
+          hasCar: true,
+        ),
+        DriverLifecycle.incompleteProfile,
+      );
+    });
+
     test('rejected beats pending flags', () {
       expect(
         DriverAccountStateResolver.resolveFromLegacyFields(

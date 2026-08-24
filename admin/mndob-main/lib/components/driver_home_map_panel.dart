@@ -6,12 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 
-import '/app_state.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/core/driver_country_service.dart';
 import '/core/driver_dialogs.dart';
-import '/core/driver_i18n.dart';
 import '/core/driver_online_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 

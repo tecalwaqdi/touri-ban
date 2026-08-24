@@ -178,21 +178,30 @@ abstract final class DriverBootstrapService {
       );
 
       if (life == DriverLifecycle.pendingApproval) {
-        final activation = await DriverAutoActivationService.tryAutoActivate();
-        if (activation.ok && !activation.alreadyActive) {
-          try {
-            doc = await UserRecord.getDocumentOnce(UserRecord.collection.doc(user.uid));
-            currentUserDocument = doc;
-            life = DriverAccountStateResolver.resolve(
-              hasAuthUser: true,
-              isAnonymous: false,
-              driverDocumentExists: true,
-              doc: doc,
-              hasActiveTrip: activeTrip,
-              debugLog: kDebugMode,
-            );
-          } catch (e) {
-            debugPrint('DriverBootstrapService auto-activate reload: $e');
+        // Registration V2: never auto-activate — wait for admin review.
+        final flowVersion = doc?.snapshotData['registration_flow_version'];
+        final isV2 = flowVersion is num
+            ? flowVersion.toInt() == 2
+            : int.tryParse('$flowVersion') == 2;
+        if (!isV2) {
+          final activation =
+              await DriverAutoActivationService.tryAutoActivate();
+          if (activation.ok && !activation.alreadyActive) {
+            try {
+              doc = await UserRecord.getDocumentOnce(
+                  UserRecord.collection.doc(user.uid));
+              currentUserDocument = doc;
+              life = DriverAccountStateResolver.resolve(
+                hasAuthUser: true,
+                isAnonymous: false,
+                driverDocumentExists: true,
+                doc: doc,
+                hasActiveTrip: activeTrip,
+                debugLog: kDebugMode,
+              );
+            } catch (e) {
+              debugPrint('DriverBootstrapService auto-activate reload: $e');
+            }
           }
         }
       }

@@ -22,10 +22,20 @@ class DriverAutoActivationResult {
   final String? code;
 }
 
-/// Temporary cash-wave path: activates driver accounts immediately after
-/// registration. Replace with admin review when the approval flow is ready.
+/// Legacy cash-wave auto-activation.
+///
+/// Registration V2 (`registration_flow_version == 2`) must never call
+/// `autoActivateDriver` — activation is admin review only.
 abstract final class DriverAutoActivationService {
   DriverAutoActivationService._();
+
+  static bool _isRegistrationV2(UserRecord? doc) {
+    if (doc == null) return false;
+    final v = doc.snapshotData['registration_flow_version'];
+    if (v is num) return v.toInt() == 2;
+    if (v is String) return int.tryParse(v) == 2;
+    return false;
+  }
 
   static Future<DriverAutoActivationResult> tryAutoActivate() async {
     if (!loggedIn || currentUserReference == null) {
@@ -33,6 +43,15 @@ abstract final class DriverAutoActivationService {
     }
 
     final doc = currentUserDocument;
+    if (_isRegistrationV2(doc)) {
+      debugPrint(
+        'DriverAutoActivationService: skipped (registration_flow_version=2)',
+      );
+      return const DriverAutoActivationResult.fail(
+        'AUTO_ACTIVATE_DISABLED_FOR_REGISTRATION_V2',
+      );
+    }
+
     if (doc != null &&
         doc.actevMndob == true &&
         doc.registrationStatus.trim().toLowerCase() == 'approved') {

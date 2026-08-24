@@ -64,7 +64,7 @@ class _ListvillWidgetState extends State<ListvillWidget> {
                       updateCallback: () => safeSetState(() {}),
                       child: SizedBox(
                         height: MediaQuery.sizeOf(context).height * 0.75,
-                        child: VillmndobWidget(),
+                        child: const VillmndobWidget(),
                       ),
                     ),
                   ),

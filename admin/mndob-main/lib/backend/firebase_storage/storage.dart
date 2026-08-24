@@ -1,10 +1,9 @@
-import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mime_type/mime_type.dart';
 
-Future<String?> uploadData(String path, Uint8List data) async {
+Future<void> uploadBytes(String path, Uint8List data) async {
   try {
     final storageRef = FirebaseStorage.instance.ref().child(path);
     var detected = mime(path);
@@ -19,13 +18,25 @@ Future<String?> uploadData(String path, Uint8List data) async {
       } else if (lower.endsWith('.pdf')) {
         detected = 'application/pdf';
       } else {
-        // Camera/gallery bytes are usually JPEG even without a clear extension.
         detected = 'image/jpeg';
       }
     }
     final metadata = SettableMetadata(contentType: detected);
     final result = await storageRef.putData(data, metadata);
-    return result.state == TaskState.success ? result.ref.getDownloadURL() : null;
+    if (result.state != TaskState.success) {
+      throw StateError('Document upload is incomplete');
+    }
+  } catch (e, st) {
+    debugPrint('uploadBytes failed path=$path: $e\n$st');
+    rethrow;
+  }
+}
+
+Future<String?> uploadData(String path, Uint8List data) async {
+  try {
+    await uploadBytes(path, data);
+    final storageRef = FirebaseStorage.instance.ref().child(path);
+    return storageRef.getDownloadURL();
   } catch (e, st) {
     debugPrint('uploadData failed path=$path: $e\n$st');
     rethrow;

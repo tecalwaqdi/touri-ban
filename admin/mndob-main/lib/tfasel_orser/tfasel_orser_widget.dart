@@ -2,13 +2,11 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/backend/push_notifications/push_notifications_util.dart';
 import '/backend/schema/enums/enums.dart';
-import '/backend/schema/structs/index.dart';
 import '/components/review_screen_widget.dart';
 import '/components/taim_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'dart:ui';
 import '/core/driver_map_actions.dart';
 import '/components/driver_trip_actions_card.dart';
 import '/components/driver_trip_details_banner.dart';
@@ -19,7 +17,6 @@ import '/components/driver_trip_plan_panel.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/core/driver_country_service.dart';
-import '/core/driver_i18n.dart';
 import '/core/toury_country_registry.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_navigation_service.dart';
@@ -33,7 +30,6 @@ import '/index.dart';
 import 'package:aligned_tooltip/aligned_tooltip.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:styled_divider/styled_divider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -121,8 +117,8 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
             curve: Curves.easeInOut,
             delay: 0.0.ms,
             duration: 600.0.ms,
-            begin: Offset(-2.0, 1.0),
-            end: Offset(1.0, 1.0),
+            begin: const Offset(-2.0, 1.0),
+            end: const Offset(1.0, 1.0),
           ),
         ],
       ),
@@ -133,8 +129,8 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
             curve: Curves.easeInOut,
             delay: 0.0.ms,
             duration: 600.0.ms,
-            begin: Offset(1.0, 1.0),
-            end: Offset(1.0, 1.0),
+            begin: const Offset(1.0, 1.0),
+            end: const Offset(1.0, 1.0),
           ),
         ],
       ),
@@ -165,8 +161,8 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
             curve: Curves.easeInOut,
             delay: 0.0.ms,
             duration: 600.0.ms,
-            begin: Offset(0.0, 60.0),
-            end: Offset(0.0, 0.0),
+            begin: const Offset(0.0, 60.0),
+            end: const Offset(0.0, 0.0),
           ),
         ],
       ),
@@ -348,7 +344,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                     ),
                   ],
                 ),
-                actions: [],
+                actions: const [],
                 centerTitle: false,
                 elevation: 0,
                 surfaceTintColor: Colors.transparent,
@@ -418,7 +414,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                               ),
                               DriverTripPlanPanel(order: columnOrderRecord),
                               Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     16.0, 0.0, 16.0, 0.0),
                                 child: Container(
                                   width: double.infinity,
@@ -427,7 +423,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                     borderRadius: DsRadius.large,
                                   ),
                                   child: Padding(
-                                    padding: EdgeInsets.all(16.0),
+                                    padding: const EdgeInsets.all(16.0),
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
@@ -439,7 +435,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 currentUserReference))
                                           Padding(
                                             padding:
-                                                EdgeInsetsDirectional.fromSTEB(
+                                                const EdgeInsetsDirectional.fromSTEB(
                                                     16.0, 0.0, 16.0, 0.0),
                                             child: Material(
                                               color: Colors.transparent,
@@ -459,7 +455,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                       'مكتمل',
                                                   child: Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(
                                                                 16.0,
                                                                 16.0,
@@ -515,7 +511,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                 ),
                                                               ),
                                                               child: Padding(
-                                                                padding: EdgeInsetsDirectional
+                                                                padding: const EdgeInsetsDirectional
                                                                     .fromSTEB(
                                                                         16.0,
                                                                         16.0,
@@ -559,16 +555,16 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                             .primary,
                                                                       ),
                                                                     ),
-                                                                  ].divide(SizedBox(
+                                                                  ].divide(const SizedBox(
                                                                       height:
                                                                           8.0)),
                                                                 ),
                                                               ),
                                                             ),
-                                                          ].divide(SizedBox(
+                                                          ].divide(const SizedBox(
                                                               width: 16.0)),
                                                         ),
-                                                      ].divide(SizedBox(
+                                                      ].divide(const SizedBox(
                                                           height: 12.0)),
                                                     ),
                                                   ),
@@ -620,7 +616,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                           padding: MediaQuery
                                                               .viewInsetsOf(
                                                                   context),
-                                                          child: Container(
+                                                          child: SizedBox(
                                                             height: MediaQuery
                                                                         .sizeOf(
                                                                             context)
@@ -646,7 +642,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                       safeSetState(() {}));
                                                 },
                                               ),
-                                            ].divide(SizedBox(width: 8.0)),
+                                            ].divide(const SizedBox(width: 8.0)),
                                           ),
                                         if ((columnOrderRecord.halhOrderMndob ==
                                                 HalhOrder.Accepted) &&
@@ -654,7 +650,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 currentUserReference))
                                           Padding(
                                             padding:
-                                                EdgeInsetsDirectional.fromSTEB(
+                                                const EdgeInsetsDirectional.fromSTEB(
                                                     0.0, 7.0, 0.0, 0.0),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.max,
@@ -826,7 +822,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                 animationsMap[
                                                                     'textOnPageLoadAnimation1']!),
                                                           ),
-                                                        ].divide(SizedBox(
+                                                        ].divide(const SizedBox(
                                                             width: 8.0)),
                                                       ).animateOnPageLoad(
                                                           animationsMap[
@@ -894,7 +890,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                   ),
                                                                 ),
                                                               ),
-                                                            ].divide(SizedBox(
+                                                            ].divide(const SizedBox(
                                                                 width: 8.0)),
                                                           ),
                                                         ),
@@ -1024,12 +1020,12 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                     if (rowCount >=
                                                                         1)
                                                                       Align(
-                                                                        alignment: AlignmentDirectional(
+                                                                        alignment: const AlignmentDirectional(
                                                                             0.0,
                                                                             0.0),
                                                                         child:
                                                                             Padding(
-                                                                          padding: EdgeInsetsDirectional.fromSTEB(
+                                                                          padding: const EdgeInsetsDirectional.fromSTEB(
                                                                               0.0,
                                                                               0.0,
                                                                               0.0,
@@ -1044,7 +1040,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                           ).animateOnPageLoad(animationsMap['textOnPageLoadAnimation2']!),
                                                                         ),
                                                                       ),
-                                                                  ].divide(SizedBox(
+                                                                  ].divide(const SizedBox(
                                                                       width:
                                                                           8.0)),
                                                                 ),
@@ -1065,17 +1061,17 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                         ),
                                                       ),
                                                     ].divide(
-                                                        SizedBox(height: 4.0)),
+                                                        const SizedBox(height: 4.0)),
                                                   ),
                                                 ),
-                                              ].divide(SizedBox(width: 16.0)),
+                                              ].divide(const SizedBox(width: 16.0)),
                                             ),
                                           ),
                                         // Legacy action row replaced by DriverTripActionsCard.
                                         if (false)
                                           Padding(
                                             padding:
-                                                EdgeInsetsDirectional.fromSTEB(
+                                                const EdgeInsetsDirectional.fromSTEB(
                                                     0.0, 11.0, 0.0, 11.0),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.max,
@@ -1112,7 +1108,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                         currentUserLocationValue =
                                                             await getCurrentUserLocation(
                                                                 defaultLocation:
-                                                                    LatLng(0.0,
+                                                                    const LatLng(0.0,
                                                                         0.0));
                                                         var confirmDialogResponse =
                                                             await showDialog<
@@ -1211,7 +1207,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                         currentUserLocationValue =
                                                             await getCurrentUserLocation(
                                                                 defaultLocation:
-                                                                    LatLng(0.0,
+                                                                    const LatLng(0.0,
                                                                         0.0));
                                                         var confirmDialogResponse =
                                                             await showDialog<
@@ -1336,7 +1332,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                         currentUserLocationValue =
                                                             await getCurrentUserLocation(
                                                                 defaultLocation:
-                                                                    LatLng(0.0,
+                                                                    const LatLng(0.0,
                                                                         0.0));
                                                         var confirmDialogResponse =
                                                             await showDialog<
@@ -1488,12 +1484,12 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                       .viewInsetsOf(
                                                                           context),
                                                                   child:
-                                                                      Container(
+                                                                      SizedBox(
                                                                     height: MediaQuery.sizeOf(context)
                                                                             .height *
                                                                         0.35,
                                                                     child:
-                                                                        TaimWidget(),
+                                                                        const TaimWidget(),
                                                                   ),
                                                                 ),
                                                               );
@@ -1530,7 +1526,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                         currentUserLocationValue =
                                                             await getCurrentUserLocation(
                                                                 defaultLocation:
-                                                                    LatLng(0.0,
+                                                                    const LatLng(0.0,
                                                                         0.0));
                                                         var confirmDialogResponse =
                                                             await showDialog<
@@ -1691,7 +1687,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                       },
                                                     ),
                                                   ),
-                                              ].divide(SizedBox(width: 8.0)),
+                                              ].divide(const SizedBox(width: 8.0)),
                                             ),
                                           ),
                                         Container(
@@ -1724,11 +1720,11 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 if (_model.isnot == true)
                                                   Align(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             1.0, 0.0),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsetsDirectional
+                                                          const EdgeInsetsDirectional
                                                               .fromSTEB(
                                                                   10.0,
                                                                   0.0,
@@ -1760,11 +1756,11 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 if (_model.isnot == false)
                                                   Align(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             1.0, 0.0),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsetsDirectional
+                                                          const EdgeInsetsDirectional
                                                               .fromSTEB(
                                                                   10.0,
                                                                   0.0,
@@ -1831,7 +1827,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 currentUserReference))
                                           Padding(
                                             padding:
-                                                EdgeInsetsDirectional.fromSTEB(
+                                                const EdgeInsetsDirectional.fromSTEB(
                                                     16.0, 0.0, 16.0, 0.0),
                                             child: Container(
                                               width: double.infinity,
@@ -1841,7 +1837,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 borderRadius: DsRadius.large,
                                               ),
                                               child: Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         16.0, 16.0, 16.0, 0.0),
                                                 child: Column(
@@ -1856,7 +1852,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                       children: [
                                                         Padding(
                                                           padding:
-                                                              EdgeInsetsDirectional
+                                                              const EdgeInsetsDirectional
                                                                   .fromSTEB(
                                                                       4.0,
                                                                       7.0,
@@ -1946,11 +1942,11 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                           .viewInsetsOf(
                                                                               context),
                                                                       child:
-                                                                          Container(
+                                                                          SizedBox(
                                                                         height: MediaQuery.sizeOf(context).height *
                                                                             0.88,
                                                                         child:
-                                                                            TaimWidget(),
+                                                                            const TaimWidget(),
                                                                       ),
                                                                     ),
                                                                   );
@@ -2010,7 +2006,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                             controller: _model
                                                                 .timer1Controller,
                                                             updateStateInterval:
-                                                                Duration(
+                                                                const Duration(
                                                                     milliseconds:
                                                                         1000),
                                                             onChanged: (value,
@@ -2033,7 +2029,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                           AlignedTooltip(
                                                             content: Padding(
                                                               padding:
-                                                                  EdgeInsets
+                                                                  const EdgeInsets
                                                                       .all(4.0),
                                                               child: Text(
                                                                 FFLocalizations.of(
@@ -2064,11 +2060,11 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                             tailBaseWidth: 24.0,
                                                             tailLength: 12.0,
                                                             waitDuration:
-                                                                Duration(
+                                                                const Duration(
                                                                     milliseconds:
                                                                         100),
                                                             showDuration:
-                                                                Duration(
+                                                                const Duration(
                                                                     milliseconds:
                                                                         1500),
                                                             triggerMode:
@@ -2127,7 +2123,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                               ),
                                                             ),
                                                           ),
-                                                        ].divide(SizedBox(
+                                                        ].divide(const SizedBox(
                                                             width: 8.0)),
                                                       ),
                                                     if (columnOrderRecord
@@ -2139,7 +2135,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                         children: [
                                                           Padding(
                                                             padding:
-                                                                EdgeInsetsDirectional
+                                                                const EdgeInsetsDirectional
                                                                     .fromSTEB(
                                                                         11.0,
                                                                         8.0,
@@ -2211,10 +2207,10 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                                 12.0,
                                                                           ),
                                                                         ),
-                                                                      ].divide(SizedBox(
+                                                                      ].divide(const SizedBox(
                                                                               width: 8.0)),
                                                                     ),
-                                                                  ].divide(SizedBox(
+                                                                  ].divide(const SizedBox(
                                                                       height:
                                                                           4.0)),
                                                                 ),
@@ -2276,10 +2272,10 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                                 12.0,
                                                                           ),
                                                                         ),
-                                                                      ].divide(SizedBox(
+                                                                      ].divide(const SizedBox(
                                                                               width: 8.0)),
                                                                     ),
-                                                                  ].divide(SizedBox(
+                                                                  ].divide(const SizedBox(
                                                                       height:
                                                                           4.0)),
                                                                 ),
@@ -2298,7 +2294,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                             ),
                                                             child: Padding(
                                                               padding:
-                                                                  EdgeInsetsDirectional
+                                                                  const EdgeInsetsDirectional
                                                                       .fromSTEB(
                                                                           11.0,
                                                                           0.0,
@@ -2358,9 +2354,9 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                               fontSize: 12.0,
                                                                             ),
                                                                           ),
-                                                                        ].divide(SizedBox(width: 8.0)),
+                                                                        ].divide(const SizedBox(width: 8.0)),
                                                                       ),
-                                                                    ].divide(SizedBox(
+                                                                    ].divide(const SizedBox(
                                                                         height:
                                                                             4.0)),
                                                                   ),
@@ -2410,9 +2406,9 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                               fontSize: 12.0,
                                                                             ),
                                                                           ),
-                                                                        ].divide(SizedBox(width: 8.0)),
+                                                                        ].divide(const SizedBox(width: 8.0)),
                                                                       ),
-                                                                    ].divide(SizedBox(
+                                                                    ].divide(const SizedBox(
                                                                         height:
                                                                             4.0)),
                                                                   ),
@@ -2435,7 +2431,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                           AlignedTooltip(
                                                             content: Padding(
                                                               padding:
-                                                                  EdgeInsets
+                                                                  const EdgeInsets
                                                                       .all(4.0),
                                                               child: Text(
                                                                 FFLocalizations.of(
@@ -2466,11 +2462,11 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                             tailBaseWidth: 24.0,
                                                             tailLength: 12.0,
                                                             waitDuration:
-                                                                Duration(
+                                                                const Duration(
                                                                     milliseconds:
                                                                         100),
                                                             showDuration:
-                                                                Duration(
+                                                                const Duration(
                                                                     milliseconds:
                                                                         1500),
                                                             triggerMode:
@@ -2513,7 +2509,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                       .bold,
                                                             ),
                                                           ),
-                                                        ].divide(SizedBox(
+                                                        ].divide(const SizedBox(
                                                             width: 8.0)),
                                                       ),
                                                     if (columnOrderRecord
@@ -2521,7 +2517,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                         'مكتمل')
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     8.0,
@@ -2600,11 +2596,11 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                           padding:
                                                                               MediaQuery.viewInsetsOf(context),
                                                                           child:
-                                                                              Container(
+                                                                              SizedBox(
                                                                             height:
                                                                                 MediaQuery.sizeOf(context).height * 0.45,
                                                                             child:
-                                                                                TaimWidget(),
+                                                                                const TaimWidget(),
                                                                           ),
                                                                         ),
                                                                       );
@@ -2619,12 +2615,12 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                         ),
                                                       ),
                                                   ].divide(
-                                                      SizedBox(height: 12.0)),
+                                                      const SizedBox(height: 12.0)),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                      ].divide(SizedBox(height: 12.0)),
+                                      ].divide(const SizedBox(height: 12.0)),
                                     ),
                                   ),
                                 ),
@@ -2632,7 +2628,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                               // Legacy Stops card replaced by DriverTripPlanPanel.
                               if (false)
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       16.0, 7.0, 16.0, 0.0),
                                   child: Material(
                                     color: Colors.transparent,
@@ -2665,7 +2661,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 children: [
                                                   Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(0.0, 9.0,
                                                                 0.0, 0.0),
                                                     child: Text(
@@ -2695,7 +2691,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 children: [
                                                   Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(0.0, 9.0,
                                                                 0.0, 0.0),
                                                     child: Icon(
@@ -2707,7 +2703,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                   ),
                                                   Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(5.0, 9.0,
                                                                 5.0, 0.0),
                                                     child: Text(
@@ -2744,7 +2740,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                   (columnOrderRecord.halhText !=
                                                       'ملغي'))
                                                 Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           8.0, 8.0, 8.0, 8.0),
                                                   child: Container(
@@ -2763,7 +2759,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                     ),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsets.all(12.0),
+                                                          const EdgeInsets.all(12.0),
                                                       child: Row(
                                                         mainAxisSize:
                                                             MainAxisSize.max,
@@ -2800,7 +2796,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                             .bold,
                                                                   ),
                                                                 ),
-                                                              ].divide(SizedBox(
+                                                              ].divide(const SizedBox(
                                                                   height: 4.0)),
                                                             ),
                                                           ),
@@ -2828,7 +2824,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                               },
                                                             ),
                                                           ),
-                                                        ].divide(SizedBox(
+                                                        ].divide(const SizedBox(
                                                             width: 8.0)),
                                                       ),
                                                     ),
@@ -2853,7 +2849,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                           mkan[mkanIndex];
                                                       return Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     8.0,
                                                                     8.0,
@@ -2880,7 +2876,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                           ),
                                                           child: Padding(
                                                             padding:
-                                                                EdgeInsets.all(
+                                                                const EdgeInsets.all(
                                                                     12.0),
                                                             child: Row(
                                                               mainAxisSize:
@@ -2922,7 +2918,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                             MainAxisSize.max,
                                                                         children: [
                                                                           Padding(
-                                                                            padding: EdgeInsetsDirectional.fromSTEB(
+                                                                            padding: const EdgeInsetsDirectional.fromSTEB(
                                                                                 0.0,
                                                                                 7.0,
                                                                                 0.0,
@@ -2955,7 +2951,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                                                   color: context.dsColors.surface,
                                                                                                 ),
                                                                                               ),
-                                                                                              duration: Duration(milliseconds: 4000),
+                                                                                              duration: const Duration(milliseconds: 4000),
                                                                                               backgroundColor: context.dsColors.primary,
                                                                                             ),
                                                                                           );
@@ -2975,7 +2971,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                           ),
                                                                         ],
                                                                       ),
-                                                                    ].divide(SizedBox(
+                                                                    ].divide(const SizedBox(
                                                                         height:
                                                                             4.0)),
                                                                   ),
@@ -3008,7 +3004,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                     },
                                                                   ),
                                                                 ),
-                                                              ].divide(SizedBox(
+                                                              ].divide(const SizedBox(
                                                                   width: 8.0)),
                                                             ),
                                                           ),
@@ -3024,7 +3020,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                   (columnOrderRecord.halhText !=
                                                       'ملغي'))
                                                 Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           8.0, 8.0, 8.0, 8.0),
                                                   child: Container(
@@ -3043,7 +3039,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                     ),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsets.all(12.0),
+                                                          const EdgeInsets.all(12.0),
                                                       child: Row(
                                                         mainAxisSize:
                                                             MainAxisSize.max,
@@ -3080,7 +3076,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                             .bold,
                                                                   ),
                                                                 ),
-                                                              ].divide(SizedBox(
+                                                              ].divide(const SizedBox(
                                                                   height: 4.0)),
                                                             ),
                                                           ),
@@ -3108,21 +3104,21 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                               },
                                                             ),
                                                           ),
-                                                        ].divide(SizedBox(
+                                                        ].divide(const SizedBox(
                                                             width: 8.0)),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                            ].divide(SizedBox(height: 12.0)),
+                                            ].divide(const SizedBox(height: 12.0)),
                                           ),
-                                        ].divide(SizedBox(height: 12.0)),
+                                        ].divide(const SizedBox(height: 12.0)),
                                       ),
                                     ),
                                   ),
                                 ),
                               Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     16.0, 4.0, 16.0, 0.0),
                                 child: Material(
                                   color: Colors.transparent,
@@ -3134,7 +3130,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                       color: context.dsColors.card,
-                                      boxShadow: [
+                                      boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4.0,
                                           color: Color(0x33000000),
@@ -3147,7 +3143,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                       borderRadius: DsRadius.large,
                                     ),
                                     child: Padding(
-                                      padding: EdgeInsets.all(16.0),
+                                      padding: const EdgeInsets.all(16.0),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         crossAxisAlignment:
@@ -3155,7 +3151,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                         children: [
                                           Padding(
                                             padding:
-                                                EdgeInsetsDirectional.fromSTEB(
+                                                const EdgeInsetsDirectional.fromSTEB(
                                                     0.0, 0.0, 0.0, 7.0),
                                             child: Text(
                                               FFLocalizations.of(context)
@@ -3178,7 +3174,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 MainAxisAlignment.center,
                                             children: [
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         5.0, 0.0, 5.0, 0.0),
                                                 child: Text(
@@ -3211,7 +3207,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 MainAxisAlignment.center,
                                             children: [
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         5.0, 0.0, 5.0, 0.0),
                                                 child: Text(
@@ -3237,7 +3233,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 ),
                                               ),
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         3.0, 0.0, 6.0, 4.0),
                                                 child: InkWell(
@@ -3269,7 +3265,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                 .scaffold,
                                                           ),
                                                         ),
-                                                        duration: Duration(
+                                                        duration: const Duration(
                                                             milliseconds: 900),
                                                         backgroundColor: context
                                                             .dsColors.primary,
@@ -3292,7 +3288,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 MainAxisAlignment.center,
                                             children: [
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         5.0, 0.0, 5.0, 0.0),
                                                 child: Text(
@@ -3329,7 +3325,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 MainAxisAlignment.center,
                                             children: [
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         5.0, 0.0, 5.0, 0.0),
                                                 child: Text(
@@ -3374,7 +3370,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 ),
                                               ),
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         5.0, 0.0, 5.0, 0.0),
                                                 child: Text(
@@ -3414,7 +3410,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 ),
                                               ),
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         5.0, 0.0, 5.0, 0.0),
                                                 child: Text(
@@ -3444,7 +3440,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 MainAxisAlignment.start,
                                             children: [
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         6.0, 0.0, 6.0, 0.0),
                                                 child: Text(
@@ -3483,7 +3479,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 MainAxisAlignment.start,
                                             children: [
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         6.0, 0.0, 6.0, 0.0),
                                                 child: Text(
@@ -3527,7 +3523,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 MainAxisAlignment.start,
                                             children: [
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         6.0, 0.0, 6.0, 0.0),
                                                 child: Text(
@@ -3570,7 +3566,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 MainAxisAlignment.start,
                                             children: [
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         6.0, 0.0, 6.0, 0.0),
                                                 child: Text(
@@ -3612,7 +3608,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                   .halhOrderMndob ==
                                               HalhOrder.Accepted)
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 12.0, 16.0, 0.0),
                                               child: InkWell(
@@ -3640,7 +3636,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                   ),
                                                   child: Padding(
                                                     padding:
-                                                        EdgeInsets.all(8.0),
+                                                        const EdgeInsets.all(8.0),
                                                     child: Row(
                                                       mainAxisSize:
                                                           MainAxisSize.max,
@@ -3650,7 +3646,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                       children: [
                                                         Padding(
                                                           padding:
-                                                              EdgeInsetsDirectional
+                                                              const EdgeInsetsDirectional
                                                                   .fromSTEB(
                                                                       8.0,
                                                                       0.0,
@@ -3667,7 +3663,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                         ),
                                                         Padding(
                                                           padding:
-                                                              EdgeInsetsDirectional
+                                                              const EdgeInsetsDirectional
                                                                   .fromSTEB(
                                                                       11.0,
                                                                       0.0,
@@ -3694,7 +3690,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                               ).animateOnPageLoad(animationsMap[
                                                   'containerOnPageLoadAnimation']!),
                                             ),
-                                        ].divide(SizedBox(height: 12.0)),
+                                        ].divide(const SizedBox(height: 12.0)),
                                       ),
                                     ),
                                   ),

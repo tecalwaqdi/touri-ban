@@ -4,14 +4,9 @@ import '/backend/backend.dart';
 import '/backend/gemini/gemini.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import '/design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'new_driver_registration_model.dart';
 export 'new_driver_registration_model.dart';
 
@@ -170,7 +165,7 @@ class _NewDriverRegistrationWidgetState
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 16.0, 0.0, 0.0),
                             child: Container(
                               decoration: BoxDecoration(
@@ -178,7 +173,7 @@ class _NewDriverRegistrationWidgetState
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   FFLocalizations.of(context).getText(
                                     '32m967gv' /* * Required fields */,
@@ -222,7 +217,7 @@ class _NewDriverRegistrationWidgetState
                                     ),
                               ),
                               AuthUserStreamWidget(
-                                builder: (context) => Container(
+                                builder: (context) => SizedBox(
                                   width: double.infinity,
                                   child: TextFormField(
                                     controller:
@@ -256,7 +251,7 @@ class _NewDriverRegistrationWidgetState
                                             BorderRadius.circular(8.0),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Color(0x00000000),
                                           width: 1.0,
                                         ),
@@ -305,7 +300,7 @@ class _NewDriverRegistrationWidgetState
                                   ),
                                 ),
                               ),
-                            ].divide(SizedBox(height: 8.0)),
+                            ].divide(const SizedBox(height: 8.0)),
                           ),
                           Column(
                             mainAxisSize: MainAxisSize.max,
@@ -328,7 +323,7 @@ class _NewDriverRegistrationWidgetState
                                     ),
                               ),
                               AuthUserStreamWidget(
-                                builder: (context) => Container(
+                                builder: (context) => SizedBox(
                                   width: double.infinity,
                                   child: TextFormField(
                                     controller: _model.textController2,
@@ -361,7 +356,7 @@ class _NewDriverRegistrationWidgetState
                                             BorderRadius.circular(8.0),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Color(0x00000000),
                                           width: 1.0,
                                         ),
@@ -369,7 +364,7 @@ class _NewDriverRegistrationWidgetState
                                             BorderRadius.circular(8.0),
                                       ),
                                       errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Color(0x00000000),
                                           width: 1.0,
                                         ),
@@ -377,7 +372,7 @@ class _NewDriverRegistrationWidgetState
                                             BorderRadius.circular(8.0),
                                       ),
                                       focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Color(0x00000000),
                                           width: 1.0,
                                         ),
@@ -404,7 +399,7 @@ class _NewDriverRegistrationWidgetState
                                   ),
                                 ),
                               ),
-                            ].divide(SizedBox(height: 8.0)),
+                            ].divide(const SizedBox(height: 8.0)),
                           ),
                           Row(
                             mainAxisSize: MainAxisSize.max,
@@ -462,7 +457,7 @@ class _NewDriverRegistrationWidgetState
                                                                   .bodySmallIsCustom,
                                                         ),
                                               ),
-                                              Container(
+                                              SizedBox(
                                                 width: double.infinity,
                                                 child: TextFormField(
                                                   controller:
@@ -509,7 +504,7 @@ class _NewDriverRegistrationWidgetState
                                                     ),
                                                     focusedBorder:
                                                         OutlineInputBorder(
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color:
                                                             Color(0x00000000),
                                                         width: 1.0,
@@ -520,7 +515,7 @@ class _NewDriverRegistrationWidgetState
                                                     ),
                                                     errorBorder:
                                                         OutlineInputBorder(
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color:
                                                             Color(0x00000000),
                                                         width: 1.0,
@@ -531,7 +526,7 @@ class _NewDriverRegistrationWidgetState
                                                     ),
                                                     focusedErrorBorder:
                                                         OutlineInputBorder(
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color:
                                                             Color(0x00000000),
                                                         width: 1.0,
@@ -598,7 +593,7 @@ class _NewDriverRegistrationWidgetState
                                                                   .bodySmallIsCustom,
                                                         ),
                                               ),
-                                              Container(
+                                              SizedBox(
                                                 width: double.infinity,
                                                 child: TextFormField(
                                                   controller:
@@ -645,7 +640,7 @@ class _NewDriverRegistrationWidgetState
                                                     ),
                                                     focusedBorder:
                                                         OutlineInputBorder(
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color:
                                                             Color(0x00000000),
                                                         width: 1.0,
@@ -656,7 +651,7 @@ class _NewDriverRegistrationWidgetState
                                                     ),
                                                     errorBorder:
                                                         OutlineInputBorder(
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color:
                                                             Color(0x00000000),
                                                         width: 1.0,
@@ -667,7 +662,7 @@ class _NewDriverRegistrationWidgetState
                                                     ),
                                                     focusedErrorBorder:
                                                         OutlineInputBorder(
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color:
                                                             Color(0x00000000),
                                                         width: 1.0,
@@ -734,7 +729,7 @@ class _NewDriverRegistrationWidgetState
                                                                   .bodySmallIsCustom,
                                                         ),
                                               ),
-                                              Container(
+                                              SizedBox(
                                                 width: double.infinity,
                                                 child: TextFormField(
                                                   controller:
@@ -781,7 +776,7 @@ class _NewDriverRegistrationWidgetState
                                                     ),
                                                     focusedBorder:
                                                         OutlineInputBorder(
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color:
                                                             Color(0x00000000),
                                                         width: 1.0,
@@ -792,7 +787,7 @@ class _NewDriverRegistrationWidgetState
                                                     ),
                                                     errorBorder:
                                                         OutlineInputBorder(
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color:
                                                             Color(0x00000000),
                                                         width: 1.0,
@@ -803,7 +798,7 @@ class _NewDriverRegistrationWidgetState
                                                     ),
                                                     focusedErrorBorder:
                                                         OutlineInputBorder(
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color:
                                                             Color(0x00000000),
                                                         width: 1.0,
@@ -842,12 +837,12 @@ class _NewDriverRegistrationWidgetState
                                             ],
                                           ),
                                         ),
-                                      ].divide(SizedBox(width: 8.0)),
+                                      ].divide(const SizedBox(width: 8.0)),
                                     ),
                                   ],
                                 ),
                               ),
-                            ].divide(SizedBox(width: 16.0)),
+                            ].divide(const SizedBox(width: 16.0)),
                           ),
                           Column(
                             mainAxisSize: MainAxisSize.max,
@@ -869,7 +864,7 @@ class _NewDriverRegistrationWidgetState
                                               .bodyMediumIsCustom,
                                     ),
                               ),
-                              Container(
+                              SizedBox(
                                 width: double.infinity,
                                 child: TextFormField(
                                   controller: _model.textController6,
@@ -901,21 +896,21 @@ class _NewDriverRegistrationWidgetState
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Color(0x00000000),
                                         width: 1.0,
                                       ),
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     errorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Color(0x00000000),
                                         width: 1.0,
                                       ),
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     focusedErrorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Color(0x00000000),
                                         width: 1.0,
                                       ),
@@ -940,7 +935,7 @@ class _NewDriverRegistrationWidgetState
                                       .asValidator(context),
                                 ),
                               ),
-                            ].divide(SizedBox(height: 8.0)),
+                            ].divide(const SizedBox(height: 8.0)),
                           ),
                           Column(
                             mainAxisSize: MainAxisSize.max,
@@ -963,7 +958,7 @@ class _NewDriverRegistrationWidgetState
                                     ),
                               ),
                               AuthUserStreamWidget(
-                                builder: (context) => Container(
+                                builder: (context) => SizedBox(
                                   width: double.infinity,
                                   child: TextFormField(
                                     controller: _model.textController7,
@@ -997,7 +992,7 @@ class _NewDriverRegistrationWidgetState
                                             BorderRadius.circular(8.0),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Color(0x00000000),
                                           width: 1.0,
                                         ),
@@ -1005,7 +1000,7 @@ class _NewDriverRegistrationWidgetState
                                             BorderRadius.circular(8.0),
                                       ),
                                       errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Color(0x00000000),
                                           width: 1.0,
                                         ),
@@ -1013,7 +1008,7 @@ class _NewDriverRegistrationWidgetState
                                             BorderRadius.circular(8.0),
                                       ),
                                       focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Color(0x00000000),
                                           width: 1.0,
                                         ),
@@ -1041,15 +1036,15 @@ class _NewDriverRegistrationWidgetState
                                   ),
                                 ),
                               ),
-                            ].divide(SizedBox(height: 8.0)),
+                            ].divide(const SizedBox(height: 8.0)),
                           ),
-                        ].divide(SizedBox(height: 16.0)),
+                        ].divide(const SizedBox(height: 16.0)),
                       ),
                     ),
                   ),
                   Padding(
                     padding:
-                        EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 16.0),
+                        const EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 16.0),
                     child: DsCard(
                       elevated: true,
                       child: Column(
@@ -1085,7 +1080,7 @@ class _NewDriverRegistrationWidgetState
                                     ),
                               ),
                               AuthUserStreamWidget(
-                                builder: (context) => Container(
+                                builder: (context) => SizedBox(
                                   width: double.infinity,
                                   child: TextFormField(
                                     controller: _model.nameCarTextController,
@@ -1118,7 +1113,7 @@ class _NewDriverRegistrationWidgetState
                                             BorderRadius.circular(8.0),
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Color(0x00000000),
                                           width: 1.0,
                                         ),
@@ -1126,7 +1121,7 @@ class _NewDriverRegistrationWidgetState
                                             BorderRadius.circular(8.0),
                                       ),
                                       errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Color(0x00000000),
                                           width: 1.0,
                                         ),
@@ -1134,7 +1129,7 @@ class _NewDriverRegistrationWidgetState
                                             BorderRadius.circular(8.0),
                                       ),
                                       focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color: Color(0x00000000),
                                           width: 1.0,
                                         ),
@@ -1162,7 +1157,7 @@ class _NewDriverRegistrationWidgetState
                                   ),
                                 ),
                               ),
-                              Container(
+                              SizedBox(
                                 width: double.infinity,
                                 child: TextFormField(
                                   controller: _model.serialNumberTextController,
@@ -1194,21 +1189,21 @@ class _NewDriverRegistrationWidgetState
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Color(0x00000000),
                                         width: 1.0,
                                       ),
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     errorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Color(0x00000000),
                                         width: 1.0,
                                       ),
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     focusedErrorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Color(0x00000000),
                                         width: 1.0,
                                       ),
@@ -1233,7 +1228,7 @@ class _NewDriverRegistrationWidgetState
                                       .asValidator(context),
                                 ),
                               ),
-                            ].divide(SizedBox(height: 8.0)),
+                            ].divide(const SizedBox(height: 8.0)),
                           ),
                           Text(
                             FFLocalizations.of(context).getText(
@@ -1275,7 +1270,7 @@ class _NewDriverRegistrationWidgetState
                                                     .bodySmallIsCustom,
                                           ),
                                     ),
-                                    Container(
+                                    SizedBox(
                                       width: double.infinity,
                                       child: TextFormField(
                                         controller: _model.textController10,
@@ -1311,7 +1306,7 @@ class _NewDriverRegistrationWidgetState
                                                 BorderRadius.circular(8.0),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                               color: Color(0x00000000),
                                               width: 1.0,
                                             ),
@@ -1319,7 +1314,7 @@ class _NewDriverRegistrationWidgetState
                                                 BorderRadius.circular(8.0),
                                           ),
                                           errorBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                               color: Color(0x00000000),
                                               width: 1.0,
                                             ),
@@ -1328,7 +1323,7 @@ class _NewDriverRegistrationWidgetState
                                           ),
                                           focusedErrorBorder:
                                               OutlineInputBorder(
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                               color: Color(0x00000000),
                                               width: 1.0,
                                             ),
@@ -1381,7 +1376,7 @@ class _NewDriverRegistrationWidgetState
                                                     .bodySmallIsCustom,
                                           ),
                                     ),
-                                    Container(
+                                    SizedBox(
                                       width: double.infinity,
                                       child: TextFormField(
                                         controller: _model.textController11,
@@ -1417,7 +1412,7 @@ class _NewDriverRegistrationWidgetState
                                                 BorderRadius.circular(8.0),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                               color: Color(0x00000000),
                                               width: 1.0,
                                             ),
@@ -1425,7 +1420,7 @@ class _NewDriverRegistrationWidgetState
                                                 BorderRadius.circular(8.0),
                                           ),
                                           errorBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                               color: Color(0x00000000),
                                               width: 1.0,
                                             ),
@@ -1434,7 +1429,7 @@ class _NewDriverRegistrationWidgetState
                                           ),
                                           focusedErrorBorder:
                                               OutlineInputBorder(
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                               color: Color(0x00000000),
                                               width: 1.0,
                                             ),
@@ -1487,7 +1482,7 @@ class _NewDriverRegistrationWidgetState
                                                     .bodySmallIsCustom,
                                           ),
                                     ),
-                                    Container(
+                                    SizedBox(
                                       width: double.infinity,
                                       child: TextFormField(
                                         controller: _model.textController12,
@@ -1523,7 +1518,7 @@ class _NewDriverRegistrationWidgetState
                                                 BorderRadius.circular(8.0),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                               color: Color(0x00000000),
                                               width: 1.0,
                                             ),
@@ -1531,7 +1526,7 @@ class _NewDriverRegistrationWidgetState
                                                 BorderRadius.circular(8.0),
                                           ),
                                           errorBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                               color: Color(0x00000000),
                                               width: 1.0,
                                             ),
@@ -1540,7 +1535,7 @@ class _NewDriverRegistrationWidgetState
                                           ),
                                           focusedErrorBorder:
                                               OutlineInputBorder(
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                               color: Color(0x00000000),
                                               width: 1.0,
                                             ),
@@ -1571,7 +1566,7 @@ class _NewDriverRegistrationWidgetState
                                   ],
                                 ),
                               ),
-                            ].divide(SizedBox(width: 8.0)),
+                            ].divide(const SizedBox(width: 8.0)),
                           ),
                           Row(
                             mainAxisSize: MainAxisSize.max,
@@ -1599,10 +1594,10 @@ class _NewDriverRegistrationWidgetState
                                           ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           0.0, 0.0, 0.0, 6.0),
                                       child: AuthUserStreamWidget(
-                                        builder: (context) => Container(
+                                        builder: (context) => SizedBox(
                                           width: double.infinity,
                                           child: TextFormField(
                                             controller: _model.textController13,
@@ -1611,7 +1606,7 @@ class _NewDriverRegistrationWidgetState
                                             onChanged: (_) =>
                                                 EasyDebounce.debounce(
                                               '_model.textController13',
-                                              Duration(milliseconds: 2000),
+                                              const Duration(milliseconds: 2000),
                                               () async {
                                                 _model.rigt = _model
                                                     .textController10.text;
@@ -1657,7 +1652,7 @@ class _NewDriverRegistrationWidgetState
                                                     BorderRadius.circular(8.0),
                                               ),
                                               focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
+                                                borderSide: const BorderSide(
                                                   color: Color(0x00000000),
                                                   width: 1.0,
                                                 ),
@@ -1665,7 +1660,7 @@ class _NewDriverRegistrationWidgetState
                                                     BorderRadius.circular(8.0),
                                               ),
                                               errorBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
+                                                borderSide: const BorderSide(
                                                   color: Color(0x00000000),
                                                   width: 1.0,
                                                 ),
@@ -1674,7 +1669,7 @@ class _NewDriverRegistrationWidgetState
                                               ),
                                               focusedErrorBorder:
                                                   OutlineInputBorder(
-                                                borderSide: BorderSide(
+                                                borderSide: const BorderSide(
                                                   color: Color(0x00000000),
                                                   width: 1.0,
                                                 ),
@@ -1734,7 +1729,7 @@ class _NewDriverRegistrationWidgetState
                                         ),
                                         child: Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   16.0, 0.0, 16.0, 0.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
@@ -1744,7 +1739,7 @@ class _NewDriverRegistrationWidgetState
                                                 CrossAxisAlignment.center,
                                             children: [
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         8.0, 0.0, 17.0, 0.0),
                                                 child: Row(
@@ -1761,7 +1756,7 @@ class _NewDriverRegistrationWidgetState
                                                             '')
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     11.0,
@@ -1793,7 +1788,7 @@ class _NewDriverRegistrationWidgetState
                                                         ),
                                                       ),
                                                   ].divide(
-                                                      SizedBox(width: 8.0)),
+                                                      const SizedBox(width: 8.0)),
                                                 ),
                                               ),
                                             ],
@@ -1804,9 +1799,9 @@ class _NewDriverRegistrationWidgetState
                                   ],
                                 ),
                               ),
-                            ].divide(SizedBox(width: 16.0)),
+                            ].divide(const SizedBox(width: 16.0)),
                           ),
-                        ].divide(SizedBox(height: 16.0)),
+                        ].divide(const SizedBox(height: 16.0)),
                       ),
                     ),
                   ),

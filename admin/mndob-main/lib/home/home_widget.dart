@@ -4,17 +4,14 @@ import '/components/driver_order_stat_card.dart';
 import '/core/driver_daily_stats_service.dart';
 import '/core/driver_design_system.dart';
 import '/core/driver_dialogs.dart';
-import '/core/driver_i18n.dart';
 import '/core/driver_legacy_field_compat.dart';
 import '/core/driver_order_match.dart';
 import '/core/driver_eligibility_service.dart';
 import '/core/driver_online_state.dart';
 import '/core/driver_trip_constants.dart';
-import '/driver_pending_approval/driver_pending_approval_widget.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'dart:ui';
 import '/index.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
@@ -207,11 +204,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                                     builder: (context, snapshot) {
                                       // Customize what your widget looks like when it's loading.
                                       if (!snapshot.hasData) {
-                                        return Center(
+                                        return const Center(
                                           child: SizedBox(
                                             width: 50.0,
                                             height: 50.0,
-                                            child: const DsLoading(),
+                                            child: DsLoading(),
                                           ),
                                         );
                                       }
@@ -238,14 +235,14 @@ class _HomeWidgetState extends State<HomeWidget> {
                                           mainAxisSize: MainAxisSize.max,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(0.0, 5.0, 0.0, 0.0),
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.max,
                                                 children: [
                                                   Align(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             0.0, 0.0),
                                                     child: Text(
                                                       () {
@@ -281,11 +278,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                   ),
                                                   Align(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             0.0, 0.0),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsetsDirectional
+                                                          const EdgeInsetsDirectional
                                                               .fromSTEB(
                                                                   0.0,
                                                                   12.0,
@@ -351,7 +348,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                   ),
                                                   Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(0.0, 8.0,
                                                                 0.0, 0.0),
                                                     child: Row(
@@ -364,7 +361,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                         Flexible(
                                                           child: Padding(
                                                           padding:
-                                                              EdgeInsetsDirectional
+                                                              const EdgeInsetsDirectional
                                                                   .fromSTEB(
                                                                       7.0,
                                                                       0.0,
@@ -400,7 +397,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                     },
                                   ),
                                 ),
-                            ].divide(SizedBox(height: 8.0)),
+                            ].divide(const SizedBox(height: 8.0)),
                           ),
                     ),
                     DsCard(
@@ -433,11 +430,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                                         builder: (context, snapshot) {
                                           // Customize what your widget looks like when it's loading.
                                           if (!snapshot.hasData) {
-                                            return Center(
+                                            return const Center(
                                               child: SizedBox(
                                                 width: 50.0,
                                                 height: 50.0,
-                                                child: const DsLoading(),
+                                                child: DsLoading(),
                                               ),
                                             );
                                           }
@@ -481,11 +478,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                                       builder: (context, snapshot) {
                                         // Customize what your widget looks like when it's loading.
                                         if (!snapshot.hasData) {
-                                          return Center(
+                                          return const Center(
                                             child: SizedBox(
                                               width: 50.0,
                                               height: 50.0,
-                                              child: const DsLoading(),
+                                              child: DsLoading(),
                                             ),
                                           );
                                         }
@@ -522,11 +519,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                                       builder: (context, snapshot) {
                                         // Customize what your widget looks like when it's loading.
                                         if (!snapshot.hasData) {
-                                          return Center(
+                                          return const Center(
                                             child: SizedBox(
                                               width: 50.0,
                                               height: 50.0,
-                                              child: const DsLoading(),
+                                              child: DsLoading(),
                                             ),
                                           );
                                         }
@@ -545,9 +542,9 @@ class _HomeWidgetState extends State<HomeWidget> {
                                       },
                                     ),
                                   ),
-                                ].divide(SizedBox(width: 8.0)),
+                                ].divide(const SizedBox(width: 8.0)),
                               ),
-                            ].divide(SizedBox(height: 12.0)),
+                            ].divide(const SizedBox(height: 12.0)),
                           ),
                     ),
                     DsCard(
@@ -597,7 +594,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                           mainAxisSize: MainAxisSize.max,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(7.0, 0.0, 7.0, 0.0),
                                               child: Text(
                                                 FFLocalizations.of(context)
@@ -646,7 +643,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                             '') !=
                                                         ''))
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         0.0, 4.0, 0.0, 4.0),
                                                 child: DsButton.primary(
@@ -931,7 +928,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                         DriverWalletWidget.routeName);
                                   },
                                 ),
-                              ].divide(SizedBox(height: 12.0)),
+                              ].divide(const SizedBox(height: 12.0)),
                             ),
                     ),
                   ],

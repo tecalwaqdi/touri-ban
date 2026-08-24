@@ -1,36 +1,25 @@
 import '/core/driver_country_service.dart';
-import '/core/driver_trip_constants.dart';
 import '/core/toury_country_registry.dart';
 import '/core/driver_online_state.dart';
 import '/core/driver_order_match.dart';
 import '/core/driver_order_meta.dart';
-import '/core/driver_navigation_service.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_ux_widgets.dart';
 import '/core/driver_pickup_eta_cache.dart';
 import '/design_system/design_system.dart';
 import '/core/toury_distance_format.dart';
 import '/auth/firebase_auth/auth_util.dart';
-import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
-import '/backend/push_notifications/push_notifications_util.dart';
-import '/backend/schema/enums/enums.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'dart:async';
-import 'dart:math';
-import 'dart:ui';
-import '/core/driver_i18n.dart';
 import '/core/driver_trip_service.dart';
 import '/index.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'now_model.dart';
 export 'now_model.dart';
@@ -128,8 +117,8 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
             curve: Curves.bounceOut,
             delay: 0.0.ms,
             duration: 930.0.ms,
-            begin: Offset(-29.0, 0.0),
-            end: Offset(0.0, 0.0),
+            begin: const Offset(-29.0, 0.0),
+            end: const Offset(0.0, 0.0),
           ),
         ],
       ),
@@ -371,7 +360,7 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                             false,
                                         child: Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 0.0, 0.0, 8.0),
                                           child: InkWell(
                                             splashColor: Colors.transparent,
@@ -515,7 +504,7 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                                                           itemSize:
                                                                               14.0,
                                                                         ),
-                                                                      ].divide(SizedBox(
+                                                                      ].divide(const SizedBox(
                                                                               width: 4.0)),
                                                                     ),
                                                                   ),
@@ -577,11 +566,11 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                                                             },
                                                                           ),
                                                                         ),
-                                                                      ].divide(SizedBox(
+                                                                      ].divide(const SizedBox(
                                                                               width: 4.0)),
                                                                     ),
                                                                   ),
-                                                                ].divide(SizedBox(
+                                                                ].divide(const SizedBox(
                                                                     width:
                                                                         16.0)),
                                                               ),
@@ -611,7 +600,7 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                                                             .bodySmall
                                                                             .copyWith(color: context.dsColors.textSecondary),
                                                                       ),
-                                                                    ].divide(SizedBox(
+                                                                    ].divide(const SizedBox(
                                                                         width:
                                                                             4.0)),
                                                                   ),
@@ -636,19 +625,19 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                                                             .bodySmall
                                                                             .copyWith(color: context.dsColors.textSecondary),
                                                                       ),
-                                                                    ].divide(SizedBox(
+                                                                    ].divide(const SizedBox(
                                                                         width:
                                                                             4.0)),
                                                                   ),
-                                                                ].divide(SizedBox(
+                                                                ].divide(const SizedBox(
                                                                     width:
                                                                         16.0)),
                                                               ),
-                                                            ].divide(SizedBox(
+                                                            ].divide(const SizedBox(
                                                                 height: 4.0)),
                                                           ),
                                                         ),
-                                                      ].divide(SizedBox(
+                                                      ].divide(const SizedBox(
                                                           width: 12.0)),
                                                     ),
                                                     Divider(
@@ -720,7 +709,7 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                                             currentUserLocationValue =
                                                                 await getCurrentUserLocation(
                                                                     defaultLocation:
-                                                                        LatLng(
+                                                                        const LatLng(
                                                                             0.0,
                                                                             0.0));
                                                             var confirmDialogResponse =
@@ -746,7 +735,7 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                                               currentUserLocationValue =
                                                                   await getCurrentUserLocation(
                                                                       defaultLocation:
-                                                                          LatLng(
+                                                                          const LatLng(
                                                                               0.0,
                                                                               0.0));
                                                               _model.soundPlayer ??=

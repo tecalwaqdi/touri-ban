@@ -48,9 +48,9 @@ class _Ttb3WidgetState extends State<Ttb3Widget> {
       stream: OrderRecord.getDocument(widget!.ido!),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return DsScreenShell(
+          return const DsScreenShell(
             child: DsScreenScaffold(
-              body: const DsLoading(message: 'Loading trip...'),
+              body: DsLoading(message: 'Loading trip...'),
             ),
           );
         }

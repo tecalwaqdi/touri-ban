@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +17,7 @@ import '/core/driver_auth_validation_service.dart';
 import '/core/driver_country_service.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
+import '/core/driver_email_verification_service.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_document_upload_service.dart';
 import '/core/driver_lifecycle_state.dart';
@@ -24,6 +27,7 @@ import '/core/driver_registration_draft.dart';
 import '/core/driver_registration_submission_service.dart';
 import '/core/driver_registration_validators.dart';
 import '/core/driver_session_router.dart';
+import '/core/driver_verify_panels.dart';
 import '/core/toury_country_registry.dart';
 import '/core/toury_maps_config.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -59,8 +63,17 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
   bool _uploadingId = false;
   bool _uploadingCar = false;
   bool _uploadingGuide = false;
+  bool _uploadingLicense = false;
+  /// null | email — interstitial after account create (Registration V2).
+  /// Phone OTP is not used: phone is a required form field only.
+  String? _verifyPhase;
   DateTime? _birthDate;
   String _carImageUrl = '';
+  String _licenseUrl = '';
+  String _photoStoragePath = '';
+  String _idStoragePath = '';
+  String _carStoragePath = '';
+  String _licenseStoragePath = '';
   String _affiliationType = 'independent';
   String _companyPath = '';
   String _companyName = '';
@@ -70,6 +83,9 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
   SelectedFile? _pendingIdDoc;
   SelectedFile? _pendingCarPhoto;
   SelectedFile? _pendingGuidePermit;
+  SelectedFile? _pendingLicense;
+  late TextEditingController makeController;
+  late FocusNode makeFocusNode;
 
   late TextEditingController nameController;
   late FocusNode nameFocusNode;
@@ -114,6 +130,8 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     confirmPasswordFocusNode = FocusNode();
     vehicleNameController = TextEditingController();
     vehicleNameFocusNode = FocusNode();
+    makeController = TextEditingController();
+    makeFocusNode = FocusNode();
     modelController = TextEditingController();
     modelFocusNode = FocusNode();
     plateController = TextEditingController();
@@ -390,6 +408,8 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     confirmPasswordFocusNode.dispose();
     vehicleNameController.dispose();
     vehicleNameFocusNode.dispose();
+    makeController.dispose();
+    makeFocusNode.dispose();
     modelController.dispose();
     modelFocusNode.dispose();
     plateController.dispose();
@@ -527,7 +547,7 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       // catalog queries are allowed (rules require request.auth).
       final ready = await _ensureEmailAccountBeforeLocation();
       if (!ready || !mounted) return;
-      await _goTo(1);
+      await _enterVerificationGatesThenLocation();
       return;
     }
     if (_step == 1) {
@@ -604,6 +624,32 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     await _registerDriver();
   }
 
+  /// Registration V2: email verify → personal/location steps (phone is a required field, no OTP).
+  Future<void> _enterVerificationGatesThenLocation() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    await user.reload();
+    final refreshed = FirebaseAuth.instance.currentUser;
+    if (refreshed == null) return;
+
+    if (refreshed.emailVerified != true) {
+      if (mounted) setState(() => _verifyPhase = 'email');
+      return;
+    }
+    if (mounted) setState(() => _verifyPhase = null);
+    await _goTo(1);
+  }
+
+  Future<void> _onEmailVerifiedContinue() async {
+    final user = FirebaseAuth.instance.currentUser;
+    await user?.reload();
+    if (FirebaseAuth.instance.currentUser?.emailVerified != true) {
+      return;
+    }
+    if (mounted) setState(() => _verifyPhase = null);
+    await _goTo(1);
+  }
+
   bool _isUploadReady({required String url, SelectedFile? pending}) {
     if (pending != null && pending.bytes.isNotEmpty) return true;
     final trimmed = url.trim();
@@ -620,7 +666,8 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
           url: _model.uploadedFileUrl_uploadData1k33,
           pending: _pendingIdDoc,
         ) &&
-        _isUploadReady(url: _carImageUrl, pending: _pendingCarPhoto);
+        _isUploadReady(url: _carImageUrl, pending: _pendingCarPhoto) &&
+        _isUploadReady(url: _licenseUrl, pending: _pendingLicense);
   }
 
   /// Email/password Auth must exist before location step (Firestore catalog).
@@ -758,6 +805,19 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         message: t('Document upload is still in progress'),
         type: DriverMessageType.warning,
       );
+      return;
+    }
+
+    final emailOk =
+        await DriverEmailVerificationService.reloadAndCheckVerified();
+    if (!emailOk) {
+      await DriverDialogs.showAlert(
+        context,
+        title: t('Error'),
+        message: t('Please verify your email before submitting'),
+        type: DriverMessageType.warning,
+      );
+      if (mounted) setState(() => _verifyPhase = 'email');
       return;
     }
 
@@ -941,9 +1001,11 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
           loceshnMndobNow: _regLocation,
           revDolh: countryRef,
           uid: uid,
-          registrationStatus: 'pending_review',
+          registrationStatus: 'draft',
           rejectionReason: '',
         ),
+        'registration_flow_version': 2,
+        'vehicle_make': makeController.text.trim(),
         'vehicle_color': colorController.text.trim(),
         'seat_count': DriverSeatCountValidator.parse(seatsController.text),
         'birth_date': _birthDate == null
@@ -957,6 +1019,31 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
               ),
         'normalized_plate':
             DriverPlateNormalizer.normalize(plateController.text),
+        'doc_national_id': {
+          'documentType': 'national_id',
+          if (_idStoragePath.isEmpty && reviewModel.idImageUrl.isNotEmpty)
+            'url': reviewModel.idImageUrl,
+          'storagePath': _idStoragePath,
+          'uploadedAt': FieldValue.serverTimestamp(),
+          'status': 'uploaded',
+        },
+        'doc_vehicle_registration': {
+          'documentType': 'vehicle_registration',
+          if (_carStoragePath.isEmpty && _carImageUrl.isNotEmpty)
+            'url': _carImageUrl,
+          'storagePath': _carStoragePath,
+          'uploadedAt': FieldValue.serverTimestamp(),
+          'status': 'uploaded',
+        },
+        'doc_driver_license': {
+          'documentType': 'driver_license',
+          if (_licenseStoragePath.isEmpty && _licenseUrl.isNotEmpty)
+            'url': _licenseUrl,
+          'storagePath': _licenseStoragePath,
+          'uploadedAt': FieldValue.serverTimestamp(),
+          'status': 'uploaded',
+        },
+        if (_photoStoragePath.isNotEmpty) 'photo_storage_path': _photoStoragePath,
         if (cityController.text.trim().isNotEmpty)
           'city_display': cityController.text.trim()
         else if (FFAppState().textvill.isNotEmpty)
@@ -1003,18 +1090,16 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       await DriverDialogs.showAlert(
         context,
         title: t('Success'),
-        message: _isTourGuide
-            ? t(
-                'Registration completed. Tour guide status is pending review.',
-              )
-            : t('Registration completed. Your account is active.'),
+        message: t(
+          'Registration submitted. Your account is pending admin review.',
+        ),
         type: DriverMessageType.success,
       );
 
       try {
         await WhatCall.call(
           to: phoneE164,
-          msg: '''${t('Registration completed. Your account is active.')}
+          msg: '''${t('Registration submitted. Your account is pending admin review.')}
 ${t('Email')}: ${emailController.text.trim().toLowerCase()}
 ''',
         );
@@ -1074,7 +1159,8 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
     if (_uploadingPhoto ||
         _uploadingId ||
         _uploadingCar ||
-        _uploadingGuide) {
+        _uploadingGuide ||
+        _uploadingLicense) {
       return;
     }
     final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -1086,6 +1172,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
       if (kind == 'id') _uploadingId = true;
       if (kind == 'car') _uploadingCar = true;
       if (kind == 'guide') _uploadingGuide = true;
+      if (kind == 'license') _uploadingLicense = true;
     });
     try {
       final selectedMedia = await selectMediaWithSourceBottomSheet(
@@ -1142,12 +1229,12 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
       }
 
       if (isRealUser) {
-        final url = await DriverDocumentUploadService.uploadSelectedFile(
+        final result = await DriverDocumentUploadService.uploadSelectedFile(
           selected: file,
           uid: uid,
         );
         if (!mounted) return;
-        if (url == null || url.isEmpty || !url.startsWith('https://')) {
+        if (result == null || result.storagePath.isEmpty) {
           await DriverDialogs.showAlert(
             context,
             title: t('Error'),
@@ -1158,16 +1245,23 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
         }
         setState(() {
           if (kind == 'photo') {
-            _model.uploadedFileUrl_uploadDataLbm = url;
+            _model.uploadedFileUrl_uploadDataLbm = result.previewUrl ?? '';
+            _photoStoragePath = result.storagePath;
             _pendingPhoto = null;
           } else if (kind == 'id') {
-            _model.uploadedFileUrl_uploadData1k33 = url;
+            _model.uploadedFileUrl_uploadData1k33 = result.previewUrl ?? '';
+            _idStoragePath = result.storagePath;
             _pendingIdDoc = null;
           } else if (kind == 'guide') {
-            _guidePermitUrl = url;
+            _guidePermitUrl = result.previewUrl ?? '';
             _pendingGuidePermit = null;
+          } else if (kind == 'license') {
+            _licenseUrl = result.previewUrl ?? '';
+            _licenseStoragePath = result.storagePath;
+            _pendingLicense = null;
           } else {
-            _carImageUrl = url;
+            _carImageUrl = result.previewUrl ?? '';
+            _carStoragePath = result.storagePath;
             _pendingCarPhoto = null;
           }
         });
@@ -1193,6 +1287,9 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
           } else if (kind == 'guide') {
             _pendingGuidePermit = file;
             _guidePermitUrl = 'pending://guide';
+          } else if (kind == 'license') {
+            _pendingLicense = file;
+            _licenseUrl = 'pending://license';
           } else {
             _pendingCarPhoto = file;
             _carImageUrl = 'pending://car';
@@ -1229,6 +1326,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
           _uploadingId = false;
           _uploadingCar = false;
           _uploadingGuide = false;
+          _uploadingLicense = false;
         });
       }
     }
@@ -1239,21 +1337,19 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
       final name = f.storagePath.split('/').last;
       final path =
           '${DriverDocumentUploadService.storageRootForUid(uid)}/$name';
-      final url = await uploadData(path, f.bytes);
-      if (url == null || url.isEmpty || !url.startsWith('https://')) {
-        throw StateError('Document upload is incomplete');
-      }
-      return url;
+      await uploadBytes(path, f.bytes);
+      return path;
     }
 
     Future<void> flushOne({
       required SelectedFile? pending,
       required String currentUrl,
-      required void Function(String url) assign,
+      required void Function(String previewUrl, String storagePath) assign,
       required void Function() clearPending,
     }) async {
       if (pending != null) {
-        assign(await up(pending));
+        final storagePath = await up(pending);
+        assign('', storagePath);
         clearPending();
         return;
       }
@@ -1267,20 +1363,38 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
     await flushOne(
       pending: _pendingPhoto,
       currentUrl: _model.uploadedFileUrl_uploadDataLbm,
-      assign: (url) => _model.uploadedFileUrl_uploadDataLbm = url,
+      assign: (url, path) {
+        _model.uploadedFileUrl_uploadDataLbm = url;
+        _photoStoragePath = path;
+      },
       clearPending: () => _pendingPhoto = null,
     );
     await flushOne(
       pending: _pendingIdDoc,
       currentUrl: _model.uploadedFileUrl_uploadData1k33,
-      assign: (url) => _model.uploadedFileUrl_uploadData1k33 = url,
+      assign: (url, path) {
+        _model.uploadedFileUrl_uploadData1k33 = url;
+        _idStoragePath = path;
+      },
       clearPending: () => _pendingIdDoc = null,
     );
     await flushOne(
       pending: _pendingCarPhoto,
       currentUrl: _carImageUrl,
-      assign: (url) => _carImageUrl = url,
+      assign: (url, path) {
+        _carImageUrl = url;
+        _carStoragePath = path;
+      },
       clearPending: () => _pendingCarPhoto = null,
+    );
+    await flushOne(
+      pending: _pendingLicense,
+      currentUrl: _licenseUrl,
+      assign: (url, path) {
+        _licenseUrl = url;
+        _licenseStoragePath = path;
+      },
+      clearPending: () => _pendingLicense = null,
     );
     if (_isTourGuide ||
         _pendingGuidePermit != null ||
@@ -1288,7 +1402,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
       await flushOne(
         pending: _pendingGuidePermit,
         currentUrl: _guidePermitUrl,
-        assign: (url) => _guidePermitUrl = url,
+        assign: (url, path) => _guidePermitUrl = url.isNotEmpty ? url : path,
         clearPending: () => _pendingGuidePermit = null,
       );
     }
@@ -1339,6 +1453,17 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                         message: t('Your draft was restored at the last saved step.'),
                         tone: DsInfoTone.info,
                       ),
+                if (_verifyPhase == 'email')
+                  Expanded(
+                    child: DriverEmailVerifyPanel(
+                      email: emailController.text.trim(),
+                      t: t,
+                      onVerified: () {
+                        unawaited(_onEmailVerifiedContinue());
+                      },
+                    ),
+                  )
+                else ...[
                 _StepHeader(step: _step, total: _totalSteps, t: t),
                 Expanded(
                   child: PageView(
@@ -1435,6 +1560,8 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                         t: t,
                         vehicleNameController: vehicleNameController,
                         vehicleNameFocusNode: vehicleNameFocusNode,
+                        makeController: makeController,
+                        makeFocusNode: makeFocusNode,
                         modelController: modelController,
                         modelFocusNode: modelFocusNode,
                         plateController: plateController,
@@ -1447,13 +1574,16 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                         photoUrl: _model.uploadedFileUrl_uploadDataLbm,
                         idUrl: _model.uploadedFileUrl_uploadData1k33,
                         carUrl: _carImageUrl,
+                        licenseUrl: _licenseUrl,
                         uploadingPhoto: _uploadingPhoto,
                         uploadingId: _uploadingId,
                         uploadingCar: _uploadingCar,
+                        uploadingLicense: _uploadingLicense,
                         onPickType: _pickVehicleType,
                         onUploadPhoto: () => _uploadDoc(kind: 'photo'),
                         onUploadId: () => _uploadDoc(kind: 'id'),
                         onUploadCar: () => _uploadDoc(kind: 'car'),
+                        onUploadLicense: () => _uploadDoc(kind: 'license'),
                         validateModel: _validateModel,
                         validatePlate: _validatePlate,
                         req: _req,
@@ -1513,12 +1643,24 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                         plate: plateController.text,
                         color: colorController.text,
                         seats: seatsController.text,
+                        emailVerified:
+                            FirebaseAuth.instance.currentUser?.emailVerified ==
+                                true,
+                        phonePresent: mobileController.text.trim().isNotEmpty,
                         photoOk:
                             _model.uploadedFileUrl_uploadDataLbm.isNotEmpty ||
                                 _pendingPhoto != null,
-                        idOk:
+                        nationalIdOk:
                             _model.uploadedFileUrl_uploadData1k33.isNotEmpty ||
                                 _pendingIdDoc != null,
+                        vehicleRegOk: _isUploadReady(
+                          url: _carImageUrl,
+                          pending: _pendingCarPhoto,
+                        ),
+                        licenseOk: _isUploadReady(
+                          url: _licenseUrl,
+                          pending: _pendingLicense,
+                        ),
                         affiliationType: _affiliationType,
                         companyName: _companyName,
                         isTourGuide: _isTourGuide,
@@ -1564,6 +1706,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                     ],
                   ),
                 ),
+                ], // end else (!verifyPhase)
               ],
             ),
           ),
@@ -1815,7 +1958,7 @@ class _AccountStep extends StatelessWidget {
         _Field(
             controller: mobileController,
             focusNode: mobileFocusNode,
-            label: t('Mobile Number'),
+            label: '${t('Mobile Number')} *',
             icon: Icons.phone_outlined,
             keyboardType: TextInputType.phone,
             hint: '+996 / +966 / +7 / +998',
@@ -2138,6 +2281,8 @@ class _VehicleStep extends StatelessWidget {
     required this.t,
     required this.vehicleNameController,
     required this.vehicleNameFocusNode,
+    required this.makeController,
+    required this.makeFocusNode,
     required this.modelController,
     required this.modelFocusNode,
     required this.plateController,
@@ -2150,13 +2295,16 @@ class _VehicleStep extends StatelessWidget {
     required this.photoUrl,
     required this.idUrl,
     required this.carUrl,
+    required this.licenseUrl,
     required this.uploadingPhoto,
     required this.uploadingId,
     required this.uploadingCar,
+    required this.uploadingLicense,
     required this.onPickType,
     required this.onUploadPhoto,
     required this.onUploadId,
     required this.onUploadCar,
+    required this.onUploadLicense,
     required this.validateModel,
     required this.validatePlate,
     required this.req,
@@ -2176,6 +2324,8 @@ class _VehicleStep extends StatelessWidget {
   final String Function(String) t;
   final TextEditingController vehicleNameController;
   final FocusNode vehicleNameFocusNode;
+  final TextEditingController makeController;
+  final FocusNode makeFocusNode;
   final TextEditingController modelController;
   final FocusNode modelFocusNode;
   final TextEditingController plateController;
@@ -2188,13 +2338,16 @@ class _VehicleStep extends StatelessWidget {
   final String photoUrl;
   final String idUrl;
   final String carUrl;
+  final String licenseUrl;
   final bool uploadingPhoto;
   final bool uploadingId;
   final bool uploadingCar;
+  final bool uploadingLicense;
   final VoidCallback onPickType;
   final VoidCallback onUploadPhoto;
   final VoidCallback onUploadId;
   final VoidCallback onUploadCar;
+  final VoidCallback onUploadLicense;
   final String? Function(String?) validateModel;
   final String? Function(String?) validatePlate;
   final String? Function(String?, String) req;
@@ -2265,6 +2418,14 @@ class _VehicleStep extends StatelessWidget {
                 fontFamily: 'cairo',
                 fontWeight: FontWeight.w700,
                 fontSize: 16)),
+        const SizedBox(height: 12),
+        _Field(
+            controller: makeController,
+            focusNode: makeFocusNode,
+            label: t('Make / Brand'),
+            icon: Icons.factory_outlined,
+            hint: t('e.g. Toyota'),
+            validator: (v) => req(v, 'Make / Brand')),
         const SizedBox(height: 12),
         _Field(
             controller: vehicleNameController,
@@ -2422,15 +2583,20 @@ class _VehicleStep extends StatelessWidget {
             loading: uploadingPhoto,
             onTap: onUploadPhoto),
         _docBtn(context,
-            label: t('ID document'),
+            label: t('National ID'),
             url: idUrl,
             loading: uploadingId,
             onTap: onUploadId),
         _docBtn(context,
-            label: t('Vehicle photo'),
+            label: t('Vehicle registration'),
             url: carUrl,
             loading: uploadingCar,
             onTap: onUploadCar),
+        _docBtn(context,
+            label: t('Driver license'),
+            url: licenseUrl,
+            loading: uploadingLicense,
+            onTap: onUploadLicense),
       ],
     );
   }
@@ -2453,8 +2619,12 @@ class _ReviewStep extends StatelessWidget {
     required this.plate,
     required this.color,
     required this.seats,
+    required this.emailVerified,
+    required this.phonePresent,
     required this.photoOk,
-    required this.idOk,
+    required this.nationalIdOk,
+    required this.vehicleRegOk,
+    required this.licenseOk,
     required this.affiliationType,
     required this.companyName,
     required this.isTourGuide,
@@ -2481,7 +2651,14 @@ class _ReviewStep extends StatelessWidget {
       affiliationType,
       companyName;
   final DateTime? birthDate;
-  final bool photoOk, idOk, isTourGuide, guidePermitOk;
+  final bool emailVerified,
+      phonePresent,
+      photoOk,
+      nationalIdOk,
+      vehicleRegOk,
+      licenseOk,
+      isTourGuide,
+      guidePermitOk;
   final VoidCallback onEditAccount, onEditLocation, onEditVehicle;
 
   Widget _row(String k, String v) => Padding(
@@ -2522,7 +2699,15 @@ class _ReviewStep extends StatelessWidget {
         const SizedBox(height: 12),
         _row(t('Full Name'), name),
         _row(t('Email'), email),
+        _row(
+          t('Email verified'),
+          emailVerified ? '${t('Verified')} ✓' : t('Not verified'),
+        ),
         _row(t('Phone'), phone),
+        _row(
+          t('Phone present'),
+          phonePresent ? '${t('Added')} ✓' : t('Missing'),
+        ),
         _row(t('ID Number'), idNumber),
         _row(t('Birth date'), birth),
         TextButton(onPressed: onEditAccount, child: Text(t('Edit'))),
@@ -2533,8 +2718,8 @@ class _ReviewStep extends StatelessWidget {
         TextButton(onPressed: onEditLocation, child: Text(t('Edit'))),
         const Divider(),
         _row(t('Vehicle Type'), vehicleType),
-        _row(t('Vehicle Name'), vehicleName),
-        _row(t('Vehicle Model'), year),
+        _row(t('Make'), vehicleName),
+        _row(t('Vehicle year'), year),
         _row(t('Plate Number'), plate),
         _row(t('Color'), color),
         _row(t('Seats'), seats),
@@ -2552,8 +2737,16 @@ class _ReviewStep extends StatelessWidget {
           photoOk ? t('Uploaded') : t('Not provided (optional)'),
         ),
         _row(
-          t('ID document'),
-          idOk ? t('Uploaded') : t('Not provided (optional)'),
+          t('National ID'),
+          nationalIdOk ? t('Uploaded') : t('Missing'),
+        ),
+        _row(
+          t('Vehicle registration'),
+          vehicleRegOk ? t('Uploaded') : t('Missing'),
+        ),
+        _row(
+          t('Driver license'),
+          licenseOk ? t('Uploaded') : t('Missing'),
         ),
         TextButton(onPressed: onEditVehicle, child: Text(t('Edit'))),
       ],

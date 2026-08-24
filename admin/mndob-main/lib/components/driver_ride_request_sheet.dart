@@ -314,7 +314,7 @@ class _DriverRideRequestSheetState extends State<DriverRideRequestSheet> {
                             color: colors.surface,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.notifications_active_rounded,
                             color: DriverBrand.partnerRed,
                           ),

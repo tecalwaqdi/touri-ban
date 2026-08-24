@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:map_launcher/map_launcher.dart' as ml;
 
-import '/core/driver_i18n.dart';
 import '/core/driver_trip_service.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 

@@ -65,7 +65,7 @@ class _DriverAuthGateState extends State<DriverAuthGate> {
       setState(() {
         _error = e;
         _resolving = false;
-        _result = DriverBootstrapResult(
+        _result = const DriverBootstrapResult(
           status: DriverBootstrapStatus.bootstrapError,
           errorMessage: 'Timed out starting the app',
         );
