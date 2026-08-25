@@ -39,6 +39,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
   StreamSubscription<int>? _statsInvalidationSub;
   int _loadGeneration = 0;
   bool _waitingForRole = false;
+  DateTime? _spinnerGuardStartedAt;
 
   static bool get hasLiveSections => _liveSections.isNotEmpty;
 
@@ -298,6 +299,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
     final generation =
         (force || scopeChanged) ? ++_loadGeneration : _loadGeneration;
     _inFlightScope = scope;
+    _spinnerGuardStartedAt ??= DateTime.now();
 
     final cachedPeek = peekDashboardStats();
     if (_stats == null && cachedPeek != null) {
@@ -349,9 +351,12 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
         _watchedScope = appliedScope;
         _inFlightScope = null;
         _loading = !stats.loadComplete;
-        _error = null;
+        _error = stats.loadError != null && !stats.countsReliable
+            ? stats.loadError
+            : null;
         if (stats.loadComplete) {
           _animationGeneration++;
+          _spinnerGuardStartedAt = null;
         }
       });
     }).catchError((Object e) {
@@ -360,6 +365,34 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
         _error = e;
         _inFlightScope = null;
         _loading = false;
+        // Ensure we leave the infinite spinner branch even if no prior stats.
+        _stats ??= DashboardStats.empty(loadError: e.toString());
+        _spinnerGuardStartedAt = null;
+      });
+    });
+
+    // Absolute wall-clock ceiling — survives loadGeneration bumps from
+    // stats invalidation / bootstrap churn so the spinner cannot hang forever.
+    Future<void>.delayed(const Duration(seconds: 20), () {
+      if (!mounted) return;
+      final started = _spinnerGuardStartedAt;
+      if (started == null) return;
+      if (DateTime.now().difference(started) < const Duration(seconds: 20)) {
+        return;
+      }
+      if (!_loading &&
+          _stats != null &&
+          _stats!.loadComplete) {
+        return;
+      }
+      setState(() {
+        _loading = false;
+        _error ??= 'dashboard_stats_ui_timeout';
+        if (_stats == null || !_stats!.loadComplete) {
+          _stats = DashboardStats.empty(loadError: 'dashboard_stats_ui_timeout');
+        }
+        _inFlightScope = null;
+        _spinnerGuardStartedAt = null;
       });
     });
   }

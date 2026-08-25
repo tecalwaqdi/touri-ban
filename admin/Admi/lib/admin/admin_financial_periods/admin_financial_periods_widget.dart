@@ -240,8 +240,23 @@ class _AdminFinancialPeriodsWidgetState
       child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('financial_periods')
+            .limit(200)
             .snapshots(),
         builder: (context, snap) {
+          if (snap.hasError) {
+            return Center(
+              child: Padding(
+                padding: AdminUi.pagePadding(context),
+                child: Text(
+                  uiTr(context, 'تعذر تحميل الفترات المالية'),
+                  softWrap: true,
+                ),
+              ),
+            );
+          }
+          if (!snap.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
           final docs = snap.data?.docs ?? [];
           return ListView(
             padding: AdminUi.pagePadding(context),

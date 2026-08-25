@@ -661,9 +661,21 @@ class _AdminSettlementDetailsWidgetState
                 stream: FirebaseFirestore.instance
                     .collection('financial_settlement_payments')
                     .where('settlementId', isEqualTo: id)
+                    .limit(100)
                     .snapshots(),
                 builder: (context, paySnap) {
-                  if (!paySnap.hasData) return const SizedBox.shrink();
+                  if (paySnap.hasError) {
+                    return Text(
+                      uiTr(context, 'تعذر تحميل المدفوعات'),
+                      softWrap: true,
+                    );
+                  }
+                  if (!paySnap.hasData) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -748,9 +760,21 @@ class _AdminSettlementDetailsWidgetState
                     .collection('financial_settlements')
                     .doc(id)
                     .collection('lines')
+                    .limit(200)
                     .snapshots(),
                 builder: (context, lines) {
-                  if (!lines.hasData) return const SizedBox.shrink();
+                  if (lines.hasError) {
+                    return Text(
+                      uiTr(context, 'تعذر تحميل الرحلات'),
+                      softWrap: true,
+                    );
+                  }
+                  if (!lines.hasData) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -810,9 +834,21 @@ class _AdminSettlementDetailsWidgetState
                     .collection('financial_settlements')
                     .doc(id)
                     .collection('events')
+                    .limit(100)
                     .snapshots(),
                 builder: (context, ev) {
-                  if (!ev.hasData) return const SizedBox.shrink();
+                  if (ev.hasError) {
+                    return Text(
+                      uiTr(context, 'تعذر تحميل الأحداث'),
+                      softWrap: true,
+                    );
+                  }
+                  if (!ev.hasData) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
                   final docs = [...ev.data!.docs]..sort((a, b) {
                       final ta = a.data()['timestamp'] as String? ?? '';
                       final tb = b.data()['timestamp'] as String? ?? '';

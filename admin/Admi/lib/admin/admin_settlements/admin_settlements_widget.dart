@@ -118,6 +118,19 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Text(
+                    uiTr(
+                      context,
+                      'List scope ≤200 settlements — counts below are for this page, not global ledger totals.',
+                    ),
+                    softWrap: true,
+                    style: theme.labelSmall.override(
+                      fontFamily: theme.labelSmallFamily,
+                      color: theme.secondaryText,
+                      useGoogleFonts: !theme.labelSmallIsCustom,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   Wrap(
                     spacing: 16,
                     runSpacing: 8,
@@ -169,7 +182,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(uiTr(context, 'Receivables / Payables'),
+                          Text(uiTr(context, 'Receivables / Payables (list scope)'),
                               style: theme.titleSmall),
                           Text('Receivables outstanding: $recv', softWrap: true),
                           Text('Payables outstanding: $pay', softWrap: true),

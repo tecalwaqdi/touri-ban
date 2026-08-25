@@ -109,8 +109,9 @@ class DashboardStats {
         supportTickets: 0,
         supportOpenTickets: 0,
         loadedAt: DateTime.now(),
-        loadComplete: false,
-        countsReliable: loadError == null,
+        // Terminal empty must exit LOADING (errors + unsupported scope).
+        loadComplete: true,
+        countsReliable: false,
         loadError: loadError,
       );
 
@@ -261,7 +262,12 @@ Future<DashboardStats> loadDashboardStats({
 }) async {
   await _ensureRoleReady();
   if (AdminRoleService.hasPanelAccess) {
-    await AdminPanelDataBootstrap.ensureReady();
+    try {
+      await AdminPanelDataBootstrap.ensureReady()
+          .timeout(const Duration(seconds: 12));
+    } catch (_) {
+      // Continue with best-effort counts; do not hang dashboard forever.
+    }
     if (AdminRoleService.isCountryAgent) {
       AdminAgentCountryLock.applyToAppState();
     }
@@ -305,9 +311,10 @@ Future<DashboardStats> loadDashboardStats({
       _statsLoadInFlightKey ==
           _loadKey(scopeKey, quickLandmarks, priorityOnly)) {
     try {
-      return await _statsLoadInFlight!.timeout(const Duration(seconds: 60));
+      return await _statsLoadInFlight!.timeout(const Duration(seconds: 45));
     } catch (_) {
-      return cached ?? DashboardStats.empty();
+      return cached ??
+          DashboardStats.empty(loadError: 'dashboard_stats_inflight_timeout');
     }
   }
 
@@ -317,8 +324,9 @@ Future<DashboardStats> loadDashboardStats({
     priorityOnly: priorityOnly,
   )
       .timeout(
-        const Duration(seconds: 60),
-        onTimeout: () => cached ?? DashboardStats.empty(),
+        const Duration(seconds: 45),
+        onTimeout: () =>
+            cached ?? DashboardStats.empty(loadError: 'dashboard_stats_timeout'),
       )
       .then((stats) {
         final prior = _dashboardStatsCacheByScope[scopeKey];

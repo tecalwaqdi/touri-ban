@@ -311,10 +311,8 @@ class _UsersTable extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minWidth: AdminUi.adminTableMinWidth(context),
-        ),
+      child: SizedBox(
+        width: AdminUi.adminTableMinWidth(context),
                                     child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
                                       children: [

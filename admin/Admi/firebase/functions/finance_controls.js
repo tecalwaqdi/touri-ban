@@ -1018,7 +1018,11 @@ async function searchFinanceAudit({db, auth, data}) {
 }
 
 function csvEscape(v) {
-  const s = v == null ? '' : String(v);
+  let s = v == null ? '' : String(v);
+  // Neutralize spreadsheet formula injection when pasted into Excel/Sheets.
+  if (/^[=+\-@\t\r]/.test(s)) {
+    s = `'${s}`;
+  }
   if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;
 }
