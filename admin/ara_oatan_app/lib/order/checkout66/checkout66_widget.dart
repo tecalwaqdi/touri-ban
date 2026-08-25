@@ -2138,53 +2138,29 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                       ],
                     ),
                   ),
-                if ((FFAppState().addcart <= 0) && (FFAppState().typeHgz != 2))
+                // Empty itinerary — always visible (including typeHgz==2).
+                // Previously typeHgz==2 only showed a tiny 12px bar that looked blank.
+                if (FFAppState().addcart <= 0)
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                        16.0, 16.0, 16.0, 0.0),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 16),
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).primary,
-                        borderRadius: BorderRadius.circular(14),
+                    padding: const EdgeInsets.fromLTRB(
+                      DsSpacing.md,
+                      DsSpacing.lg,
+                      DsSpacing.md,
+                      DsSpacing.md,
+                    ),
+                    child: DsEmptyState(
+                      icon: FFAppState().typeHgz == 2
+                          ? Icons.route_outlined
+                          : Icons.luggage_outlined,
+                      title: FFLocalizations.of(context).getText(
+                        'vbjndb7s' /* No tours have been added! */,
                       ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.sentiment_dissatisfied,
-                            color: FlutterFlowTheme.of(context)
-                                .secondaryBackground,
-                            size: 28.0,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              FFLocalizations.of(context).getText(
-                                'vbjndb7s' /* No tours have been added! */,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    fontFamily: FlutterFlowTheme.of(context)
-                                        .bodyMediumFamily,
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryBackground,
-                                    fontSize: 16.0,
-                                    letterSpacing: 0.0,
-                                    useGoogleFonts: !FlutterFlowTheme.of(context)
-                                        .bodyMediumIsCustom,
-                                  ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      message: FFAppState().typeHgz == 2
+                          ? 'ux_select_destination_hint'.tr()
+                          : 'ux_add_places_hint'.tr(),
                     ),
                   ),
-                if (FFAppState().typeHgz == 2)
+                if (FFAppState().typeHgz == 2 && FFAppState().addcart >= 1)
                   Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -2210,35 +2186,34 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                   size: 22.0,
                                 ),
                               const SizedBox(width: 8),
-                              if (FFAppState().addcart <= 0)
-                                Expanded(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            0.0, 0.0, 18.0, 0.0),
-                                    child: Text(
-                                      FFLocalizations.of(context)
-                                          .getText('un9qx6mz'),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.start,
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .override(
-                                            fontFamily:
-                                                FlutterFlowTheme.of(context)
-                                                    .bodyMediumFamily,
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryBackground,
-                                            fontSize: 12.0,
-                                            letterSpacing: 0.0,
-                                            useGoogleFonts:
-                                                !FlutterFlowTheme.of(context)
-                                                    .bodyMediumIsCustom,
-                                          ),
-                                    ),
+                              Expanded(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsetsDirectional.fromSTEB(
+                                          0.0, 0.0, 18.0, 0.0),
+                                  child: Text(
+                                    FFLocalizations.of(context)
+                                        .getText('un9qx6mz'),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.start,
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          fontFamily:
+                                              FlutterFlowTheme.of(context)
+                                                  .bodyMediumFamily,
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryBackground,
+                                          fontSize: 12.0,
+                                          letterSpacing: 0.0,
+                                          useGoogleFonts:
+                                              !FlutterFlowTheme.of(context)
+                                                  .bodyMediumIsCustom,
+                                        ),
                                   ),
-                                )
+                                ),
+                              ),
                             ],
                           ),
                         ),

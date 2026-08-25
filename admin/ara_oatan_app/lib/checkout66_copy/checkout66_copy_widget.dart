@@ -4,6 +4,7 @@ import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
@@ -125,13 +126,16 @@ class _Checkout66CopyWidgetState extends State<Checkout66CopyWidget> {
   }
 
   Widget _buildEmptyBody(BuildContext context) {
+    final villageHint = FFAppState().naimvillatext.trim();
     return DsFadeSlide(
       child: DsEmptyState(
         icon: Icons.luggage_outlined,
         title: FFLocalizations.of(context).getText(
           'cmuygo0x' /* No tours have been added! */,
         ),
-        message: FFAppState().naimvillatext,
+        message: villageHint.isEmpty
+            ? 'ux_add_places_hint'.tr()
+            : villageHint,
       ),
     );
   }

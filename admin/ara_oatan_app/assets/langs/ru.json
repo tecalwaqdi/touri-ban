@@ -985,5 +985,7 @@
   "landmark_remove": "Удалить",
   "notification_default_title": "Новое уведомление",
   "notification_open_action": "Открыть",
-  "open_app_settings": "Открыть настройки"
+  "open_app_settings": "Открыть настройки",
+  "ux_select_destination_hint": "Выберите точку подачи и назначения, чтобы продолжить.",
+  "ux_add_places_hint": "Добавьте места в список поездки, чтобы продолжить."
 }

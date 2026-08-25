@@ -985,5 +985,7 @@
   "landmark_remove": "Remove",
   "notification_default_title": "New notification",
   "notification_open_action": "Open",
-  "open_app_settings": "Open settings"
+  "open_app_settings": "Open settings",
+  "ux_select_destination_hint": "Choose a pickup and destination to continue booking.",
+  "ux_add_places_hint": "Add places to your trip list to continue."
 }

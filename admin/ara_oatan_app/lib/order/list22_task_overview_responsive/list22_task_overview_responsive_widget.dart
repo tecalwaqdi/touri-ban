@@ -1134,14 +1134,20 @@ class _List22TaskOverviewResponsiveWidgetState
                                   snapshot.data ?? const <OrderRecord>[];
 
                               if (listViewOrderRecordList.isEmpty) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: DsSpacing.huge,
+                                return ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    minHeight: 280,
                                   ),
-                                  child: DsEmptyState(
-                                    icon: DsIcons.bookings,
-                                    title: 'ux_no_bookings_title'.tr(),
-                                    message: 'ux_no_bookings_msg'.tr(),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: DsSpacing.huge,
+                                      horizontal: DsSpacing.md,
+                                    ),
+                                    child: DsEmptyState(
+                                      icon: DsIcons.bookings,
+                                      title: 'ux_no_bookings_title'.tr(),
+                                      message: 'ux_no_bookings_msg'.tr(),
+                                    ),
                                   ),
                                 );
                               }

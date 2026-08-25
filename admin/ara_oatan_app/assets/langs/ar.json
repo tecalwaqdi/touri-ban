@@ -985,5 +985,7 @@
   "landmark_remove": "حذف",
   "notification_default_title": "إشعار جديد",
   "notification_open_action": "فتح",
-  "open_app_settings": "فتح الإعدادات"
+  "open_app_settings": "فتح الإعدادات",
+  "ux_select_destination_hint": "اختر نقطة الانطلاق والوجهة لمتابعة الحجز.",
+  "ux_add_places_hint": "أضف أماكن إلى قائمة رحلتك للمتابعة."
 }

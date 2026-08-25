@@ -985,5 +985,7 @@
   "landmark_remove": "Supprimer",
   "notification_default_title": "Nouvelle notification",
   "notification_open_action": "Ouvrir",
-  "open_app_settings": "Ouvrir les réglages"
+  "open_app_settings": "Ouvrir les réglages",
+  "ux_select_destination_hint": "Choisissez un départ et une destination pour continuer.",
+  "ux_add_places_hint": "Ajoutez des lieux à votre liste de trajet pour continuer."
 }

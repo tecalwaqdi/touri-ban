@@ -76,6 +76,16 @@ class _MktmlhWidgetState extends State<MktmlhWidget> {
                         .orderBy('data_order'),
                   ),
                   builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return DsErrorState(
+                        title: driverTr(context, 'Something went wrong'),
+                        message: driverTr(
+                          context,
+                          'Please try again',
+                        ),
+                        onRetry: () => safeSetState(() {}),
+                      );
+                    }
                     if (!snapshot.hasData) {
                       return const DsLoading();
                     }
@@ -83,8 +93,10 @@ class _MktmlhWidgetState extends State<MktmlhWidget> {
 
                     if (listViewOrderRecordList.isEmpty) {
                       return DsEmptyState(
-                        title: FFLocalizations.of(context).getText(
-                          'h2tehj88' /* completed */,
+                        title: driverTr(context, 'No orders'),
+                        message: driverTr(
+                          context,
+                          'New orders will appear here when available',
                         ),
                         icon: Icons.check_circle_outline_rounded,
                       );
