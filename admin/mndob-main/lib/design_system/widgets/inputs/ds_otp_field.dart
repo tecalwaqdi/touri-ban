@@ -68,7 +68,7 @@ class _DsOtpFieldState extends State<DsOtpField> {
             enabled: widget.enabled,
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
-            maxLength: 1,
+            maxLength: 6,
             style: typography.titleLarge.copyWith(color: colors.textPrimary),
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
@@ -88,9 +88,25 @@ class _DsOtpFieldState extends State<DsOtpField> {
               ),
             ),
             onChanged: (v) {
-              if (v.isNotEmpty && i < widget.length - 1) {
+              final digits = v.replaceAll(RegExp(r'\D'), '');
+              if (digits.length > 1) {
+                for (var j = 0; j < widget.length; j++) {
+                  _controllers[j].text =
+                      j < digits.length ? digits[j] : '';
+                }
+                final focusIdx = digits.length >= widget.length
+                    ? widget.length - 1
+                    : digits.length;
+                _nodes[focusIdx].requestFocus();
+                _emit();
+                return;
+              }
+              if (digits.length == 1 && _controllers[i].text != digits) {
+                _controllers[i].text = digits;
+              }
+              if (digits.isNotEmpty && i < widget.length - 1) {
                 _nodes[i + 1].requestFocus();
-              } else if (v.isEmpty && i > 0) {
+              } else if (digits.isEmpty && i > 0) {
                 _nodes[i - 1].requestFocus();
               }
               _emit();

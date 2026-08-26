@@ -53,12 +53,33 @@ abstract final class TouryPaymentFlags {
     defaultValue: 'https://touri-ban.onrender.com',
   );
 
-  /// When true, open Hosted Payment Page in the system browser (Safari)
-  /// instead of the in-app WebView (avoids simulator WebView/3DS issues).
+  /// When true, open Hosted Payment Page in Safari / system browser.
+  /// Only used for **HPP fallback** after native is unavailable — never as
+  /// the iOS primary path. Rollback: `--dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=true`
   static const bool openPaymentInExternalBrowser = bool.fromEnvironment(
     'OPEN_PAYMENT_IN_EXTERNAL_BROWSER',
     defaultValue: true,
   );
+
+  /// Mobile checkout experience: `sdk` (N-Genius native primary) | `hpp` (legacy).
+  ///
+  /// iOS release default is **sdk**. Safe rollback:
+  /// `--dart-define=MOBILE_PAYMENT_MODE=hpp`
+  static const String mobilePaymentMode = String.fromEnvironment(
+    'MOBILE_PAYMENT_MODE',
+    defaultValue: 'sdk',
+  );
+
+  /// Prefer in-app N-Genius Mobile SDK when available (iOS/Android).
+  static bool get preferMobileSdk =>
+      enableOnlinePayment &&
+      !cashOnlyMode &&
+      !kIsWeb &&
+      mobilePaymentMode.toLowerCase() != 'hpp';
+
+  /// Force Hosted Payment Page (safe rollback without native SDK).
+  static bool get forceHostedPaymentPage =>
+      !preferMobileSdk || mobilePaymentMode.toLowerCase() == 'hpp';
 
   static bool get cashOnlyMode =>
       !enableOnlinePayment || paymentBackend == 'cash_only';

@@ -182,3 +182,155 @@ describe('Storage upload security', () => {
     );
   });
 });
+
+describe('Storage type_car vehicle images', () => {
+  const carPath = 'type_car/uploads/qa_car.jpg';
+
+  beforeEach(async () => {
+    await seedFirestore({
+      'user/super-1': {IsAdmin: true},
+      'user/admin-sa': {isAdminRule: 2, Rev_dloh_agent: 'countries/sa'},
+      'user/customer-1': {ismndob: false},
+      'user/driver-1': {ismndob: true},
+      'user/partner-1': {isAdminRule: 3, isPartner: true},
+      'user/company-1': {isAdminRule: 4},
+    });
+    await seedStorageObject(carPath, Uint8Array.from([0xff, 0xd8, 0xff, 0xd9]));
+  });
+
+  it('customer can read type_car image', async () => {
+    const storage = testEnv.authenticatedContext('customer-1').storage(bucket);
+    await assertSucceeds(getBytes(ref(storage, carPath)));
+  });
+
+  it('unauthenticated can read type_car image', async () => {
+    const storage = testEnv.unauthenticatedContext().storage(bucket);
+    await assertSucceeds(getBytes(ref(storage, carPath)));
+  });
+
+  it('super admin can upload/replace type_car image', async () => {
+    const storage = testEnv
+      .authenticatedContext('super-1', {super_admin: true})
+      .storage(bucket);
+    await assertSucceeds(
+      uploadBytes(
+        ref(storage, 'type_car/uploads/qa_new.jpg'),
+        Uint8Array.from([0xff, 0xd8, 0xff, 0xd9]),
+        {contentType: 'image/jpeg'},
+      ),
+    );
+    await assertSucceeds(
+      uploadBytes(
+        ref(storage, carPath),
+        Uint8Array.from([0xff, 0xd8, 0xff, 0xaa, 0xd9]),
+        {contentType: 'image/jpeg'},
+      ),
+    );
+  });
+
+  it('customer cannot write type_car image', async () => {
+    const storage = testEnv.authenticatedContext('customer-1').storage(bucket);
+    await assertFails(
+      uploadBytes(
+        ref(storage, 'type_car/uploads/hack.jpg'),
+        Uint8Array.from([0xff, 0xd8, 0xff, 0xd9]),
+        {contentType: 'image/jpeg'},
+      ),
+    );
+  });
+
+  it('driver cannot write global type_car image', async () => {
+    const storage = testEnv.authenticatedContext('driver-1').storage(bucket);
+    await assertFails(
+      uploadBytes(
+        ref(storage, 'type_car/uploads/hack.jpg'),
+        Uint8Array.from([0xff, 0xd8, 0xff, 0xd9]),
+        {contentType: 'image/jpeg'},
+      ),
+    );
+  });
+
+  it('partner cannot write type_car image', async () => {
+    const storage = testEnv.authenticatedContext('partner-1').storage(bucket);
+    await assertFails(
+      uploadBytes(
+        ref(storage, 'type_car/uploads/hack.jpg'),
+        Uint8Array.from([0xff, 0xd8, 0xff, 0xd9]),
+        {contentType: 'image/jpeg'},
+      ),
+    );
+  });
+
+  it('transport company cannot write global type_car image', async () => {
+    const storage = testEnv.authenticatedContext('company-1').storage(bucket);
+    await assertFails(
+      uploadBytes(
+        ref(storage, 'type_car/uploads/hack.jpg'),
+        Uint8Array.from([0xff, 0xd8, 0xff, 0xd9]),
+        {contentType: 'image/jpeg'},
+      ),
+    );
+  });
+
+  it('country admin cannot write type_car image (storage super-only)', async () => {
+    const storage = testEnv
+      .authenticatedContext('admin-sa', {
+        country_admin: true,
+        country_id: 'countries/sa',
+      })
+      .storage(bucket);
+    await assertFails(
+      uploadBytes(
+        ref(storage, 'type_car/uploads/hack.jpg'),
+        Uint8Array.from([0xff, 0xd8, 0xff, 0xd9]),
+        {contentType: 'image/jpeg'},
+      ),
+    );
+  });
+});
+
+
+describe('Customer profile photo upload', () => {
+  const uid = 'customer-photo-1';
+  const path = `users/${uid}/profile.jpg`;
+
+  beforeEach(async () => {
+    await seedFirestore({
+      [`user/${uid}`]: {ismndob: false},
+      'user/other-user': {ismndob: false},
+    });
+  });
+
+  it('OWNER_PROFILE_UPLOAD_ALLOW = PASS', async () => {
+    const storage = testEnv.authenticatedContext(uid).storage(bucket);
+    await assertSucceeds(
+      uploadBytes(
+        ref(storage, path),
+        Uint8Array.from([0xff, 0xd8, 0xff, 0xd9]),
+        {contentType: 'image/jpeg'},
+      ),
+    );
+  });
+
+  it('CROSS_USER_PROFILE_UPLOAD_DENY = PASS', async () => {
+    const storage = testEnv.authenticatedContext(uid).storage(bucket);
+    await assertFails(
+      uploadBytes(
+        ref(storage, 'users/other-user/profile.jpg'),
+        Uint8Array.from([0xff, 0xd8, 0xff, 0xd9]),
+        {contentType: 'image/jpeg'},
+      ),
+    );
+  });
+
+  it('ANONYMOUS_PROFILE_UPLOAD_DENY = PASS', async () => {
+    const storage = testEnv.unauthenticatedContext().storage(bucket);
+    await assertFails(
+      uploadBytes(
+        ref(storage, path),
+        Uint8Array.from([0xff, 0xd8, 0xff, 0xd9]),
+        {contentType: 'image/jpeg'},
+      ),
+    );
+  });
+});

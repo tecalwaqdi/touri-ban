@@ -1830,24 +1830,24 @@ const kAdminTranslations = <String, Map<String, String>>{
   },
   'adm_login_unauthorized': {
     'en':
-        'This account is not authorized for the admin panel. The account must be activated with one of these roles: Super Admin, Country Agent, Partner, or Transport Company Manager.',
-    'pt': 'This account is not authorized for the admin panel. The account must be activated with one of these roles: Super Admin, País Agent, Partner, or Transport Company Manager.',
-    'fr': 'This account is not authorized for the admin panel. The account must be activated with one of these roles: Super Admin, Pays Agent, Partner, or Transport Company Manager.',
+        'This account does not have permission to access the control panel.',
+    'pt': 'This account does not have permission to access the control panel.',
+    'fr': 'This account does not have permission to access the control panel.',
     'ar':
-        'هذا الحساب لا يملك صلاحية الدخول للوحة الإدارة. يجب أن يكون الحساب مفعّلاً بأحد الأدوار: سوبر أدمن، وكيل دولة، شريك، أو مدير شركة نقل.',
-    'zh_Hans': '此账户无权访问管理面板。账户须激活为以下角色之一：超级管理员、国家代理、合作伙伴或运输公司经理。',
+        'هذا الحساب لا يملك صلاحية الدخول إلى لوحة التحكم',
+    'zh_Hans': '此账户无权访问控制面板。',
     'tr':
-        'Bu hesabın yönetici paneline erişim yetkisi yok. Hesap şu rollerden biriyle etkinleştirilmelidir: Süper Yönetici, Ülke Temsilcisi, Ortak veya Ulaşım Şirketi Yöneticisi.',
+        'Bu hesabın kontrol paneline erişim yetkisi yok.',
     'ur':
-        'اس اکاؤنٹ کو ایڈمن پینل کی اجازت نہیں۔ اکاؤنٹ ان میں سے کسی ایک رول کے ساتھ فعال ہونا چاہیے: سپر ایڈمن، کنٹری ایجنٹ، پارٹنر، یا ٹرانسپورٹ کمپنی مینیجر۔',
+        'اس اکاؤنٹ کو کنٹرول پینل تک رسائی کی اجازت نہیں۔',
     'ru':
-        'У этой учётной записи нет доступа к панели администратора. Аккаунт должен быть активирован с одной из ролей: супер-админ, агент страны, партнёр или менеджер транспортной компании.',
+        'У этой учётной записи нет доступа к панели управления.',
     'ky':
-        'Бул аккаунттун админ панелине кирүүгө укугу жок. Аккаунт супер-админ, өлкө агенти, өнөктөш же транспорт компаниясынын менеджери ролу менен активдештирилиши керек.',
+        'Бул аккаунттун башкаруу панелине кирүүгө укугу жок.',
     'az':
-        'Bu hesabın admin panelinə girişi yoxdur. Hesab bu rollardan biri ilə aktivləşdirilməlidir: Super Admin, Ölkə Agenti, Tərəfdaş və ya Nəqliyyat Şirkəti Meneceri.',
+        'Bu hesabın idarəetmə panelinə girişi yoxdur.',
     'ka':
-        'ამ ანგარიშს ადმინ პანელზე წვდომა არ აქვს. ანგარიში უნდა იყოს გააქტიურებული ერთ-ერთი როლით: სუპერ ადმინი, ქვეყნის აგენტი, პარტნიორი ან სატრანსპორტო კომპანიის მენეჯერი.',
+        'ამ ანგარიშს მართვის პანელზე წვდომა არ აქვს.',
   },
   'adm_login_nav_failed': {
     'en': 'Could not open the control panel. Please try again.',
@@ -1995,17 +1995,17 @@ const kAdminTranslations = <String, Map<String, String>>{
     'ka': 'ვერ მოიძებნა.',
   },
   'adm_err_network': {
-    'en': 'Network error. Check your connection.',
-    'pt': 'Network error. Check your connection.',
-    'fr': 'Network error. Check your connection.',
-    'ar': 'خطأ في الشبكة. تحقق من الاتصال.',
-    'zh_Hans': '网络错误。请检查连接。',
-    'tr': 'Ağ hatası. Bağlantınızı kontrol edin.',
-    'ur': 'نیٹ ورک خرابی۔ کنکشن چیک کریں۔',
-    'ru': 'Ошибка сети. Проверьте соединение.',
-    'ky': 'Тармак катасы. Байланышты текшериңиз.',
-    'az': 'Şəbəkə xətası. Bağlantınızı yoxlayın.',
-    'ka': 'ქსელის შეცდომა. შეამოწმეთ კავშირი.',
+    'en': 'Could not connect. Please try again.',
+    'pt': 'Could not connect. Please try again.',
+    'fr': 'Could not connect. Please try again.',
+    'ar': 'تعذر الاتصال، حاول مرة أخرى',
+    'zh_Hans': '无法连接，请重试。',
+    'tr': 'Bağlantı kurulamadı. Lütfen tekrar deneyin.',
+    'ur': 'کنکشن نہیں ہو سکا، دوبارہ کوشش کریں۔',
+    'ru': 'Не удалось подключиться. Попробуйте ещё раз.',
+    'ky': 'Байланыш мүмкүн болбоду, кайра аракет кылыңыз.',
+    'az': 'Qoşulmaq mümkün olmadı, yenidən cəhd edin.',
+    'ka': 'დაკავშირება ვერ მოხერხდა, სცადეთ ხელახლა.',
   },
   'adm_err_unavailable': {
     'en': 'Service temporarily unavailable.',

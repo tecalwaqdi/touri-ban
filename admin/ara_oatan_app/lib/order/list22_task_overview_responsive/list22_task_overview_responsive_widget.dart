@@ -12,10 +12,12 @@ import '/core/app_design_system.dart';
 import '/core/toury_firestore_cache.dart';
 import '/core/toury_navigation_service.dart';
 import '/core/toury_order_meta.dart';
+import '/core/toury_async_action_guard.dart';
+import '/core/toury_booking_filter.dart';
 import '/core/toury_booking_status_localizer.dart';
+import '/core/toury_currency.dart';
 import '/core/toury_dialogs.dart';
 import '/core/toury_payment_flow.dart';
-import '/core/toury_order_meta.dart';
 import '/backend/schema/enums/enums.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'list22_task_overview_responsive_model.dart';
@@ -1097,129 +1099,7 @@ class _List22TaskOverviewResponsiveWidgetState
                               ],
                             ),
                           ),
-                          StreamBuilder<List<OrderRecord>>(
-                            stream: TouryFirestoreCache.userOrdersStream(
-                              currentUserReference,
-                            ),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasError) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: DsSpacing.huge,
-                                  ),
-                                  child: DsErrorState(
-                                    title: 'load_error_title'.tr(),
-                                    message: 'load_error_message'.tr(),
-                                    retryLabel: 'ux_retry'.tr(),
-                                    onRetry: () {
-                                      TouryFirestoreCache.invalidateUserOrders(
-                                        currentUserReference,
-                                      );
-                                      safeSetState(() {});
-                                    },
-                                  ),
-                                );
-                              }
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting &&
-                                  !snapshot.hasData) {
-                                return const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: DsSpacing.huge,
-                                  ),
-                                  child: DsLoading(),
-                                );
-                              }
-                              List<OrderRecord> listViewOrderRecordList =
-                                  snapshot.data ?? const <OrderRecord>[];
-
-                              if (listViewOrderRecordList.isEmpty) {
-                                return ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    minHeight: 280,
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: DsSpacing.huge,
-                                      horizontal: DsSpacing.md,
-                                    ),
-                                    child: DsEmptyState(
-                                      icon: DsIcons.bookings,
-                                      title: 'ux_no_bookings_title'.tr(),
-                                      message: 'ux_no_bookings_msg'.tr(),
-                                    ),
-                                  ),
-                                );
-                              }
-
-                              return ListView.separated(
-                                padding: const EdgeInsets.fromLTRB(
-                                  0,
-                                  DsSpacing.xs,
-                                  0,
-                                  DsSpacing.huge,
-                                ),
-                                primary: false,
-                                shrinkWrap: true,
-                                cacheExtent: 560,
-                                addRepaintBoundaries: true,
-                                addAutomaticKeepAlives: false,
-                                scrollDirection: Axis.vertical,
-                                itemCount: listViewOrderRecordList.length,
-                                separatorBuilder: (_, __) =>
-                                    const SizedBox(height: DsSpacing.xs),
-                                itemBuilder: (context, listViewIndex) {
-                                  final listViewOrderRecord =
-                                      listViewOrderRecordList[listViewIndex];
-                                  return _TouryBookingCard(
-                                    order: listViewOrderRecord,
-                                    onOpen: () {
-                                      context.pushNamed(
-                                        TfaselOrderWidget.routeName,
-                                        queryParameters: {
-                                          'idorder': serializeParam(
-                                            listViewOrderRecord,
-                                            ParamType.Document,
-                                          ),
-                                        }.withoutNulls,
-                                        extra: <String, dynamic>{
-                                          'idorder': listViewOrderRecord,
-                                        },
-                                      );
-                                    },
-                                    onMap: () async {
-                                      final pts = listViewOrderRecord
-                                          .trackingRouteWaypoints();
-                                      if (pts.isEmpty) {
-                                        final pickup =
-                                            listViewOrderRecord.customerPickup;
-                                        if (pickup != null) {
-                                          await TouryNavigationService
-                                              .openGoogleMapsNavigation(
-                                            destination: pickup,
-                                            localeKey:
-                                                TouryNavigationService
-                                                    .localeForContext(context),
-                                          );
-                                        }
-                                        return;
-                                      }
-                                      await TouryNavigationService
-                                          .openGoogleMapsNavigation(
-                                        origin: pts.first,
-                                        destination: pts.last,
-                                        waypoints: pts.length > 2
-                                            ? pts.sublist(1, pts.length - 1)
-                                            : const [],
-                                        localeKey: TouryNavigationService
-                                            .localeForContext(context),
-                                      );
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                          ),
+                          const _TouryBookingsSection(),
                         ],
                       ),
                     ),
@@ -1235,15 +1115,397 @@ class _List22TaskOverviewResponsiveWidgetState
   }
 }
 
+/// Bookings list with status segmentation, skeleton loading and per-tab
+/// empty states.
+class _TouryBookingsSection extends StatefulWidget {
+  const _TouryBookingsSection();
+
+  @override
+  State<_TouryBookingsSection> createState() => _TouryBookingsSectionState();
+}
+
+class _TouryBookingsSectionState extends State<_TouryBookingsSection> {
+  static const _tabs = <TouryBookingBucket>[
+    TouryBookingBucket.active,
+    TouryBookingBucket.awaitingPayment,
+    TouryBookingBucket.completed,
+    TouryBookingBucket.cancelled,
+  ];
+
+  TouryBookingBucket _selected = TouryBookingBucket.active;
+
+  static String _tabLabelKey(TouryBookingBucket bucket) {
+    switch (bucket) {
+      case TouryBookingBucket.active:
+        return 'bookings_tab_current';
+      case TouryBookingBucket.awaitingPayment:
+        return 'bookings_tab_awaiting_payment';
+      case TouryBookingBucket.completed:
+        return 'bookings_tab_completed';
+      case TouryBookingBucket.cancelled:
+        return 'bookings_tab_cancelled';
+    }
+  }
+
+  static ({String titleKey, String messageKey, IconData icon}) _emptyFor(
+    TouryBookingBucket bucket,
+  ) {
+    switch (bucket) {
+      case TouryBookingBucket.active:
+        return (
+          titleKey: 'bookings_empty_active_title',
+          messageKey: 'bookings_empty_active_msg',
+          icon: Icons.directions_car_filled_outlined,
+        );
+      case TouryBookingBucket.awaitingPayment:
+        return (
+          titleKey: 'bookings_empty_payment_title',
+          messageKey: 'bookings_empty_payment_msg',
+          icon: Icons.payments_outlined,
+        );
+      case TouryBookingBucket.completed:
+        return (
+          titleKey: 'bookings_empty_completed_title',
+          messageKey: 'bookings_empty_completed_msg',
+          icon: Icons.check_circle_outline,
+        );
+      case TouryBookingBucket.cancelled:
+        return (
+          titleKey: 'bookings_empty_cancelled_title',
+          messageKey: 'bookings_empty_cancelled_msg',
+          icon: Icons.cancel_outlined,
+        );
+    }
+  }
+
+  /// Blocks the second tap of a double-tap from pushing a duplicate route.
+  bool _claimNavigation() {
+    final now = DateTime.now();
+    final last = _lastNavigationAt;
+    if (last != null && now.difference(last) < const Duration(seconds: 1)) {
+      return false;
+    }
+    _lastNavigationAt = now;
+    return true;
+  }
+
+  DateTime? _lastNavigationAt;
+
+  void _openDetails(OrderRecord order) {
+    if (!_claimNavigation()) return;
+    context.pushNamed(
+      TfaselOrderWidget.routeName,
+      queryParameters: {
+        'idorder': serializeParam(order, ParamType.Document),
+      }.withoutNulls,
+      extra: <String, dynamic>{'idorder': order},
+    );
+  }
+
+  void _openTracking(OrderRecord order) {
+    if (!_claimNavigation()) return;
+    context.pushNamed(
+      MapTrdemoWidget.routeName,
+      queryParameters: {
+        'idd': serializeParam(order.reference, ParamType.DocumentReference),
+      }.withoutNulls,
+    );
+  }
+
+  Future<void> _openExternalRoute(OrderRecord order) async {
+    final localeKey = TouryNavigationService.localeForContext(context);
+    final pts = order.trackingRouteWaypoints();
+    if (pts.isEmpty) {
+      final pickup = order.customerPickup;
+      if (pickup == null) return;
+      await TouryNavigationService.openGoogleMapsNavigation(
+        destination: pickup,
+        localeKey: localeKey,
+      );
+      return;
+    }
+    await TouryNavigationService.openGoogleMapsNavigation(
+      origin: pts.first,
+      destination: pts.last,
+      waypoints: pts.length > 2 ? pts.sublist(1, pts.length - 1) : const [],
+      localeKey: localeKey,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<List<OrderRecord>>(
+      stream: TouryFirestoreCache.userOrdersStream(currentUserReference),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: DsSpacing.huge),
+            child: DsErrorState(
+              title: 'load_error_title'.tr(),
+              message: 'load_error_message'.tr(),
+              retryLabel: 'ux_retry'.tr(),
+              onRetry: () {
+                TouryFirestoreCache.invalidateUserOrders(currentUserReference);
+                safeSetState(() {});
+              },
+            ),
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting &&
+            !snapshot.hasData) {
+          return const _BookingsSkeleton();
+        }
+
+        final all = snapshot.data ?? const <OrderRecord>[];
+
+        if (all.isEmpty) {
+          return ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 280),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: DsSpacing.huge,
+                horizontal: DsSpacing.md,
+              ),
+              child: DsEmptyState(
+                icon: DsIcons.bookings,
+                title: 'ux_no_bookings_title'.tr(),
+                message: 'ux_no_bookings_msg'.tr(),
+              ),
+            ),
+          );
+        }
+
+        final counts = touryCountBuckets(all);
+        final visible = touryFilterBookings(all, _selected);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 44,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: DsSpacing.md),
+                itemCount: _tabs.length,
+                separatorBuilder: (_, __) =>
+                    const SizedBox(width: DsSpacing.xs),
+                itemBuilder: (context, index) {
+                  final bucket = _tabs[index];
+                  return _BookingTab(
+                    label: _tabLabelKey(bucket).tr(),
+                    count: counts[bucket] ?? 0,
+                    selected: bucket == _selected,
+                    onTap: () => safeSetState(() => _selected = bucket),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: DsSpacing.xs),
+            if (visible.isEmpty)
+              ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 240),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: DsSpacing.xl,
+                    horizontal: DsSpacing.md,
+                  ),
+                  child: Builder(
+                    builder: (context) {
+                      final empty = _emptyFor(_selected);
+                      return DsEmptyState(
+                        icon: empty.icon,
+                        title: empty.titleKey.tr(),
+                        message: empty.messageKey.tr(),
+                      );
+                    },
+                  ),
+                ),
+              )
+            else
+              ListView.separated(
+                padding: const EdgeInsets.fromLTRB(
+                  0,
+                  DsSpacing.xs,
+                  0,
+                  DsSpacing.huge,
+                ),
+                primary: false,
+                shrinkWrap: true,
+                cacheExtent: 560,
+                addRepaintBoundaries: true,
+                addAutomaticKeepAlives: false,
+                itemCount: visible.length,
+                separatorBuilder: (_, __) =>
+                    const SizedBox(height: DsSpacing.xs),
+                itemBuilder: (context, index) {
+                  final order = visible[index];
+                  return _TouryBookingCard(
+                    key: ValueKey(order.reference.id),
+                    order: order,
+                    onOpen: () => _openDetails(order),
+                    onTrack: () => _openTracking(order),
+                    onMap: () => _openExternalRoute(order),
+                  );
+                },
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _BookingTab extends StatelessWidget {
+  const _BookingTab({
+    required this.label,
+    required this.count,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final int count;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+
+    return DsPressable(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(
+          horizontal: DsSpacing.md,
+          vertical: DsSpacing.xs,
+        ),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: selected ? colors.primary : colors.surface,
+          borderRadius: DsRadius.pill,
+          border: Border.all(
+            color: selected ? colors.primary : colors.border,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: typography.labelMedium.copyWith(
+                color: selected ? colors.onPrimary : colors.textSecondary,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+            if (count > 0) ...[
+              const SizedBox(width: DsSpacing.xxs),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 1,
+                ),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? colors.onPrimary.withValues(alpha: 0.22)
+                      : colors.primarySoft,
+                  borderRadius: DsRadius.pill,
+                ),
+                child: Text(
+                  '$count',
+                  style: typography.labelSmall.copyWith(
+                    color: selected ? colors.onPrimary : colors.primaryStrong,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BookingsSkeleton extends StatelessWidget {
+  const _BookingsSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        DsSpacing.md,
+        DsSpacing.sm,
+        DsSpacing.md,
+        DsSpacing.huge,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              DsShimmer(width: 92, height: 34, borderRadius: DsRadius.pill),
+              const SizedBox(width: DsSpacing.xs),
+              DsShimmer(width: 92, height: 34, borderRadius: DsRadius.pill),
+              const SizedBox(width: DsSpacing.xs),
+              DsShimmer(width: 92, height: 34, borderRadius: DsRadius.pill),
+            ],
+          ),
+          const SizedBox(height: DsSpacing.md),
+          for (var i = 0; i < 4; i++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: DsSpacing.sm),
+              child: DsCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        DsShimmer(
+                          width: 40,
+                          height: 40,
+                          borderRadius: DsRadius.medium,
+                        ),
+                        const SizedBox(width: DsSpacing.sm),
+                        const Expanded(child: DsShimmer(height: 14)),
+                        const SizedBox(width: DsSpacing.sm),
+                        DsShimmer(
+                          width: 64,
+                          height: 22,
+                          borderRadius: DsRadius.pill,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: DsSpacing.md),
+                    const DsShimmer(height: 12),
+                    const SizedBox(height: DsSpacing.xs),
+                    const DsShimmer(height: 12),
+                    const SizedBox(height: DsSpacing.md),
+                    const DsShimmer(height: 32),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _TouryBookingCard extends StatelessWidget {
   const _TouryBookingCard({
+    super.key,
     required this.order,
     required this.onOpen,
+    required this.onTrack,
     required this.onMap,
   });
 
   final OrderRecord order;
   final VoidCallback onOpen;
+  final VoidCallback onTrack;
   final VoidCallback onMap;
 
   ({String key, Color color, IconData icon}) _status(
@@ -1312,6 +1574,65 @@ class _TouryBookingCard extends StatelessWidget {
     );
   }
 
+  String _pickupLabel() {
+    final raw = order.loceshStreng.trim();
+    if (raw.isNotEmpty) return raw;
+    if (order.villText.trim().isNotEmpty) return order.villText.trim();
+    return 'booking_pickup_unknown'.tr();
+  }
+
+  String? _destinationLabel() {
+    if (order.listAmakn.isEmpty) return null;
+    final label = order.listAmakn.last.displayLabel.trim();
+    return label.isEmpty ? null : label;
+  }
+
+  String _vehicleLabel() {
+    final parts = <String>[
+      if (order.nameCar.trim().isNotEmpty) order.nameCar.trim(),
+      if (order.modelCar.trim().isNotEmpty) order.modelCar.trim(),
+    ];
+    return parts.join(' · ');
+  }
+
+  String _money(BuildContext context) {
+    final total = order.total;
+    if (total <= 0) return '';
+    final formatted = formatNumber(
+      total,
+      formatType: FormatType.decimal,
+      decimalType: DecimalType.automatic,
+    );
+    final currency = TouryCurrency.displaySymbolForOrder(order).trim();
+    return currency.isEmpty ? formatted : '$formatted $currency';
+  }
+
+  Future<void> _completePayment(BuildContext context) async {
+    // Rapid taps must never create a second payment attempt for this order.
+    final guardKey = 'payment:retry:${order.reference.id}';
+    if (!TouryAsyncActionGuard.tryStart(guardKey)) return;
+    try {
+      final result = await touryRetryUnpaidOrderPayment(order: order);
+      if (!context.mounted) return;
+      if (!result.success) {
+        TouryDialogs.showSnackBar(
+          context,
+          result.errorMessage ??
+              'checkout_payment_temporarily_unavailable'.tr(),
+          type: TouryMessageType.error,
+        );
+        return;
+      }
+      await touryNavigateAfterCardPayment(
+        context,
+        result: result,
+        paymentFlowType: TypeHgz.Rhlh,
+      );
+    } finally {
+      TouryAsyncActionGuard.finish(guardKey);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.dsColors;
@@ -1320,6 +1641,12 @@ class _TouryBookingCard extends StatelessWidget {
     final hasRoute = order.trackingRouteWaypoints().isNotEmpty ||
         order.customerPickup != null;
     final isRtl = Directionality.of(context) == ui.TextDirection.rtl;
+
+    final destination = _destinationLabel();
+    final vehicle = _vehicleLabel();
+    final driver = order.naimMndobText.trim();
+    final money = _money(context);
+    final canTrack = order.driverLivePosition != null && order.isDriverEnRoute;
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -1343,7 +1670,8 @@ class _TouryBookingCard extends StatelessWidget {
                       color: status.color.withValues(alpha: 0.14),
                       borderRadius: DsRadius.medium,
                     ),
-                    child: Icon(status.icon, color: status.color, size: DsIcons.sm),
+                    child:
+                        Icon(status.icon, color: status.color, size: DsIcons.sm),
                   ),
                   const SizedBox(width: DsSpacing.sm),
                   Expanded(
@@ -1359,10 +1687,14 @@ class _TouryBookingCard extends StatelessWidget {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        if (order.villText.trim().isNotEmpty) ...[
+                        if (order.dataOrder != null) ...[
                           const SizedBox(height: DsSpacing.xxs),
                           Text(
-                            order.villText,
+                            dateTimeFormat(
+                              'yMMMd · jm',
+                              order.dataOrder!,
+                              locale: context.locale.toString(),
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: typography.bodySmall.copyWith(
@@ -1392,72 +1724,217 @@ class _TouryBookingCard extends StatelessWidget {
               const SizedBox(height: DsSpacing.sm),
               Divider(height: 1, color: colors.divider),
               const SizedBox(height: DsSpacing.sm),
-              Row(
-                children: [
-                  Icon(
-                    Icons.schedule_outlined,
-                    size: DsIcons.xs,
-                    color: colors.iconMuted,
-                  ),
-                  const SizedBox(width: DsSpacing.xs),
-                  Expanded(
-                    child: Text(
-                      order.dataOrder == null
-                          ? ''
-                          : dateTimeFormat(
-                              'yMMMd',
-                              order.dataOrder!,
-                              locale: context.locale.toString(),
-                            ),
-                      style: typography.bodySmall.copyWith(
-                        color: colors.textSecondary,
+              _RouteLine(
+                pickup: _pickupLabel(),
+                destination: destination,
+              ),
+              if (vehicle.isNotEmpty || driver.isNotEmpty) ...[
+                const SizedBox(height: DsSpacing.sm),
+                Wrap(
+                  spacing: DsSpacing.xs,
+                  runSpacing: DsSpacing.xxs,
+                  children: [
+                    if (vehicle.isNotEmpty)
+                      _MetaChip(icon: DsIcons.car, label: vehicle),
+                    if (driver.isNotEmpty)
+                      _MetaChip(
+                        icon: Icons.person_outline_rounded,
+                        label: driver,
                       ),
-                    ),
-                  ),
+                    if (order.totalTaim > 0)
+                      _MetaChip(
+                        icon: Icons.schedule_outlined,
+                        label: 'order_hours_label'.tr(
+                          namedArgs: {'hours': order.totalTaim.toString()},
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: DsSpacing.sm),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (money.isNotEmpty)
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            money,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: typography.titleMedium.copyWith(
+                              color: colors.textPrimary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Text(
+                            order.paymentMethod == PaymentMethod.Cash
+                                ? 'order_pay_method_cash'.tr()
+                                : PaymentStatusLocalizer.label(
+                                    (order.snapshotData['payment_status'] ?? '')
+                                        .toString(),
+                                  ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: typography.labelSmall.copyWith(
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    const Spacer(),
                   if (order.isAwaitingPayment)
-                    DsButton.text(
+                    DsButton.primary(
                       label: 'order_complete_payment'.tr(),
                       icon: Icons.payment_rounded,
                       size: DsButtonSize.sm,
-                      onPressed: () async {
-                        final result =
-                            await touryRetryUnpaidOrderPayment(order: order);
-                        if (!context.mounted) return;
-                        if (!result.success) {
-                          TouryDialogs.showSnackBar(
-                            context,
-                            result.errorMessage ??
-                                'checkout_payment_temporarily_unavailable'
-                                    .tr(),
-                            type: TouryMessageType.error,
-                          );
-                          return;
-                        }
-                        await touryNavigateAfterCardPayment(
-                          context,
-                          result: result,
-                          paymentFlowType: TypeHgz.Rhlh,
-                        );
-                      },
+                      onPressed: () => _completePayment(context),
+                    )
+                  else if (canTrack)
+                    DsButton.primary(
+                      label: 'order_track_driver'.tr(),
+                      icon: Icons.my_location_rounded,
+                      size: DsButtonSize.sm,
+                      onPressed: onTrack,
                     )
                   else if (hasRoute)
-                    DsButton.text(
+                    DsButton.outlined(
                       label: 'booking_view_route'.tr(),
                       icon: Icons.route_rounded,
                       size: DsButtonSize.sm,
                       onPressed: onMap,
+                    )
+                  else
+                    DsButton.outlined(
+                      label: 'booking_view_details'.tr(),
+                      icon: isRtl
+                          ? Icons.chevron_left_rounded
+                          : Icons.chevron_right_rounded,
+                      size: DsButtonSize.sm,
+                      onPressed: onOpen,
                     ),
-                  Icon(
-                    isRtl
-                        ? Icons.chevron_left_rounded
-                        : Icons.chevron_right_rounded,
-                    color: colors.iconMuted,
-                  ),
                 ],
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Pickup → destination with a connector rail.
+class _RouteLine extends StatelessWidget {
+  const _RouteLine({required this.pickup, this.destination});
+
+  final String pickup;
+  final String? destination;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+    final dest = destination;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 9,
+                height: 9,
+                decoration: BoxDecoration(
+                  color: colors.success,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              if (dest != null) ...[
+                Container(
+                  width: 2,
+                  height: 18,
+                  color: colors.border,
+                ),
+                Icon(Icons.place, size: 12, color: colors.error),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(width: DsSpacing.xs),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                pickup,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: typography.bodyMedium.copyWith(
+                  color: colors.textPrimary,
+                ),
+              ),
+              if (dest != null) ...[
+                const SizedBox(height: DsSpacing.sm),
+                Text(
+                  dest,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: typography.bodyMedium.copyWith(
+                    color: colors.textPrimary,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MetaChip extends StatelessWidget {
+  const _MetaChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: colors.background,
+        borderRadius: DsRadius.pill,
+        border: Border.all(color: colors.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: colors.iconMuted),
+          const SizedBox(width: 4),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 150),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: typography.labelSmall.copyWith(
+                color: colors.textSecondary,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

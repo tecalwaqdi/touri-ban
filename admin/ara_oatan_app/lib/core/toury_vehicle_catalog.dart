@@ -263,7 +263,23 @@ int _preferenceScore(TypeCarRecord car, TouryVehicleCategory category) {
   return preferred.length + 10;
 }
 
-/// مفتاح ترتيب المركبة حسب الفئة الرسمية (غير المصنّفة في النهاية).
+/// Admin Firestore order when present; otherwise category fallback.
+int touryAdminVehicleSortKey({
+  required int sortOrder,
+  required int numTrteb,
+  required int categorySort,
+}) {
+  if (sortOrder > 0) return sortOrder;
+  if (numTrteb > 0) return numTrteb;
+  return categorySort;
+}
+
+bool touryShouldPreferRemoteVehicleImage(String? url) {
+  final u = (url ?? '').trim();
+  return u.startsWith('http://') || u.startsWith('https://');
+}
+
+/// مفتاح ترتيب المركبة: Admin `sort_order`/`num_trteb` أولاً، ثم الفئة المحلية.
 int touryTypeCarSortKey(TypeCarRecord car) {
   final category = touryVehicleCategoryFor(
     codeCar: car.codeCar,
@@ -271,13 +287,17 @@ int touryTypeCarSortKey(TypeCarRecord car) {
     displayName: car.naim,
     note: car.not,
   );
-  if (category == null) return 1000;
-  return category.sortOrder;
+  final categorySort = category?.sortOrder ?? 1000;
+  return touryAdminVehicleSortKey(
+    sortOrder: car.sortOrder,
+    numTrteb: car.numTrteb,
+    categorySort: categorySort,
+  );
 }
 
 int touryCompareTypeCars(TypeCarRecord a, TypeCarRecord b) {
-  final byCategory = touryTypeCarSortKey(a).compareTo(touryTypeCarSortKey(b));
-  if (byCategory != 0) return byCategory;
+  final bySort = touryTypeCarSortKey(a).compareTo(touryTypeCarSortKey(b));
+  if (bySort != 0) return bySort;
   return a.sr.compareTo(b.sr);
 }
 
@@ -327,11 +347,17 @@ List<TypeCarRecord> touryDeduplicateTypeCars(List<TypeCarRecord> cars) {
   return ordered;
 }
 
-/// Localized display name for the vehicle category (follows app language).
+/// Localized display name — prefers Admin Firestore names over category keys.
 String touryVehicleCategoryDisplayName(
   TypeCarRecord car, [
   BuildContext? context,
 ]) {
+  if (context != null) {
+    return touryTypeCarName(context, car);
+  }
+  final fromI18n = car.namesI18n['en']?.trim();
+  if (fromI18n != null && fromI18n.isNotEmpty) return fromI18n;
+  if (car.naim.trim().isNotEmpty) return car.naim;
   final category = touryVehicleCategoryFor(
     codeCar: car.codeCar,
     documentId: car.reference.id,
@@ -341,10 +367,15 @@ String touryVehicleCategoryDisplayName(
   if (category != null) {
     return category.localizationKey.tr();
   }
-  if (context != null) {
-    return touryTypeCarName(context, car);
-  }
   return car.naim;
+}
+
+/// Prefer remote Admin image when usable; otherwise category asset fallback.
+String? touryVehiclePreferredLocalAsset(TypeCarRecord car) {
+  if (touryShouldPreferRemoteVehicleImage(car.img)) {
+    return null;
+  }
+  return touryVehicleCategoryImage(car);
 }
 
 String? touryVehicleCategoryImage(TypeCarRecord car) {

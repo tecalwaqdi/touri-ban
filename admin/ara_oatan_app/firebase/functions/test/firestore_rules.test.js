@@ -337,3 +337,227 @@ describe("Firestore P0 authorization boundaries", () => {
     }));
   });
 });
+
+describe("Email OTP challenge client denial", () => {
+  it("customer cannot create email_verification_challenges", async () => {
+    const db = testEnv.authenticatedContext("customer-otp-1").firestore();
+    await assertFails(setDoc(doc(db, "email_verification_challenges", "c1"), {
+      uid: "customer-otp-1",
+      otpHash: "x",
+      purpose: "email_verification",
+    }));
+  });
+
+  it("customer cannot read email_verification_challenges", async () => {
+    await seed({
+      "email_verification_challenges/c1": {
+        uid: "customer-otp-1",
+        otpHash: "x",
+        purpose: "email_verification",
+      },
+    });
+    const db = testEnv.authenticatedContext("customer-otp-1").firestore();
+    await assertFails(getDoc(doc(db, "email_verification_challenges", "c1")));
+  });
+
+  it("customer cannot update or delete email_verification_challenges", async () => {
+    await seed({
+      "email_verification_challenges/c1": {
+        uid: "customer-otp-1",
+        otpHash: "x",
+        purpose: "email_verification",
+      },
+    });
+    const db = testEnv.authenticatedContext("customer-otp-1").firestore();
+    await assertFails(updateDoc(doc(db, "email_verification_challenges", "c1"), {
+      attemptCount: 1,
+    }));
+    await assertFails(setDoc(doc(db, "email_verification_challenges", "c1"), {
+      uid: "customer-otp-1",
+      otpHash: "y",
+    }));
+  });
+
+  it("driver cannot read/write OTP challenges or rate limits", async () => {
+    await seed({
+      "email_verification_challenges/d1": {
+        uid: "driver-otp-1",
+        otpHash: "x",
+        purpose: "email_verification",
+      },
+      "email_otp_rate_limits/uid_driver-otp-1_bucket": {count: 1},
+      "email_otp_cooldown/driver-otp-1": {lastSentAt: Timestamp.now()},
+    });
+    const db = testEnv.authenticatedContext("driver-otp-1").firestore();
+    await assertFails(getDoc(doc(db, "email_verification_challenges", "d1")));
+    await assertFails(setDoc(doc(db, "email_verification_challenges", "d2"), {
+      uid: "driver-otp-1",
+      otpHash: "z",
+    }));
+    await assertFails(getDoc(doc(db, "email_otp_rate_limits", "uid_driver-otp-1_bucket")));
+    await assertFails(getDoc(doc(db, "email_otp_cooldown", "driver-otp-1")));
+  });
+
+  it("other authenticated user cannot access another user's OTP challenge", async () => {
+    await seed({
+      "email_verification_challenges/c1": {
+        uid: "customer-otp-1",
+        otpHash: "x",
+        purpose: "email_verification",
+      },
+    });
+    const db = testEnv.authenticatedContext("customer-otp-2").firestore();
+    await assertFails(getDoc(doc(db, "email_verification_challenges", "c1")));
+    await assertFails(updateDoc(doc(db, "email_verification_challenges", "c1"), {
+      attemptCount: 99,
+    }));
+  });
+});
+
+describe("type_car vehicle catalog authorization", () => {
+  beforeEach(async () => {
+    await seed({
+      "type_car/economy_qa": {
+        naim: "Economy QA",
+        sr: 100,
+        actev: true,
+        codeCar: "economy_qa",
+      },
+      "user/super-1": {IsAdmin: true, isAdminRule: 1},
+      "user/admin-sa": {isAdminRule: 2, Rev_dloh_agent: "countries/sa"},
+      "user/customer-1": {isAdminRule: 0},
+      "user/driver-1": {ismndob: true},
+      "user/partner-1": {isAdminRule: 3, isPartner: true},
+      "user/company-1": {isAdminRule: 4},
+    });
+  });
+
+  it("customer can read type_car", async () => {
+    const db = testEnv.authenticatedContext("customer-1").firestore();
+    await assertSucceeds(getDoc(doc(db, "type_car", "economy_qa")));
+  });
+
+  it("unauthenticated can read type_car", async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertSucceeds(getDoc(doc(db, "type_car", "economy_qa")));
+  });
+
+  it("customer cannot write type_car", async () => {
+    const db = testEnv.authenticatedContext("customer-1").firestore();
+    await assertFails(updateDoc(doc(db, "type_car", "economy_qa"), {sr: 999}));
+    await assertFails(setDoc(doc(db, "type_car", "hack"), {sr: 1, actev: true}));
+  });
+
+  it("driver cannot write global type_car pricing", async () => {
+    const db = testEnv.authenticatedContext("driver-1").firestore();
+    await assertFails(updateDoc(doc(db, "type_car", "economy_qa"), {sr: 999}));
+  });
+
+  it("partner cannot write type_car", async () => {
+    const db = testEnv.authenticatedContext("partner-1", {
+      partner: true,
+    }).firestore();
+    await assertFails(updateDoc(doc(db, "type_car", "economy_qa"), {sr: 999}));
+  });
+
+  it("transport company cannot write global type_car", async () => {
+    const db = testEnv.authenticatedContext("company-1", {
+      transport_company: true,
+    }).firestore();
+    await assertFails(updateDoc(doc(db, "type_car", "economy_qa"), {sr: 999}));
+  });
+
+  it("super admin can update type_car", async () => {
+    const db = testEnv
+      .authenticatedContext("super-1", {super_admin: true})
+      .firestore();
+    await assertSucceeds(
+      updateDoc(doc(db, "type_car", "economy_qa"), {sr: 120, actev: true}),
+    );
+  });
+
+  it("country admin can update type_car per current rules", async () => {
+    // SECURITY_FINDING note: rules allow any country admin to edit any type_car
+    // (no dolh scope on type_car write). Documented, not silently changed.
+    const db = testEnv
+      .authenticatedContext("admin-sa", {
+        country_admin: true,
+        country_id: "countries/sa",
+      })
+      .firestore();
+    await assertSucceeds(
+      updateDoc(doc(db, "type_car", "economy_qa"), {sr: 110}),
+    );
+  });
+});
+
+
+describe('Customer profile self-update', () => {
+  const uid = 'customer-profile-1';
+
+  beforeEach(async () => {
+    await seed({
+      [`user/${uid}`]: {
+        actev_user: true,
+        display_name: 'Old',
+        email: 'c@example.com',
+        phone_number: '',
+        uid,
+      },
+      'user/other-user': {
+        actev_user: true,
+        display_name: 'Other',
+        uid: 'other-user',
+      },
+    });
+  });
+
+  it('OWNER_PHONE_NAME_PHOTO_ALLOW = PASS', async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      updateDoc(doc(db, 'user', uid), {
+        display_name: 'New Name',
+        phone_number: '0577118808',
+        phone_n: 577118808,
+        photo_url: 'https://example.com/p.jpg',
+      }),
+    );
+  });
+
+  it('OWNER_PRIVILEGE_ESCALATION_DENY = PASS', async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertFails(
+      updateDoc(doc(db, 'user', uid), {
+        isAdmin: true,
+      }),
+    );
+    await assertFails(
+      updateDoc(doc(db, 'user', uid), {
+        Isagent: true,
+      }),
+    );
+    await assertFails(
+      updateDoc(doc(db, 'user', uid), {
+        ismndob: true,
+      }),
+    );
+  });
+
+  it('CROSS_USER_UPDATE_DENY = PASS', async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertFails(
+      updateDoc(doc(db, 'user', 'other-user'), {
+        phone_number: '0500000000',
+      }),
+    );
+  });
+
+  it('ANONYMOUS_UPDATE_DENY = PASS', async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertFails(
+      updateDoc(doc(db, 'user', uid), {
+        phone_number: '0500000000',
+      }),
+    );
+  });
+});

@@ -1,0 +1,90 @@
+{
+  "startedAt": "2026-08-26T00:28:15.777Z",
+  "docId": "qa_vehicle_admin_runtime",
+  "steps": {
+    "seed": "PASS",
+    "firestoreNameUpdated": "PASS",
+    "customerSeesUpdatedName": "PASS",
+    "firestoreNameBeatsHardcoded": "PASS",
+    "imageUrlUpdated": "PASS",
+    "customerSeesRemoteImage": "PASS",
+    "cacheBustWorks": "PASS",
+    "firestoreSrUpdated": "PASS",
+    "customerPriceRefresh": "PASS",
+    "historicalPriceMutation": "PASS",
+    "adminSortSaved": "PASS",
+    "customerSortKey": "PASS",
+    "deactivateFirestore": "PASS",
+    "inactiveHiddenFromCustomer": "PASS",
+    "inactiveHiddenFromDriver": "CODE_PASS",
+    "reactivate": "PASS",
+    "capacityDataAdminControl": "PASS",
+    "customerCapacityUi": "PARTIAL",
+    "qaRecordRestored": "PASS",
+    "customerPostRestore": "PASS",
+    "vehicleAuditLog": "PARTIAL"
+  },
+  "existedBefore": false,
+  "before": {
+    "naim": "QA Vehicle Runtime",
+    "names_i18n": {
+      "ar": "سيارة QA",
+      "en": "QA Vehicle",
+      "ru": "QA авто",
+      "ky": "QA унаа",
+      "fr": "Véhicule QA",
+      "ur": "QA گاڑی",
+      "pt": "Veículo QA"
+    },
+    "osf": "QA description",
+    "osf_i18n": {
+      "ar": "وصف QA",
+      "en": "QA description",
+      "ru": "QA описание",
+      "ky": "QA сүрөттөмө",
+      "fr": "Description QA",
+      "ur": "QA وضاحت",
+      "pt": "Descrição QA"
+    },
+    "sr": 111,
+    "agl_saat": 3,
+    "NesbahkKsm": 0,
+    "TotalKsmUb": 0,
+    "passengers": 4,
+    "luggage": 2,
+    "sort_order": 50,
+    "num_trteb": 50,
+    "actev": true,
+    "codeCar": "qa_vehicle_admin_runtime",
+    "country_iso2": "SA",
+    "img": "https://flagcdn.com/w320/sa.png?v=baseline",
+    "ishafelh": false,
+    "geo_import_source": "vehicle_admin_customer_runtime_qa"
+  },
+  "price": {
+    "bookingHours": 3,
+    "sr": 222,
+    "expectedBase": 666,
+    "actualBase": 666,
+    "delta": 0
+  },
+  "historical": {
+    "orderId": "03392f80a1007caa396054888b200465fb2c3c23476d9c6f8a81d6421d756647",
+    "before": 200,
+    "after": 200,
+    "mutation": false
+  },
+  "security": {
+    "partnerVehicleRoute": "DENIED",
+    "companyGlobalVehicleAdmin": "DENIED",
+    "countryAgentCanAccessAdmintypecar": true,
+    "countryAgentFirestoreTypeCarWrite": "ALLOW_GLOBAL (no dolh scope) — SECURITY_FINDING",
+    "storageTypeCarWrite": "SUPER_ADMIN_ONLY"
+  },
+  "audit": {
+    "recentVehicleRelated": 0,
+    "note": "no vehicle audits in last 20 (Admin UI audit may not have been exercised this run; SDK QA path did not call CF audit)"
+  },
+  "finishedAt": "2026-08-26T00:28:29.296Z",
+  "hardGateReady": true
+}

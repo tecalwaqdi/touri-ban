@@ -355,17 +355,17 @@ abstract final class DriverLocationValidator {
   DriverLocationValidator._();
 
   static DriverFieldValidation validate({
-    required bool hasUsableGps,
+    required bool hasSelectedLocation,
     required bool hasCountry,
     required bool hasRegion,
     required bool hasCity,
     bool requireRegion = true,
     bool requireCity = true,
   }) {
-    if (!hasUsableGps) {
+    if (!hasSelectedLocation) {
       return const DriverFieldValidation.invalid(
         errorKey:
-            'Enable GPS and allow location access so we can place you on the map',
+            'Move the map to set your position. You can place the pin manually if GPS is unavailable.',
         field: 'location',
       );
     }

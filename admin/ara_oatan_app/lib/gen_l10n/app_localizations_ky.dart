@@ -355,7 +355,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get welcome_to_the_Arra_Watan_app =>
-      'Arra Watan колдонмосуна кош келиңиз';
+      'Touri Taxi колдонмосуна кош келиңиз';
 
   @override
   String get first_global_saudi_tourist_taxi_app =>

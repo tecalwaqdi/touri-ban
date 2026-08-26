@@ -20,10 +20,19 @@ abstract final class TouryPhoneUtil {
     String? authPhone,
   }) {
     final fromText = (phoneNumber ?? '').trim();
-    if (digitsOnly(fromText).length >= 7) return true;
-    if (phoneN != null && phoneN > 0) return true;
+    if (_digitsUsable(fromText)) return true;
+    if (phoneN != null && phoneN > 0) {
+      if (_digitsUsable(phoneN.toString())) return true;
+    }
     final auth = (authPhone ?? '').trim();
-    return digitsOnly(auth).length >= 7;
+    return _digitsUsable(auth);
+  }
+
+  static bool _digitsUsable(String raw) {
+    final digits = digitsOnly(raw);
+    if (digits.length < 7) return false;
+    if (RegExp(r'^0+$').hasMatch(digits)) return false;
+    return true;
   }
 
   static String displayPhone({
@@ -40,10 +49,12 @@ abstract final class TouryPhoneUtil {
   static ({String phoneNumber, int? phoneN}) normalizeForSave(String raw) {
     final trimmed = raw.trim();
     final digits = digitsOnly(trimmed);
-    final phoneN = int.tryParse(digits);
+    final parsed = int.tryParse(digits);
+    final phoneN =
+        (parsed != null && parsed > 0 && digits.length >= 7) ? parsed : null;
     return (
       phoneNumber: trimmed.isNotEmpty ? trimmed : digits,
-      phoneN: (phoneN != null && phoneN > 0) ? phoneN : null,
+      phoneN: phoneN,
     );
   }
 }

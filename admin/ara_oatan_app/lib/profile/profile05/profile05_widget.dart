@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
 import '/auth/firebase_auth/google_auth.dart';
@@ -10,6 +11,9 @@ import '/backend/profile_photo_service.dart';
 import '/backend/schema/enums/enums.dart';
 import '/core/toury_dialogs.dart';
 import '/core/toury_image.dart';
+import '/core/toury_notification_settings.dart';
+import '/core/toury_profile_completeness.dart';
+import '/core/toury_profile_state.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_language_selector.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -33,16 +37,73 @@ class _Profile05WidgetState extends State<Profile05Widget> {
   late Profile05Model _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  bool? _osNotificationsEnabled;
+  bool _notificationSettingsLoading = true;
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => Profile05Model());
 
-    _model.switchValue1 = false;
-    _model.switchValue2 = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshNotificationSettings();
+      safeSetState(() {});
+    });
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  Future<void> _refreshNotificationSettings() async {
+    try {
+      final enabled = await TouryNotificationSettings.osNotificationsEnabled();
+      if (!mounted) return;
+      safeSetState(() {
+        _osNotificationsEnabled = enabled;
+        _notificationSettingsLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      safeSetState(() {
+        _osNotificationsEnabled = false;
+        _notificationSettingsLoading = false;
+      });
+    }
+  }
+
+  Future<void> _onNotificationToggle(bool enable) async {
+    if (_notificationSettingsLoading) return;
+
+    if (enable) {
+      final granted = await TouryNotificationSettings.requestEnable();
+      if (!mounted) return;
+      safeSetState(() => _osNotificationsEnabled = granted);
+      if (!granted) {
+        final openSettings = await TouryDialogs.showConfirm(
+          context,
+          title: 'dialog_error_title'.tr(),
+          message:
+              'Notifications are disabled in iOS Settings. Open Settings to enable them.',
+          type: TouryMessageType.warning,
+        );
+        if (openSettings) {
+          await Geolocator.openAppSettings();
+        }
+      }
+      return;
+    }
+
+    // iOS cannot revoke notification permission from the app.
+    final openSettings = await TouryDialogs.showConfirm(
+      context,
+      title: FFLocalizations.of(context).getText(
+        '0fsig7jr' /* Enable notifications */,
+      ),
+      message:
+          'To turn off notifications, use iOS Settings for this app.',
+      type: TouryMessageType.info,
+    );
+    if (openSettings) {
+      await Geolocator.openAppSettings();
+    }
+    await _refreshNotificationSettings();
   }
 
   @override
@@ -113,10 +174,7 @@ class _Profile05WidgetState extends State<Profile05Widget> {
         createUserRecordData(photoUrl: photoUrl),
       );
 
-      try {
-        currentUserDocument =
-            await UserRecord.getDocumentOnce(currentUserReference!);
-      } catch (_) {}
+      await TouryProfileState.refreshFromServer();
 
       if (!mounted) return;
       safeSetState(() {
@@ -169,14 +227,12 @@ class _Profile05WidgetState extends State<Profile05Widget> {
       type: TouryMessageType.warning,
       destructive: true,
     );
-    if (confirmDialogResponse) {
-      await TouryDialogs.showAlert(
-        context,
-        title: 'dialog_request_sent_title'.tr(),
-        message: 'dialog_request_sent_msg'.tr(),
-        type: TouryMessageType.success,
-      );
+    if (!confirmDialogResponse || !mounted) return;
 
+    // Retain a support audit ticket for ops/legal, then delete Auth user.
+    // Auth onDelete CF cleans Firestore user/{uid}. Financial history retention
+    // is handled server-side — client must not remain half-logged-in.
+    try {
       await SupportRecord.collection.doc().set(createSupportRecordData(
             naim: currentUserDisplayName,
             osf: 'طلب حذف حسابي من التطبيق',
@@ -185,6 +241,38 @@ class _Profile05WidgetState extends State<Profile05Widget> {
             data: getCurrentTimestamp,
             halh: Halhsupport.Open,
           ));
+    } catch (_) {
+      // Ticket is best-effort; Auth deletion is the App Store requirement.
+    }
+
+    try {
+      await authManager.deleteUser(context);
+      if (!mounted) return;
+      if (loggedIn) {
+        // requires-recent-login left the session intact.
+        await TouryDialogs.showAlert(
+          context,
+          title: 'dialog_error_title'.tr(),
+          message: 'dialog_delete_account_reauth'.tr(),
+          type: TouryMessageType.warning,
+        );
+        return;
+      }
+      try {
+        FFAppState().clearSensitivePaymentSession();
+        FFAppState.reset();
+      } catch (_) {}
+      GoRouter.of(context).clearRedirectLocation();
+      if (!mounted) return;
+      context.goNamedAuth(HomePagWidget.routeName, context.mounted);
+    } catch (e) {
+      if (!mounted) return;
+      await TouryDialogs.showAlert(
+        context,
+        title: 'dialog_error_title'.tr(),
+        message: e.toString(),
+        type: TouryMessageType.error,
+      );
     }
   }
 
@@ -290,11 +378,10 @@ class _Profile05WidgetState extends State<Profile05Widget> {
                                     '0fsig7jr' /* Enable notifications */,
                                   ),
                                   trailing: Switch.adaptive(
-                                    value: _model.switchListTileValue ??= true,
-                                    onChanged: (newValue) async {
-                                      safeSetState(() =>
-                                          _model.switchListTileValue = newValue);
-                                    },
+                                    value: _osNotificationsEnabled ?? false,
+                                    onChanged: _notificationSettingsLoading
+                                        ? null
+                                        : _onNotificationToggle,
                                     activeColor: colors.onPrimary,
                                     activeTrackColor: colors.primary,
                                     inactiveTrackColor: colors.disabled,
@@ -305,50 +392,29 @@ class _Profile05WidgetState extends State<Profile05Widget> {
                                   onChanged: (lang) =>
                                       setAppLanguage(context, lang),
                                 ),
-                                if (isDark)
-                                  _SettingsTile(
-                                    icon: Icons.dark_mode_outlined,
-                                    label: FFLocalizations.of(context).getText(
-                                      '75sk17tv' /* Night mode */,
-                                    ),
-                                    trailing: Switch.adaptive(
-                                      value: _model.switchValue1!,
-                                      onChanged: (newValue) async {
-                                        safeSetState(() =>
-                                            _model.switchValue1 = newValue);
-                                        if (newValue) {
-                                          setDarkModeSetting(
-                                              context, ThemeMode.light);
-                                        }
-                                      },
-                                      activeColor: colors.onPrimary,
-                                      activeTrackColor: colors.primary,
-                                      inactiveTrackColor: colors.disabled,
-                                      inactiveThumbColor: colors.iconMuted,
-                                    ),
+                                _SettingsTile(
+                                  icon: isDark
+                                      ? Icons.dark_mode_outlined
+                                      : Icons.light_mode_outlined,
+                                  label: FFLocalizations.of(context).getText(
+                                    'gi6xg6nf' /* Dark  mode */,
                                   ),
-                                if (!isDark)
-                                  _SettingsTile(
-                                    icon: Icons.light_mode_outlined,
-                                    label: FFLocalizations.of(context).getText(
-                                      'gi6xg6nf' /* Dark  mode */,
-                                    ),
-                                    trailing: Switch.adaptive(
-                                      value: _model.switchValue2!,
-                                      onChanged: (newValue) async {
-                                        safeSetState(() =>
-                                            _model.switchValue2 = newValue);
-                                        if (newValue) {
-                                          setDarkModeSetting(
-                                              context, ThemeMode.dark);
-                                        }
-                                      },
-                                      activeColor: colors.onPrimary,
-                                      activeTrackColor: colors.primary,
-                                      inactiveTrackColor: colors.disabled,
-                                      inactiveThumbColor: colors.iconMuted,
-                                    ),
+                                  trailing: Switch.adaptive(
+                                    value: isDark,
+                                    onChanged: (enabled) {
+                                      setDarkModeSetting(
+                                        context,
+                                        enabled
+                                            ? ThemeMode.dark
+                                            : ThemeMode.light,
+                                      );
+                                    },
+                                    activeColor: colors.onPrimary,
+                                    activeTrackColor: colors.primary,
+                                    inactiveTrackColor: colors.disabled,
+                                    inactiveThumbColor: colors.iconMuted,
                                   ),
+                                ),
                               ],
                             ),
                           ),
@@ -372,9 +438,12 @@ class _Profile05WidgetState extends State<Profile05Widget> {
                                         .pushNamed(UpdateProfWidget.routeName);
                                   },
                                 ),
-                                if (currentPhoneNumber == '')
-                                  AuthUserStreamWidget(
-                                    builder: (context) => _SettingsTile(
+                                AuthUserStreamWidget(
+                                  builder: (context) {
+                                    if (TouryProfileCompleteness.hasUsablePhone()) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return _SettingsTile(
                                       icon: Icons.mobile_off_rounded,
                                       danger: true,
                                       label:
@@ -385,8 +454,9 @@ class _Profile05WidgetState extends State<Profile05Widget> {
                                         context.pushNamed(
                                             UpdateProfWidget.routeName);
                                       },
-                                    ),
-                                  ),
+                                    );
+                                  },
+                                ),
                                 _SettingsTile(
                                   icon: Icons.maps_home_work_outlined,
                                   label: FFLocalizations.of(context).getText(

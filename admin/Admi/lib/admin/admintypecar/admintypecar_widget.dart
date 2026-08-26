@@ -1,9 +1,11 @@
+import '/backend/admin_audit_log.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_performance.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/components/admin_vehicle_type_editor.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/core/admin_currency.dart';
@@ -610,203 +612,16 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                 FFButtonWidget(
                                                                   onPressed:
                                                                       () async {
-                                                                    final nameCtrl =
-                                                                        TextEditingController(
-                                                                      text: listViewTypeCarRecord
-                                                                          .naim,
+                                                                    final changed =
+                                                                        await AdminVehicleTypeEditor
+                                                                            .open(
+                                                                      context,
+                                                                      listViewTypeCarRecord,
                                                                     );
-                                                                    final nameEnCtrl =
-                                                                        TextEditingController(
-                                                                      text: listViewTypeCarRecord
-                                                                              .namesI18n[
-                                                                          'en'] ??
-                                                                          '',
-                                                                    );
-                                                                    final nameRuCtrl =
-                                                                        TextEditingController(
-                                                                      text: listViewTypeCarRecord
-                                                                              .namesI18n[
-                                                                          'ru'] ??
-                                                                          '',
-                                                                    );
-                                                                    final nameKyCtrl =
-                                                                        TextEditingController(
-                                                                      text: listViewTypeCarRecord
-                                                                              .namesI18n[
-                                                                          'ky'] ??
-                                                                          '',
-                                                                    );
-                                                                    final rateCtrl =
-                                                                        TextEditingController(
-                                                                      text: listViewTypeCarRecord
-                                                                          .sr
-                                                                          .toString(),
-                                                                    );
-                                                                    final saved =
-                                                                        await showDialog<
-                                                                            bool>(
-                                                                      context:
-                                                                          context,
-                                                                      builder:
-                                                                          (ctx) {
-                                                                        return AlertDialog(
-                                                                          title: Text(uiTr(context, 'تعديل نوع السيارة')),
-                                                                          content:
-                                                                              SingleChildScrollView(
-                                                                            child: Column(
-                                                                            mainAxisSize:
-                                                                                MainAxisSize.min,
-                                                                            children: [
-                                                                              TextField(
-                                                                                controller:
-                                                                                    nameCtrl,
-                                                                                decoration:
-                                                                                    InputDecoration(
-                                                                                  labelText: uiTr(context, 'الاسم (عربي)'),
-                                                                                ),
-                                                                              ),
-                                                                              TextField(
-                                                                                controller:
-                                                                                    nameEnCtrl,
-                                                                                decoration:
-                                                                                    InputDecoration(
-                                                                                  labelText: appTr(context, 'adm_car_name_en'),
-                                                                                ),
-                                                                              ),
-                                                                              TextField(
-                                                                                controller:
-                                                                                    nameRuCtrl,
-                                                                                decoration:
-                                                                                    InputDecoration(
-                                                                                  labelText: appTr(context, 'adm_car_name_ru'),
-                                                                                ),
-                                                                              ),
-                                                                              TextField(
-                                                                                controller:
-                                                                                    nameKyCtrl,
-                                                                                decoration:
-                                                                                    InputDecoration(
-                                                                                  labelText: appTr(context, 'adm_car_name_ky'),
-                                                                                ),
-                                                                              ),
-                                                                              TextField(
-                                                                                controller:
-                                                                                    rateCtrl,
-                                                                                keyboardType:
-                                                                                    TextInputType.number,
-                                                                                decoration:
-                                                                                    InputDecoration(
-                                                                                  labelText:
-                                                                                      uiTr(context, 'السعر للساعة'),
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                          ),
-                                                                          actions: [
-                                                                            TextButton(
-                                                                              onPressed: () =>
-                                                                                  Navigator.pop(
-                                                                                      ctx,
-                                                                                      false),
-                                                                              child:
-                                                                                  Text(uiTr(context, 'إلغاء')),
-                                                                            ),
-                                                                            TextButton(
-                                                                              onPressed: () =>
-                                                                                  Navigator.pop(
-                                                                                      ctx,
-                                                                                      true),
-                                                                              child:
-                                                                                  Text(uiTr(context, 'حفظ')),
-                                                                            ),
-                                                                          ],
-                                                                        );
-                                                                      },
-                                                                    );
-                                                                    if (saved !=
-                                                                            true ||
-                                                                        !context
-                                                                            .mounted) {
-                                                                      return;
-                                                                    }
-                                                                    try {
-                                                                      final ar = nameCtrl
-                                                                          .text
-                                                                          .trim();
-                                                                      final names =
-                                                                          <String,
-                                                                              String>{
-                                                                        ...listViewTypeCarRecord
-                                                                            .namesI18n,
-                                                                        if (ar
-                                                                            .isNotEmpty)
-                                                                          'ar':
-                                                                              ar,
-                                                                      };
-                                                                      final en =
-                                                                          nameEnCtrl
-                                                                              .text
-                                                                              .trim();
-                                                                      final ru =
-                                                                          nameRuCtrl
-                                                                              .text
-                                                                              .trim();
-                                                                      final ky =
-                                                                          nameKyCtrl
-                                                                              .text
-                                                                              .trim();
-                                                                      if (en
-                                                                          .isNotEmpty) {
-                                                                        names[
-                                                                            'en'] = en;
-                                                                      }
-                                                                      if (ru
-                                                                          .isNotEmpty) {
-                                                                        names[
-                                                                            'ru'] = ru;
-                                                                      }
-                                                                      if (ky
-                                                                          .isNotEmpty) {
-                                                                        names[
-                                                                            'ky'] = ky;
-                                                                      }
-                                                                      await listViewTypeCarRecord
-                                                                          .reference
-                                                                          .update(
-                                                                        createTypeCarRecordData(
-                                                                          naim:
-                                                                              ar,
-                                                                          sr: int.tryParse(rateCtrl.text.trim()) ??
-                                                                              listViewTypeCarRecord.sr,
-                                                                          namesI18n:
-                                                                              names,
-                                                                        ),
-                                                                      );
-                                                                      if (!context
-                                                                          .mounted) {
-                                                                        return;
-                                                                      }
-                                                                      ScaffoldMessenger.of(
-                                                                              context)
-                                                                          .showSnackBar(
-                                                                        SnackBar(
-                                                                          content:
-                                                                              Text(uiTr(context, 'تم حفظ التعديلات')),
-                                                                        ),
-                                                                      );
-                                                                    } catch (e) {
-                                                                      if (!context
-                                                                          .mounted) {
-                                                                        return;
-                                                                      }
-                                                                      ScaffoldMessenger.of(
-                                                                              context)
-                                                                          .showSnackBar(
-                                                                        SnackBar(
-                                                                            content:
-                                                                                Text(AdminCrudFeedback.saveFailed(context, e))),
-                                                                      );
+                                                                    if (changed ==
+                                                                            true &&
+                                                                        mounted) {
+                                                                      _reloadTypeCars();
                                                                     }
                                                                   },
                                                                   text: FFLocalizations.of(
@@ -989,12 +804,27 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                         actev:
                                                                             false,
                                                                       ));
+                                                                      await AdminAuditLog
+                                                                          .recordToggle(
+                                                                        targetType:
+                                                                            'type_car',
+                                                                        targetId:
+                                                                            listViewTypeCarRecord
+                                                                                .reference
+                                                                                .id,
+                                                                        activated:
+                                                                            false,
+                                                                        targetLabel:
+                                                                            listViewTypeCarRecord
+                                                                                .naim,
+                                                                      );
+                                                                      if (mounted) {
+                                                                        _reloadTypeCars();
+                                                                      }
                                                                     },
-                                                                    text: FFLocalizations.of(
-                                                                            context)
-                                                                        .getText(
-                                                                      'oxfcbiec' /* Parking  */,
-                                                                    ),
+                                                                    text: uiTr(
+                                                                        context,
+                                                                        'إيقاف'),
                                                                     options:
                                                                         FFButtonOptions(
                                                                       width:
@@ -1045,12 +875,27 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                                         actev:
                                                                             true,
                                                                       ));
+                                                                      await AdminAuditLog
+                                                                          .recordToggle(
+                                                                        targetType:
+                                                                            'type_car',
+                                                                        targetId:
+                                                                            listViewTypeCarRecord
+                                                                                .reference
+                                                                                .id,
+                                                                        activated:
+                                                                            true,
+                                                                        targetLabel:
+                                                                            listViewTypeCarRecord
+                                                                                .naim,
+                                                                      );
+                                                                      if (mounted) {
+                                                                        _reloadTypeCars();
+                                                                      }
                                                                     },
-                                                                    text: FFLocalizations.of(
-                                                                            context)
-                                                                        .getText(
-                                                                      '4tbswp3v' /* Activation  */,
-                                                                    ),
+                                                                    text: uiTr(
+                                                                        context,
+                                                                        'تفعيل'),
                                                                     options:
                                                                         FFButtonOptions(
                                                                       width:

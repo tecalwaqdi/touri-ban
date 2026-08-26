@@ -352,7 +352,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get update_Profile => 'Update Profile';
 
   @override
-  String get welcome_to_the_Arra_Watan_app => 'Welcome to the Arra Watan app';
+  String get welcome_to_the_Arra_Watan_app =>
+      'Bienvenue sur l\'application Touri Taxi';
 
   @override
   String get first_global_saudi_tourist_taxi_app =>

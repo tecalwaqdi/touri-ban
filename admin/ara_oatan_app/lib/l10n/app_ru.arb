@@ -440,7 +440,7 @@
   "@update_Profile": {
     "description": "UI string (source key: Update Profile)"
   },
-  "welcome_to_the_Arra_Watan_app": "Добро пожаловать в приложение Arra Watan",
+  "welcome_to_the_Arra_Watan_app": "Добро пожаловать в приложение Touri Taxi",
   "@welcome_to_the_Arra_Watan_app": {
     "description": "UI string (source key: Welcome to the Arra Watan app)"
   },

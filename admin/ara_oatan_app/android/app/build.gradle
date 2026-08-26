@@ -107,4 +107,7 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.2.20"
     implementation 'io.card:android-sdk:5.5.1'
+    // Official N-Genius Android Payment SDK (JitPack).
+    implementation 'com.github.network-international.payment-sdk-android:payment-sdk-core:5.2.3'
+    implementation 'com.github.network-international.payment-sdk-android:payment-sdk:5.2.3'
 }

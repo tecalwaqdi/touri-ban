@@ -65,6 +65,51 @@ class TypeCarRecord extends FirestoreRecord {
   String get codeCar => _codeCar ?? '';
   bool hasCodeCar() => _codeCar != null;
 
+  // "NesbahkKsm" — extra-hours discount percent.
+  double? _nesbahkKsm;
+  double get nesbahkKsm => _nesbahkKsm ?? 0.0;
+  bool hasNesbahkKsm() => _nesbahkKsm != null;
+
+  // "TotalKsmUb" — discount cap.
+  int? _totalKsmUb;
+  int get totalKsmUb => _totalKsmUb ?? 0;
+  bool hasTotalKsmUb() => _totalKsmUb != null;
+
+  // "osf" / "osf_i18n" — description.
+  String? _osf;
+  String get osf => _osf ?? '';
+  bool hasOsf() => _osf != null;
+
+  Map<String, String>? _osfI18n;
+  Map<String, String> get osfI18n => _osfI18n ?? const {};
+  bool hasOsfI18n() => _osfI18n != null && _osfI18n!.isNotEmpty;
+
+  // "sort_order" / "num_trteb"
+  int? _sortOrder;
+  int get sortOrder => _sortOrder ?? 0;
+  bool hasSortOrder() => _sortOrder != null;
+
+  int? _numTrteb;
+  int get numTrteb => _numTrteb ?? 0;
+  bool hasNumTrteb() => _numTrteb != null;
+
+  // Optional capacity (Admin-managed; display when present).
+  int? _passengers;
+  int get passengers => _passengers ?? 0;
+  bool hasPassengers() => _passengers != null;
+
+  int? _luggage;
+  int get luggage => _luggage ?? 0;
+  bool hasLuggage() => _luggage != null;
+
+  String? _icon;
+  String get icon => _icon ?? '';
+  bool hasIcon() => _icon != null;
+
+  DateTime? _updatedAt;
+  DateTime? get updatedAt => _updatedAt;
+  bool hasUpdatedAt() => _updatedAt != null;
+
   DocumentReference? _dolh;
   DocumentReference? get dolh => _dolh;
   bool hasDolh() => _dolh != null;
@@ -77,13 +122,37 @@ class TypeCarRecord extends FirestoreRecord {
     _naim = snapshotData['naim'] as String?;
     _namesI18n = _parseI18nStringMap(snapshotData['names_i18n']);
     _sr = castToType<int>(snapshotData['sr']);
-    _actev = snapshotData['actev'] as bool?;
+    _actev = snapshotData['actev'] as bool? ??
+        snapshotData['acctev'] as bool?;
     _img = snapshotData['img'] as String?;
     _ishafelh = snapshotData['ishafelh'] as bool?;
     _vill = getDataList(snapshotData['vill']);
     _not = snapshotData['not'] as String?;
     _aglSaat = castToType<int>(snapshotData['agl_saat']);
     _codeCar = snapshotData['codeCar'] as String?;
+    _nesbahkKsm = castToType<double>(snapshotData['NesbahkKsm']);
+    _totalKsmUb = castToType<int>(snapshotData['TotalKsmUb']);
+    _osf = snapshotData['osf'] as String?;
+    _osfI18n = _parseI18nStringMap(snapshotData['osf_i18n']);
+    _sortOrder = castToType<int>(snapshotData['sort_order']);
+    _numTrteb = castToType<int>(snapshotData['num_trteb']);
+    _passengers = castToType<int>(
+      snapshotData['passengers'] ?? snapshotData['passenger_capacity'],
+    );
+    _luggage = castToType<int>(
+      snapshotData['luggage'] ?? snapshotData['luggage_capacity'],
+    );
+    _icon = snapshotData['icon'] as String?;
+    final rawUpdated = snapshotData['updated_at'];
+    if (rawUpdated is DateTime) {
+      _updatedAt = rawUpdated;
+    } else if (rawUpdated != null) {
+      try {
+        _updatedAt = (rawUpdated as dynamic).toDate() as DateTime?;
+      } catch (_) {
+        _updatedAt = null;
+      }
+    }
     _dolh = snapshotData['dolh'] as DocumentReference?;
     _countryIso2 = snapshotData['country_iso2'] as String?;
   }
@@ -141,7 +210,17 @@ Map<String, dynamic> createTypeCarRecordData({
   bool? ishafelh,
   String? not,
   int? aglSaat,
+  double? nesbahkKsm,
+  int? totalKsmUb,
   String? codeCar,
+  String? osf,
+  Map<String, String>? osfI18n,
+  int? sortOrder,
+  int? numTrteb,
+  int? passengers,
+  int? luggage,
+  String? icon,
+  DateTime? updatedAt,
   DocumentReference? dolh,
   String? countryIso2,
 }) {
@@ -155,7 +234,17 @@ Map<String, dynamic> createTypeCarRecordData({
       'ishafelh': ishafelh,
       'not': not,
       'agl_saat': aglSaat,
+      'NesbahkKsm': nesbahkKsm,
+      'TotalKsmUb': totalKsmUb,
       'codeCar': codeCar,
+      'osf': osf,
+      'osf_i18n': osfI18n,
+      'sort_order': sortOrder,
+      'num_trteb': numTrteb,
+      'passengers': passengers,
+      'luggage': luggage,
+      'icon': icon,
+      'updated_at': updatedAt,
       'dolh': dolh,
       'country_iso2': countryIso2,
     }.withoutNulls,

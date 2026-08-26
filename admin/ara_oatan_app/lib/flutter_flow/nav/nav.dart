@@ -652,6 +652,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'fromWebView',
               ParamType.bool,
             ),
+            awaitingExternalHpp: params.getParam(
+              'awaitingExternalHpp',
+              ParamType.bool,
+            ),
           ),
         ),
         FFRoute(
@@ -661,6 +665,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => PaymentConfirmWidget(
             fromWebView: params.getParam(
               'fromWebView',
+              ParamType.bool,
+            ),
+            awaitingExternalHpp: params.getParam(
+              'awaitingExternalHpp',
               ParamType.bool,
             ),
           ),

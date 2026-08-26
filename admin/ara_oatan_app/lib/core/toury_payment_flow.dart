@@ -47,6 +47,12 @@ class TouryCardPaymentResult {
       threeDsUrl!.isNotEmpty &&
       !isPaid;
 
+  /// Native SDK finished locally — poll backend; do not treat as paid yet.
+  bool get needsBackendConfirmation {
+    final s = (status ?? '').toLowerCase();
+    return s == 'pending_backend_confirmation';
+  }
+
   /// Only server-normalized paid/captured — never treat return URL as paid.
   bool get isPaid {
     final s = (status ?? TouryNGeniusService.status(response?.jsonBody) ?? '')
@@ -199,7 +205,8 @@ Future<void> touryNavigateAfterCardPayment(
   });
 
   // Never treat a missing return/3DS URL as paid — only explicit paid/captured.
-  if (result.isPaid) {
+  // Native SDK success also routes here for backend confirmation polling.
+  if (result.isPaid || result.needsBackendConfirmation) {
     if (onPaidWithoutWebView != null) {
       onPaidWithoutWebView();
       return;
@@ -242,6 +249,7 @@ Future<void> touryNavigateAfterCardPayment(
         PaymentConfirmWidget.routeName,
         queryParameters: {
           'fromWebView': serializeParam(false, ParamType.bool),
+          'awaitingExternalHpp': serializeParam(true, ParamType.bool),
         }.withoutNulls,
       );
       return;
@@ -516,8 +524,10 @@ Future<TouryCardPaymentResult> touryRetryUnpaidOrderPayment({
   }
 
   final app = FFAppState();
-  // Stable idempotency per unpaid order — refreshes HPP without double charge.
-  app.paymentIdempotencyKey = 'pay_order_${order.reference.id}';
+  // Unique key per retry attempt so older Payment API builds (without
+  // forceRefreshHpp / HPP TTL) still mint a fresh N-Genius paypage code.
+  app.paymentIdempotencyKey =
+      'pay_order_${order.reference.id}_${DateTime.now().millisecondsSinceEpoch}';
   app.pendingPaymentOrderId = order.reference.id;
 
   if (TouryPaymentFlags.useExternalPaymentApi) {
@@ -532,6 +542,7 @@ Future<TouryCardPaymentResult> touryRetryUnpaidOrderPayment({
         booking: TouryOrderIntegration.cloudBookingPayload(),
         orderPath: order.reference.path,
         description: 'Toury-retry-${order.reference.id.substring(0, 8)}',
+        forceRefreshHpp: true,
       );
       final paymentId = body['id']?.toString();
       final bookingId = body['bookingId']?.toString() ?? order.reference.id;

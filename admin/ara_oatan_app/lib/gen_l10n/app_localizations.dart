@@ -772,7 +772,7 @@ abstract class AppLocalizations {
   /// UI string (source key: Welcome to the Arra Watan app)
   ///
   /// In en, this message translates to:
-  /// **'Welcome to the Arra Watan app'**
+  /// **'Welcome to the Touri Taxi app'**
   String get welcome_to_the_Arra_Watan_app;
 
   /// UI string (source key: first global saudi tourist taxi app)

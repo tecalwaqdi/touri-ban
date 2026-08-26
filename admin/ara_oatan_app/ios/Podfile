@@ -34,6 +34,8 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '11.13.0'
+  # Official N-Genius iOS Payment SDK
+  pod 'NISdk', '~> 5.1'
 end
 
 post_install do |installer|

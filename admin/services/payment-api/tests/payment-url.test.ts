@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   analyzeNGeniusPaymentLinks,
+  buildMobileSdkPayload,
+  extractHostedPaymentCode,
   extractHostedPaymentPageUrl,
+  extractPaymentAuthorizationUrl,
   isHostedPaymentPageUrl,
 } from "@/lib/ngenius/payment-url";
 import { canReuseHostedPaymentSession } from "@/lib/payments/create";
@@ -85,8 +88,57 @@ describe("hosted payment page URL", () => {
   });
 });
 
+describe("mobile SDK payload", () => {
+  const auth =
+    "https://api-gateway.sandbox.ngenius-payments.com/transactions/paymentAuthorization";
+  const hpp =
+    "https://paypage.sandbox.ngenius-payments.com/?code=sdkCode99";
+
+  it("extracts authorization URL and payment code", () => {
+    expect(
+      extractPaymentAuthorizationUrl({
+        _links: { "payment-authorization": { href: auth } },
+      }),
+    ).toBe(auth);
+    expect(extractHostedPaymentCode(hpp)).toBe("sdkCode99");
+    expect(
+      extractPaymentAuthorizationUrl({
+        _links: { payment: { href: hpp } },
+      }),
+    ).toBeNull();
+  });
+
+  it("builds additive SDK payload when both links present", () => {
+    const payload = buildMobileSdkPayload({
+      reference: "ord-1",
+      _links: {
+        "payment-authorization": { href: auth },
+        payment: { href: hpp },
+      },
+    });
+    expect(payload).toEqual({
+      gatewayAuthorizationUrl: auth,
+      payPageUrl: hpp,
+      paymentCode: "sdkCode99",
+      orderReference: "ord-1",
+    });
+  });
+
+  it("returns null when auth link missing (HPP-only order)", () => {
+    expect(
+      buildMobileSdkPayload({
+        _links: { payment: { href: hpp } },
+      }),
+    ).toBeNull();
+  });
+});
+
 describe("session HPP reuse", () => {
-  it("reuses only pending sessions with valid HPP in same env", () => {
+  const now = Date.parse("2026-08-26T12:00:00.000Z");
+  const fresh = new Date(now - 5 * 60 * 1000);
+  const stale = new Date(now - 20 * 60 * 1000);
+
+  it("reuses only pending sessions with fresh HPP in same env", () => {
     expect(
       canReuseHostedPaymentSession(
         {
@@ -94,8 +146,10 @@ describe("session HPP reuse", () => {
           environment: "production",
           payment_url:
             "https://paypage.ngenius-payments.com/?code=alive",
+          hpp_refreshed_at: fresh,
         },
         "production",
+        now,
       ),
     ).toBe(true);
   });
@@ -107,8 +161,10 @@ describe("session HPP reuse", () => {
           status: "failed",
           environment: "production",
           payment_url: "https://paypage.ngenius-payments.com/?code=x",
+          hpp_refreshed_at: fresh,
         },
         "production",
+        now,
       ),
     ).toBe(false);
     expect(
@@ -117,8 +173,10 @@ describe("session HPP reuse", () => {
           status: "pending",
           environment: "sandbox",
           payment_url: "https://paypage.ngenius-payments.com/?code=x",
+          hpp_refreshed_at: fresh,
         },
         "production",
+        now,
       ),
     ).toBe(false);
     expect(
@@ -128,8 +186,25 @@ describe("session HPP reuse", () => {
           environment: "production",
           payment_url:
             "https://api-gateway.ksa.ngenius-payments.com/transactions/outlets/a/orders/b",
+          hpp_refreshed_at: fresh,
         },
         "production",
+        now,
+      ),
+    ).toBe(false);
+  });
+
+  it("does not reuse HPP older than TTL", () => {
+    expect(
+      canReuseHostedPaymentSession(
+        {
+          status: "pending",
+          environment: "production",
+          payment_url: "https://paypage.ngenius-payments.com/?code=old",
+          hpp_refreshed_at: stale,
+        },
+        "production",
+        now,
       ),
     ).toBe(false);
   });

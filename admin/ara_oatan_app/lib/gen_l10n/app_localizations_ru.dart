@@ -354,7 +354,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get welcome_to_the_Arra_Watan_app =>
-      'Добро пожаловать в приложение Arra Watan';
+      'Добро пожаловать в приложение Touri Taxi';
 
   @override
   String get first_global_saudi_tourist_taxi_app =>

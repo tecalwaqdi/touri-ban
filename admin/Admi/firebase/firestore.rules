@@ -794,41 +794,40 @@ service cloud.firestore {
     }
 
     match /user/{document} {
-      allow create: if request.auth != null && (
-        (
-          request.auth.uid == document
-          && !('isAdmin' in request.resource.data)
-          && !('IsAdmin' in request.resource.data)
-          && !('isAdminRule' in request.resource.data)
-          && !('IsAdminRule' in request.resource.data)
-          && !('isagent' in request.resource.data)
-          && !('Isagent' in request.resource.data)
-          && !('ismndob' in request.resource.data)
-          && !('isPartner' in request.resource.data)
-          && !('Rev_dloh_agent' in request.resource.data)
-          && !('partner_mkan' in request.resource.data)
-          && (
-            !('transport_company' in request.resource.data)
-            || request.resource.data.transport_company == null
-            || activeTransportCompanyRef(request.resource.data.transport_company)
-          )
-          && (
-            !('is_tour_guide' in request.resource.data)
-            || (
-              request.resource.data.get('is_tour_guide', false) == true
-              && request.resource.data.get('tour_guide_status', '') == 'pending'
-            )
-            || (
-              request.resource.data.get('is_tour_guide', false) == false
-              && request.resource.data.get('tour_guide_status', 'none') in ['none', '']
-            )
-          )
-          && !('tour_guide_reviewed_at' in request.resource.data)
-          && request.resource.data.get('tour_guide_status', 'none') in
-            ['none', 'pending', '']
+      // Own-profile create FIRST — separate statement so panelCanProvisionUser()
+      // does not burn the 1000-expression budget for normal customer signup.
+      allow create: if signedIn()
+        && request.auth.uid == document
+        && !('isAdmin' in request.resource.data)
+        && !('IsAdmin' in request.resource.data)
+        && !('isAdminRule' in request.resource.data)
+        && !('IsAdminRule' in request.resource.data)
+        && !('isagent' in request.resource.data)
+        && !('Isagent' in request.resource.data)
+        && !('ismndob' in request.resource.data)
+        && !('isPartner' in request.resource.data)
+        && !('Rev_dloh_agent' in request.resource.data)
+        && !('partner_mkan' in request.resource.data)
+        && (
+          !('transport_company' in request.resource.data)
+          || request.resource.data.transport_company == null
+          || activeTransportCompanyRef(request.resource.data.transport_company)
         )
-        || panelCanProvisionUser()
-      );
+        && (
+          !('is_tour_guide' in request.resource.data)
+          || (
+            request.resource.data.get('is_tour_guide', false) == true
+            && request.resource.data.get('tour_guide_status', '') == 'pending'
+          )
+          || (
+            request.resource.data.get('is_tour_guide', false) == false
+            && request.resource.data.get('tour_guide_status', 'none') in ['none', '']
+          )
+        )
+        && !('tour_guide_reviewed_at' in request.resource.data)
+        && request.resource.data.get('tour_guide_status', 'none') in
+          ['none', 'pending', ''];
+      allow create: if request.auth != null && panelCanProvisionUser();
       // Own profile first (separate statement) — avoids recursive isSuperAdmin()
       // get() while evaluating currentUserData() from other rules.
       allow read: if signedIn() && request.auth.uid == document;
@@ -840,12 +839,15 @@ service cloud.firestore {
             && resource.data.transport_company != null
             && resource.data.transport_company.path == claimTransportCompanyPath())
       );
+      // Own-profile update FIRST — critical: the panel OR-chain below exceeds the
+      // 1000-expression limit and was denying ALL customer profile writes
+      // (photo_url, phone, display_name, login sync).
+      allow update: if signedIn() && userSelfFieldsOnly(document);
+      allow update: if signedIn() && canDriverSetOnlineOffline(document);
+      allow update: if signedIn() && canClaimOrReleaseOwnActiveOrder(document);
       allow update: if request.auth != null && (
         isSuperAdmin()
-        || canDriverSetOnlineOffline(document)
-        || canClaimOrReleaseOwnActiveOrder(document)
         || panelCanClearActiveOrderLock(document)
-        || userSelfFieldsOnly(document)
         || canSelfRegisterAsPendingDriver(document)
         || panelCanManageTourGuide()
         || panelCanReviewDriver()
@@ -1347,6 +1349,17 @@ service cloud.firestore {
     match /financial_wallet_adjust_idempotency/{id} {
       allow read: if signedIn() && isSuperAdmin();
       allow create, update, delete: if false;
+    }
+
+    // Email OTP challenges + rate limits — Admin SDK / Cloud Functions only
+    match /email_verification_challenges/{id} {
+      allow read, write: if false;
+    }
+    match /email_otp_rate_limits/{id} {
+      allow read, write: if false;
+    }
+    match /email_otp_cooldown/{id} {
+      allow read, write: if false;
     }
   }
 }

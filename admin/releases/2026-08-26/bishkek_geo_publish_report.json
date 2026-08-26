@@ -1,0 +1,158 @@
+{
+  "publishedAt": "2026-08-25T23:44:11.200Z",
+  "countsBefore": {
+    "countries": 10,
+    "regions": 1,
+    "cities": 29,
+    "villages": 33,
+    "mkan": 156,
+    "type_car": 43,
+    "auto_num": 1
+  },
+  "countsAfter": {
+    "countries": 10,
+    "regions": 1,
+    "cities": 30,
+    "villages": 34,
+    "mkan": 161,
+    "type_car": 43,
+    "auto_num": 1
+  },
+  "fingerprintBefore": "e8f0fd2f4c2a3374a6589bead1988817a023b4de8923540c911250a8fe1a144b",
+  "fingerprintAfter": "3c4f7855e0b4d0b529dd849c29ff751c059416577b7c9d6bfd4147053534187a",
+  "oldExpectedFingerprint": "637d84841363b34e039783f185098631ac7b30a2094ec2eeb1d0623ffe1b1b0d",
+  "verify": {
+    "region": true,
+    "village": true,
+    "lm_kg_bishkek_bishkek-ala-too": true,
+    "lm_kg_bishkek_bishkek-history-museum": true,
+    "lm_kg_bishkek_bishkek-osh-bazaar": true,
+    "lm_kg_bishkek_bishkek-victory-square": true,
+    "lm_kg_bishkek_bishkek-panfilov": true
+  },
+  "localization": [
+    {
+      "entity": "Bishkek region",
+      "ar": "PASS",
+      "en": "PASS",
+      "ru": "PASS",
+      "ky": "PASS",
+      "fr": "PASS",
+      "ur": "PASS",
+      "pt": "PASS"
+    },
+    {
+      "entity": "Bishkek village",
+      "ar": "PASS",
+      "en": "PASS",
+      "ru": "PASS",
+      "ky": "PASS",
+      "fr": "PASS",
+      "ur": "PASS",
+      "pt": "PASS"
+    },
+    {
+      "entity": "Ala-Too Square",
+      "ar": "PASS",
+      "en": "PASS",
+      "ru": "PASS",
+      "ky": "PASS",
+      "fr": "PASS",
+      "ur": "PASS",
+      "pt": "PASS"
+    },
+    {
+      "entity": "State History Museum of the Kyrgyz Republic",
+      "ar": "PASS",
+      "en": "PASS",
+      "ru": "PASS",
+      "ky": "PASS",
+      "fr": "PASS",
+      "ur": "PASS",
+      "pt": "PASS"
+    },
+    {
+      "entity": "Osh Bazaar",
+      "ar": "PASS",
+      "en": "PASS",
+      "ru": "PASS",
+      "ky": "PASS",
+      "fr": "PASS",
+      "ur": "PASS",
+      "pt": "PASS"
+    },
+    {
+      "entity": "Victory Square",
+      "ar": "PASS",
+      "en": "PASS",
+      "ru": "PASS",
+      "ky": "PASS",
+      "fr": "PASS",
+      "ur": "PASS",
+      "pt": "PASS"
+    },
+    {
+      "entity": "Panfilov Park",
+      "ar": "PASS",
+      "en": "PASS",
+      "ru": "PASS",
+      "ky": "PASS",
+      "fr": "PASS",
+      "ur": "PASS",
+      "pt": "PASS"
+    }
+  ],
+  "coordinates": {
+    "bishkek": {
+      "lat": 42.8746,
+      "lng": 74.5698,
+      "source": "OpenStreetMap/Wikipedia city center"
+    },
+    "landmarks": [
+      {
+        "name": "Ala-Too Square",
+        "lat": 42.8746,
+        "lng": 74.6122,
+        "source": "curated_kyrgyzstan_seed + OSM crosscheck"
+      },
+      {
+        "name": "State History Museum of the Kyrgyz Republic",
+        "lat": 42.8763,
+        "lng": 74.6037,
+        "source": "curated_kyrgyzstan_seed + OSM crosscheck"
+      },
+      {
+        "name": "Osh Bazaar",
+        "lat": 42.874,
+        "lng": 74.5696,
+        "source": "curated_kyrgyzstan_seed + OSM crosscheck"
+      },
+      {
+        "name": "Victory Square",
+        "lat": 42.8779,
+        "lng": 74.6138,
+        "source": "curated_kyrgyzstan_seed + OSM crosscheck"
+      },
+      {
+        "name": "Panfilov Park",
+        "lat": 42.8798,
+        "lng": 74.6032,
+        "source": "curated_kyrgyzstan_seed + OSM crosscheck"
+      }
+    ]
+  },
+  "backupPath": "/Users/ventura/ara-ban/admin/releases/2026-08-26/geo_bishkek_backup/pre_write_backup.json",
+  "mutations": {
+    "createRegion": "cities/region_kg_bishkek",
+    "createVillage": "villages/city_kg_bishkek",
+    "createLandmarks": [
+      "mkan/lm_kg_bishkek_bishkek-ala-too",
+      "mkan/lm_kg_bishkek_bishkek-history-museum",
+      "mkan/lm_kg_bishkek_bishkek-osh-bazaar",
+      "mkan/lm_kg_bishkek_bishkek-victory-square",
+      "mkan/lm_kg_bishkek_bishkek-panfilov"
+    ],
+    "delete": 0,
+    "otherUpdates": 0
+  }
+}

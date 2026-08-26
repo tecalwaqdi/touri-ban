@@ -135,7 +135,7 @@ void main() {
     test('requires country region city and gps', () {
       expect(
         DriverLocationValidator.validate(
-          hasUsableGps: true,
+          hasSelectedLocation: true,
           hasCountry: true,
           hasRegion: true,
           hasCity: true,
@@ -144,7 +144,7 @@ void main() {
       );
       expect(
         DriverLocationValidator.validate(
-          hasUsableGps: true,
+          hasSelectedLocation: true,
           hasCountry: true,
           hasRegion: false,
           hasCity: false,

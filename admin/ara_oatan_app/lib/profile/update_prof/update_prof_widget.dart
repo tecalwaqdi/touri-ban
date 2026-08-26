@@ -1,17 +1,20 @@
-import 'package:ara_oatan_app/order/checkout66/checkout66_widget.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
 import '/backend/profile_photo_service.dart';
 import '/core/toury_dialogs.dart';
+import '/core/toury_async_action_guard.dart';
 import '/core/toury_phone_util.dart';
+import '/core/toury_profile_errors.dart';
+import '/core/toury_profile_state.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/upload_data.dart';
 import 'update_prof_model.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:ara_oatan_app/order/checkout66/checkout66_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 export 'update_prof_model.dart';
 
@@ -29,6 +32,7 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
   late UpdateProfModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -40,13 +44,50 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
     _model.textFieldFocusNode1 ??= FocusNode();
 
     _model.textController2 ??= TextEditingController(
-        text: valueOrDefault(currentUserDocument?.phoneN, 0).toString());
+      text: TouryPhoneUtil.displayPhone(
+        phoneNumber: currentUserDocument?.phoneNumber,
+        phoneN: currentUserDocument?.phoneN,
+        authPhone: currentUser?.phoneNumber,
+      ),
+    );
     _model.textFieldFocusNode2 ??= FocusNode();
 
     _model.textController3 ??= TextEditingController(text: currentUserEmail);
     _model.textFieldFocusNode3 ??= FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  bool _fieldsDirty = false;
+
+  void _syncFieldsFromDocument(UserRecord? user) {
+    if (user == null || _fieldsDirty || _isSaving) return;
+    if (!_model.textFieldFocusNode1!.hasFocus) {
+      final name = user.displayName.trim().isNotEmpty
+          ? user.displayName
+          : currentUserDisplayName;
+      if (_model.textController1!.text != name) {
+        _model.textController1!.text = name;
+      }
+    }
+    if (!_model.textFieldFocusNode2!.hasFocus) {
+      final phone = TouryPhoneUtil.displayPhone(
+        phoneNumber: user.phoneNumber,
+        phoneN: user.phoneN,
+        authPhone: currentUser?.phoneNumber,
+      );
+      if (_model.textController2!.text != phone) {
+        _model.textController2!.text = phone;
+      }
+    }
+    if (!_model.textFieldFocusNode3!.hasFocus) {
+      final email = user.email.trim().isNotEmpty
+          ? user.email
+          : currentUserEmail;
+      if (_model.textController3!.text != email) {
+        _model.textController3!.text = email;
+      }
+    }
   }
 
   @override
@@ -124,14 +165,24 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
         bytes: picked.bytes,
       );
 
-      await currentUserReference!.update(
-        createUserRecordData(photoUrl: photoUrl),
-      );
-
       try {
-        currentUserDocument =
-            await UserRecord.getDocumentOnce(currentUserReference!);
-      } catch (_) {}
+        await currentUserReference!.update(<String, dynamic>{
+          'photo_url': photoUrl,
+          'updated_time': getCurrentTimestamp,
+        });
+      } catch (e) {
+        debugPrint('photo_url_write failed: $e');
+        if (!mounted) return;
+        await TouryDialogs.showAlert(
+          context,
+          title: 'dialog_error_title'.tr(),
+          message: touryProfileErrorMessage(e, operation: 'photo_url_write'),
+          type: TouryMessageType.error,
+        );
+        return;
+      }
+
+      await TouryProfileState.refreshFromServer();
 
       if (!mounted) return;
       safeSetState(() {
@@ -160,7 +211,9 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
       await TouryDialogs.showAlert(
         context,
         title: 'dialog_error_title'.tr(),
-        message: e.message,
+        message: e.message.contains('صلاحيات')
+            ? 'تعذر رفع الصورة بسبب صلاحيات التخزين.'
+            : e.message,
         type: TouryMessageType.error,
       );
     } catch (e) {
@@ -168,7 +221,7 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
       await TouryDialogs.showAlert(
         context,
         title: 'dialog_error_title'.tr(),
-        message: uploadErrorMessage(e),
+        message: touryProfileErrorMessage(e, operation: 'photo_upload'),
         type: TouryMessageType.error,
       );
     } finally {
@@ -191,37 +244,105 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
       _changeProfilePhoto(galleryOnly: true);
 
   Future<void> _submit() async {
-    final normalized = TouryPhoneUtil.normalizeForSave(
-      _model.textController2.text,
-    );
-    if (TouryPhoneUtil.digitsOnly(normalized.phoneNumber).length < 7) {
+    if (_isSaving || _isUploading) return;
+    final guardKey = 'profile:update:${currentUserUid.isEmpty ? 'anon' : currentUserUid}';
+    if (!TouryAsyncActionGuard.tryStart(guardKey)) return;
+    safeSetState(() => _isSaving = true);
+
+    try {
+      final normalized = TouryPhoneUtil.normalizeForSave(
+        _model.textController2.text,
+      );
+      if (!TouryPhoneUtil.hasUsablePhone(
+        phoneNumber: normalized.phoneNumber,
+        phoneN: normalized.phoneN,
+      )) {
+        await TouryDialogs.showAlert(
+          context,
+          title: 'dialog_error_title'.tr(),
+          message: 'enter_phone_number'.tr(),
+          type: TouryMessageType.error,
+        );
+        return;
+      }
+
+      final displayName = _model.textController1.text.trim();
+      if (displayName.isEmpty) {
+        await TouryDialogs.showAlert(
+          context,
+          title: 'dialog_error_title'.tr(),
+          message: 'يرجى إدخال الاسم.',
+          type: TouryMessageType.error,
+        );
+        return;
+      }
+
+      final ref = currentUserReference;
+      if (ref == null || currentUserUid.isEmpty) {
+        await TouryDialogs.showAlert(
+          context,
+          title: 'dialog_error_title'.tr(),
+          message: 'انتهت جلسة تسجيل الدخول. سجّل الدخول مرة أخرى.',
+          type: TouryMessageType.error,
+        );
+        return;
+      }
+
+      // Only safe profile fields — never privileged role keys.
+      final payload = <String, dynamic>{
+        'display_name': displayName,
+        'phone_number': normalized.phoneNumber,
+        if (normalized.phoneN != null) 'phone_n': normalized.phoneN,
+        'updated_time': getCurrentTimestamp,
+      };
+      debugPrint(
+        'profile_save uid=$currentUserUid keys=${payload.keys.toList()}',
+      );
+      await ref.update(payload);
+      final refreshed = await TouryProfileState.refreshFromServer();
+      final savedPhone = refreshed?.phoneNumber ?? '';
+      if (savedPhone.trim().isEmpty) {
+        throw StateError('PROFILE_PHONE_READBACK_EMPTY');
+      }
+      _fieldsDirty = false;
+      if (!mounted) return;
+      await TouryDialogs.showAlert(
+        context,
+        title: 'نجاح',
+        message: 'تم حفظ الملف الشخصي بنجاح',
+        type: TouryMessageType.success,
+      );
+      if (!mounted) return;
+      if (context.canPop()) {
+        context.safePop();
+      } else {
+        context.pushReplacementNamed(Checkout66Widget.routeName);
+      }
+    } catch (e) {
+      debugPrint('profile_save failed: $e');
+      if (!mounted) return;
       await TouryDialogs.showAlert(
         context,
         title: 'dialog_error_title'.tr(),
-        message: 'enter_phone_number'.tr(),
+        message: touryProfileErrorMessage(e, operation: 'profile_save'),
         type: TouryMessageType.error,
       );
-      return;
+    } finally {
+      TouryAsyncActionGuard.finish(guardKey);
+      if (mounted) {
+        safeSetState(() => _isSaving = false);
+      } else {
+        _isSaving = false;
+      }
     }
-    await currentUserReference!.update(
-      createUserRecordData(
-        displayName: _model.textController1.text,
-        phoneNumber: normalized.phoneNumber,
-        phoneN: normalized.phoneN,
-      ),
-    );
-    // Refresh local user doc before returning to checkout.
-    final refreshed = await UserRecord.getDocumentOnce(currentUserReference!);
-    currentUserDocument = refreshed;
-    if (!mounted) return;
-    context.pushReplacementNamed(Checkout66Widget.routeName);
   }
 
   @override
   Widget build(BuildContext context) {
     return DsScreenShell(
-      child: Builder(
+      child: AuthUserStreamWidget(
         builder: (context) {
+          _syncFieldsFromDocument(currentUserDocument);
           final colors = context.dsColors;
 
           return GestureDetector(
@@ -283,6 +404,7 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
                                     '7dplhdxl' /* Enter your full name */,
                                   ),
                                   textInputAction: TextInputAction.next,
+                                  onChanged: (_) => _fieldsDirty = true,
                                   prefixIcon: Icon(
                                     Icons.person_outline_rounded,
                                     size: DsIcons.sm,
@@ -303,6 +425,7 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
                                   ),
                                   keyboardType: TextInputType.phone,
                                   textInputAction: TextInputAction.done,
+                                  onChanged: (_) => _fieldsDirty = true,
                                   prefixIcon: Icon(
                                     Icons.phone_outlined,
                                     size: DsIcons.sm,
@@ -342,7 +465,7 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
                           icon: Icons.check_rounded,
                           size: DsButtonSize.lg,
                           expanded: true,
-                          onPressed: _submit,
+                          onPressed: (_isSaving || _isUploading) ? null : _submit,
                         ),
                       ),
                     ],

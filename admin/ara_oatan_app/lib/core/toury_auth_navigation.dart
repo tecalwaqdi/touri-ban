@@ -103,3 +103,22 @@ Future<void> tourySignInWithGoogle(BuildContext context) async {
     showSnackbar(context, errorMsg, type: TouryMessageType.error);
   }
 }
+
+/// Sign in with Apple — required on iOS when Google (third-party) login is offered.
+Future<void> tourySignInWithApple(BuildContext context) async {
+  GoRouter.of(context).prepareAuthEvent();
+  try {
+    final user = await authManager.signInWithApple(context);
+    if (user == null) return;
+    if (!context.mounted) return;
+    await touryFinishSignIn(context, user);
+  } catch (e) {
+    debugPrint('tourySignInWithApple error: $e');
+    if (!context.mounted) return;
+    showSnackbar(
+      context,
+      e.toString(),
+      type: TouryMessageType.error,
+    );
+  }
+}

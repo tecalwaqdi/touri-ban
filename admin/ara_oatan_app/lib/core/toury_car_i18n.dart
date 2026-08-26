@@ -325,19 +325,35 @@ String? _catalogKeyForCar(TypeCarRecord record) {
   return null;
 }
 
-Map<String, String> _mergedCarNames(TypeCarRecord record) {
+Map<String, String> touryMergeVehicleNames({
+  required Map<String, String> firestoreNames,
+  required String codeCar,
+  required String naim,
+}) {
   final merged = <String, String>{};
-  final catalogKey = _catalogKeyForCar(record);
-  // الكتالوج المحلي له الأولوية لأسماء المركبات المعتمدة في الواجهة.
-  if (catalogKey != null) {
-    merged.addAll(kTouryVehicleNameCatalog[catalogKey]!);
-  }
-  for (final entry in record.namesI18n.entries) {
+  for (final entry in firestoreNames.entries) {
     final value = entry.value.trim();
     if (value.isEmpty) continue;
-    merged.putIfAbsent(entry.key, () => value);
+    merged[entry.key] = value;
+  }
+  final code = codeCar.trim().toLowerCase();
+  if (code.isNotEmpty && kTouryVehicleNameCatalog.containsKey(code)) {
+    for (final entry in kTouryVehicleNameCatalog[code]!.entries) {
+      merged.putIfAbsent(entry.key, () => entry.value);
+    }
+  }
+  if (naim.trim().isNotEmpty) {
+    merged.putIfAbsent('ar', () => naim.trim());
   }
   return merged;
+}
+
+Map<String, String> _mergedCarNames(TypeCarRecord record) {
+  return touryMergeVehicleNames(
+    firestoreNames: record.namesI18n,
+    codeCar: record.codeCar,
+    naim: record.naim,
+  );
 }
 
 String touryTypeCarName(BuildContext context, TypeCarRecord record) {

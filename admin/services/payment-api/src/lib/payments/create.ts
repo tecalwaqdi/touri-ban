@@ -36,6 +36,11 @@ const createSchema = z.object({
     ])
     .default("booking"),
   locale: z.enum(["ar", "en", "ru", "ky"]).optional(),
+  /** Optional hint — does not change trusted amount. Backward compatible. */
+  paymentExperience: z.enum(["mobile_sdk", "hosted_page"]).optional(),
+  platform: z.enum(["android", "ios", "web"]).optional(),
+  /** When true, skip HPP reuse and mint a fresh N-Genius order. */
+  forceRefreshHpp: z.boolean().optional(),
   idempotencyKey: z.string().min(8).max(96).regex(/^[a-zA-Z0-9_.:-]+$/),
   // Booking intent identifiers only — never trust client amount
   carPath: z.string().optional(),
@@ -72,6 +77,41 @@ const TERMINAL_PAID_STATUSES = new Set([
   "captured",
   "authorized",
 ]);
+
+/** Additive SDK + HPP fallback fields. Never breaks legacy clients. */
+function sdkFieldsFromSession(existingData: Record<string, unknown>) {
+  const auth = String(existingData.sdk_auth_url || "").trim();
+  const pay = String(
+    existingData.sdk_pay_page_url || existingData.payment_url || "",
+  ).trim();
+  const code = String(existingData.sdk_payment_code || "").trim();
+  const orderJson = existingData.sdk_order_json;
+  if (!auth || !pay || !code) {
+    return {
+      paymentExperience: "hosted_page" as const,
+      sdk: null as null,
+      fallback: {
+        hostedPaymentUrl: isHostedPaymentPageUrl(pay) ? pay : null,
+      },
+    };
+  }
+  return {
+    paymentExperience: "mobile_sdk" as const,
+    sdk: {
+      gatewayAuthorizationUrl: auth,
+      payPageUrl: pay,
+      paymentCode: code,
+      orderReference: existingData.provider_order_ref
+        ? String(existingData.provider_order_ref)
+        : null,
+      orderJson:
+        orderJson && typeof orderJson === "object" ? orderJson : null,
+    },
+    fallback: {
+      hostedPaymentUrl: isHostedPaymentPageUrl(pay) ? pay : null,
+    },
+  };
+}
 
 function documentPath(value: string, collectionName: string): string {
   const parts = value.trim().split("/");
@@ -171,9 +211,38 @@ async function quoteWalletTopUp(data: z.infer<typeof createSchema>) {
   };
 }
 
+/** N-Genius HPP access codes expire; reusing stale URLs shows
+ * "unable to retrieve order details" on paypage.ksa.ngenius-payments.com. */
+export const HPP_REUSE_MAX_AGE_MS = 15 * 60 * 1000;
+
+function sessionTimestampMs(value: unknown): number | null {
+  if (value == null) return null;
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (value instanceof Date) return value.getTime();
+  if (typeof value === "object") {
+    const maybe = value as { toMillis?: () => number; _seconds?: number };
+    if (typeof maybe.toMillis === "function") {
+      try {
+        return maybe.toMillis();
+      } catch {
+        return null;
+      }
+    }
+    if (typeof maybe._seconds === "number") {
+      return maybe._seconds * 1000;
+    }
+  }
+  if (typeof value === "string") {
+    const parsed = Date.parse(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
 export function canReuseHostedPaymentSession(
   existing: Record<string, unknown>,
   currentEnv: string,
+  nowMs: number = Date.now(),
 ): boolean {
   const status = String(existing.normalized_status || existing.status || "");
   if (TERMINAL_PAID_STATUSES.has(status)) return false;
@@ -181,7 +250,13 @@ export function canReuseHostedPaymentSession(
   const sessionEnv = String(existing.environment || "");
   if (sessionEnv && sessionEnv !== currentEnv) return false;
   const url = String(existing.payment_url || existing.three_ds_url || "");
-  return isHostedPaymentPageUrl(url);
+  if (!isHostedPaymentPageUrl(url)) return false;
+  const mintedAt =
+    sessionTimestampMs(existing.hpp_refreshed_at) ??
+    sessionTimestampMs(existing.updated_at) ??
+    sessionTimestampMs(existing.created_at);
+  if (mintedAt == null) return false;
+  return nowMs - mintedAt <= HPP_REUSE_MAX_AGE_MS;
 }
 
 export async function handleCreatePayment(req: Request) {
@@ -312,10 +387,14 @@ export async function handleCreatePayment(req: Request) {
         bookingId: existingData.booking_id || existingData.unpaid_order_id || sessionId,
         bookingStatus: "paid",
         bookingCreated: Boolean(existingData.booking_created),
+        ...sdkFieldsFromSession(existingData as Record<string, unknown>),
       };
     }
 
-    if (canReuseHostedPaymentSession(existingData, env.NGENIUS_ENV)) {
+    if (
+      !body.forceRefreshHpp &&
+      canReuseHostedPaymentSession(existingData, env.NGENIUS_ENV)
+    ) {
       const url = String(existingData.payment_url || existingData.three_ds_url);
       logger.info("payment_session_hpp_reused", {
         sessionIdPrefix: sessionId.slice(0, 8),
@@ -371,6 +450,7 @@ export async function handleCreatePayment(req: Request) {
         purpose,
         bookingId: reuseBookingId,
         bookingStatus: "payment_pending",
+        ...sdkFieldsFromSession(existingData as Record<string, unknown>),
       };
     }
 
@@ -405,9 +485,12 @@ export async function handleCreatePayment(req: Request) {
         outlet_reference: env.NGENIUS_OUTLET_REF,
         environment: env.NGENIUS_ENV,
         purpose,
-        hpp_refreshed_at: existingData
-          ? FieldValue.serverTimestamp()
-          : undefined,
+        // Additive Mobile SDK session (no merchant API key).
+        sdk_auth_url: order.mobileSdk?.gatewayAuthorizationUrl || null,
+        sdk_pay_page_url: order.mobileSdk?.payPageUrl || order.paymentUrl,
+        sdk_payment_code: order.mobileSdk?.paymentCode || null,
+        sdk_order_json: order.orderJson || null,
+        hpp_refreshed_at: FieldValue.serverTimestamp(),
         failure_code: FieldValue.delete(),
         updated_at: FieldValue.serverTimestamp(),
       },
@@ -455,6 +538,19 @@ export async function handleCreatePayment(req: Request) {
       purpose,
       bookingId,
       bookingStatus: bookingId ? "payment_pending" : null,
+      paymentExperience: order.mobileSdk ? "mobile_sdk" : "hosted_page",
+      sdk: order.mobileSdk
+        ? {
+            gatewayAuthorizationUrl: order.mobileSdk.gatewayAuthorizationUrl,
+            payPageUrl: order.mobileSdk.payPageUrl,
+            paymentCode: order.mobileSdk.paymentCode,
+            orderReference: order.mobileSdk.orderReference,
+            orderJson: order.orderJson,
+          }
+        : null,
+      fallback: {
+        hostedPaymentUrl: order.paymentUrl,
+      },
     };
   } catch (error) {
     const failureCode =

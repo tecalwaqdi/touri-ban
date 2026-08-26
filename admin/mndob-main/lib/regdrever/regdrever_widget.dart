@@ -24,6 +24,7 @@ import '/core/driver_lifecycle_state.dart';
 import '/core/driver_location_catalog_service.dart';
 import '/core/driver_phone_number_service.dart';
 import '/core/driver_registration_draft.dart';
+import '/core/driver_registration_location_state.dart';
 import '/core/driver_registration_submission_service.dart';
 import '/core/driver_registration_validators.dart';
 import '/core/driver_session_router.dart';
@@ -551,12 +552,12 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       return;
     }
     if (_step == 1) {
-      final loc = DriverLocationValidator.validate(
-        hasUsableGps: TouryMapsConfig.isUsableCoordinate(_regLocation),
+      final loc = DriverRegistrationLocationInput(
+        selectedPosition: _regLocation,
         hasCountry: FFAppState().dolh != null,
         hasRegion: FFAppState().mdenh != null,
         hasCity: FFAppState().villmndoBREV != null,
-      );
+      ).validate();
       if (!loc.isValid) {
         await DriverDialogs.showAlert(
           context,
@@ -1528,6 +1529,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                               FFAppState().textvill = '';
                             }
                           });
+                          unawaited(_persistDraft());
                           final iso =
                               TouryCountryRegistry.isoFromCoordinates(loc);
                           if (iso == null || iso == prevIso) return;

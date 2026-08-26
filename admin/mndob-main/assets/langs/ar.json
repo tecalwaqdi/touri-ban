@@ -117,6 +117,10 @@
   "Email Address": "البريد الإلكتروني",
   "Email is required": "البريد الإلكتروني مطلوب",
   "Enable GPS and allow location access so we can place you on the map": "فعّل GPS واسمح بالوصول للموقع لوضعك على الخريطة",
+  "Allow this app to access your location in Settings": "اسمح للتطبيق بالوصول إلى موقعك من الإعدادات",
+  "Allow this app to access your location to use GPS": "اسمح للتطبيق بالوصول إلى موقعك لاستخدام GPS",
+  "Turn on Location Services on your device to use GPS": "فعّل خدمات الموقع على جهازك لاستخدام GPS",
+  "Move the map to set your position. You can place the pin manually if GPS is unavailable.": "حرّك الخريطة لتحديد موقعك. يمكنك وضع الدبوس يدوياً إذا كان GPS غير متاح.",
   "Enable location to continue registration": "فعّل الموقع لمتابعة التسجيل",
   "End of trip — return to customer": "نهاية الرحلة — العودة لموقع العميل",
   "Enter verification code": "أدخل رمز التحقق",
@@ -429,5 +433,15 @@
   "Verified": "موثّق",
   "Complete": "مكتمل",
   "Not verified": "غير موثّق",
-  "Please upload all required documents before continuing": "يرجى رفع جميع المستندات المطلوبة قبل المتابعة"
+  "Please upload all required documents before continuing": "يرجى رفع جميع المستندات المطلوبة قبل المتابعة",
+  "Enter the 6-digit verification code sent to {email}": "أدخل رمز التحقق المرسل إلى {email}",
+  "Resend code": "إعادة إرسال الرمز",
+  "Resend in": "إعادة الإرسال خلال",
+  "Code sent": "تم إرسال الرمز",
+  "Email verified successfully": "تم التحقق من البريد الإلكتروني بنجاح",
+  "Invalid code": "رمز غير صالح",
+  "Expired code": "انتهت صلاحية الرمز",
+  "Too many attempts": "محاولات كثيرة جداً",
+  "Resend cooldown": "انتظر قبل إعادة الإرسال",
+  "Network error": "خطأ في الشبكة"
 }

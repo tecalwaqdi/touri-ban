@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
+import '/core/toury_async_action_guard.dart';
 import '/core/toury_auth_navigation.dart';
 import '/core/toury_brand_widgets.dart';
 import '/core/toury_google_sign_in.dart';
@@ -33,6 +34,8 @@ class _LogenWidgetState extends State<LogenWidget>
 
   final animationsMap = <String, AnimationInfo>{};
   bool _googleSignInLoading = false;
+  bool _emailSignInLoading = false;
+  static const _emailLoginKey = 'auth:login:email';
 
   Future<void> _handleGoogleSignIn() async {
     if (_googleSignInLoading) return;
@@ -47,18 +50,32 @@ class _LogenWidgetState extends State<LogenWidget>
   }
 
   Future<void> _handleEmailSignIn() async {
-    GoRouter.of(context).prepareAuthEvent();
-
-    final user = await authManager.signInWithEmail(
-      context,
-      _model.emailAddressTextController.text,
-      _model.passwordTextController.text,
-    );
-    if (user == null) {
+    if (_emailSignInLoading ||
+        !TouryAsyncActionGuard.tryStart(_emailLoginKey)) {
       return;
     }
+    safeSetState(() => _emailSignInLoading = true);
+    try {
+      GoRouter.of(context).prepareAuthEvent();
 
-    await touryFinishSignIn(context, user);
+      final user = await authManager.signInWithEmail(
+        context,
+        _model.emailAddressTextController.text,
+        _model.passwordTextController.text,
+      );
+      if (user == null) {
+        return;
+      }
+
+      await touryFinishSignIn(context, user);
+    } finally {
+      TouryAsyncActionGuard.finish(_emailLoginKey);
+      if (mounted) {
+        safeSetState(() => _emailSignInLoading = false);
+      } else {
+        _emailSignInLoading = false;
+      }
+    }
   }
 
   @override
@@ -248,11 +265,13 @@ class _LogenWidgetState extends State<LogenWidget>
       ),
       const SizedBox(height: DsSpacing.xl),
       DsButton.primary(
-        label: 'Login'.tr(),
+        label: _emailSignInLoading ? '...' : 'Login'.tr(),
         size: DsButtonSize.md,
         expanded: true,
         icon: Icons.login_rounded,
-        onPressed: _handleEmailSignIn,
+        loading: _emailSignInLoading,
+        enabled: !_emailSignInLoading,
+        onPressed: _emailSignInLoading ? null : _handleEmailSignIn,
       ),
       const SizedBox(height: DsSpacing.md),
       Row(

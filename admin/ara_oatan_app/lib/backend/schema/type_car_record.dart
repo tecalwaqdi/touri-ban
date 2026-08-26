@@ -85,6 +85,31 @@ class TypeCarRecord extends FirestoreRecord {
   String get countryIso2 => _countryIso2 ?? '';
   bool hasCountryIso2() => _countryIso2 != null;
 
+  // Admin-controlled display order.
+  int? _sortOrder;
+  int get sortOrder => _sortOrder ?? 0;
+  bool hasSortOrder() => _sortOrder != null;
+
+  int? _numTrteb;
+  int get numTrteb => _numTrteb ?? 0;
+  bool hasNumTrteb() => _numTrteb != null;
+
+  int? _passengers;
+  int get passengers => _passengers ?? 0;
+  bool hasPassengers() => _passengers != null;
+
+  int? _luggage;
+  int get luggage => _luggage ?? 0;
+  bool hasLuggage() => _luggage != null;
+
+  String? _osf;
+  String get osf => _osf ?? '';
+  bool hasOsf() => _osf != null;
+
+  Map<String, String>? _osfI18n;
+  Map<String, String> get osfI18n => _osfI18n ?? const {};
+  bool hasOsfI18n() => _osfI18n != null && _osfI18n!.isNotEmpty;
+
   /// نشط للعرض: actev/acctev = true، أو بدون حقل تفعيل (بيانات قديمة).
   bool get isAvailableForListing {
     if (snapshotData.containsKey('actev')) {
@@ -131,6 +156,16 @@ class TypeCarRecord extends FirestoreRecord {
     _codeCar = snapshotData['codeCar'] as String?;
     _dolh = castDocRef(snapshotData['dolh']);
     _countryIso2 = snapshotData['country_iso2'] as String?;
+    _sortOrder = castToType<int>(snapshotData['sort_order']);
+    _numTrteb = castToType<int>(snapshotData['num_trteb']);
+    _passengers = castToType<int>(
+      snapshotData['passengers'] ?? snapshotData['passenger_capacity'],
+    );
+    _luggage = castToType<int>(
+      snapshotData['luggage'] ?? snapshotData['luggage_capacity'],
+    );
+    _osf = snapshotData['osf'] as String?;
+    _osfI18n = _parseI18nStringMap(snapshotData['osf_i18n']);
   }
 
   static Map<String, String>? _parseI18nStringMap(dynamic raw) {

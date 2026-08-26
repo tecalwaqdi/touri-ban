@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
@@ -10,6 +11,8 @@ import '/core/toury_auth_navigation.dart';
 import '/core/toury_brand_widgets.dart';
 import '/core/toury_google_sign_in.dart';
 import '/core/toury_email_verification_gate.dart';
+import '/core/customer_email_otp_panel.dart';
+import '/core/email_otp_verification_service.dart';
 import '/core/toury_phone_util.dart';
 import '/core/toury_signup_policy.dart';
 import '/design_system/design_system.dart';
@@ -51,6 +54,7 @@ class _HomePagWidgetState extends State<HomePagWidget>
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _googleSignInLoading = false;
+  bool _appleSignInLoading = false;
   bool _emailLoginLoading = false;
   bool _signUpLoading = false;
 
@@ -62,6 +66,18 @@ class _HomePagWidgetState extends State<HomePagWidget>
     } finally {
       if (mounted) {
         safeSetState(() => _googleSignInLoading = false);
+      }
+    }
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    if (_appleSignInLoading) return;
+    safeSetState(() => _appleSignInLoading = true);
+    try {
+      await tourySignInWithApple(context);
+    } finally {
+      if (mounted) {
+        safeSetState(() => _appleSignInLoading = false);
       }
     }
   }
@@ -158,9 +174,12 @@ class _HomePagWidgetState extends State<HomePagWidget>
         }
 
         try {
-          await user.sendEmailVerification();
+          // Email OTP (6-digit) — Firebase Auth emailVerified remains SoT.
+          await EmailOtpVerificationService.requestOtp(
+            locale: context.locale.languageCode,
+          );
         } catch (e) {
-          debugPrint('home signup verification email: $e');
+          debugPrint('home signup verification otp: $e');
         }
 
         try {
@@ -386,22 +405,11 @@ class _HomePagWidgetState extends State<HomePagWidget>
                                     setAppLanguage(context, lang),
                               ),
                               if (loggedIn && !currentUserEmailVerified)
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    DsSpacing.md,
-                                    DsSpacing.xs,
-                                    DsSpacing.md,
-                                    0,
-                                  ),
-                                  child: Semantics(
-                                    identifier: 'qa-customer-email-verification',
-                                    label: 'qa-customer-email-verification',
-                                    child: DsInformationCard(
-                                      title: 'Email verification required',
-                                      message: 'Please verify your email before continuing.',
-                                      icon: Icons.mark_email_unread_outlined,
-                                    ),
-                                  ),
+                                CustomerEmailOtpPanel(
+                                  email: currentUserEmail,
+                                  onVerified: () {
+                                    safeSetState(() {});
+                                  },
                                 ),
                               const Padding(
                                 padding: EdgeInsets.fromLTRB(
@@ -431,8 +439,10 @@ class _HomePagWidgetState extends State<HomePagWidget>
                                       model: _model,
                                       loading: _emailLoginLoading,
                                       googleLoading: _googleSignInLoading,
+                                      appleLoading: _appleSignInLoading,
                                       onLogin: _handleEmailLogin,
                                       onGoogleSignIn: _handleGoogleSignIn,
+                                      onAppleSignIn: _handleAppleSignIn,
                                       onForgotPassword: _openForgotPassword,
                                       onTogglePasswordVisibility: () =>
                                           safeSetState(() =>
@@ -444,7 +454,9 @@ class _HomePagWidgetState extends State<HomePagWidget>
                                       model: _model,
                                       loading: _signUpLoading,
                                       googleLoading: _googleSignInLoading,
+                                      appleLoading: _appleSignInLoading,
                                       onGoogleSignIn: _handleGoogleSignIn,
+                                      onAppleSignIn: _handleAppleSignIn,
                                       onSubmit: _handleSignUp,
                                       onOpenTerms: _openTerms,
                                       onSignIn: _openSignIn,
@@ -729,8 +741,10 @@ class _LoginTabView extends StatelessWidget {
     required this.model,
     required this.loading,
     required this.googleLoading,
+    required this.appleLoading,
     required this.onLogin,
     required this.onGoogleSignIn,
+    required this.onAppleSignIn,
     required this.onForgotPassword,
     required this.onTogglePasswordVisibility,
   });
@@ -738,8 +752,10 @@ class _LoginTabView extends StatelessWidget {
   final HomePagModel model;
   final bool loading;
   final bool googleLoading;
+  final bool appleLoading;
   final VoidCallback onLogin;
   final VoidCallback onGoogleSignIn;
+  final VoidCallback onAppleSignIn;
   final VoidCallback onForgotPassword;
   final VoidCallback onTogglePasswordVisibility;
 
@@ -799,6 +815,17 @@ class _LoginTabView extends StatelessWidget {
               loading: googleLoading,
               onPressed: onGoogleSignIn,
             ),
+            if (!kIsWeb &&
+                Theme.of(context).platform == TargetPlatform.iOS) ...[
+              const SizedBox(height: DsSpacing.sm),
+              DsButton.outlined(
+                label: 'Sign in with Apple'.tr(),
+                expanded: true,
+                loading: appleLoading,
+                icon: Icons.apple,
+                onPressed: onAppleSignIn,
+              ),
+            ],
             const SizedBox(height: DsSpacing.sm),
             DsButton.text(
               label: FFLocalizations.of(context).getText(
@@ -819,7 +846,9 @@ class _SignUpTabView extends StatelessWidget {
     required this.model,
     required this.loading,
     required this.googleLoading,
+    required this.appleLoading,
     required this.onGoogleSignIn,
+    required this.onAppleSignIn,
     required this.onSubmit,
     required this.onOpenTerms,
     required this.onSignIn,
@@ -831,7 +860,9 @@ class _SignUpTabView extends StatelessWidget {
   final HomePagModel model;
   final bool loading;
   final bool googleLoading;
+  final bool appleLoading;
   final VoidCallback onGoogleSignIn;
+  final VoidCallback onAppleSignIn;
   final VoidCallback onSubmit;
   final VoidCallback onOpenTerms;
   final VoidCallback onSignIn;
@@ -861,6 +892,17 @@ class _SignUpTabView extends StatelessWidget {
               onPressed: onGoogleSignIn,
               label: 'Create an account with Google'.tr(),
             ),
+            if (!kIsWeb &&
+                Theme.of(context).platform == TargetPlatform.iOS) ...[
+              const SizedBox(height: DsSpacing.sm),
+              DsButton.outlined(
+                label: 'Sign in with Apple'.tr(),
+                expanded: true,
+                loading: appleLoading,
+                icon: Icons.apple,
+                onPressed: onAppleSignIn,
+              ),
+            ],
             const SizedBox(height: DsSpacing.md),
             const _OrDivider(),
             const SizedBox(height: DsSpacing.md),

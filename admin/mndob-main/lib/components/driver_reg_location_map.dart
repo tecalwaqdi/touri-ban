@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 import '/core/driver_design_system.dart';
@@ -25,19 +26,113 @@ class DriverRegLocationMap extends StatefulWidget {
   State<DriverRegLocationMap> createState() => _DriverRegLocationMapState();
 }
 
-class _DriverRegLocationMapState extends State<DriverRegLocationMap> {
+class _DriverRegLocationMapState extends State<DriverRegLocationMap>
+    with WidgetsBindingObserver {
   final Completer<gmaps.GoogleMapController> _controller = Completer();
   bool _loading = true;
+  bool _locateInFlight = false;
   String? _error;
+  LatLng? _lastIdleCenter;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _locate(force: true));
+    WidgetsBinding.instance.addObserver(this);
+    _controller.future.then((_) {
+      if (!mounted) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _flushIdleCenter());
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _locate(force: false));
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshGpsDiagnostics();
+      if (!TouryMapsConfig.isUsableCoordinate(widget.location)) {
+        _flushIdleCenter();
+      }
+    }
+  }
+
+  void _commitCenter(LatLng latLng) {
+    if (!TouryMapsConfig.isUsableCoordinate(latLng)) return;
+    _lastIdleCenter = latLng;
+    widget.onLocationChanged(latLng);
+  }
+
+  void _flushIdleCenter() {
+    final center = _lastIdleCenter;
+    if (center != null) {
+      _commitCenter(center);
+      return;
+    }
+    unawaited(_syncVisibleMapCenter());
+  }
+
+  Future<void> _syncVisibleMapCenter() async {
+    if (!_controller.isCompleted || !mounted) return;
+    try {
+      final map = await _controller.future;
+      final bounds = await map.getVisibleRegion();
+      final latLng = LatLng(
+        (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
+        (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
+      );
+      if (TouryMapsConfig.isUsableCoordinate(latLng)) {
+        _commitCenter(latLng);
+      }
+    } catch (_) {}
+  }
+
+  Future<String> _gpsFailureMessage() async {
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return driverTr(
+        context,
+        'Turn on Location Services on your device to use GPS',
+      );
+    }
+    final permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return driverTr(
+        context,
+        'Allow this app to access your location in Settings',
+      );
+    }
+    if (permission == LocationPermission.denied) {
+      return driverTr(
+        context,
+        'Allow this app to access your location to use GPS',
+      );
+    }
+    return driverTr(
+      context,
+      'Enable GPS and allow location access so we can place you on the map',
+    );
+  }
+
+  Future<void> _refreshGpsDiagnostics() async {
+    if (!mounted) return;
+    if (TouryMapsConfig.isUsableCoordinate(widget.location)) {
+      if (_error != null) setState(() => _error = null);
+      return;
+    }
+    final message = await _gpsFailureMessage();
+    if (mounted && _error != message) {
+      setState(() => _error = message);
+    }
   }
 
   Future<void> _locate({bool force = false}) async {
-    if (!mounted) return;
+    if (!mounted || _locateInFlight) return;
+    _locateInFlight = true;
     setState(() {
       _loading = true;
       _error = null;
@@ -49,7 +144,7 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap> {
       if (!TouryMapsConfig.isUsableCoordinate(loc)) {
         throw Exception('invalid');
       }
-      widget.onLocationChanged(loc);
+      _commitCenter(loc);
       if (_controller.isCompleted) {
         final map = await _controller.future;
         await map.animateCamera(
@@ -61,25 +156,23 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap> {
       }
     } catch (_) {
       if (!mounted) return;
-      setState(() {
-        _error = driverTr(
-          context,
-          'Enable location to continue registration',
-        );
-      });
+      final message = await _gpsFailureMessage();
+      if (!mounted) return;
+      setState(() => _error = message);
       if (force && mounted) {
         await DriverDialogs.showAlert(
           context,
           title: driverTr(context, 'Location'),
-          message: driverTr(
-            context,
-            'Enable GPS and allow location access so we can place you on the map',
-          ),
+          message: message,
           type: DriverMessageType.warning,
         );
       }
     } finally {
-      if (mounted) setState(() => _loading = false);
+      _locateInFlight = false;
+      if (mounted) {
+        setState(() => _loading = false);
+        _flushIdleCenter();
+      }
     }
   }
 
@@ -88,7 +181,7 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap> {
     final colors = context.dsColors;
     final typography = context.dsTypography;
     final center = TouryMapsConfig.resolveLocation(widget.location);
-    final hasGps = TouryMapsConfig.isUsableCoordinate(widget.location);
+    final hasSelected = TouryMapsConfig.isUsableCoordinate(widget.location);
 
     return DsCard(
       elevated: true,
@@ -158,7 +251,7 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap> {
                 FlutterFlowGoogleMap(
                   controller: _controller,
                   initialLocation: center,
-                  initialZoom: hasGps ? 15 : TouryMapsConfig.defaultZoom,
+                  initialZoom: hasSelected ? 15 : TouryMapsConfig.defaultZoom,
                   allowInteraction: true,
                   allowZoom: true,
                   showZoomControls: false,
@@ -171,9 +264,10 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap> {
                   markers: const [],
                   onCameraIdle: (latLng) {
                     if (!TouryMapsConfig.isUsableCoordinate(latLng)) return;
-                    // Allow manual pin placement even when GPS failed.
-                    if (_loading) return;
-                    widget.onLocationChanged(latLng);
+                    _lastIdleCenter = latLng;
+                    if (!_loading) {
+                      _commitCenter(latLng);
+                    }
                   },
                 ),
                 const IgnorePointer(
@@ -188,7 +282,7 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap> {
                     ),
                   ),
                 ),
-                if (_error != null)
+                if (_error != null && !hasSelected)
                   Positioned(
                     left: DsSpacing.xs,
                     right: DsSpacing.xs,
@@ -211,7 +305,7 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap> {
               ],
             ),
           ),
-          if (hasGps)
+          if (hasSelected)
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 DsSpacing.sm,

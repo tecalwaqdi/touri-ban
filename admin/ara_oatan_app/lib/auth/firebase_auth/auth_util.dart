@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '/backend/backend.dart';
 import '/core/toury_phone_util.dart';
+import '/core/toury_profile_state.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'firebase_auth_manager.dart';
 
@@ -80,8 +81,16 @@ class AuthUserStreamWidget extends StatelessWidget {
   final WidgetBuilder builder;
 
   @override
-  Widget build(BuildContext context) => StreamBuilder(
-        stream: authenticatedUserStream,
-        builder: (context, _) => builder(context),
+  Widget build(BuildContext context) => ListenableBuilder(
+        listenable: TouryProfileState.refreshTick,
+        builder: (context, _) => StreamBuilder<UserRecord?>(
+          stream: authenticatedUserStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              currentUserDocument = snapshot.data;
+            }
+            return builder(context);
+          },
+        ),
       );
 }

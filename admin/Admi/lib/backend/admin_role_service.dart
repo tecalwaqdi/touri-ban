@@ -246,6 +246,8 @@ class AdminRoleService {
     'DriverProfile',
     'AdminaddMkan',
     'AdminaddMkanCopy',
+    'Admintypecar',
+    'CarTypeAddition',
   };
 
   static const _partnerRoutes = {

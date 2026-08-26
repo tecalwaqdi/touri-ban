@@ -65,6 +65,9 @@ String uploadErrorMessage(Object error) {
     final code = error.code.toLowerCase();
     final msg = (error.message ?? '').toLowerCase();
     final combined = '$code $msg';
+    final plugin = error.plugin.toLowerCase();
+    final isFirestore = plugin.contains('firestore') ||
+        combined.contains('cloud_firestore');
 
     if (code.contains('quota') ||
         msg.contains('quota') ||
@@ -79,6 +82,10 @@ String uploadErrorMessage(Object error) {
       case 'unauthorized':
       case 'permission-denied':
       case 'storage/unauthorized':
+        if (isFirestore) {
+          return 'تعذر حفظ الملف الشخصي في قاعدة البيانات. '
+              'أعد تسجيل الدخول ثم حاول مرة أخرى.';
+        }
         return 'صلاحيات التخزين مرفوضة. تأكد من تسجيل الدخول ونشر قواعد Storage.';
       case 'unauthenticated':
       case 'storage/unauthenticated':
@@ -95,6 +102,9 @@ String uploadErrorMessage(Object error) {
             msg.contains('payment')) {
           return 'خدمة التخزين متوقفة: يجب تفعيل الفوترة (Blaze) في مشروع Firebase.';
         }
+        if (isFirestore) {
+          return 'تعذر تحديث الملف الشخصي. حاول مرة أخرى.';
+        }
         return 'تعذر رفع الصورة إلى التخزين السحابي. حاول مرة أخرى أو اختر صورة أصغر.';
     }
   }
@@ -103,6 +113,10 @@ String uploadErrorMessage(Object error) {
   if (text.contains('quota') || text.contains('402')) {
     return 'تم تجاوز حصة Firebase Storage لهذا المشروع. '
         'راجع Usage في Firebase Console أو فعّل Blaze.';
+  }
+  if (text.contains('cloud_firestore') && text.contains('permission-denied')) {
+    return 'تعذر حفظ الملف الشخصي في قاعدة البيانات. '
+        'أعد تسجيل الدخول ثم حاول مرة أخرى.';
   }
   if (text.contains('billing') || text.contains('payment')) {
     return 'خدمة التخزين متوقفة: يجب تفعيل الفوترة (Blaze) في مشروع Firebase.';

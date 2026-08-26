@@ -251,7 +251,7 @@ class _ListCarWidgetState extends State<ListCarWidget> {
                           ),
                           child: _CarOptionCard(
                             title: touryVehicleCategoryDisplayName(car, context),
-                            localAsset: touryVehicleCategoryImage(car),
+                            localAsset: touryVehiclePreferredLocalAsset(car),
                             imageUrl: car.img,
                             documentId: car.reference.id,
                             priceLabel: price,

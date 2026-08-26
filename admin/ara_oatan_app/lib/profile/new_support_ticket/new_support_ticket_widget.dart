@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/backend/schema/enums/enums.dart';
+import '/core/toury_async_action_guard.dart';
 import '/core/toury_error_localizer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '/design_system/design_system.dart';
@@ -75,34 +76,37 @@ class _NewSupportTicketWidgetState extends State<NewSupportTicketWidget> {
 
   Future<void> _createTicket() async {
     if (_isSubmitting) return;
-
-    final description = (_model.textController1.text).trim();
-    final message = (_model.textController2.text).trim();
-    final category = (_model.dropDownValue ?? '').trim();
-    final userRef = currentUserReference;
-
-    if (description.isEmpty || message.isEmpty || category.isEmpty) {
-      DsSnackBar.show(
-        context,
-        message: FFLocalizations.of(context).getText(
-          'tjrl68rw' /* Please fill in all fields to r... */,
-        ),
-        tone: DsSnackTone.warning,
-      );
-      return;
-    }
-
-    if (userRef == null) {
-      DsSnackBar.show(
-        context,
-        message: ErrorLocalizer.fromCode('booking_auth_required'),
-        tone: DsSnackTone.error,
-      );
-      return;
-    }
-
+    final guardKey =
+        'support:create:${currentUserUid.isEmpty ? 'anon' : currentUserUid}';
+    if (!TouryAsyncActionGuard.tryStart(guardKey)) return;
     setState(() => _isSubmitting = true);
+
     try {
+      final description = (_model.textController1.text).trim();
+      final message = (_model.textController2.text).trim();
+      final category = (_model.dropDownValue ?? '').trim();
+      final userRef = currentUserReference;
+
+      if (description.isEmpty || message.isEmpty || category.isEmpty) {
+        DsSnackBar.show(
+          context,
+          message: FFLocalizations.of(context).getText(
+            'tjrl68rw' /* Please fill in all fields to r... */,
+          ),
+          tone: DsSnackTone.warning,
+        );
+        return;
+      }
+
+      if (userRef == null) {
+        DsSnackBar.show(
+          context,
+          message: ErrorLocalizer.fromCode('booking_auth_required'),
+          tone: DsSnackTone.error,
+        );
+        return;
+      }
+
       final phone = int.tryParse(currentPhoneNumber.replaceAll(RegExp(r'[^0-9]'), ''));
       final ticketId = DateTime.now().millisecondsSinceEpoch;
       await SupportRecord.collection.doc().set(
@@ -135,6 +139,7 @@ class _NewSupportTicketWidgetState extends State<NewSupportTicketWidget> {
         tone: DsSnackTone.error,
       );
     } finally {
+      TouryAsyncActionGuard.finish(guardKey);
       if (mounted) setState(() => _isSubmitting = false);
     }
   }

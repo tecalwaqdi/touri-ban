@@ -34,6 +34,34 @@ exports.submitDriverApplicationV2 = functions.region("us-central1")
   .https.onCall(driverRegistrationV2.submitDriverApplicationV2);
 exports.reviewDriverApplicationV2 = functions.region("us-central1")
   .https.onCall(driverRegistrationV2.reviewDriverApplicationV2);
+
+const emailVerificationOtp = require("./email_verification_otp.js");
+// Always bind Secret Manager secrets for OTP — required for production send/verify.
+exports.requestEmailVerificationOtp = functions
+  .region("us-central1")
+  .runWith({
+    timeoutSeconds: 60,
+    secrets: ["EMAIL_OTP_HMAC_SECRET", "BREVO_API_KEY"],
+  })
+  .https.onCall(emailVerificationOtp.requestEmailVerificationOtp);
+exports.verifyEmailVerificationOtp = functions
+  .region("us-central1")
+  .runWith({
+    timeoutSeconds: 60,
+    secrets: ["EMAIL_OTP_HMAC_SECRET"],
+  })
+  .https.onCall(emailVerificationOtp.verifyEmailVerificationOtp);
+exports.getEmailVerificationOtpStatus = functions
+  .region("us-central1")
+  .https.onCall(emailVerificationOtp.getEmailVerificationOtpStatus);
+exports.probeBrevoOtpDeliveryEvents = functions
+  .region("us-central1")
+  .runWith({
+    timeoutSeconds: 30,
+    secrets: ["BREVO_API_KEY"],
+  })
+  .https.onCall(emailVerificationOtp.probeBrevoOtpDeliveryEvents);
+
 const driverWalletOps = require("./driver_wallet_ops.js");
 exports.acceptDriverOrder = driverWalletOps.acceptDriverOrder;
 exports.payCompanyFromWallet = driverWalletOps.payCompanyFromWallet;

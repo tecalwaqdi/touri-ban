@@ -1486,14 +1486,14 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
   // LIST_countries
   {
     'bbumradi': {
-      'en': 'Welcome to the Arra Watan app',
-      'ar': 'مرحباً بكم في تطبيق Arra Watan',
-      'az': 'Arra Watan proqramına xoş gəlmisiniz',
-      'ka': 'კეთილი იყოს თქვენი მობრძანება Arra Watan აპლიკაციაში',
-      'ru': 'Добро пожаловать в приложение Arra Watan',
-      'tr': 'Arra Watan uygulamasına hoş geldiniz',
-      'ur': 'آرا وطن ایپ میں خوش آمدید',
-      'zh_Hans': '欢迎使用 Arra Watan 应用程序',
+      'en': 'Welcome to the Touri Taxi app',
+      'ar': 'مرحباً بكم في تطبيق توري تاكسي',
+      'az': 'Touri Taxi proqramına xoş gəlmisiniz',
+      'ka': 'კეთილი იყოს თქვენი მობრძანება Touri Taxi აპლიკაციაში',
+      'ru': 'Добро пожаловать в приложение Touri Taxi',
+      'tr': 'Touri Taxi uygulamasına hoş geldiniz',
+      'ur': 'توري تاكسي ایپ میں خوش آمدید',
+      'zh_Hans': '欢迎使用 Touri Taxi 应用程序',
     },
     'moydcuyp': {
       'en': 'first global saudi tourist taxi app',

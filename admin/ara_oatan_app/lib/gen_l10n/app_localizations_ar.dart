@@ -348,7 +348,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get update_Profile => 'تحديث الملف الشخصي';
 
   @override
-  String get welcome_to_the_Arra_Watan_app => 'مرحباً بك في تطبيق أرى وطن';
+  String get welcome_to_the_Arra_Watan_app => 'مرحباً بكم في تطبيق توري تاكسي';
 
   @override
   String get first_global_saudi_tourist_taxi_app =>

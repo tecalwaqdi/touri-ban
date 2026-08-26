@@ -270,6 +270,7 @@ function outletOrdersUrl(): string {
 
 import {
   analyzeNGeniusPaymentLinks,
+  buildMobileSdkPayload,
   extractHostedPaymentPageUrl,
   isHostedPaymentPageUrl,
   paymentHrefHost,
@@ -277,6 +278,7 @@ import {
 
 export {
   analyzeNGeniusPaymentLinks,
+  buildMobileSdkPayload,
   extractHostedPaymentPageUrl,
   isHostedPaymentPageUrl,
   paymentHrefHost,
@@ -481,7 +483,20 @@ export async function createNGeniusOrder(input: {
   currency: string;
   email?: string;
   merchantOrderReference: string;
-}): Promise<{ providerOrderRef: string; paymentUrl: string; rawState: string }> {
+}): Promise<{
+  providerOrderRef: string;
+  paymentUrl: string;
+  rawState: string;
+  /** Additive Mobile SDK fields — null if provider omitted auth link. */
+  mobileSdk: {
+    gatewayAuthorizationUrl: string;
+    payPageUrl: string;
+    paymentCode: string;
+    orderReference: string | null;
+  } | null;
+  /** Full order JSON for iOS OrderResponse (no merchant API key). */
+  orderJson: Record<string, unknown> | null;
+}> {
   const env = getEnv();
   const token = await getNGeniusAccessToken();
   const redirectUrl =
@@ -543,18 +558,25 @@ export async function createNGeniusOrder(input: {
     });
     throw new ApiError(PaymentErrorCode.PROVIDER_UNAVAILABLE, 502);
   }
+  const mobileSdk = buildMobileSdkPayload(body);
   logger.info("ngenius_create_order_ok", {
     environment: env.NGENIUS_ENV,
     orderRefPrefix: String(providerOrderRef).slice(0, 8),
     orderState: String((body as { state?: string }).state || ""),
     amount: orderBody.amount.value,
     currency: orderBody.amount.currencyCode,
+    mobileSdkReady: Boolean(mobileSdk),
     ...linkDiag,
   });
   return {
     providerOrderRef,
     paymentUrl,
     rawState: String((body as { state?: string }).state || "STARTED"),
+    mobileSdk,
+    orderJson:
+      body && typeof body === "object"
+        ? (body as Record<string, unknown>)
+        : null,
   };
 }
 

@@ -59,6 +59,7 @@ class PaymentApiClient {
     String? description,
     String? orderPath,
     String locale = 'ar',
+    bool forceRefreshHpp = false,
   }) async {
     // Wake Render free-tier cold starts before the authenticated create.
     unawaited(_warmUp());
@@ -90,6 +91,16 @@ class PaymentApiClient {
                 if (email != null && email.isNotEmpty) 'email': email,
                 if (description != null) 'description': description,
                 'locale': locale,
+                if (forceRefreshHpp) 'forceRefreshHpp': true,
+                // Additive — ignored by older backends; enables SDK payload.
+                'paymentExperience': TouryPaymentFlags.preferMobileSdk
+                    ? 'mobile_sdk'
+                    : 'hosted_page',
+                'platform': defaultTargetPlatform == TargetPlatform.iOS
+                    ? 'ios'
+                    : (defaultTargetPlatform == TargetPlatform.android
+                        ? 'android'
+                        : 'web'),
               }),
             )
             .timeout(timeout);
