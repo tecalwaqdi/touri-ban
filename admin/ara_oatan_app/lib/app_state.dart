@@ -196,6 +196,10 @@ class FFAppState extends ChangeNotifier {
       _paymentOrderId = prefs.getString('ff_paymentOrderId') ?? _paymentOrderId;
     });
     _safeInit(() {
+      _pendingPaymentOrderId =
+          prefs.getString('ff_pendingPaymentOrderId') ?? _pendingPaymentOrderId;
+    });
+    _safeInit(() {
       _paymentIdempotencyKey =
           prefs.getString('ff_paymentIdempotencyKey') ?? _paymentIdempotencyKey;
     });
@@ -318,6 +322,11 @@ class FFAppState extends ChangeNotifier {
         prefs.setString('ff_paymentOrderId', _paymentOrderId);
       } else {
         prefs.remove('ff_paymentOrderId');
+      }
+      if (_pendingPaymentOrderId.isNotEmpty) {
+        prefs.setString('ff_pendingPaymentOrderId', _pendingPaymentOrderId);
+      } else {
+        prefs.remove('ff_pendingPaymentOrderId');
       }
       if (_paymentIdempotencyKey.isNotEmpty) {
         prefs.setString('ff_paymentIdempotencyKey', _paymentIdempotencyKey);
@@ -1021,7 +1030,7 @@ class FFAppState extends ChangeNotifier {
   String get pendingPaymentOrderId => _pendingPaymentOrderId;
   set pendingPaymentOrderId(String value) {
     _pendingPaymentOrderId = value;
-    // Intentionally not persisted to prefs as a payment secret — order id only.
+    _schedulePersist();
   }
 
   String get paymentIdempotencyKey => _paymentIdempotencyKey;

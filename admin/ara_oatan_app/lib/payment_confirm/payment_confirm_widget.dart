@@ -96,6 +96,10 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
         return;
       }
 
+      // Never trap the user on a spinner-only HPP screen.
+      if (_awaitingHpp && mounted) {
+        safeSetState(() => _phase = _PaymentConfirmPhase.pending);
+      }
       await _runVerify(reason: 'init');
     });
 
@@ -189,7 +193,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
   Future<void> _runVerify({required String reason}) async {
     if (_finalizeBusy) return;
     final gen = ++_verifyGeneration;
-    if (mounted) {
+    if (mounted && !_awaitingHpp) {
       safeSetState(() => _phase = _PaymentConfirmPhase.verifying);
     }
 
@@ -337,6 +341,68 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
     context.goNamed(List22TaskOverviewResponsiveWidget.routeName);
   }
 
+  Future<void> _goToBooking() async {
+    final id = FFAppState().pendingPaymentOrderId.isNotEmpty
+        ? FFAppState().pendingPaymentOrderId
+        : FFAppState().paymentOrderId;
+    if (id.trim().isEmpty) {
+      await _goToOrders();
+      return;
+    }
+    try {
+      final snap = await OrderRecord.getDocumentOnce(
+        OrderRecord.collection.doc(id),
+      );
+      if (!mounted) return;
+      context.goNamed(
+        TfaselOrderWidget.routeName,
+        queryParameters: {
+          'idorder': serializeParam(snap, ParamType.Document),
+        }.withoutNulls,
+        extra: <String, dynamic>{'idorder': snap},
+      );
+    } catch (_) {
+      await _goToOrders();
+    }
+  }
+
+  Future<void> _cancelAttempt() async {
+    final ok = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('payment_cancel_attempt_title'.tr()),
+            content: Text('payment_cancel_attempt_body'.tr()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text('order_cancel_confirm_back'.tr()),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text('checkout_cancel_payment_attempt'.tr()),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+    if (!ok || !mounted) return;
+    final sessionId = FFAppState().paymentOrderId.trim();
+    final bookingId = FFAppState().pendingPaymentOrderId.trim();
+    final done = await touryCancelPaymentAttempt(
+      sessionId: sessionId.isNotEmpty ? sessionId : null,
+      bookingId: bookingId.isNotEmpty ? bookingId : null,
+    );
+    if (!mounted) return;
+    TouryDialogs.showSnackBar(
+      context,
+      done
+          ? 'payment_attempt_cancelled'.tr()
+          : 'checkout_payment_temporarily_unavailable'.tr(),
+      type: done ? TouryMessageType.success : TouryMessageType.error,
+    );
+    if (done) await _goToBooking();
+  }
+
   Future<void> _retryPayment() async {
     final id = FFAppState().pendingPaymentOrderId.isNotEmpty
         ? FFAppState().pendingPaymentOrderId
@@ -350,7 +416,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
         OrderRecord.collection.doc(id),
       );
       if (!mounted) return;
-      final result = await touryRetryUnpaidOrderPayment(order: snap);
+      final result = await touryRetryUnpaidOrderPayment(context: context, order: snap);
       if (!mounted) return;
       await touryNavigateAfterCardPayment(
         context,
@@ -380,7 +446,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
             canPop: false,
             onPopInvokedWithResult: (didPop, _) {
               if (didPop) return;
-              context.goNamed(List22TaskOverviewResponsiveWidget.routeName);
+              unawaited(_goToBooking());
             },
             child: Scaffold(
               key: scaffoldKey,
@@ -457,6 +523,29 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
             textAlign: TextAlign.center,
             style: typography.bodyMedium.copyWith(color: colors.textSecondary),
           ),
+          if (_awaitingHpp) ...[
+            const SizedBox(height: DsSpacing.xxl),
+            DsButton.primary(
+              label: 'checkout_check_payment_status'.tr(),
+              icon: Icons.refresh_rounded,
+              size: DsButtonSize.lg,
+              expanded: true,
+              onPressed: () => _runVerify(reason: 'manual'),
+            ),
+            const SizedBox(height: DsSpacing.sm),
+            DsButton.outlined(
+              label: 'payment_back_to_booking'.tr(),
+              size: DsButtonSize.lg,
+              expanded: true,
+              onPressed: _goToBooking,
+            ),
+            const SizedBox(height: DsSpacing.sm),
+            DsButton.text(
+              label: 'checkout_cancel_payment_attempt'.tr(),
+              size: DsButtonSize.lg,
+              onPressed: _cancelAttempt,
+            ),
+          ],
         ],
       ),
     );
@@ -492,7 +581,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
           ),
           const SizedBox(height: DsSpacing.xxl),
           DsButton.primary(
-            label: 'payment_recheck'.tr(),
+            label: 'checkout_check_payment_status'.tr(),
             icon: Icons.refresh_rounded,
             size: DsButtonSize.lg,
             expanded: true,
@@ -500,17 +589,25 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
           ),
           const SizedBox(height: DsSpacing.sm),
           DsButton.outlined(
-            label: 'payment_incomplete_retry'.tr(),
+            label: 'checkout_resume_payment'.tr(),
             icon: Icons.payment_rounded,
             size: DsButtonSize.lg,
             expanded: true,
             onPressed: _retryPayment,
           ),
           const SizedBox(height: DsSpacing.sm),
-          DsButton.text(
-            label: 'payment_incomplete_go_orders'.tr(),
+          DsButton.outlined(
+            label: 'checkout_cancel_payment_attempt'.tr(),
+            icon: Icons.close_rounded,
             size: DsButtonSize.lg,
-            onPressed: _goToOrders,
+            expanded: true,
+            onPressed: _cancelAttempt,
+          ),
+          const SizedBox(height: DsSpacing.sm),
+          DsButton.text(
+            label: 'payment_back_to_booking'.tr(),
+            size: DsButtonSize.lg,
+            onPressed: _goToBooking,
           ),
         ],
       ),

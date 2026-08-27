@@ -9,7 +9,9 @@ import '/core/toury_brand_widgets.dart';
 import '/core/toury_location_service.dart';
 import '/core/toury_booking_agents.dart';
 import '/core/toury_booking_service.dart';
+import '/core/payments/touri_payment_lock.dart';
 import '/core/toury_active_booking_guard.dart';
+import '/components/touri_checkout_payment_section.dart';
 import '/core/toury_async_action_guard.dart';
 import '/core/toury_checkout_state.dart';
 import '/core/toury_payment_labels.dart';
@@ -39,7 +41,6 @@ import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/backend/schema/enums/enums.dart';
 import '/components/mmaapp_widget.dart';
-import '/components/payment_methods2_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_count_controller.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -142,17 +143,41 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
         return;
       }
 
-      // Same unpaid order (pendingPaymentOrderId / paymentOrderId) must RESUME,
-      // not show "you already have an active booking".
-      if (await touryBlockIfActiveBooking(
-        context,
+      // Same unpaid draft must RESUME — never "payment in progress for another booking".
+      final gate = await touryEvaluateActiveBookingGate(
         currentOrderId: FFAppState().pendingPaymentOrderId.isNotEmpty
             ? FFAppState().pendingPaymentOrderId
             : (FFAppState().paymentOrderId.isNotEmpty
                 ? FFAppState().paymentOrderId
                 : null),
-      )) {
+      );
+      if (gate.blocked) {
+        if (mounted) {
+          await touryShowPaymentLockDialog(
+            context,
+            gate: gate,
+            otherPayment: gate.decision.kind ==
+                TouriPaymentLockKind.conflictOtherPayment,
+          );
+        }
         return;
+      }
+      if (gate.decision.kind == TouriPaymentLockKind.paidBlock) {
+        if (mounted) {
+          TouryDialogs.showSnackBar(
+            context,
+            'checkout_payment_paid'.tr(),
+            type: TouryMessageType.success,
+          );
+        }
+        return;
+      }
+
+      final resumeId = gate.resumeOrderId;
+      if (resumeId.isNotEmpty) {
+        FFAppState().pendingPaymentOrderId = resumeId;
+        FFAppState().paymentIdempotencyKey =
+            touriStableOrderIdempotencyKey(resumeId);
       }
 
       final carRef = FFAppState().typecarRev;
@@ -179,6 +204,7 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
         countryPath: countryRef.path,
         bookingHours: quote.bookingHours,
         additionalHours: FFAppState().addhors,
+        orderPath: resumeId.isNotEmpty ? 'order/$resumeId' : null,
       );
 
       if (!mounted) return;
@@ -218,6 +244,137 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
         setState(() => _isPaying = false);
       } else {
         _isPaying = false;
+      }
+    }
+  }
+
+  Future<void> _onPrimaryCheckoutPressed() async {
+    if (touryIsCashBookNowPayment(FFAppState().payth)) {
+      await _onConfirmCashPressed();
+      return;
+    }
+    if (touryHasElectronicPaymentSelected()) {
+      await _onPayNowPressed();
+      return;
+    }
+    if (!mounted) return;
+    TouryDialogs.showSnackBar(
+      context,
+      'ux_choose_payment_method'.tr(),
+      type: TouryMessageType.error,
+    );
+  }
+
+  Future<void> _onConfirmCashPressed() async {
+    if (_isBookingCash || !TouryAsyncActionGuard.tryStart(_cashActionKey)) {
+      return;
+    }
+    setState(() => _isBookingCash = true);
+    try {
+      if (!TouryProfileCompleteness.hasUsablePhone()) {
+        if (mounted) {
+          TouryDialogs.showSnackBar(
+            context,
+            'profile_phone_required'.tr(),
+            type: TouryMessageType.error,
+          );
+        }
+        return;
+      }
+      touryEnsureCashPaymentIfUnset();
+      touryPrepareCheckoutState();
+      if (!touryCheckoutReadyForBooking()) {
+        await TouryDialogs.showSelectAllOptions(context);
+        return;
+      }
+
+      final gate = await touryEvaluateActiveBookingGate();
+      if (gate.blocked &&
+          gate.decision.kind != TouriPaymentLockKind.resumeUnpaidCheckout &&
+          gate.decision.kind != TouriPaymentLockKind.resumeSame) {
+        if (mounted) {
+          await touryShowPaymentLockDialog(
+            context,
+            gate: gate,
+            otherPayment: gate.decision.kind ==
+                TouriPaymentLockKind.conflictOtherPayment,
+          );
+        }
+        return;
+      }
+
+      final cashBooking = await touryCreateCashBookingFromCurrentState();
+      if (!cashBooking.success) {
+        if (!mounted) return;
+        TouryDialogs.showSnackBar(
+          context,
+          ErrorLocalizer.fromCode(cashBooking.error ?? 'booking_save_failed'),
+          type: TouryMessageType.error,
+        );
+        return;
+      }
+      FFAppState().paymentIdempotencyKey = '';
+
+      final notifyHours = FFAppState().totalsaat;
+      final notifyPay = FFAppState().totalmndob3;
+      final notifyCurrency = FFAppState().RMZCurrency;
+      final notifyVill = FFAppState().villnow;
+      final notifyCar = FFAppState().typecarRev;
+      final notifyDriverGuide =
+          FFAppState().DriverGuideState == true || FFAppState().typeHgz == 2;
+      FFAppState().typeHgz = 0;
+      FFAppState().AllowBooking = false;
+      FFAppState().DriverGuideState = false;
+      FFAppState().NsbhKsm = 0.0;
+      FFAppState().totalKsm = 0;
+      FFAppState().UbKsm = 0;
+      FFAppState().totalKsm2 = 0.0;
+      FFAppState().totalAllnow3 = 0.0;
+      safeSetState(() {});
+
+      await touryOnBookingSuccess(context);
+
+      FFAppState().typecarRev = null;
+      FFAppState().addcart = 0;
+      FFAppState().cartItems = [];
+      FFAppState().cartmkss = [];
+      FFAppState().cartPriceSummary = [];
+      FFAppState().saatcar = 0;
+      FFAppState().totalsaatandcar = 0;
+      FFAppState().srtypecar = 0;
+      FFAppState().tebycar = '';
+      FFAppState().notcar = '';
+      FFAppState().adressNaim = '';
+      FFAppState().adressSelection = null;
+      FFAppState().fulltextSchedule = '';
+      FFAppState().taimSchedule = '';
+      FFAppState().TOTALmndob2 = 0;
+      FFAppState().totalapp2 = 0;
+      FFAppState().vat2 = 0;
+      FFAppState().totalAllNow2 = 0;
+      safeSetState(() {});
+
+      unawaited(
+        touryNotifyAgentsForNewOrder(
+          villnow: notifyVill,
+          typecarRev: notifyCar,
+          nglValue: true,
+          totalsaat: notifyHours,
+          totalmndob3: notifyPay,
+          currency: notifyCurrency,
+          countryRef: FFAppState().dolh,
+          cityRef: FFAppState().mdenh,
+          driverGuideOnly: notifyDriverGuide,
+        ),
+      );
+      FFAppState().totalmndob3 = 0.0;
+      safeSetState(() {});
+    } finally {
+      TouryAsyncActionGuard.finish(_cashActionKey);
+      if (mounted) {
+        setState(() => _isBookingCash = false);
+      } else {
+        _isBookingCash = false;
       }
     }
   }
@@ -1934,48 +2091,14 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                     ),
                   ),
                 if (touryBookingOptionsVisible())
-                  TouryCheckoutOptionTile(
-                    icon: Icons.payment_rounded,
-                    title: FFLocalizations.of(context).getText(
-                      '97gi9omv' /* Payment method. */,
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      DsSpacing.sm, DsSpacing.sm, DsSpacing.sm, 0,
                     ),
-                    subtitle: touryPaymentDisplayLabel(
-                      valueOrDefault<String>(
-                        FFAppState().payth,
-                        TouryPaymentKeys.unset,
-                      ),
+                    child: TouriCheckoutPaymentMethodPicker(
+                      remoteOkCash: true,
+                      onChanged: () => safeSetState(() {}),
                     ),
-                    selected: !touryIsUnsetPaymentValue(FFAppState().payth),
-                    onTap: () async {
-                      await showModalBottomSheet(
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        context: context,
-                        builder: (context) {
-                          return WebViewAware(
-                            child: GestureDetector(
-                              onTap: () {
-                                FocusScope.of(context).unfocus();
-                                FocusManager.instance.primaryFocus?.unfocus();
-                              },
-                              child: Padding(
-                                padding: MediaQuery.viewInsetsOf(context),
-                                child: Container(
-                                  height: TouryLayout.sheetMaxHeight(context),
-                                  decoration: BoxDecoration(
-                                    color: TouryBrand.cardFor(context),
-                                    borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(24),
-                                    ),
-                                  ),
-                                  child: const PaymentMethods2Widget(),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ).then((value) => safeSetState(() {}));
-                    },
                   ),
                 if (_rejectedRoutePoints > 0)
                   Padding(
@@ -2647,423 +2770,51 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                             value: _formatMoney(FFAppState().totalAllnow3),
                             isTotal: true,
                           ),
-                          if (!touryIsCashPaymentValue(FFAppState().payth) &&
-                              FFAppState().payth.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: DsSpacing.md),
-                              child: DsButton.primary(
-                                label: _isPaying
-                                    ? 'checkout_preparing_payment'.tr()
-                                    : FFLocalizations.of(context).getText(
-                                        'hgw4quay' /* Pay Now */,
-                                      ),
-                                icon: _isPaying
-                                    ? Icons.hourglass_top_rounded
-                                    : Icons.payment_rounded,
-                                size: DsButtonSize.lg,
-                                expanded: true,
-                                loading: _isPaying,
-                                enabled: !_isPaying,
-                                onPressed: _isPaying ? null : _onPayNowPressed,
-                              ),
-                            ),
-                        ],
-                      ),
-                    if (touryIsCashBookNowPayment(FFAppState().payth) &&
-                        (FFAppState().DriverGuideState == true))
-                      AuthUserStreamWidget(
-                        builder: (context) {
-                          final phoneOk = TouryProfileCompleteness.hasUsablePhone();
-                          if (!phoneOk ||
-                              !touryIsCashBookNowPayment(FFAppState().payth)) {
-                            return const SizedBox.shrink();
-                          }
-                          return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: DsSpacing.md,
-                            vertical: DsSpacing.xs,
-                          ),
-                          child: DsButton.outlined(
-                              loading: _isBookingCash,
-                              enabled: !_isBookingCash,
-                              onPressed: _isBookingCash
-                                  ? null
-                                  : () async {
-                                    if (_isBookingCash ||
-                                        !TouryAsyncActionGuard.tryStart(
-                                            _cashActionKey)) {
-                                      return;
-                                    }
-                                    setState(() => _isBookingCash = true);
-                                    try {
-                                    touryEnsureCashPaymentIfUnset();
-                                    touryPrepareCheckoutState();
-                                    if (!touryCheckoutReadyForBooking()) {
-                                      await TouryDialogs.showSelectAllOptions(
-                                          context);
-                                      return;
-                                    }
-                                    if (await touryBlockIfActiveBooking(
-                                        context)) {
-                                      return;
-                                    }
-                                    await Future.wait([
-                                      Future(() async {
-                                        if (touryCheckoutReadyForBooking()) {
-                                          _model.conOrder =
-                                              await queryOrderRecordCount();
-                                          _model.ngl = await TouryFirestoreCache
-                                              .settingsRecordOnce(
-                                            queryBuilder: (settingsRecord) =>
-                                                settingsRecord.where(
-                                              'id',
-                                              isEqualTo: 1,
-                                            ),
-                                            singleRecord: true,
-                                          );
-                                          try {
-                                            final cashBooking =
-                                                await touryCreateCashBookingFromCurrentState();
-                                            if (!cashBooking.success) {
-                                              throw StateError(
-                                                    cashBooking.error ??
-                                                    'booking_save_failed',
-                                              );
-                                            }
-                                            FFAppState().paymentIdempotencyKey =
-                                                '';
-                                          } catch (e) {
-                                            debugPrint('Order save failed: $e');
-                                            if (context.mounted) {
-                                              TouryDialogs.showSnackBar(
-                                                context,
-                                                e is StateError
-                                                    ? ErrorLocalizer.fromCode(
-                                                        e.message,
-                                                      )
-                                                    : ErrorLocalizer.fromObject(
-                                                        e,
-                                                      ),
-                                                type: TouryMessageType.error,
-                                              );
-                                            }
-                                            return;
-                                          }
-
-                                          final notifyHours =
-                                              FFAppState().totalsaat;
-                                          final notifyPay =
-                                              FFAppState().totalmndob3;
-                                          final notifyCurrency =
-                                              FFAppState().RMZCurrency;
-                                          final notifyVill =
-                                              FFAppState().villnow;
-                                          final notifyCar =
-                                              FFAppState().typecarRev;
-                                          final notifyNgl = true; // online drivers only
-                                          final notifyDriverGuide =
-                                              FFAppState().DriverGuideState == true ||
-                                                  FFAppState().typeHgz == 2;
-                                          // مسح الخصومات
-                                          FFAppState().typeHgz = 0;
-                                          FFAppState().AllowBooking = false;
-                                          FFAppState().DriverGuideState = false;
-                                          FFAppState().NsbhKsm = 0.0;
-                                          FFAppState().totalKsm = 0;
-                                          FFAppState().UbKsm = 0;
-                                          FFAppState().totalKsm2 = 0.0;
-                                          FFAppState().totalAllnow3 = 0.0;
-                                          safeSetState(() {});
-
-                                          await touryOnBookingSuccess(context);
-
-                                          FFAppState().typecarRev = null;
-                                          FFAppState().addcart = 0;
-                                          FFAppState().cartItems = [];
-                                          FFAppState().cartmkss = [];
-                                          FFAppState().cartPriceSummary = [];
-                                          FFAppState().saatcar = 0;
-                                          FFAppState().totalsaatandcar = 0;
-                                          FFAppState().srtypecar = 0;
-                                          FFAppState().tebycar = '';
-                                          FFAppState().notcar = '';
-                                          FFAppState().adressNaim = '';
-                                          FFAppState().adressSelection = null;
-                                          FFAppState().fulltextSchedule = '';
-                                          FFAppState().taimSchedule = '';
-                                          FFAppState().TOTALmndob2 = 0;
-                                          FFAppState().totalapp2 = 0;
-                                          FFAppState().vat2 = 0;
-                                          FFAppState().totalAllNow2 = 0;
-                                          safeSetState(() {});
-
-                                          unawaited(
-                                            touryNotifyAgentsForNewOrder(
-                                              villnow: notifyVill,
-                                              typecarRev: notifyCar,
-                                              nglValue: notifyNgl,
-                                              totalsaat: notifyHours,
-                                              totalmndob3: notifyPay,
-                                              currency: notifyCurrency,
-                                              countryRef: FFAppState().dolh,
-                                              cityRef: FFAppState().mdenh,
-                                              driverGuideOnly: notifyDriverGuide,
-                                            ),
-                                          );
-                                          FFAppState().totalmndob3 = 0.0;
-                                          safeSetState(() {});
-                                        } else {
-                                          await TouryDialogs
-                                              .showSelectAllOptions(context);
-                                        }
-                                      }),
-                                      Future(() async {}),
-                                    ]);
-
-                                    safeSetState(() {});
-                                    } finally {
-                                      TouryAsyncActionGuard.finish(
-                                          _cashActionKey);
-                                      if (mounted) {
-                                        setState(() => _isBookingCash = false);
-                                      } else {
-                                        _isBookingCash = false;
-                                      }
-                                    }
-                                  },
-                              label: _isBookingCash
-                                  ? 'checkout_booking'.tr()
-                                  : FFLocalizations.of(context).getText(
-                                      '4pp7yghj' /* Book now */,
-                                    ),
-                              icon: Icons.send_rounded,
-                              size: DsButtonSize.lg,
-                              expanded: true,
-                            ),
-                          );
-                        },
-                      ),
-                    if (touryIsCashBookNowPayment(FFAppState().payth) &&
-                        (FFAppState().DriverGuideState == false))
-                      AuthUserStreamWidget(
-                        builder: (context) {
-                          final phoneOk = TouryProfileCompleteness.hasUsablePhone();
-                          if (!phoneOk ||
-                              !touryIsCashBookNowPayment(FFAppState().payth)) {
-                            return const SizedBox.shrink();
-                          }
-                          return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: DsSpacing.md,
-                            vertical: DsSpacing.xs,
-                          ),
-                          child: DsButton.outlined(
-                                  loading: _isBookingCash,
-                                  enabled: !_isBookingCash,
-                                  onPressed: _isBookingCash
-                                      ? null
-                                      : () async {
-                                    if (_isBookingCash ||
-                                        !TouryAsyncActionGuard.tryStart(
-                                            _cashActionKey)) {
-                                      return;
-                                    }
-                                    setState(() => _isBookingCash = true);
-                                    try {
-                                    touryEnsureCashPaymentIfUnset();
-                                    touryPrepareCheckoutState();
-
-                                    final missingHours =
-                                        touryMissingBookingHours(
-                                      bookingHours:
-                                          FFAppState().totalsaat.toDouble(),
-                                      previewTimeHours: _tripTimeHours,
-                                      osrmTimeMinutes: osrmTime,
-                                      landmarkCount:
-                                          FFAppState().cartmkss.length,
-                                    );
-                                    if (missingHours != null) {
-                                      ScaffoldMessenger.of(context)
-                                          .clearSnackBars();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            FFLocalizations.of(context)
-                                                .getVariableText(
-                                              enText:
-                                                  'Please add at least $missingHours more hour(s) to continue.',
-                                              arText:
-                                                  'checkout_add_hours_prompt'
-                                                      .tr(namedArgs: {
-                                                'hours': '$missingHours',
-                                              }),
-                                            ),
-                                            style: TextStyle(
-                                              fontFamily: 'cairo',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryBackground,
-                                            ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: DsSpacing.md),
+                            child: Builder(
+                              builder: (context) {
+                                final cash = touryIsCashBookNowPayment(
+                                  FFAppState().payth,
+                                );
+                                final card = touryHasElectronicPaymentSelected();
+                                final kind = touriCheckoutCtaKind(
+                                  cashSelected: cash,
+                                  cardSelected: card,
+                                  paid: false,
+                                  hasPendingSameBookingAttempt: FFAppState()
+                                      .pendingPaymentOrderId
+                                      .isNotEmpty,
+                                  lastAttemptFailed: false,
+                                );
+                                final busy = _isPaying || _isBookingCash;
+                                return DsButton.primary(
+                                  label: busy
+                                      ? (cash
+                                          ? 'checkout_booking'.tr()
+                                          : 'checkout_preparing_payment'.tr())
+                                      : touriCheckoutCtaLabel(
+                                          kind: kind,
+                                          amountLabel: _formatMoney(
+                                            FFAppState().totalAllnow3,
                                           ),
-                                          duration: const Duration(
-                                              milliseconds: 4000),
-                                          backgroundColor:
-                                              FlutterFlowTheme.of(context)
-                                                  .error,
                                         ),
-                                      );
-                                      return;
-                                    }
-
-                                    if (!touryCheckoutReadyForBooking()) {
-                                      await TouryDialogs.showSelectAllOptions(
-                                          context);
-                                      return;
-                                    }
-
-                                    if (await touryBlockIfActiveBooking(
-                                        context)) {
-                                      return;
-                                    }
-
-                                    await Future.wait([
-                                      Future(() async {
-                                        if (touryCheckoutReadyForBooking()) {
-                                          _model.conOrder2 =
-                                              await queryOrderRecordCount();
-                                          _model.ngl2 =
-                                              await querySettingsRecordOnce(
-                                            queryBuilder: (settingsRecord) =>
-                                                settingsRecord.where(
-                                              'id',
-                                              isEqualTo: 1,
-                                            ),
-                                            singleRecord: true,
-                                          ).then((s) => s.firstOrNull);
-                                          try {
-                                            final cashBooking =
-                                                await touryCreateCashBookingFromCurrentState();
-                                            if (!cashBooking.success) {
-                                              throw StateError(
-                                                    cashBooking.error ??
-                                                    'booking_save_failed',
-                                              );
-                                            }
-                                            FFAppState().paymentIdempotencyKey =
-                                                '';
-                                          } catch (e) {
-                                            debugPrint('Order save failed: $e');
-                                            if (context.mounted) {
-                                              TouryDialogs.showSnackBar(
-                                                context,
-                                                e is StateError
-                                                    ? ErrorLocalizer.fromCode(
-                                                        e.message,
-                                                      )
-                                                    : ErrorLocalizer.fromObject(
-                                                        e,
-                                                      ),
-                                                type: TouryMessageType.error,
-                                              );
-                                            }
-                                            return;
-                                          }
-
-                                          final notifyHours =
-                                              FFAppState().totalsaat;
-                                          final notifyPay =
-                                              FFAppState().totalmndob3;
-                                          final notifyCurrency =
-                                              FFAppState().RMZCurrency;
-                                          final notifyVill =
-                                              FFAppState().villnow;
-                                          final notifyCar =
-                                              FFAppState().typecarRev;
-                                          final notifyNgl = true; // online drivers only
-                                          final notifyDriverGuide =
-                                              FFAppState().DriverGuideState == true ||
-                                                  FFAppState().typeHgz == 2;
-                                          // مسح الخصومات
-                                          FFAppState().typeHgz = 0;
-                                          FFAppState().AllowBooking = false;
-                                          FFAppState().DriverGuideState = false;
-                                          FFAppState().NsbhKsm = 0.0;
-                                          FFAppState().totalKsm = 0;
-                                          FFAppState().UbKsm = 0;
-                                          FFAppState().totalKsm2 = 0.0;
-                                          FFAppState().totalAllnow3 = 0.0;
-                                          safeSetState(() {});
-
-                                          await touryOnBookingSuccess(context);
-
-                                          FFAppState().typecarRev = null;
-                                          FFAppState().addcart = 0;
-                                          FFAppState().cartItems = [];
-                                          FFAppState().cartmkss = [];
-                                          FFAppState().cartPriceSummary = [];
-                                          FFAppState().saatcar = 0;
-                                          FFAppState().totalsaatandcar = 0;
-                                          FFAppState().srtypecar = 0;
-                                          FFAppState().tebycar = '';
-                                          FFAppState().notcar = '';
-                                          FFAppState().adressNaim = '';
-                                          FFAppState().adressSelection = null;
-                                          FFAppState().fulltextSchedule = '';
-                                          FFAppState().taimSchedule = '';
-                                          FFAppState().TOTALmndob2 = 0;
-                                          FFAppState().totalapp2 = 0;
-                                          FFAppState().vat2 = 0;
-                                          FFAppState().totalAllNow2 = 0;
-                                          safeSetState(() {});
-
-                                          unawaited(
-                                            touryNotifyAgentsForNewOrder(
-                                              villnow: notifyVill,
-                                              typecarRev: notifyCar,
-                                              nglValue: notifyNgl,
-                                              totalsaat: notifyHours,
-                                              totalmndob3: notifyPay,
-                                              currency: notifyCurrency,
-                                              countryRef: FFAppState().dolh,
-                                              cityRef: FFAppState().mdenh,
-                                              driverGuideOnly: notifyDriverGuide,
-                                            ),
-                                          );
-                                          FFAppState().totalmndob3 = 0.0;
-                                          safeSetState(() {});
-                                          // ====== PREVIEW TIME SAFE CHECK ======
-                                          // ===== SAFE HOURS VALUES =====
-                                        } else {
-                                          await TouryDialogs
-                                              .showSelectAllOptions(context);
-                                        }
-                                      }),
-                                      Future(() async {}),
-                                    ]);
-
-                                    safeSetState(() {});
-                                    } finally {
-                                      TouryAsyncActionGuard.finish(
-                                          _cashActionKey);
-                                      if (mounted) {
-                                        setState(() => _isBookingCash = false);
-                                      } else {
-                                        _isBookingCash = false;
-                                      }
-                                    }
-                                  },
-                              label: _isBookingCash
-                                  ? 'checkout_booking'.tr()
-                                  : FFLocalizations.of(context).getText(
-                                      '6o9re56s' /* Book now */,
-                                    ),
-                              icon: Icons.send_rounded,
-                              size: DsButtonSize.lg,
-                              expanded: true,
+                                  icon: cash
+                                      ? Icons.send_rounded
+                                      : Icons.payment_rounded,
+                                  size: DsButtonSize.lg,
+                                  expanded: true,
+                                  loading: busy,
+                                  enabled: !busy &&
+                                      kind != TouriCheckoutCtaKind.chooseMethod,
+                                  onPressed: busy
+                                      ? null
+                                      : _onPrimaryCheckoutPressed,
+                                );
+                              },
                             ),
-                          );
-                        },
+                          ),
+                        ],
                       ),
                   ],
                 ),

@@ -3,6 +3,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import { config as loadEnv } from "dotenv";
 
 import { handleCreatePayment } from "@/lib/payments/create";
+import { handleCancelPayment } from "@/lib/payments/cancel";
 import { handlePaymentStatus } from "@/lib/payments/status-handler";
 import { handleNGeniusWebhook } from "@/lib/payments/webhook";
 import {
@@ -112,6 +113,16 @@ export function createPaymentApp(): express.Express {
     asyncRoute(async (req, res) => {
       const fetchReq = toFetchRequest(req);
       const result = await handleCreatePayment(fetchReq);
+      sendJson(res, 200, result);
+    }),
+  );
+
+  /** POST /payments/cancel — abandon electronic attempt; booking stays. */
+  app.post(
+    "/payments/cancel",
+    asyncRoute(async (req, res) => {
+      const fetchReq = toFetchRequest(req);
+      const result = await handleCancelPayment(fetchReq);
       sendJson(res, 200, result);
     }),
   );

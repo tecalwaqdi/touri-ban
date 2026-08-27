@@ -34,6 +34,7 @@ class TouryPaymentExperienceService {
     required String countryPath,
     required int bookingHours,
     required int additionalHours,
+    String? orderPath,
   }) async {
     if (TouryPaymentFlags.forceHostedPaymentPage || kIsWeb) {
       return touryExecuteCardPayment(
@@ -43,10 +44,11 @@ class TouryPaymentExperienceService {
         countryPath: countryPath,
         bookingHours: bookingHours,
         additionalHours: additionalHours,
+        orderPath: orderPath,
       );
     }
 
-    if (amountHalalas <= 0) {
+    if (amountHalalas <= 0 && (orderPath == null || orderPath.isEmpty)) {
       return TouryCardPaymentResult(
         success: false,
         errorMessage: 'checkout_payment_temporarily_unavailable'.tr(),
@@ -70,6 +72,7 @@ class TouryPaymentExperienceService {
         booking: TouryOrderIntegration.cloudBookingPayload(),
         description: description,
         locale: context.locale.languageCode,
+        orderPath: orderPath,
       );
     } on PaymentApiException catch (e) {
       return TouryCardPaymentResult(

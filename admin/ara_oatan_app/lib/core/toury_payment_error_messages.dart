@@ -45,8 +45,16 @@ String touryPaymentApiErrorKey(String? rawCode) {
   }
 
   if (upper == 'PAYMENT_CANCELLED') return 'PAYMENT_CANCELLED';
-  if (upper == 'PAYMENT_EXPIRED') return 'PAYMENT_EXPIRED';
-  if (upper == 'ACTIVE_BOOKING_EXISTS') return 'booking_active_exists';
+  if (upper == 'PAYMENT_EXPIRED' || upper == 'PAYMENT_ATTEMPT_EXPIRED') {
+    return 'PAYMENT_EXPIRED';
+  }
+  if (upper == 'ACTIVE_BOOKING_EXISTS' ||
+      upper == 'PAYMENT_ACTIVE_OTHER_BOOKING') {
+    return 'booking_active_exists';
+  }
+  if (upper == 'PAYMENT_NATIVE_UNAVAILABLE') {
+    return 'payment_sdk_fallback_hpp';
+  }
 
   const passThrough = <String>{
     'AUTH_REQUIRED',

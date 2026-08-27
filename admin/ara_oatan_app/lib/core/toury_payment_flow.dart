@@ -16,6 +16,8 @@ import '/core/toury_payment_flags.dart';
 import '/core/toury_payment_labels.dart';
 import '/core/toury_order_integration.dart';
 import '/core/toury_order_meta.dart';
+import '/core/payments/touri_payment_lock.dart';
+import '/core/payments/touri_payment_experience_service.dart';
 import '/core/payments/payment_api_client.dart';
 import '/design_system/colors/ds_color_scales.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -69,6 +71,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
   required String countryPath,
   required int bookingHours,
   required int additionalHours,
+  String? orderPath,
 }) async {
   if (!TouryPaymentFlags.enableOnlinePayment || TouryPaymentFlags.cashOnlyMode) {
     return TouryCardPaymentResult(
@@ -76,7 +79,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
       errorMessage: 'checkout_online_payment_disabled'.tr(),
     );
   }
-  if (amountHalalas <= 0) {
+  if (amountHalalas <= 0 && (orderPath == null || orderPath.isEmpty)) {
     return TouryCardPaymentResult(
       success: false,
       errorMessage: 'checkout_payment_temporarily_unavailable'.tr(),
@@ -99,6 +102,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
         additionalHours: additionalHours,
         booking: TouryOrderIntegration.cloudBookingPayload(),
         description: description,
+        orderPath: orderPath,
       );
       final paymentId = body['id']?.toString();
       final bookingId = body['bookingId']?.toString() ?? paymentId;
@@ -498,6 +502,7 @@ class TouryPaymentSummaryBar extends StatelessWidget {
 
 /// Retry card payment for an existing unpaid order (no duplicate booking).
 Future<TouryCardPaymentResult> touryRetryUnpaidOrderPayment({
+  required BuildContext context,
   required OrderRecord order,
 }) async {
   if (!TouryPaymentFlags.enableOnlinePayment || TouryPaymentFlags.cashOnlyMode) {
@@ -524,84 +529,37 @@ Future<TouryCardPaymentResult> touryRetryUnpaidOrderPayment({
   }
 
   final app = FFAppState();
-  // Unique key per retry attempt so older Payment API builds (without
-  // forceRefreshHpp / HPP TTL) still mint a fresh N-Genius paypage code.
-  app.paymentIdempotencyKey =
-      'pay_order_${order.reference.id}_${DateTime.now().millisecondsSinceEpoch}';
   app.pendingPaymentOrderId = order.reference.id;
-
-  if (TouryPaymentFlags.useExternalPaymentApi) {
-    try {
-      final client = PaymentApiClient();
-      final body = await client.createCardBookingPayment(
-        idempotencyKey: app.paymentIdempotencyKey,
-        carPath: carPath,
-        countryPath: countryPath,
-        bookingHours: order.totalTaim > 0 ? order.totalTaim : 1,
-        additionalHours: 0,
-        booking: TouryOrderIntegration.cloudBookingPayload(),
-        orderPath: order.reference.path,
-        description: 'Toury-retry-${order.reference.id.substring(0, 8)}',
-        forceRefreshHpp: true,
-      );
-      final paymentId = body['id']?.toString();
-      final bookingId = body['bookingId']?.toString() ?? order.reference.id;
-      final status = (body['status']?.toString() ?? '').toLowerCase();
-      if (status == 'paid' ||
-          status == 'captured' ||
-          body['bookingCreated'] == true) {
-        return TouryCardPaymentResult(
-          success: true,
-          paymentId: paymentId ?? order.reference.id,
-          bookingId: bookingId,
-          status: 'paid',
-          response: ApiCallResponse(body, const {}, 200),
-        );
-      }
-      final rawUrl = body['threeDsUrl']?.toString() ??
-          body['paymentUrl']?.toString();
-      final threeDsUrl = _hostedPaymentPageUrlOrNull(rawUrl);
-      if (paymentId == null || paymentId.isEmpty || threeDsUrl == null) {
-        return TouryCardPaymentResult(
-          success: false,
-          paymentId: paymentId,
-          bookingId: bookingId,
-          errorMessage: 'checkout_hosted_payment_unavailable'.tr(),
-        );
-      }
-      return TouryCardPaymentResult(
-        success: true,
-        paymentId: paymentId,
-        bookingId: bookingId,
-        threeDsUrl: threeDsUrl,
-        status: body['status']?.toString(),
-        response: ApiCallResponse(body, const {}, 200),
-      );
-    } on PaymentApiException catch (e) {
-      if (e.code == 'PAYMENT_ALREADY_EXISTS') {
-        return TouryCardPaymentResult(
-          success: true,
-          paymentId: order.reference.id,
-          bookingId: order.reference.id,
-          status: 'paid',
-        );
-      }
-      return TouryCardPaymentResult(
-        success: false,
-        errorMessage: touryPaymentApiErrorMessage(e.code),
-      );
-    } catch (_) {
-      return TouryCardPaymentResult(
-        success: false,
-        errorMessage: 'checkout_payment_temporarily_unavailable'.tr(),
-      );
-    }
+  final stableKey = touriStableOrderIdempotencyKey(order.reference.id);
+  if (stableKey.isNotEmpty) {
+    app.paymentIdempotencyKey = stableKey;
   }
 
-  return TouryCardPaymentResult(
-    success: false,
-    errorMessage: 'checkout_payment_temporarily_unavailable'.tr(),
+  return TouryPaymentExperienceService().startCardCheckout(
+    context: context,
+    description: 'Toury-retry-${order.reference.id.substring(0, 8)}',
+    amountHalalas: 0,
+    carPath: carPath,
+    countryPath: countryPath,
+    bookingHours: order.totalTaim > 0 ? order.totalTaim : 1,
+    additionalHours: 0,
+    orderPath: order.reference.path,
   );
+}
+
+Future<bool> touryCancelPaymentAttempt({
+  String? sessionId,
+  String? bookingId,
+}) async {
+  try {
+    await PaymentApiClient().cancelPaymentAttempt(
+      sessionId: sessionId,
+      bookingId: bookingId,
+    );
+    return true;
+  } catch (_) {
+    return false;
+  }
 }
 
 /// Shown when HPP closes / fails but unpaid order was saved.
@@ -639,7 +597,7 @@ Future<void> touryShowPaymentIncompleteSheet(
       final snap = await OrderRecord.getDocumentOnce(
         OrderRecord.collection.doc(id),
       );
-      final result = await touryRetryUnpaidOrderPayment(order: snap);
+      final result = await touryRetryUnpaidOrderPayment(context: context, order: snap);
       if (!context.mounted) return;
       await touryNavigateAfterCardPayment(
         context,

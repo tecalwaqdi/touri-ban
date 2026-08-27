@@ -10,6 +10,8 @@ import '/core/toury_booking_status_localizer.dart';
 import '/core/toury_currency.dart';
 import '/core/toury_customer_cancel_policy.dart';
 import '/core/toury_payment_flow.dart';
+import '/core/toury_payment_verify.dart';
+import '/core/toury_dialogs.dart';
 import '/core/toury_customer_order_actions.dart';
 import '/core/toury_error_localizer.dart';
 import '/core/toury_navigation_service.dart';
@@ -179,7 +181,7 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
   Future<void> _retryPayment() async {
     if (!_isAwaitingPayment || _busy) return;
     await _runGuarded('retry_pay', () async {
-      final result = await touryRetryUnpaidOrderPayment(order: order);
+      final result = await touryRetryUnpaidOrderPayment(context: context, order: order);
       if (!mounted) return;
       if (!result.success) {
         TouryDialogs.showSnackBar(
@@ -201,6 +203,75 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
         context,
         result: result,
         paymentFlowType: TypeHgz.Rhlh,
+      );
+    });
+  }
+
+  Future<void> _checkPaymentStatus() async {
+    if (!_isAwaitingPayment || _busy) return;
+    await _runGuarded('check_pay', () async {
+      final sessionId = (order.snapshotData['payment_session_id'] ??
+              order.ngeniusOrderId)
+          .toString()
+          .trim();
+      final id = sessionId.isNotEmpty ? sessionId : order.reference.id;
+      final verify = await touryVerifyGatewayPayment(id);
+      if (!mounted) return;
+      if (verify.isPaid) {
+        TouryDialogs.showSnackBar(
+          context,
+          'checkout_payment_paid'.tr(),
+          type: TouryMessageType.success,
+        );
+        return;
+      }
+      TouryDialogs.showSnackBar(
+        context,
+        verify.isFailed
+            ? 'checkout_payment_declined'.tr()
+            : 'payment_pending_body'.tr(),
+        type: verify.isFailed
+            ? TouryMessageType.error
+            : TouryMessageType.info,
+      );
+    });
+  }
+
+  Future<void> _cancelPaymentAttempt() async {
+    if (!_isAwaitingPayment || _busy) return;
+    final ok = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('payment_cancel_attempt_title'.tr()),
+            content: Text('payment_cancel_attempt_body'.tr()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text('order_cancel_confirm_back'.tr()),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text('checkout_cancel_payment_attempt'.tr()),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+    if (!ok || !mounted) return;
+    await _runGuarded('cancel_pay', () async {
+      final sessionId =
+          (order.snapshotData['payment_session_id'] ?? '').toString();
+      final done = await touryCancelPaymentAttempt(
+        sessionId: sessionId.trim().isNotEmpty ? sessionId.trim() : null,
+        bookingId: order.reference.id,
+      );
+      if (!mounted) return;
+      TouryDialogs.showSnackBar(
+        context,
+        done
+            ? 'payment_attempt_cancelled'.tr()
+            : 'checkout_payment_temporarily_unavailable'.tr(),
+        type: done ? TouryMessageType.success : TouryMessageType.error,
       );
     });
   }
@@ -643,6 +714,26 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
                   icon: Icons.payment_rounded,
                   onPressed: _busy ? null : _retryPayment,
                   loading: _busy && _busyAction == 'retry_pay',
+                  enabled: !_busy,
+                  expanded: true,
+                  size: DsButtonSize.lg,
+                ),
+                const SizedBox(height: DsSpacing.sm),
+                DsButton.outlined(
+                  label: 'checkout_check_payment_status'.tr(),
+                  icon: Icons.refresh_rounded,
+                  onPressed: _busy ? null : _checkPaymentStatus,
+                  loading: _busy && _busyAction == 'check_pay',
+                  enabled: !_busy,
+                  expanded: true,
+                  size: DsButtonSize.lg,
+                ),
+                const SizedBox(height: DsSpacing.sm),
+                DsButton.outlined(
+                  label: 'checkout_cancel_payment_attempt'.tr(),
+                  icon: Icons.close_rounded,
+                  onPressed: _busy ? null : _cancelPaymentAttempt,
+                  loading: _busy && _busyAction == 'cancel_pay',
                   enabled: !_busy,
                   expanded: true,
                   size: DsButtonSize.lg,

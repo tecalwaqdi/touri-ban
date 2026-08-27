@@ -15,8 +15,11 @@ import { logger } from "@/lib/logging/logger";
 import { parseBookingDraft } from "@/lib/bookings/build-order";
 import {
   ensureUnpaidBookingOrder,
+  findResumableUnpaidOrderForUser,
   loadPayableUnpaidOrder,
+  loadUserActiveOrder,
 } from "@/lib/bookings/unpaid-order";
+import { decidePaymentLock } from "@/lib/payments/lock";
 import { normalizePaymentPurpose } from "@/lib/payments/guards";
 import { isFirebaseAdcMode } from "@/lib/security/env";
 
@@ -323,12 +326,81 @@ export async function handleCreatePayment(req: Request) {
       );
     }
   } else {
-    bookingDraft = parseBookingDraft(body.booking);
-    verifiedQuote = await quoteBooking(body);
+    const resumable = purpose === "booking"
+      ? await findResumableUnpaidOrderForUser(user.uid)
+      : null;
+    if (resumable) {
+      const lock = decidePaymentLock({
+        currentOrderId: null,
+        activeOrderId: resumable.orderId,
+        activeStatusCode: String(resumable.order.status_code || ""),
+        activePaymentStatus: String(resumable.order.payment_status || ""),
+      });
+      if (lock.kind === "conflictActiveBooking") {
+        throw new ApiError(
+          PaymentErrorCode.ACTIVE_BOOKING_EXISTS,
+          409,
+          resumable.orderId,
+        );
+      }
+      const unpaid = await loadPayableUnpaidOrder({
+        orderPath: `order/${resumable.orderId}`,
+        userId: user.uid,
+      });
+      unpaidOrderId = unpaid.orderId;
+      verifiedQuote = await quoteBooking({
+        ...body,
+        carPath: unpaid.carPath,
+        countryPath: unpaid.countryPath,
+        bookingHours: unpaid.bookingHours,
+        additionalHours: unpaid.additionalHours,
+      });
+      if (Number(verifiedQuote.amountMinor) !== Number(unpaid.amountMinor)) {
+        verifiedQuote = {
+          ...verifiedQuote,
+          amountMinor: unpaid.amountMinor,
+          amount_halalas: unpaid.amountMinor,
+        };
+      }
+      if (unpaid.draft) {
+        try {
+          bookingDraft = parseBookingDraft(unpaid.draft);
+        } catch {
+          bookingDraft = parseBookingDraft(body.booking);
+        }
+      } else {
+        bookingDraft = parseBookingDraft(body.booking);
+      }
+      logger.info("payment_resume_unpaid_checkout", {
+        orderIdPrefix: unpaid.orderId.slice(0, 8),
+      });
+    } else {
+      bookingDraft = parseBookingDraft(body.booking);
+      verifiedQuote = await quoteBooking(body);
+    }
   }
 
   const sessionId = sessionIdFor(user.uid, body.idempotencyKey);
   const sessionRef = db().collection(COLLECTIONS.paymentSessions).doc(sessionId);
+
+  if (purpose === "booking" && !unpaidOrderId) {
+    const active = await loadUserActiveOrder(user.uid);
+    if (active) {
+      const lock = decidePaymentLock({
+        currentOrderId: unpaidOrderId,
+        activeOrderId: active.orderId,
+        activeStatusCode: String(active.order.status_code || ""),
+        activePaymentStatus: String(active.order.payment_status || ""),
+      });
+      if (lock.kind === "conflictActiveBooking") {
+        throw new ApiError(
+          PaymentErrorCode.ACTIVE_BOOKING_EXISTS,
+          409,
+          active.orderId,
+        );
+      }
+    }
+  }
 
   let existingData: Record<string, unknown> | undefined;
   await db().runTransaction(async (tx) => {

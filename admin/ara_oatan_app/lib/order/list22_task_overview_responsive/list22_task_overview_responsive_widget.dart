@@ -1612,7 +1612,7 @@ class _TouryBookingCard extends StatelessWidget {
     final guardKey = 'payment:retry:${order.reference.id}';
     if (!TouryAsyncActionGuard.tryStart(guardKey)) return;
     try {
-      final result = await touryRetryUnpaidOrderPayment(order: order);
+      final result = await touryRetryUnpaidOrderPayment(context: context, order: order);
       if (!context.mounted) return;
       if (!result.success) {
         TouryDialogs.showSnackBar(

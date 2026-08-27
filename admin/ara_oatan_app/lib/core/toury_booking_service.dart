@@ -8,11 +8,14 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/app_state.dart';
 import '/backend/backend.dart';
 import '/backend/cloud_functions/cloud_functions.dart';
+import '/core/payments/touri_payment_lock.dart';
 import '/core/toury_active_booking.dart';
 import '/core/toury_currency.dart';
 import '/core/toury_location_service.dart';
 import '/core/toury_order_integration.dart';
 import '/core/toury_payment_flags.dart';
+import '/core/toury_payment_flow.dart';
+import '/core/toury_payment_labels.dart';
 import '/core/toury_pricing.dart';
 
 class TouryCashBookingResult {
@@ -138,9 +141,18 @@ Future<TouryCashBookingResult> _touryCreateCashBookingFromCurrentStateImpl() asy
     );
   }
 
-  // Block before CF/fallback when an active booking already exists.
+  // Block before CF/fallback when an operational booking already exists.
+  // Unpaid electronic drafts are converted to cash on the SAME booking.
   final existingActive = await touryFindActiveBookingForCurrentUser();
   if (existingActive != null) {
+    final pay = (existingActive.order?.snapshotData['payment_status'] ?? '')
+        .toString();
+    if (touriIsUnpaidDraft(
+      statusCode: existingActive.statusCode ?? '',
+      paymentStatus: pay,
+    )) {
+      return _touryConvertUnpaidOrderToCash(existingActive.orderId);
+    }
     return TouryCashBookingResult(
       success: false,
       error: 'booking_active_exists',
@@ -407,6 +419,37 @@ Future<TouryCashBookingResult> touryCreateCashBookingViaFirestoreFallback({
       success: false,
       error: 'booking_save_failed',
       viaFallback: true,
+    );
+  }
+}
+
+/// Card → cash switch on the same unpaid booking. No N-Genius.
+Future<TouryCashBookingResult> _touryConvertUnpaidOrderToCash(
+  String orderId,
+) async {
+  try {
+    await OrderRecord.collection.doc(orderId).set(
+      {
+        'payment_method': TouryPaymentKeys.cash,
+        'payth': TouryPaymentKeys.cash,
+        'payment_status': 'cash_pending',
+        'status_code': 'pending_driver',
+        'ALLNOW': true,
+        'ElectronicPayment': false,
+        'last_payment_attempt_status': 'switched_to_cash',
+        'updated_at': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
+    try {
+      await touryCancelPaymentAttempt(bookingId: orderId);
+    } catch (_) {}
+    return TouryCashBookingResult(success: true, orderId: orderId);
+  } catch (e) {
+    debugPrint('Convert unpaid to cash failed: $e');
+    return const TouryCashBookingResult(
+      success: false,
+      error: 'booking_save_failed',
     );
   }
 }

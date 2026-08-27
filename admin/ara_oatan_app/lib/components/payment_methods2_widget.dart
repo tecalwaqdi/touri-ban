@@ -36,14 +36,12 @@ class _PaymentMethods2WidgetState extends State<PaymentMethods2Widget> {
 
   void _selectOnline() {
     if (!TouryPaymentFlags.onlineOptionVisible()) return;
-    FFAppState().clearSensitivePaymentSession();
     FFAppState().ElectronicPayment = true;
     FFAppState().payth = TouryPaymentKeys.online;
     Navigator.pop(context);
   }
 
   void _selectCash() {
-    FFAppState().clearSensitivePaymentSession();
     FFAppState().ElectronicPayment = false;
     FFAppState().payth = TouryPaymentKeys.cash;
     Navigator.pop(context);

@@ -7,6 +7,7 @@ import {
   SessionQuote,
 } from "@/lib/bookings/build-order";
 import { assertAndClaimActiveOrderSlot } from "@/lib/bookings/active-order";
+import { isUnpaidDraft } from "@/lib/payments/lock";
 import { logger } from "@/lib/logging/logger";
 
 function isAlreadyPaidOrder(data: Record<string, unknown>): boolean {
@@ -15,12 +16,44 @@ function isAlreadyPaidOrder(data: Record<string, unknown>): boolean {
 }
 
 function isUnpaidDraftOrder(data: Record<string, unknown>): boolean {
-  const status = String(data.status_code || "");
-  const payment = String(data.payment_status || "").toLowerCase();
-  return (
-    status === "payment_pending" &&
-    (payment === "unpaid" || payment === "pending" || payment === "failed")
-  );
+  return isUnpaidDraft({
+    statusCode: String(data.status_code || ""),
+    paymentStatus: String(data.payment_status || ""),
+  });
+}
+
+/**
+ * If the user already has an unpaid electronic draft, reuse it.
+ * Never mint a second booking for the same checkout.
+ */
+export async function findResumableUnpaidOrderForUser(userId: string): Promise<{
+  orderId: string;
+  order: Record<string, unknown>;
+} | null> {
+  const found = await loadUserActiveOrder(userId);
+  if (!found) return null;
+  if (isAlreadyPaidOrder(found.order)) return null;
+  if (!isUnpaidDraftOrder(found.order)) return null;
+  return found;
+}
+
+export async function loadUserActiveOrder(userId: string): Promise<{
+  orderId: string;
+  order: Record<string, unknown>;
+} | null> {
+  const userSnap = await db().collection(COLLECTIONS.users).doc(userId).get();
+  const activeId = String(userSnap.data()?.active_order_id || "").trim();
+  if (!activeId) return null;
+  const snap = await db().collection(COLLECTIONS.orders).doc(activeId).get();
+  if (!snap.exists) return null;
+  const order = snap.data() || {};
+  const owner = order.USER;
+  const ownerId =
+    owner && typeof owner === "object" && "id" in owner
+      ? String((owner as { id: string }).id)
+      : String(owner || "").split("/").pop();
+  if (ownerId && ownerId !== userId) return null;
+  return { orderId: activeId, order };
 }
 
 /**

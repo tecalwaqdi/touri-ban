@@ -189,6 +189,28 @@ class PaymentApiClient {
     );
   }
 
+  Future<Map<String, dynamic>> cancelPaymentAttempt({
+    String? sessionId,
+    String? bookingId,
+  }) async {
+    final token = await _idToken();
+    final response = await _http
+        .post(
+          _uri('/payments/cancel'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: jsonEncode({
+            if (sessionId != null && sessionId.isNotEmpty) 'sessionId': sessionId,
+            if (bookingId != null && bookingId.isNotEmpty) 'bookingId': bookingId,
+          }),
+        )
+        .timeout(timeout);
+    return _decode(response);
+  }
+
   Map<String, dynamic> _decode(http.Response response) {
     Map<String, dynamic> body;
     try {
