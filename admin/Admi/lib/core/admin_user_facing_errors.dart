@@ -107,6 +107,13 @@ abstract final class AdminUserFacingErrors {
         msg.contains('payment')) {
       return appTr(context, 'adm_err_storage_billing');
     }
+    // Never surface composite-index console URLs or raw query text to operators.
+    if (code == 'failed-precondition' ||
+        msg.contains('requires an index') ||
+        msg.contains('create_composite') ||
+        msg.contains('console.firebase.google.com')) {
+      return appTr(context, 'adm_err_query_index');
+    }
     switch (error.code) {
       case 'permission-denied':
       case 'unauthorized':

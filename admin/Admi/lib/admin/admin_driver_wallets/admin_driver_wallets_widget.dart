@@ -321,7 +321,15 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
               FirebaseFirestore.instance.collection('wallets').limit(200).snapshots(),
           builder: (context, snap) {
             if (snap.hasError) {
-              return Center(child: Text('${snap.error}'));
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    AdminUserFacingErrors.from(context, snap.error!),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
             }
             if (!snap.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -347,8 +355,11 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
                 final uid = (d['userRef'] is DocumentReference)
                     ? (d['userRef'] as DocumentReference).id
                     : (d['driverId'] ?? docs[i].id).toString();
+                final displayId = uid.length <= 8
+                    ? uid
+                    : '${uid.substring(0, 4)}…${uid.substring(uid.length - 4)}';
                 return ListTile(
-                  title: Text('${uiTr(context, 'مندوب')}: $uid'),
+                  title: Text('${uiTr(context, 'مندوب')}: $displayId'),
                   subtitle: Text(
                     '${uiTr(context, 'عملة')}: $currency · '
                     '${bal >= 200 ? uiTr(context, 'مؤهل نقدي') : uiTr(context, 'غير مؤهل نقدي')}',
@@ -395,7 +406,15 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
       stream: query.snapshots(),
       builder: (context, snap) {
         if (snap.hasError) {
-          return Center(child: Text('${snap.error}'));
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                AdminUserFacingErrors.from(context, snap.error!),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
         }
         if (!snap.hasData) {
           return const Center(child: CircularProgressIndicator());
@@ -412,8 +431,11 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
             final uid = (d['userRef'] is DocumentReference)
                 ? (d['userRef'] as DocumentReference).id
                 : (d['driverId'] ?? '—').toString();
+            final displayId = uid.length <= 8
+                ? uid
+                : '${uid.substring(0, 4)}…${uid.substring(uid.length - 4)}';
             return ListTile(
-              title: Text('${d['type'] ?? 'tx'} · $uid'),
+              title: Text('${d['type'] ?? 'tx'} · $displayId'),
               subtitle: Text(
                 '${_dfFmt(d['createdAt'])} · '
                 '${uiTr(context, 'قبل')} ${(d['balanceBefore'] ?? '—')} → '

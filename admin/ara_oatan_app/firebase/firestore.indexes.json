@@ -485,6 +485,76 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "transport_company",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "Rev_dolh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "naim",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "Rev_dolh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_order",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "support",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "Rev_dolh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "villages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "dolh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "naim",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

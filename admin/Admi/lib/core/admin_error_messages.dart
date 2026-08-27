@@ -41,7 +41,12 @@ String adminFriendlyError(BuildContext context, Object error) {
   if (raw.contains('PERMISSION_DENIED') || raw.contains('PERMISSION-DENIED')) {
     return uiTr(context, 'You do not have permission for this action.');
   }
-  if (raw.contains('INDEX_REQUIRED') || raw.contains('FAILED_PRECONDITION') && raw.contains('INDEX')) {
+  if (raw.contains('INDEX_REQUIRED') ||
+      raw.contains('CREATE_COMPOSITE') ||
+      raw.contains('REQUIRES AN INDEX') ||
+      raw.contains('CONSOLE.FIREBASE.GOOGLE.COM') ||
+      (raw.contains('FAILED_PRECONDITION') && raw.contains('INDEX')) ||
+      (raw.contains('FAILED-PRECONDITION') && raw.contains('INDEX'))) {
     return uiTr(context, 'A Firestore index is required for this query.');
   }
   if (raw.contains('UNSUPPORTED_CURRENCY')) {
@@ -61,8 +66,25 @@ String adminFriendlyError(BuildContext context, Object error) {
       raw.contains('UNAVAILABLE')) {
     return uiTr(context, 'Service timed out or is temporarily unavailable. Retry.');
   }
-  if (raw.contains('NETWORK') || raw.contains('SOCKET') || raw.contains('FAILED-PRECONDITION') && raw.contains('NETWORK')) {
+  if (raw.contains('NETWORK') ||
+      raw.contains('SOCKET') ||
+      (raw.contains('FAILED-PRECONDITION') && raw.contains('NETWORK'))) {
     return uiTr(context, 'Network failure. Check connection and retry.');
   }
-  return message;
+  // Never return Firebase console URLs or stack-like noise to operators.
+  final cleaned = message
+      .replaceAll(RegExp(r'https?://\S+', caseSensitive: false), '')
+      .trim();
+  if (cleaned.toLowerCase().contains('requires an index') ||
+      cleaned.toLowerCase().contains('failed-precondition')) {
+    return uiTr(context, 'A Firestore index is required for this query.');
+  }
+  if (cleaned.length < 180 &&
+      !cleaned.contains('FirebaseException') &&
+      !cleaned.contains('Instance of')) {
+    return cleaned.isEmpty
+        ? uiTr(context, 'Something went wrong. Please try again.')
+        : cleaned;
+  }
+  return uiTr(context, 'Something went wrong. Please try again.');
 }
