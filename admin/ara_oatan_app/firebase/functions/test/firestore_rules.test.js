@@ -18,6 +18,7 @@ const {
   setDoc,
   updateDoc,
   Timestamp,
+  GeoPoint,
 } = require("firebase/firestore");
 
 const projectId = "demo-touri-taxi";
@@ -559,5 +560,364 @@ describe('Customer profile self-update', () => {
         phone_number: '0500000000',
       }),
     );
+  });
+});
+
+/**
+ * Exact payload mirror of touryCreateCashBookingViaFirestoreFallback
+ * + _touryConvertUnpaidOrderToCash (installed customer app).
+ */
+function clientCashFallbackPayload(db, uid, orderId) {
+  const userRef = doc(db, "user", uid);
+  const carRef = doc(db, "type_car", "economy");
+  const countryRef = doc(db, "countries", "sa");
+  return {
+    USER: userRef,
+    total: 150,
+    amount_halalas: 15000,
+    currency: "SAR",
+    currency_code: "SAR",
+    data_order: Timestamp.now(),
+    acceptanceDeadline: Timestamp.fromMillis(Date.now() + 60 * 60 * 1000),
+    acceptance_deadline_ms: Date.now() + 60 * 60 * 1000,
+    LOKESHN: new GeoPoint(24.7, 46.7),
+    mapuser: new GeoPoint(24.7, 46.7),
+    originLatitude: 24.7,
+    originLongitude: 46.7,
+    carRev: carRef,
+    Rev_dolh: countryRef,
+    cartext: "Economy",
+    naim_user_text: "Customer",
+    phone_numper: 500000000,
+    imgProfileClent: "",
+    total_taim: 2,
+    total_app: 22.5,
+    total_vat: 0,
+    ksm: 0,
+    SrSAAH: 75,
+    DriverGuide: false,
+    fullSchedule: "",
+    listAmakn: [],
+    plannedWaypoints: [],
+    trip_type: "one_way",
+    luggage_estimate: 0,
+    routeProvider: "waypoints",
+    routeVersion: 1,
+    plannedDistanceMeters: 0,
+    plannedDurationSeconds: 0,
+    pricing_authority: "client_fallback_pending_cf",
+    pricing_quote_halalas: 15000,
+    pricing_hourly_halalas: 7500,
+    pricing_hours: 2,
+    IDorder: `CASH-${orderId.substring(0, 10).toUpperCase()}`,
+    halh_order: "Cash",
+    halh: "pending_cash",
+    halh_text: "بإنتظار قبول المندوب",
+    status_code: "pending_driver",
+    payment_status: "pending_cash",
+    cash_collection_status: "uncollected",
+    PaymentMethod: "Cash",
+    mndob_user: null,
+    ALLNOW: true,
+    ActiveOrder: false,
+    ReviewMndonsend: false,
+    created_by_function: false,
+    created_by_client_cash_fallback: true,
+    idempotency_key: "cash_testkey_abcdef",
+    additional_hours: 0,
+  };
+}
+
+/** Exact Card→Cash fields from _touryConvertUnpaidOrderToCash */
+const CARD_TO_CASH_PATCH = {
+  payment_method: "TOURY_PAY_CASH",
+  payth: "TOURY_PAY_CASH",
+  payment_status: "cash_pending",
+  status_code: "pending_driver",
+  ALLNOW: true,
+  ElectronicPayment: false,
+  last_payment_attempt_status: "switched_to_cash",
+  updated_at: Timestamp.now(),
+};
+
+describe("Cash create fallback + Card→Cash (installed app payloads)", () => {
+  const uid = "cash-customer-1";
+  const orderId = "cashorderabcdef0123456789abcdef0123456789ab";
+
+  beforeEach(async () => {
+    await seed({
+      [`user/${uid}`]: {
+        actev_user: true,
+        uid,
+        active_order_id: orderId,
+      },
+      "type_car/economy": {sr: 75, actev: true},
+      "countries/sa": {currency_code: "SAR", acctev: true},
+    });
+  });
+
+  it("NEW_CASH exact client fallback payload ALLOW when active_order_id matches", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      setDoc(doc(db, "order", orderId), clientCashFallbackPayload(db, uid, orderId)),
+    );
+  });
+
+  it("NEW_CASH FAIL different USER", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    const payload = clientCashFallbackPayload(db, uid, orderId);
+    payload.USER = doc(db, "user", "other-user");
+    await assertFails(setDoc(doc(db, "order", orderId), payload));
+  });
+
+  it("NEW_CASH FAIL wrong active_order_id", async () => {
+    await seed({
+      [`user/${uid}`]: {
+        actev_user: true,
+        uid,
+        active_order_id: "different-order-id",
+      },
+    });
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertFails(
+      setDoc(doc(db, "order", orderId), clientCashFallbackPayload(db, uid, orderId)),
+    );
+  });
+
+  it("NEW_CASH FAIL electronic payment fields", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    const payload = clientCashFallbackPayload(db, uid, orderId);
+    payload.PaymentMethod = "OnlinePayment";
+    payload.halh_order = "Pending";
+    await assertFails(setDoc(doc(db, "order", orderId), payload));
+  });
+
+  it("NEW_CASH FAIL paid status", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    const payload = clientCashFallbackPayload(db, uid, orderId);
+    payload.payment_status = "paid";
+    await assertFails(setDoc(doc(db, "order", orderId), payload));
+  });
+
+  it("ACTIVE_LOCK claim empty → allow", async () => {
+    await seed({
+      [`user/${uid}`]: {actev_user: true, uid},
+    });
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      updateDoc(doc(db, "user", uid), {
+        active_order_id: orderId,
+        active_order_updated_at: Timestamp.now(),
+      }),
+    );
+  });
+
+  it("ACTIVE_LOCK same orderId retry → allow", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      updateDoc(doc(db, "user", uid), {
+        active_order_id: orderId,
+        active_order_updated_at: Timestamp.now(),
+      }),
+    );
+  });
+
+  it("ACTIVE_LOCK different active non-terminal → block", async () => {
+    await seed({
+      [`user/${uid}`]: {
+        actev_user: true,
+        uid,
+        active_order_id: "other-active",
+      },
+      "order/other-active": {
+        USER: `user/${uid}`,
+        status_code: "pending_driver",
+        payment_status: "pending_cash",
+      },
+    });
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertFails(
+      updateDoc(doc(db, "user", uid), {
+        active_order_id: orderId,
+        active_order_updated_at: Timestamp.now(),
+      }),
+    );
+  });
+
+  it("ACTIVE_LOCK stale terminal → allow reclaim", async () => {
+    await seed({
+      [`user/${uid}`]: {
+        actev_user: true,
+        uid,
+        active_order_id: "stale-done",
+      },
+      "order/stale-done": {
+        USER: `user/${uid}`,
+        status_code: "completed",
+        payment_status: "cash_collected",
+      },
+    });
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      updateDoc(doc(db, "user", uid), {
+        active_order_id: orderId,
+        active_order_updated_at: Timestamp.now(),
+      }),
+    );
+  });
+
+  async function seedUnpaidElectronic(paymentStatus = "unpaid") {
+    await seed({
+      [`user/${uid}`]: {
+        actev_user: true,
+        uid,
+        active_order_id: "pay-draft-1",
+      },
+      "order/pay-draft-1": {
+        USER: doc(
+          testEnv.authenticatedContext(uid).firestore(),
+          "user",
+          uid,
+        ),
+        status_code: "payment_pending",
+        payment_status: paymentStatus,
+        PaymentMethod: "OnlinePayment",
+        ALLNOW: false,
+        ElectronicPayment: true,
+        total: 100,
+        amount_halalas: 10000,
+        currency: "SAR",
+        carRev: doc(
+          testEnv.authenticatedContext(uid).firestore(),
+          "type_car",
+          "economy",
+        ),
+        Rev_dolh: doc(
+          testEnv.authenticatedContext(uid).firestore(),
+          "countries",
+          "sa",
+        ),
+      },
+    });
+  }
+
+  it("CARD_TO_CASH PASS unpaid payment_pending", async () => {
+    await seedUnpaidElectronic("unpaid");
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      updateDoc(doc(db, "order", "pay-draft-1"), CARD_TO_CASH_PATCH),
+    );
+  });
+
+  it("CARD_TO_CASH PASS payment_pending + failed", async () => {
+    await seedUnpaidElectronic("failed");
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      updateDoc(doc(db, "order", "pay-draft-1"), CARD_TO_CASH_PATCH),
+    );
+  });
+
+  it("CARD_TO_CASH PASS payment_pending + expired", async () => {
+    await seedUnpaidElectronic("expired");
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      updateDoc(doc(db, "order", "pay-draft-1"), CARD_TO_CASH_PATCH),
+    );
+  });
+
+  it("CARD_TO_CASH FAIL paid", async () => {
+    await seed({
+      [`user/${uid}`]: {actev_user: true, uid},
+      "order/paid-1": {
+        USER: doc(testEnv.authenticatedContext(uid).firestore(), "user", uid),
+        status_code: "pending_driver",
+        payment_status: "paid",
+        PaymentMethod: "OnlinePayment",
+        ALLNOW: true,
+        total: 100,
+        amount_halalas: 10000,
+        currency: "SAR",
+      },
+    });
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertFails(
+      updateDoc(doc(db, "order", "paid-1"), CARD_TO_CASH_PATCH),
+    );
+  });
+
+  it("CARD_TO_CASH FAIL driver_assigned", async () => {
+    await seed({
+      [`user/${uid}`]: {actev_user: true, uid},
+      "order/assigned-1": {
+        USER: doc(testEnv.authenticatedContext(uid).firestore(), "user", uid),
+        status_code: "driver_assigned",
+        payment_status: "unpaid",
+        PaymentMethod: "OnlinePayment",
+        ALLNOW: true,
+        total: 100,
+        amount_halalas: 10000,
+        currency: "SAR",
+      },
+    });
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertFails(
+      updateDoc(doc(db, "order", "assigned-1"), CARD_TO_CASH_PATCH),
+    );
+  });
+
+  it("CARD_TO_CASH FAIL different USER", async () => {
+    await seedUnpaidElectronic("unpaid");
+    const db = testEnv.authenticatedContext("intruder").firestore();
+    await assertFails(
+      updateDoc(doc(db, "order", "pay-draft-1"), CARD_TO_CASH_PATCH),
+    );
+  });
+
+  it("CARD_TO_CASH FAIL alter price/owner", async () => {
+    await seedUnpaidElectronic("unpaid");
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertFails(
+      updateDoc(doc(db, "order", "pay-draft-1"), {
+        ...CARD_TO_CASH_PATCH,
+        total: 1,
+        amount_halalas: 1,
+      }),
+    );
+  });
+
+  it("OWNER_LIST own pending_driver cash ALLOW", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      setDoc(doc(db, "order", orderId), clientCashFallbackPayload(db, uid, orderId)),
+    );
+    const { getDocs, query, where, orderBy, collection } = require("firebase/firestore");
+    const q = query(
+      collection(db, "order"),
+      where("USER", "==", doc(db, "user", uid)),
+      orderBy("data_order", "desc"),
+    );
+    await assertSucceeds(getDocs(q));
+  });
+
+  it("OWNER_LIST other customer cash DENY", async () => {
+    await seed({
+      [`user/${uid}`]: {actev_user: true, uid, active_order_id: orderId},
+      "user/other-owner": {actev_user: true, uid: "other-owner"},
+    });
+    const ownerDb = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      setDoc(
+        doc(ownerDb, "order", orderId),
+        clientCashFallbackPayload(ownerDb, uid, orderId),
+      ),
+    );
+    const otherDb = testEnv.authenticatedContext("intruder-list").firestore();
+    const { getDocs, query, where, orderBy, collection } = require("firebase/firestore");
+    const q = query(
+      collection(otherDb, "order"),
+      where("USER", "==", doc(otherDb, "user", uid)),
+      orderBy("data_order", "desc"),
+    );
+    await assertFails(getDocs(q));
   });
 });

@@ -1016,153 +1016,200 @@ exports.createCashBooking = functions
   .region("us-central1")
   .runWith(cashRuntime)
   .https.onCall(async (data, context) => {
-    requireAuth(context);
-    // Cash booking must not depend on N-Genius secrets.
-    requireAppCheck(context);
-    const uid = context.auth.uid;
-    const idempotencyKey = sanitizeString(data.idempotencyKey, 96);
-    if (!idempotencyKey || !/^[a-zA-Z0-9_.:-]+$/.test(idempotencyKey)) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        "A valid booking idempotency key is required.",
-      );
-    }
-    let quote;
+    console.log("cash_booking_start", {
+      uid: context.auth && context.auth.uid ? context.auth.uid : null,
+      hasAuth: Boolean(context.auth),
+    });
     try {
-      quote = await verifiedBookingAmount(data);
-    } catch (err) {
-      if (err instanceof functions.https.HttpsError) throw err;
-      console.error("createCashBooking quote failed", err);
-      throw new functions.https.HttpsError(
-        "unavailable",
-        "Booking service cannot access Firestore. Check function IAM.",
-      );
-    }
-    const booking = data.booking && typeof data.booking === "object"
-      ? data.booking
-      : {};
-    const pickupLat = safeCoordinate(
-      booking.pickupLat,
-      -90,
-      90,
-      "pickup latitude",
-    );
-    const pickupLng = safeCoordinate(
-      booking.pickupLng,
-      -180,
-      180,
-      "pickup longitude",
-    );
-    const schedule = optionalTimestamp(booking.schedule);
-    const cityRef = optionalDocumentReference(booking.cityPath, "cities");
-    const villageRef = optionalDocumentReference(booking.villagePath, "villages");
-    const plannedWaypoints = safeWaypoints(booking.plannedWaypoints);
-    const stops = safeStops(booking.stops, uid);
-    const firestore = admin.firestore();
-    const userRef = firestore.collection("user").doc(uid);
-    let userSnapshot;
-    try {
-      userSnapshot = await userRef.get();
-    } catch (err) {
-      console.error("createCashBooking user get failed", err);
-      throw new functions.https.HttpsError(
-        "unavailable",
-        "Booking service cannot access Firestore. Check function IAM.",
-      );
-    }
-    const user = userSnapshot.exists ? userSnapshot.data() : {};
-    const orderId = sessionIdFor(uid, `cash:${idempotencyKey}`);
-    const orderRef = firestore.collection("order").doc(orderId);
-    const now = admin.firestore.FieldValue.serverTimestamp();
-    let alreadyExisted = false;
-
-    await firestore.runTransaction(async (transaction) => {
-      const existing = await transaction.get(orderRef);
-      if (existing.exists) {
-        alreadyExisted = true;
-        return;
-      }
-      const claim = await assertAndClaimActiveOrderSlot({
-        transaction,
-        firestore,
-        userRef,
-        orderId,
-        FieldValue: admin.firestore.FieldValue,
-      });
-      if (!claim.ok) {
+      requireAuth(context);
+      // Cash booking must not depend on N-Genius secrets.
+      requireAppCheck(context);
+      const uid = context.auth.uid;
+      console.log("cash_booking_auth_ok", {uid});
+      const idempotencyKey = sanitizeString(data.idempotencyKey, 96);
+      if (!idempotencyKey || !/^[a-zA-Z0-9_.:-]+$/.test(idempotencyKey)) {
+        console.log("cash_booking_validation_failed", {
+          uid,
+          errorCode: "invalid_idempotency_key",
+        });
         throw new functions.https.HttpsError(
-          "failed-precondition",
-          "ACTIVE_BOOKING_EXISTS",
-          { activeOrderId: claim.activeOrderId, code: "ACTIVE_BOOKING_EXISTS" },
+          "invalid-argument",
+          "A valid booking idempotency key is required.",
         );
       }
-      const orderData = {
-        USER: userRef,
-        total: quote.amountHalalas / 100,
-        amount_halalas: quote.amountHalalas,
-        currency: quote.currency || "SAR",
-        currency_code: quote.currency || "SAR",
-        data_order: now,
-        acceptanceDeadline: admin.firestore.Timestamp.fromMillis(
-          Date.now() + 60 * 60 * 1000,
-        ),
-        acceptance_deadline_ms: Date.now() + 60 * 60 * 1000,
-        LOKESHN: new admin.firestore.GeoPoint(pickupLat, pickupLng),
-        mapuser: new admin.firestore.GeoPoint(pickupLat, pickupLng),
-        originLatitude: pickupLat,
-        originLongitude: pickupLng,
-        carRev: firestore.doc(quote.carPath),
-        Rev_dolh: firestore.doc(quote.countryPath),
-        cities_user_now: cityRef,
-        vill: villageRef,
-        vill_text: sanitizeString(booking.cityName, 180),
-        cartext: sanitizeString(booking.carName, 160),
-        naim_user_text: sanitizeString(user.display_name || user.name, 160),
-        phone_numper: Number(user.phone_n || user.phoneN || 0),
-        imgProfileClent: sanitizeString(user.photo_url || user.photoUrl, 500),
-        total_taim: quote.bookingHours,
-        total_app: quote.appFeeHalalas / 100,
-        total_vat: quote.vatHalalas / 100,
-        ksm: quote.discountHalalas / 100,
-        SrSAAH: quote.baseFareHalalas /
-          Math.max(1, quote.bookingHours) / 100,
-        DriverGuide: booking.driverGuide === true,
-        Schedule: schedule,
-        fullSchedule: sanitizeString(booking.scheduleLabel, 180),
-        listAmakn: stops,
-        plannedWaypoints,
-        trip_type: sanitizeString(booking.tripType, 32) || "one_way",
-        luggage_estimate: Math.max(0, Number(booking.luggageEstimate) || 0),
-        routeProvider: sanitizeString(booking.routeProvider, 32) || "waypoints",
-        routeVersion: 1,
-        plannedDistanceMeters: Math.max(
-          0,
-          Number(booking.plannedDistanceMeters) || 0,
-        ),
-        plannedDurationSeconds: Math.max(
-          0,
-          Number(booking.plannedDurationSeconds) || 0,
-        ),
-        IDorder: `CASH-${orderId.slice(0, 10).toUpperCase()}`,
-        // Trip lifecycle pending; cash collection tracked via payment_status.
-        halh_order: "Cash",
-        halh: "pending_cash",
-        halh_text: "بإنتظار قبول المندوب",
-        status_code: "pending_driver",
-        payment_status: "pending_cash",
-        cash_collection_status: "uncollected",
-        PaymentMethod: "Cash",
-        ALLNOW: true,
-        ActiveOrder: false,
-        ReviewMndonsend: false,
-        created_by_function: true,
-      };
-      Object.keys(orderData).forEach((key) => {
-        if (orderData[key] == null) delete orderData[key];
+      let quote;
+      try {
+        quote = await verifiedBookingAmount(data);
+      } catch (err) {
+        if (err instanceof functions.https.HttpsError) {
+          console.log("cash_booking_validation_failed", {
+            uid,
+            errorCode: err.code || "quote_https_error",
+          });
+          throw err;
+        }
+        console.error("cash_booking_error", {
+          uid,
+          errorCode: "quote_firestore_unavailable",
+        });
+        throw new functions.https.HttpsError(
+          "unavailable",
+          "Booking service cannot access Firestore. Check function IAM.",
+        );
+      }
+      const booking = data.booking && typeof data.booking === "object"
+        ? data.booking
+        : {};
+      const pickupLat = safeCoordinate(
+        booking.pickupLat,
+        -90,
+        90,
+        "pickup latitude",
+      );
+      const pickupLng = safeCoordinate(
+        booking.pickupLng,
+        -180,
+        180,
+        "pickup longitude",
+      );
+      const schedule = optionalTimestamp(booking.schedule);
+      const cityRef = optionalDocumentReference(booking.cityPath, "cities");
+      const villageRef = optionalDocumentReference(booking.villagePath, "villages");
+      const plannedWaypoints = safeWaypoints(booking.plannedWaypoints);
+      const stops = safeStops(booking.stops, uid);
+      const firestore = admin.firestore();
+      const userRef = firestore.collection("user").doc(uid);
+      let userSnapshot;
+      try {
+        userSnapshot = await userRef.get();
+      } catch (err) {
+        console.error("cash_booking_error", {
+          uid,
+          errorCode: "user_get_failed",
+        });
+        throw new functions.https.HttpsError(
+          "unavailable",
+          "Booking service cannot access Firestore. Check function IAM.",
+        );
+      }
+      const user = userSnapshot.exists ? userSnapshot.data() : {};
+      const orderId = sessionIdFor(uid, `cash:${idempotencyKey}`);
+      const orderRef = firestore.collection("order").doc(orderId);
+      const now = admin.firestore.FieldValue.serverTimestamp();
+      let alreadyExisted = false;
+
+      await firestore.runTransaction(async (transaction) => {
+        const existing = await transaction.get(orderRef);
+        if (existing.exists) {
+          alreadyExisted = true;
+          return;
+        }
+        const claim = await assertAndClaimActiveOrderSlot({
+          transaction,
+          firestore,
+          userRef,
+          orderId,
+          FieldValue: admin.firestore.FieldValue,
+        });
+        if (!claim.ok) {
+          console.log("cash_booking_active_conflict", {
+            uid,
+            orderId,
+            activeOrderId: claim.activeOrderId,
+            errorCode: "ACTIVE_BOOKING_EXISTS",
+          });
+          throw new functions.https.HttpsError(
+            "failed-precondition",
+            "ACTIVE_BOOKING_EXISTS",
+            { activeOrderId: claim.activeOrderId, code: "ACTIVE_BOOKING_EXISTS" },
+          );
+        }
+        const orderData = {
+          USER: userRef,
+          total: quote.amountHalalas / 100,
+          amount_halalas: quote.amountHalalas,
+          currency: quote.currency || "SAR",
+          currency_code: quote.currency || "SAR",
+          data_order: now,
+          acceptanceDeadline: admin.firestore.Timestamp.fromMillis(
+            Date.now() + 60 * 60 * 1000,
+          ),
+          acceptance_deadline_ms: Date.now() + 60 * 60 * 1000,
+          LOKESHN: new admin.firestore.GeoPoint(pickupLat, pickupLng),
+          mapuser: new admin.firestore.GeoPoint(pickupLat, pickupLng),
+          originLatitude: pickupLat,
+          originLongitude: pickupLng,
+          carRev: firestore.doc(quote.carPath),
+          Rev_dolh: firestore.doc(quote.countryPath),
+          cities_user_now: cityRef,
+          vill: villageRef,
+          vill_text: sanitizeString(booking.cityName, 180),
+          cartext: sanitizeString(booking.carName, 160),
+          naim_user_text: sanitizeString(user.display_name || user.name, 160),
+          phone_numper: Number(user.phone_n || user.phoneN || 0),
+          imgProfileClent: sanitizeString(user.photo_url || user.photoUrl, 500),
+          total_taim: quote.bookingHours,
+          total_app: quote.appFeeHalalas / 100,
+          total_vat: quote.vatHalalas / 100,
+          ksm: quote.discountHalalas / 100,
+          SrSAAH: quote.baseFareHalalas /
+            Math.max(1, quote.bookingHours) / 100,
+          DriverGuide: booking.driverGuide === true,
+          Schedule: schedule,
+          fullSchedule: sanitizeString(booking.scheduleLabel, 180),
+          listAmakn: stops,
+          plannedWaypoints,
+          trip_type: sanitizeString(booking.tripType, 32) || "one_way",
+          luggage_estimate: Math.max(0, Number(booking.luggageEstimate) || 0),
+          routeProvider: sanitizeString(booking.routeProvider, 32) || "waypoints",
+          routeVersion: 1,
+          plannedDistanceMeters: Math.max(
+            0,
+            Number(booking.plannedDistanceMeters) || 0,
+          ),
+          plannedDurationSeconds: Math.max(
+            0,
+            Number(booking.plannedDurationSeconds) || 0,
+          ),
+          IDorder: `CASH-${orderId.slice(0, 10).toUpperCase()}`,
+          // Trip lifecycle pending; cash collection tracked via payment_status.
+          halh_order: "Cash",
+          halh: "pending_cash",
+          halh_text: "بإنتظار قبول المندوب",
+          status_code: "pending_driver",
+          payment_status: "pending_cash",
+          cash_collection_status: "uncollected",
+          PaymentMethod: "Cash",
+          // Installed-app Card/Cash keys (TouryPaymentKeys.cash).
+          payment_method: "TOURY_PAY_CASH",
+          payth: "TOURY_PAY_CASH",
+          ElectronicPayment: false,
+          ALLNOW: true,
+          ActiveOrder: false,
+          ReviewMndonsend: false,
+          created_by_function: true,
+          cash_compat_version: 1,
+        };
+        Object.keys(orderData).forEach((key) => {
+          if (orderData[key] == null) delete orderData[key];
+        });
+        transaction.create(orderRef, orderData);
       });
-      transaction.create(orderRef, orderData);
-    });
-    return { id: orderId, orderId, status: "pending_cash", alreadyExisted };
+      if (alreadyExisted) {
+        console.log("cash_booking_idempotent_reuse", {uid, orderId});
+      } else {
+        console.log("cash_booking_created", {uid, orderId});
+      }
+      // Keep existing client contract: orderId / id (makeCloudCall ignores `success`).
+      return { id: orderId, orderId, status: "pending_cash", alreadyExisted };
+    } catch (err) {
+      if (err instanceof functions.https.HttpsError) throw err;
+      console.error("cash_booking_error", {
+        uid: context.auth && context.auth.uid ? context.auth.uid : null,
+        errorCode: "unhandled",
+      });
+      throw err;
+    }
   });
 
 exports.finalizeNGeniusWalletTopUp = functions

@@ -10,6 +10,9 @@ exports.createNGeniusPayment = ngeniusPayments.createNGeniusPayment;
 exports.getNGeniusPayment = ngeniusPayments.getNGeniusPayment;
 exports.finalizeNGeniusBooking = ngeniusPayments.finalizeNGeniusBooking;
 exports.createCashBooking = ngeniusPayments.createCashBooking;
+const cashBookingCompatibility = require("./cash_booking_compatibility.js");
+exports.normalizeCashBookingCompatibility =
+  cashBookingCompatibility.normalizeCashBookingCompatibility;
 exports.finalizeNGeniusWalletTopUp =
   ngeniusPayments.finalizeNGeniusWalletTopUp;
 exports.createWalletWithdrawalRequest =
@@ -34,6 +37,21 @@ exports.submitDriverApplicationV2 = functions.region("us-central1")
   .https.onCall(driverRegistrationV2.submitDriverApplicationV2);
 exports.reviewDriverApplicationV2 = functions.region("us-central1")
   .https.onCall(driverRegistrationV2.reviewDriverApplicationV2);
+const driverDocumentReview = require('./driver_document_review.js');
+const driverCountryConfigAdmin = require('./driver_country_config_admin.js');
+exports.reviewDriverDocument = functions
+  .region('us-central1')
+  .https.onCall(driverDocumentReview.reviewDriverDocument);
+exports.adminEnsureDriverCountryConfigs = functions
+  .region('us-central1')
+  .https.onCall(driverCountryConfigAdmin.adminEnsureDriverCountryConfigs);
+exports.onCountryCreatedDriverConfig = functions
+  .region('us-central1')
+  .firestore.document('countries/{countryId}')
+  .onCreate(driverCountryConfigAdmin.onCountryCreated);
+const driverDocumentExpiryNotify = require('./driver_document_expiry_notify.js');
+exports.scanDriverDocumentExpiry = driverDocumentExpiryNotify.scanDriverDocumentExpiry;
+
 
 const emailVerificationOtp = require("./email_verification_otp.js");
 // Always bind Secret Manager secrets for OTP — required for production send/verify.

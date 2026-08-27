@@ -34,7 +34,13 @@ function deadlineMs(data) {
 function isCashOrder(data) {
   const method = String(data.PaymentMethod || data.paymentMethod || "").toLowerCase();
   const payStatus = String(data.payment_status || "").toLowerCase();
-  return method.includes("cash") || payStatus === "pending_cash";
+  const payth = String(data.payth || data.payment_method || "");
+  return (
+    method.includes("cash") ||
+    payStatus === "pending_cash" ||
+    payStatus === "cash_pending" ||
+    payth === "TOURY_PAY_CASH"
+  );
 }
 
 function isOnlinePaid(data) {
