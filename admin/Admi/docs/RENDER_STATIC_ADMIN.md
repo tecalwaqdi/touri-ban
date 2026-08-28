@@ -14,18 +14,25 @@ Production URL: `https://touri-ban-1.onrender.com`
 
 Flutter Web uses **Path URL Strategy** (`usePathUrlStrategy()`). Direct navigation to routes such as `/home22Dashboard` must rewrite to `index.html`.
 
-1. **Preferred:** include `web/_redirects` in the publish output (copied automatically from `web/`):
+### Required — Render Dashboard (production proof)
 
-   ```
-   /*    /index.html   200
-   ```
+Static Site → **Redirects/Rewrites**:
 
-2. **Alternative:** Render Dashboard → Static Site → Redirects/Rewrites:
-   - Source: `/*`
-   - Destination: `/index.html`
-   - Action: **Rewrite** (not 301 redirect)
+| Field | Value |
+|-------|--------|
+| Source | `/*` |
+| Destination | `/index.html` |
+| Action | **Rewrite** (not 301 redirect) |
 
 Without this, deep links return **404** while `/` and `/index.html` work.
+
+### Backup / documentation only
+
+`web/_redirects` is copied into `build/web` for hosts that read that file. **Do not rely on it alone on Render** — configure the Dashboard rewrite above.
+
+```
+/*    /index.html   200
+```
 
 ## Firebase Auth
 
