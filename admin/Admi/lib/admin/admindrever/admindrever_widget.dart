@@ -405,41 +405,6 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                   },
                 ),
               const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () => context.pushNamed(
-                      AdminDriverExpiryQueueWidget.routeName,
-                      queryParameters: {
-                        'bucket': serializeParam(
-                          'expiring_soon',
-                          ParamType.String,
-                        ),
-                      }.withoutNulls,
-                    ),
-                    icon: const Icon(Icons.hourglass_bottom_rounded, size: 18),
-                    label: Text(
-                      '${uiTr(context, 'تنتهي قريبًا')} (${_stats.expiringSoon})',
-                    ),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: () => context.pushNamed(
-                      AdminDriverExpiryQueueWidget.routeName,
-                      queryParameters: {
-                        'bucket':
-                            serializeParam('expired', ParamType.String),
-                      }.withoutNulls,
-                    ),
-                    icon: const Icon(Icons.event_busy_rounded, size: 18),
-                    label: Text(
-                      '${uiTr(context, 'منتهية')} (${_stats.expired})',
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
               AdminDriverCountersStrip(
                 stats: _stats,
                 loading: _statsLoading,

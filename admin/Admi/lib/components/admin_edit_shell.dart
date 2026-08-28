@@ -318,6 +318,71 @@ class AdminEditSwitchRow extends StatelessWidget {
   }
 }
 
+/// Shown when an edit/detail route is opened without a required document id.
+class AdminMissingDocumentScaffold extends StatelessWidget {
+  const AdminMissingDocumentScaffold({
+    super.key,
+    required this.title,
+    this.message,
+  });
+
+  final String title;
+  final String? message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    final body = message ?? 'تعذر تحميل البيانات. الرابط ناقص أو غير صالح.';
+    return Scaffold(
+      backgroundColor: theme.primaryBackground,
+      appBar: AppBar(
+        backgroundColor: theme.secondaryBackground,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+        title: Text(title),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.link_off_rounded,
+                size: 48,
+                color: theme.secondaryText,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: theme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                body,
+                textAlign: TextAlign.center,
+                style: theme.bodyMedium.override(
+                  fontFamily: theme.bodyMediumFamily,
+                  color: theme.secondaryText,
+                  useGoogleFonts: !theme.bodyMediumIsCustom,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 Future<void> showAdminPickerSheet({
   required BuildContext context,
   required Widget child,

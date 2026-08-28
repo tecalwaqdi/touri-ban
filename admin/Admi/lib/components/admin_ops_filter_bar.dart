@@ -24,6 +24,10 @@ class AdminOpsFilterConfig {
     this.showCity = false,
     this.showSearch = true,
     this.searchHint,
+
+    /// When true, chip/dropdown filters start collapsed so the list stays
+    /// above the fold (Drivers / dense ops pages).
+    this.collapseAdvancedByDefault = false,
   });
 
   final bool showDate;
@@ -38,6 +42,7 @@ class AdminOpsFilterConfig {
   final bool showCity;
   final bool showSearch;
   final String? searchHint;
+  final bool collapseAdvancedByDefault;
 }
 
 /// Unified filter bar — date / status / geo / search.
@@ -64,12 +69,14 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
   List<VillagesRecord> _cities = const [];
   List<TypeCarRecord> _vehicleTypes = const [];
   bool _loadingGeo = false;
+  late bool _advancedOpen;
 
   bool get _lockCountry => AdminRoleService.isCountryAgent;
 
   @override
   void initState() {
     super.initState();
+    _advancedOpen = !widget.config.collapseAdvancedByDefault;
     _searchController = TextEditingController(text: widget.value.searchQuery);
     _loadCountries();
     if (widget.config.showDriverVehicleType) {
@@ -179,306 +186,325 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
       identifier: 'qa-driver-filter',
       label: 'qa-driver-filter',
       child: AdminContentCard(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  f.activeFilterCount == 0
-                      ? uiTr(context, 'Filters')
-                      : '${uiTr(context, 'Filters')} (${f.activeFilterCount})',
-                  softWrap: true,
-                  style: theme.titleSmall,
-                ),
-              ),
-              if (f.activeFilterCount > 0)
-                TextButton(
-                  onPressed: () {
-                    _searchController.clear();
-                    final base = AdminOpsFilterState.empty.reset();
-                    _emit(
-                      AdminRoleService.isCountryAgent
-                          ? base.copyWith(
-                              countryRef: AdminRoleService.scopedCountryRef,
-                            )
-                          : base,
-                    );
-                  },
-                  child: Text(uiTr(context, 'Reset')),
-                ),
-            ],
-          ),
-          if (cfg.showSearch) ...[
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: cfg.searchHint ??
-                    uiTr(context, 'بحث (اسم / هاتف / معرف)'),
-                prefixIcon: const Icon(Icons.search_rounded),
-                suffixIcon: f.searchQuery.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.clear_rounded),
-                        onPressed: () {
-                          _searchController.clear();
-                          _emit(f.copyWith(searchQuery: ''));
-                        },
-                      ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                isDense: true,
-              ),
-              onChanged: (v) {
-                EasyDebounce.debounce(
-                  'admin_ops_filter_search',
-                  const Duration(milliseconds: 350),
-                  () => _emit(f.copyWith(searchQuery: v)),
-                );
-              },
-            ),
-            Builder(
-              builder: (context) {
-                final plan = AdminOpsSearch.classify(f.searchQuery);
-                final hint = AdminOpsSearch.hintFor(plan);
-                if (hint.isEmpty) return const SizedBox.shrink();
-                return Padding(
-                  padding: const EdgeInsets.only(top: 6),
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
                   child: Text(
-                    hint,
-                    style: theme.labelSmall.override(
-                      fontFamily: theme.labelSmallFamily,
-                      color: theme.secondaryText,
-                      useGoogleFonts: !theme.labelSmallIsCustom,
-                    ),
+                    f.activeFilterCount == 0
+                        ? uiTr(context, 'Filters')
+                        : '${uiTr(context, 'Filters')} (${f.activeFilterCount})',
+                    softWrap: true,
+                    style: theme.titleSmall,
                   ),
-                );
-              },
+                ),
+                if (f.activeFilterCount > 0)
+                  TextButton(
+                    onPressed: () {
+                      _searchController.clear();
+                      final base = AdminOpsFilterState.empty.reset();
+                      _emit(
+                        AdminRoleService.isCountryAgent
+                            ? base.copyWith(
+                                countryRef: AdminRoleService.scopedCountryRef,
+                              )
+                            : base,
+                      );
+                    },
+                    child: Text(uiTr(context, 'Reset')),
+                  ),
+              ],
             ),
-            const SizedBox(height: 10),
-          ],
-          if (cfg.showDate) ...[
-            Text(
-              uiTr(context, 'الفترة'),
-              style: theme.labelMedium,
-            ),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final preset in AdminDatePreset.values)
-                  if (preset != AdminDatePreset.custom)
-                    _chip(
-                      label: _dateLabel(context, preset),
-                      selected: f.datePreset == preset,
-                      onTap: () => _emit(
-                        f.copyWith(
-                          datePreset: preset,
-                          clearCustomDates: true,
+            if (cfg.showSearch) ...[
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: cfg.searchHint ??
+                      uiTr(context, 'بحث (اسم / هاتف / معرف)'),
+                  prefixIcon: const Icon(Icons.search_rounded),
+                  suffixIcon: f.searchQuery.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: const Icon(Icons.clear_rounded),
+                          onPressed: () {
+                            _searchController.clear();
+                            _emit(f.copyWith(searchQuery: ''));
+                          },
                         ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  isDense: true,
+                ),
+                onChanged: (v) {
+                  EasyDebounce.debounce(
+                    'admin_ops_filter_search',
+                    const Duration(milliseconds: 350),
+                    () => _emit(f.copyWith(searchQuery: v)),
+                  );
+                },
+              ),
+              Builder(
+                builder: (context) {
+                  final plan = AdminOpsSearch.classify(f.searchQuery);
+                  final hint = AdminOpsSearch.hintFor(plan);
+                  if (hint.isEmpty) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      hint,
+                      style: theme.labelSmall.override(
+                        fontFamily: theme.labelSmallFamily,
+                        color: theme.secondaryText,
+                        useGoogleFonts: !theme.labelSmallIsCustom,
                       ),
-                      qaIdentifier: preset == AdminDatePreset.last30Days
-                          ? 'qa-filter-date-last30days'
-                          : null,
                     ),
-                _chip(
-                  label: uiTr(context, 'مخصص'),
-                  selected: f.datePreset == AdminDatePreset.custom,
-                  onTap: () => _pickCustomRange(context),
-                ),
-              ],
-            ),
-            if (f.datePreset == AdminDatePreset.custom &&
-                f.customStart != null &&
-                f.customEnd != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(
-                  '${_fmtDay(f.customStart!)} → ${_fmtDay(f.customEnd!)}',
-                  style: theme.labelSmall,
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+            ],
+            if (cfg.collapseAdvancedByDefault)
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton.icon(
+                  onPressed: () =>
+                      setState(() => _advancedOpen = !_advancedOpen),
+                  icon: Icon(
+                    _advancedOpen
+                        ? Icons.expand_less_rounded
+                        : Icons.expand_more_rounded,
+                  ),
+                  label: Text(
+                    _advancedOpen
+                        ? uiTr(context, 'إخفاء الفلاتر المتقدمة')
+                        : uiTr(context, 'إظهار الفلاتر المتقدمة'),
+                  ),
                 ),
               ),
-            const SizedBox(height: 10),
-          ],
-          if (cfg.showOrderLifecycle) ...[
-            Text(uiTr(context, 'حالة الحجز'), style: theme.labelMedium),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final s in AdminOrderLifecycleFilter.values)
-                  _chip(
-                    label: _orderStatusLabel(context, s),
-                    selected: f.orderLifecycle == s,
-                    onTap: () => _emit(f.copyWith(orderLifecycle: s)),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 10),
-          ],
-          if (cfg.showDriverActivation) ...[
-            Text(uiTr(context, 'حالة التفعيل'), style: theme.labelMedium),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final s in AdminDriverActivationFilter.values)
-                  _chip(
-                    label: _driverActLabel(context, s),
-                    selected: f.driverActivation == s,
-                    onTap: () => _emit(f.copyWith(driverActivation: s)),
-                    qaIdentifier: s == AdminDriverActivationFilter.activated
-                        ? 'qa-filter-activation-activated'
-                        : null,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 10),
-          ],
-          if (cfg.showDriverReview) ...[
-            Text(uiTr(context, 'حالة المراجعة'), style: theme.labelMedium),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final s in AdminDriverReviewFilter.values)
-                  _chip(
-                    label: _driverReviewLabel(context, s),
-                    selected: f.driverReview == s,
-                    onTap: () => _emit(f.copyWith(driverReview: s)),
-                    qaIdentifier: s == AdminDriverReviewFilter.pendingReview
-                        ? 'qa-filter-review-pending'
-                        : null,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 10),
-          ],
-          if (cfg.showDriverDocuments) ...[
-            Text(uiTr(context, 'الوثائق'), style: theme.labelMedium),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final s in AdminDriverDocumentsFilter.values)
-                  _chip(
-                    label: _driverDocsLabel(context, s),
-                    selected: f.driverDocuments == s,
-                    onTap: () => _emit(f.copyWith(driverDocuments: s)),
-                    qaIdentifier: s == AdminDriverDocumentsFilter.missing
-                        ? 'qa-filter-documents-missing'
-                        : null,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 10),
-          ],
-          if (cfg.showDriverVehicleType && _vehicleTypes.isNotEmpty) ...[
-            Text(uiTr(context, 'تصنيف السيارة'), style: theme.labelMedium),
-            const SizedBox(height: 6),
-            Semantics(
-              identifier: 'qa-filter-vehicle-type',
-              label: 'qa-filter-vehicle-type',
-              child: InputDecorator(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+            if (_advancedOpen) ...[
+              if (cfg.showDate) ...[
+                Text(
+                  uiTr(context, 'الفترة'),
+                  style: theme.labelMedium,
                 ),
-                isDense: true,
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<DocumentReference?>(
-                  isExpanded: true,
-                  value: f.vehicleTypeRef,
-                  hint: Text(uiTr(context, 'الكل')),
-                  items: [
-                    DropdownMenuItem<DocumentReference?>(
-                      value: null,
-                      child: Text(uiTr(context, 'الكل')),
-                    ),
-                    for (final t in _vehicleTypes)
-                      DropdownMenuItem<DocumentReference?>(
-                        value: t.reference,
-                        child: Text(
-                          t.naim.isNotEmpty ? t.naim : t.reference.id,
-                          overflow: TextOverflow.ellipsis,
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final preset in AdminDatePreset.values)
+                      if (preset != AdminDatePreset.custom)
+                        _chip(
+                          label: _dateLabel(context, preset),
+                          selected: f.datePreset == preset,
+                          onTap: () => _emit(
+                            f.copyWith(
+                              datePreset: preset,
+                              clearCustomDates: true,
+                            ),
+                          ),
+                          qaIdentifier: preset == AdminDatePreset.last30Days
+                              ? 'qa-filter-date-last30days'
+                              : null,
                         ),
+                    _chip(
+                      label: uiTr(context, 'مخصص'),
+                      selected: f.datePreset == AdminDatePreset.custom,
+                      onTap: () => _pickCustomRange(context),
+                    ),
+                  ],
+                ),
+                if (f.datePreset == AdminDatePreset.custom &&
+                    f.customStart != null &&
+                    f.customEnd != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      '${_fmtDay(f.customStart!)} → ${_fmtDay(f.customEnd!)}',
+                      style: theme.labelSmall,
+                    ),
+                  ),
+                const SizedBox(height: 10),
+              ],
+              if (cfg.showOrderLifecycle) ...[
+                Text(uiTr(context, 'حالة الحجز'), style: theme.labelMedium),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final s in AdminOrderLifecycleFilter.values)
+                      _chip(
+                        label: _orderStatusLabel(context, s),
+                        selected: f.orderLifecycle == s,
+                        onTap: () => _emit(f.copyWith(orderLifecycle: s)),
                       ),
                   ],
-                  onChanged: (v) => _emit(
-                    v == null
-                        ? f.copyWith(clearVehicleType: true)
-                        : f.copyWith(vehicleTypeRef: v),
+                ),
+                const SizedBox(height: 10),
+              ],
+              if (cfg.showDriverActivation) ...[
+                Text(uiTr(context, 'حالة التفعيل'), style: theme.labelMedium),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final s in AdminDriverActivationFilter.values)
+                      _chip(
+                        label: _driverActLabel(context, s),
+                        selected: f.driverActivation == s,
+                        onTap: () => _emit(f.copyWith(driverActivation: s)),
+                        qaIdentifier: s == AdminDriverActivationFilter.activated
+                            ? 'qa-filter-activation-activated'
+                            : null,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
+              if (cfg.showDriverReview) ...[
+                Text(uiTr(context, 'حالة المراجعة'), style: theme.labelMedium),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final s in AdminDriverReviewFilter.values)
+                      _chip(
+                        label: _driverReviewLabel(context, s),
+                        selected: f.driverReview == s,
+                        onTap: () => _emit(f.copyWith(driverReview: s)),
+                        qaIdentifier: s == AdminDriverReviewFilter.pendingReview
+                            ? 'qa-filter-review-pending'
+                            : null,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
+              if (cfg.showDriverDocuments) ...[
+                Text(uiTr(context, 'الوثائق'), style: theme.labelMedium),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final s in AdminDriverDocumentsFilter.values)
+                      _chip(
+                        label: _driverDocsLabel(context, s),
+                        selected: f.driverDocuments == s,
+                        onTap: () => _emit(f.copyWith(driverDocuments: s)),
+                        qaIdentifier: s == AdminDriverDocumentsFilter.missing
+                            ? 'qa-filter-documents-missing'
+                            : null,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
+              if (cfg.showDriverVehicleType && _vehicleTypes.isNotEmpty) ...[
+                Text(uiTr(context, 'تصنيف السيارة'), style: theme.labelMedium),
+                const SizedBox(height: 6),
+                Semantics(
+                  identifier: 'qa-filter-vehicle-type',
+                  label: 'qa-filter-vehicle-type',
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      isDense: true,
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<DocumentReference?>(
+                        isExpanded: true,
+                        value: f.vehicleTypeRef,
+                        hint: Text(uiTr(context, 'الكل')),
+                        items: [
+                          DropdownMenuItem<DocumentReference?>(
+                            value: null,
+                            child: Text(uiTr(context, 'الكل')),
+                          ),
+                          for (final t in _vehicleTypes)
+                            DropdownMenuItem<DocumentReference?>(
+                              value: t.reference,
+                              child: Text(
+                                t.naim.isNotEmpty ? t.naim : t.reference.id,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
+                        onChanged: (v) => _emit(
+                          v == null
+                              ? f.copyWith(clearVehicleType: true)
+                              : f.copyWith(vehicleTypeRef: v),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+              if (cfg.showSupportStatus) ...[
+                Text(uiTr(context, 'حالة التذكرة'), style: theme.labelMedium),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final s in AdminSupportStatusFilter.values)
+                      _chip(
+                        label: _supportLabel(context, s),
+                        selected: f.supportStatus == s,
+                        onTap: () => _emit(f.copyWith(supportStatus: s)),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
+              if (cfg.showCountry && !_lockCountry) ...[
+                _dropdownCountry(theme),
+                const SizedBox(height: 8),
+              ],
+              if (cfg.showRegion && f.effectiveCountryRef != null) ...[
+                _dropdownRegion(theme),
+                const SizedBox(height: 8),
+              ],
+              if (cfg.showCity &&
+                  (f.regionRef != null || f.effectiveCountryRef != null)) ...[
+                _dropdownCity(theme),
+                const SizedBox(height: 8),
+              ],
+              if (_loadingGeo) const LinearProgressIndicator(minHeight: 2),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: TextButton.icon(
+                  onPressed: f.hasActiveFilters
+                      ? () {
+                          _searchController.clear();
+                          setState(() {
+                            _regions = const [];
+                            _cities = const [];
+                          });
+                          _emit(f.reset());
+                        }
+                      : null,
+                  icon: const Icon(Icons.filter_alt_off_rounded, size: 18),
+                  label: Text(
+                    uiTr(context, 'إعادة ضبط الفلاتر'),
+                    softWrap: true,
                   ),
                 ),
               ),
-            ),
-            ),
-            const SizedBox(height: 10),
+            ],
           ],
-          if (cfg.showSupportStatus) ...[
-            Text(uiTr(context, 'حالة التذكرة'), style: theme.labelMedium),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final s in AdminSupportStatusFilter.values)
-                  _chip(
-                    label: _supportLabel(context, s),
-                    selected: f.supportStatus == s,
-                    onTap: () => _emit(f.copyWith(supportStatus: s)),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 10),
-          ],
-          if (cfg.showCountry && !_lockCountry) ...[
-            _dropdownCountry(theme),
-            const SizedBox(height: 8),
-          ],
-          if (cfg.showRegion && f.effectiveCountryRef != null) ...[
-            _dropdownRegion(theme),
-            const SizedBox(height: 8),
-          ],
-          if (cfg.showCity &&
-              (f.regionRef != null || f.effectiveCountryRef != null)) ...[
-            _dropdownCity(theme),
-            const SizedBox(height: 8),
-          ],
-          if (_loadingGeo)
-            const LinearProgressIndicator(minHeight: 2),
-          Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: TextButton.icon(
-              onPressed: f.hasActiveFilters
-                  ? () {
-                      _searchController.clear();
-                      setState(() {
-                        _regions = const [];
-                        _cities = const [];
-                      });
-                      _emit(f.reset());
-                    }
-                  : null,
-              icon: const Icon(Icons.filter_alt_off_rounded, size: 18),
-              label: Text(
-                uiTr(context, 'إعادة ضبط الفلاتر'),
-                softWrap: true,
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
-    ),
     );
   }
 
@@ -487,46 +513,46 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
       identifier: 'qa-filter-country',
       label: 'qa-filter-country',
       child: InputDecorator(
-      decoration: InputDecoration(
-        labelText: uiTr(context, 'الدولة'),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        isDense: true,
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<DocumentReference?>(
-          isExpanded: true,
-          value: widget.value.countryRef,
-          hint: Text(uiTr(context, 'كل الدول')),
-          items: [
-            DropdownMenuItem(
-              value: null,
-              child: Text(uiTr(context, 'كل الدول')),
-            ),
-            ..._countries.map(
-              (c) => DropdownMenuItem(
-                value: c.reference,
-                child: Text(c.naim.isNotEmpty ? c.naim : c.reference.id),
+        decoration: InputDecoration(
+          labelText: uiTr(context, 'الدولة'),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          isDense: true,
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<DocumentReference?>(
+            isExpanded: true,
+            value: widget.value.countryRef,
+            hint: Text(uiTr(context, 'كل الدول')),
+            items: [
+              DropdownMenuItem(
+                value: null,
+                child: Text(uiTr(context, 'كل الدول')),
               ),
-            ),
-          ],
-          onChanged: (ref) {
-            _emit(
-              widget.value.copyWith(
-                countryRef: ref,
-                clearCountry: ref == null,
-                clearRegion: true,
-                clearCity: true,
+              ..._countries.map(
+                (c) => DropdownMenuItem(
+                  value: c.reference,
+                  child: Text(c.naim.isNotEmpty ? c.naim : c.reference.id),
+                ),
               ),
-            );
-            setState(() {
-              _regions = const [];
-              _cities = const [];
-            });
-            if (ref != null) _loadRegions(ref);
-          },
+            ],
+            onChanged: (ref) {
+              _emit(
+                widget.value.copyWith(
+                  countryRef: ref,
+                  clearCountry: ref == null,
+                  clearRegion: true,
+                  clearCity: true,
+                ),
+              );
+              setState(() {
+                _regions = const [];
+                _cities = const [];
+              });
+              if (ref != null) _loadRegions(ref);
+            },
+          ),
         ),
       ),
-    ),
     );
   }
 
@@ -613,13 +639,13 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
       context: context,
       firstDate: DateTime(now.year - 5),
       lastDate: DateTime(now.year + 1),
-      initialDateRange: widget.value.customStart != null &&
-              widget.value.customEnd != null
-          ? DateTimeRange(
-              start: widget.value.customStart!,
-              end: widget.value.customEnd!,
-            )
-          : null,
+      initialDateRange:
+          widget.value.customStart != null && widget.value.customEnd != null
+              ? DateTimeRange(
+                  start: widget.value.customStart!,
+                  end: widget.value.customEnd!,
+                )
+              : null,
     );
     if (picked == null) return;
     _emit(
@@ -683,8 +709,7 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
         AdminDriverActivationFilter.all => uiTr(context, 'الكل'),
         AdminDriverActivationFilter.activated => uiTr(context, 'مفعّل'),
         AdminDriverActivationFilter.deactivated => uiTr(context, 'غير مفعّل'),
-        AdminDriverActivationFilter.unknown =>
-          uiTr(context, 'حالة غير محددة'),
+        AdminDriverActivationFilter.unknown => uiTr(context, 'حالة غير محددة'),
       };
 
   String _driverReviewLabel(BuildContext context, AdminDriverReviewFilter s) =>
@@ -693,8 +718,7 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
         AdminDriverReviewFilter.pendingReview => uiTr(context, 'تحت المراجعة'),
         AdminDriverReviewFilter.approved => uiTr(context, 'معتمد'),
         AdminDriverReviewFilter.rejected => uiTr(context, 'مرفوض'),
-        AdminDriverReviewFilter.needsChanges =>
-          uiTr(context, 'يحتاج استكمال'),
+        AdminDriverReviewFilter.needsChanges => uiTr(context, 'يحتاج استكمال'),
         AdminDriverReviewFilter.inactive => uiTr(context, 'غير مفعّل'),
         AdminDriverReviewFilter.unknownLegacy =>
           uiTr(context, 'حالة غير محددة'),
@@ -703,10 +727,8 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
   String _driverDocsLabel(BuildContext context, AdminDriverDocumentsFilter s) =>
       switch (s) {
         AdminDriverDocumentsFilter.all => uiTr(context, 'الكل'),
-        AdminDriverDocumentsFilter.complete =>
-          uiTr(context, 'وثائق مكتملة'),
-        AdminDriverDocumentsFilter.missing =>
-          uiTr(context, 'وثائق ناقصة'),
+        AdminDriverDocumentsFilter.complete => uiTr(context, 'وثائق مكتملة'),
+        AdminDriverDocumentsFilter.missing => uiTr(context, 'وثائق ناقصة'),
         AdminDriverDocumentsFilter.needsReupload =>
           uiTr(context, 'تحتاج إعادة رفع'),
         AdminDriverDocumentsFilter.unknownLegacy =>
