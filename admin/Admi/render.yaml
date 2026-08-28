@@ -1,0 +1,14 @@
+# Render Blueprint — Admin static site (SPA).
+# Existing service: sync Redirects/Rewrites in Dashboard OR recreate from this file.
+# Critical: /* -> /index.html (Rewrite) or deep links return 404.
+services:
+  - type: web
+    name: touri-ban-admin
+    runtime: static
+    rootDir: admin/Admi
+    buildCommand: bash scripts/render_build.sh
+    staticPublishPath: build/web
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
