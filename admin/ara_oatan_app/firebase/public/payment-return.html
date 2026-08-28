@@ -1,108 +1,51 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <title>Touri Taxi</title>
-
-  <style>
-    :root {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      color: #123b3a;
-      background: #f7fbfa;
-    }
-
-    body {
-      min-height: 100vh;
-      margin: 0;
-      display: grid;
-      place-items: center;
-    }
-
-    main {
-      width: min(34rem, calc(100% - 3rem));
-      text-align: center;
-    }
-
-    .mark {
-      width: 3.5rem;
-      height: 3.5rem;
-      margin: 0 auto 1rem;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      color: white;
-      background: #008f86;
-      font-size: 1.75rem;
-    }
-
-    h1 {
-      font-size: 1.35rem;
-      margin-bottom: .75rem;
-    }
-
-    p {
-      line-height: 1.7;
-      color: #4b6664;
-    }
-
-    .open-app {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: .9rem 1.4rem;
-      border-radius: .8rem;
-      background: #008f86;
-      color: white;
-      text-decoration: none;
-      font-weight: 700;
-    }
-
-    @media (prefers-color-scheme: dark) {
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Touri Taxi payment</title>
+    <style>
       :root {
-        color: #e8f7f5;
-        background: #101918;
+        font-family: system-ui, sans-serif;
+        color: #123b3a;
+        background: #f7fbfa;
       }
-
-      p {
-        color: #b7cfcc;
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
       }
-    }
-  </style>
-</head>
-
-<body>
-  <main>
-    <div class="mark" aria-hidden="true">✓</div>
-
-    <h1>العودة إلى Touri Taxi</h1>
-
-    <p>
-      يتم التحقق من حالة الدفع بأمان داخل التطبيق.
-    </p>
-
-    <p>
-      إذا لم يفتح التطبيق تلقائيًا، اضغط الزر أدناه.
-    </p>
-
-    <a
-      id="openTouri"
-      class="open-app"
-      href="araoatanapp://araoatanapp.com">
-      فتح Touri Taxi
-    </a>
-  </main>
-
-  <script>
-    (() => {
-      const APP_URL = 'araoatanapp://araoatanapp.com';
-
-      // لا نحدد نجاح أو فشل الدفع هنا.
-      // التطبيق نفسه يعيد التحقق من الحالة عبر Payment API / Render.
-      window.setTimeout(() => {
-        window.location.href = APP_URL;
-      }, 500);
-    })();
-  </script>
-</body>
+      main {
+        width: min(34rem, calc(100% - 3rem));
+        text-align: center;
+      }
+      .mark {
+        width: 3.5rem;
+        height: 3.5rem;
+        margin: 0 auto 1rem;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: white;
+        background: #008f86;
+        font-size: 1.75rem;
+      }
+      h1 { font-size: 1.35rem; }
+      p { line-height: 1.6; color: #4b6664; }
+      @media (prefers-color-scheme: dark) {
+        :root { color: #e8f7f5; background: #101918; }
+        p { color: #b7cfcc; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="mark" aria-hidden="true">&#10003;</div>
+      <h1>Return to Touri Taxi</h1>
+      <p>The application is securely verifying the payment status.</p>
+      <p dir="rtl">ارجع إلى تطبيق توري تاكسي، وسيتم التحقق من حالة الدفع بأمان.</p>
+    </main>
+  </body>
 </html>

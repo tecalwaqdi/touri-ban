@@ -75,13 +75,6 @@ class CountriesRecord extends FirestoreRecord {
   String get currencySymbol => _currencySymbol ?? '';
   bool hasCurrencySymbol() => _currencySymbol != null;
 
-  // "driver_requirements" — Super Admin config map of document types.
-  Map<String, dynamic>? _driverRequirements;
-  Map<String, dynamic> get driverRequirements =>
-      _driverRequirements ?? const {};
-  bool hasDriverRequirements() =>
-      _driverRequirements != null && _driverRequirements!.isNotEmpty;
-
   // "geo_center" field.
   LatLng? _geoCenter;
   LatLng? get geoCenter => _geoCenter;
@@ -130,10 +123,6 @@ class CountriesRecord extends FirestoreRecord {
             snapshotData['currency_symbol'] ??
             snapshotData['currencySymbol'])
         ?.toString();
-    final rawReqs = snapshotData['driver_requirements'];
-    if (rawReqs is Map) {
-      _driverRequirements = Map<String, dynamic>.from(rawReqs);
-    }
     _geoCenter = snapshotData['geo_center'] as LatLng?;
     _boundsSw = snapshotData['bounds_sw'] as LatLng?;
     _boundsNe = snapshotData['bounds_ne'] as LatLng?;
@@ -201,7 +190,6 @@ Map<String, dynamic> createCountriesRecordData({
   Map<String, String>? namesI18n,
   String? currencyCode,
   String? currencySymbol,
-  Map<String, dynamic>? driverRequirements,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -224,7 +212,6 @@ Map<String, dynamic> createCountriesRecordData({
       'names_i18n': namesI18n,
       'currency_code': currencyCode,
       'CurrencySymbol': currencySymbol,
-      if (driverRequirements != null) 'driver_requirements': driverRequirements,
     }.withoutNulls,
   );
 

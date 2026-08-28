@@ -105,23 +105,6 @@ exports.acceptDriverOrder = functions
       : firestore.collection("order").doc(orderId);
     const userRef = firestore.collection("user").doc(uid);
 
-    // Defense-in-depth: Auth emailVerified + Firestore actev (checked in tx).
-    try {
-      const authUser = await admin.auth().getUser(uid);
-      if (authUser.emailVerified !== true) {
-        throw new functions.https.HttpsError(
-          "failed-precondition",
-          "email-not-verified",
-        );
-      }
-    } catch (e) {
-      if (e instanceof functions.https.HttpsError) throw e;
-      throw new functions.https.HttpsError(
-        "failed-precondition",
-        "driver-disabled",
-      );
-    }
-
     let walletRef;
     try {
       walletRef = await resolveWalletRef(firestore, userRef);
@@ -154,32 +137,6 @@ exports.acceptDriverOrder = functions
             'failed-precondition',
             'driver-disabled',
           );
-        }
-
-        // Block new trip accept when a critical document is expired.
-        try {
-          const docReview = require('./driver_document_review.js');
-          let countryReqs = null;
-          const countryRef = driver.Rev_dolh || driver.rev_dolh;
-          if (countryRef) {
-            const cSnap = await tx.get(countryRef);
-            if (cSnap.exists) {
-              countryReqs = (cSnap.data() || {}).driver_requirements || null;
-            }
-          }
-          const blocking = docReview.firstBlockingExpiredDocument(
-            driver,
-            countryReqs,
-            new Date(),
-          );
-          if (blocking) {
-            throw new functions.https.HttpsError(
-              'failed-precondition',
-              'document-expired',
-            );
-          }
-        } catch (e) {
-          if (e instanceof functions.https.HttpsError) throw e;
         }
 
         if (!orderSnap.exists) {

@@ -27,24 +27,15 @@ Future<Map<String, dynamic>> makeCloudCall(
     debugPrint(
       'Cloud call error!\n$callName '
       'Code: ${e.code}\n'
-      'Message: ${e.message}\n'
-      'Details: ${e.details}',
+      'Message: ${e.message}',
     );
     final msg = (e.message ?? '').trim();
-    final details = e.details is Map
-        ? Map<String, dynamic>.from(e.details as Map)
-        : <String, dynamic>{};
-    final reasonCode = details['reasonCode']?.toString();
-    final errorCode = reasonCode ??
-        _guessCallableErrorCode(msg, e.code) ??
-        (msg.isNotEmpty && msg != e.code ? msg : e.code);
+    final errorCode = _guessCallableErrorCode(msg, e.code) ?? e.code;
     return {
       'ok': false,
       'error': msg.isEmpty ? 'cloud_call_failed' : msg,
       'code': e.code,
       'errorCode': errorCode,
-      'reasonCode': reasonCode,
-      'details': details,
     };
   } catch (e) {
     debugPrint('Cloud call error:$callName $e');

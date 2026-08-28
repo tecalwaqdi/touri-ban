@@ -5,7 +5,6 @@ import '/backend/admin_country_geo_service.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
-import '/components/admin_driver_requirements_editor.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_image_picker.dart';
 import '/components/admin_super_admin_gate.dart';
@@ -227,15 +226,9 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
       );
 
       final countryRef = CountriesRecord.collection.doc();
-      final baseline =
-          AdminDriverRequirementsEditor.operationalAutoBaselineConfig();
       await AdminFirestoreDelete.setDocument(countryRef, {
         ...countryData,
         ...AdminCountryGeoService.geoFieldsForFirestore(geo),
-        'driver_requirements': baseline,
-        'driver_requirements_version': 1,
-        'driver_requirements_initialized_at': FieldValue.serverTimestamp(),
-        'driver_requirements_initialized_by': 'admin_create',
       });
 
       if (!mounted) return;

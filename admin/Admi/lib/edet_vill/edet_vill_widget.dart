@@ -221,13 +221,6 @@ class _EdetVillWidgetState extends State<EdetVillWidget> {
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
 
-    if (widget.idvill == null) {
-      return AdminMissingDocumentScaffold(
-        title: uiTr(context, 'تعديل المدينة'),
-        message: uiTr(context, 'تعذر تحميل البيانات. الرابط ناقص أو غير صالح.'),
-      );
-    }
-
     return StreamBuilder<VillagesRecord>(
       stream: VillagesRecord.getDocument(widget.idvill!),
       builder: (context, snapshot) {

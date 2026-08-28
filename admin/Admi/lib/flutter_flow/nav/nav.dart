@@ -594,15 +594,6 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => AdmindreverWidget(),
         ),
         FFRoute(
-          name: AdminDriverExpiryQueueWidget.routeName,
-          path: AdminDriverExpiryQueueWidget.routePath,
-          requireAuth: true,
-          builder: (context, params) => AdminDriverExpiryQueueWidget(
-            initialBucket: params.getParam('bucket', ParamType.String) ??
-                'expiring_soon',
-          ),
-        ),
-        FFRoute(
           name: AdminTourGuidesWidget.routeName,
           path: AdminTourGuidesWidget.routePath,
           requireAuth: true,

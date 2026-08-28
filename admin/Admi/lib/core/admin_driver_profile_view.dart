@@ -48,11 +48,6 @@ class AdminDriverDocumentSlot {
     required this.legacyUrl,
     required this.presence,
     required this.accessMode,
-    this.reviewStatus = '',
-    this.reviewReason = '',
-    this.uploadedAt,
-    this.expiryDate,
-    this.documentVersion = 1,
   });
 
   final AdminDriverDocKind kind;
@@ -61,35 +56,10 @@ class AdminDriverDocumentSlot {
   final String legacyUrl;
   final AdminDriverDocPresence presence;
   final AdminDriverDocAccessMode accessMode;
-  final String reviewStatus;
-  final String reviewReason;
-  final DateTime? uploadedAt;
-  final DateTime? expiryDate;
-  final int documentVersion;
 
   bool get canView =>
       accessMode == AdminDriverDocAccessMode.v2StoragePath ||
       accessMode == AdminDriverDocAccessMode.legacyUrl;
-
-  /// Callable [reviewDriverDocument] documentType (empty = not reviewable).
-  String get reviewDocumentType {
-    switch (kind) {
-      case AdminDriverDocKind.nationalId:
-        return 'nationalId';
-      case AdminDriverDocKind.vehicleRegistration:
-      case AdminDriverDocKind.vehiclePhoto:
-        return 'vehicleRegistration';
-      case AdminDriverDocKind.driverLicense:
-        return 'driverLicense';
-      case AdminDriverDocKind.profilePhoto:
-      case AdminDriverDocKind.tourGuidePermit:
-        return '';
-    }
-  }
-
-  bool get isReviewable =>
-      reviewDocumentType.isNotEmpty &&
-      presence != AdminDriverDocPresence.missing;
 }
 
 /// Vehicle summary from live SoT fields (type_car ref + denormalized text).
@@ -263,36 +233,9 @@ abstract final class AdminDriverProfileView {
       return '';
     }
 
-    Map<String, dynamic>? slotMap(String key) {
-      final v = user.snapshotData[key];
-      if (v is Map) return Map<String, dynamic>.from(v);
-      return null;
-    }
-
-    DateTime? asDate(dynamic v) {
-      if (v is DateTime) return v;
-      if (v == null) return null;
-      try {
-        final dyn = v as dynamic;
-        final dt = dyn.toDate();
-        if (dt is DateTime) return dt;
-      } catch (_) {}
-      if (v is String) return DateTime.tryParse(v.trim());
-      return null;
-    }
-
     AdminDriverDocumentSlot slot(AdminDriverDocKind kind, String key) {
-      final map = slotMap(key);
       final storagePath = storagePathOf(key);
       final mapUrl = urlFromMap(key);
-      final reviewStatus =
-          '${map?['reviewStatus'] ?? map?['status'] ?? ''}'.trim();
-      final reviewReason = '${map?['reviewReason'] ?? ''}'.trim();
-      final uploadedAt = asDate(map?['uploadedAt'] ?? map?['updatedAt']);
-      final expiryDate = asDate(map?['expiryDate'] ?? map?['expiry_date']);
-      final version = (map?['documentVersion'] as num?)?.toInt() ??
-          (map?['version'] as num?)?.toInt() ??
-          1;
       if (DriverRegistrationDocumentStatus.isStoragePath(storagePath)) {
         return AdminDriverDocumentSlot(
           kind: kind,
@@ -301,11 +244,6 @@ abstract final class AdminDriverProfileView {
           legacyUrl: mapUrl,
           presence: AdminDriverDocPresence.present,
           accessMode: AdminDriverDocAccessMode.v2StoragePath,
-          reviewStatus: reviewStatus,
-          reviewReason: reviewReason,
-          uploadedAt: uploadedAt,
-          expiryDate: expiryDate,
-          documentVersion: version,
         );
       }
       final legacy = mapUrl.isNotEmpty ? mapUrl : legacyUrlOf(key);
@@ -317,11 +255,6 @@ abstract final class AdminDriverProfileView {
           legacyUrl: legacy,
           presence: AdminDriverDocPresence.legacy,
           accessMode: AdminDriverDocAccessMode.legacyUrl,
-          reviewStatus: reviewStatus,
-          reviewReason: reviewReason,
-          uploadedAt: uploadedAt,
-          expiryDate: expiryDate,
-          documentVersion: version,
         );
       }
       return AdminDriverDocumentSlot(
@@ -331,11 +264,6 @@ abstract final class AdminDriverProfileView {
         legacyUrl: '',
         presence: AdminDriverDocPresence.missing,
         accessMode: AdminDriverDocAccessMode.missing,
-        reviewStatus: reviewStatus,
-        reviewReason: reviewReason,
-        uploadedAt: uploadedAt,
-        expiryDate: expiryDate,
-        documentVersion: version,
       );
     }
 

@@ -87,12 +87,6 @@ class AdminDriverCountersStrip extends StatelessWidget {
         stats.docsUnknownLegacy,
         theme.secondaryText
       ),
-      (
-        uiTr(context, 'تنتهي قريبًا'),
-        stats.expiringSoon,
-        Colors.orange.shade800
-      ),
-      (uiTr(context, 'منتهية'), stats.expired, theme.error),
     ];
 
     return Semantics(
@@ -105,8 +99,7 @@ class AdminDriverCountersStrip extends StatelessWidget {
           'needsChanges:${stats.needsChanges} unknown:${stats.unknownLegacy} '
           'docsComplete:${stats.docsComplete} docsMissing:${stats.docsMissing} '
           'docsNeedsReupload:${stats.docsNeedsReupload} '
-          'docsUnknownLegacy:${stats.docsUnknownLegacy} '
-          'expiringSoon:${stats.expiringSoon} expired:${stats.expired}',
+          'docsUnknownLegacy:${stats.docsUnknownLegacy}',
       child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,6 @@ import 'auth/firebase_auth/auth_util.dart';
 
 import 'backend/push_notifications/push_notifications_util.dart';
 import 'backend/firebase/firebase_config.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow/flutter_flow_util.dart';
 import '/core/driver_bootstrap.dart';
@@ -42,24 +40,6 @@ void main() async {
   usePathUrlStrategy();
 
   await initFirebase();
-
-  const enableFirebaseAppCheck = bool.fromEnvironment(
-    'ENABLE_FIREBASE_APP_CHECK',
-    defaultValue: kReleaseMode,
-  );
-  if (enableFirebaseAppCheck) {
-    if (kDebugMode) {
-      await FirebaseAppCheck.instance.activate(
-        androidProvider: AndroidProvider.debug,
-        appleProvider: AppleProvider.debug,
-      );
-    } else {
-      await FirebaseAppCheck.instance.activate(
-        androidProvider: AndroidProvider.playIntegrity,
-        appleProvider: AppleProvider.deviceCheck,
-      );
-    }
-  }
 
   // Never keep a registration guest session across app launches.
   await DriverBootstrap.clearAnonymousSession();

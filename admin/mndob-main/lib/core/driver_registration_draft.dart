@@ -34,14 +34,6 @@ class DriverRegistrationDraft {
     this.companyName = '',
     this.isTourGuide = false,
     this.guidePermitUrl = '',
-    this.vehicleTypePath = '',
-    this.vehicleTypeText = '',
-    this.licenseImageUrl = '',
-    this.licenseExpiryIso = '',
-    this.vehicleRegExpiryIso = '',
-    this.nationalIdExpiryIso = '',
-    this.insuranceExpiryIso = '',
-    this.insuranceImageUrl = '',
   });
 
   final int step;
@@ -74,14 +66,6 @@ class DriverRegistrationDraft {
   final String companyName;
   final bool isTourGuide;
   final String guidePermitUrl;
-  final String vehicleTypePath;
-  final String vehicleTypeText;
-  final String licenseImageUrl;
-  final String licenseExpiryIso;
-  final String vehicleRegExpiryIso;
-  final String nationalIdExpiryIso;
-  final String insuranceExpiryIso;
-  final String insuranceImageUrl;
 
   static const _guestKey = 'driver_registration_draft_v1_guest';
   static String _uidKey(String uid) => 'driver_registration_draft_v1_u_$uid';
@@ -99,12 +83,6 @@ class DriverRegistrationDraft {
       villagePath.trim().isNotEmpty ||
       companyPath.trim().isNotEmpty ||
       guidePermitUrl.trim().isNotEmpty ||
-      vehicleTypePath.trim().isNotEmpty ||
-      vehicleTypeText.trim().isNotEmpty ||
-      licenseImageUrl.trim().isNotEmpty ||
-      licenseExpiryIso.trim().isNotEmpty ||
-      vehicleRegExpiryIso.trim().isNotEmpty ||
-      insuranceImageUrl.trim().isNotEmpty ||
       isTourGuide ||
       affiliationType == 'company' ||
       (lat != null && lng != null);
@@ -138,14 +116,6 @@ class DriverRegistrationDraft {
         'companyName': companyName,
         'isTourGuide': isTourGuide,
         'guidePermitUrl': guidePermitUrl,
-        'vehicleTypePath': vehicleTypePath,
-        'vehicleTypeText': vehicleTypeText,
-        'licenseImageUrl': licenseImageUrl,
-        'licenseExpiryIso': licenseExpiryIso,
-        'vehicleRegExpiryIso': vehicleRegExpiryIso,
-        'nationalIdExpiryIso': nationalIdExpiryIso,
-        'insuranceExpiryIso': insuranceExpiryIso,
-        'insuranceImageUrl': insuranceImageUrl,
       };
 
   factory DriverRegistrationDraft.fromJson(Map<String, dynamic> json) {
@@ -181,14 +151,6 @@ class DriverRegistrationDraft {
       companyName: (json['companyName'] as String?) ?? '',
       isTourGuide: json['isTourGuide'] == true,
       guidePermitUrl: (json['guidePermitUrl'] as String?) ?? '',
-      vehicleTypePath: (json['vehicleTypePath'] as String?) ?? '',
-      vehicleTypeText: (json['vehicleTypeText'] as String?) ?? '',
-      licenseImageUrl: (json['licenseImageUrl'] as String?) ?? '',
-      licenseExpiryIso: (json['licenseExpiryIso'] as String?) ?? '',
-      vehicleRegExpiryIso: (json['vehicleRegExpiryIso'] as String?) ?? '',
-      nationalIdExpiryIso: (json['nationalIdExpiryIso'] as String?) ?? '',
-      insuranceExpiryIso: (json['insuranceExpiryIso'] as String?) ?? '',
-      insuranceImageUrl: (json['insuranceImageUrl'] as String?) ?? '',
     );
   }
 
@@ -221,20 +183,8 @@ class DriverRegistrationDraft {
     String? companyName,
     bool? isTourGuide,
     String? guidePermitUrl,
-    String? vehicleTypePath,
-    String? vehicleTypeText,
-    String? licenseImageUrl,
-    String? licenseExpiryIso,
-    String? vehicleRegExpiryIso,
-    String? nationalIdExpiryIso,
-    String? insuranceExpiryIso,
-    String? insuranceImageUrl,
     bool clearLocation = false,
     bool clearCompany = false,
-    bool clearLicenseExpiry = false,
-    bool clearVehicleRegExpiry = false,
-    bool clearNationalIdExpiry = false,
-    bool clearInsuranceExpiry = false,
   }) {
     return DriverRegistrationDraft(
       step: step ?? this.step,
@@ -265,22 +215,6 @@ class DriverRegistrationDraft {
       companyName: clearCompany ? '' : (companyName ?? this.companyName),
       isTourGuide: isTourGuide ?? this.isTourGuide,
       guidePermitUrl: guidePermitUrl ?? this.guidePermitUrl,
-      vehicleTypePath: vehicleTypePath ?? this.vehicleTypePath,
-      vehicleTypeText: vehicleTypeText ?? this.vehicleTypeText,
-      licenseImageUrl: licenseImageUrl ?? this.licenseImageUrl,
-      licenseExpiryIso: clearLicenseExpiry
-          ? ''
-          : (licenseExpiryIso ?? this.licenseExpiryIso),
-      vehicleRegExpiryIso: clearVehicleRegExpiry
-          ? ''
-          : (vehicleRegExpiryIso ?? this.vehicleRegExpiryIso),
-      nationalIdExpiryIso: clearNationalIdExpiry
-          ? ''
-          : (nationalIdExpiryIso ?? this.nationalIdExpiryIso),
-      insuranceExpiryIso: clearInsuranceExpiry
-          ? ''
-          : (insuranceExpiryIso ?? this.insuranceExpiryIso),
-      insuranceImageUrl: insuranceImageUrl ?? this.insuranceImageUrl,
     );
   }
 

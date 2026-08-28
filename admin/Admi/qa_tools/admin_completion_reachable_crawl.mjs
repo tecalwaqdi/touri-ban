@@ -154,14 +154,6 @@ function classify(route, state) {
     return route.needsParam ? 'PARTIAL' : 'FAIL';
   }
   if (state.errorish) return 'FAIL';
-  if (
-    route.needsParam &&
-    /تعذر تحميل|Unable to load|missing|رابط ناقص|link_off|تفعيل المندوب|تعديل /i.test(
-      state.sample,
-    )
-  ) {
-    return 'PARTIAL';
-  }
   if (state.blank) return 'FAIL';
   if (state.loading) return 'PARTIAL';
   if (route.needsParam && /تعذر تحميل|Unable to load|missing/i.test(state.sample)) {

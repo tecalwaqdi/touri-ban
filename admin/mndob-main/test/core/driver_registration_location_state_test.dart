@@ -29,7 +29,7 @@ void main() {
       expect(result.field, 'location');
       expect(
         result.errorKey,
-        'Please select your location to continue',
+        contains('Move the map to set your position'),
       );
     });
 

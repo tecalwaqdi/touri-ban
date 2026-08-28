@@ -106,9 +106,9 @@ abstract final class DriverAccountStateResolver {
     }
 
     final status = registrationStatus.trim().toLowerCase();
-    // Operational access requires admin activation flag (actev_mndob).
-    // registration_status==approved alone is not enough to open Home/ops.
-    final approved = actevMndob;
+    // Treat explicit approved status as activated even if actev_mndob lagged
+    // (self-activate race / older rules). Repair writes still set actev_mndob.
+    final approved = actevMndob || status == 'approved';
     final isDriver = ismndob || ismndom;
     final name = displayName.trim();
     final onTrip = hasActiveTrip == true || mndonNewacc;

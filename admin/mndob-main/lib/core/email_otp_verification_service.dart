@@ -20,10 +20,7 @@ abstract final class EmailOtpVerificationService {
   EmailOtpVerificationService._();
 
   /// Default product mode for this checkpoint.
-  /// Driver Registration V2 uses Firebase email-link only (see
-  /// [DriverEmailVerificationService]). OTP remains available for shared
-  /// helpers / tests when explicitly set.
-  static EmailVerificationMode mode = EmailVerificationMode.emailLink;
+  static EmailVerificationMode mode = EmailVerificationMode.emailOtp;
 
   static String? _challengeId;
   static DateTime? _lastSentAt;
@@ -58,17 +55,6 @@ abstract final class EmailOtpVerificationService {
     return FirebaseAuth.instance.currentUser?.emailVerified == true;
   }
 
-  /// Reload Auth user, verify email, then force a fresh ID token for callables.
-  static Future<bool> reloadRefreshTokenAndCheckVerified() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null || user.isAnonymous) return false;
-    await user.reload();
-    final refreshed = FirebaseAuth.instance.currentUser;
-    if (refreshed == null || refreshed.emailVerified != true) return false;
-    await refreshed.getIdToken(true);
-    return true;
-  }
-
   /// Request a new OTP. Returns challenge metadata (never the code).
   static Future<Map<String, dynamic>> requestOtp({String locale = 'en'}) async {
     final user = FirebaseAuth.instance.currentUser;
@@ -82,12 +68,6 @@ abstract final class EmailOtpVerificationService {
       return {'alreadyVerified': true, 'verified': true};
     }
     if (mode == EmailVerificationMode.emailLink) {
-      if (!canResend) {
-        throw FirebaseFunctionsException(
-          code: 'resource-exhausted',
-          message: 'RESEND_COOLDOWN',
-        );
-      }
       await user.sendEmailVerification();
       _lastSentAt = DateTime.now();
       return {'ok': true, 'mode': 'email_link'};

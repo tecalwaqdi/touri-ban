@@ -141,31 +141,31 @@ const COPY = {
   driver_needs_changes: {
     ar: {
       title: 'طلبك يحتاج إلى تعديل',
-      body: 'يرجى مراجعة الملاحظات وتحديث المستندات المطلوبة. {reason}',
+      body: 'يرجى تعديل البيانات المطلوبة وإعادة التقديم.',
     },
     en: {
       title: 'Your application needs changes',
-      body: 'Please review the notes and update the required documents. {reason}',
+      body: 'Please update the requested fields and resubmit.',
     },
     ru: {
       title: 'Нужны изменения в заявке',
-      body: 'Проверьте замечания и обновите документы. {reason}',
+      body: 'Обновите указанные поля и отправьте снова.',
     },
     ky: {
       title: 'Арызды оңдоо керек',
-      body: 'Эскертүүлөрдү карап, документтерди жаңыртыңыз. {reason}',
+      body: 'Талап кылынган талааларды жаңыртып, кайра жөнөтүңүз.',
     },
     fr: {
       title: 'Modifications requises',
-      body: 'Consultez les notes et mettez à jour les documents. {reason}',
+      body: 'Mettez à jour les champs demandés puis renvoyez.',
     },
     ur: {
       title: 'آپ کی درخواست میں ترمیم درکار ہے',
-      body: 'نوٹس دیکھیں اور مطلوبہ دستاویزات اپ ڈیٹ کریں۔ {reason}',
+      body: 'مطلوبہ خانے اپ ڈیٹ کر کے دوبارہ جمع کروائیں۔',
     },
     pt: {
       title: 'Alterações necessárias',
-      body: 'Veja as notas e atualize os documentos. {reason}',
+      body: 'Atualize os campos pedidos e reenvie.',
     },
   },
 };

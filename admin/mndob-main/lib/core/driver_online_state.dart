@@ -1,5 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-
 import '/app_state.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
@@ -9,8 +7,6 @@ import '/core/driver_legacy_field_compat.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_live_location_service.dart';
 import '/core/driver_offline_queue.dart';
-import '/core/driver_operational_eligibility_resolver.dart';
-import '/flutter_flow/flutter_flow_util.dart';
 
 /// Single definition of "driver is online and can receive work".
 abstract final class DriverOnlineState {
@@ -23,12 +19,8 @@ abstract final class DriverOnlineState {
 
   static bool get isMarkedOnline => DriverLegacyFieldCompat.isOnline(lifecycle);
 
-  /// Driver can see/accept new orders when approved + email verified + online.
+  /// Driver can see/accept new orders when approved + online + not busy.
   static bool get canReceiveOrders {
-    final emailOk =
-        FirebaseAuth.instance.currentUser?.emailVerified == true;
-    if (!emailOk) return false;
-    if (currentUserDocument?.actevMndob != true) return false;
     final life = lifecycle;
     if (!DriverLegacyFieldCompat.isOperationallyApproved(life)) return false;
     if (life != DriverLifecycle.activeOnline) return false;
@@ -101,57 +93,6 @@ abstract final class DriverOnlineState {
             'Your account needs admin approval before going online.',
       );
     }
-
-    // Email link verification remains SoT for Auth; block ops if stale.
-    final firebaseUser = FirebaseAuth.instance.currentUser;
-    if (firebaseUser != null && !firebaseUser.emailVerified) {
-      try {
-        await firebaseUser.reload();
-      } catch (_) {}
-      if (FirebaseAuth.instance.currentUser?.emailVerified != true) {
-        return const DriverOnlineGateResult(
-          ok: false,
-          code: 'EMAIL_NOT_VERIFIED',
-          message: 'Verify your email before going online.',
-        );
-      }
-    }
-
-    // Critical document expiry / replacement pending (active trip exempt).
-    try {
-      final doc = currentUserDocument;
-      if (doc != null) {
-        final reqs =
-            await DriverDocumentRequirementResolver.resolveForCountryRef(
-          doc.revDolh,
-        );
-        final onTrip = valueOrDefault<bool>(doc.mndonNewacc, false);
-        final elig =
-            DriverOperationalEligibilityResolver.evaluateFromUserRecord(
-          emailVerified: true,
-          doc: doc,
-          requirements: reqs,
-          onActiveTrip: onTrip,
-        );
-        if (!elig.allowed && elig.reasonCode == 'document_expired') {
-          return DriverOnlineGateResult(
-            ok: false,
-            code: 'DOCUMENT_EXPIRED',
-            message:
-                'A required document is expired. Update it to go online.',
-          );
-        }
-        if (!elig.allowed &&
-            elig.reasonCode == 'document_needs_replacement') {
-          return const DriverOnlineGateResult(
-            ok: false,
-            code: 'DOCUMENT_NEEDS_REPLACEMENT',
-            message:
-                'A document needs replacement before going online.',
-          );
-        }
-      }
-    } catch (_) {}
 
     try {
       await currentUserReference!.update(_onlinePatch(loc));

@@ -364,7 +364,8 @@ abstract final class DriverLocationValidator {
   }) {
     if (!hasSelectedLocation) {
       return const DriverFieldValidation.invalid(
-        errorKey: 'Please select your location to continue',
+        errorKey:
+            'Move the map to set your position. You can place the pin manually if GPS is unavailable.',
         field: 'location',
       );
     }
@@ -488,14 +489,8 @@ abstract final class DriverRegistrationCompletenessValidator {
       missing.add('Seats');
     }
     if ((color ?? '').trim().isEmpty) missing.add('Color');
-    // Documents required for submit (aligned with submitDriverApplicationV2).
-    if (!_hasHttpsAsset(photoUrl)) missing.add('Profile photo');
-    if (!_hasHttpsAsset(idImageUrl)) missing.add('National ID');
+    // Documents are collected optionally at submission time. They are
+    // required by the admin approval gate, not by initial registration.
     return missing;
-  }
-
-  static bool _hasHttpsAsset(String url) {
-    final t = url.trim();
-    return t.startsWith('https://');
   }
 }
