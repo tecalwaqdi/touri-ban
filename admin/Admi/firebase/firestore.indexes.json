@@ -535,6 +535,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "ALLNOW",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_order",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "Rev_dolh",
           "order": "ASCENDING"
         },
