@@ -563,6 +563,125 @@ describe('Customer profile self-update', () => {
   });
 });
 
+describe("Driver registration V2 draft write", () => {
+  const uid = "driver-reg-v2-new";
+  const existingUid = "driver-reg-v2-existing";
+
+  function driverDraftCreatePayload(db, targetUid) {
+    const country = doc(db, "countries", "sa");
+    return {
+      email: "driver@test.com",
+      display_name: "Driver Test",
+      uid: targetUid,
+      ismndom: true,
+      actev_mndob: false,
+      ngl: false,
+      registration_flow_version: 2,
+      registration_status: "draft",
+      submission_status: "draft",
+      account_status: "inactive",
+      operational_status: "offline",
+      auto_activated: false,
+      Rev_dolh: country,
+      mndob_vill: doc(db, "villages", "v1"),
+      mndob_type_car: doc(db, "type_car", "t1"),
+      photo_url: "https://example.com/p.jpg",
+      img_id_rksh: "https://example.com/id.jpg",
+      img_id_car: "https://example.com/car.jpg",
+      doc_driver_license: {
+        url: "https://example.com/lic.jpg",
+        storagePath: `users/${targetUid}/lic`,
+        status: "pending_review",
+      },
+      doc_national_id: {
+        url: "https://example.com/nid.jpg",
+        storagePath: `users/${targetUid}/nid`,
+        status: "pending_review",
+      },
+      doc_vehicle_registration: {
+        url: "https://example.com/vr.jpg",
+        storagePath: `users/${targetUid}/vr`,
+        status: "pending_review",
+      },
+      loceshnMndobNow: new GeoPoint(24.7136, 46.6753),
+    };
+  }
+
+  function pendingClaimPatch() {
+    return {
+      ismndob: true,
+      ismndom: true,
+      actev_mndob: false,
+      ngl: false,
+      registration_flow_version: 2,
+      registration_status: "draft",
+      submission_status: "draft",
+      account_status: "inactive",
+      operational_status: "offline",
+      auto_activated: false,
+    };
+  }
+
+  beforeEach(async () => {
+    const seedDb = testEnv.authenticatedContext("seed").firestore();
+    await seed({
+      "countries/sa": {acctev: true, naim: "Saudi"},
+      [`user/${existingUid}`]: {
+        actev_user: true,
+        email: "existing@test.com",
+        display_name: "Existing",
+        uid: existingUid,
+      },
+    });
+  });
+
+  it("NEW_DRIVER_CREATE_WITHOUT_ISMNDOB_ALLOW = PASS", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      setDoc(doc(db, "user", uid), driverDraftCreatePayload(db, uid)),
+    );
+  });
+
+  it("NEW_DRIVER_PENDING_CLAIM_ALLOW = PASS", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await setDoc(doc(db, "user", uid), driverDraftCreatePayload(db, uid));
+    await assertSucceeds(
+      updateDoc(doc(db, "user", uid), pendingClaimPatch()),
+    );
+  });
+
+  it("NEW_DRIVER_CREATE_WITH_ISMNDOB_DENY = PASS", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertFails(
+      setDoc(doc(db, "user", uid), {
+        ...driverDraftCreatePayload(db, uid),
+        ismndob: true,
+      }),
+    );
+  });
+
+  it("EXISTING_USER_MERGE_DRAFT_THEN_CLAIM_ALLOW = PASS", async () => {
+    const db = testEnv.authenticatedContext(existingUid).firestore();
+    const payload = driverDraftCreatePayload(db, existingUid);
+    await assertSucceeds(
+      setDoc(doc(db, "user", existingUid), payload, {merge: true}),
+    );
+    await assertSucceeds(
+      updateDoc(doc(db, "user", existingUid), pendingClaimPatch()),
+    );
+  });
+
+  it("EXISTING_USER_SELF_APPROVE_DENY = PASS", async () => {
+    const db = testEnv.authenticatedContext(existingUid).firestore();
+    await assertFails(
+      updateDoc(doc(db, "user", existingUid), {
+        actev_mndob: true,
+        registration_status: "approved",
+      }),
+    );
+  });
+});
+
 /**
  * Exact payload mirror of touryCreateCashBookingViaFirestoreFallback
  * + _touryConvertUnpaidOrderToCash (installed customer app).

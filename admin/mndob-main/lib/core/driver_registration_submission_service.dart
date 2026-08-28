@@ -3,6 +3,9 @@ import 'package:flutter/foundation.dart';
 
 import '/backend/backend.dart';
 import '/backend/cloud_functions/cloud_functions.dart';
+import '/core/driver_registration_submission_error_mapper.dart';
+import '/core/driver_country_resolver.dart';
+import '/core/driver_operational_eligibility_resolver.dart';
 import '/core/driver_registration_validators.dart';
 import '/core/tour_guide_status.dart';
 import '/core/toury_country_registry.dart';
@@ -100,6 +103,7 @@ class DriverRegistrationReviewModel {
     required this.photoUrl,
     required this.idImageUrl,
     required this.carImageUrl,
+    required this.licenseImageUrl,
     required this.location,
     required this.isResubmit,
     required this.uploadInFlight,
@@ -131,6 +135,7 @@ class DriverRegistrationReviewModel {
   final String photoUrl;
   final String idImageUrl;
   final String carImageUrl;
+  final String licenseImageUrl;
   final LatLng? location;
   final bool isResubmit;
   final bool uploadInFlight;
@@ -156,6 +161,8 @@ abstract final class DriverRegistrationCompletenessService {
         final user = FirebaseAuth.instance.currentUser;
         if (user == null || user.isAnonymous || user.uid != m.uid) {
           reasons.add('Please sign in first.');
+        } else if (user.emailVerified != true) {
+          reasons.add('Please verify your email before submitting');
         }
       } catch (_) {
         // Unit tests / Firebase not initialized — treat as unsigned.
@@ -192,6 +199,8 @@ abstract final class DriverRegistrationCompletenessService {
         phoneIso2: iso,
       ),
     );
+    if (!_https(m.carImageUrl)) reasons.add('Vehicle registration');
+    if (!_https(m.licenseImageUrl)) reasons.add('Driver license');
     if (m.villageRef == null) {
       if (!reasons.contains('City')) reasons.add('City');
     }
@@ -202,6 +211,11 @@ abstract final class DriverRegistrationCompletenessService {
       reasons.add('Tour guide permit');
     }
     return reasons.toSet().toList();
+  }
+
+  static bool _https(String url) {
+    final t = url.trim();
+    return t.startsWith('https://');
   }
 
   static bool isComplete(DriverRegistrationReviewModel m) =>
@@ -236,6 +250,8 @@ class DriverSubmissionResult {
 /// Production: stays `pending_review` until admin/country agent approves.
 abstract final class DriverRegistrationSubmissionService {
   DriverRegistrationSubmissionService._();
+
+  static bool _submitInFlight = false;
 
   static String _newSubmissionId(String uid) =>
       'sub_${uid}_${DateTime.now().millisecondsSinceEpoch}';
@@ -278,10 +294,47 @@ abstract final class DriverRegistrationSubmissionService {
     required Map<String, dynamic> profileFields,
     String? clientSubmissionId,
   }) async {
+    if (_submitInFlight) {
+      return const DriverSubmissionResult.fail(
+        'Could not complete registration. Please try again.',
+      );
+    }
+    _submitInFlight = true;
+    try {
+      return await _submitInner(
+        model: model,
+        profileFields: profileFields,
+        clientSubmissionId: clientSubmissionId,
+      );
+    } finally {
+      _submitInFlight = false;
+    }
+  }
+
+  static Future<DriverSubmissionResult> _submitInner({
+    required DriverRegistrationReviewModel model,
+    required Map<String, dynamic> profileFields,
+    String? clientSubmissionId,
+  }) async {
     final blockers =
         DriverRegistrationCompletenessService.blockingReasons(model);
     if (blockers.isNotEmpty) {
       return DriverSubmissionResult.fail(blockers.first);
+    }
+
+    final canonicalCountry =
+        DriverCountryResolver.canonicalCountryRef(model.countryRef);
+    final countryReqs =
+        await DriverDocumentRequirementResolver.resolveForCountryRef(
+      canonicalCountry,
+    );
+    if (countryReqs.isEmpty) {
+      debugPrint(
+        '[DriverRegistration][country_requirements] empty after baseline fallback',
+      );
+      return const DriverSubmissionResult.fail(
+        'Country registration requirements could not be loaded. Please try again later or contact support.',
+      );
     }
 
     final auth = FirebaseAuth.instance.currentUser;
@@ -399,29 +452,22 @@ abstract final class DriverRegistrationSubmissionService {
         payload[TourGuideStatus.fieldStatus] = TourGuideStatus.none;
       }
 
-      // Firestore create rules forbid `ismndob` on first write. Create the
-      // profile without it, then claim pending-driver via update.
+      // Firestore create rules forbid `ismndob` on first write. Always write the
+      // draft profile without it, then claim pending-driver via update.
+      final writePayload = Map<String, dynamic>.from(payload)..remove('ismndob');
       if (!snap.exists) {
-        final createPayload = Map<String, dynamic>.from(payload)
-          ..remove('ismndob');
-        await ref.set(createPayload);
-        await _claimPendingDriver(ref);
+        await ref.set(writePayload);
       } else {
-        try {
-          await ref.set(payload, SetOptions(merge: true));
-        } on FirebaseException catch (e) {
-          if (e.code != 'permission-denied') rethrow;
-          final safe = Map<String, dynamic>.from(payload)..remove('ismndob');
-          await ref.set(safe, SetOptions(merge: true));
-          await _claimPendingDriver(ref);
-        }
+        await ref.set(writePayload, SetOptions(merge: true));
       }
 
-      final claimed = await repairPendingClaim(userRef: ref);
+      final claimed = await _claimPendingDriver(ref);
       if (!claimed) {
         debugPrint(
-          'DriverRegistrationSubmissionService: pending claim incomplete '
-          'after submit for ${model.uid}',
+          '[DriverRegistration][claim] pending claim failed uid=${model.uid}',
+        );
+        return const DriverSubmissionResult.fail(
+          'Could not complete registration. Please try again.',
         );
       }
 
@@ -431,16 +477,25 @@ abstract final class DriverRegistrationSubmissionService {
         'idempotencyKey': submissionId,
       });
       if (server['ok'] != true) {
-        final code =
-            server['code']?.toString() ?? server['error']?.toString() ?? '';
+        final details = DriverRegistrationSubmissionErrorMapper.detailsFrom(
+          server['details'],
+        );
+        final messageKey = DriverRegistrationSubmissionErrorMapper.messageKey(
+          reasonCode: server['reasonCode']?.toString() ?? details['reasonCode']?.toString(),
+          fallbackMessage: server['error']?.toString(),
+          cfCode: server['code']?.toString(),
+          missingDocuments: DriverRegistrationSubmissionErrorMapper.stringList(
+            details['missingDocuments'],
+          ),
+          missingExpiryTypes: DriverRegistrationSubmissionErrorMapper.stringList(
+            details['missingExpiryTypes'],
+          ),
+        );
         debugPrint(
-          'DriverRegistrationSubmissionService: submit V2 failed: $code',
+          'DriverRegistrationSubmissionService: submit V2 failed: '
+          '${server['reasonCode'] ?? details['reasonCode'] ?? server['code']}',
         );
-        return DriverSubmissionResult.fail(
-          code.isNotEmpty
-              ? code
-              : 'Could not complete registration. Please try again.',
-        );
+        return DriverSubmissionResult.fail(messageKey);
       }
 
       return DriverSubmissionResult.ok(
@@ -450,8 +505,27 @@ abstract final class DriverRegistrationSubmissionService {
             (server['reviewVersion'] as num?)?.toInt() ?? nextVersion,
         idempotentReplay: server['idempotent'] == true,
       );
-    } catch (e) {
-      debugPrint('DriverRegistrationSubmissionService.submit failed: $e');
+    } on FirebaseException catch (e, st) {
+      debugPrint(
+        '[DriverRegistration][firestore] code=${e.code} message=${e.message}',
+      );
+      debugPrint('$st');
+      if (e.code == 'permission-denied') {
+        return const DriverSubmissionResult.fail(
+          'Could not complete registration. Please try again.',
+        );
+      }
+      if (e.code == 'unavailable' || e.code == 'deadline-exceeded') {
+        return const DriverSubmissionResult.fail(
+          'Could not reach the service. Check your connection and try again.',
+        );
+      }
+      return const DriverSubmissionResult.fail(
+        'Could not complete registration. Please try again.',
+      );
+    } catch (e, st) {
+      debugPrint('[DriverRegistration][unexpected] $e');
+      debugPrint('$st');
       return const DriverSubmissionResult.fail(
         'Could not complete registration. Please try again.',
       );
@@ -459,7 +533,7 @@ abstract final class DriverRegistrationSubmissionService {
   }
 
   /// Claims ismndob as pending V2 draft — never self-approves.
-  static Future<void> _claimPendingDriver(DocumentReference ref) async {
+  static Future<bool> _claimPendingDriver(DocumentReference ref) async {
     try {
       await ref.update({
         'ismndob': true,
@@ -473,10 +547,16 @@ abstract final class DriverRegistrationSubmissionService {
         'operational_status': 'offline',
         'auto_activated': false,
       });
-    } catch (e) {
+      return true;
+    } on FirebaseException catch (e) {
       debugPrint(
-        'DriverRegistrationSubmissionService: pending claim skipped: $e',
+        '[DriverRegistration][claim] FirebaseException code=${e.code} '
+        'message=${e.message}',
       );
+      return false;
+    } catch (e) {
+      debugPrint('[DriverRegistration][claim] $e');
+      return false;
     }
   }
 }

@@ -189,8 +189,10 @@ service cloud.firestore {
     // (Same-transaction claim+create is NOT visible to rules — that hole
     // allowed parallel cash creates when active_order_id was empty.)
     function customerActiveOrderAllowsCreate(newOrderId) {
-      let u = get(/databases/$(database)/documents/user/$(request.auth.uid)).data;
-      return u.get('active_order_id', '') == newOrderId;
+      return signedIn()
+        && exists(/databases/$(database)/documents/user/$(request.auth.uid))
+        && get(/databases/$(database)/documents/user/$(request.auth.uid))
+          .data.get('active_order_id', '') == newOrderId;
     }
 
     function canClaimOrReleaseOwnActiveOrder(userId) {
@@ -225,35 +227,74 @@ service cloud.firestore {
         );
     }
 
-    function isValidClientCashOrderCreate() {
-      let d = request.resource.data;
+    function isValidClientCashOrderCreate(orderId) {
+      // Pass orderId explicitly — referencing match wildcard `document` from
+      // nested helpers causes Null value evaluation errors.
       return signedIn()
-        && d.USER == currentUserRef()
-        && d.PaymentMethod == 'Cash'
-        && d.halh_order == 'Cash'
-        && d.payment_status in ['cash_pending', 'pending_cash']
-        && d.cash_collection_status == 'uncollected'
-        && d.status_code == 'pending_driver'
-        && d.ActiveOrder == false
-        && d.created_by_client_cash_fallback == true
-        && d.pricing_authority == 'client_fallback_pending_cf'
-        && customerActiveOrderAllowsCreate(document)
-        && d.keys().hasAll([
-          'USER', 'total', 'amount_halalas', 'currency', 'carRev', 'Rev_dolh',
-          'PaymentMethod', 'payment_status', 'status_code', 'idempotency_key',
-          'created_by_client_cash_fallback', 'pricing_authority',
-          'pricing_quote_halalas'
+        && request.resource.data.USER == currentUserRef()
+        && request.resource.data.PaymentMethod == 'Cash'
+        && request.resource.data.halh_order == 'Cash'
+        && request.resource.data.payment_status in ['cash_pending', 'pending_cash']
+        && request.resource.data.cash_collection_status == 'uncollected'
+        && request.resource.data.status_code == 'pending_driver'
+        && request.resource.data.ActiveOrder == false
+        && request.resource.data.created_by_client_cash_fallback == true
+        && request.resource.data.pricing_authority == 'client_fallback_pending_cf'
+        && customerActiveOrderAllowsCreate(orderId)
+        && request.resource.data.total is number
+        && request.resource.data.total > 0
+        && request.resource.data.total < 1000000
+        && request.resource.data.amount_halalas is number
+        && request.resource.data.amount_halalas > 0
+        && request.resource.data.pricing_quote_halalas is number
+        && request.resource.data.amount_halalas
+          == request.resource.data.pricing_quote_halalas
+        && request.resource.data.currency is string
+        && request.resource.data.idempotency_key is string
+        && request.resource.data.idempotency_key.size() >= 8
+        && request.resource.data.idempotency_key.size() <= 96
+        && !('ngeniusOrderId' in request.resource.data)
+        && !('payment_session_id' in request.resource.data);
+    }
+
+    // Installed app Card→Cash: _touryConvertUnpaidOrderToCash merge fields only.
+    // TouryPaymentKeys.cash == 'TOURY_PAY_CASH'
+    function consumerCanSwitchUnpaidElectronicOrderToCash() {
+      let touched = request.resource.data.diff(resource.data).affectedKeys();
+      return signedIn()
+        && orderBelongsToConsumer(resource.data)
+        && orderUnassigned(resource.data)
+        && resource.data.get('status_code', '') in [
+          'payment_pending', 'pending_payment', 'awaiting_payment'
+        ]
+        && !(resource.data.get('payment_status', '') in [
+          'paid', 'captured', 'authorized', 'cash_collected', 'cash_pending',
+          'pending_cash'
         ])
-        && d.total is number && d.total > 0 && d.total < 1000000
-        && d.amount_halalas is number && d.amount_halalas > 0
-        && d.amount_halalas == d.pricing_quote_halalas
-        && d.currency is string
-        && d.idempotency_key is string
-        && d.idempotency_key.size() >= 8
-        && d.idempotency_key.size() <= 96
-        && !(d.payment_status in ['paid', 'captured', 'authorized'])
-        && !('ngeniusOrderId' in d)
-        && !('payment_session_id' in d);
+        && resource.data.get('payment_status', '') in [
+          'unpaid', 'pending', 'failed', 'cancelled', 'canceled', 'expired', ''
+        ]
+        && !(resource.data.get('status_code', '') in [
+          'driver_assigned', 'driver_arriving', 'driver_arrived',
+          'trip_started', 'trip_in_progress', 'completed', 'trip_completed',
+          'cancelled', 'canceled', 'cancelled_by_customer',
+          'cancelled_by_driver', 'cancelled_by_admin', 'expired'
+        ])
+        && touched.hasOnly([
+          'payment_method', 'payth', 'payment_status', 'status_code',
+          'ALLNOW', 'ElectronicPayment', 'last_payment_attempt_status',
+          'updated_at'
+        ])
+        && request.resource.data.payment_method == 'TOURY_PAY_CASH'
+        && request.resource.data.payth == 'TOURY_PAY_CASH'
+        && request.resource.data.payment_status == 'cash_pending'
+        && request.resource.data.status_code == 'pending_driver'
+        && request.resource.data.ALLNOW == true
+        && request.resource.data.ElectronicPayment == false
+        && request.resource.data.last_payment_attempt_status == 'switched_to_cash'
+        && request.resource.data.USER == resource.data.USER
+        && request.resource.data.total == resource.data.total
+        && request.resource.data.amount_halalas == resource.data.amount_halalas;
     }
 
     // Prefer consumer ownership first — avoids get()-heavy driver branches
@@ -608,7 +649,7 @@ service cloud.firestore {
     }
 
     // Driver app self-registration: non-driver → pending driver (cannot self-activate).
-    function canSelfRegisterAsPendingDriver(userId) {
+    function pendingDriverRegistrationCommonOk(userId) {
       let d = request.resource.data;
       let prev = resource.data;
       let companyOk =
@@ -624,7 +665,6 @@ service cloud.firestore {
         );
       return request.auth != null
         && request.auth.uid == userId
-        && d.get('ismndob', false) == true
         && d.get('ismndom', false) == true
         && d.get('actev_mndob', false) == false
         && prev.get('actev_mndob', false) == false
@@ -640,13 +680,28 @@ service cloud.firestore {
         && !('partner_mkan' in d)
         && companyOk
         && tourGuideSelfClaimOk()
-        // Registration V2: client may only keep draft/needs_changes (submit is CF).
         && (
           d.get('registration_flow_version', 0) != 2
           || d.get('registration_status', 'draft') in
             ['draft', 'needs_changes', 'changes_requested', '']
         )
-        && d.get('registration_status', '') != 'approved'
+        && d.get('registration_status', '') != 'approved';
+    }
+
+    // Registration V2 draft profile merge/create (no ismndob yet — claim is separate).
+    function canSelfRegisterPendingDriverDraftWrite(userId) {
+      let d = request.resource.data;
+      let prev = resource.data;
+      return pendingDriverRegistrationCommonOk(userId)
+        && d.get('ismndob', false) == false
+        && prev.get('ismndob', false) == false;
+    }
+
+    function canSelfRegisterAsPendingDriver(userId) {
+      let d = request.resource.data;
+      let prev = resource.data;
+      return pendingDriverRegistrationCommonOk(userId)
+        && d.get('ismndob', false) == true
         // First claim OR refresh of an already-pending (inactive) driver profile.
         && (prev.get('ismndob', false) == false
             || prev.get('ismndob', false) == true);
@@ -845,10 +900,14 @@ service cloud.firestore {
       allow update: if signedIn() && userSelfFieldsOnly(document);
       allow update: if signedIn() && canDriverSetOnlineOffline(document);
       allow update: if signedIn() && canClaimOrReleaseOwnActiveOrder(document);
+      // Driver Registration V2 pending claim FIRST — must not sit behind the panel
+      // OR-chain (expression budget exhaustion denied ismndob claim updates).
+      // rules-rev: driver-pending-claim-standalone-2026-08-28
+      allow update: if signedIn() && canSelfRegisterPendingDriverDraftWrite(document);
+      allow update: if signedIn() && canSelfRegisterAsPendingDriver(document);
       allow update: if request.auth != null && (
         isSuperAdmin()
         || panelCanClearActiveOrderLock(document)
-        || canSelfRegisterAsPendingDriver(document)
         || panelCanManageTourGuide()
         || panelCanReviewDriver()
         || countryAdminCanUpdateUser()
@@ -921,7 +980,7 @@ service cloud.firestore {
       // Prefer createCashBooking CF; when CF Admin IAM fails, constrained client
       // cash create is allowed (isValidClientCashOrderCreate + fallback flag).
       // rules-rev: cash-fallback-2026-08-10
-      allow create: if isValidClientCashOrderCreate();
+      allow create: if isValidClientCashOrderCreate(document);
       // Idempotent cash create uses a transaction get() on a new doc id.
       // Missing docs have resource == null — must allow that get, else the
       // whole create fails as permission-denied (looks like "no internet").
@@ -936,7 +995,11 @@ service cloud.firestore {
       // in canReadOrder make Firestore reject consumer/driver list queries.
       // rules-rev: order-list-simple-2026-08-01
       allow list: if signedIn() && canListOrder(resource.data);
-      // Consumer cancel FIRST as its own statement — must not share an OR-chain
+      // Card→Cash FIRST — narrow installed-app patch; keep off heavy OR-chains
+      // so expression budget is not burned by driver/panel helpers.
+      // rules-rev: consumer-card-to-cash-2026-08-27
+      allow update: if consumerCanSwitchUnpaidElectronicOrderToCash();
+      // Consumer cancel as its own statement — must not share an OR-chain
       // with driver/panel helpers that call get(user) (missing profile → deny all).
       // rules-rev: consumer-cancel-standalone-2026-08-21
       allow update: if consumerCanCancelOrder();
