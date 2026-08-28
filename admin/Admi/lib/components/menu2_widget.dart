@@ -124,6 +124,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
           (route: AdminALLhgZWidget.routeName, icon: Icons.bookmark_added_rounded),
           (route: AdminuserWidget.routeName, icon: Icons.groups_rounded),
           (route: AdmindreverWidget.routeName, icon: Icons.directions_car_rounded),
+          (route: AdmintypecarWidget.routeName, icon: Icons.airport_shuttle_rounded),
           (route: AdminSuportWidget.routeName, icon: Icons.support_agent_rounded),
         ],
       ),
