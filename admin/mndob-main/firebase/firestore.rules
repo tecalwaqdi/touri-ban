@@ -82,7 +82,11 @@ service cloud.firestore {
         || profileActivatedDriver();
     }
 
-    // Admin-approved drivers only: ismndob + actev_mndob.
+    // Admin-activated drivers: ismndob + actev_mndob.
+    // Operational gate matches published Driver (DriverAccountStateResolver):
+    // actev_mndob alone unlocks Home/online — do NOT deny open-order LIST when
+    // registration_status still lags as pending_review/submitted (legacy admin
+    // activate / V2 review mismatch). Hard-block only terminal negatives.
     function profileActivatedDriver() {
       return signedIn()
         && currentUserData().ismndob == true
@@ -96,8 +100,7 @@ service cloud.firestore {
         && currentUserData().get('isPartner', false) == false
         && currentUserData().get('is_partner', false) == false
         && !(currentUserData().get('registration_status', 'approved') in
-          ['rejected', 'suspended', 'blocked', 'pending_review', 'submitted',
-           'changes_requested']);
+          ['rejected', 'suspended', 'blocked']);
     }
 
     function claimCountryPath() {
