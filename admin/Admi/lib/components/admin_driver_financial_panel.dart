@@ -3,6 +3,7 @@ import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/backend/financial_accounting_loader.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/core/finance/financial_accounting_engine.dart';
 import '/core/finance/money_amount.dart';
 import '/core/finance/settlement_ledger_client.dart';
@@ -110,7 +111,9 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
       }
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AdminUserFacingErrors.from(context, e))),
+      );
     }
   }
 
@@ -205,7 +208,10 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
       future: _future,
       builder: (context, snap) {
         if (snap.hasError) {
-          return Text('${uiTr(context, 'تعذر تحميل المالية')}: ${snap.error}');
+          return Text(
+            '${uiTr(context, 'تعذر تحميل المالية')}: '
+            '${AdminUserFacingErrors.from(context, snap.error!)}',
+          );
         }
         if (!snap.hasData) {
           return const Padding(

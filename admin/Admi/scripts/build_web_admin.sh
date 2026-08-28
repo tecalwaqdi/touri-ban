@@ -61,3 +61,14 @@ cp -R "$HOSTING_DIR/." "$FIREBASE_HOSTING/"
 echo "==> Synced for Firebase: $FIREBASE_HOSTING"
 
 echo "==> Done. Deploy folder: $HOSTING_DIR"
+
+# Render / Netlify SPA fallback (PathUrlStrategy deep links)
+if [[ -f "$ROOT/web/_redirects" ]]; then
+  cp "$ROOT/web/_redirects" "$ROOT/build/web/_redirects"
+  if [[ -d "$HOSTING_DIR" ]]; then
+    find "$HOSTING_DIR" -name index.html -exec dirname {} \; | while read -r dir; do
+      cp "$ROOT/web/_redirects" "$dir/_redirects"
+    done
+  fi
+  echo "==> Copied web/_redirects for SPA hosting"
+fi

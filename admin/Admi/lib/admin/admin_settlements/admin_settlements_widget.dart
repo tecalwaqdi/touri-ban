@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '/backend/admin_role_service.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/core/finance/settlement_exposure.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -88,7 +89,10 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
             }(),
             builder: (context, snap) {
               if (snap.hasError) {
-                return Text('${snap.error}', softWrap: true);
+                return Text(
+                  AdminUserFacingErrors.from(context, snap.error!),
+                  softWrap: true,
+                );
               }
               if (!snap.hasData) {
                 return const Center(child: CircularProgressIndicator());

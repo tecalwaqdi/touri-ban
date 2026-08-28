@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/csv_export.dart';
 import '/core/finance/finance_controls_client.dart';
@@ -66,7 +67,9 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
       setState(() => _report = data);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AdminUserFacingErrors.from(context, e))),
+        );
       }
     } finally {
       if (mounted) setState(() => _busy = false);

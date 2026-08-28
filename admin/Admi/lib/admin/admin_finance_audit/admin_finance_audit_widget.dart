@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/finance_controls_client.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -57,7 +58,9 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
       setState(() => _events = (r['events'] as List?) ?? []);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AdminUserFacingErrors.from(context, e))),
+        );
       }
     }
   }

@@ -11,6 +11,7 @@ import '/backend/admin_stats_coordinator.dart';
 import '/backend/backend.dart';
 import '/backend/dashboard_stats_loader.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -361,12 +362,13 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
       });
     }).catchError((Object e) {
       if (!mounted || generation != _loadGeneration) return;
+      final friendly = AdminUserFacingErrors.from(context, e);
       setState(() {
-        _error = e;
+        _error = friendly;
         _inFlightScope = null;
         _loading = false;
         // Ensure we leave the infinite spinner branch even if no prior stats.
-        _stats ??= DashboardStats.empty(loadError: e.toString());
+        _stats ??= DashboardStats.empty(loadError: friendly);
         _spinnerGuardStartedAt = null;
       });
     });
