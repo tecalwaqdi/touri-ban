@@ -73,7 +73,7 @@ class TypeCarRecord extends FirestoreRecord {
   bool matchesCountry({
     DocumentReference? countryRef,
     String? iso2,
-    bool allowLegacySaudiFallback = true,
+    bool allowLegacySaudiFallback = false,
   }) {
     final iso = (iso2 ?? TouryCountryRegistry.normalizeIso(countryRef?.id) ?? '')
         .trim()
@@ -119,7 +119,10 @@ class TypeCarRecord extends FirestoreRecord {
     if (lang != 'ar' && _looksArabic(legacy)) {
       final en = map['en']?.trim();
       if (en != null && en.isNotEmpty) return en;
-      return '';
+      if (legacy.isNotEmpty) return legacy;
+      final code = codeCar.trim();
+      if (code.isNotEmpty) return code;
+      return reference.id;
     }
     return legacy;
   }

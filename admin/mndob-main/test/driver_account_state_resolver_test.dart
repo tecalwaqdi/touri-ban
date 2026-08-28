@@ -131,7 +131,7 @@ void main() {
       );
     });
 
-    test('registration_status approved without actev → activeOffline', () {
+    test('registration_status approved without actev → pendingApproval', () {
       expect(
         DriverAccountStateResolver.resolveFromLegacyFields(
           hasAuthUser: true,
@@ -143,7 +143,7 @@ void main() {
           displayName: 'Ali',
           hasCar: true,
         ),
-        DriverLifecycle.activeOffline,
+        DriverLifecycle.pendingApproval,
       );
     });
 

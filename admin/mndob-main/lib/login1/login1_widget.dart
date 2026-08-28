@@ -8,6 +8,8 @@ import '/core/driver_auth_errors.dart';
 import '/core/driver_auth_validation_service.dart';
 import '/core/driver_bootstrap.dart';
 import '/core/driver_dialogs.dart';
+import '/core/driver_lifecycle_state.dart';
+import '/core/driver_session_router.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_language_selector.dart';
@@ -162,7 +164,22 @@ class _Login1WidgetState extends State<Login1Widget> {
       }
 
       if (!mounted) return;
-      context.go('/');
+
+      final life = doc == null
+          ? DriverLifecycle.loading
+          : DriverLifecycleState.resolveFromDocument(doc);
+      final dest = DriverSessionRouter.namedRouteForLifecycle(life);
+      if (DriverSessionRouter.opensPendingShell(life)) {
+        context.goNamed(DriverPendingApprovalWidget.routeName);
+      } else if (DriverSessionRouter.opensHomeShell(life)) {
+        context.go('/');
+      } else if (DriverSessionRouter.opensRegistration(life)) {
+        context.goNamed(RegdreverWidget.routeName);
+      } else if (dest == DriverSessionRouter.loginRoute) {
+        context.go('/');
+      } else {
+        context.go('/');
+      }
     } on FirebaseAuthException catch (e) {
       DriverAuthErrors.logSafely(e);
       if (mounted) {
@@ -364,37 +381,29 @@ class _Login1WidgetState extends State<Login1Widget> {
               icon: Icons.login_rounded,
               onPressed: _handleSignIn,
             ),
-            const SizedBox(height: DsSpacing.lg),
-            RichText(
+            const SizedBox(height: DsSpacing.md),
+            Text(
+              FFLocalizations.of(context).getText(
+                'q6t722yp' /* Do you want to register? */,
+              ),
               textAlign: TextAlign.center,
-              textScaler: MediaQuery.of(context).textScaler,
-              text: TextSpan(
-                style: typography.bodyMedium.copyWith(
-                  color: colors.textSecondary,
-                ),
-                children: [
-                  TextSpan(
-                    text: FFLocalizations.of(context).getText(
-                      'q6t722yp' /* Do you want to register? */,
-                    ),
-                  ),
-                  TextSpan(
-                    text: FFLocalizations.of(context).getText(
-                      'h1ev5ljd' /*  Register now  */,
-                    ),
-                    style: typography.bodyMedium.copyWith(
-                      color: colors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        context.pushNamed(RegdreverWidget.routeName);
-                      },
-                  ),
-                ],
+              style: typography.bodyMedium.copyWith(
+                color: colors.textSecondary,
               ),
             ),
             const SizedBox(height: DsSpacing.sm),
+            DsButton.outlined(
+              label: FFLocalizations.of(context).getText(
+                'h1ev5ljd' /*  Register now  */,
+              ).trim(),
+              expanded: true,
+              size: DsButtonSize.lg,
+              icon: Icons.person_add_alt_1_rounded,
+              onPressed: () {
+                context.pushNamed(RegdreverWidget.routeName);
+              },
+            ),
+            const SizedBox(height: DsSpacing.lg),
             RichText(
               textAlign: TextAlign.center,
               textScaler: MediaQuery.of(context).textScaler,

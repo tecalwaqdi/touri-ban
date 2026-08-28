@@ -100,6 +100,45 @@ class _DriverPendingApprovalWidgetState
     }
   }
 
+  Future<void> _tryEnterApp() async {
+    if (currentUserReference == null) return;
+    setState(() => _refreshing = true);
+    try {
+      await currentUserReference!.get(const GetOptions(source: Source.server));
+      final doc = await UserRecord.getDocumentOnce(currentUserReference!);
+      currentUserDocument = doc;
+      if (!mounted) return;
+      final life = DriverLifecycleState.resolveFromDocument(doc);
+      if (life == DriverLifecycle.activeOffline ||
+          life == DriverLifecycle.activeOnline ||
+          life == DriverLifecycle.onTrip) {
+        context.go('/');
+        return;
+      }
+      await DriverDialogs.showAlert(
+        context,
+        title: driverTr(context, 'Account under review'),
+        message: driverTr(
+          context,
+          'Your application is still under review. You will be able to enter after admin approval.',
+        ),
+        type: DriverMessageType.info,
+      );
+    } catch (e) {
+      debugPrint('DriverPendingApproval tryEnter failed: $e');
+      if (mounted) {
+        await DriverDialogs.showAlert(
+          context,
+          title: driverTr(context, 'Error'),
+          message: driverTr(context, 'No internet connection.'),
+          type: DriverMessageType.error,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _refreshing = false);
+    }
+  }
+
   Future<void> _openRegistration() async {
     if (!mounted) return;
     context.pushNamed(RegdreverWidget.routeName);
@@ -451,15 +490,46 @@ class _DriverPendingApprovalWidgetState
                             const DsDivider(),
                             _InfoRow(
                               label: driverTr(context, 'Submitted'),
-                              value: doc.createdTime != null
-                                  ? dateTimeFormat('yMMMd', doc.createdTime)
-                                  : '—',
+                              value: (() {
+                                final raw = doc.snapshotData['submittedAt'] ??
+                                    doc.snapshotData['submitted_at'] ??
+                                    doc.createdTime;
+                                DateTime? when;
+                                if (raw is Timestamp) {
+                                  when = raw.toDate();
+                                } else if (raw is DateTime) {
+                                  when = raw;
+                                }
+                                if (when == null) return '—';
+                                return dateTimeFormat('yMMMd', when);
+                              })(),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(height: DsSpacing.xl),
-                      if (pending || changes || rejected || suspended)
+                      if (pending) ...[
+                        DsButton.primary(
+                          label: _refreshing
+                              ? driverTr(context, 'Refreshing…')
+                              : driverTr(context, 'Enter app'),
+                          loading: _refreshing,
+                          enabled: !_refreshing,
+                          expanded: true,
+                          size: DsButtonSize.lg,
+                          icon: Icons.login_rounded,
+                          onPressed: _tryEnterApp,
+                        ),
+                        const SizedBox(height: DsSpacing.sm),
+                        DsButton.outlined(
+                          label: driverTr(context, 'Refresh status'),
+                          enabled: !_refreshing,
+                          expanded: true,
+                          size: DsButtonSize.lg,
+                          onPressed: _refresh,
+                        ),
+                      ],
+                      if ((changes || rejected || suspended) && !pending)
                         DsButton.primary(
                           label: _refreshing
                               ? driverTr(context, 'Refreshing…')
@@ -486,8 +556,14 @@ class _DriverPendingApprovalWidgetState
                         label: driverTr(context, 'Contact support'),
                         expanded: true,
                         size: DsButtonSize.lg,
-                        onPressed: () =>
-                            context.pushNamed(SuportWidget.routeName),
+                        icon: Icons.support_agent_rounded,
+                        onPressed: () async {
+                          // Do NOT route to SuportWidget — that screen is
+                          // "Confirm Transfer" (wallet), not customer support.
+                          await launchURL(
+                            'https://wa.me/message/LHEPTGBXGS7UJ1',
+                          );
+                        },
                       ),
                     ],
                   ),

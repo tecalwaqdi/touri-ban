@@ -130,11 +130,11 @@ class _Menu2WidgetState extends State<Menu2Widget> {
       (
         key: 'catalog',
         items: [
+          (route: AdmintypecarWidget.routeName, icon: Icons.airport_shuttle_rounded),
           (route: AdminDolWidget.routeName, icon: Icons.flag_rounded),
           (route: AdminregionWidget.routeName, icon: Icons.filter_hdr_rounded),
           (route: AdminvillWidget.routeName, icon: Icons.location_city_rounded),
           (route: AdminM3almWidget.routeName, icon: Icons.place_rounded),
-          (route: AdmintypecarWidget.routeName, icon: Icons.airport_shuttle_rounded),
         ],
       ),
       (

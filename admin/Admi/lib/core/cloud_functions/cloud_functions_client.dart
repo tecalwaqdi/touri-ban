@@ -108,6 +108,25 @@ class CloudFunctionsClient {
     });
   }
 
+  static Future<Map<String, dynamic>> reviewDriverDocument({
+    required String driverId,
+    required String documentType,
+    required String action,
+    String reason = '',
+    String? idempotencyKey,
+  }) async {
+    final result =
+        await _functions.httpsCallable('reviewDriverDocument').call({
+      'driverId': driverId,
+      'documentType': documentType,
+      'action': action,
+      if (reason.isNotEmpty) 'reason': reason,
+      'idempotencyKey': idempotencyKey ??
+          'doc_${driverId}_${documentType}_${action}_${DateTime.now().millisecondsSinceEpoch}',
+    });
+    return Map<String, dynamic>.from(result.data as Map);
+  }
+
   static Future<Map<String, dynamic>> reviewDriver({
     required String action,
     required String driverId,
@@ -149,6 +168,19 @@ class CloudFunctionsClient {
       'driverId': driverId,
       if (reason.isNotEmpty) 'reason': reason,
       if (section.isNotEmpty) 'section': section,
+    });
+    return Map<String, dynamic>.from(result.data as Map);
+  }
+
+  static Future<Map<String, dynamic>> ensureDriverCountryConfigs({
+    bool dryRun = false,
+    String? countryPath,
+  }) async {
+    final result =
+        await _functions.httpsCallable('adminEnsureDriverCountryConfigs').call({
+      'dryRun': dryRun,
+      if (countryPath != null && countryPath.isNotEmpty)
+        'countryPath': countryPath,
     });
     return Map<String, dynamic>.from(result.data as Map);
   }

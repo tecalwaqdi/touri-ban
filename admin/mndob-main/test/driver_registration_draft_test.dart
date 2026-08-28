@@ -84,6 +84,18 @@ void main() {
       expect(loaded, isNull);
     });
 
+    test('lat lng round-trip survives draft save', () async {
+      const draft = DriverRegistrationDraft(
+        step: 1,
+        lat: 42.8746,
+        lng: 74.5698,
+      );
+      await draft.save();
+      final loaded = await DriverRegistrationDraft.load();
+      expect(loaded?.lat, 42.8746);
+      expect(loaded?.lng, 74.5698);
+    });
+
     test('hasContinuableDraft', () async {
       expect(await DriverRegistrationDraft.hasContinuableDraft(), isFalse);
       await const DriverRegistrationDraft(step: 2, name: 'A').save();
@@ -104,6 +116,32 @@ void main() {
       final loaded = await DriverRegistrationDraft.load();
       expect(loaded?.regionPath, 'cities/r1');
       expect(loaded?.villageName, 'City1');
+    });
+
+    test('vehicle type path and text round-trip', () async {
+      const draft = DriverRegistrationDraft(
+        step: 2,
+        vehicleTypePath: 'type_car/kg_economy',
+        vehicleTypeText: 'Economy Car',
+      );
+      await draft.save();
+      final loaded = await DriverRegistrationDraft.load();
+      expect(loaded?.vehicleTypePath, 'type_car/kg_economy');
+      expect(loaded?.vehicleTypeText, 'Economy Car');
+    });
+
+    test('document expiry dates round-trip', () async {
+      const draft = DriverRegistrationDraft(
+        step: 2,
+        licenseExpiryIso: '2028-08-15T00:00:00.000',
+        vehicleRegExpiryIso: '2027-01-01T00:00:00.000',
+        licenseImageUrl: 'https://example.com/license.jpg',
+      );
+      await draft.save();
+      final loaded = await DriverRegistrationDraft.load();
+      expect(loaded?.licenseExpiryIso, '2028-08-15T00:00:00.000');
+      expect(loaded?.vehicleRegExpiryIso, '2027-01-01T00:00:00.000');
+      expect(loaded?.licenseImageUrl, 'https://example.com/license.jpg');
     });
   });
 }

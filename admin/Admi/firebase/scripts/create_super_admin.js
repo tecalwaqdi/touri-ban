@@ -103,6 +103,19 @@ async function credentialFromFirebaseTools() {
 async function initAdmin() {
   if (admin.apps.length) return;
 
+  // Prefer an explicit service-account JSON (works for Auth + Firestore).
+  const saPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  if (saPath && fs.existsSync(saPath)) {
+    const sa = JSON.parse(fs.readFileSync(saPath, "utf8"));
+    if (sa.client_email && sa.private_key) {
+      admin.initializeApp({
+        credential: admin.credential.cert(sa),
+        projectId: PROJECT_ID,
+      });
+      return;
+    }
+  }
+
   const tryAdc = async () => {
     admin.initializeApp({
       credential: admin.credential.applicationDefault(),
@@ -126,6 +139,7 @@ async function initAdmin() {
     }
   }
 
+  // firebase-tools OAuth works for Auth but NOT Firestore — last resort only.
   const cred = await credentialFromFirebaseTools();
   admin.initializeApp({
     credential: cred,

@@ -1,8 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '/backend/backend.dart';
+import '/core/driver_type_car_catalog.dart';
+import '/core/driver_country_resolver.dart';
 import '/core/driver_ux_widgets.dart';
 import '/core/toury_country_registry.dart';
 import '/design_system/design_system.dart';
@@ -11,8 +15,18 @@ import 'list_type_car_model.dart';
 export 'list_type_car_model.dart';
 
 class ListTypeCarWidget extends StatefulWidget {
-  const ListTypeCarWidget({super.key, required this.idNumber});
+  const ListTypeCarWidget({
+    super.key,
+    required this.idNumber,
+    this.countryRef,
+    this.countryIso2,
+    this.onSelected,
+  });
+
   final String idNumber;
+  final DocumentReference? countryRef;
+  final String? countryIso2;
+  final VoidCallback? onSelected;
 
   @override
   State<ListTypeCarWidget> createState() => _ListTypeCarWidgetState();
@@ -52,8 +66,6 @@ class _ListTypeCarWidgetState extends State<ListTypeCarWidget> {
   late ListTypeCarModel _model;
   Future<List<TypeCarRecord>>? _carsFuture;
 
-  bool _canSeeSmallCar() => widget.idNumber.trim().startsWith('10');
-
   @override
   void setState(VoidCallback callback) {
     super.setState(callback);
@@ -74,7 +86,17 @@ class _ListTypeCarWidgetState extends State<ListTypeCarWidget> {
   }
 
   Future<List<TypeCarRecord>> _loadCars() async {
-    return queryTypeCarRecordOnce(limit: 120);
+    debugPrint('TYPE_CAR_QUERY_START');
+    try {
+      final rows = await queryTypeCarRecordOnce(limit: 120);
+      debugPrint('TYPE_CAR_QUERY_COUNT=${rows.length}');
+      return rows;
+    } catch (e, st) {
+      final code = e is FirebaseException ? e.code : e.runtimeType.toString();
+      debugPrint('TYPE_CAR_QUERY_ERROR=$code');
+      debugPrint('$st');
+      rethrow;
+    }
   }
 
   void _retry() {
@@ -83,33 +105,101 @@ class _ListTypeCarWidgetState extends State<ListTypeCarWidget> {
     });
   }
 
-  List<TypeCarRecord> _filterCars(List<TypeCarRecord> raw) {
-    final allowSmallCar = _canSeeSmallCar();
-    final countryRef = FFAppState().dolh;
-    final iso = TouryCountryRegistry.normalizeIso(countryRef?.id);
+  DriverTypeCarCatalogResult _filterCars(List<TypeCarRecord> raw) {
+    final countryRef = widget.countryRef ?? FFAppState().dolh;
+    final iso = DriverCountryResolver.resolveRegistrationIso(
+      dolh: countryRef,
+      locationIso2: widget.countryIso2,
+    );
+    final scopedRef = DriverCountryResolver.resolveRegistrationCountry(
+      dolh: countryRef,
+      locationIso2: widget.countryIso2,
+    );
+    final result = DriverTypeCarCatalog.filter(
+      raw: raw,
+      idNumber: widget.idNumber,
+      countryRef: scopedRef,
+      countryIso2: iso,
+    );
+    debugPrint('TYPE_CAR_RAW_COUNT=${result.rawCount}');
+    debugPrint('TYPE_CAR_ACTIVE_COUNT=${result.activeCount}');
+    debugPrint('TYPE_CAR_COUNTRY_COUNT=${result.countryMatchedCount}');
+    debugPrint('TYPE_CAR_FILTERED_COUNT=${result.renderedCount}');
+    return result;
+  }
 
-    var list = raw.where((item) {
-      if (!item.isAvailableForListing) return false;
-      if (item.naim.trim() == 'سيارة صغيره' && !allowSmallCar) return false;
-      return true;
-    }).toList();
-
-    if (countryRef != null || (iso != null && iso.isNotEmpty)) {
-      final scoped = list
-          .where(
-            (item) => item.matchesCountry(
-              countryRef: countryRef,
-              iso2: iso,
-            ),
-          )
-          .toList();
-      if (scoped.isNotEmpty) {
-        list = scoped;
+  String _errorMessage(BuildContext context, Object error) {
+    if (error is FirebaseException) {
+      debugPrint(
+        'TYPE_CAR_QUERY_ERROR=${error.code} type=${error.runtimeType}',
+      );
+      switch (error.code) {
+        case 'permission-denied':
+          return driverTr(
+            context,
+            'Unable to load vehicle types due to permissions.',
+          );
+        case 'unavailable':
+          return driverTr(
+            context,
+            'Unable to reach the service. Check your connection.',
+          );
       }
+    } else {
+      debugPrint('TYPE_CAR_QUERY_ERROR=${error.runtimeType}');
     }
+    return driverTr(context, 'Something went wrong. Please try again.');
+  }
 
-    list.sort((a, b) => a.sr.compareTo(b.sr));
-    return list;
+  ({String title, String message}) _emptyCopy(
+    BuildContext context,
+    DriverTypeCarEmptyReason? reason,
+  ) {
+    switch (reason) {
+      case DriverTypeCarEmptyReason.noCatalogForCountry:
+        return (
+          title: driverTr(context, 'No vehicle types available'),
+          message: driverTr(
+            context,
+            'No vehicle types are configured for this country yet. Contact support or try again later.',
+          ),
+        );
+      case DriverTypeCarEmptyReason.noActiveTypes:
+        return (
+          title: driverTr(context, 'No vehicle types available'),
+          message: driverTr(
+            context,
+            'No active vehicle types are available right now.',
+          ),
+        );
+      case DriverTypeCarEmptyReason.network:
+        return (
+          title: driverTr(context, 'Error'),
+          message: driverTr(
+            context,
+            'Unable to load vehicle types. Check your connection and try again.',
+          ),
+        );
+      case DriverTypeCarEmptyReason.unknown:
+      case null:
+        return (
+          title: driverTr(context, 'No vehicle types available'),
+          message: driverTr(
+            context,
+            'No vehicle types are available right now.',
+          ),
+        );
+    }
+  }
+
+  void _selectCar(BuildContext context, TypeCarRecord car, String title) {
+    FFAppState().update(() {
+      FFAppState().MNDOBTYPECARrev = car.reference;
+      FFAppState().textTypeCar = title;
+    });
+    debugPrint('SELECTED_TYPE_PATH=${car.reference.path}');
+    widget.onSelected?.call();
+    Navigator.pop(context, car);
   }
 
   @override
@@ -157,24 +247,20 @@ class _ListTypeCarWidgetState extends State<ListTypeCarWidget> {
                 if (snapshot.hasError) {
                   return DriverEmptyState(
                     title: driverTr(context, 'Error'),
-                    message: driverTr(
-                      context,
-                      'Something went wrong. Please try again.',
-                    ),
+                    message: _errorMessage(context, snapshot.error!),
                     icon: Icons.error_outline,
                     actionLabel: driverTr(context, 'Retry'),
                     onAction: _retry,
                   );
                 }
 
-                final cars = _filterCars(snapshot.data ?? const []);
+                final filtered = _filterCars(snapshot.data ?? const []);
+                final cars = filtered.cars;
                 if (cars.isEmpty) {
+                  final copy = _emptyCopy(context, filtered.emptyReason);
                   return DriverEmptyState(
-                    title: driverTr(context, 'No vehicle types available'),
-                    message: driverTr(
-                      context,
-                      'No vehicle types for your location yet. Try again after enabling GPS.',
-                    ),
+                    title: copy.title,
+                    message: copy.message,
                     icon: Icons.directions_car_outlined,
                     actionLabel: driverTr(context, 'Retry'),
                     onAction: _retry,
@@ -192,13 +278,9 @@ class _ListTypeCarWidgetState extends State<ListTypeCarWidget> {
                   separatorBuilder: (_, __) => DsSpacing.gapXs,
                   itemBuilder: (context, index) {
                     final car = cars[index];
-                    final title = car.localizedName(lang);
+                    final title = DriverTypeCarCatalog.displayLabel(car, lang);
                     return DsCard(
-                      onTap: () {
-                        FFAppState().MNDOBTYPECARrev = car.reference;
-                        FFAppState().textTypeCar = title;
-                        Navigator.pop(context, car);
-                      },
+                      onTap: () => _selectCar(context, car, title),
                       padding: const EdgeInsets.symmetric(
                         horizontal: DsSpacing.sm,
                         vertical: DsSpacing.sm,

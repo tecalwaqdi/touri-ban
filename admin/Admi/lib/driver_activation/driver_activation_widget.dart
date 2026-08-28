@@ -204,8 +204,74 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
     }
   }
 
+  Future<List<String>?> _askFieldsToFix() async {
+    final selected = <String>{
+      AdminDriverReviewActions.fieldsToFixAllowlist.first,
+    };
+    final labels = <String, String>{
+      'personal_info': uiTr(context, 'البيانات الشخصية'),
+      'vehicle': uiTr(context, 'بيانات المركبة'),
+      'national_id': uiTr(context, 'الهوية'),
+      'vehicle_registration': uiTr(context, 'استمارة المركبة'),
+      'driver_license': uiTr(context, 'رخصة القيادة'),
+      'plate': uiTr(context, 'رقم اللوحة'),
+      'other': uiTr(context, 'أخرى'),
+    };
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setLocal) {
+            return AlertDialog(
+              title: Text(uiTr(context, 'الحقول المطلوب تعديلها')),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (final code
+                        in AdminDriverReviewActions.fieldsToFixAllowlist)
+                      CheckboxListTile(
+                        dense: true,
+                        value: selected.contains(code),
+                        title: Text(labels[code] ?? code),
+                        onChanged: (v) {
+                          setLocal(() {
+                            if (v == true) {
+                              selected.add(code);
+                            } else {
+                              selected.remove(code);
+                            }
+                          });
+                        },
+                      ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: Text(appTr(context, 'adm_cancel')),
+                ),
+                TextButton(
+                  onPressed: selected.isEmpty
+                      ? null
+                      : () => Navigator.pop(ctx, true),
+                  child: Text(appTr(context, 'adm_confirm')),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+    if (ok != true || selected.isEmpty) return null;
+    return selected.toList();
+  }
+
   Future<void> _requestChanges() async {
     if (_busy || widget.dre == null) return;
+    final fields = await _askFieldsToFix();
+    if (fields == null) return;
     final reason =
         await _askReason(appTr(context, 'adm_drv_request_changes_title'));
     if (reason == null) return;
@@ -219,7 +285,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
         driverId: widget.dre!.id,
         reason: reason,
         useRegistrationV2: isV2,
-        fieldsToFix: const ['other'],
+        fieldsToFix: fields,
         reviewVersion: (data['reviewVersion'] as num?)?.toInt(),
       );
       await AdminAuditLog.record(
@@ -227,7 +293,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
         targetType: 'user',
         targetId: widget.dre!.id,
         targetLabel: _model.naimTextController.text,
-        metadata: {'reason': reason},
+        metadata: {'reason': reason, 'fieldsToFix': fields},
       );
       if (!mounted) return;
       context.safePop();
@@ -271,6 +337,13 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
+
+    if (widget.dre == null) {
+      return AdminMissingDocumentScaffold(
+        title: uiTr(context, 'تفعيل المندوب'),
+        message: uiTr(context, 'تعذر تحميل بيانات المندوب'),
+      );
+    }
 
     return StreamBuilder<UserRecord>(
       stream: UserRecord.getDocument(widget.dre!),

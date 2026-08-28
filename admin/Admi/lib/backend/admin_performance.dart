@@ -100,9 +100,15 @@ class _CountEntry {
 }
 
 /// Reads cache first (instant UI), then refreshes from server in background.
-Future<QuerySnapshot> getQuerySnapshotFast(Query query) async {
+/// On Flutter web, unbounded `Source.cache` can hang forever — always budget it.
+Future<QuerySnapshot> getQuerySnapshotFast(
+  Query query, {
+  Duration cacheBudget = const Duration(milliseconds: 700),
+}) async {
   try {
-    final cached = await query.get(const GetOptions(source: Source.cache));
+    final cached = await query
+        .get(const GetOptions(source: Source.cache))
+        .timeout(cacheBudget);
     if (cached.docs.isNotEmpty) {
       // ignore: unawaited_futures
       query.get();
@@ -119,12 +125,15 @@ Future<List<T>> queryListCacheFirst<T>(
   RecordBuilder<T> recordBuilder, {
   Query Function(Query)? queryBuilder,
   int limit = kAdminPickerLimit,
+  Duration cacheBudget = const Duration(milliseconds: 700),
 }) async {
   final base = (queryBuilder ?? (q) => q)(collection);
   final query = limit > 0 ? base.limit(limit) : base;
 
   try {
-    final cached = await query.get(const GetOptions(source: Source.cache));
+    final cached = await query
+        .get(const GetOptions(source: Source.cache))
+        .timeout(cacheBudget);
     if (cached.docs.isNotEmpty) {
       final items = mapQuerySnapshot(cached, recordBuilder);
       // ignore: unawaited_futures

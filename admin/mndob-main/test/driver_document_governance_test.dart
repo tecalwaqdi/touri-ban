@@ -296,7 +296,7 @@ void main() {
   });
 
   group('DriverDocumentRequirementResolver', () {
-    test('missing config returns empty', () {
+    test('missing config returns empty from resolveFromCountryData', () {
       expect(
         DriverDocumentRequirementResolver.resolveFromCountryData(null),
         isEmpty,
@@ -305,6 +305,8 @@ void main() {
         DriverDocumentRequirementResolver.hasConfiguredRequirements({}),
         isFalse,
       );
+      // Submit path falls back to baseline when country doc has no enabled config.
+      expect(DriverDocumentRequirementsRepository.baseline, isNotEmpty);
     });
 
     test('enabled config merges', () {

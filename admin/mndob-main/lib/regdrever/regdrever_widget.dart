@@ -10,11 +10,16 @@ import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
 import '/components/driver_reg_location_cascade.dart';
-import '/components/driver_reg_location_map.dart';
+import '/components/driver_reg_location_section.dart';
 import '/components/list_type_car_widget.dart';
 import '/core/driver_auth_errors.dart';
 import '/core/driver_auth_validation_service.dart';
+import '/core/driver_country_resolver.dart';
 import '/core/driver_country_service.dart';
+import '/core/driver_market_readiness_resolver.dart';
+import '/core/driver_document_requirements.dart';
+import '/core/driver_operational_eligibility_resolver.dart';
+import '/core/driver_registration_preflight.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/core/driver_email_verification_service.dart';
@@ -33,6 +38,7 @@ import '/core/toury_country_registry.dart';
 import '/core/toury_maps_config.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/upload_data.dart';
+import '/index.dart';
 import 'regdrever_model.dart';
 export 'regdrever_model.dart';
 
@@ -80,6 +86,17 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
   String _companyName = '';
   bool _isTourGuide = false;
   String _guidePermitUrl = '';
+  bool _countryRequirementsResolved = false;
+  DriverMarketReadiness? _marketReadiness;
+  List<DriverDocumentRequirement> _countryDocReqs = const [];
+  DateTime? _licenseExpiry;
+  DateTime? _vehicleRegExpiry;
+  DateTime? _nationalIdExpiry;
+  DateTime? _insuranceExpiry;
+  String _insuranceUrl = '';
+  String _insuranceStoragePath = '';
+  SelectedFile? _pendingInsurance;
+  bool _uploadingInsurance = false;
   SelectedFile? _pendingPhoto;
   SelectedFile? _pendingIdDoc;
   SelectedFile? _pendingCarPhoto;
@@ -203,6 +220,18 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       _model.uploadedFileUrl_uploadData1k33 = draft.idImageUrl;
     }
     _carImageUrl = draft.carImageUrl;
+    if (draft.licenseImageUrl.isNotEmpty &&
+        !draft.licenseImageUrl.startsWith('pending://')) {
+      _licenseUrl = draft.licenseImageUrl;
+    }
+    if (draft.insuranceImageUrl.isNotEmpty &&
+        !draft.insuranceImageUrl.startsWith('pending://')) {
+      _insuranceUrl = draft.insuranceImageUrl;
+    }
+    _licenseExpiry = DateTime.tryParse(draft.licenseExpiryIso);
+    _vehicleRegExpiry = DateTime.tryParse(draft.vehicleRegExpiryIso);
+    _nationalIdExpiry = DateTime.tryParse(draft.nationalIdExpiryIso);
+    _insuranceExpiry = DateTime.tryParse(draft.insuranceExpiryIso);
     _affiliationType =
         draft.affiliationType == 'company' ? 'company' : 'independent';
     _companyPath = draft.companyPath;
@@ -224,6 +253,15 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     }
     if (draft.lat != null && draft.lng != null) {
       _regLocation = LatLng(draft.lat!, draft.lng!);
+    }
+    if (draft.vehicleTypePath.trim().isNotEmpty) {
+      final typeRef = DriverLocationCatalogService.refFromPath(
+        draft.vehicleTypePath,
+      );
+      if (typeRef != null) {
+        FFAppState().MNDOBTYPECARrev = typeRef;
+        FFAppState().textTypeCar = draft.vehicleTypeText;
+      }
     }
     // Restore country from draft ISO before region/city so cascade stays consistent.
     if (draft.countryIso.trim().isNotEmpty) {
@@ -381,6 +419,14 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       companyName: _companyName,
       isTourGuide: _isTourGuide,
       guidePermitUrl: _guidePermitUrl,
+      vehicleTypePath: FFAppState().MNDOBTYPECARrev?.path ?? '',
+      vehicleTypeText: FFAppState().textTypeCar,
+      licenseImageUrl: _licenseUrl,
+      licenseExpiryIso: _licenseExpiry?.toIso8601String() ?? '',
+      vehicleRegExpiryIso: _vehicleRegExpiry?.toIso8601String() ?? '',
+      nationalIdExpiryIso: _nationalIdExpiry?.toIso8601String() ?? '',
+      insuranceExpiryIso: _insuranceExpiry?.toIso8601String() ?? '',
+      insuranceImageUrl: _insuranceUrl,
     );
     await draft.save(forUid: forUid.isEmpty ? null : forUid);
   }
@@ -501,8 +547,69 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     return r.isValid ? null : t(r.errorKey!);
   }
 
+  Future<void> _applyRegLocation(LatLng loc) async {
+    final prevIso = _regLocation == null
+        ? null
+        : TouryCountryRegistry.isoFromCoordinates(_regLocation!);
+    setState(() {
+      _regLocation = loc;
+      final iso = TouryCountryRegistry.isoFromCoordinates(loc);
+      if (iso != null && iso != prevIso) {
+        cityController.text = '';
+        FFAppState().mdenh = null;
+        FFAppState().naimmdenh = '';
+        FFAppState().villmndoBREV = null;
+        FFAppState().textvill = '';
+      }
+    });
+    unawaited(_persistDraft());
+    final iso = TouryCountryRegistry.isoFromCoordinates(loc);
+    if (iso == null || iso == prevIso) return;
+    final countries = await DriverCountryService.listActiveCountries();
+    final match = countries
+        .where(
+          (c) => DriverCountryService.isoOfCountry(c) == iso,
+        )
+        .firstOrNull;
+    if (match != null) {
+      await DriverCountryService.applyCountry(FFAppState(), match);
+      FFAppState().textTypeCar = '';
+      FFAppState().MNDOBTYPECARrev = null;
+      FFAppState().mdenh = null;
+      FFAppState().naimmdenh = '';
+      FFAppState().villmndoBREV = null;
+      FFAppState().textvill = '';
+      _companyPath = '';
+      _companyName = '';
+      if (mounted) setState(() {});
+    }
+  }
+
+  Future<void> _promptSelectLocation() async {
+    final open = await DriverDialogs.showConfirm(
+      context,
+      title: t('Location'),
+      message: t('Please select your location to continue'),
+      confirmLabel: t('Select location'),
+      cancelLabel: t('Cancel'),
+      type: DriverMessageType.warning,
+    );
+    if (!open || !mounted) return;
+    final picked = await openDriverRegLocationPicker(
+      context,
+      initialLocation: _regLocation,
+      countryIso2: TouryCountryRegistry.normalizeIso(FFAppState().dolh?.id),
+    );
+    if (picked != null && mounted) {
+      await _applyRegLocation(picked);
+    }
+  }
+
   Future<void> _goTo(int step) async {
     setState(() => _step = step);
+    if (step >= 2) {
+      unawaited(_refreshCountryRequirements());
+    }
     await _persistDraft();
     await _pageController.animateToPage(
       step,
@@ -559,10 +666,25 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         hasCity: FFAppState().villmndoBREV != null,
       ).validate();
       if (!loc.isValid) {
+        if (loc.field == 'location') {
+          await _promptSelectLocation();
+        } else {
+          await DriverDialogs.showAlert(
+            context,
+            title: t('Location'),
+            message: t(loc.errorKey!),
+            type: DriverMessageType.warning,
+          );
+        }
+        return;
+      }
+      await _refreshCountryRequirements();
+      final marketMsg = _marketNotReadyMessage();
+      if (marketMsg != null) {
         await DriverDialogs.showAlert(
           context,
-          title: t('Location'),
-          message: t(loc.errorKey!),
+          title: t('Error'),
+          message: marketMsg,
           type: DriverMessageType.warning,
         );
         return;
@@ -581,6 +703,18 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
             FFAppState().MNDOBTYPECARrev != null,
       );
       if (!vehicle.isValid) {
+        if (vehicle.field == 'vehicleType') {
+          final openPicker = await DriverDialogs.showConfirm(
+            context,
+            title: t('Error'),
+            message: t('Please select vehicle type'),
+            confirmLabel: t('Select vehicle type'),
+            cancelLabel: t('Cancel'),
+            type: DriverMessageType.warning,
+          );
+          if (openPicker) await _pickVehicleType();
+          return;
+        }
         await DriverDialogs.showAlert(
           context,
           title: t('Error'),
@@ -607,6 +741,33 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
           ),
           type: DriverMessageType.warning,
         );
+        return;
+      }
+      await _refreshCountryRequirements();
+      final preflight = _buildPreflight();
+      final expiryBlockers = preflight.blockers
+          .where(
+            (b) =>
+                b.reasonCode == 'REQUIRED_EXPIRY_MISSING' ||
+                b.reasonCode == 'DOCUMENT_EXPIRED',
+          )
+          .toList();
+      if (expiryBlockers.isNotEmpty) {
+        final msg = expiryBlockers.length == 1
+            ? t(expiryBlockers.first.messageKey)
+            : '${t('Please complete the following')}:\n${expiryBlockers.map((b) => '• ${t(b.messageKey)}').join('\n')}';
+        final fix = await DriverDialogs.showConfirm(
+          context,
+          title: t('Error'),
+          message: msg,
+          confirmLabel: t('Add expiry date'),
+          cancelLabel: t('Cancel'),
+          type: DriverMessageType.warning,
+        );
+        if (fix && mounted) {
+          final type = expiryBlockers.first.documentType;
+          if (type.isNotEmpty) await _pickDocExpiry(type);
+        }
         return;
       }
       if (_isTourGuide &&
@@ -651,8 +812,14 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     await _goTo(1);
   }
 
-  bool _isUploadReady({required String url, SelectedFile? pending}) {
+  bool _isUploadReady({
+    required String url,
+    String storagePath = '',
+    SelectedFile? pending,
+  }) {
     if (pending != null && pending.bytes.isNotEmpty) return true;
+    final path = storagePath.trim();
+    if (path.startsWith('users/') && !path.contains('..')) return true;
     final trimmed = url.trim();
     if (trimmed.startsWith('pending://')) return false;
     return trimmed.startsWith('https://');
@@ -661,14 +828,24 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
   bool _hasRequiredDocumentUploads() {
     return _isUploadReady(
           url: _model.uploadedFileUrl_uploadDataLbm,
+          storagePath: _photoStoragePath,
           pending: _pendingPhoto,
         ) &&
         _isUploadReady(
           url: _model.uploadedFileUrl_uploadData1k33,
+          storagePath: _idStoragePath,
           pending: _pendingIdDoc,
         ) &&
-        _isUploadReady(url: _carImageUrl, pending: _pendingCarPhoto) &&
-        _isUploadReady(url: _licenseUrl, pending: _pendingLicense);
+        _isUploadReady(
+          url: _carImageUrl,
+          storagePath: _carStoragePath,
+          pending: _pendingCarPhoto,
+        ) &&
+        _isUploadReady(
+          url: _licenseUrl,
+          storagePath: _licenseStoragePath,
+          pending: _pendingLicense,
+        );
   }
 
   /// Email/password Auth must exist before location step (Firestore catalog).
@@ -771,6 +948,43 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       );
       return;
     }
+    final locationIso = _regLocation != null
+        ? TouryCountryRegistry.isoFromCoordinates(_regLocation!)
+        : null;
+    final resolvedCountry = DriverCountryResolver.resolveRegistrationCountry(
+      dolh: FFAppState().dolh,
+      locationIso2: locationIso,
+    );
+    if (resolvedCountry == null) {
+      await DriverDialogs.showAlert(
+        context,
+        title: t('Error'),
+        message: t('Please select a country'),
+        type: DriverMessageType.warning,
+      );
+      return;
+    }
+    await _refreshCountryRequirements();
+    final countryReqs =
+        await DriverDocumentRequirementResolver.resolveForCountryRef(
+      resolvedCountry,
+    );
+    if (countryReqs.isEmpty) {
+      await DriverDialogs.showAlert(
+        context,
+        title: t('Error'),
+        message: t(
+          'Country registration requirements could not be loaded. Please try again later or contact support.',
+        ),
+        type: DriverMessageType.warning,
+      );
+      return;
+    }
+    if (FFAppState().dolh?.path != resolvedCountry.path) {
+      FFAppState().update(() {
+        FFAppState().dolh = resolvedCountry;
+      });
+    }
     if (_affiliationType == 'company' && _companyPath.trim().isEmpty) {
       await DriverDialogs.showAlert(
         context,
@@ -796,10 +1010,39 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       );
       return;
     }
+    final preflightBeforeSubmit = _buildPreflight();
+    final expiryBeforeSubmit = preflightBeforeSubmit.blockers
+        .where(
+          (b) =>
+              b.reasonCode == 'REQUIRED_EXPIRY_MISSING' ||
+              b.reasonCode == 'DOCUMENT_EXPIRED',
+        )
+        .toList();
+    if (expiryBeforeSubmit.isNotEmpty) {
+      final msg = expiryBeforeSubmit.length == 1
+          ? t(expiryBeforeSubmit.first.messageKey)
+          : '${t('Please complete the following')}:\n${expiryBeforeSubmit.map((b) => '• ${t(b.messageKey)}').join('\n')}';
+      final fix = await DriverDialogs.showConfirm(
+        context,
+        title: t('Error'),
+        message: msg,
+        confirmLabel: t('Add expiry date'),
+        cancelLabel: t('Cancel'),
+        type: DriverMessageType.warning,
+      );
+      if (fix && mounted) {
+        await _goTo(2);
+        final type = expiryBeforeSubmit.first.documentType;
+        if (type.isNotEmpty) await _pickDocExpiry(type);
+      }
+      return;
+    }
     if (_uploadingPhoto ||
         _uploadingId ||
         _uploadingCar ||
-        _uploadingGuide) {
+        _uploadingGuide ||
+        _uploadingLicense ||
+        _uploadingInsurance) {
       await DriverDialogs.showAlert(
         context,
         title: t('Please wait'),
@@ -810,7 +1053,7 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     }
 
     final emailOk =
-        await DriverEmailVerificationService.reloadAndCheckVerified();
+        await DriverEmailVerificationService.reloadRefreshTokenAndCheckVerified();
     if (!emailOk) {
       await DriverDialogs.showAlert(
         context,
@@ -956,6 +1199,7 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         photoUrl: _model.uploadedFileUrl_uploadDataLbm,
         idImageUrl: _model.uploadedFileUrl_uploadData1k33,
         carImageUrl: _carImageUrl,
+        licenseImageUrl: _licenseUrl,
         location: _regLocation,
         isResubmit: isResubmit,
         uploadInFlight: _uploadingPhoto ||
@@ -1026,7 +1270,12 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
             'url': reviewModel.idImageUrl,
           'storagePath': _idStoragePath,
           'uploadedAt': FieldValue.serverTimestamp(),
-          'status': 'uploaded',
+          'updatedAt': FieldValue.serverTimestamp(),
+          'status': 'pending_review',
+          'reviewStatus': 'pending_review',
+          'documentVersion': 1,
+          if (_nationalIdExpiry != null)
+            'expiryDate': Timestamp.fromDate(_nationalIdExpiry!.toUtc()),
         },
         'doc_vehicle_registration': {
           'documentType': 'vehicle_registration',
@@ -1034,7 +1283,12 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
             'url': _carImageUrl,
           'storagePath': _carStoragePath,
           'uploadedAt': FieldValue.serverTimestamp(),
-          'status': 'uploaded',
+          'updatedAt': FieldValue.serverTimestamp(),
+          'status': 'pending_review',
+          'reviewStatus': 'pending_review',
+          'documentVersion': 1,
+          if (_vehicleRegExpiry != null)
+            'expiryDate': Timestamp.fromDate(_vehicleRegExpiry!.toUtc()),
         },
         'doc_driver_license': {
           'documentType': 'driver_license',
@@ -1042,8 +1296,27 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
             'url': _licenseUrl,
           'storagePath': _licenseStoragePath,
           'uploadedAt': FieldValue.serverTimestamp(),
-          'status': 'uploaded',
+          'updatedAt': FieldValue.serverTimestamp(),
+          'status': 'pending_review',
+          'reviewStatus': 'pending_review',
+          'documentVersion': 1,
+          if (_licenseExpiry != null)
+            'expiryDate': Timestamp.fromDate(_licenseExpiry!.toUtc()),
         },
+        if (_filePresentForType('vehicleInsurance'))
+          'doc_vehicle_insurance': {
+            'documentType': 'vehicle_insurance',
+            if (_insuranceStoragePath.isEmpty && _insuranceUrl.isNotEmpty)
+              'url': _insuranceUrl,
+            'storagePath': _insuranceStoragePath,
+            'uploadedAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+            'status': 'pending_review',
+            'reviewStatus': 'pending_review',
+            'documentVersion': 1,
+            if (_insuranceExpiry != null)
+              'expiryDate': Timestamp.fromDate(_insuranceExpiry!.toUtc()),
+          },
         if (_photoStoragePath.isNotEmpty) 'photo_storage_path': _photoStoragePath,
         if (cityController.text.trim().isNotEmpty)
           'city_display': cityController.text.trim()
@@ -1087,16 +1360,6 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         debugPrint('Post-registration profile reload failed: $e');
       }
 
-      if (!mounted) return;
-      await DriverDialogs.showAlert(
-        context,
-        title: t('Success'),
-        message: t(
-          'Registration submitted. Your account is pending admin review.',
-        ),
-        type: DriverMessageType.success,
-      );
-
       try {
         await WhatCall.call(
           to: phoneE164,
@@ -1108,9 +1371,10 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
         debugPrint('Registration WhatsApp notify failed: $e');
       }
 
-      if (mounted) {
-        context.go('/');
-      }
+      if (!mounted) return;
+      // Leave registration immediately — do not remain on Step 4.
+      context.goNamed(DriverPendingApprovalWidget.routeName);
+      return;
     } catch (e) {
       DriverAuthErrors.logSafely(e);
       if (mounted) {
@@ -1127,6 +1391,17 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
   }
 
   Future<void> _pickVehicleType() async {
+    final locationIso = _regLocation != null
+        ? TouryCountryRegistry.isoFromCoordinates(_regLocation!)
+        : null;
+    final countryRef = DriverCountryResolver.resolveRegistrationCountry(
+      dolh: FFAppState().dolh,
+      locationIso2: locationIso,
+    );
+    final countryIso = DriverCountryResolver.resolveRegistrationIso(
+      dolh: FFAppState().dolh,
+      locationIso2: locationIso,
+    );
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1136,10 +1411,205 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
       ),
       builder: (context) => SizedBox(
         height: MediaQuery.sizeOf(context).height * 0.75,
-        child: ListTypeCarWidget(idNumber: idNumberController.text),
+        child: ListTypeCarWidget(
+          idNumber: idNumberController.text,
+          countryRef: countryRef,
+          countryIso2: countryIso,
+          onSelected: () => unawaited(_persistDraft()),
+        ),
       ),
     );
     if (mounted) setState(() {});
+  }
+
+  Future<void> _refreshCountryRequirements() async {
+    final locationIso = _regLocation != null
+        ? TouryCountryRegistry.isoFromCoordinates(_regLocation!)
+        : null;
+    final countryRef = DriverCountryResolver.resolveRegistrationCountry(
+      dolh: FFAppState().dolh,
+      locationIso2: locationIso,
+    );
+    if (countryRef == null) {
+      if (mounted) {
+        setState(() {
+          _countryRequirementsResolved = false;
+          _marketReadiness = null;
+        });
+      }
+      debugPrint('DRIVER_COUNTRY_PATH=');
+      debugPrint('REQUIREMENTS_ENABLED_COUNT=0');
+      return;
+    }
+    debugPrint('DRIVER_COUNTRY_PATH=${countryRef.path}');
+    final readiness = await DriverMarketReadinessResolver.resolveForCountryRef(
+      countryRef: countryRef,
+      countryIso2: locationIso,
+      idNumber: idNumberController.text,
+    );
+    final reqs = await DriverDocumentRequirementResolver.resolveForCountryRef(
+      countryRef,
+    );
+    if (!mounted) return;
+    setState(() {
+      _countryRequirementsResolved = reqs.isNotEmpty;
+      _countryDocReqs = reqs;
+      _marketReadiness = readiness;
+    });
+    debugPrint('REQUIREMENTS_ENABLED_COUNT=${readiness.enabledRequirementsCount}');
+    debugPrint('TYPE_CAR_MARKET_COUNT=${readiness.activeVehicleCount}');
+    debugPrint('MARKET_READINESS=${readiness.reasonCode.name}');
+    for (final r in reqs) {
+      debugPrint(
+        'DOC_TYPE=${r.type} REQUIRED=${r.required} EXPIRY_REQUIRED=${r.expiryRequired}',
+      );
+    }
+  }
+
+  DateTime? _expiryForType(String type) {
+    switch (type) {
+      case 'driverLicense':
+        return _licenseExpiry;
+      case 'vehicleRegistration':
+        return _vehicleRegExpiry;
+      case 'nationalId':
+        return _nationalIdExpiry;
+      case 'vehicleInsurance':
+        return _insuranceExpiry;
+      default:
+        return null;
+    }
+  }
+
+  void _setExpiryForType(String type, DateTime? value) {
+    setState(() {
+      switch (type) {
+        case 'driverLicense':
+          _licenseExpiry = value;
+          break;
+        case 'vehicleRegistration':
+          _vehicleRegExpiry = value;
+          break;
+        case 'nationalId':
+          _nationalIdExpiry = value;
+          break;
+        case 'vehicleInsurance':
+          _insuranceExpiry = value;
+          break;
+      }
+    });
+    unawaited(_persistDraft());
+  }
+
+  bool _filePresentForType(String type) {
+    switch (type) {
+      case 'profilePhoto':
+        return _isUploadReady(
+          url: _model.uploadedFileUrl_uploadDataLbm,
+          storagePath: _photoStoragePath,
+          pending: _pendingPhoto,
+        );
+      case 'nationalId':
+        return _isUploadReady(
+          url: _model.uploadedFileUrl_uploadData1k33,
+          storagePath: _idStoragePath,
+          pending: _pendingIdDoc,
+        );
+      case 'vehicleRegistration':
+        return _isUploadReady(
+          url: _carImageUrl,
+          storagePath: _carStoragePath,
+          pending: _pendingCarPhoto,
+        );
+      case 'driverLicense':
+        return _isUploadReady(
+          url: _licenseUrl,
+          storagePath: _licenseStoragePath,
+          pending: _pendingLicense,
+        );
+      case 'vehicleInsurance':
+        return _isUploadReady(
+          url: _insuranceUrl,
+          storagePath: _insuranceStoragePath,
+          pending: _pendingInsurance,
+        );
+      default:
+        return false;
+    }
+  }
+
+  DriverRegistrationPreflightResult _buildPreflight() {
+    final fileMap = <String, bool>{};
+    final expiryMap = <String, DateTime?>{};
+    for (final r in _countryDocReqs) {
+      fileMap[r.type] = _filePresentForType(r.type);
+      expiryMap[r.type] = _expiryForType(r.type);
+    }
+    // Fallback baseline when config not yet loaded — still require license/reg expiry.
+    final reqs = _countryDocReqs.isNotEmpty
+        ? _countryDocReqs
+        : DriverDocumentRequirementsRepository.baseline;
+    return DriverRegistrationPreflightValidator.evaluate(
+      requirements: reqs,
+      filePresentByType: fileMap.isNotEmpty
+          ? fileMap
+          : {
+              'profilePhoto': _filePresentForType('profilePhoto'),
+              'nationalId': _filePresentForType('nationalId'),
+              'vehicleRegistration': _filePresentForType('vehicleRegistration'),
+              'driverLicense': _filePresentForType('driverLicense'),
+            },
+      expiryByType: expiryMap.isNotEmpty
+          ? expiryMap
+          : {
+              'driverLicense': _licenseExpiry,
+              'vehicleRegistration': _vehicleRegExpiry,
+              'nationalId': _nationalIdExpiry,
+              'vehicleInsurance': _insuranceExpiry,
+            },
+      emailVerified:
+          FirebaseAuth.instance.currentUser?.emailVerified == true,
+      hasVehicleType: FFAppState().MNDOBTYPECARrev != null &&
+          FFAppState().textTypeCar.isNotEmpty,
+      hasLocation: TouryMapsConfig.isUsableCoordinate(_regLocation),
+      countryConfigReady: _countryRequirementsResolved ||
+          _countryDocReqs.isNotEmpty,
+    );
+  }
+
+  Future<void> _pickDocExpiry(String type) async {
+    final now = DateTime.now();
+    final initial = _expiryForType(type) ??
+        DateTime(now.year + 1, now.month, now.day);
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial.isBefore(now) ? now : initial,
+      firstDate: now,
+      lastDate: DateTime(now.year + 30),
+      helpText: t('Expiry date'),
+    );
+    if (picked == null || !mounted) return;
+    _setExpiryForType(type, picked);
+  }
+
+  String? _marketNotReadyMessage() {
+    final readiness = _marketReadiness;
+    if (readiness == null || readiness.registrationReady) return null;
+    switch (readiness.reasonCode) {
+      case DriverMarketReadinessReason.missingVehicleCatalog:
+        return t(
+          'No vehicle types are configured for this country yet. Contact support or try again later.',
+        );
+      case DriverMarketReadinessReason.missingDriverRequirements:
+      case DriverMarketReadinessReason.incomplete:
+      case DriverMarketReadinessReason.countryInactive:
+      case DriverMarketReadinessReason.countryMissing:
+        return t(
+          'Driver registration is not available in this country right now.',
+        );
+      case DriverMarketReadinessReason.ready:
+        return null;
+    }
   }
 
   Future<void> _pickBirthDate() async {
@@ -1161,7 +1631,8 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
         _uploadingId ||
         _uploadingCar ||
         _uploadingGuide ||
-        _uploadingLicense) {
+        _uploadingLicense ||
+        _uploadingInsurance) {
       return;
     }
     final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -1174,6 +1645,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
       if (kind == 'car') _uploadingCar = true;
       if (kind == 'guide') _uploadingGuide = true;
       if (kind == 'license') _uploadingLicense = true;
+      if (kind == 'insurance') _uploadingInsurance = true;
     });
     try {
       final selectedMedia = await selectMediaWithSourceBottomSheet(
@@ -1253,6 +1725,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
             _model.uploadedFileUrl_uploadData1k33 = result.previewUrl ?? '';
             _idStoragePath = result.storagePath;
             _pendingIdDoc = null;
+            _nationalIdExpiry = null;
           } else if (kind == 'guide') {
             _guidePermitUrl = result.previewUrl ?? '';
             _pendingGuidePermit = null;
@@ -1260,10 +1733,17 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
             _licenseUrl = result.previewUrl ?? '';
             _licenseStoragePath = result.storagePath;
             _pendingLicense = null;
+            _licenseExpiry = null;
+          } else if (kind == 'insurance') {
+            _insuranceUrl = result.previewUrl ?? '';
+            _insuranceStoragePath = result.storagePath;
+            _pendingInsurance = null;
+            _insuranceExpiry = null;
           } else {
             _carImageUrl = result.previewUrl ?? '';
             _carStoragePath = result.storagePath;
             _pendingCarPhoto = null;
+            _vehicleRegExpiry = null;
           }
         });
         if (mounted) {
@@ -1285,15 +1765,22 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
           } else if (kind == 'id') {
             _pendingIdDoc = file;
             _model.uploadedFileUrl_uploadData1k33 = 'pending://id';
+            _nationalIdExpiry = null;
           } else if (kind == 'guide') {
             _pendingGuidePermit = file;
             _guidePermitUrl = 'pending://guide';
           } else if (kind == 'license') {
             _pendingLicense = file;
             _licenseUrl = 'pending://license';
+            _licenseExpiry = null;
+          } else if (kind == 'insurance') {
+            _pendingInsurance = file;
+            _insuranceUrl = 'pending://insurance';
+            _insuranceExpiry = null;
           } else {
             _pendingCarPhoto = file;
             _carImageUrl = 'pending://car';
+            _vehicleRegExpiry = null;
           }
         });
         if (mounted) {
@@ -1328,6 +1815,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
           _uploadingCar = false;
           _uploadingGuide = false;
           _uploadingLicense = false;
+          _uploadingInsurance = false;
         });
       }
     }
@@ -1397,6 +1885,19 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
       },
       clearPending: () => _pendingLicense = null,
     );
+    if (_pendingInsurance != null ||
+        _insuranceUrl.isNotEmpty ||
+        _insuranceStoragePath.isNotEmpty) {
+      await flushOne(
+        pending: _pendingInsurance,
+        currentUrl: _insuranceUrl,
+        assign: (url, path) {
+          _insuranceUrl = url;
+          _insuranceStoragePath = path;
+        },
+        clearPending: () => _pendingInsurance = null,
+      );
+    }
     if (_isTourGuide ||
         _pendingGuidePermit != null ||
         _guidePermitUrl.isNotEmpty) {
@@ -1466,6 +1967,16 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                   )
                 else ...[
                 _StepHeader(step: _step, total: _totalSteps, t: t),
+                if (_marketNotReadyMessage() != null && _step >= 1)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: DsInformationCard(
+                      title: t('Error'),
+                      message: _marketNotReadyMessage()!,
+                      tone: DsInfoTone.warning,
+                      icon: Icons.warning_amber_rounded,
+                    ),
+                  ),
                 Expanded(
                   child: PageView(
                     controller: _pageController,
@@ -1498,6 +2009,8 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                       _LocationStep(
                         t: t,
                         location: _regLocation,
+                        countryIso2:
+                            TouryCountryRegistry.normalizeIso(FFAppState().dolh?.id),
                         cityController: cityController,
                         cityFocusNode: cityFocusNode,
                         onCityChanged: (v) {
@@ -1512,50 +2025,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                           if (mounted) setState(() {});
                         },
                         onLocationChanged: (loc) async {
-                          final prevIso = _regLocation == null
-                              ? null
-                              : TouryCountryRegistry.isoFromCoordinates(
-                                  _regLocation!,
-                                );
-                          setState(() {
-                            _regLocation = loc;
-                            final iso =
-                                TouryCountryRegistry.isoFromCoordinates(loc);
-                            if (iso != null && iso != prevIso) {
-                              cityController.text = '';
-                              FFAppState().mdenh = null;
-                              FFAppState().naimmdenh = '';
-                              FFAppState().villmndoBREV = null;
-                              FFAppState().textvill = '';
-                            }
-                          });
-                          unawaited(_persistDraft());
-                          final iso =
-                              TouryCountryRegistry.isoFromCoordinates(loc);
-                          if (iso == null || iso == prevIso) return;
-                          final countries =
-                              await DriverCountryService.listActiveCountries();
-                          final match = countries
-                              .where(
-                                (c) =>
-                                    DriverCountryService.isoOfCountry(c) == iso,
-                              )
-                              .firstOrNull;
-                          if (match != null) {
-                            await DriverCountryService.applyCountry(
-                              FFAppState(),
-                              match,
-                            );
-                            FFAppState().textTypeCar = '';
-                            FFAppState().MNDOBTYPECARrev = null;
-                            FFAppState().mdenh = null;
-                            FFAppState().naimmdenh = '';
-                            FFAppState().villmndoBREV = null;
-                            FFAppState().textvill = '';
-                            _companyPath = '';
-                            _companyName = '';
-                            if (mounted) setState(() {});
-                          }
+                          await _applyRegLocation(loc);
                         },
                       ),
                       _VehicleStep(
@@ -1586,6 +2056,18 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                         onUploadId: () => _uploadDoc(kind: 'id'),
                         onUploadCar: () => _uploadDoc(kind: 'car'),
                         onUploadLicense: () => _uploadDoc(kind: 'license'),
+                        documentRequirements: _countryDocReqs.isNotEmpty
+                            ? _countryDocReqs
+                            : DriverDocumentRequirementsRepository.baseline,
+                        licenseExpiry: _licenseExpiry,
+                        vehicleRegExpiry: _vehicleRegExpiry,
+                        nationalIdExpiry: _nationalIdExpiry,
+                        insuranceExpiry: _insuranceExpiry,
+                        insuranceUrl: _insuranceUrl,
+                        uploadingInsurance: _uploadingInsurance,
+                        onUploadInsurance: () =>
+                            _uploadDoc(kind: 'insurance'),
+                        onPickExpiry: _pickDocExpiry,
                         validateModel: _validateModel,
                         validatePlate: _validatePlate,
                         req: _req,
@@ -1671,6 +2153,12 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                         onEditAccount: () => _goTo(0),
                         onEditLocation: () => _goTo(1),
                         onEditVehicle: () => _goTo(2),
+                        licenseExpiry: _licenseExpiry,
+                        vehicleRegExpiry: _vehicleRegExpiry,
+                        documentRequirements: _countryDocReqs,
+                        preflightReady: _buildPreflight().isReady,
+                        remainingRequirements:
+                            _buildPreflight().remainingCount,
                       ),
                     ],
                   ),
@@ -1696,13 +2184,56 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                       if (_step > 0) const SizedBox(width: DsSpacing.sm),
                       Expanded(
                         flex: 2,
-                        child: DsButton.primary(
-                          label: _step == _totalSteps - 1
-                              ? t('Submit Application')
-                              : t('Next'),
-                          expanded: true,
-                          loading: _submitting,
-                          onPressed: _next,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            DsButton.primary(
+                              label: _step == _totalSteps - 1
+                                  ? t('Submit Application')
+                                  : t('Next'),
+                              expanded: true,
+                              loading: _submitting,
+                              enabled: !_submitting &&
+                                  (_step != _totalSteps - 1 ||
+                                      _buildPreflight().isReady),
+                              onPressed: _next,
+                            ),
+                            if (_step == _totalSteps - 1 &&
+                                !_buildPreflight().isReady) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                '${t('Remaining requirements')}: ${_buildPreflight().remainingCount}',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'cairo',
+                                  fontSize: 12,
+                                  color: context.dsColors.warning,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  final blockers = _buildPreflight().blockers;
+                                  if (blockers.isEmpty) return;
+                                  final first = blockers.first;
+                                  if (first.step == 2) {
+                                    await _goTo(2);
+                                    if (first.documentType.isNotEmpty &&
+                                        first.reasonCode ==
+                                            'REQUIRED_EXPIRY_MISSING') {
+                                      await _pickDocExpiry(first.documentType);
+                                    }
+                                  } else {
+                                    await _goTo(first.step);
+                                  }
+                                },
+                                child: Text(
+                                  t('View requirements'),
+                                  style: const TextStyle(fontFamily: 'cairo'),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                     ],
@@ -2231,6 +2762,7 @@ class _LocationStep extends StatelessWidget {
     required this.onCityChanged,
     required this.onCascadeChanged,
     required this.onLocationChanged,
+    this.countryIso2,
   });
 
   final String Function(String) t;
@@ -2240,6 +2772,7 @@ class _LocationStep extends StatelessWidget {
   final ValueChanged<String> onCityChanged;
   final VoidCallback onCascadeChanged;
   final ValueChanged<LatLng> onLocationChanged;
+  final String? countryIso2;
 
   @override
   Widget build(BuildContext context) {
@@ -2251,17 +2784,11 @@ class _LocationStep extends StatelessWidget {
           onChanged: onCascadeChanged,
         ),
         const SizedBox(height: 16),
-        Text(
-          t('Confirm your current location on the map'),
-          style: TextStyle(
-            fontFamily: 'cairo',
-            color: context.dsColors.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 12),
-        DriverRegLocationMap(
+        DriverRegLocationSection(
+          t: t,
           location: location,
-          onLocationChanged: onLocationChanged,
+          countryIso2: countryIso2,
+          onLocationSelected: onLocationChanged,
         ),
         const SizedBox(height: 12),
         _Field(
@@ -2307,6 +2834,15 @@ class _VehicleStep extends StatelessWidget {
     required this.onUploadId,
     required this.onUploadCar,
     required this.onUploadLicense,
+    required this.documentRequirements,
+    required this.licenseExpiry,
+    required this.vehicleRegExpiry,
+    required this.nationalIdExpiry,
+    required this.insuranceExpiry,
+    required this.insuranceUrl,
+    required this.uploadingInsurance,
+    required this.onUploadInsurance,
+    required this.onPickExpiry,
     required this.validateModel,
     required this.validatePlate,
     required this.req,
@@ -2350,6 +2886,15 @@ class _VehicleStep extends StatelessWidget {
   final VoidCallback onUploadId;
   final VoidCallback onUploadCar;
   final VoidCallback onUploadLicense;
+  final List<DriverDocumentRequirement> documentRequirements;
+  final DateTime? licenseExpiry;
+  final DateTime? vehicleRegExpiry;
+  final DateTime? nationalIdExpiry;
+  final DateTime? insuranceExpiry;
+  final String insuranceUrl;
+  final bool uploadingInsurance;
+  final VoidCallback onUploadInsurance;
+  final Future<void> Function(String type) onPickExpiry;
   final String? Function(String?) validateModel;
   final String? Function(String?) validatePlate;
   final String? Function(String?, String) req;
@@ -2421,6 +2966,50 @@ class _VehicleStep extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 fontSize: 16)),
         const SizedBox(height: 12),
+        InkWell(
+          onTap: onPickType,
+          borderRadius: DsRadius.medium,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+                color: context.dsColors.card,
+                borderRadius: DsRadius.medium,
+                border: Border.all(
+                    color: selectedType.isEmpty
+                        ? context.dsColors.border
+                        : context.dsColors.primary,
+                    width: selectedType.isEmpty ? 1 : 2)),
+            child: Row(children: [
+              Icon(Icons.category_outlined, color: context.dsColors.primaryStrong),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    t('Select vehicle type'),
+                    style: TextStyle(
+                      fontFamily: 'cairo',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: context.dsColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                      selectedType.isEmpty
+                          ? t('Tap to choose from catalog')
+                          : selectedType,
+                      style: const TextStyle(
+                          fontFamily: 'cairo', fontWeight: FontWeight.w700)),
+                ],
+              )),
+              Icon(Icons.expand_more, color: context.dsColors.primaryStrong),
+            ]),
+          ),
+        ),
+        const SizedBox(height: 16),
         _Field(
             controller: makeController,
             focusNode: makeFocusNode,
@@ -2470,34 +3059,6 @@ class _VehicleStep extends StatelessWidget {
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             validator: (v) => req(v, 'Seats')),
-        const SizedBox(height: 12),
-        InkWell(
-          onTap: onPickType,
-          borderRadius: DsRadius.medium,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-                color: context.dsColors.card,
-                borderRadius: DsRadius.medium,
-                border: Border.all(
-                    color: selectedType.isEmpty
-                        ? context.dsColors.border
-                        : context.dsColors.primary)),
-            child: Row(children: [
-              Icon(Icons.category_outlined, color: context.dsColors.primaryStrong),
-              const SizedBox(width: 12),
-              Expanded(
-                  child: Text(
-                      selectedType.isEmpty
-                          ? t('Select vehicle type')
-                          : selectedType,
-                      style: const TextStyle(
-                          fontFamily: 'cairo', fontWeight: FontWeight.w700))),
-              Icon(Icons.expand_more, color: context.dsColors.primaryStrong),
-            ]),
-          ),
-        ),
         const SizedBox(height: 20),
         Text(
           t('Affiliation'),
@@ -2579,27 +3140,286 @@ class _VehicleStep extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 fontSize: 16)),
         const SizedBox(height: 8),
-        _docBtn(context,
-            label: t('Profile photo'),
-            url: photoUrl,
-            loading: uploadingPhoto,
-            onTap: onUploadPhoto),
-        _docBtn(context,
-            label: t('National ID'),
-            url: idUrl,
-            loading: uploadingId,
-            onTap: onUploadId),
-        _docBtn(context,
-            label: t('Vehicle registration'),
-            url: carUrl,
-            loading: uploadingCar,
-            onTap: onUploadCar),
-        _docBtn(context,
-            label: t('Driver license'),
-            url: licenseUrl,
-            loading: uploadingLicense,
-            onTap: onUploadLicense),
+        ..._buildDocumentCards(context),
       ],
+    );
+  }
+
+  List<Widget> _buildDocumentCards(BuildContext context) {
+    final reqs = documentRequirements.isNotEmpty
+        ? documentRequirements
+        : DriverDocumentRequirementsRepository.baseline;
+    DateTime? expiryOf(String type) {
+      switch (type) {
+        case 'driverLicense':
+          return licenseExpiry;
+        case 'vehicleRegistration':
+          return vehicleRegExpiry;
+        case 'nationalId':
+          return nationalIdExpiry;
+        case 'vehicleInsurance':
+          return insuranceExpiry;
+        default:
+          return null;
+      }
+    }
+
+    String urlOf(String type) {
+      switch (type) {
+        case 'profilePhoto':
+          return photoUrl;
+        case 'nationalId':
+          return idUrl;
+        case 'vehicleRegistration':
+          return carUrl;
+        case 'driverLicense':
+          return licenseUrl;
+        case 'vehicleInsurance':
+          return insuranceUrl;
+        default:
+          return '';
+      }
+    }
+
+    bool loadingOf(String type) {
+      switch (type) {
+        case 'profilePhoto':
+          return uploadingPhoto;
+        case 'nationalId':
+          return uploadingId;
+        case 'vehicleRegistration':
+          return uploadingCar;
+        case 'driverLicense':
+          return uploadingLicense;
+        case 'vehicleInsurance':
+          return uploadingInsurance;
+        default:
+          return false;
+      }
+    }
+
+    VoidCallback? onUploadOf(String type) {
+      switch (type) {
+        case 'profilePhoto':
+          return onUploadPhoto;
+        case 'nationalId':
+          return onUploadId;
+        case 'vehicleRegistration':
+          return onUploadCar;
+        case 'driverLicense':
+          return onUploadLicense;
+        case 'vehicleInsurance':
+          return onUploadInsurance;
+        default:
+          return null;
+      }
+    }
+
+    return [
+      for (final req in reqs)
+        _RegDocumentCard(
+          t: t,
+          title: t(DriverRegistrationPreflightValidator.titleKeyForType(req.type)),
+          requiredLabel: req.required ? t('Required') : t('Optional'),
+          url: urlOf(req.type),
+          loading: loadingOf(req.type),
+          expiryRequired: req.expiryRequired,
+          expiryDate: expiryOf(req.type),
+          onUpload: onUploadOf(req.type) ?? () {},
+          onPickExpiry: () => onPickExpiry(req.type),
+        ),
+    ];
+  }
+}
+
+class _RegDocumentCard extends StatelessWidget {
+  const _RegDocumentCard({
+    required this.t,
+    required this.title,
+    required this.requiredLabel,
+    required this.url,
+    required this.loading,
+    required this.expiryRequired,
+    required this.expiryDate,
+    required this.onUpload,
+    required this.onPickExpiry,
+  });
+
+  final String Function(String) t;
+  final String title;
+  final String requiredLabel;
+  final String url;
+  final bool loading;
+  final bool expiryRequired;
+  final DateTime? expiryDate;
+  final VoidCallback onUpload;
+  final VoidCallback onPickExpiry;
+
+  @override
+  Widget build(BuildContext context) {
+    final pending = url.startsWith('pending://');
+    final fileOk = url.startsWith('https://') || pending;
+    final status = DriverRegistrationPreflightValidator.documentStatus(
+      filePresent: fileOk && !pending ? url.startsWith('https://') : pending,
+      expiryRequired: expiryRequired,
+      expiryDate: expiryDate,
+    );
+    // Treat pending local selection as file present for UI status.
+    final effectiveStatus = (!fileOk)
+        ? DriverRegDocUiStatus.missing
+        : (pending && expiryRequired && expiryDate == null)
+            ? DriverRegDocUiStatus.uploadedIncomplete
+            : (pending && !expiryRequired)
+                ? DriverRegDocUiStatus.ready
+                : status;
+    final expired = DriverRegistrationPreflightValidator.isExpiryExpired(expiryDate);
+
+    String statusText;
+    Color statusColor;
+    switch (effectiveStatus) {
+      case DriverRegDocUiStatus.missing:
+        statusText = t('Missing');
+        statusColor = context.dsColors.error;
+        break;
+      case DriverRegDocUiStatus.uploadedIncomplete:
+        statusText = expired
+            ? t('This document has expired. Please upload a valid document.')
+            : t('Document uploaded — expiry date required');
+        statusColor = context.dsColors.warning;
+        break;
+      case DriverRegDocUiStatus.ready:
+        statusText = pending
+            ? '${t('Selected')}'
+            : t('Uploaded');
+        statusColor = Colors.green;
+        break;
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: context.dsColors.card,
+        borderRadius: DsRadius.medium,
+        border: Border.all(
+          color: effectiveStatus == DriverRegDocUiStatus.uploadedIncomplete
+              ? context.dsColors.warning
+              : context.dsColors.border,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontFamily: 'cairo',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+              Text(
+                requiredLabel,
+                style: TextStyle(
+                  fontFamily: 'cairo',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  color: context.dsColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 44,
+            child: OutlinedButton.icon(
+              onPressed: loading ? null : onUpload,
+              icon: loading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(
+                      fileOk ? Icons.check_circle : Icons.upload_file,
+                      color: fileOk
+                          ? Colors.green
+                          : context.dsColors.primaryStrong,
+                    ),
+              label: Text(
+                fileOk ? t('Replace document') : t('Upload document'),
+                style: const TextStyle(
+                  fontFamily: 'cairo',
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${t('Status')}: $statusText',
+            style: TextStyle(
+              fontFamily: 'cairo',
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+              color: statusColor,
+            ),
+          ),
+          if (expiryRequired) ...[
+            const SizedBox(height: 10),
+            Text(
+              '${t('Expiry date')} *',
+              style: TextStyle(
+                fontFamily: 'cairo',
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: context.dsColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 6),
+            InkWell(
+              onTap: onPickExpiry,
+              borderRadius: DsRadius.medium,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                decoration: BoxDecoration(
+                  borderRadius: DsRadius.medium,
+                  border: Border.all(
+                    color: expiryDate == null
+                        ? context.dsColors.warning
+                        : context.dsColors.border,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today_outlined,
+                        size: 18, color: context.dsColors.primaryStrong),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        expiryDate == null
+                            ? t('Select expiry date')
+                            : '${expiryDate!.day.toString().padLeft(2, '0')} / ${expiryDate!.month.toString().padLeft(2, '0')} / ${expiryDate!.year}',
+                        style: TextStyle(
+                          fontFamily: 'cairo',
+                          fontWeight: FontWeight.w700,
+                          color: expiryDate == null
+                              ? context.dsColors.textSecondary
+                              : context.dsColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -2634,6 +3454,11 @@ class _ReviewStep extends StatelessWidget {
     required this.onEditAccount,
     required this.onEditLocation,
     required this.onEditVehicle,
+    this.licenseExpiry,
+    this.vehicleRegExpiry,
+    this.documentRequirements = const [],
+    this.preflightReady = true,
+    this.remainingRequirements = 0,
   });
 
   final String Function(String) t;
@@ -2662,6 +3487,11 @@ class _ReviewStep extends StatelessWidget {
       isTourGuide,
       guidePermitOk;
   final VoidCallback onEditAccount, onEditLocation, onEditVehicle;
+  final DateTime? licenseExpiry;
+  final DateTime? vehicleRegExpiry;
+  final List<DriverDocumentRequirement> documentRequirements;
+  final bool preflightReady;
+  final int remainingRequirements;
 
   Widget _row(String k, String v) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
@@ -2744,14 +3574,59 @@ class _ReviewStep extends StatelessWidget {
         ),
         _row(
           t('Vehicle registration'),
-          vehicleRegOk ? t('Uploaded') : t('Missing'),
+          _docReviewStatus(
+            uploaded: vehicleRegOk,
+            expiryRequired: documentRequirements.any(
+              (r) => r.type == 'vehicleRegistration' && r.expiryRequired,
+            ),
+            expiry: vehicleRegExpiry,
+          ),
         ),
+        if (vehicleRegOk && vehicleRegExpiry != null)
+          _row(
+            t('Vehicle registration expiry'),
+            '${vehicleRegExpiry!.day.toString().padLeft(2, '0')} / ${vehicleRegExpiry!.month.toString().padLeft(2, '0')} / ${vehicleRegExpiry!.year}',
+          ),
         _row(
           t('Driver license'),
-          licenseOk ? t('Uploaded') : t('Missing'),
+          _docReviewStatus(
+            uploaded: licenseOk,
+            expiryRequired: documentRequirements.any(
+              (r) => r.type == 'driverLicense' && r.expiryRequired,
+            ),
+            expiry: licenseExpiry,
+          ),
         ),
+        if (licenseOk && licenseExpiry != null)
+          _row(
+            t('Driver license expiry'),
+            '${licenseExpiry!.day.toString().padLeft(2, '0')} / ${licenseExpiry!.month.toString().padLeft(2, '0')} / ${licenseExpiry!.year}',
+          ),
         TextButton(onPressed: onEditVehicle, child: Text(t('Edit'))),
+        const SizedBox(height: 12),
+        Text(
+          preflightReady
+              ? t('Ready to submit')
+              : '${t('Registration incomplete')} ($remainingRequirements)',
+          style: TextStyle(
+            fontFamily: 'cairo',
+            fontWeight: FontWeight.w700,
+            color: preflightReady ? Colors.green : Colors.orange.shade800,
+          ),
+        ),
       ],
     );
+  }
+
+  String _docReviewStatus({
+    required bool uploaded,
+    required bool expiryRequired,
+    required DateTime? expiry,
+  }) {
+    if (!uploaded) return t('Missing');
+    if (expiryRequired && expiry == null) {
+      return t('Document uploaded — expiry date required');
+    }
+    return t('Ready');
   }
 }

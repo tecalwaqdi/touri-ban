@@ -3,7 +3,9 @@ import '/backend/admin_audit_log.dart';
 import '/backend/admin_cascade_delete.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/backend.dart';
+import '/core/cloud_functions/cloud_functions_client.dart';
 import '/components/admin_crud_feedback.dart';
+import '/components/admin_driver_requirements_editor.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_image_picker.dart';
 import '/components/admin_super_admin_gate.dart';
@@ -32,6 +34,9 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
   late EdetDolhModel _model;
   bool _isSaving = false;
   bool _isDeleting = false;
+  bool _isInitializingRequirements = false;
+  Map<String, dynamic> _driverRequirements = {};
+  String? _boundRequirementsCountryId;
 
   @override
   void initState() {
@@ -111,6 +116,10 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
                   record.appCommissionPercent,
           currencyCode: _model.textControllerCurrencyCode!.text.trim().toUpperCase(),
           currencySymbol: _model.textControllerCurrencySymbol!.text.trim(),
+          driverRequirements: (!AdminSuperAdminGate.isAllowed ||
+                  _driverRequirements.isEmpty)
+              ? null
+              : Map<String, dynamic>.from(_driverRequirements),
         ),
       );
       if (!mounted) return;
@@ -127,6 +136,36 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
       AdminCrudFeedback.error(context, AdminCrudFeedback.saveFailed(context, e));
     } finally {
       if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _initializeDriverRequirements(CountriesRecord record) async {
+    if (!AdminSuperAdminGate.isAllowed) return;
+    setState(() => _isInitializingRequirements = true);
+    try {
+      await CloudFunctionsClient.ensureDriverCountryConfigs(
+        countryPath: record.reference.path,
+      );
+      final snap = await record.reference.get();
+      if (!mounted) return;
+      final data = snap.data() as Map<String, dynamic>? ?? {};
+      final raw = data['driver_requirements'];
+      setState(() {
+        _driverRequirements = raw is Map
+            ? Map<String, dynamic>.from(raw)
+            : AdminDriverRequirementsEditor.operationalAutoBaselineConfig();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(uiTr(context, 'تم تهيئة متطلبات المندوب'))),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      AdminCrudFeedback.error(
+        context,
+        AdminCrudFeedback.saveFailed(context, e),
+      );
+    } finally {
+      if (mounted) setState(() => _isInitializingRequirements = false);
     }
   }
 
@@ -184,6 +223,13 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.iddolhe == null) {
+      return AdminMissingDocumentScaffold(
+        title: uiTr(context, 'تعديل الدولة'),
+        message: uiTr(context, 'تعذر تحميل البيانات. الرابط ناقص أو غير صالح.'),
+      );
+    }
+
     return StreamBuilder<CountriesRecord>(
       stream: CountriesRecord.getDocument(widget.iddolhe!),
       builder: (context, snapshot) {
@@ -197,6 +243,13 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
 
         final record = snapshot.data!;
         _model.bindCountriesRecord(record);
+        final countryId = record.reference.id;
+        if (_boundRequirementsCountryId != countryId) {
+          _boundRequirementsCountryId = countryId;
+          _driverRequirements = record.hasDriverRequirements()
+              ? Map<String, dynamic>.from(record.driverRequirements)
+              : <String, dynamic>{};
+        }
 
         return AdminEditScaffold(
           title: uiTr(context, 'تعديل الدولة'),
@@ -258,6 +311,29 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
                 icon: Icons.attach_money_rounded,
                 hint: uiTr(context, 'مثال: ر.س أو сом'),
               ),
+              const SizedBox(height: AdminUi.fieldGap),
+              AdminDriverRequirementsEditor(
+                value: _driverRequirements,
+                readOnly: !AdminSuperAdminGate.isAllowed,
+                onChanged: (next) => setState(() => _driverRequirements = next),
+              ),
+              if (AdminSuperAdminGate.isAllowed &&
+                  !record.hasDriverRequirements()) ...[
+                const SizedBox(height: 10),
+                OutlinedButton.icon(
+                  onPressed: _isInitializingRequirements
+                      ? null
+                      : () => _initializeDriverRequirements(record),
+                  icon: _isInitializingRequirements
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.auto_fix_high_outlined),
+                  label: Text(uiTr(context, 'تهيئة متطلبات المندوب')),
+                ),
+              ],
               const SizedBox(height: AdminUi.fieldGap),
               AdminEditSwitchRow(
                 label: uiTr(context, 'تفعيل الدولة'),

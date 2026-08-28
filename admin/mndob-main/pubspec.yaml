@@ -18,7 +18,9 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 #version: 11.0.0+5 last one for ios version
 #version: 2.0.0+3 last one for android version
 
-version: 11.1.6+21
+version: 11.1.7+26
+#version: 11.1.7+23 ASC uploaded — pre submit/AppCheck fix
+#version: 11.1.6+21 previous (predevice, no physical)
 #version: 11.1.6+20 previous App Store review build
 #version: 2.0.6+13 previous (blocked by ASC: must be > approved 11.1.1)
 #version: 2.0.1+8 previous
@@ -55,6 +57,7 @@ dependencies:
   firebase_auth: 5.6.0
   firebase_auth_platform_interface: 7.7.0
   firebase_auth_web: 5.15.0
+  firebase_app_check: 0.3.2+7
   firebase_core: 3.14.0
   firebase_core_platform_interface: 5.4.0
   firebase_core_web: 2.23.0

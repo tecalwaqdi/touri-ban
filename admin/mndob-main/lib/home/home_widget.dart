@@ -1,6 +1,7 @@
 import '/components/driver_daily_stats_card.dart';
 import '/components/driver_home_map_panel.dart';
 import '/components/driver_order_stat_card.dart';
+import '/core/driver_document_expiry_banners.dart';
 import '/core/driver_daily_stats_service.dart';
 import '/core/driver_design_system.dart';
 import '/core/driver_dialogs.dart';
@@ -168,6 +169,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const DriverDocumentExpiryBanners(),
                               if (DriverOnlineState.isApproved)
                                 AuthUserStreamWidget(
                                   builder: (context) => Text(

@@ -1,4 +1,5 @@
 import '/backend/admin_audit_log.dart';
+import '/backend/admin_driver_market_readiness.dart';
 import '/backend/backend.dart';
 import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
@@ -31,16 +32,39 @@ class _AdminDolWidgetState extends State<AdminDolWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   String _searchQuery = '';
+  Map<String, int>? _vehicleCountsByCountryPath;
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AdminDolModel());
+    _loadVehicleCounts();
 
     _model.textController ??= TextEditingController();
     _model.textFieldFocusNode ??= FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  Future<void> _loadVehicleCounts() async {
+    try {
+      final cars = await TypeCarRecord.collection
+          .get()
+          .then((s) => s.docs.map(TypeCarRecord.fromSnapshot).toList());
+      final countries = await CountriesRecord.collection
+          .get()
+          .then((s) => s.docs.map(CountriesRecord.fromSnapshot).toList());
+      if (!mounted) return;
+      setState(() {
+        _vehicleCountsByCountryPath =
+            AdminDriverMarketReadinessResolver.vehicleCountsByCountryPath(
+          cars,
+          countries,
+        );
+      });
+    } catch (_) {
+      if (mounted) setState(() => _vehicleCountsByCountryPath = null);
+    }
   }
 
   @override
@@ -213,6 +237,8 @@ class _AdminDolWidgetState extends State<AdminDolWidget> {
                         else if (isWide)
                           _CountriesGrid(
                             countries: countries,
+                            vehicleCountsByCountryPath:
+                                _vehicleCountsByCountryPath,
                             onEdit: _editCountry,
                             onDelete: _deleteCountry,
                           )
@@ -225,6 +251,13 @@ class _AdminDolWidgetState extends State<AdminDolWidget> {
                                 const SizedBox(height: 10),
                             itemBuilder: (context, index) => _CountryCard(
                               record: countries[index],
+                              readiness: AdminDriverMarketReadinessResolver
+                                  .forCountry(
+                                country: countries[index],
+                                activeVehicles: _vehicleCountsByCountryPath?[
+                                        countries[index].reference.path] ??
+                                    0,
+                              ),
                               onEdit: () => _editCountry(countries[index]),
                               onDelete: () =>
                                   _deleteCountry(countries[index]),
@@ -280,11 +313,13 @@ class _AdminDolWidgetState extends State<AdminDolWidget> {
 class _CountriesGrid extends StatelessWidget {
   const _CountriesGrid({
     required this.countries,
+    required this.vehicleCountsByCountryPath,
     required this.onEdit,
     required this.onDelete,
   });
 
   final List<CountriesRecord> countries;
+  final Map<String, int>? vehicleCountsByCountryPath;
   final void Function(CountriesRecord) onEdit;
   final Future<void> Function(CountriesRecord) onDelete;
 
@@ -310,6 +345,12 @@ class _CountriesGrid extends StatelessWidget {
                 width: itemWidth,
                 child: _CountryCard(
                   record: country,
+                  readiness: AdminDriverMarketReadinessResolver.forCountry(
+                    country: country,
+                    activeVehicles:
+                        vehicleCountsByCountryPath?[country.reference.path] ??
+                            0,
+                  ),
                   onEdit: () => onEdit(country),
                   onDelete: () => onDelete(country),
                 ),
@@ -324,11 +365,13 @@ class _CountriesGrid extends StatelessWidget {
 class _CountryCard extends StatelessWidget {
   const _CountryCard({
     required this.record,
+    required this.readiness,
     required this.onEdit,
     required this.onDelete,
   });
 
   final CountriesRecord record;
+  final AdminDriverMarketReadiness readiness;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -380,6 +423,7 @@ class _CountryCard extends StatelessWidget {
                   runSpacing: 6,
                   children: [
                     _StatusBadge(active: record.acctev),
+                    _DriverReadinessBadge(readiness: readiness),
                     if (record.saudi) const _SaudiBadge(),
                     if (record.currencyCode.isNotEmpty ||
                         record.currencySymbol.isNotEmpty)
@@ -501,6 +545,36 @@ class _StatusBadge extends StatelessWidget {
         style: theme.labelSmall.override(
           fontFamily: theme.labelSmallFamily,
           color: active ? const Color(0xFF2E7D32) : const Color(0xFFE65100),
+          fontWeight: FontWeight.w600,
+          useGoogleFonts: !theme.labelSmallIsCustom,
+        ),
+      ),
+    );
+  }
+}
+
+class _DriverReadinessBadge extends StatelessWidget {
+  const _DriverReadinessBadge({required this.readiness});
+
+  final AdminDriverMarketReadiness readiness;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    final ready = readiness.isReady;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: ready ? const Color(0xFFE3F2FD) : const Color(0xFFFFF8E1),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        ready
+            ? uiTr(context, 'Driver Ready ✅')
+            : uiTr(context, 'Needs Setup ⚠️'),
+        style: theme.labelSmall.override(
+          fontFamily: theme.labelSmallFamily,
+          color: ready ? const Color(0xFF1565C0) : const Color(0xFFF57F17),
           fontWeight: FontWeight.w600,
           useGoogleFonts: !theme.labelSmallIsCustom,
         ),

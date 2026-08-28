@@ -197,6 +197,13 @@ class _EdetRegWidgetState extends State<EdetRegWidget> {
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
 
+    if (widget.idreg == null) {
+      return AdminMissingDocumentScaffold(
+        title: uiTr(context, 'تعديل المنطقة'),
+        message: uiTr(context, 'تعذر تحميل البيانات. الرابط ناقص أو غير صالح.'),
+      );
+    }
+
     return StreamBuilder<CitiesRecord>(
       stream: CitiesRecord.getDocument(widget.idreg!),
       builder: (context, snapshot) {

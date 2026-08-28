@@ -12,10 +12,10 @@ void main() {
       );
     });
 
-    test('mode defaults to emailOtp', () {
+    test('mode defaults to emailLink (driver policy)', () {
       expect(
         EmailOtpVerificationService.mode,
-        EmailVerificationMode.emailOtp,
+        EmailVerificationMode.emailLink,
       );
     });
   });
