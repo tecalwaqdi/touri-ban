@@ -9,6 +9,9 @@ const admin = require('firebase-admin');
 const crypto = require('crypto');
 const regNotif = require('./driver_registration_notifications.js');
 const docStatus = require('./driver_registration_document_status.js');
+const submitValidation = require('./driver_submit_validation.js');
+const countryResolver = require('./driver_country_resolver.js');
+const countryConfig = require('./driver_country_config.js');
 
 if (!admin.apps.length) admin.initializeApp();
 const db = admin.firestore();
@@ -24,8 +27,25 @@ const ALLOWED_FIELDS_TO_FIX = new Set([
   'other',
 ]);
 
-function fail(code, message) {
-  throw new functions.https.HttpsError(code, message);
+function fail(code, message, details) {
+  throw new functions.https.HttpsError(code, message, details);
+}
+
+function rejectSubmit(payload, logExtra = {}) {
+  const {reasonCode, safeMessage, details} = payload;
+  console.warn(
+    JSON.stringify({
+      event: 'DRIVER_APPLICATION_SUBMIT_REJECTED',
+      reasonCode,
+      missingFields: details.missingFields || [],
+      missingDocumentTypes: details.missingDocuments || [],
+      missingExpiryTypes: details.missingExpiryTypes || [],
+      countryId: details.countryId || null,
+      registrationStatus: details.registrationStatus || null,
+      ...logExtra,
+    }),
+  );
+  fail('failed-precondition', safeMessage, details);
 }
 
 function requireAuth(context) {
@@ -108,33 +128,17 @@ function approvalBlockingReasonsV2(driver, authUser) {
     blockers.push('driver_license_required');
   }
   if (!profilePhotoPresent(driver)) blockers.push('profile_photo_required');
+  try {
+    const docReview = require('./driver_document_review.js');
+    if (!docReview.allRequiredDocumentsApproved(driver)) {
+      blockers.push('REQUIRED_DOCUMENTS_NOT_APPROVED');
+    }
+  } catch (_) {}
   return blockers;
 }
 
 function submitBlockingReasons(driver, authUser) {
-  const blockers = [];
-  if (!authUser.emailVerified) blockers.push('EMAIL_NOT_VERIFIED');
-  if (!phonePresent(driver)) blockers.push('PHONE_REQUIRED');
-  if (!driver.mndob_vill) blockers.push('village_required');
-  if (!driver.mndob_type_car && !driver.carRev_mndob && !driver.car_rev_mndob) {
-    blockers.push('vehicle_type_required');
-  }
-  if (!String(driver.NameCar || '').trim()) blockers.push('vehicle_name_required');
-  if (!String(driver.ModelCar || '').trim()) blockers.push('vehicle_model_required');
-  if (!String(driver.number_lohh_car || driver.normalized_plate || '').trim()) {
-    blockers.push('plate_required');
-  }
-  if (!profilePhotoPresent(driver)) blockers.push('profile_photo_required');
-  if (!docAssetPresent(driver, 'doc_national_id', 'img_id_rksh')) {
-    blockers.push('national_id_required');
-  }
-  if (!docAssetPresent(driver, 'doc_vehicle_registration', 'img_id_car')) {
-    blockers.push('vehicle_registration_required');
-  }
-  if (!docAssetPresent(driver, 'doc_driver_license', '')) {
-    blockers.push('driver_license_required');
-  }
-  return blockers;
+  return submitValidation.legacySubmitBlockers(driver, authUser);
 }
 
 function sameCountry(claims, driver) {
@@ -145,6 +149,23 @@ function sameCountry(claims, driver) {
 
 function idempotencyId(uid, op, key) {
   return crypto.createHash('sha256').update(`${uid}:${op}:${key}`).digest('hex').slice(0, 40);
+}
+
+function isResubmitRegistrationStatus(status) {
+  const s = String(status || '');
+  return s === 'needs_changes' || s === 'changes_requested' || s === 'rejected';
+}
+
+/** Preserves admin audit fields; marks prior change requests resolved server-side. */
+function resolveRequestedChangesOnResubmit(priorChanges, resolvedAt) {
+  const prior = Array.isArray(priorChanges) ? priorChanges : [];
+  if (!prior.length) return null;
+  const at = resolvedAt || admin.firestore.Timestamp.now();
+  return prior.map((entry) => ({
+    ...(entry && typeof entry === 'object' ? entry : {}),
+    resolved: true,
+    resolvedAt: at,
+  }));
 }
 
 function normalizePlate(raw) {
@@ -215,6 +236,23 @@ async function readIdempotency(tx, id) {
   return {ref, snap};
 }
 
+async function prepareCountryForSubmit(countryRef) {
+  if (!countryRef || !countryRef.path) return;
+  const paths = countryResolver.candidateCountryPaths(countryRef);
+  for (const path of paths) {
+    const snap = await db.doc(path).get();
+    if (!snap.exists) continue;
+    const status = countryConfig.classifyRequirements(
+      (snap.data() || {}).driver_requirements,
+    );
+    if (status === 'missing' || status === 'empty') {
+      await countryConfig.ensureDriverCountryConfiguration(db, path, {
+        actor: 'submit_auto_repair',
+      });
+    }
+  }
+}
+
 /**
  * submitDriverApplicationV2 — authenticated driver submits for review.
  */
@@ -234,6 +272,12 @@ exports.submitDriverApplicationV2 = async (data, context) => {
   const ref = db.doc(`user/${uid}`);
   const idempDocId = idempotencyId(uid, 'submit', idempotencyKey);
   let result;
+
+  const preSnap = await ref.get();
+  if (preSnap.exists) {
+    const preDriver = preSnap.data() || {};
+    await prepareCountryForSubmit(preDriver.Rev_dolh || preDriver.rev_dolh);
+  }
 
   await db.runTransaction(async (tx) => {
     const {ref: idempRef, snap: idempSnap} = await readIdempotency(tx, idempDocId);
@@ -261,15 +305,82 @@ exports.submitDriverApplicationV2 = async (data, context) => {
       return;
     }
     if (status === 'approved' || status === 'suspended' || status === 'blocked') {
-      fail('failed-precondition', `SUBMIT_NOT_ALLOWED_FROM_${status || 'unknown'}`);
+      rejectSubmit(
+        submitValidation.buildRejectPayload([`SUBMIT_NOT_ALLOWED_FROM_${status || 'unknown'}`], {
+          registrationStatus: status,
+        }),
+        {uid},
+      );
     }
     if (!allowed.has(status) && status !== 'changes_requested') {
-      fail('failed-precondition', `SUBMIT_NOT_ALLOWED_FROM_${status}`);
+      rejectSubmit(
+        submitValidation.buildRejectPayload([`SUBMIT_NOT_ALLOWED_FROM_${status}`], {
+          registrationStatus: status,
+        }),
+        {uid},
+      );
     }
 
-    const blockers = submitBlockingReasons(driver, authUser);
-    if (blockers.length) {
-      fail('failed-precondition', blockers.join(','));
+    const countryRef = driver.Rev_dolh || driver.rev_dolh;
+    const resolvedCountry = await countryResolver.resolveCountryRequirements(
+      tx,
+      db,
+      countryRef,
+      submitValidation.countryRequirementsEnabled,
+    );
+    const countryReqs = resolvedCountry.countryReqs;
+    let countryExists = false;
+    let requirementsStatus = 'missing';
+    if (resolvedCountry.countryPath) {
+      const countrySnap = await tx.get(db.doc(resolvedCountry.countryPath));
+      countryExists = countrySnap.exists;
+      if (countrySnap.exists) {
+        requirementsStatus = countryConfig.classifyRequirements(
+          (countrySnap.data() || {}).driver_requirements,
+        );
+      }
+    }
+
+    let vehicleReasonCode = null;
+    const typeRef =
+      driver.mndob_type_car || driver.carRev_mndob || driver.car_rev_mndob;
+    if (typeRef && resolvedCountry.countryPath) {
+      const typeSnap = await tx.get(typeRef);
+      const countrySnap = await tx.get(db.doc(resolvedCountry.countryPath));
+      const countryData = countrySnap.exists ? countrySnap.data() || {} : {};
+      const iso2 = countryConfig.resolveCountryIso(
+        resolvedCountry.countryPath.split('/').pop(),
+        countryData,
+      );
+      const vehicleCheck = countryConfig.validateTypeCarForMarket(
+        typeSnap.exists ? typeSnap.data() : null,
+        resolvedCountry.countryPath,
+        iso2,
+      );
+      if (!vehicleCheck.ok) vehicleReasonCode = vehicleCheck.reasonCode;
+    }
+
+    const blockersOut = submitValidation.collectSubmitBlockers(
+      driver,
+      authUser,
+      countryReqs,
+      resolvedCountry.countryRef,
+      {
+        countryExists,
+        requirementsStatus,
+        vehicleReasonCode,
+      },
+    );
+    const {blockers, missingExpiryTypes} = blockersOut;
+    if (blockers.length || missingExpiryTypes.length) {
+      rejectSubmit(
+        submitValidation.buildRejectPayload(blockers, {
+          missingExpiryTypes,
+          countryId: resolvedCountry.countryPath || null,
+          registrationStatus: status,
+        }),
+        {uid},
+      );
     }
 
     // V2 plate uniqueness claim (transactional). Legacy duplicates untouched.
@@ -291,8 +402,7 @@ exports.submitDriverApplicationV2 = async (data, context) => {
     const now = admin.firestore.FieldValue.serverTimestamp();
     const attempt = Number(driver.reviewAttemptCount || 0) + 1;
     const reviewVersion = Number(driver.reviewVersion || 0) + 1;
-    const isResubmit =
-      status === 'needs_changes' || status === 'changes_requested' || status === 'rejected';
+    const isResubmit = isResubmitRegistrationStatus(status);
 
     const patch = {
       registration_flow_version: FLOW_VERSION,
@@ -317,6 +427,10 @@ exports.submitDriverApplicationV2 = async (data, context) => {
     };
     if (isResubmit) {
       patch.resubmittedAt = now;
+      const resolved = resolveRequestedChangesOnResubmit(driver.requested_changes);
+      if (resolved) {
+        patch.requested_changes = resolved;
+      }
     } else {
       patch.submittedAt = now;
     }
@@ -371,6 +485,14 @@ exports.submitDriverApplicationV2 = async (data, context) => {
 
   // Notifications are secondary — never fail submit.
   if (result && result.ok && !result.idempotent && !result.fromIdempotency) {
+    console.info(
+      JSON.stringify({
+        event: 'DRIVER_APPLICATION_SUBMIT_ACCEPTED',
+        uid: result.driverId,
+        countryId: result.countryPath,
+        submissionVersion: result.reviewVersion,
+      }),
+    );
     try {
       const countryRef = result.countryPath
         ? db.doc(result.countryPath)
@@ -618,12 +740,15 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
 };
 
 exports._testSubmitBlockingReasons = submitBlockingReasons;
+exports._testSubmitValidation = submitValidation;
 exports._testApprovalBlockingReasonsV2 = approvalBlockingReasonsV2;
 exports._testNormalizePlate = normalizePlate;
 exports._testPlateClaimDocPath = plateClaimDocPath;
 exports._testPlateClaimConflict = plateClaimConflict;
 exports._testSimulatePlateClaimRace = simulatePlateClaimRace;
 exports._testPhonePresent = phonePresent;
+exports._testIsResubmitRegistrationStatus = isResubmitRegistrationStatus;
+exports._testResolveRequestedChangesOnResubmit = resolveRequestedChangesOnResubmit;
 exports._testRegistrationDocumentsStatus = docStatus.registrationDocumentsStatus;
 exports.driverIsOperationallyApproved = regNotif.driverIsOperationallyApproved;
 exports.FLOW_VERSION = FLOW_VERSION;

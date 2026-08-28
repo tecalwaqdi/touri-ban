@@ -1,6 +1,7 @@
 'use strict';
 
-const assert = require('assert');
+const {describe, it} = require('node:test');
+const assert = require('node:assert/strict');
 const v2 = require('../driver_registration_v2.js');
 const docStatus = require('../driver_registration_document_status.js');
 
@@ -19,6 +20,7 @@ function baseDriver(overrides = {}) {
     NameCar: 'Camry',
     ModelCar: '2020',
     number_lohh_car: 'ABC1234',
+    loceshnMndobNow: {latitude: 42.87, longitude: 74.59},
     photo_url: 'https://example.com/photo.jpg',
     img_id_rksh: 'https://example.com/id.jpg',
     img_id_car: 'https://example.com/car.jpg',
@@ -142,5 +144,38 @@ describe('registration_documents_status authoritative', () => {
     assert.strictEqual(docStatus.phonePresent({phoneNumber: '+966500000000'}), true);
     assert.strictEqual(docStatus.phonePresent({phone_n: 966500000000}), true);
     assert.strictEqual(docStatus.phonePresent({}), false);
+  });
+});
+
+describe('driver resubmit after changes_requested', () => {
+  it('detects resubmit registration statuses', () => {
+    assert.equal(v2._testIsResubmitRegistrationStatus('changes_requested'), true);
+    assert.equal(v2._testIsResubmitRegistrationStatus('needs_changes'), true);
+    assert.equal(v2._testIsResubmitRegistrationStatus('rejected'), true);
+    assert.equal(v2._testIsResubmitRegistrationStatus('draft'), false);
+    assert.equal(v2._testIsResubmitRegistrationStatus('pending_review'), false);
+  });
+
+  it('resolveRequestedChangesOnResubmit preserves history and marks resolved', () => {
+    const resolvedAt = {seconds: 100, nanoseconds: 0};
+    const out = v2._testResolveRequestedChangesOnResubmit(
+      [
+        {
+          section: 'vehicle',
+          field: 'plate',
+          adminMessage: 'Fix plate',
+          createdBy: 'admin1',
+          resolved: false,
+        },
+      ],
+      resolvedAt,
+    );
+    assert.equal(out.length, 1);
+    assert.equal(out[0].section, 'vehicle');
+    assert.equal(out[0].field, 'plate');
+    assert.equal(out[0].adminMessage, 'Fix plate');
+    assert.equal(out[0].createdBy, 'admin1');
+    assert.equal(out[0].resolved, true);
+    assert.deepEqual(out[0].resolvedAt, resolvedAt);
   });
 });

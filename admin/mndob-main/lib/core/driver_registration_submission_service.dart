@@ -256,6 +256,71 @@ abstract final class DriverRegistrationSubmissionService {
   static String _newSubmissionId(String uid) =>
       'sub_${uid}_${DateTime.now().millisecondsSinceEpoch}';
 
+  /// Resubmit after admin requested changes — server owns status transition.
+  @visibleForTesting
+  static bool isResubmitAfterChangesRequested(String status) =>
+      status == 'changes_requested' ||
+      status == 'needs_changes' ||
+      status == 'rejected';
+
+  /// Profile/doc fields only — must not alter review metadata (Rules + CF).
+  @visibleForTesting
+  static Map<String, dynamic> buildResubmitProfilePayload({
+    required Map<String, dynamic> cleanedProfile,
+    required String uid,
+    required String submissionId,
+    required DriverRegistrationReviewModel model,
+  }) {
+    final safeProfile = Map<String, dynamic>.from(cleanedProfile)
+      ..remove('actev_mndob')
+      ..remove('registration_status')
+      ..remove('submission_status')
+      ..remove('ismndob')
+      ..remove('auto_activated')
+      ..remove('approved_at')
+      ..remove('approvedAt')
+      ..remove('approvedBy')
+      ..remove('rejectedAt')
+      ..remove('rejectedBy')
+      ..remove('rejectionReason')
+      ..remove('changesRequestedAt')
+      ..remove('changesRequestedBy')
+      ..remove('changeRequestReason')
+      ..remove('requested_changes')
+      ..remove('fieldsToFix')
+      ..remove('reviewVersion')
+      ..remove('reviewAttemptCount')
+      ..remove('vehicle_review_status')
+      ..remove('document_review_status')
+      ..remove('account_status')
+      ..remove('operational_status');
+
+    final payload = <String, dynamic>{
+      ...safeProfile,
+      'uid': uid,
+      'submission_id': submissionId,
+    };
+
+    final isCompany = model.affiliationType == 'company' &&
+        model.companyPath.trim().isNotEmpty;
+    if (isCompany) {
+      payload['transport_company'] =
+          FirebaseFirestore.instance.doc(model.companyPath.trim());
+      payload['transport_company_text'] = model.companyName.trim();
+    }
+
+    if (model.isTourGuide) {
+      payload[TourGuideStatus.fieldIsTourGuide] = true;
+      payload[TourGuideStatus.fieldStatus] = TourGuideStatus.pending;
+      payload[TourGuideStatus.fieldPermitUrl] = model.guidePermitUrl.trim();
+    } else {
+      payload[TourGuideStatus.fieldIsTourGuide] = false;
+      payload[TourGuideStatus.fieldStatus] = TourGuideStatus.none;
+    }
+
+    return payload;
+  }
+
   /// Ensures pending-driver flags without self-activation.
   static Future<bool> repairPendingClaim({DocumentReference? userRef}) async {
     final ref = userRef ??
@@ -380,11 +445,8 @@ abstract final class DriverRegistrationSubmissionService {
       }
 
       final nextVersion = existingVersion + 1;
-
-      final openChanges =
-          DriverRequestedChange.listFrom(data['requested_changes'])
-              .map((c) => c.toMap()..['resolved'] = true)
-              .toList();
+      final isResubmit = isResubmitAfterChangesRequested(existingStatus);
+      final alreadyClaimedDriver = data['ismndob'] == true;
 
       // Never allow client payload to self-approve or set review metadata.
       final cleanedProfile = Map<String, dynamic>.from(profileFields)
@@ -405,74 +467,100 @@ abstract final class DriverRegistrationSubmissionService {
         ..remove('reviewVersion')
         ..remove('reviewAttemptCount');
 
-      // Registration V2: write draft profile first; server sets pending_review.
-      final payload = <String, dynamic>{
-        ...cleanedProfile,
-        'uid': model.uid,
-        'ismndob': true,
-        'ismndom': true,
-        'actev_mndob': false,
-        'ngl': false,
-        'registration_flow_version': 2,
-        'registration_status':
-            (existingStatus == 'pending_review') ? 'pending_review' : 'draft',
-        'submission_status': 'draft',
-        'rejection_reason': '',
-        'submission_id': submissionId,
-        'registration_version': nextVersion,
-        'requested_changes': openChanges,
-        'vehicle_review_status': 'pending',
-        'document_review_status': 'pending',
-        'account_status': 'inactive',
-        'operational_status': 'offline',
-        'auto_activated': false,
-      };
-
-      final isCompany = model.affiliationType == 'company' &&
-          model.companyPath.trim().isNotEmpty;
-      if (isCompany) {
-        payload['transport_company'] =
-            FirebaseFirestore.instance.doc(model.companyPath.trim());
-        payload['transport_company_text'] = model.companyName.trim();
-      } else if (snap.exists) {
-        // Clear company link when switching to independent on update.
-        payload['transport_company'] = FieldValue.delete();
-        payload['transport_company_text'] = FieldValue.delete();
-      } else {
-        payload.remove('transport_company');
-        payload.remove('transport_company_text');
-      }
-
-      if (model.isTourGuide) {
-        payload[TourGuideStatus.fieldIsTourGuide] = true;
-        payload[TourGuideStatus.fieldStatus] = TourGuideStatus.pending;
-        payload[TourGuideStatus.fieldPermitUrl] = model.guidePermitUrl.trim();
-      } else {
-        payload[TourGuideStatus.fieldIsTourGuide] = false;
-        payload[TourGuideStatus.fieldStatus] = TourGuideStatus.none;
-      }
-
-      // Firestore create rules forbid `ismndob` on first write. Always write the
-      // draft profile without it, then claim pending-driver via update.
-      final writePayload = Map<String, dynamic>.from(payload)..remove('ismndob');
-      if (!snap.exists) {
-        await ref.set(writePayload);
-      } else {
-        await ref.set(writePayload, SetOptions(merge: true));
-      }
-
-      final claimed = await _claimPendingDriver(ref);
-      if (!claimed) {
+      if (isResubmit && alreadyClaimedDriver) {
+        // Resubmit: editable profile/docs only. Keep registration_status and
+        // requested_changes until submitDriverApplicationV2 transitions server-side.
         debugPrint(
-          '[DriverRegistration][claim] pending claim failed uid=${model.uid}',
+          '[DriverRegistration][resubmit_profile_write] '
+          'status=$existingStatus uid=${model.uid}',
         );
-        return const DriverSubmissionResult.fail(
-          'Could not complete registration. Please try again.',
+        final resubmitPayload = buildResubmitProfilePayload(
+          cleanedProfile: cleanedProfile,
+          uid: model.uid,
+          submissionId: submissionId,
+          model: model,
         );
+        await ref.set(resubmitPayload, SetOptions(merge: true));
+      } else {
+        // First submit (or legacy reclaim): draft profile + pending claim.
+        final openChanges =
+            DriverRequestedChange.listFrom(data['requested_changes'])
+                .map((c) => c.toMap()..['resolved'] = true)
+                .toList();
+
+        final payload = <String, dynamic>{
+          ...cleanedProfile,
+          'uid': model.uid,
+          'ismndob': true,
+          'ismndom': true,
+          'actev_mndob': false,
+          'ngl': false,
+          'registration_flow_version': 2,
+          'registration_status':
+              (existingStatus == 'pending_review') ? 'pending_review' : 'draft',
+          'submission_status': 'draft',
+          'rejection_reason': '',
+          'submission_id': submissionId,
+          'registration_version': nextVersion,
+          'requested_changes': openChanges,
+          'vehicle_review_status': 'pending',
+          'document_review_status': 'pending',
+          'account_status': 'inactive',
+          'operational_status': 'offline',
+          'auto_activated': false,
+        };
+
+        final isCompany = model.affiliationType == 'company' &&
+            model.companyPath.trim().isNotEmpty;
+        if (isCompany) {
+          payload['transport_company'] =
+              FirebaseFirestore.instance.doc(model.companyPath.trim());
+          payload['transport_company_text'] = model.companyName.trim();
+        } else if (snap.exists) {
+          payload['transport_company'] = FieldValue.delete();
+          payload['transport_company_text'] = FieldValue.delete();
+        } else {
+          payload.remove('transport_company');
+          payload.remove('transport_company_text');
+        }
+
+        if (model.isTourGuide) {
+          payload[TourGuideStatus.fieldIsTourGuide] = true;
+          payload[TourGuideStatus.fieldStatus] = TourGuideStatus.pending;
+          payload[TourGuideStatus.fieldPermitUrl] = model.guidePermitUrl.trim();
+        } else {
+          payload[TourGuideStatus.fieldIsTourGuide] = false;
+          payload[TourGuideStatus.fieldStatus] = TourGuideStatus.none;
+        }
+
+        debugPrint(
+          '[DriverRegistration][first_submit_profile_write] uid=${model.uid}',
+        );
+        final writePayload = Map<String, dynamic>.from(payload)
+          ..remove('ismndob');
+        if (!snap.exists) {
+          await ref.set(writePayload);
+        } else {
+          await ref.set(writePayload, SetOptions(merge: true));
+        }
+
+        final claimed = await _claimPendingDriver(ref);
+        if (!claimed) {
+          debugPrint(
+            '[DriverRegistration][claim] pending claim failed uid=${model.uid}',
+          );
+          return const DriverSubmissionResult.fail(
+            'Could not complete registration. Please try again.',
+          );
+        }
       }
 
       // Server-side submit: email/phone/docs gates + pending_review.
       // Never call autoActivateDriver for Registration V2.
+      debugPrint(
+        '[DriverRegistration][cloud_submit] '
+        'resubmit=$isResubmit idempotencyKey=$submissionId',
+      );
       final server = await makeCloudCall('submitDriverApplicationV2', {
         'idempotencyKey': submissionId,
       });

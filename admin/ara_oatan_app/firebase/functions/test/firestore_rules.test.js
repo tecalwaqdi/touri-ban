@@ -682,6 +682,99 @@ describe("Driver registration V2 draft write", () => {
   });
 });
 
+describe("Driver resubmit after changes_requested", () => {
+  const uid = "driver-resubmit-changes";
+
+  function changesRequestedDriver(db) {
+    const country = doc(db, "countries", "sa");
+    return {
+      email: "resubmit@test.com",
+      display_name: "Resubmit Driver",
+      uid,
+      ismndob: true,
+      ismndom: true,
+      actev_mndob: false,
+      ngl: false,
+      registration_flow_version: 2,
+      registration_status: "changes_requested",
+      submission_status: "changesRequested",
+      Rev_dolh: country,
+      mndob_vill: doc(db, "villages", "v1"),
+      mndob_type_car: doc(db, "type_car", "t1"),
+      requested_changes: [
+        {
+          section: "vehicle",
+          adminMessage: "Fix plate",
+          resolved: false,
+          createdAt: Timestamp.now(),
+        },
+      ],
+    };
+  }
+
+  beforeEach(async () => {
+    await seed({
+      "countries/sa": {acctev: true, naim: "Saudi"},
+      [`user/${uid}`]: changesRequestedDriver(
+        testEnv.authenticatedContext("seed").firestore(),
+      ),
+    });
+  });
+
+  it("RESUBMIT_PROFILE_MERGE_ALLOW = PASS", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertSucceeds(
+      setDoc(
+        doc(db, "user", uid),
+        {
+          display_name: "Resubmit Driver Updated",
+          number_lohh_car: "ABC1234",
+          submission_id: "sub_resubmit_1",
+          doc_driver_license: {
+            url: "https://example.com/lic-new.jpg",
+            storagePath: `users/${uid}/lic-new`,
+            status: "pending_review",
+          },
+        },
+        {merge: true},
+      ),
+    );
+  });
+
+  it("RESUBMIT_STATUS_DOWNGRADE_DENY = PASS", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertFails(
+      setDoc(
+        doc(db, "user", uid),
+        {
+          registration_status: "draft",
+          submission_status: "draft",
+        },
+        {merge: true},
+      ),
+    );
+  });
+
+  it("RESUBMIT_REQUESTED_CHANGES_CLIENT_RESOLVE_DENY = PASS", async () => {
+    const db = testEnv.authenticatedContext(uid).firestore();
+    await assertFails(
+      setDoc(
+        doc(db, "user", uid),
+        {
+          requested_changes: [
+            {
+              section: "vehicle",
+              adminMessage: "Fix plate",
+              resolved: true,
+            },
+          ],
+        },
+        {merge: true},
+      ),
+    );
+  });
+});
+
 /**
  * Exact payload mirror of touryCreateCashBookingViaFirestoreFallback
  * + _touryConvertUnpaidOrderToCash (installed customer app).
