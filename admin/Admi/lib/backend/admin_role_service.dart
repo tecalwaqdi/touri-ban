@@ -122,6 +122,16 @@ class AdminRoleService {
       _claims.isSuperAdmin ||
       _roleFromUserDoc(_boundProfile) == AdminRole.superAdmin;
 
+  /// Country-agent list/dashboard scoping. Super admins always use global scope
+  /// even when legacy claims also include country_admin/agent (production QA account).
+  static bool get isCountryAgent {
+    if (isSuperAdmin) return false;
+    return _claims.isCountryAdmin ||
+        _claims.isAgent ||
+        _claims.isSupport ||
+        _roleFromUserDoc(_boundProfile) == AdminRole.countryAgent;
+  }
+
   /// Firestore user doc check (editing/viewing another account).
   static bool isSuperAdminUser(UserRecord? user) {
     if (user == null) return false;
@@ -130,12 +140,6 @@ class AdminRoleService {
     }
     return user.isAdmin;
   }
-
-  static bool get isCountryAgent =>
-      _claims.isCountryAdmin ||
-      _claims.isAgent ||
-      _claims.isSupport ||
-      _roleFromUserDoc(_boundProfile) == AdminRole.countryAgent;
 
   static bool get isPartner =>
       _claims.isPartner || _roleFromUserDoc(_boundProfile) == AdminRole.partner;
@@ -152,6 +156,7 @@ class AdminRoleService {
       (_claims.isFinance && !_claims.isCountryAdmin && !_claims.isAgent);
 
   static DocumentReference? get scopedCountryRef {
+    if (isSuperAdmin) return null;
     final path = _claims.countryId;
     if (path != null && path.isNotEmpty) {
       return FirebaseFirestore.instance.doc(path);

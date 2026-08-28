@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-08-28T13:22:00Z",
+  "project": "tutorial-multi-language-70gx4j",
+  "method": "read-only aggregate REST via admin_data_parity_probe.mjs",
+  "accountRedacted": "info@touri-taxi.com",
+  "profileShape": {
+    "isAdminRule": 2,
+    "IsAdmin": true,
+    "Rev_dloh_agent": "countries/demo_saudi",
+    "note": "Hybrid super_admin + country_admin claims; isAdminRule=2 on profile"
+  },
+  "counts": {
+    "user": 46,
+    "drivers_ismndob": 16,
+    "order": 17,
+    "order_ALLNOW": 2,
+    "countries": 10,
+    "cities_collection_regions": 29,
+    "regions_id_prefix": 28,
+    "villages": 34,
+    "mkan_raw": 161,
+    "mkan_legacy_aliases": 33,
+    "mkan_logical": 128,
+    "mkan_saudi_raw": 88,
+    "type_car": 43,
+    "transport_company": 3,
+    "support": 3,
+    "wallets": 16
+  },
+  "schemaNotes": {
+    "regions": "collection id `cities` with region_* document ids",
+    "cities": "collection id `villages`",
+    "landmarks": "collection id `mkan`; legacy alias ids excluded from logical count"
+  }
+}

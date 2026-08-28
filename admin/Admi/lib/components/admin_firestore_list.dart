@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '/backend/admin_data_trace.dart';
 import '/backend/admin_panel_session.dart';
 import '/backend/admin_panel_data_bootstrap.dart';
 import '/backend/admin_agent_country_lock.dart';
@@ -325,6 +326,10 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     required bool showedCache,
     required int generation,
   }) async {
+    final t0 = DateTime.now();
+    final collectionPath = widget.query is CollectionReference
+        ? (widget.query as CollectionReference).path
+        : 'query';
     try {
       var snap = await query
           .get(const GetOptions(source: Source.server))
@@ -355,6 +360,15 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
         _errorMessage = null;
         _page = 1;
       });
+      AdminDataTrace.log(
+        route: widget.refreshScope ?? 'list',
+        queryName: 'initial',
+        collection: collectionPath,
+        scope: AdminRoleService.isCountryAgent ? 'country' : 'global',
+        docsReturned: snap.docs.length,
+        durationMs: DateTime.now().difference(t0).inMilliseconds,
+        source: 'server',
+      );
 
       if (widget.liveUpdates) {
         _listenFirstPage(query);
