@@ -1,7 +1,7 @@
 
+import '/backend/admin_ops_country_scope.dart';
 import '/backend/admin_ops_counters.dart';
 import '/backend/admin_ops_filters.dart';
-import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 
 /// Aggregate driver counters (Firestore count aggregates).
@@ -40,6 +40,8 @@ class DriverAdminStats {
     required this.docsMissing,
     required this.docsNeedsReupload,
     required this.docsUnknownLegacy,
+    this.expiringSoon = 0,
+    this.expired = 0,
     this.scopedNote = '',
   });
 
@@ -60,6 +62,8 @@ class DriverAdminStats {
   final int docsMissing;
   final int docsNeedsReupload;
   final int docsUnknownLegacy;
+  final int expiringSoon;
+  final int expired;
 
   /// When non-empty, counters match the active table filter dataset.
   final String scopedNote;
@@ -95,6 +99,8 @@ class DriverAdminStats {
     docsMissing: 0,
     docsNeedsReupload: 0,
     docsUnknownLegacy: 0,
+    expiringSoon: 0,
+    expired: 0,
   );
 }
 
@@ -119,10 +125,11 @@ abstract final class DriverAdminStatsLoader {
       return AdminOpsQueryBuilder.applyDriverFiltersCore(q, filters);
     }
     q = q.where('ismndob', isEqualTo: true);
-    final c = AdminRoleService.isCountryAgent
-        ? AdminRoleService.scopedCountryRef
-        : null;
-    if (c != null) q = q.where('Rev_dolh', isEqualTo: c);
+    q = AdminOpsCountryScope.applyCountryFieldFilter(
+      q,
+      field: 'Rev_dolh',
+      explicitCountry: filters?.effectiveCountryRef,
+    );
     return q;
   }
 
@@ -183,6 +190,10 @@ abstract final class DriverAdminStatsLoader {
             'registration_documents_status',
             isEqualTo: 'unknown_legacy',
           )),
+      _count((q) =>
+          base(q).where('doc_expiry_bucket', isEqualTo: 'expiring_soon')),
+      _count((q) =>
+          base(q).where('doc_expiry_bucket', isEqualTo: 'expired')),
     ]);
 
     final total = results[0];
@@ -221,12 +232,14 @@ abstract final class DriverAdminStatsLoader {
           break;
       }
     }
-    final v2Idx = reviewPinned ? 3 : 12;
+    final v2Idx = reviewPinned ? 13 : 12;
     final v2Total = results[v2Idx];
     final docsComplete = results[v2Idx + 1];
     final docsMissing = results[v2Idx + 2];
     final docsNeedsReupload = results[v2Idx + 3];
     final docsUnknownExplicit = results[v2Idx + 4];
+    final expiringSoon = results[v2Idx + 5];
+    final expired = results[v2Idx + 6];
     final docsKnown = docsComplete + docsMissing + docsNeedsReupload;
     // Unknown = explicit unknown_legacy + drivers with no authoritative field yet.
     final docsUnknownLegacy = AdminOpsCounters.driversUnknown(
@@ -286,6 +299,8 @@ abstract final class DriverAdminStatsLoader {
       docsMissing: docsMissing,
       docsNeedsReupload: docsNeedsReupload,
       docsUnknownLegacy: docsUnknownFinal,
+      expiringSoon: expiringSoon,
+      expired: expired,
       scopedNote: noteParts.isEmpty
           ? ''
           : 'Counters scoped to: ${noteParts.join(', ')}',

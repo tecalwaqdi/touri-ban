@@ -28,11 +28,14 @@ class AdminFirestoreList<T> extends StatefulWidget {
     this.empty,
     this.loading,
     this.refreshScope,
+    this.countQueryBuilder,
   });
 
   final Query query;
   final RecordBuilder<T> recordBuilder;
   final Query Function(Query)? queryBuilder;
+  /// Optional aggregate query without `orderBy` (matches list filters).
+  final Query Function(Query)? countQueryBuilder;
   /// When this changes, the list reloads (use filter signature).
   final String? reloadKey;
   final int pageSize;
@@ -116,9 +119,11 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   Future<void> _refreshTotalCount() async {
     final gen = ++_countGeneration;
     try {
-      // Drop orderBy for cheaper aggregate counts when present.
-      var q = _baseQuery();
-      final count = await queryCollectionCount(q);
+      final builder = widget.countQueryBuilder ?? widget.queryBuilder ?? (q) => q;
+      final count = await queryCollectionCount(
+        widget.query,
+        queryBuilder: builder,
+      );
       if (!mounted || gen != _countGeneration) return;
       setState(() => _totalAvailable = count);
     } catch (_) {
@@ -157,11 +162,31 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     }
     if (AdminRoleService.isCountryAgent) {
       _agentReadySub = AdminAgentSessionReady.onReady.listen((_) {
-        if (!mounted || _items.isNotEmpty) return;
-        _loadInitial();
+        if (!mounted || !AdminPanelDataBootstrap.isAgentScopeReady) return;
+        if (_items.isEmpty || _hasError) {
+          unawaited(_resetAndReload());
+        }
       });
     }
     _start();
+  }
+
+  Future<bool> _ensureListScopeReady() async {
+    if (AdminRoleService.isCountryAgent) {
+      try {
+        await AdminPanelDataBootstrap.ensureReady();
+        AdminAgentCountryLock.applyToAppState();
+        return AdminPanelDataBootstrap.isAgentScopeReady;
+      } catch (_) {
+        return false;
+      }
+    }
+    try {
+      await AdminPanelSession.ensureScopeReady().timeout(
+        const Duration(seconds: 4),
+      );
+    } catch (_) {}
+    return true;
   }
 
   Future<void> _start() async {
@@ -170,17 +195,11 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
       _hasError = false;
       _errorMessage = null;
     });
-    if (AdminRoleService.isCountryAgent) {
-      try {
-        await AdminAgentCountryLock.ensureCountryResolved();
-        AdminAgentCountryLock.applyToAppState();
-      } catch (_) {}
-    } else {
-      try {
-        await AdminPanelSession.ensureScopeReady();
-      } catch (_) {}
-    }
+    final ready = await _ensureListScopeReady();
     if (!mounted) return;
+    if (!ready && AdminRoleService.isCountryAgent) {
+      return;
+    }
     await _loadInitial();
   }
 
@@ -191,7 +210,8 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     // Reload when collection, page size, or explicit filter reloadKey changes.
     if (oldWidget.query != widget.query ||
         oldWidget.pageSize != widget.pageSize ||
-        oldWidget.reloadKey != widget.reloadKey) {
+        oldWidget.reloadKey != widget.reloadKey ||
+        oldWidget.countQueryBuilder != widget.countQueryBuilder) {
       _resetAndLoad();
     }
   }
@@ -209,33 +229,52 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     _start();
   }
 
+  /// Firestore web can hang forever on `Source.cache` when IndexedDB
+  /// persistence is cold / unavailable. Never block first paint on cache.
+  static const _cacheBudget = Duration(milliseconds: 700);
+
+  Future<QuerySnapshot?> _getCacheBounded(Query query) async {
+    try {
+      return await query
+          .get(const GetOptions(source: Source.cache))
+          .timeout(_cacheBudget);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _loadInitial() async {
     final query = _baseQuery().limit(widget.pageSize);
     final generation = ++_syncGeneration;
     var showedCache = false;
     unawaited(_refreshTotalCount());
 
-    try {
-      final cached = await query.get(const GetOptions(source: Source.cache));
-      if (cached.docs.isNotEmpty && mounted && generation == _syncGeneration) {
-        showedCache = true;
-        setState(() {
-          _items
-            ..clear()
-            ..addAll(_map(cached));
-          _lastDoc = cached.docs.last;
-          _hasMore = cached.docs.length >= widget.pageSize;
-          _loading = false;
-          _fromCache = true;
-          _hasError = false;
-          _errorMessage = null;
-        });
-        unawaited(_refreshFromServerInBackground(query, generation));
-        return;
-      }
-    } catch (_) {}
+    final cached = await _getCacheBounded(query);
+    if (cached != null &&
+        cached.docs.isNotEmpty &&
+        mounted &&
+        generation == _syncGeneration) {
+      showedCache = true;
+      setState(() {
+        _items
+          ..clear()
+          ..addAll(_map(cached));
+        _lastDoc = cached.docs.last;
+        _hasMore = cached.docs.length >= widget.pageSize;
+        _loading = false;
+        _fromCache = true;
+        _hasError = false;
+        _errorMessage = null;
+      });
+      unawaited(_refreshFromServerInBackground(query, generation));
+      return;
+    }
 
-    await _fetchFromServer(query, showedCache: showedCache, generation: generation);
+    await _fetchFromServer(
+      query,
+      showedCache: showedCache,
+      generation: generation,
+    );
   }
 
   Future<void> _refreshFromServerInBackground(Query query, int generation) async {
@@ -398,17 +437,12 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
       _hasError = false;
       _errorMessage = null;
     });
-    if (AdminRoleService.isCountryAgent) {
-      try {
-        await AdminAgentCountryLock.ensureCountryResolved();
-        AdminAgentCountryLock.applyToAppState();
-      } catch (_) {}
-    } else {
-      try {
-        await AdminPanelSession.ensureScopeReady();
-      } catch (_) {}
-    }
+    final ready = await _ensureListScopeReady();
     if (!mounted) return;
+    if (!ready && AdminRoleService.isCountryAgent) {
+      setState(() => _loading = true);
+      return;
+    }
     await _loadInitial();
   }
 
@@ -424,12 +458,10 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
           .limit(widget.pageSize);
 
       QuerySnapshot snap;
-      try {
-        snap = await query.get(const GetOptions(source: Source.cache));
-        if (snap.docs.isEmpty) {
-          snap = await query.get();
-        }
-      } catch (_) {
+      final cachedMore = await _getCacheBounded(query);
+      if (cachedMore != null && cachedMore.docs.isNotEmpty) {
+        snap = cachedMore;
+      } else {
         snap = await query.get();
       }
 

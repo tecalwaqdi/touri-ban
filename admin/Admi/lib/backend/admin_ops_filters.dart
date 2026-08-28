@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '/backend/admin_cache_policy.dart';
+import '/backend/admin_ops_country_scope.dart';
 import '/backend/admin_ops_counters.dart';
 import '/backend/admin_role_service.dart';
 import '/core/toury_system_status_codes.dart';
@@ -372,10 +373,11 @@ abstract final class AdminOpsQueryBuilder {
 
   /// Orders list / aggregate query.
   static Query applyOrderFilters(Query q, AdminOpsFilterState filters) {
-    final country = filters.effectiveCountryRef;
-    if (country != null) {
-      q = q.where('Rev_dolh', isEqualTo: country);
-    }
+    q = AdminOpsCountryScope.applyCountryFieldFilter(
+      q,
+      field: 'Rev_dolh',
+      explicitCountry: filters.effectiveCountryRef,
+    );
 
     final codes = statusCodesFor(filters.orderLifecycle);
     if (filters.orderLifecycle == AdminOrderLifecycleFilter.active) {
@@ -524,10 +526,11 @@ abstract final class AdminOpsQueryBuilder {
   static Query applyDriverFiltersCore(Query q, AdminOpsFilterState filters) {
     q = q.where('ismndob', isEqualTo: true);
 
-    final country = filters.effectiveCountryRef;
-    if (country != null) {
-      q = q.where('Rev_dolh', isEqualTo: country);
-    }
+    q = AdminOpsCountryScope.applyCountryFieldFilter(
+      q,
+      field: 'Rev_dolh',
+      explicitCountry: filters.effectiveCountryRef,
+    );
 
     switch (filters.driverActivation) {
       case AdminDriverActivationFilter.all:
@@ -617,18 +620,20 @@ abstract final class AdminOpsQueryBuilder {
 
   /// App users (non-agent / non-driver) — geo only; role math stays in counters.
   static Query applyUserFilters(Query q, AdminOpsFilterState filters) {
-    final country = filters.effectiveCountryRef;
-    if (country != null) {
-      q = q.where('Rev_dolh', isEqualTo: country);
-    }
+    q = AdminOpsCountryScope.applyCountryFieldFilter(
+      q,
+      field: 'Rev_dolh',
+      explicitCountry: filters.effectiveCountryRef,
+    );
     return q.orderBy(FieldPath.documentId);
   }
 
   static Query applySupportFilters(Query q, AdminOpsFilterState filters) {
-    final country = filters.effectiveCountryRef;
-    if (country != null) {
-      q = q.where('Rev_dolh', isEqualTo: country);
-    }
+    q = AdminOpsCountryScope.applyCountryFieldFilter(
+      q,
+      field: 'Rev_dolh',
+      explicitCountry: filters.effectiveCountryRef,
+    );
     switch (filters.supportStatus) {
       case AdminSupportStatusFilter.all:
         break;
@@ -655,10 +660,11 @@ abstract final class AdminOpsQueryBuilder {
   }
 
   static Query applyLandmarkFilters(Query q, AdminOpsFilterState filters) {
-    final country = filters.effectiveCountryRef;
-    if (country != null) {
-      q = q.where('Rev_dolh', isEqualTo: country);
-    }
+    q = AdminOpsCountryScope.applyCountryFieldFilter(
+      q,
+      field: 'Rev_dolh',
+      explicitCountry: filters.effectiveCountryRef,
+    );
     if (filters.cityRef != null) {
       q = q.where('vill', isEqualTo: filters.cityRef);
     }
@@ -669,19 +675,21 @@ abstract final class AdminOpsQueryBuilder {
     Query q,
     AdminOpsFilterState filters,
   ) {
-    final country = filters.effectiveCountryRef;
-    if (country != null) {
-      q = q.where('Rev_dolh', isEqualTo: country);
-    }
+    q = AdminOpsCountryScope.applyCountryFieldFilter(
+      q,
+      field: 'Rev_dolh',
+      explicitCountry: filters.effectiveCountryRef,
+    );
     return q.orderBy(FieldPath.documentId);
   }
 
   static Query applyGuideFilters(Query q, AdminOpsFilterState filters) {
     q = q.where('is_tour_guide', isEqualTo: true);
-    final country = filters.effectiveCountryRef;
-    if (country != null) {
-      q = q.where('Rev_dolh', isEqualTo: country);
-    }
+    q = AdminOpsCountryScope.applyCountryFieldFilter(
+      q,
+      field: 'Rev_dolh',
+      explicitCountry: filters.effectiveCountryRef,
+    );
     return q.orderBy(FieldPath.documentId);
   }
 

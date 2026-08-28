@@ -74,7 +74,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
     setState(() {
       _statsLoading = true;
       _statsError = false;
-      _tableQaLabel = 'visible:0 total:0 empty:false loading:true';
+      // Keep prior visible:* from the table; only mark counters loading.
     });
     try {
       final s = await DriverAdminStatsLoader.load(
@@ -84,8 +84,11 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
       setState(() {
         _stats = s;
         _statsLoading = false;
+        // Preserve table visible count if already known; never force visible:0.
+        final match = RegExp(r'visible:(\d+)').firstMatch(_tableQaLabel);
+        final visible = match?.group(1) ?? '0';
         _tableQaLabel =
-            'visible:0 total:${s.total} empty:${s.total == 0}';
+            'visible:$visible total:${s.total} empty:${s.total == 0}';
       });
     } catch (_) {
       if (!mounted) return;
@@ -222,6 +225,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                   showRegion: true,
                   showCity: true,
                   showSearch: true,
+                  collapseAdvancedByDefault: true,
                   searchHint:
                       'بحث: اسم / هاتف / بريد / معرف / لوحة (الاسم على الصفحة الحالية)',
                 ),
@@ -273,24 +277,17 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                 child: const SizedBox.shrink(),
               ),
               const SizedBox(height: 12),
-              AdminDriverCountersStrip(
-                stats: _stats,
-                loading: _statsLoading,
-                error: _statsError,
-                onRetry: _loadStats,
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: _buildAddButton(l10n),
               ),
+              const SizedBox(height: 16),
               Semantics(
                 identifier: 'qa-driver-table-total',
                 container: true,
                 label: _tableQaLabel,
                 child: const SizedBox.shrink(),
               ),
-              const SizedBox(height: 12),
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: _buildAddButton(l10n),
-              ),
-              const SizedBox(height: 16),
               if (_filters.driverActivation ==
                   AdminDriverActivationFilter.unknown)
                 _UnknownDriversPanel(
@@ -308,6 +305,8 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                   recordBuilder: UserRecord.fromSnapshot,
                   queryBuilder: (q) =>
                       AdminOpsQueryBuilder.applyDriverFilters(q, _filters),
+                  countQueryBuilder: (q) =>
+                      AdminOpsQueryBuilder.applyDriverFiltersCore(q, _filters),
                   loading: Semantics(
                     identifier: 'qa-driver-table-total',
                     container: true,
@@ -405,6 +404,48 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                     );
                   },
                 ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () => context.pushNamed(
+                      AdminDriverExpiryQueueWidget.routeName,
+                      queryParameters: {
+                        'bucket': serializeParam(
+                          'expiring_soon',
+                          ParamType.String,
+                        ),
+                      }.withoutNulls,
+                    ),
+                    icon: const Icon(Icons.hourglass_bottom_rounded, size: 18),
+                    label: Text(
+                      '${uiTr(context, 'تنتهي قريبًا')} (${_stats.expiringSoon})',
+                    ),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => context.pushNamed(
+                      AdminDriverExpiryQueueWidget.routeName,
+                      queryParameters: {
+                        'bucket':
+                            serializeParam('expired', ParamType.String),
+                      }.withoutNulls,
+                    ),
+                    icon: const Icon(Icons.event_busy_rounded, size: 18),
+                    label: Text(
+                      '${uiTr(context, 'منتهية')} (${_stats.expired})',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              AdminDriverCountersStrip(
+                stats: _stats,
+                loading: _statsLoading,
+                error: _statsError,
+                onRetry: _loadStats,
+              ),
             ],
           ),
           ),
