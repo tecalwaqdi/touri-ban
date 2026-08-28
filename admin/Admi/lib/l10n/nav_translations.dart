@@ -31,6 +31,19 @@ const kNavTranslations = <String, Map<String, String>>{
     'az': 'Görüləcək yerlər',
     'ka': 'ღირსშესანიშნაობები',
   },
+  'nav_vehicle_types': {
+    'en': 'Vehicle types',
+    'pt': 'Tipos de veículo',
+    'fr': 'Types de véhicules',
+    'ar': 'أنواع المركبات',
+    'zh_Hans': '车辆类型',
+    'tr': 'Araç türleri',
+    'ur': 'گاڑی کی اقسام',
+    'ru': 'Типы транспорта',
+    'ky': 'Унаа түрлөрү',
+    'az': 'Nəqliyyat növləri',
+    'ka': 'ტრანსპორტის ტიპები',
+  },
   'nav_partners': {
     'en': 'Partners',
     'pt': 'Parceiros',
@@ -1204,6 +1217,7 @@ const kNavTranslations = <String, Map<String, String>>{
 const kNavRouteKeys = <String, String>{
   'Home22Dashboard': 'nav_dashboard',
   'AdminM3alm': 'nav_landmarks',
+  'Admintypecar': 'nav_vehicle_types',
   'AdminPartners': 'nav_partners',
   'AdminDol': 'nav_countries',
   'Adminregion': 'nav_regions',
