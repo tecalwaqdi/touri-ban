@@ -1,6 +1,7 @@
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_cascade_delete.dart';
+import '/backend/admin_landmark_catalog_stats.dart';
 import '/backend/admin_legacy_alias_filter.dart';
 import '/backend/backend.dart';
 import '/components/admin_confirm_dialog.dart';
@@ -77,19 +78,20 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
     );
   }
 
+  /// Soft-disable only — never hard-delete city documents.
   Future<void> _deleteCity(VillagesRecord record) async {
     final confirmed = await showAdminConfirmDialog(
       context: context,
-      title: appTr(context, 'adm_delete_confirm_title'),
+      title: uiTr(context, 'تعطيل المدينة'),
       whatHappens: uiTr(
         context,
-        'Deleting this city removes linked landmarks and may break historical order references.',
+        'Soft-disable this city (acctev=false). Documents and historical refs stay intact.',
       ),
       subject: record.naim.isNotEmpty ? record.naim : record.reference.id,
-      impact: uiTr(context, 'Cascade delete on city and landmarks.'),
+      impact: uiTr(context, 'City hidden from active lists; not hard-deleted'),
       destructive: true,
-      irreversible: true,
-      confirmLabel: appTr(context, 'adm_yes_delete'),
+      irreversible: false,
+      confirmLabel: uiTr(context, 'تعطيل المدينة'),
       cancelLabel: appTr(context, 'adm_no'),
     );
 
@@ -98,8 +100,13 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
     try {
       await AdminCrudFeedback.runWithBlockingProgress(
         context: context,
-        message: uiTr(context, 'جاري الحذف… لا تغلق التطبيق'),
-        action: () => deleteCityCascade(record.reference),
+        message: uiTr(context, 'جاري التعطيل…'),
+        action: () async {
+          await record.reference.update(
+            createVillagesRecordData(acctev: false),
+          );
+          await setCityLandmarksActive(record.reference, false);
+        },
       );
       await AdminAuditLog.recordDelete(
         targetType: 'city',
@@ -110,9 +117,8 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
       await AdminCrudFeedback.success(
         context,
         action: AdminCrudAction.delete,
-        message: uiTr(context, 'تم حذف المدينة والمعالم المرتبطة'),
+        message: uiTr(context, 'تم تعطيل المدينة (بدون حذف)'),
         refreshScope: AdminListScope.cities,
-        removedDocumentId: record.reference.id,
       );
     } catch (e) {
       if (!mounted) return;
@@ -187,6 +193,22 @@ class _AdminvillWidgetState extends State<AdminvillWidget> {
                           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
+              if (AdminLandmarkCatalogStats.isCountryScoped &&
+                  AdminLandmarkCatalogStats.scopeLabelForUi().isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: AdminContentCard(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    child: Text(
+                      '${uiTr(context, 'النطاق الحالي')}: '
+                      '${AdminLandmarkCatalogStats.scopeLabelForUi()}',
+                      style: theme.bodySmall,
+                    ),
+                  ),
+                ),
               AdminContentCard(
                 padding: const EdgeInsets.all(16),
                 child: isWide

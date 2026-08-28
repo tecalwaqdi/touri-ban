@@ -3,6 +3,7 @@ import '/core/admin_content_locale.dart';
 import '/components/admin_i18n_fields.dart';
 import '/core/i18n/toury_i18n_text.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_geo_cascade.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
@@ -1182,15 +1183,30 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                             _model.placePickerValue.latLng)
                         ? _model.placePickerValue.latLng
                         : _model.googleMapsCenter;
-                      if (location == null ||
-                          !AdminLocationService.isValidLocation(location)) {
+                      final cascadeErr = AdminGeoCascade.validateLandmarkParents(
+                        name: name,
+                        countryRef: FFAppState().RevDolh ??
+                            AdminCountryScope.mkanCountryRefForSave(),
+                        regionRef: FFAppState().Revreg,
+                        cityRef: FFAppState().REvCITE,
+                        location: location,
+                        requireLocation: true,
+                      );
+                      if (cascadeErr != null || location == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(uiTr(context, 'يرجى تحديد موقع المعلم على الخريطة')),
+                            content: Text(
+                              uiTr(
+                                context,
+                                cascadeErr ??
+                                    'يرجى تحديد موقع المعلم على الخريطة',
+                              ),
+                            ),
                           ),
                         );
                         return;
                       }
+                      final resolvedLocation = location;
 
                       try {
                         setState(() => _isSaving = true);
@@ -1263,11 +1279,11 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                 idVill: FFAppState().REvCITE,
                                 idCit: FFAppState().Revreg,
                                 revDolh: countryRef,
-                                location: location,
+                                location: resolvedLocation,
                                 address: _model.placePickerValue.address.isNotEmpty
                                     ? _model.placePickerValue.address
                                     : AdminLocationService.formatCoordinates(
-                                        location,
+                                        resolvedLocation,
                                       ),
                                 asAds: _model.switchValue,
                                 isfood: _model.switchrestaurantValue,

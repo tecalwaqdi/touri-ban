@@ -3,6 +3,7 @@ import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_landmark_catalog_stats.dart';
+import '/backend/admin_landmark_list_filters.dart';
 import '/backend/admin_landmark_search.dart';
 import '/backend/admin_legacy_alias_filter.dart';
 import '/backend/admin_performance.dart';
@@ -15,7 +16,10 @@ import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
 import '/components/admin_layout_widget.dart';
+import '/components/admin_ops_filter_bar.dart';
 import '/components/admin_ui.dart';
+import '/backend/admin_ops_filters.dart';
+import '/components/admin_location_service.dart';
 import '/components/map_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -51,6 +55,9 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
   int _searchRequestId = 0;
   Future<int>? _catalogCountFuture;
   bool _catalogCountPartnersOnly = false;
+  AdminLandmarkListFilters _listFilters = const AdminLandmarkListFilters();
+  AdminOpsFilterState _opsFilters = const AdminOpsFilterState();
+  int? _excludedAliasHint;
 
   Query _landmarksQuery(Query collection) {
     var q = collection as Query<Map<String, dynamic>>;
@@ -140,14 +147,19 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
       list,
       (m) => m.reference.id,
     );
+    if (items.isNotEmpty && withoutAliases.length < list.length) {
+      _excludedAliasHint = list.length - withoutAliases.length;
+    }
     final filtered = widget.partnersOnly
         ? withoutAliases.where((m) => m.isShrek).toList()
         : withoutAliases;
 
-    final q = _searchQuery.trim().toLowerCase();
-    if (q.isEmpty) return filtered;
+    var scoped = _listFilters.apply(filtered);
 
-    return filtered.where((m) {
+    final q = _searchQuery.trim().toLowerCase();
+    if (q.isEmpty) return scoped;
+
+    return scoped.where((m) {
       return m.naim.toLowerCase().contains(q) ||
           m.osf.toLowerCase().contains(q) ||
           m.address.toLowerCase().contains(q) ||
@@ -344,30 +356,51 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
   }
 
   Widget _buildScopeBanner() {
+    final theme = FlutterFlowTheme.of(context);
     final scopeLabel = AdminLandmarkCatalogStats.scopeLabelForUi();
-    if (!AdminLandmarkCatalogStats.isCountryScoped || scopeLabel.isEmpty) {
+    final isScoped = AdminLandmarkCatalogStats.isCountryScoped;
+    if (!isScoped && (_excludedAliasHint == null || _excludedAliasHint! <= 0)) {
       return const SizedBox.shrink();
     }
-    final theme = FlutterFlowTheme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: AdminContentCard(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.filter_alt_outlined, size: 18, color: AdminUi.brandTeal),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                '${uiTr(context, 'نطاق العرض')}: $scopeLabel — '
-                '${uiTr(context, 'المعالم خارج هذه الدولة لا تظهر في هذه القائمة')}',
+            if (isScoped && scopeLabel.isNotEmpty)
+              Row(
+                children: [
+                  Icon(Icons.filter_alt_outlined,
+                      size: 18, color: AdminUi.brandTeal),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${uiTr(context, 'النطاق الحالي')}: $scopeLabel',
+                      style: theme.bodySmall.override(
+                        fontFamily: theme.bodySmallFamily,
+                        color: theme.secondaryText,
+                        useGoogleFonts: !theme.bodySmallIsCustom,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            if (_excludedAliasHint != null && _excludedAliasHint! > 0) ...[
+              if (isScoped && scopeLabel.isNotEmpty) const SizedBox(height: 6),
+              Text(
+                uiTr(
+                  context,
+                  '${_excludedAliasHint} سجلات توافق legacy مستبعدة من القائمة العادية',
+                ),
                 style: theme.bodySmall.override(
                   fontFamily: theme.bodySmallFamily,
                   color: theme.secondaryText,
                   useGoogleFonts: !theme.bodySmallIsCustom,
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),
@@ -375,12 +408,15 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
   }
 
   String _landmarkLocationText(MkanRecord record) {
+    if (record.location == null) {
+      return uiTr(context, 'الموقع غير محدد');
+    }
     if (record.mdh.isNotEmpty && record.address.isNotEmpty) {
       return '${record.mdh} · ${record.address}';
     }
     if (record.mdh.isNotEmpty) return record.mdh;
     if (record.address.isNotEmpty) return record.address;
-    return '—';
+    return AdminLocationService.formatCoordinates(record.location!);
   }
 
   Widget _buildLandmarksCard({
@@ -400,19 +436,31 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
         AdminUi.responsiveColumnCount(context, wide: 3, medium: 2, narrow: 1);
     final activeCount = landmarks.where((m) => m.acctev).length;
     final isSearching = _searchQuery.trim().isNotEmpty;
+    // Avoid flash: wait for catalogTotal (final scope) before showing a number.
+    final countReady = isSearching || displayTotal != null;
     final count = displayTotal ??
-        listState?.totalAvailable ??
-        landmarks.length;
+        (isSearching
+            ? landmarks.length
+            : (listState?.totalAvailable ?? landmarks.length));
 
     final scopeNote = AdminLandmarkCatalogStats.isCountryScoped
         ? AdminLandmarkCatalogStats.scopeLabelForUi()
         : null;
-    final hiddenAliasNote = partnerTotal != null && partnerTotal > count
+    final aliasExcluded = _excludedAliasHint;
+    final catalog = displayTotal;
+    final hiddenAliasNote = aliasExcluded != null && aliasExcluded > 0
         ? uiTr(
             context,
-            'تم استبعاد ${partnerTotal - count} معلم alias قديم من العدد الإجمالي',
+            'تم استبعاد $aliasExcluded سجل توافق legacy من العدد الإجمالي',
           )
-        : null;
+        : (partnerTotal != null &&
+                catalog != null &&
+                partnerTotal > catalog
+            ? uiTr(
+                context,
+                'تم استبعاد ${partnerTotal - catalog} معلم alias قديم من العدد الإجمالي',
+              )
+            : null);
 
     return AdminContentCard(
       padding: EdgeInsets.zero,
@@ -421,7 +469,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
         children: [
           _LandmarksSummaryBar(
             totalLabel: totalLabel,
-            count: count,
+            count: countReady ? count : null,
             hasMore: hasMore && displayTotal == null && listState?.totalAvailable == null,
             activeCount: activeCount,
             inactiveCount: landmarks.length - activeCount,
@@ -562,22 +610,101 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
             children: [
               AdminContentCard(
                 padding: const EdgeInsets.all(16),
-                child: isWide
-                    ? Row(
-                        children: [
-                          Expanded(child: _buildSearch(l10n)),
-                          const SizedBox(width: 12),
-                          _buildAddButton(l10n),
-                        ],
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildSearch(l10n),
-                          const SizedBox(height: 12),
-                          _buildAddButton(l10n),
-                        ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    isWide
+                        ? Row(
+                            children: [
+                              Expanded(child: _buildSearch(l10n)),
+                              const SizedBox(width: 12),
+                              _buildAddButton(l10n),
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _buildSearch(l10n),
+                              const SizedBox(height: 12),
+                              _buildAddButton(l10n),
+                            ],
+                          ),
+                    const SizedBox(height: 12),
+                    AdminOpsFilterBar(
+                      value: _opsFilters,
+                      config: AdminOpsFilterConfig(
+                        showDate: false,
+                        showCountry: !AdminRoleService.isCountryAgent,
+                        showRegion: true,
+                        showCity: true,
+                        showSearch: false,
+                        collapseAdvancedByDefault: false,
                       ),
+                      onChanged: (next) {
+                        setState(() {
+                          _opsFilters = next;
+                          _listFilters = AdminLandmarkListFilters(
+                            countryRef: next.effectiveCountryRef,
+                            regionRef: next.regionRef,
+                            cityRef: next.cityRef,
+                            status: _listFilters.status,
+                            imageMissingOnly: _listFilters.imageMissingOnly,
+                          );
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        FilterChip(
+                          label: Text(uiTr(context, 'الكل')),
+                          selected:
+                              _listFilters.status == AdminLandmarkStatusFilter.all &&
+                                  !_listFilters.imageMissingOnly,
+                          onSelected: (_) => setState(() {
+                            _listFilters = _listFilters.copyWith(
+                              status: AdminLandmarkStatusFilter.all,
+                              imageMissingOnly: false,
+                            );
+                          }),
+                        ),
+                        FilterChip(
+                          label: Text(uiTr(context, 'نشط')),
+                          selected: _listFilters.status ==
+                              AdminLandmarkStatusFilter.active,
+                          onSelected: (_) => setState(() {
+                            _listFilters = _listFilters.copyWith(
+                              status: AdminLandmarkStatusFilter.active,
+                              imageMissingOnly: false,
+                            );
+                          }),
+                        ),
+                        FilterChip(
+                          label: Text(uiTr(context, 'غير نشط')),
+                          selected: _listFilters.status ==
+                              AdminLandmarkStatusFilter.inactive,
+                          onSelected: (_) => setState(() {
+                            _listFilters = _listFilters.copyWith(
+                              status: AdminLandmarkStatusFilter.inactive,
+                              imageMissingOnly: false,
+                            );
+                          }),
+                        ),
+                        FilterChip(
+                          label: Text(uiTr(context, 'بلا صورة')),
+                          selected: _listFilters.imageMissingOnly,
+                          onSelected: (_) => setState(() {
+                            _listFilters = _listFilters.copyWith(
+                              imageMissingOnly: !_listFilters.imageMissingOnly,
+                            );
+                          }),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 14),
               _buildScopeBanner(),
@@ -687,7 +814,7 @@ class _LandmarksSummaryBar extends StatelessWidget {
   });
 
   final String totalLabel;
-  final int count;
+  final int? count;
   final bool hasMore;
   final int activeCount;
   final int inactiveCount;
@@ -700,6 +827,9 @@ class _LandmarksSummaryBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
+    final countText = count == null
+        ? '…'
+        : '$count${hasMore ? '+' : ''}';
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
@@ -722,8 +852,8 @@ class _LandmarksSummaryBar extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  '$totalLabel: $count${hasMore ? '+' : ''}'
-                  '${filteredFromTotal && partnerTotal != null ? ' ${uiTr(context, 'من')} ${partnerTotal}' : ''}',
+                  '$totalLabel: $countText'
+                  '${filteredFromTotal && partnerTotal != null && count != null ? ' ${uiTr(context, 'من')} ${partnerTotal}' : ''}',
                   style: theme.titleSmall.override(
                     fontFamily: theme.titleSmallFamily,
                     fontWeight: FontWeight.w700,
@@ -734,7 +864,7 @@ class _LandmarksSummaryBar extends StatelessWidget {
               ),
             ],
           ),
-          if (count > 0) ...[
+          if (count != null && count! > 0) ...[
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,

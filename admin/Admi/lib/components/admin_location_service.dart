@@ -21,8 +21,14 @@ class GeocodeResult {
 class AdminLocationService {
   static const LatLng defaultCenter = LatLng(24.7136, 46.6753);
 
-  static bool isValidLocation(LatLng latLng) =>
-      latLng.latitude.abs() > 0.0001 || latLng.longitude.abs() > 0.0001;
+  /// Accepts real-world coordinates only (not 0,0 / NaN / out of range).
+  static bool isValidLocation(LatLng? latLng) {
+    if (latLng == null) return false;
+    final lat = latLng.latitude;
+    final lng = latLng.longitude;
+    if (lat.isNaN || lng.isNaN) return false;
+    return _isValidLatLng(lat, lng);
+  }
 
   static String formatCoordinates(LatLng latLng) =>
       '${latLng.latitude.toStringAsFixed(6)}, ${latLng.longitude.toStringAsFixed(6)}';

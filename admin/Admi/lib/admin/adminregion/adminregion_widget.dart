@@ -2,6 +2,7 @@ import '/backend/admin_audit_log.dart';
 import '/backend/admin_cascade_delete.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_legacy_alias_filter.dart';
+import '/backend/admin_landmark_catalog_stats.dart';
 import '/backend/backend.dart';
 import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
@@ -76,19 +77,20 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
     );
   }
 
+  /// Soft-disable only — never hard-delete region documents.
   Future<void> _deleteRegion(CitiesRecord record) async {
     final confirmed = await showAdminConfirmDialog(
       context: context,
-      title: appTr(context, 'adm_delete_confirm_title'),
+      title: uiTr(context, 'تعطيل المنطقة'),
       whatHappens: uiTr(
         context,
-        'Deleting this region removes linked landmarks. This may break historical order references.',
+        'Soft-disable this region (acctev=false). Documents and historical refs stay intact.',
       ),
       subject: record.naim.isNotEmpty ? record.naim : record.reference.id,
-      impact: uiTr(context, 'Cascade delete on region and landmarks.'),
+      impact: uiTr(context, 'Region hidden from active lists; not hard-deleted'),
       destructive: true,
-      irreversible: true,
-      confirmLabel: appTr(context, 'adm_yes_delete'),
+      irreversible: false,
+      confirmLabel: uiTr(context, 'تعطيل المنطقة'),
       cancelLabel: appTr(context, 'adm_no'),
     );
 
@@ -97,8 +99,13 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
     try {
       await AdminCrudFeedback.runWithBlockingProgress(
         context: context,
-        message: uiTr(context, 'جاري الحذف… لا تغلق التطبيق'),
-        action: () => deleteRegionCascade(record.reference),
+        message: uiTr(context, 'جاري التعطيل…'),
+        action: () async {
+          await record.reference.update(
+            createCitiesRecordData(acctev: false),
+          );
+          await setRegionLandmarksActive(record.reference, false);
+        },
       );
       await AdminAuditLog.recordDelete(
         targetType: 'region',
@@ -110,9 +117,8 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
       await AdminCrudFeedback.success(
         context,
         action: AdminCrudAction.delete,
-        message: uiTr(context, 'تم حذف المنطقة وكل البيانات المرتبطة'),
+        message: uiTr(context, 'تم تعطيل المنطقة (بدون حذف)'),
         refreshScope: AdminListScope.regions,
-        removedDocumentId: record.reference.id,
       );
     } catch (e) {
       if (!mounted) return;
@@ -189,6 +195,22 @@ class _AdminregionWidgetState extends State<AdminregionWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (AdminLandmarkCatalogStats.isCountryScoped &&
+                  AdminLandmarkCatalogStats.scopeLabelForUi().isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: AdminContentCard(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    child: Text(
+                      '${uiTr(context, 'النطاق الحالي')}: '
+                      '${AdminLandmarkCatalogStats.scopeLabelForUi()}',
+                      style: theme.bodySmall,
+                    ),
+                  ),
+                ),
               AdminContentCard(
                 padding: const EdgeInsets.all(16),
                 child: isWide

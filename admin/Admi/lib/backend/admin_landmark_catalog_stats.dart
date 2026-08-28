@@ -11,8 +11,8 @@ import '/backend/backend.dart';
 abstract final class AdminLandmarkCatalogStats {
   AdminLandmarkCatalogStats._();
 
-  static const _pageSize = 400;
-  static const _maxDuration = Duration(seconds: 40);
+  static const _pageSize = 1000;
+  static const _maxDuration = Duration(seconds: 25);
 
   static final Map<String, _CachedCatalogCount> _cache = {};
 

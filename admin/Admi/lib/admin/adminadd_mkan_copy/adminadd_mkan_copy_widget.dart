@@ -1,6 +1,6 @@
-
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_geo_cascade.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_landmark_search.dart';
@@ -82,6 +82,41 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
         return;
       }
 
+      final nextCountry = AdminCountryScope.mkanCountryRefForSave() ??
+          record.revDolh ??
+          FFAppState().RevDolh;
+      final nextRegion = FFAppState().Revreg ?? record.idCit;
+      final nextCity = FFAppState().REvCITE ?? record.idVill;
+      final nextLocation = AdminLocationService.isValidLocation(
+            _model.placePickerValue.latLng)
+          ? _model.placePickerValue.latLng
+          : (_model.googleMapsCenter ?? record.location);
+      final cascadeErr = AdminGeoCascade.validateLandmarkParents(
+        name: name,
+        countryRef: nextCountry,
+        regionRef: nextRegion,
+        cityRef: nextCity,
+        location: nextLocation,
+        requireLocation: false,
+      );
+      if (cascadeErr != null &&
+          cascadeErr != 'الموقع غير محدد' &&
+          cascadeErr != 'يرجى تحديد موقع المعلم على الخريطة') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(uiTr(context, cascadeErr))),
+        );
+        return;
+      }
+      if (nextLocation != null) {
+        final locErr = AdminGeoCascade.validateLatLng(nextLocation);
+        if (locErr != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(uiTr(context, locErr))),
+          );
+          return;
+        }
+      }
+
       setState(() => _isSaving = true);
     try {
       await AdminAgentCountryLock.ensureCountryResolved();
@@ -96,6 +131,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
               existingUrl: record.img1,
               localBytes: _model.uploadedLocalFile_uploadDataCni.bytes,
               previousUrl: previousImg1,
+              cleanupReplaced: false,
             );
       final img2 = _model.secondImageRemoved
           ? ''
@@ -104,6 +140,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
               existingUrl: record.img2,
               localBytes: _model.uploadedLocalFile_uploadData8dq.bytes,
               previousUrl: previousImg2,
+              cleanupReplaced: false,
             );
       final img3 = _model.thirdImageRemoved
           ? ''
@@ -112,16 +149,8 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
               existingUrl: record.img3,
               localBytes: _model.uploadedLocalFile_uploadDataImg3.bytes,
               previousUrl: previousImg3,
+              cleanupReplaced: false,
             );
-      if (_model.mainImageRemoved) {
-        await deleteAdminStorageUrl(previousImg1);
-      }
-      if (_model.secondImageRemoved) {
-        await deleteAdminStorageUrl(previousImg2);
-      }
-      if (_model.thirdImageRemoved) {
-        await deleteAdminStorageUrl(previousImg3);
-      }
 
       await AdminFirestoreDelete.updateDocument(
         widget.idmkan!,
@@ -150,10 +179,8 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
           idclassification: record.idclassification,
           idCit: FFAppState().Revreg ?? record.idCit,
           idVill: FFAppState().REvCITE ?? record.idVill,
-          location: AdminLocationService.isValidLocation(
-                _model.placePickerValue.latLng)
-            ? _model.placePickerValue.latLng
-            : (_model.googleMapsCenter ?? record.location),
+          revDolh: countryRef ?? record.revDolh,
+          location: nextLocation,
           userMalk: record.userMalk,
           ser: record.ser,
           address: _model.placePickerValue.address.isNotEmpty
@@ -169,9 +196,21 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
           rate: _model.ratingValue,
           addSaat: record.addSaat,
           ismzod: record.ismzod,
-          revDolh: countryRef ?? record.revDolh,
         ),
       );
+      // Only remove old Storage objects after Firestore write succeeds.
+      if (_model.mainImageRemoved ||
+          (img1.isNotEmpty && img1 != previousImg1)) {
+        await deleteAdminStorageUrl(previousImg1);
+      }
+      if (_model.secondImageRemoved ||
+          (img2.isNotEmpty && img2 != previousImg2)) {
+        await deleteAdminStorageUrl(previousImg2);
+      }
+      if (_model.thirdImageRemoved ||
+          (img3.isNotEmpty && img3 != previousImg3)) {
+        await deleteAdminStorageUrl(previousImg3);
+      }
       if (!mounted) return;
       await AdminCrudFeedback.success(
         context,
@@ -513,6 +552,13 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
+
+    if (widget.idmkan == null) {
+      return AdminMissingDocumentScaffold(
+        title: uiTr(context, 'تعديل المعلم'),
+        message: uiTr(context, 'تعذر تحميل البيانات. الرابط ناقص أو غير صالح.'),
+      );
+    }
 
     return StreamBuilder<MkanRecord>(
       stream: MkanRecord.getDocument(widget.idmkan!),

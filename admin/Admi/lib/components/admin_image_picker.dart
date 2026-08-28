@@ -352,16 +352,25 @@ ImageProvider? adminImageProvider({
   if (localBytes != null && localBytes.isNotEmpty) {
     return MemoryImage(localBytes);
   }
-  if (imageUrl.trim().isEmpty) {
+  final url = imageUrl.trim();
+  if (url.isEmpty) {
     return null;
   }
-  if (isProfilePhotoDataUrl(imageUrl)) {
-    final embedded = decodeProfilePhotoDataUrl(imageUrl);
+  if (isProfilePhotoDataUrl(url)) {
+    final embedded = decodeProfilePhotoDataUrl(url);
     if (embedded != null) {
       return MemoryImage(embedded);
     }
   }
-  return NetworkImage(imageUrl);
+  // Local Flutter assets — never fetch as network (avoids Console 404).
+  if (url.startsWith('assets/')) {
+    return AssetImage(url);
+  }
+  // Only http(s) URLs become NetworkImage.
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return NetworkImage(url);
+  }
+  return null;
 }
 
 /// Preview widget for add/edit forms (network + data-URL + local bytes).
