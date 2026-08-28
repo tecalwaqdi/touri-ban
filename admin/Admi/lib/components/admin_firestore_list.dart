@@ -198,6 +198,13 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     final ready = await _ensureListScopeReady();
     if (!mounted) return;
     if (!ready && AdminRoleService.isCountryAgent) {
+      // Never leave an infinite spinner when agent scope is unresolved.
+      // Session-ready listener will retry once bootstrap finishes.
+      setState(() {
+        _loading = false;
+        _hasError = true;
+        _errorMessage = 'adm_scope_not_ready';
+      });
       return;
     }
     await _loadInitial();
@@ -232,6 +239,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   /// Firestore web can hang forever on `Source.cache` when IndexedDB
   /// persistence is cold / unavailable. Never block first paint on cache.
   static const _cacheBudget = Duration(milliseconds: 700);
+  static const _serverBudget = Duration(seconds: 12);
 
   Future<QuerySnapshot?> _getCacheBounded(Query query) async {
     try {
@@ -318,7 +326,9 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     required int generation,
   }) async {
     try {
-      var snap = await query.get(const GetOptions(source: Source.server));
+      var snap = await query
+          .get(const GetOptions(source: Source.server))
+          .timeout(_serverBudget);
       if (!mounted || generation != _syncGeneration) return;
 
       if (snap.docs.isEmpty &&
@@ -326,9 +336,10 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
           _loadAttempt == 0) {
         _loadAttempt++;
         await _ensureAgentScopeReady();
-        snap = await _baseQuery().limit(widget.pageSize).get(
-              const GetOptions(source: Source.server),
-            );
+        snap = await _baseQuery()
+            .limit(widget.pageSize)
+            .get(const GetOptions(source: Source.server))
+            .timeout(_serverBudget);
         if (!mounted || generation != _syncGeneration) return;
       }
 

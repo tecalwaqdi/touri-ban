@@ -31,6 +31,40 @@ class AdminRoleService {
   /// Legacy shim for callers comparing an already-loaded profile.
   static AdminRole roleFrom(UserRecord? user) => _roleFromUserDoc(user);
 
+  /// Testable role matrix from raw profile fields (no Firebase required).
+  static AdminRole roleFromFields({
+    required bool isAdmin,
+    required int isAdminRule,
+    required bool hasIsAdminRule,
+    bool isagent = false,
+    bool isPartner = false,
+  }) {
+    if (hasIsAdminRule) {
+      if (isAdminRule == ruleSuperAdmin) {
+        return AdminRole.superAdmin;
+      }
+      if (isAdminRule == ruleCountryAgent) {
+        return AdminRole.countryAgent;
+      }
+      if (isAdminRule == rulePartner) {
+        return AdminRole.partner;
+      }
+      if (isAdminRule == ruleTransportCompany) {
+        return AdminRole.transportCompany;
+      }
+    }
+    if (isAdmin) {
+      return AdminRole.superAdmin;
+    }
+    if (isagent) {
+      return AdminRole.countryAgent;
+    }
+    if (isPartner) {
+      return AdminRole.partner;
+    }
+    return AdminRole.none;
+  }
+
   static String roleLabel(AdminRole role) => role.name;
 
   static Future<void> refreshClaims({bool forceRefresh = false}) async {
@@ -56,19 +90,13 @@ class AdminRoleService {
 
   static AdminRole _roleFromUserDoc(UserRecord? user) {
     if (user == null) return AdminRole.none;
-    if (user.isAdmin || user.isAdminRule == ruleSuperAdmin) {
-      return AdminRole.superAdmin;
-    }
-    if (user.isAdminRule == ruleCountryAgent || user.isagent) {
-      return AdminRole.countryAgent;
-    }
-    if (user.isAdminRule == rulePartner || user.isPartner) {
-      return AdminRole.partner;
-    }
-    if (user.isAdminRule == ruleTransportCompany) {
-      return AdminRole.transportCompany;
-    }
-    return AdminRole.none;
+    return roleFromFields(
+      isAdmin: user.isAdmin,
+      isAdminRule: user.isAdminRule,
+      hasIsAdminRule: user.hasIsAdminRule(),
+      isagent: user.isagent,
+      isPartner: user.isPartner,
+    );
   }
 
   static bool get hasPanelAccess =>
@@ -97,7 +125,10 @@ class AdminRoleService {
   /// Firestore user doc check (editing/viewing another account).
   static bool isSuperAdminUser(UserRecord? user) {
     if (user == null) return false;
-    return user.isAdmin || user.isAdminRule == ruleSuperAdmin;
+    if (user.hasIsAdminRule()) {
+      return user.isAdminRule == ruleSuperAdmin;
+    }
+    return user.isAdmin;
   }
 
   static bool get isCountryAgent =>
