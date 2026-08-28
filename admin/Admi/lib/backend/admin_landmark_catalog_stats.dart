@@ -12,7 +12,7 @@ abstract final class AdminLandmarkCatalogStats {
   AdminLandmarkCatalogStats._();
 
   static const _pageSize = 400;
-  static const _maxDuration = Duration(seconds: 25);
+  static const _maxDuration = Duration(seconds: 40);
 
   static final Map<String, _CachedCatalogCount> _cache = {};
 
@@ -50,7 +50,7 @@ abstract final class AdminLandmarkCatalogStats {
 
     final deadline = DateTime.now().add(_maxDuration);
     var count = 0;
-    DocumentSnapshot? last;
+    String? lastDocId;
 
     while (DateTime.now().isBefore(deadline)) {
       final batch = await queryMkanRecordOnce(
@@ -60,8 +60,8 @@ abstract final class AdminLandmarkCatalogStats {
             query = query.where('isShrek', isEqualTo: true);
           }
           query = query.orderBy(FieldPath.documentId);
-          if (last != null) {
-            query = query.startAfterDocument(last);
+          if (lastDocId != null) {
+            query = query.startAfter([lastDocId]);
           }
           return query;
         },
@@ -78,7 +78,7 @@ abstract final class AdminLandmarkCatalogStats {
         count++;
       }
 
-      last = await batch.last.reference.get();
+      lastDocId = batch.last.reference.id;
       if (batch.length < _pageSize) break;
     }
 

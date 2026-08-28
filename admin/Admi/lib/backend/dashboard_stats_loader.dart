@@ -1,6 +1,7 @@
 
 import '/app_state.dart';
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/dashboard_metric_keys.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_landmark_catalog_stats.dart';
 import '/backend/admin_landmark_count.dart';
@@ -14,6 +15,7 @@ import '/backend/backend.dart';
 import '/backend/admin_performance.dart';
 import '/backend/schema/enums/enums.dart';
 import '/core/toury_system_status_codes.dart';
+import 'package:flutter/foundation.dart';
 
 /// Unified operational dashboard metrics (Firestore Aggregate Count).
 ///
@@ -44,7 +46,7 @@ class DashboardStats {
     required this.loadedAt,
     this.loadComplete = true,
     this.fromCache = false,
-    this.countsReliable = true,
+    this.unreliableMetrics = const {},
     this.loadError,
   });
 
@@ -74,9 +76,14 @@ class DashboardStats {
   final DateTime loadedAt;
   final bool loadComplete;
   final bool fromCache;
-  /// When true, at least one Aggregate failed — do not treat zeros as SoT.
-  final bool countsReliable;
+  /// Metric keys in [DashboardMetricKeys] that failed to load (do not show 0 as SoT).
+  final Set<String> unreliableMetrics;
   final String? loadError;
+
+  bool metricReliable(String key) => !unreliableMetrics.contains(key);
+
+  /// True only when every dashboard metric loaded successfully.
+  bool get countsReliable => unreliableMetrics.isEmpty;
 
   bool get isExpired =>
       DateTime.now().difference(loadedAt) > kAdminStatsTtl;
@@ -112,7 +119,7 @@ class DashboardStats {
         loadedAt: DateTime.now(),
         // Terminal empty must exit LOADING (errors + unsupported scope).
         loadComplete: true,
-        countsReliable: false,
+        unreliableMetrics: DashboardMetricKeys.all,
         loadError: loadError,
       );
 
@@ -214,6 +221,7 @@ void patchDashboardStatsCache({
     loadedAt: DateTime.now(),
     loadComplete: true,
     fromCache: true,
+    unreliableMetrics: cached.unreliableMetrics,
   );
 }
 
@@ -360,7 +368,7 @@ Future<DashboardStats> loadDashboardStats({
             loadedAt: prior.loadedAt,
             loadComplete: true,
             fromCache: true,
-            countsReliable: true,
+            unreliableMetrics: prior.unreliableMetrics,
             loadError: stats.loadError ?? 'stale_kept_after_error',
           );
         }
@@ -495,9 +503,19 @@ Future<int> _recordCount(
 
 Future<int> _countHeavy(Future<int> Function() load) async {
   try {
-    return await load().timeout(const Duration(seconds: 18));
+    return await load().timeout(const Duration(seconds: 35));
   } catch (_) {
-    return 0;
+    return -1;
+  }
+}
+
+Future<int> _countLandmarkCatalog({required bool partnersOnly}) async {
+  try {
+    return await AdminLandmarkCatalogStats.countCatalog(
+      partnersOnly: partnersOnly,
+    ).timeout(const Duration(seconds: 35));
+  } catch (_) {
+    return -1;
   }
 }
 
@@ -602,12 +620,8 @@ Future<int> _partnerBookingCount(DocumentReference partnerMkan) async {
 
 Future<DashboardStats> _fetchSuperAdminStats() async {
   final results = await _parallelCounts<dynamic>([
-    () => _count(
-      () => AdminLandmarkCatalogStats.countCatalog(partnersOnly: false),
-    ),
-    () => _count(
-      () => AdminLandmarkCatalogStats.countCatalog(partnersOnly: true),
-    ),
+    () => _countLandmarkCatalog(partnersOnly: false),
+    () => _countLandmarkCatalog(partnersOnly: true),
     () => _count(() => _recordCount(CountriesRecord.collection)),
     () => _count(() => _recordCount(CitiesRecord.collection)),
     () => _count(() => _recordCount(VillagesRecord.collection)),
@@ -1125,22 +1139,51 @@ DashboardStats _buildStatsFromResults(
   _ExtendedOpsCounts extended = _ExtendedOpsCounts.zero,
 }) {
   final raw = results.map((e) => e as int).toList(growable: false);
-  final failed = raw.any(_isCountFailed) ||
-      [
-        extended.driversActive,
-        extended.driversInactive,
-        extended.tourGuides,
-        extended.bookingsTotal,
-        extended.bookingsCompleted,
-        extended.bookingsCancelled,
-        extended.bookingsExpired,
-        extended.supportOpenTickets,
-      ].any(_isCountFailed);
+  final unreliable = <String>{};
+
+  void markMain(int index, String key) {
+    if (_isCountFailed(raw[index])) unreliable.add(key);
+  }
+
+  markMain(0, DashboardMetricKeys.attractions);
+  markMain(1, DashboardMetricKeys.partners);
+  markMain(2, DashboardMetricKeys.countries);
+  markMain(3, DashboardMetricKeys.regions);
+  markMain(4, DashboardMetricKeys.cities);
+  markMain(5, DashboardMetricKeys.agents);
+  markMain(6, DashboardMetricKeys.representatives);
+  markMain(7, DashboardMetricKeys.appUsers);
+  markMain(8, DashboardMetricKeys.transportCompanies);
+  markMain(9, DashboardMetricKeys.activeBookings);
+  markMain(10, DashboardMetricKeys.supportTickets);
+
+  void markExt(int value, String key) {
+    if (_isCountFailed(value)) unreliable.add(key);
+  }
+
+  markExt(extended.driversActive, DashboardMetricKeys.driversActive);
+  markExt(extended.driversInactive, DashboardMetricKeys.driversInactive);
+  markExt(extended.tourGuides, DashboardMetricKeys.tourGuides);
+  markExt(extended.bookingsTotal, DashboardMetricKeys.bookingsTotal);
+  markExt(extended.bookingsCompleted, DashboardMetricKeys.bookingsCompleted);
+  markExt(extended.bookingsCancelled, DashboardMetricKeys.bookingsCancelled);
+  markExt(extended.bookingsExpired, DashboardMetricKeys.bookingsExpired);
+  markExt(extended.supportOpenTickets, DashboardMetricKeys.supportOpenTickets);
 
   final safe = raw.map(_orZero).toList(growable: false);
   final reps = safe[6];
   final active = _orZero(extended.driversActive);
   final inactive = _orZero(extended.driversInactive);
+
+  final driversUnknownReliable = metricReliableFor(
+    unreliable,
+    DashboardMetricKeys.representatives,
+  ) &&
+      metricReliableFor(unreliable, DashboardMetricKeys.driversActive) &&
+      metricReliableFor(unreliable, DashboardMetricKeys.driversInactive);
+  if (!driversUnknownReliable) {
+    unreliable.add(DashboardMetricKeys.driversUnknown);
+  }
 
   return DashboardStats(
     attractions: safe[0],
@@ -1156,13 +1199,13 @@ DashboardStats _buildStatsFromResults(
     supportTickets: safe[10],
     driversActive: active,
     driversInactive: inactive,
-    driversUnknown: failed
-        ? 0
-        : AdminOpsCounters.driversUnknown(
+    driversUnknown: driversUnknownReliable
+        ? AdminOpsCounters.driversUnknown(
             totalDrivers: reps,
             active: active,
             inactive: inactive,
-          ),
+          )
+        : 0,
     tourGuides: _orZero(extended.tourGuides),
     bookingsTotal: _orZero(extended.bookingsTotal),
     bookingsCompleted: _orZero(extended.bookingsCompleted),
@@ -1170,10 +1213,40 @@ DashboardStats _buildStatsFromResults(
     bookingsExpired: _orZero(extended.bookingsExpired),
     supportOpenTickets: _orZero(extended.supportOpenTickets),
     loadedAt: DateTime.now(),
-    countsReliable: !failed,
-    loadError: failed ? 'aggregate_count_failed' : null,
+    unreliableMetrics: unreliable,
+    loadError: unreliable.isEmpty ? null : 'aggregate_count_failed',
   );
 }
+
+bool metricReliableFor(Set<String> unreliable, String key) =>
+    !unreliable.contains(key);
+
+/// Visible for unit tests — builds dashboard stats from raw aggregate results.
+@visibleForTesting
+DashboardStats buildDashboardStatsFromResultsForTest(
+  List<int> results, {
+  int driversActive = 0,
+  int driversInactive = 0,
+  int tourGuides = 0,
+  int bookingsTotal = 0,
+  int bookingsCompleted = 0,
+  int bookingsCancelled = 0,
+  int bookingsExpired = 0,
+  int supportOpenTickets = 0,
+}) =>
+    _buildStatsFromResults(
+      results,
+      extended: _ExtendedOpsCounts(
+        driversActive: driversActive,
+        driversInactive: driversInactive,
+        tourGuides: tourGuides,
+        bookingsTotal: bookingsTotal,
+        bookingsCompleted: bookingsCompleted,
+        bookingsCancelled: bookingsCancelled,
+        bookingsExpired: bookingsExpired,
+        supportOpenTickets: supportOpenTickets,
+      ),
+    );
 
 Future<int> queryAppUserCount({bool forceServer = false}) async {
   final results = await Future.wait<int>([
@@ -1212,6 +1285,7 @@ Future<int> queryAppUserCount({bool forceServer = false}) async {
   final agents = results[1];
   final reps = results[2];
   final both = results[3];
+  if (results.any(_isCountFailed)) return -1;
   return AdminOpsCounters.appUsersFromParts(
     totalUsers: total,
     agents: agents,

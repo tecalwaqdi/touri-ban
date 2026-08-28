@@ -9,6 +9,7 @@ import '/backend/admin_performance.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_stats_coordinator.dart';
 import '/backend/backend.dart';
+import '/backend/dashboard_metric_keys.dart';
 import '/backend/dashboard_stats_loader.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_user_facing_errors.dart';
@@ -449,6 +450,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
     }
 
     final stats = _stats ?? DashboardStats.empty();
+    bool rel(String key) => stats.metricReliable(key);
     final contentSections = <_DashboardStatGroup>[
       _DashboardStatGroup(
         title: appTr(context, 'dash_section_content'),
@@ -459,6 +461,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_landmarks'),
             icon: Icons.place_rounded,
             count: stats.attractions,
+            reliable: rel(DashboardMetricKeys.attractions),
             colors: const [Color(0xFF1F7372), Color(0xFF2A9D8A)],
             route: AdminM3almWidget.routeName,
           ),
@@ -467,6 +470,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_partner_landmarks'),
             icon: Icons.handshake_rounded,
             count: stats.partners,
+            reliable: rel(DashboardMetricKeys.partners),
             colors: const [Color(0xFF39D2C0), Color(0xFF2EB8A6)],
             route: AdminPartnersWidget.routeName,
           ),
@@ -475,6 +479,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_countries'),
             icon: Icons.flag_rounded,
             count: stats.countries,
+            reliable: rel(DashboardMetricKeys.countries),
             colors: const [Color(0xFF2E8B87), Color(0xFF1F7372)],
             route: AdminDolWidget.routeName,
           ),
@@ -483,6 +488,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_regions'),
             icon: Icons.filter_hdr_rounded,
             count: stats.regions,
+            reliable: rel(DashboardMetricKeys.regions),
             colors: const [Color(0xFF7A9A95), Color(0xFF5F8580)],
             route: AdminregionWidget.routeName,
           ),
@@ -491,6 +497,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_cities'),
             icon: Icons.location_city_rounded,
             count: stats.cities,
+            reliable: rel(DashboardMetricKeys.cities),
             colors: const [Color(0xFF3A9E99), Color(0xFF2A8580)],
             route: AdminvillWidget.routeName,
           ),
@@ -505,6 +512,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_app_users'),
             icon: Icons.groups_rounded,
             count: stats.appUsers,
+            reliable: rel(DashboardMetricKeys.appUsers),
             colors: const [Color(0xFF1F7372), Color(0xFF185E5D)],
             route: AdminuserWidget.routeName,
           ),
@@ -513,6 +521,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_agents'),
             icon: Icons.real_estate_agent_rounded,
             count: stats.agents,
+            reliable: rel(DashboardMetricKeys.agents),
             colors: const [Color(0xFF39D2C0), Color(0xFF1F9A8A)],
             route: AdminAgentWidget.routeName,
           ),
@@ -521,6 +530,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_reps'),
             icon: Icons.directions_car_rounded,
             count: stats.representatives,
+            reliable: rel(DashboardMetricKeys.representatives),
             colors: const [Color(0xFF4DB6AC), Color(0xFF2E9E94)],
             route: AdmindreverWidget.routeName,
           ),
@@ -529,6 +539,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_drivers_active'),
             icon: Icons.verified_user_rounded,
             count: stats.driversActive,
+            reliable: rel(DashboardMetricKeys.driversActive),
             colors: const [Color(0xFF66BB6A), Color(0xFF43A047)],
             route: AdmindreverWidget.routeName,
           ),
@@ -537,6 +548,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_drivers_inactive'),
             icon: Icons.person_off_rounded,
             count: stats.driversInactive,
+            reliable: rel(DashboardMetricKeys.driversInactive),
             colors: const [Color(0xFF90A4AE), Color(0xFF607D8B)],
             route: AdminDriversWidget.routeName,
           ),
@@ -545,6 +557,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_drivers_unknown_hint'),
             icon: Icons.help_outline_rounded,
             count: stats.driversUnknown,
+            reliable: rel(DashboardMetricKeys.driversUnknown),
             colors: const [Color(0xFFFFB74D), Color(0xFFF57C00)],
             route: AdmindreverWidget.routeName,
           ),
@@ -553,6 +566,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_tour_guides'),
             icon: Icons.tour_rounded,
             count: stats.tourGuides,
+            reliable: rel(DashboardMetricKeys.tourGuides),
             colors: const [Color(0xFF7E57C2), Color(0xFF5E35B1)],
             route: AdminTourGuidesWidget.routeName,
           ),
@@ -561,6 +575,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_transport_cos'),
             icon: Icons.local_shipping_rounded,
             count: stats.transportCompanies,
+            reliable: rel(DashboardMetricKeys.transportCompanies),
             colors: const [Color(0xFF6D4C41), Color(0xFF4E342E)],
             route: AdminTransportCompaniesWidget.routeName,
           ),
@@ -569,6 +584,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_support_tickets'),
             icon: Icons.support_agent_rounded,
             count: stats.supportTickets,
+            reliable: rel(DashboardMetricKeys.supportTickets),
             colors: const [Color(0xFFFF8A65), Color(0xFFE64A19)],
             route: AdminSuportWidget.routeName,
           ),
@@ -577,6 +593,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_support_open'),
             icon: Icons.mark_email_unread_rounded,
             count: stats.supportOpenTickets,
+            reliable: rel(DashboardMetricKeys.supportOpenTickets),
             colors: const [Color(0xFFFF7043), Color(0xFFE64A19)],
             route: AdminSuportWidget.routeName,
           ),
@@ -591,6 +608,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_bookings_total'),
             icon: Icons.receipt_long_rounded,
             count: stats.bookingsTotal,
+            reliable: rel(DashboardMetricKeys.bookingsTotal),
             colors: const [Color(0xFF5C6BC0), Color(0xFF3949AB)],
             route: AdminALLhgZWidget.routeName,
           ),
@@ -599,6 +617,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_active_bookings'),
             icon: Icons.event_available_rounded,
             count: stats.activeBookings,
+            reliable: rel(DashboardMetricKeys.activeBookings),
             colors: const [Color(0xFF5C6BC0), Color(0xFF3F51B5)],
             route: AdminALLhgZWidget.routeName,
           ),
@@ -607,6 +626,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_bookings_completed'),
             icon: Icons.check_circle_rounded,
             count: stats.bookingsCompleted,
+            reliable: rel(DashboardMetricKeys.bookingsCompleted),
             colors: const [Color(0xFF26A69A), Color(0xFF00897B)],
             route: AdminALLhgZWidget.routeName,
           ),
@@ -615,6 +635,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_bookings_cancelled'),
             icon: Icons.cancel_rounded,
             count: stats.bookingsCancelled,
+            reliable: rel(DashboardMetricKeys.bookingsCancelled),
             colors: const [Color(0xFFEF5350), Color(0xFFC62828)],
             route: AdminALLhgZWidget.routeName,
           ),
@@ -623,6 +644,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             subtitle: appTr(context, 'dash_sub_bookings_expired'),
             icon: Icons.timer_off_rounded,
             count: stats.bookingsExpired,
+            reliable: rel(DashboardMetricKeys.bookingsExpired),
             colors: const [Color(0xFFFFA726), Color(0xFFEF6C00)],
             route: AdminALLhgZWidget.routeName,
           ),
@@ -719,12 +741,14 @@ class _DashboardStatItem {
     required this.count,
     required this.colors,
     required this.route,
+    this.reliable = true,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
   final int count;
+  final bool reliable;
   final List<Color> colors;
   final String route;
 }
@@ -745,22 +769,31 @@ class _DashboardSummaryStrip extends StatelessWidget {
         icon: Icons.place_rounded,
         label: appTr(context, 'dash_chart_landmarks'),
         value: stats.attractions,
+        reliable: stats.metricReliable(DashboardMetricKeys.attractions),
         color: AdminUi.brandTeal,
-        loading: loading && stats.attractions == 0,
+        loading: loading &&
+            stats.attractions == 0 &&
+            stats.metricReliable(DashboardMetricKeys.attractions),
       ),
       _SummaryPill(
         icon: Icons.groups_rounded,
         label: appTr(context, 'dash_chart_users'),
         value: stats.appUsers,
+        reliable: stats.metricReliable(DashboardMetricKeys.appUsers),
         color: const Color(0xFF2A9D8A),
-        loading: loading && stats.appUsers == 0,
+        loading: loading &&
+            stats.appUsers == 0 &&
+            stats.metricReliable(DashboardMetricKeys.appUsers),
       ),
       _SummaryPill(
         icon: Icons.event_available_rounded,
         label: appTr(context, 'dash_chart_bookings'),
         value: stats.activeBookings,
+        reliable: stats.metricReliable(DashboardMetricKeys.activeBookings),
         color: const Color(0xFF5C6BC0),
-        loading: loading && stats.activeBookings == 0,
+        loading: loading &&
+            stats.activeBookings == 0 &&
+            stats.metricReliable(DashboardMetricKeys.activeBookings),
       ),
     ];
 
@@ -804,6 +837,7 @@ class _SummaryPill extends StatelessWidget {
     required this.label,
     required this.value,
     required this.color,
+    this.reliable = true,
     this.loading = false,
   });
 
@@ -811,6 +845,7 @@ class _SummaryPill extends StatelessWidget {
   final String label;
   final int value;
   final Color color;
+  final bool reliable;
   final bool loading;
 
   @override
@@ -844,10 +879,11 @@ class _SummaryPill extends StatelessWidget {
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                value.toString(),
+                reliable ? value.toString() : uiTr(context, 'غير مؤكد'),
                 style: theme.titleLarge.override(
                   fontFamily: theme.titleLargeFamily,
                   fontWeight: FontWeight.w800,
+                  fontSize: reliable ? null : 13,
                   useGoogleFonts: !theme.titleLargeIsCustom,
                 ),
               ),
@@ -986,11 +1022,14 @@ class _DashboardStatCard extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      item.count.toString(),
+                      item.reliable
+                          ? item.count.toString()
+                          : uiTr(context, 'غير مؤكد'),
                       style: theme.headlineSmall.override(
                         fontFamily: theme.headlineSmallFamily,
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
+                        fontSize: item.reliable ? null : 16,
                         useGoogleFonts: !theme.headlineSmallIsCustom,
                       ),
                     ),

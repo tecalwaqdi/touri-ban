@@ -66,7 +66,9 @@ abstract final class AdminOpsCounters {
   }) async {
     var sum = 0;
     for (final code in codes) {
-      sum += await countForCode(code);
+      final n = await countForCode(code);
+      if (n < 0) return -1;
+      sum += n;
     }
     return sum.clamp(0, 1 << 30);
   }

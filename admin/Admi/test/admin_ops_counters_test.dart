@@ -67,5 +67,12 @@ void main() {
         isEmpty,
       );
     });
+    test('sumStatusCodeCounts returns -1 when any code fails', () async {
+      final result = await AdminOpsCounters.sumStatusCodeCounts(
+        codes: const ['a', 'b'],
+        countForCode: (code) async => code == 'a' ? 2 : -1,
+      );
+      expect(result, -1);
+    });
   });
 }
