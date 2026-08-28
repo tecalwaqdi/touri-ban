@@ -2,6 +2,7 @@
 import '/app_state.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_country_lock.dart';
+import '/backend/admin_landmark_catalog_stats.dart';
 import '/backend/admin_landmark_count.dart';
 import '/backend/admin_ops_counters.dart';
 import '/backend/admin_panel_data_bootstrap.dart';
@@ -601,12 +602,11 @@ Future<int> _partnerBookingCount(DocumentReference partnerMkan) async {
 
 Future<DashboardStats> _fetchSuperAdminStats() async {
   final results = await _parallelCounts<dynamic>([
-    () => _count(() => _recordCount(MkanRecord.collection)),
     () => _count(
-      () => _recordCount(
-        MkanRecord.collection,
-        queryBuilder: (q) => q.where('isShrek', isEqualTo: true),
-      ),
+      () => AdminLandmarkCatalogStats.countCatalog(partnersOnly: false),
+    ),
+    () => _count(
+      () => AdminLandmarkCatalogStats.countCatalog(partnersOnly: true),
     ),
     () => _count(() => _recordCount(CountriesRecord.collection)),
     () => _count(() => _recordCount(CitiesRecord.collection)),
@@ -810,16 +810,12 @@ Future<DashboardStats> _fetchCountryAgentStats({
       : (country != null ? [country] : <DocumentReference>[]);
 
   // Fast Firestore counts first (super-admin pattern); heavy geo merge on manual refresh only.
-  final landmarkCount = quickLandmarks
-      ? () => _count(() => _fastLandmarkCount(partnersOnly: false))
-      : () => _countHeavy(
-          () => AdminLandmarkCount.countForAgent(partnersOnly: false),
-        );
-  final partnerCount = quickLandmarks
-      ? () => _count(() => _fastLandmarkCount(partnersOnly: true))
-      : () => _countHeavy(
-          () => AdminLandmarkCount.countForAgent(partnersOnly: true),
-        );
+  final landmarkCount = () => _countHeavy(
+        () => AdminLandmarkCount.countForAgent(partnersOnly: false),
+      );
+  final partnerCount = () => _countHeavy(
+        () => AdminLandmarkCount.countForAgent(partnersOnly: true),
+      );
 
   if (priorityOnly) {
     final results = await Future.wait<int>([
@@ -912,18 +908,6 @@ Future<int> _countCitiesForAgent(
       ),
     ),
   );
-}
-
-Future<int> _fastLandmarkCount({required bool partnersOnly}) async {
-  return queryMkanRecordCount(
-    queryBuilder: (collection) {
-      var q = collection as Query<Map<String, dynamic>>;
-      if (partnersOnly) {
-        q = q.where('isShrek', isEqualTo: true);
-      }
-      return AdminCountryScope.applyLandmarkCountryFilter(q);
-    },
-  ).timeout(const Duration(seconds: 12));
 }
 
 Future<int> _countAgentsForAgent(List<DocumentReference> countryRefs) async {

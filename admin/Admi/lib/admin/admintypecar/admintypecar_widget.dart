@@ -101,7 +101,7 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
       TypeCarRecord.collection,
       TypeCarRecord.fromSnapshot,
       queryBuilder: (q) => q.orderBy('sr'),
-      limit: 80,
+      limit: 120,
     );
   }
 

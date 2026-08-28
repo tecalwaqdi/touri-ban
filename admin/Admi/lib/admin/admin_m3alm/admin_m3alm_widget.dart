@@ -2,6 +2,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_landmark_catalog_stats.dart';
 import '/backend/admin_landmark_search.dart';
 import '/backend/admin_legacy_alias_filter.dart';
 import '/backend/admin_performance.dart';
@@ -48,6 +49,8 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
   String _searchQuery = '';
   Future<List<MkanRecord>>? _searchFuture;
   int _searchRequestId = 0;
+  Future<int>? _catalogCountFuture;
+  bool _catalogCountPartnersOnly = false;
 
   Query _landmarksQuery(Query collection) {
     var q = collection as Query<Map<String, dynamic>>;
@@ -99,6 +102,14 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
 
     _model.textController ??= TextEditingController();
     _model.textFieldFocusNode ??= FocusNode();
+    _refreshCatalogCount();
+  }
+
+  void _refreshCatalogCount() {
+    _catalogCountPartnersOnly = widget.partnersOnly;
+    _catalogCountFuture = AdminLandmarkCatalogStats.countCatalog(
+      partnersOnly: widget.partnersOnly,
+    );
   }
 
   @override
@@ -115,6 +126,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
       _searchFuture = null;
       AdminLandmarkIndex.clear();
       _model.textController?.clear();
+      _refreshCatalogCount();
     }
   }
 
@@ -148,6 +160,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
     required BuildContext context,
     required FFLocalizations l10n,
     required FlutterFlowTheme theme,
+    int? catalogTotal,
   }) {
     // Country agents: geo-merge loader (matches dashboard landmark totals).
     if (AdminRoleService.isCountryAgent) {
@@ -170,7 +183,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
             listState: listState,
             partnerTotal: widget.partnersOnly ? total : null,
             filteredFromTotal: visibleLandmarks.length != landmarks.length,
-            displayTotal: total,
+            displayTotal: catalogTotal ?? landmarks.length,
           );
         },
       );
@@ -199,9 +212,9 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
           landmarks: landmarks,
           totalLabel: uiTr(context, 'العدد'),
           listState: listState,
-          partnerTotal: partnerTotal,
-          filteredFromTotal: allLandmarks.length != landmarks.length,
-          displayTotal: listState.totalAvailable,
+          partnerTotal: listState.totalAvailable ?? partnerTotal,
+          filteredFromTotal: (listState.totalAvailable ?? allLandmarks.length) != (catalogTotal ?? landmarks.length),
+          displayTotal: catalogTotal ?? landmarks.length,
         );
       },
     );
@@ -250,6 +263,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
       }
       await record.reference.update(createMkanRecordData(acctev: false));
       AdminLandmarkIndex.removeRecord(record);
+      AdminLandmarkCatalogStats.invalidateCache();
       await AdminAuditLog.recordToggle(
         targetType: 'landmark',
         targetId: record.reference.id,
@@ -314,6 +328,52 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
     );
   }
 
+  Widget _buildCatalogCountWrapper({
+    required Widget Function(int? catalogTotal) builder,
+  }) {
+    if (_catalogCountFuture == null ||
+        _catalogCountPartnersOnly != widget.partnersOnly) {
+      _refreshCatalogCount();
+    }
+    return FutureBuilder<int>(
+      future: _catalogCountFuture,
+      builder: (context, snapshot) {
+        return builder(snapshot.hasData ? snapshot.data : null);
+      },
+    );
+  }
+
+  Widget _buildScopeBanner() {
+    final scopeLabel = AdminLandmarkCatalogStats.scopeLabelForUi();
+    if (!AdminLandmarkCatalogStats.isCountryScoped || scopeLabel.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final theme = FlutterFlowTheme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: AdminContentCard(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            Icon(Icons.filter_alt_outlined, size: 18, color: AdminUi.brandTeal),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '${uiTr(context, 'نطاق العرض')}: $scopeLabel — '
+                '${uiTr(context, 'المعالم خارج هذه الدولة لا تظهر في هذه القائمة')}',
+                style: theme.bodySmall.override(
+                  fontFamily: theme.bodySmallFamily,
+                  color: theme.secondaryText,
+                  useGoogleFonts: !theme.bodySmallIsCustom,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   String _landmarkLocationText(MkanRecord record) {
     if (record.mdh.isNotEmpty && record.address.isNotEmpty) {
       return '${record.mdh} · ${record.address}';
@@ -344,6 +404,16 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
         listState?.totalAvailable ??
         landmarks.length;
 
+    final scopeNote = AdminLandmarkCatalogStats.isCountryScoped
+        ? AdminLandmarkCatalogStats.scopeLabelForUi()
+        : null;
+    final hiddenAliasNote = partnerTotal != null && partnerTotal > count
+        ? uiTr(
+            context,
+            'تم استبعاد ${partnerTotal - count} معلم alias قديم من العدد الإجمالي',
+          )
+        : null;
+
     return AdminContentCard(
       padding: EdgeInsets.zero,
       child: Column(
@@ -358,6 +428,8 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
             isSearching: isSearching,
             filteredFromTotal: filteredFromTotal,
             partnerTotal: partnerTotal,
+            scopeNote: scopeNote?.isNotEmpty == true ? scopeNote : null,
+            hiddenAliasNote: hiddenAliasNote,
           ),
           if (landmarks.isEmpty)
             Padding(
@@ -508,6 +580,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
                       ),
               ),
               const SizedBox(height: 14),
+              _buildScopeBanner(),
               if (_searchQuery.trim().isNotEmpty)
                 FutureBuilder<List<MkanRecord>>(
                   future: _searchFuture,
@@ -540,10 +613,13 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
                   },
                 )
               else
-                _buildPaginatedLandmarksList(
-                  context: context,
-                  l10n: l10n,
-                  theme: theme,
+                _buildCatalogCountWrapper(
+                  builder: (catalogTotal) => _buildPaginatedLandmarksList(
+                    context: context,
+                    l10n: l10n,
+                    theme: theme,
+                    catalogTotal: catalogTotal,
+                  ),
                 ),
             ],
           ),
@@ -606,6 +682,8 @@ class _LandmarksSummaryBar extends StatelessWidget {
     required this.isSearching,
     this.filteredFromTotal = false,
     this.partnerTotal,
+    this.scopeNote,
+    this.hiddenAliasNote,
   });
 
   final String totalLabel;
@@ -616,6 +694,8 @@ class _LandmarksSummaryBar extends StatelessWidget {
   final bool isSearching;
   final bool filteredFromTotal;
   final int? partnerTotal;
+  final String? scopeNote;
+  final String? hiddenAliasNote;
 
   @override
   Widget build(BuildContext context) {
@@ -675,6 +755,28 @@ class _LandmarksSummaryBar extends StatelessWidget {
                   background: const Color(0xFFFFF3E0),
                 ),
               ],
+            ),
+          ],
+          if (scopeNote != null && scopeNote!.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              '${uiTr(context, 'نطاق')}: $scopeNote',
+              style: theme.bodySmall.override(
+                fontFamily: theme.bodySmallFamily,
+                color: theme.secondaryText,
+                useGoogleFonts: !theme.bodySmallIsCustom,
+              ),
+            ),
+          ],
+          if (hiddenAliasNote != null && hiddenAliasNote!.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              hiddenAliasNote!,
+              style: theme.bodySmall.override(
+                fontFamily: theme.bodySmallFamily,
+                color: theme.secondaryText,
+                useGoogleFonts: !theme.bodySmallIsCustom,
+              ),
             ),
           ],
         ],

@@ -3,6 +3,7 @@ import 'dart:math';
 
 
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_legacy_alias_filter.dart';
 import '/backend/admin_panel_data_bootstrap.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_saudi_country.dart';
@@ -243,6 +244,9 @@ class AdminLandmarkCount {
       if (batch.isEmpty) break;
 
       for (final record in batch) {
+        if (!AdminLegacyAliasFilter.keepDocumentId(record.reference.id)) {
+          continue;
+        }
         if (partnersOnly && !record.isShrek) continue;
         if (!validate(record)) continue;
         ids.add(record.reference.path);

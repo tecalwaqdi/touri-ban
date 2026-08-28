@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '/backend/admin_landmark_catalog_stats.dart';
 import '/backend/admin_landmark_count.dart';
 import '/backend/admin_performance.dart';
 import '/backend/admin_reports_loader.dart';
@@ -32,6 +33,7 @@ void refreshDashboardStatsAfterDelete({
   DashboardStatsSectionState.applyOptimisticPatch();
 
   AdminLandmarkCount.invalidateCache();
+  AdminLandmarkCatalogStats.invalidateCache();
   AdminLandmarkCountCache.invalidate();
   clearAdminReportsSummaryCache();
   cancelDashboardStatsLoadInFlight();
@@ -59,6 +61,7 @@ void _flushDashboardInvalidate() {
   clearDashboardStatsCache();
   clearAdminReportsSummaryCache();
   AdminLandmarkCount.invalidateCache();
+  AdminLandmarkCatalogStats.invalidateCache();
   AdminLandmarkCountCache.invalidate();
   AdminStatsCoordinator.instance.invalidate();
   if (DashboardStatsSectionState.hasLiveSections) {
