@@ -270,23 +270,40 @@ abstract final class AdminDriverProfileView {
     AdminDriverDocumentSlot photoSlot() {
       final photoPath =
           (user.snapshotData['photo_storage_path'] as String?)?.trim() ?? '';
-      if (DriverRegistrationDocumentStatus.isStoragePath(photoPath)) {
+      final photoUrl = user.photoUrl.trim();
+      // Also accept nested map shape if ever mirrored like other docs.
+      final mapPhoto = user.snapshotData['doc_profile_photo'];
+      final mapPath = mapPhoto is Map && mapPhoto['storagePath'] is String
+          ? (mapPhoto['storagePath'] as String).trim()
+          : '';
+      final mapUrl = mapPhoto is Map && mapPhoto['url'] is String
+          ? (mapPhoto['url'] as String).trim()
+          : '';
+      final path = DriverRegistrationDocumentStatus.isStoragePath(photoPath)
+          ? photoPath
+          : (DriverRegistrationDocumentStatus.isStoragePath(mapPath)
+              ? mapPath
+              : '');
+      final fallbackUrl = photoUrl.startsWith('https://')
+          ? photoUrl
+          : (mapUrl.startsWith('https://') ? mapUrl : '');
+
+      if (path.isNotEmpty) {
         return AdminDriverDocumentSlot(
           kind: AdminDriverDocKind.profilePhoto,
           fieldKey: 'photo_storage_path',
-          storagePath: photoPath,
-          legacyUrl: user.photoUrl,
+          storagePath: path,
+          legacyUrl: fallbackUrl,
           presence: AdminDriverDocPresence.present,
           accessMode: AdminDriverDocAccessMode.v2StoragePath,
         );
       }
-      final url = user.photoUrl.trim();
-      if (url.startsWith('https://')) {
+      if (fallbackUrl.isNotEmpty) {
         return AdminDriverDocumentSlot(
           kind: AdminDriverDocKind.profilePhoto,
           fieldKey: 'photo_url',
           storagePath: '',
-          legacyUrl: url,
+          legacyUrl: fallbackUrl,
           presence: AdminDriverDocPresence.legacy,
           accessMode: AdminDriverDocAccessMode.legacyUrl,
         );

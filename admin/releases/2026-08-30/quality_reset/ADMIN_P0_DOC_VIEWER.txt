@@ -1,0 +1,23 @@
+ADMIN PANEL P0 — Document viewer fix
+Date: 2026-08-30
+
+CODE_FIXED:
+1. AdminDriverDocumentAccess.resolveView
+   - Loads via Storage getData (authenticated SDK) — avoids Flutter Web CORS
+   - Falls back to legacy https URL when path fails
+   - Maps Storage errors to denied / not_found / unauthorized / network
+2. AdminDriverDocumentsPanel
+   - Loading dialog while fetching
+   - Image.memory for SDK bytes
+   - Actionable Arabic errors + copy details + path
+   - PDF hint + optional open URL
+3. Profile photo slot keeps storagePath + photoUrl fallback together
+4. Header status: incomplete no longer labeled "ناقصة / Legacy" when auth empty
+
+TESTS: admin_driver_document_access_test + profile_view — PASS (12)
+ANALYZE: no issues on touched files
+
+CORS gsutil: BLOCKED (needs interactive gcloud reauth) — not required for getData path
+
+DEPLOY: NOT pushed to Render (await Ara). Rebuild/publish admin/Admi web to touri-ban-1.onrender.com to verify live.
+DEVICE_REQUIRED: open driver docs on production after deploy; confirm الصورة الشخصية displays.
