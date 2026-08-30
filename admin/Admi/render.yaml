@@ -12,3 +12,4 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
+# last_manual_trigger: 2026-08-30T12:11Z (P0 doc viewer)
