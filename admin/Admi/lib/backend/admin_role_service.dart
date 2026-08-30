@@ -259,6 +259,7 @@ class AdminRoleService {
     'Adminuser',
     'Admindrever',
     'AdminDrivers',
+    'AdminDriverExpiryQueue',
     'DriverActivation',
     'addDrev',
     'AdminTransportCompanies',

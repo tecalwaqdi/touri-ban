@@ -83,6 +83,8 @@ export '/admin/admin_drivers_copy/admin_drivers_copy_widget.dart'
     show AdminDriversCopyWidget;
 export '/driver_activation/driver_activation_widget.dart'
     show DriverActivationWidget;
+export '/admin/admin_driver_expiry_queue/admin_driver_expiry_queue_widget.dart'
+    show AdminDriverExpiryQueueWidget;
 export '/admin/admin_driver_review_fixture/admin_driver_review_fixture_widget.dart'
     show AdminDriverReviewFixtureWidget;
 export '/car_type_addition/car_type_addition_widget.dart'

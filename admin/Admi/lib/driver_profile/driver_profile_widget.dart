@@ -5,6 +5,7 @@ import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_driver_documents_panel.dart';
 import '/components/admin_driver_financial_panel.dart';
+import '/components/admin_driver_lifecycle_strip.dart';
 import '/components/admin_driver_review_history_panel.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_region_picker.dart';
@@ -425,6 +426,8 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
                           );
                         },
                       ),
+                      AdminDriverLifecycleStrip(user: driverProfileUserRecord),
+                      const SizedBox(height: 12),
                       AdminDriverDocumentsPanel(user: driverProfileUserRecord),
                       AdminDriverReviewHistoryPanel(
                         driverId: driverProfileUserRecord.reference.id,

@@ -57,4 +57,14 @@ void main() {
       'pending_review',
     );
   });
+
+  test('parseDocExpiry supports DateTime and ISO string', () {
+    final d = DateTime.utc(2026, 9, 1);
+    expect(AdminDriverProfileView.parseDocExpiry(d), d);
+    expect(
+      AdminDriverProfileView.parseDocExpiry('2026-09-01T00:00:00Z')?.toUtc(),
+      DateTime.utc(2026, 9, 1),
+    );
+    expect(AdminDriverProfileView.parseDocExpiry(null), isNull);
+  });
 }

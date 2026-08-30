@@ -48,6 +48,7 @@ class AdminDriverDocumentSlot {
     required this.legacyUrl,
     required this.presence,
     required this.accessMode,
+    this.expiryDate,
   });
 
   final AdminDriverDocKind kind;
@@ -56,10 +57,23 @@ class AdminDriverDocumentSlot {
   final String legacyUrl;
   final AdminDriverDocPresence presence;
   final AdminDriverDocAccessMode accessMode;
+  final DateTime? expiryDate;
 
   bool get canView =>
       accessMode == AdminDriverDocAccessMode.v2StoragePath ||
       accessMode == AdminDriverDocAccessMode.legacyUrl;
+
+  bool get isExpired {
+    final e = expiryDate;
+    if (e == null) return false;
+    return e.toUtc().isBefore(DateTime.now().toUtc());
+  }
+
+  bool get isExpiringSoon {
+    final e = expiryDate;
+    if (e == null || isExpired) return false;
+    return e.toUtc().difference(DateTime.now().toUtc()).inDays <= 30;
+  }
 }
 
 /// Vehicle summary from live SoT fields (type_car ref + denormalized text).
@@ -212,6 +226,26 @@ abstract final class AdminDriverProfileView {
     );
   }
 
+  static DateTime? parseDocExpiry(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is DateTime) return raw;
+    if (raw is Timestamp) return raw.toDate();
+    if (raw is String) {
+      final t = raw.trim();
+      if (t.isEmpty) return null;
+      return DateTime.tryParse(t);
+    }
+    // Firestore-like map {seconds, nanoseconds} from some loaders.
+    if (raw is Map) {
+      final sec = raw['seconds'] ?? raw['_seconds'];
+      if (sec is num) {
+        return DateTime.fromMillisecondsSinceEpoch(sec.toInt() * 1000,
+            isUtc: true);
+      }
+    }
+    return null;
+  }
+
   static List<AdminDriverDocumentSlot> documents(UserRecord user) {
     String legacyUrlOf(String key) {
       final v = user.snapshotData[key];
@@ -233,9 +267,18 @@ abstract final class AdminDriverProfileView {
       return '';
     }
 
+    DateTime? expiryOf(String key) {
+      final v = user.snapshotData[key];
+      if (v is Map) {
+        return parseDocExpiry(v['expiryDate'] ?? v['expiry_date']);
+      }
+      return null;
+    }
+
     AdminDriverDocumentSlot slot(AdminDriverDocKind kind, String key) {
       final storagePath = storagePathOf(key);
       final mapUrl = urlFromMap(key);
+      final expiry = expiryOf(key);
       if (DriverRegistrationDocumentStatus.isStoragePath(storagePath)) {
         return AdminDriverDocumentSlot(
           kind: kind,
@@ -244,6 +287,7 @@ abstract final class AdminDriverProfileView {
           legacyUrl: mapUrl,
           presence: AdminDriverDocPresence.present,
           accessMode: AdminDriverDocAccessMode.v2StoragePath,
+          expiryDate: expiry,
         );
       }
       final legacy = mapUrl.isNotEmpty ? mapUrl : legacyUrlOf(key);
@@ -255,6 +299,7 @@ abstract final class AdminDriverProfileView {
           legacyUrl: legacy,
           presence: AdminDriverDocPresence.legacy,
           accessMode: AdminDriverDocAccessMode.legacyUrl,
+          expiryDate: expiry,
         );
       }
       return AdminDriverDocumentSlot(
@@ -264,6 +309,7 @@ abstract final class AdminDriverProfileView {
         legacyUrl: '',
         presence: AdminDriverDocPresence.missing,
         accessMode: AdminDriverDocAccessMode.missing,
+        expiryDate: expiry,
       );
     }
 
@@ -381,6 +427,35 @@ abstract final class AdminDriverProfileView {
     final ref = user.revDolh;
     if (ref == null) return '';
     return ref.id;
+  }
+
+  /// Denormalized expiry queue bucket from CF (`none` / `expiring_soon` / `expired`).
+  static String docExpiryBucket(UserRecord user) {
+    final raw = '${user.snapshotData['doc_expiry_bucket'] ?? ''}'.trim();
+    return raw;
+  }
+
+  static bool isActivated(UserRecord user) => user.actevMndob == true;
+
+  /// Compact lifecycle line for profile / list sheets (localized keys via uiTr).
+  static List<String> lifecycleChips(UserRecord user) {
+    final chips = <String>[];
+    final review = rawRegistrationStatus(user);
+    if (review.isNotEmpty) {
+      chips.add('reg:$review');
+    }
+    final docs = authoritativeDocumentsStatus(user);
+    if (docs.isNotEmpty) {
+      chips.add('docs:$docs');
+    } else {
+      chips.add(documentsComplete(user) ? 'docs:complete' : 'docs:missing');
+    }
+    chips.add(isActivated(user) ? 'act:on' : 'act:off');
+    final exp = docExpiryBucket(user);
+    if (exp.isNotEmpty && exp != 'none') {
+      chips.add('exp:$exp');
+    }
+    return chips;
   }
 
   static String docKindLabel(BuildContext context, AdminDriverDocKind kind) {

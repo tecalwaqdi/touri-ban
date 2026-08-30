@@ -26,6 +26,9 @@ abstract final class AdminDriverReviewActions {
     final flow = data['registration_flow_version'];
     final isV2 = flow is num ? flow.toInt() == 2 : int.tryParse('$flow') == 2;
     if (isV2) {
+      if (!DriverRegistrationDocumentStatus.profilePhotoOk(data)) {
+        blockers.add('adm_drv_blocker_photo');
+      }
       if (DriverRegistrationDocumentStatus.statusForType(
               data, 'national_id') !=
           DriverRegistrationDocStatus.complete) {

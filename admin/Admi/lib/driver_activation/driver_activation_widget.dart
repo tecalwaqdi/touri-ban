@@ -1,6 +1,7 @@
 import '/backend/admin_audit_log.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
+import '/components/admin_driver_lifecycle_strip.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_region_picker.dart';
 import '/components/admin_ui.dart';
@@ -331,6 +332,8 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                    const SizedBox(height: 12),
+                    AdminDriverLifecycleStrip(user: driverActivationUserRecord),
                     Padding(
                       padding: EdgeInsets.all(20.0),
                       child: Container(

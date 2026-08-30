@@ -1211,6 +1211,19 @@ const kNavTranslations = <String, Map<String, String>>{
     'az': 'Statistika yüklənmədi',
     'ka': 'სტატისტიკის ჩატვირთვა ვერ მოხერხდა',
   },
+  'nav_driver_doc_expiry': {
+    'en': 'Document expiry',
+    'pt': 'Document expiry',
+    'fr': 'Document expiry',
+    'ar': 'انتهاء الوثائق',
+    'zh_Hans': '证件到期',
+    'tr': 'Belge süresi',
+    'ur': 'دستاویز میعاد',
+    'ru': 'Срок документов',
+    'ky': 'Документ мөөнөтү',
+    'az': 'Sənəd müddəti',
+    'ka': 'დოკუმენტის ვადა',
+  },
 };
 
 /// Maps admin routes to sidebar translation keys.
@@ -1227,6 +1240,7 @@ const kNavRouteKeys = <String, String>{
   'AdminSuperAdmins': 'nav_super_admin',
   'AdminTransportCompanies': 'nav_transport_companies',
   'Admindrever': 'nav_representatives',
+  'AdminDriverExpiryQueue': 'nav_driver_doc_expiry',
   'AdminALLhgZ': 'nav_bookings',
   'AdminProfits': 'nav_profits',
   'AdminSettlements': 'nav_settlements',

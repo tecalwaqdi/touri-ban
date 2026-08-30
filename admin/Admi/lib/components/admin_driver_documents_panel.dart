@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
-
 import '/backend/backend.dart';
+import '/components/admin_driver_lifecycle_strip.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_driver_document_access.dart';
 import '/core/admin_driver_profile_view.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Read-only documents section for Driver Details / Review.
 ///
@@ -48,6 +48,8 @@ class AdminDriverDocumentsPanel extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            AdminDriverLifecycleStrip(user: user),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -184,6 +186,26 @@ class _DocRow extends StatelessWidget {
                   presenceLabel,
                   style: theme.labelSmall,
                 ),
+                if (slot.expiryDate != null)
+                  Text(
+                    slot.isExpired
+                        ? '${uiTr(context, 'منتهية')}: ${dateTimeFormat('yMMMd', slot.expiryDate)}'
+                        : slot.isExpiringSoon
+                            ? '${uiTr(context, 'تنتهي قريبًا')}: ${dateTimeFormat('yMMMd', slot.expiryDate)}'
+                            : '${uiTr(context, 'تنتهي')}: ${dateTimeFormat('yMMMd', slot.expiryDate)}',
+                    style: theme.labelSmall.override(
+                      fontFamily: theme.labelSmallFamily,
+                      color: slot.isExpired
+                          ? Colors.red.shade700
+                          : slot.isExpiringSoon
+                              ? Colors.deepOrange.shade700
+                              : theme.secondaryText,
+                      fontWeight: (slot.isExpired || slot.isExpiringSoon)
+                          ? FontWeight.w700
+                          : FontWeight.w500,
+                      useGoogleFonts: !theme.labelSmallIsCustom,
+                    ),
+                  ),
               ],
             ),
           ),

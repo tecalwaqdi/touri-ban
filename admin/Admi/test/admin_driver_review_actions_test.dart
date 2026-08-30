@@ -37,4 +37,20 @@ void main() {
     });
     expect(blockers, isEmpty);
   });
+
+  test('V2 approval requires profile photo and required docs', () {
+    final blockers = AdminDriverReviewActions.approvalBlockingReasons({
+      'registration_status': 'pending_review',
+      'registration_flow_version': 2,
+      'mndob_vill': 'cities/x',
+      'mndob_type_car': 'type_car/y',
+      'photo_storage_path': '',
+      'photo_url': '',
+      'doc_national_id': {'storagePath': 'users/u/id.jpg'},
+      'doc_vehicle_registration': {'storagePath': 'users/u/reg.jpg'},
+      'doc_driver_license': {'storagePath': 'users/u/lic.jpg'},
+    });
+    expect(blockers, contains('adm_drv_blocker_photo'));
+    expect(blockers, isNot(contains('adm_drv_blocker_national_id')));
+  });
 }
