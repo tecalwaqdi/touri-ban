@@ -5,7 +5,10 @@ import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_region_picker.dart';
+import '/core/admin_driver_profile_view.dart';
 import '/core/admin_driver_review_actions.dart';
+import '/core/admin_driver_route_params.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/core/cloud_functions/cloud_functions_client.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +16,14 @@ import 'package:provider/provider.dart';
 import 'driver_activation_model.dart';
 import 'driver_registration_review_body.dart';
 export 'driver_activation_model.dart';
+
+enum _ReviewLoadPhase {
+  loading,
+  invalidParam,
+  notFound,
+  error,
+  ready,
+}
 
 /// Driver Activation Page: There is a field for ID number, a field for name,
 /// a field for work city, a field for car type, and an activation
@@ -36,6 +47,11 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
   late DriverActivationModel _model;
   bool _busy = false;
   bool _seeded = false;
+
+  _ReviewLoadPhase _phase = _ReviewLoadPhase.loading;
+  UserRecord? _user;
+  DocumentReference? _resolvedRef;
+  Object? _error;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -62,11 +78,76 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
     }
   }
 
+  String? _rawDre() {
+    try {
+      return GoRouterState.of(context).uri.queryParameters['dre'];
+    } catch (_) {
+      return null;
+    }
+  }
+
+  DocumentReference? _resolveRef() {
+    return AdminDriverRouteParams.resolveUserRef(
+      rawQuery: _rawDre(),
+      deserialized: widget.dre,
+    );
+  }
+
+  Future<void> _load() async {
+    final ref = _resolveRef();
+    if (!mounted) return;
+
+    if (ref == null) {
+      setState(() {
+        _phase = _ReviewLoadPhase.invalidParam;
+        _user = null;
+        _resolvedRef = null;
+        _error = null;
+      });
+      return;
+    }
+
+    setState(() {
+      _phase = _ReviewLoadPhase.loading;
+      _resolvedRef = ref;
+      _error = null;
+      _seeded = false;
+    });
+
+    try {
+      final snap = await ref.get();
+      if (!mounted) return;
+      if (!snap.exists) {
+        setState(() {
+          _phase = _ReviewLoadPhase.notFound;
+          _user = null;
+        });
+        return;
+      }
+
+      final user = UserRecord.fromSnapshot(snap);
+      _seedFromUser(user);
+      if (!mounted) return;
+      setState(() {
+        _phase = _ReviewLoadPhase.ready;
+        _user = user;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _phase = _ReviewLoadPhase.error;
+        _error = e;
+        _user = null;
+      });
+    }
+  }
+
   Future<void> _approve() async {
-    if (_busy || widget.dre == null) return;
+    final ref = _resolvedRef ?? _resolveRef();
+    if (_busy || ref == null) return;
     setState(() => _busy = true);
     try {
-      final snap = await widget.dre!.get();
+      final snap = await ref.get();
       final data = snap.data() as Map<String, dynamic>? ?? {};
       // Merge in-form city/type so prerequisites see intended values.
       data['mndob_vill'] = FFAppState().workcite ?? data['mndob_vill'];
@@ -112,7 +193,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
       );
       if (confirm != true) return;
 
-      await widget.dre!.update({
+      await ref.update({
         ...createUserRecordData(
           displayName: _model.naimTextController.text,
           mndobVill: FFAppState().workcite,
@@ -122,14 +203,14 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
       });
       await CloudFunctionsClient.reviewDriver(
         action: 'approved',
-        driverId: widget.dre!.id,
+        driverId: ref.id,
         useRegistrationV2: isV2,
         reviewVersion: (data['reviewVersion'] as num?)?.toInt(),
       );
       await AdminAuditLog.record(
         action: 'driver_approve',
         targetType: 'user',
-        targetId: widget.dre!.id,
+        targetId: ref.id,
         targetLabel: _model.naimTextController.text,
       );
       if (!mounted) return;
@@ -161,17 +242,18 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
   }
 
   Future<void> _reject() async {
-    if (_busy || widget.dre == null) return;
+    final ref = _resolvedRef ?? _resolveRef();
+    if (_busy || ref == null) return;
     final reason = await showDriverRejectDialog(context: context);
     if (reason == null) return;
     setState(() => _busy = true);
     try {
-      final snap = await widget.dre!.get();
+      final snap = await ref.get();
       final data = snap.data() as Map<String, dynamic>? ?? {};
       final isV2 = AdminDriverReviewActions.isRegistrationV2(data);
       await CloudFunctionsClient.reviewDriver(
         action: 'rejected',
-        driverId: widget.dre!.id,
+        driverId: ref.id,
         reason: reason,
         useRegistrationV2: isV2,
         reviewVersion: (data['reviewVersion'] as num?)?.toInt(),
@@ -179,7 +261,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
       await AdminAuditLog.record(
         action: 'driver_reject',
         targetType: 'user',
-        targetId: widget.dre!.id,
+        targetId: ref.id,
         targetLabel: _model.naimTextController.text,
         metadata: {'reason': reason},
       );
@@ -196,17 +278,18 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
   }
 
   Future<void> _requestChanges() async {
-    if (_busy || widget.dre == null) return;
+    final ref = _resolvedRef ?? _resolveRef();
+    if (_busy || ref == null) return;
     final payload = await showDriverNeedsChangesDialog(context: context);
     if (payload == null) return;
     setState(() => _busy = true);
     try {
-      final snap = await widget.dre!.get();
+      final snap = await ref.get();
       final data = snap.data() as Map<String, dynamic>? ?? {};
       final isV2 = AdminDriverReviewActions.isRegistrationV2(data);
       await CloudFunctionsClient.reviewDriver(
         action: 'changes_requested',
-        driverId: widget.dre!.id,
+        driverId: ref.id,
         reason: payload.reason,
         useRegistrationV2: isV2,
         fieldsToFix: payload.fields,
@@ -215,7 +298,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
       await AdminAuditLog.record(
         action: 'driver_request_changes',
         targetType: 'user',
-        targetId: widget.dre!.id,
+        targetId: ref.id,
         targetLabel: _model.naimTextController!.text,
         metadata: {
           'reason': payload.reason,
@@ -251,7 +334,17 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
         TextEditingController(text: FFAppState().typeCarText);
     _model.textFieldtypFocusNode ??= FocusNode();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _load();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant DriverActivationWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.dre?.path != widget.dre?.path) {
+      _load();
+    }
   }
 
   @override
@@ -265,21 +358,55 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
 
-    return StreamBuilder<UserRecord>(
-      stream: UserRecord.getDocument(widget.dre!),
-      builder: (context, snapshot) {
-        // Customize what your widget looks like when it's loading.
-        if (!snapshot.hasData) {
-          return AdminDriverModuleScaffold(
-            title: uiTr(context, 'مراجعة طلب المندوب'),
-            isLoading: true,
-            body: const SizedBox.shrink(),
-          );
-        }
-
-        final driverActivationUserRecord = snapshot.data!;
-        _seedFromUser(driverActivationUserRecord);
-        final row = AdminDriverRow.fromUser(driverActivationUserRecord);
+    switch (_phase) {
+      case _ReviewLoadPhase.loading:
+        return AdminDriverModuleScaffold(
+          title: uiTr(context, 'مراجعة طلب المندوب'),
+          isLoading: true,
+          body: const SizedBox.shrink(),
+        );
+      case _ReviewLoadPhase.invalidParam:
+        return AdminMissingDocumentScaffold(
+          title: uiTr(context, 'مراجعة طلب المندوب'),
+          message: uiTr(context, 'معرّف المندوب غير صالح'),
+        );
+      case _ReviewLoadPhase.notFound:
+        return AdminMissingDocumentScaffold(
+          title: uiTr(context, 'مراجعة طلب المندوب'),
+          message: uiTr(context, 'تعذر العثور على بيانات المندوب'),
+        );
+      case _ReviewLoadPhase.error:
+        return AdminDriverModuleScaffold(
+          title: uiTr(context, 'مراجعة طلب المندوب'),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    AdminUserFacingErrors.from(
+                      context,
+                      _error ?? Exception('load_failed'),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: _load,
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: Text(uiTr(context, 'إعادة المحاولة')),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      case _ReviewLoadPhase.ready:
+        final user = _user!;
+        final row = AdminDriverRow.fromUser(user);
+        final awaiting = row.review == AdminDriverReviewBucket.pendingReview ||
+            row.review == AdminDriverReviewBucket.needsChanges;
 
         return Semantics(
           identifier: 'qa-driver-review',
@@ -293,11 +420,12 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
               title: uiTr(context, 'مراجعة طلب المندوب'),
               subtitle: row.displayName,
               body: DriverRegistrationReviewBody(
-                user: driverActivationUserRecord,
+                user: user,
                 nameController: _model.naimTextController!,
                 cityController: _model.textController3!,
                 carTypeController: _model.textFieldtypTextController!,
                 busy: _busy,
+                awaitingReview: awaiting,
                 onPickCity: () async {
                   await showAdminPickerSheet(
                     context: context,
@@ -317,14 +445,13 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
                         FFAppState().typeCarText;
                   });
                 },
-                onApprove: _approve,
-                onReject: _reject,
-                onRequestChanges: _requestChanges,
+                onApprove: awaiting ? _approve : null,
+                onReject: awaiting ? _reject : null,
+                onRequestChanges: awaiting ? _requestChanges : null,
               ),
             ),
           ),
         );
-      },
-    );
+    }
   }
 }

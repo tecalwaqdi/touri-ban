@@ -160,7 +160,14 @@ DocumentReference _deserializeDocumentReference(
   List<String> collectionNamePath,
 ) {
   var path = '';
-  final docIds = refStr.split(_kDocIdDelimeter);
+  var docIds = refStr.split(_kDocIdDelimeter);
+  // Tolerate mistaken "collection|docId" when collectionNamePath already
+  // supplies the collection (e.g. iduser=user|UID must not become user/user).
+  if (collectionNamePath.isNotEmpty &&
+      docIds.length == collectionNamePath.length + 1 &&
+      docIds.first == collectionNamePath.first) {
+    docIds = docIds.sublist(1);
+  }
   for (int i = 0; i < docIds.length && i < collectionNamePath.length; i++) {
     path += '/${collectionNamePath[i]}/${docIds[i]}';
   }

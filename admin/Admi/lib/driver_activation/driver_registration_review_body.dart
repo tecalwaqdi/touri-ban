@@ -19,11 +19,12 @@ class DriverRegistrationReviewBody extends StatelessWidget {
     required this.cityController,
     required this.carTypeController,
     required this.busy,
+    this.awaitingReview = true,
     required this.onPickCity,
     required this.onPickCarType,
-    required this.onApprove,
-    required this.onReject,
-    required this.onRequestChanges,
+    this.onApprove,
+    this.onReject,
+    this.onRequestChanges,
   });
 
   final UserRecord user;
@@ -31,11 +32,13 @@ class DriverRegistrationReviewBody extends StatelessWidget {
   final TextEditingController cityController;
   final TextEditingController carTypeController;
   final bool busy;
+  /// When false, show a clear status and hide decision actions (no blank screen).
+  final bool awaitingReview;
   final VoidCallback onPickCity;
   final VoidCallback onPickCarType;
-  final VoidCallback onApprove;
-  final VoidCallback onReject;
-  final VoidCallback onRequestChanges;
+  final VoidCallback? onApprove;
+  final VoidCallback? onReject;
+  final VoidCallback? onRequestChanges;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +56,12 @@ class DriverRegistrationReviewBody extends StatelessWidget {
       padding: AdminUi.pagePadding(context).copyWith(top: 12, bottom: 24),
       children: [
         AdminDriverProfileHeader(row: row),
+        if (!awaitingReview) ...[
+          const SizedBox(height: 12),
+          AdminDriverCompactTip(
+            text: uiTr(context, 'هذا الطلب ليس بانتظار المراجعة'),
+          ),
+        ],
         const SizedBox(height: 12),
         AdminDriverSectionCard(
           title: uiTr(context, 'حالة الطلب'),
@@ -170,86 +179,88 @@ class DriverRegistrationReviewBody extends StatelessWidget {
                 ),
             ],
           ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'تعديل قبل الاعتماد'),
-          children: [
-            AdminDriverCompactTip(
-              text: uiTr(
-                context,
-                'يمكنك تعديل الاسم ومدينة العمل ونوع المركبة قبل الاعتماد فقط.',
+        if (awaitingReview) ...[
+          AdminDriverSectionCard(
+            title: uiTr(context, 'تعديل قبل الاعتماد'),
+            children: [
+              AdminDriverCompactTip(
+                text: uiTr(
+                  context,
+                  'يمكنك تعديل الاسم ومدينة العمل ونوع المركبة قبل الاعتماد فقط.',
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            AdminDriverFormGrid(
-              children: [
-                TextFormField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: uiTr(context, 'الاسم الكامل'),
-                  ),
-                ),
-                const SizedBox.shrink(),
-                AdminEditPickerRow(
-                  label: uiTr(context, 'مدينة العمل'),
-                  value: cityController.text,
-                  placeholder: uiTr(context, 'اختر مدينة العمل'),
-                  onTap: onPickCity,
-                ),
-                AdminEditPickerRow(
-                  label: uiTr(context, 'نوع المركبة'),
-                  value: carTypeController.text,
-                  placeholder: uiTr(context, 'اختر نوع المركبة'),
-                  onTap: onPickCarType,
-                ),
-              ],
-            ),
-          ],
-        ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'إجراءات القرار'),
-          children: [
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                Semantics(
-                  identifier: 'qa-driver-approve',
-                  label: 'qa-driver-approve',
-                  button: true,
-                  child: AdminPrimaryButton(
-                    label: uiTr(context, 'اعتماد المندوب'),
-                    icon: Icons.check_circle_outline_rounded,
-                    isLoading: busy,
-                    onPressed: busy ? null : onApprove,
-                  ),
-                ),
-                Semantics(
-                  identifier: 'qa-driver-request-changes',
-                  label: 'qa-driver-request-changes',
-                  button: true,
-                  child: OutlinedButton.icon(
-                    onPressed: busy ? null : onRequestChanges,
-                    icon: const Icon(Icons.edit_note_rounded, size: 18),
-                    label: Text(appTr(context, 'adm_drv_request_changes_btn')),
-                  ),
-                ),
-                Semantics(
-                  identifier: 'qa-driver-reject',
-                  label: 'qa-driver-reject',
-                  button: true,
-                  child: OutlinedButton.icon(
-                    onPressed: busy ? null : onReject,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: theme.error,
+              const SizedBox(height: 12),
+              AdminDriverFormGrid(
+                children: [
+                  TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: uiTr(context, 'الاسم الكامل'),
                     ),
-                    icon: const Icon(Icons.block_rounded, size: 18),
-                    label: Text(appTr(context, 'adm_drv_reject_btn')),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
+                  const SizedBox.shrink(),
+                  AdminEditPickerRow(
+                    label: uiTr(context, 'مدينة العمل'),
+                    value: cityController.text,
+                    placeholder: uiTr(context, 'اختر مدينة العمل'),
+                    onTap: onPickCity,
+                  ),
+                  AdminEditPickerRow(
+                    label: uiTr(context, 'نوع المركبة'),
+                    value: carTypeController.text,
+                    placeholder: uiTr(context, 'اختر نوع المركبة'),
+                    onTap: onPickCarType,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          AdminDriverSectionCard(
+            title: uiTr(context, 'إجراءات القرار'),
+            children: [
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  Semantics(
+                    identifier: 'qa-driver-approve',
+                    label: 'qa-driver-approve',
+                    button: true,
+                    child: AdminPrimaryButton(
+                      label: uiTr(context, 'اعتماد المندوب'),
+                      icon: Icons.check_circle_outline_rounded,
+                      isLoading: busy,
+                      onPressed: busy ? null : onApprove,
+                    ),
+                  ),
+                  Semantics(
+                    identifier: 'qa-driver-request-changes',
+                    label: 'qa-driver-request-changes',
+                    button: true,
+                    child: OutlinedButton.icon(
+                      onPressed: busy ? null : onRequestChanges,
+                      icon: const Icon(Icons.edit_note_rounded, size: 18),
+                      label: Text(appTr(context, 'adm_drv_request_changes_btn')),
+                    ),
+                  ),
+                  Semantics(
+                    identifier: 'qa-driver-reject',
+                    label: 'qa-driver-reject',
+                    button: true,
+                    child: OutlinedButton.icon(
+                      onPressed: busy ? null : onReject,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: theme.error,
+                      ),
+                      icon: const Icon(Icons.block_rounded, size: 18),
+                      label: Text(appTr(context, 'adm_drv_reject_btn')),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
         AdminDriverTechnicalSection(user: user),
       ],
     );
