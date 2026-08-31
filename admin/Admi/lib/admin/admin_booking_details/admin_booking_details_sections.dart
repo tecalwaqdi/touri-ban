@@ -292,6 +292,9 @@ class _AdminBookingDetailsHeaderState extends State<AdminBookingDetailsHeader> {
     final theme = FlutterFlowTheme.of(context);
     final view = widget.view;
     final row = view.row;
+    final bookingId = row.orderId.trim().isNotEmpty
+        ? row.orderId.trim()
+        : row.order.reference.id;
     final created = row.createdAt != null
         ? dateTimeFormat('d/M/y – HH:mm', row.createdAt, locale: 'ar')
         : '—';
@@ -314,24 +317,27 @@ class _AdminBookingDetailsHeaderState extends State<AdminBookingDetailsHeader> {
                 child: Row(
                   children: [
                     Text(
-                      uiTr(context, 'رقم الحجز:'),
+                      uiTr(context, 'رقم الحجز'),
                       style: theme.labelSmall.override(
                         fontFamily: theme.labelSmallFamily,
                         color: theme.secondaryText,
                         useGoogleFonts: !theme.labelSmallIsCustom,
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    Flexible(
+                    const SizedBox(width: 8),
+                    Expanded(
                       child: Directionality(
                         textDirection: ui.TextDirection.ltr,
                         child: Text(
-                          row.orderId,
+                          bookingId,
                           maxLines: 1,
+                          softWrap: false,
                           overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.start,
                           style: theme.titleSmall.override(
                             fontFamily: theme.titleSmallFamily,
                             fontWeight: FontWeight.w700,
+                            color: AdminUi.brandTeal,
                             useGoogleFonts: !theme.titleSmallIsCustom,
                           ),
                         ),
@@ -349,7 +355,7 @@ class _AdminBookingDetailsHeaderState extends State<AdminBookingDetailsHeader> {
                         size: 16,
                         color: _copied ? theme.success : theme.secondaryText,
                       ),
-                      onPressed: () => _copyId(row.orderId),
+                      onPressed: () => _copyId(bookingId),
                       tooltip: _copied
                           ? uiTr(context, 'تم النسخ')
                           : uiTr(context, 'نسخ'),
@@ -357,6 +363,7 @@ class _AdminBookingDetailsHeaderState extends State<AdminBookingDetailsHeader> {
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
               AdminBookingDetailsStatusBadge(view: view),
             ],
           ),
@@ -663,13 +670,6 @@ class AdminBookingDetailsDriverCard extends StatelessWidget {
           value: row.statusLabel,
           icon: Icons.info_outline_rounded,
         ),
-        if (view.driverRef != null)
-          AdminBookingDetailsKvRow(
-            label: uiTr(context, 'معرّف المندوب'),
-            value: view.driverRef!.id,
-            icon: Icons.badge_outlined,
-            isLtr: true,
-          ),
       ],
     );
   }
@@ -701,7 +701,7 @@ class AdminBookingDetailsTripCard extends StatelessWidget {
           ),
         if (row.durationMinutes > 0)
           AdminBookingDetailsKvRow(
-            label: uiTr(context, 'عدد الساعات'),
+            label: uiTr(context, 'مدة الرحلة'),
             value: _durationLabel(row.durationMinutes),
           ),
         if (passengers != null && passengers.toString() != '0')
