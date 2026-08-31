@@ -61,13 +61,13 @@ class AdminBookingsTable extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        _h(context, uiTr(context, 'الحجز'), 12),
-                        _h(context, uiTr(context, 'العميل'), 13),
-                        _h(context, uiTr(context, 'المندوب'), 12),
+                        _h(context, uiTr(context, 'الحجز'), 15),
+                        _h(context, uiTr(context, 'العميل'), 12),
+                        _h(context, uiTr(context, 'المندوب'), 11),
                         _h(context, uiTr(context, 'الحالة'), 12),
                         if (!hideCity) _h(context, uiTr(context, 'المدينة'), 9),
-                        _h(context, uiTr(context, 'الانطلاق'), narrow ? 11 : 13),
-                        _h(context, uiTr(context, 'الوجهة'), narrow ? 11 : 13),
+                        _h(context, uiTr(context, 'الانطلاق'), narrow ? 10 : 12),
+                        _h(context, uiTr(context, 'الوجهة'), narrow ? 10 : 12),
                         _h(context, uiTr(context, 'المبلغ'), 9),
                         if (!hidePayment)
                           _h(context, uiTr(context, 'الدفع'), 8),
@@ -163,7 +163,7 @@ class _BookingsTableRow extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _cell(_BookingIdCell(orderId: row.orderId, theme: theme), 12),
+              _cell(_BookingIdCell(orderId: row.orderId, theme: theme), 15),
               _cell(
                 _EllipsisText(
                   customer,
@@ -174,7 +174,7 @@ class _BookingsTableRow extends StatelessWidget {
                     useGoogleFonts: !theme.bodySmallIsCustom,
                   ),
                 ),
-                13,
+                12,
               ),
               _cell(
                 _EllipsisText(
@@ -188,7 +188,7 @@ class _BookingsTableRow extends StatelessWidget {
                     useGoogleFonts: !theme.bodySmallIsCustom,
                   ),
                 ),
-                12,
+                11,
               ),
               _cell(AdminBookingStatusBadge(order: row.order), 12),
               if (!hideCity)
@@ -206,7 +206,7 @@ class _BookingsTableRow extends StatelessWidget {
                   maxLines: 2,
                   style: theme.bodySmall,
                 ),
-                13,
+                12,
               ),
               _cell(
                 _EllipsisText(
@@ -214,7 +214,7 @@ class _BookingsTableRow extends StatelessWidget {
                   maxLines: 2,
                   style: theme.bodySmall,
                 ),
-                13,
+                12,
               ),
               _cell(
                 Directionality(
