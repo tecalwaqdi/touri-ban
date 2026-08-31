@@ -3,6 +3,7 @@ import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_country_geo_service.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_firestore_delete.dart';
+import '/backend/admin_geo_cascade.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
@@ -99,6 +100,16 @@ class _AddRegWidgetState extends State<AddRegWidget> {
 
     final countryRef =
         AdminCountryScope.mkanCountryRefForSave() ?? FFAppState().RevDolh;
+    final cascadeErr = AdminGeoCascade.validateRegionParents(
+      name: name,
+      countryRef: countryRef,
+    );
+    if (cascadeErr != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(cascadeErr)),
+      );
+      return;
+    }
 
     if (_model.isDataUploading_uploadDataO6sc) {
       ScaffoldMessenger.of(context).showSnackBar(
