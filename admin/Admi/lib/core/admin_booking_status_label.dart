@@ -8,43 +8,51 @@ import '/core/toury_system_status_codes.dart';
 abstract final class AdminBookingStatusLabel {
   AdminBookingStatusLabel._();
 
-  /// Canonical / aliased `status_code` → Arabic badge label.
+  /// Canonical / aliased `status_code` → Arabic badge label (granular lifecycle).
   static const Map<String, String> codeToArabic = {
-    TourySystemStatusCodes.pendingDriver: 'بإنتظار قبول المندوب',
-    TourySystemStatusCodes.legacyAwaitingDriver: 'بإنتظار قبول المندوب',
-    'pending': 'بإنتظار قبول المندوب',
-    'payment_pending': 'بإنتظار قبول المندوب',
-    'draft': 'بإنتظار قبول المندوب',
-    'payment': 'بإنتظار قبول المندوب',
-    TourySystemStatusCodes.driverAssigned: 'مقبول',
-    TourySystemStatusCodes.driverArriving: 'مقبول',
-    TourySystemStatusCodes.driverArrived: 'وصل المندوب',
-    TourySystemStatusCodes.tripStarted: 'تم البدء في الرحلة',
-    TourySystemStatusCodes.tripInProgress: 'تم البدء في الرحلة',
-    TourySystemStatusCodes.completed: 'مكتمل',
-    TourySystemStatusCodes.legacyTripCompleted: 'مكتمل',
-    TourySystemStatusCodes.cancelledByAdmin: 'ملغي',
-    TourySystemStatusCodes.cancelledByCustomer: 'ملغي',
-    TourySystemStatusCodes.cancelledByDriver: 'ملغي',
-    TourySystemStatusCodes.legacyCancelled: 'ملغي',
-    TourySystemStatusCodes.legacyCanceled: 'ملغي',
-    TourySystemStatusCodes.expired: 'ملغي',
+    TourySystemStatusCodes.pendingDriver: 'بانتظار قبول مندوب',
+    TourySystemStatusCodes.legacyAwaitingDriver: 'بانتظار قبول مندوب',
+    'pending': 'قيد الانتظار',
+    'payment_pending': 'قيد الانتظار',
+    'draft': 'قيد الانتظار',
+    'payment': 'قيد الانتظار',
+    TourySystemStatusCodes.driverAssigned: 'تم إسناد مندوب',
+    TourySystemStatusCodes.driverArriving: 'المندوب في الطريق',
+    TourySystemStatusCodes.driverArrived: 'وصل لنقطة الانطلاق',
+    TourySystemStatusCodes.tripStarted: 'الرحلة بدأت',
+    TourySystemStatusCodes.tripInProgress: 'الرحلة بدأت',
+    TourySystemStatusCodes.completed: 'مكتملة',
+    TourySystemStatusCodes.legacyTripCompleted: 'مكتملة',
+    TourySystemStatusCodes.cancelledByAdmin: 'ملغية',
+    TourySystemStatusCodes.cancelledByCustomer: 'ملغية',
+    TourySystemStatusCodes.cancelledByDriver: 'ملغية',
+    TourySystemStatusCodes.legacyCancelled: 'ملغية',
+    TourySystemStatusCodes.legacyCanceled: 'ملغية',
+    TourySystemStatusCodes.expired: 'منتهية الصلاحية',
   };
 
   /// Legacy Arabic (and close variants) → normalized Arabic badge label.
   static const Map<String, String> legacyArabicToArabic = {
-    'بإنتظار قبول المندوب': 'بإنتظار قبول المندوب',
-    'بانتظار قبول المندوب': 'بإنتظار قبول المندوب',
-    'بانتظار قبول السائق': 'بإنتظار قبول المندوب',
-    'مقبول': 'مقبول',
-    'وصل المندوب': 'وصل المندوب',
-    'وصل السائق': 'وصل المندوب',
-    'تم البدء في الرحلة': 'تم البدء في الرحلة',
-    'بدأت الرحلة': 'تم البدء في الرحلة',
-    'مكتمل': 'مكتمل',
-    'مكتملة': 'مكتمل',
-    'ملغي': 'ملغي',
-    'ملغى': 'ملغي',
+    'بإنتظار قبول المندوب': 'بانتظار قبول مندوب',
+    'بانتظار قبول المندوب': 'بانتظار قبول مندوب',
+    'بانتظار قبول السائق': 'بانتظار قبول مندوب',
+    'قيد الانتظار': 'قيد الانتظار',
+    'مقبول': 'تم إسناد مندوب',
+    'تم إسناد مندوب': 'تم إسناد مندوب',
+    'المندوب في الطريق': 'المندوب في الطريق',
+    'وصل المندوب': 'وصل لنقطة الانطلاق',
+    'وصل السائق': 'وصل لنقطة الانطلاق',
+    'وصل لنقطة الانطلاق': 'وصل لنقطة الانطلاق',
+    'تم البدء في الرحلة': 'الرحلة بدأت',
+    'بدأت الرحلة': 'الرحلة بدأت',
+    'الرحلة بدأت': 'الرحلة بدأت',
+    'مكتمل': 'مكتملة',
+    'مكتملة': 'مكتملة',
+    'ملغي': 'ملغية',
+    'ملغى': 'ملغية',
+    'ملغية': 'ملغية',
+    'منتهية الصلاحية': 'منتهية الصلاحية',
+    'منتهي': 'منتهية الصلاحية',
   };
 
   static String _rawStatusCode(OrderRecord order) {
@@ -93,7 +101,10 @@ abstract final class AdminBookingStatusLabel {
       final fromCode = codeToArabic[code];
       if (fromCode != null) return fromCode;
       if (code.startsWith('cancelled') || code.startsWith('canceled')) {
-        return 'ملغي';
+        return 'ملغية';
+      }
+      if (code == TourySystemStatusCodes.expired) {
+        return 'منتهية الصلاحية';
       }
     }
 
@@ -112,54 +123,88 @@ abstract final class AdminBookingStatusLabel {
         halhText: order.halhText,
       );
 
-  /// Color bucket aligned with list badge matching (pending / accepted / canceled).
+  /// Color bucket for badges (granular lifecycle groups).
   static AdminBookingStatusTone toneOf(OrderRecord order) {
     final code = codeOf(order);
     final label = of(order);
 
+    if (code == TourySystemStatusCodes.expired ||
+        label == 'منتهية الصلاحية') {
+      return AdminBookingStatusTone.expired;
+    }
+
     if (code == TourySystemStatusCodes.cancelledByAdmin ||
+        code == TourySystemStatusCodes.cancelledByCustomer ||
+        code == TourySystemStatusCodes.cancelledByDriver ||
         code == TourySystemStatusCodes.legacyCancelled ||
         code == TourySystemStatusCodes.legacyCanceled ||
         code.startsWith('cancelled') ||
         code.startsWith('canceled') ||
-        label == 'ملغي') {
+        label == 'ملغية') {
       return AdminBookingStatusTone.canceled;
     }
 
     if (code == TourySystemStatusCodes.pendingDriver ||
-        code == 'awaiting_driver' ||
+        code == TourySystemStatusCodes.legacyAwaitingDriver ||
         code == 'pending' ||
         code == 'payment_pending' ||
         code == 'draft' ||
         code == 'payment' ||
-        label == 'بإنتظار قبول المندوب') {
-      return AdminBookingStatusTone.pendingDriver;
+        label == 'بانتظار قبول مندوب' ||
+        label == 'قيد الانتظار') {
+      return AdminBookingStatusTone.pending;
     }
 
-    if (code == TourySystemStatusCodes.driverAssigned ||
-        code == TourySystemStatusCodes.driverArrived ||
-        code == TourySystemStatusCodes.tripStarted ||
+    if (code == TourySystemStatusCodes.driverAssigned) {
+      return AdminBookingStatusTone.assigned;
+    }
+
+    if (code == TourySystemStatusCodes.driverArriving) {
+      return AdminBookingStatusTone.onTheWay;
+    }
+
+    if (code == TourySystemStatusCodes.driverArrived ||
+        label == 'وصل لنقطة الانطلاق') {
+      return AdminBookingStatusTone.arrived;
+    }
+
+    if (code == TourySystemStatusCodes.tripStarted ||
         code == TourySystemStatusCodes.tripInProgress ||
-        label == 'مقبول' ||
-        label == 'وصل المندوب' ||
-        label == 'تم البدء في الرحلة') {
-      return AdminBookingStatusTone.accepted;
+        label == 'الرحلة بدأت') {
+      return AdminBookingStatusTone.inTrip;
     }
 
     if (code == TourySystemStatusCodes.completed ||
         code == TourySystemStatusCodes.legacyTripCompleted ||
-        label == 'مكتمل') {
+        label == 'مكتملة') {
       return AdminBookingStatusTone.completed;
+    }
+
+    // Legacy "مقبول" without finer code → assigned bucket.
+    if (label == 'تم إسناد مندوب') {
+      return AdminBookingStatusTone.assigned;
     }
 
     return AdminBookingStatusTone.unknown;
   }
+
+  /// True when cancel action is still meaningful.
+  static bool isTerminal(OrderRecord order) {
+    final tone = toneOf(order);
+    return tone == AdminBookingStatusTone.completed ||
+        tone == AdminBookingStatusTone.canceled ||
+        tone == AdminBookingStatusTone.expired;
+  }
 }
 
 enum AdminBookingStatusTone {
-  pendingDriver,
-  accepted,
+  pending,
+  assigned,
+  onTheWay,
+  arrived,
+  inTrip,
   completed,
   canceled,
+  expired,
   unknown,
 }

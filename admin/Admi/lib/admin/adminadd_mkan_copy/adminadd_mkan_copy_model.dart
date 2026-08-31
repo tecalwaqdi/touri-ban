@@ -13,32 +13,80 @@ class AdminaddMkanCopyModel extends FlutterFlowModel<AdminaddMkanCopyWidget> {
   bool secondImageRemoved = false;
   bool thirdImageRemoved = false;
 
+  /// Last server img* synced into the form (detects stale-cache → server refresh).
+  String _syncedImg1 = '';
+  String _syncedImg2 = '';
+  String _syncedImg3 = '';
+
+  bool get _pendingMainImageEdit =>
+      mainImageRemoved ||
+      isDataUploading_uploadDataCni ||
+      (uploadedLocalFile_uploadDataCni.bytes != null &&
+          uploadedLocalFile_uploadDataCni.bytes!.isNotEmpty);
+
+  bool get _pendingSecondImageEdit =>
+      secondImageRemoved ||
+      isDataUploading_uploadData8dq ||
+      (uploadedLocalFile_uploadData8dq.bytes != null &&
+          uploadedLocalFile_uploadData8dq.bytes!.isNotEmpty);
+
+  bool get _pendingThirdImageEdit =>
+      thirdImageRemoved ||
+      isDataUploading_uploadDataImg3 ||
+      (uploadedLocalFile_uploadDataImg3.bytes != null &&
+          uploadedLocalFile_uploadDataImg3.bytes!.isNotEmpty);
+
   void bindMkanRecord(MkanRecord record) {
-    if (recordInitialized) {
+    if (!recordInitialized) {
+      textController1 ??= TextEditingController(text: record.naim);
+      textController2 ??= TextEditingController(text: record.osf);
+      switchMosqueValue ??= record.ismsgd;
+      switchRestroomValue ??= record.ishmam;
+      switchrestaurantValue ??= record.isfood;
+      switchValue ??= record.asAds;
+      switchACCTEVValue ??= record.acctev;
+      ratingValue = record.rate;
+      uploadedFileUrl_uploadDataCni = record.img1;
+      uploadedFileUrl_uploadData8dq = record.img2;
+      uploadedFileUrl_uploadDataImg3 = record.img3;
+      _syncedImg1 = record.img1;
+      _syncedImg2 = record.img2;
+      _syncedImg3 = record.img3;
+      if (record.location != null) {
+        placePickerValue = FFPlace(
+          latLng: record.location!,
+          address: record.address,
+        );
+        googleMapsCenter = record.location;
+      }
+      if (record.idVill != null) {
+        FFAppState().REvCITE = record.idVill;
+      }
+      if (record.idCit != null) {
+        FFAppState().Revreg = record.idCit;
+      }
+      if (record.revDolh != null) {
+        FFAppState().RevDolh = record.revDolh;
+      }
+      recordInitialized = true;
       return;
     }
-    textController1 ??= TextEditingController(text: record.naim);
-    textController2 ??= TextEditingController(text: record.osf);
-    switchMosqueValue ??= record.ismsgd;
-    switchRestroomValue ??= record.ishmam;
-    switchrestaurantValue ??= record.isfood;
-    switchValue ??= record.asAds;
-    switchACCTEVValue ??= record.acctev;
-    ratingValue = record.rate;
-    uploadedFileUrl_uploadDataCni = record.img1;
-    uploadedFileUrl_uploadData8dq = record.img2;
-    uploadedFileUrl_uploadDataImg3 = record.img3;
-    if (record.location != null) {
-      placePickerValue = FFPlace(
-        latLng: record.location!,
-        address: record.address,
-      );
-      googleMapsCenter = record.location;
+
+    // Root cause fix: first StreamBuilder snapshot may be persistence-cache
+    // with a stale img*. When server delivers the real document, refresh the
+    // form images unless the admin has a pending local pick/upload.
+    if (!_pendingMainImageEdit && record.img1 != _syncedImg1) {
+      uploadedFileUrl_uploadDataCni = record.img1;
+      _syncedImg1 = record.img1;
     }
-    if (record.idVill != null) {
-      FFAppState().REvCITE = record.idVill;
+    if (!_pendingSecondImageEdit && record.img2 != _syncedImg2) {
+      uploadedFileUrl_uploadData8dq = record.img2;
+      _syncedImg2 = record.img2;
     }
-    recordInitialized = true;
+    if (!_pendingThirdImageEdit && record.img3 != _syncedImg3) {
+      uploadedFileUrl_uploadDataImg3 = record.img3;
+      _syncedImg3 = record.img3;
+    }
   }
 
   bool cityLabelLoaded = false;

@@ -1,3 +1,4 @@
+import '/backend/admin_media_resolver.dart';
 import '/backend/admin_storage_cleanup.dart';
 import '/backend/profile_photo_service.dart';
 import '/components/admin_crud_feedback.dart';
@@ -6,7 +7,6 @@ import '/components/profile_photo_image.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/upload_data.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -162,16 +162,12 @@ class AdminEditableImageCard extends StatelessWidget {
                   else if (hasRemote)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(AdminUi.radiusMd),
-                      child: CachedNetworkImage(
-                        imageUrl: imageUrl,
+                      child: ProfilePhotoImage(
+                        key: ValueKey('edit_img_${imageUrl.hashCode}'),
+                        photoUrl: imageUrl,
+                        size: height,
+                        borderRadius: BorderRadius.circular(AdminUi.radiusMd),
                         fit: BoxFit.cover,
-                        placeholder: (_, __) => Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AdminUi.brandTeal,
-                          ),
-                        ),
-                        errorWidget: (_, __, ___) => _placeholder(context, theme),
                       ),
                     )
                   else
@@ -345,6 +341,9 @@ Future<String> resolveImageForFirestoreSave({
 }
 
 /// ImageProvider for network URLs and Firestore data-URL fallbacks.
+///
+/// Prefer [AdminRecordThumbnail] / [ProfilePhotoImage] for widgets that may
+/// load auth-gated Firebase Storage objects (`users/**`).
 ImageProvider? adminImageProvider({
   required String imageUrl,
   Uint8List? localBytes,
@@ -366,14 +365,23 @@ ImageProvider? adminImageProvider({
   if (url.startsWith('assets/')) {
     return AssetImage(url);
   }
-  // Only http(s) URLs become NetworkImage.
+  // Only non-Storage http(s) URLs become NetworkImage here.
+  // Firebase Storage download URLs under users/** require Auth — anonymous
+  // GET returns 403 and Chromium reports it as CORS.
   if (url.startsWith('http://') || url.startsWith('https://')) {
+    if (AdminMediaResolver.storagePathFrom(url) != null) {
+      return null;
+    }
     return NetworkImage(url);
   }
   return null;
 }
 
-/// Preview widget for add/edit forms (network + data-URL + local bytes).
+/// Preview widget for add/edit forms (network + data-URL + local bytes + Storage).
+///
+/// Root cause of “Admin shows old/empty after image change”: Firebase Storage
+/// download URLs were rejected by [adminImageProvider] (returns null) so the
+/// form showed a placeholder while Customer App still rendered the public URL.
 Widget adminImagePreview({
   required String imageUrl,
   Uint8List? localBytes,
@@ -388,7 +396,37 @@ Widget adminImagePreview({
   );
 
   Widget child;
-  if (provider == null) {
+  if (provider != null) {
+    child = Image(
+      image: provider,
+      width: width,
+      height: height,
+      fit: fit,
+      gaplessPlayback: true,
+    );
+  } else if (imageUrl.trim().isNotEmpty) {
+    // Storage path / gs:// / Firebase download URL → Auth SDK resolver.
+    child = AdminRecordThumbnail(
+      key: ValueKey('preview_${imageUrl.hashCode}'),
+      imageUrl: imageUrl,
+      width: width,
+      height: height,
+      fit: fit,
+      borderRadius: borderRadius,
+      fallback: Container(
+        width: width,
+        height: height,
+        alignment: Alignment.center,
+        color: const Color(0xFFF0F4F4),
+        child: Icon(
+          Icons.broken_image_outlined,
+          size: 40,
+          color: AdminUi.brandTeal.withValues(alpha: 0.45),
+        ),
+      ),
+    );
+    return child;
+  } else {
     child = Container(
       width: width,
       height: height,
@@ -400,14 +438,6 @@ Widget adminImagePreview({
         color: AdminUi.brandTeal.withValues(alpha: 0.5),
       ),
     );
-  } else {
-    child = Image(
-      image: provider,
-      width: width,
-      height: height,
-      fit: fit,
-      gaplessPlayback: true,
-    );
   }
 
   if (borderRadius == BorderRadius.zero) {
@@ -416,8 +446,11 @@ Widget adminImagePreview({
   return ClipRRect(borderRadius: borderRadius, child: child);
 }
 
-/// Thumbnail for admin list/table rows (https + Firestore data-URL).
-class AdminRecordThumbnail extends StatelessWidget {
+/// Thumbnail for admin list/table rows (https + gs:// + Storage path + data-URL).
+///
+/// Auth-gated Storage objects are loaded via [AdminMediaResolver] (SDK bytes),
+/// avoiding anonymous HTTPS GET 403 / console CORS noise on Flutter Web.
+class AdminRecordThumbnail extends StatefulWidget {
   const AdminRecordThumbnail({
     super.key,
     required this.imageUrl,
@@ -436,48 +469,112 @@ class AdminRecordThumbnail extends StatelessWidget {
   final Widget? fallback;
 
   @override
+  State<AdminRecordThumbnail> createState() => _AdminRecordThumbnailState();
+}
+
+class _AdminRecordThumbnailState extends State<AdminRecordThumbnail> {
+  Future<AdminMediaResolved>? _future;
+  String? _url;
+
+  @override
+  void initState() {
+    super.initState();
+    _kick(widget.imageUrl);
+  }
+
+  @override
+  void didUpdateWidget(covariant AdminRecordThumbnail oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.imageUrl != widget.imageUrl) {
+      _kick(widget.imageUrl);
+    }
+  }
+
+  void _kick(String raw) {
+    _url = raw.trim();
+    if ((_url ?? '').isEmpty) {
+      _future = null;
+      return;
+    }
+    // Sync path for data-URLs / assets handled below; still resolve for Storage.
+    _future = AdminMediaResolver.resolve(_url);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final url = imageUrl.trim();
     final empty = SizedBox(
-      width: width,
-      height: height,
-      child: fallback,
+      width: widget.width,
+      height: widget.height,
+      child: widget.fallback,
     );
 
-    if (url.isEmpty) {
-      return empty;
+    final url = (_url ?? '').trim();
+    if (url.isEmpty) return empty;
+
+    // Fast sync providers (no Storage auth needed).
+    final sync = adminImageProvider(imageUrl: url);
+    if (sync != null) {
+      return _clipImage(context, sync, empty);
     }
 
-    final provider = adminImageProvider(imageUrl: url);
-    if (provider == null) {
-      return empty;
-    }
+    return FutureBuilder<AdminMediaResolved>(
+      future: _future,
+      builder: (context, snap) {
+        if (snap.connectionState != ConnectionState.done) {
+          return Container(
+            width: widget.width,
+            height: widget.height,
+            color: AdminUi.brandTeal.withValues(alpha: 0.06),
+            alignment: Alignment.center,
+            child: const SizedBox(
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AdminUi.brandTeal,
+              ),
+            ),
+          );
+        }
+        final resolved = snap.data;
+        if (resolved == null || !resolved.ok) return empty;
+        if (resolved.hasBytes) {
+          return _clipImage(context, MemoryImage(resolved.bytes!), empty);
+        }
+        final network = resolved.networkUrl!.trim();
+        return _clipImage(context, NetworkImage(network), empty);
+      },
+    );
+  }
 
+  Widget _clipImage(
+    BuildContext context,
+    ImageProvider provider,
+    Widget empty,
+  ) {
     final dpr = MediaQuery.devicePixelRatioOf(context);
-    final decoded = provider is NetworkImage
+    final decoded = provider is NetworkImage || provider is MemoryImage
         ? ResizeImage(
             provider,
-            width: (width * dpr).round().clamp(48, 320),
-            height: (height * dpr).round().clamp(48, 320),
+            width: (widget.width * dpr).round().clamp(48, 320),
+            height: (widget.height * dpr).round().clamp(48, 320),
           )
         : provider;
 
     return ClipRRect(
-      borderRadius: borderRadius,
+      borderRadius: widget.borderRadius,
       child: Image(
         image: decoded,
-        width: width,
-        height: height,
-        fit: fit,
+        width: widget.width,
+        height: widget.height,
+        fit: widget.fit,
         gaplessPlayback: true,
         errorBuilder: (_, __, ___) => empty,
         loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) {
-            return child;
-          }
+          if (loadingProgress == null) return child;
           return Container(
-            width: width,
-            height: height,
+            width: widget.width,
+            height: widget.height,
             color: AdminUi.brandTeal.withValues(alpha: 0.06),
             alignment: Alignment.center,
             child: const SizedBox(

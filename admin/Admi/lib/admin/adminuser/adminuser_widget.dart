@@ -2,18 +2,21 @@ import '/backend/admin_audit_log.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_ops_search.dart';
 import '/backend/backend.dart';
+import '/admin/adminuser/admin_customer_active_order.dart';
+import '/admin/adminuser/admin_customers_adapter.dart';
+import '/admin/adminuser/admin_customers_details_drawer.dart';
+import '/admin/adminuser/admin_customers_filter_bar.dart';
+import '/admin/adminuser/admin_customers_stats_loader.dart';
+import '/admin/adminuser/admin_customers_summary_strip.dart';
+import '/admin/adminuser/admin_customers_table.dart';
 import '/components/add_yser_widget.dart';
 import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
-import '/components/admin_image_picker.dart';
 import '/components/admin_layout_widget.dart';
-import '/components/admin_ops_filter_bar.dart';
 import '/components/admin_ui.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/index.dart';
 import 'package:flutter/material.dart';
 import 'adminuser_model.dart';
 export 'adminuser_model.dart';
@@ -33,14 +36,26 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   AdminOpsFilterState _filters = const AdminOpsFilterState();
+  AdminCustomerExtraFilters _extra = AdminCustomerExtraFilters.empty;
+  int _pageSize = 20;
+  AdminCustomerStats _stats = const AdminCustomerStats.empty();
+  bool _statsLoading = true;
+  bool _statsError = false;
   List<UserRecord>? _serverSearchHits;
   int _searchGen = 0;
+  Map<String, AdminCustomerActiveOrderTruth> _tripTruth = const {};
+  int _tripGen = 0;
+  int _pageLiveTrip = 0;
+  String _tripUsersKey = '';
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AdminuserModel());
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      safeSetState(() {});
+      _loadStats();
+    });
   }
 
   @override
@@ -49,45 +64,95 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
     super.dispose();
   }
 
+  Future<void> _loadStats() async {
+    setState(() {
+      _statsLoading = true;
+      _statsError = false;
+    });
+    try {
+      final s = await AdminCustomerStatsLoader.load(filters: _filters);
+      if (!mounted) return;
+      setState(() {
+        _stats = s;
+        _statsLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _statsError = true;
+        _statsLoading = false;
+      });
+    }
+  }
+
   Future<void> _onFiltersChanged(AdminOpsFilterState next) async {
     setState(() {
       _filters = next;
       _serverSearchHits = null;
+      _tripTruth = const {};
+      _tripUsersKey = '';
+      _pageLiveTrip = 0;
     });
+    _loadStats();
     final plan = AdminOpsSearch.classify(next.searchQuery);
     if (!plan.isServerSide) return;
     final gen = ++_searchGen;
     final hits = await AdminOpsSearch.searchUsersServer(plan, next);
     if (!mounted || gen != _searchGen) return;
-    setState(() => _serverSearchHits = hits);
+    setState(() {
+      _serverSearchHits =
+          hits.where(adminIsAppCustomer).toList(growable: false);
+    });
   }
 
-  List<UserRecord> _filterUsers(List<UserRecord> users) {
-    if (_serverSearchHits != null) {
-      return _serverSearchHits!
-          .where((u) => !u.isagent && !u.ismndob)
-          .toList(growable: false);
+  Future<void> _resolveTrips(List<UserRecord> users) async {
+    final gen = ++_tripGen;
+    final map = await AdminCustomerActiveOrderTruth.resolvePage(users);
+    if (!mounted || gen != _tripGen) return;
+    var live = 0;
+    for (final t in map.values) {
+      if (t.hasLiveTrip) live++;
     }
-
-    final appUsers = users
-        .where((u) => !u.isagent && !u.ismndob)
-        .toList(growable: false);
-
-    final q = _filters.searchQuery.trim().toLowerCase();
-    if (q.isEmpty) return appUsers;
-
-    final plan = AdminOpsSearch.classify(q);
-    if (plan.isServerSide) return appUsers;
-
-    return appUsers.where((u) {
-      return u.displayName.toLowerCase().contains(q) ||
-          u.phoneNumber.toLowerCase().contains(q) ||
-          u.email.toLowerCase().contains(q) ||
-          u.reference.id.toLowerCase().contains(q);
-    }).toList();
+    setState(() {
+      _tripTruth = map;
+      _pageLiveTrip = live;
+    });
   }
 
-  Future<void> _toggleActivation(UserRecord user, {required bool activate}) async {
+  List<AdminCustomerRow> _buildRows(List<UserRecord> users) {
+    final rows = users.map((u) {
+      final truth = _tripTruth[u.reference.id];
+      return AdminCustomerRow.fromUser(
+        u,
+        tripHint: truth?.tripHint ??
+            (AdminCustomerRow.activeOrderIdOf(u).isNotEmpty
+                ? AdminCustomerTripHint.lockPresent
+                : AdminCustomerTripHint.none),
+      );
+    }).toList(growable: false);
+
+    final q = _filters.searchQuery.trim();
+    var filtered = rows;
+    if (_serverSearchHits == null && q.isNotEmpty) {
+      final plan = AdminOpsSearch.classify(q);
+      if (!plan.isServerSide) {
+        filtered = rows.where((r) => r.matchesSearch(q)).toList(growable: false);
+      }
+    }
+    return _extra.apply(filtered);
+  }
+
+  List<UserRecord> _baseUsers(List<UserRecord> all) {
+    if (_serverSearchHits != null) {
+      return _serverSearchHits!;
+    }
+    return all.where(adminIsAppCustomer).toList(growable: false);
+  }
+
+  Future<void> _toggleActivation(
+    UserRecord user, {
+    required bool activate,
+  }) async {
     final confirmed = await showAdminConfirmDialog(
       context: context,
       title: activate
@@ -96,7 +161,8 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
       whatHappens: activate
           ? uiTr(context, 'هل أنت متأكد من تنشيط حساب')
           : uiTr(context, 'هل أنت متأكد من إيقاف حساب'),
-      subject: user.displayName.isNotEmpty ? user.displayName : user.reference.id,
+      subject:
+          user.displayName.isNotEmpty ? user.displayName : user.reference.id,
       impact: activate
           ? uiTr(context, 'User can sign in and book again')
           : uiTr(context, 'User account will be disabled'),
@@ -124,10 +190,14 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            activate ? uiTr(context, 'تم تنشيط الحساب بنجاح') : uiTr(context, 'تم إيقاف الحساب بنجاح'),
+            activate
+                ? uiTr(context, 'تم تنشيط الحساب بنجاح')
+                : uiTr(context, 'تم إيقاف الحساب بنجاح'),
           ),
         ),
       );
+      AdminListRefresh.notify(AdminListScope.users);
+      _loadStats();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -153,8 +223,7 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
             expand: false,
             builder: (context, scrollController) => SingleChildScrollView(
               controller: scrollController,
-              keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.only(top: 8),
               child: const AddYserWidget(),
             ),
@@ -163,75 +232,167 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
       },
     );
     safeSetState(() {});
+    AdminListRefresh.notify(AdminListScope.users);
+    _loadStats();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = FFLocalizations.of(context);
     final theme = FlutterFlowTheme.of(context);
-    final isWide = AdminUi.useTableLayout(context);
 
-        return GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          child: AdminLayoutWidget(
-            scaffoldKey: scaffoldKey,
-            menu2Model: _model.menu2Model,
-            updateCallback: () => safeSetState(() {}),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: AdminLayoutWidget(
+        scaffoldKey: scaffoldKey,
+        menu2Model: _model.menu2Model,
+        updateCallback: () => safeSetState(() {}),
         padContent: false,
         title: l10n.getText('0qqjtlup'),
         child: AdminPageBody(
-          title: l10n.getText('5sxo5qip'),
-          subtitle: appTr(context, 'scr_users_subtitle'),
+          title: uiTr(context, 'المستخدمون'),
+          subtitle: uiTr(
+            context,
+            'إدارة حسابات العملاء وبياناتهم وحالتهم.',
+          ),
+          actions: AdminPrimaryButton(
+            label: l10n.getText('ojvmhyny'),
+            icon: Icons.person_add_rounded,
+            onPressed: _openAddUserSheet,
+          ),
           scrollable: true,
-                          child: Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-              AdminOpsFilterBar(
+            children: [
+              AdminCustomersSummaryStrip(
+                stats: _stats,
+                loading: _statsLoading,
+                error: _statsError,
+                onRetry: _loadStats,
+                pageLiveTripHint: _pageLiveTrip,
+              ),
+              const SizedBox(height: 8),
+              AdminCustomersFilterBar(
                 value: _filters,
-                config: const AdminOpsFilterConfig(
-                  showDate: false,
-                  showCountry: true,
-                  showSearch: true,
-                  searchHint: 'بحث بالاسم / الهاتف / البريد',
-                ),
+                extra: _extra,
+                pageSize: _pageSize,
                 onChanged: _onFiltersChanged,
+                onExtraChanged: (e) => setState(() => _extra = e),
+                onPageSizeChanged: (n) => setState(() => _pageSize = n),
               ),
-              const SizedBox(height: 12),
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: _buildAddButton(l10n),
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               AdminFirestoreList<UserRecord>(
-                key: ValueKey('users_${_filters.signature}'),
-                reloadKey: _filters.signature,
+                key: ValueKey(
+                  'users_${_filters.signature}_${_pageSize}_${_extra.signature}',
+                ),
+                reloadKey:
+                    '${_filters.signature}|$_pageSize|${_extra.signature}',
                 refreshScope: AdminListScope.users,
                 query: UserRecord.collection,
                 recordBuilder: UserRecord.fromSnapshot,
+                pageSize: _pageSize,
                 queryBuilder: (q) =>
                     AdminOpsQueryBuilder.applyUserFilters(q, _filters),
+                loading: AdminContentCard(
+                  child: Column(
+                    children: List.generate(
+                      4,
+                      (i) => Container(
+                        height: 44,
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: theme.alternate.withValues(alpha: 0.35),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                empty: AdminContentCard(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.groups_outlined,
+                        size: 48,
+                        color: AdminUi.brandTeal.withValues(alpha: 0.45),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        uiTr(context, 'لا يوجد مستخدمون مسجلون'),
+                        style: theme.titleMedium,
+                      ),
+                    ],
+                  ),
+                ),
                 builder: (context, allUsers, listState) {
-                  final users = _filterUsers(allUsers);
+                  if (listState.hasError) {
+                    return AdminContentCard(
+                      child: Column(
+                        children: [
+                          Text(
+                            uiTr(context, 'تعذر تحميل المستخدمين'),
+                            style: theme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          if (listState.errorMessage != null)
+                            Text(
+                              listState.errorMessage!,
+                              style: theme.bodySmall,
+                              textAlign: TextAlign.center,
+                            ),
+                          TextButton(
+                            onPressed: listState.refresh,
+                            child: Text(uiTr(context, 'إعادة المحاولة')),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
 
-                  if (users.isEmpty) {
+                  final users = _baseUsers(allUsers);
+                  final tripKey = users.map((u) => u.reference.id).join(',');
+                  if (tripKey != _tripUsersKey) {
+                    _tripUsersKey = tripKey;
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (!mounted) return;
+                      _resolveTrips(users);
+                    });
+                  }
+
+                  final rows = _buildRows(users);
+                  if (rows.isEmpty) {
                     return AdminContentCard(
                       child: Column(
                         children: [
                           Icon(
-                            Icons.groups_outlined,
-                            size: 48,
-                            color: AdminUi.brandTeal.withValues(alpha: 0.45),
+                            Icons.search_off_rounded,
+                            size: 40,
+                            color: theme.secondaryText,
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 10),
                           Text(
-                            _filters.searchQuery.isEmpty
+                            _filters.searchQuery.isEmpty && !_extra.hasAny
                                 ? uiTr(context, 'لا يوجد مستخدمون مسجلون')
                                 : uiTr(context, 'لا توجد نتائج للبحث'),
                             style: theme.titleMedium,
                           ),
+                          if (_extra.hasAny ||
+                              _filters.searchQuery.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _extra = AdminCustomerExtraFilters.empty;
+                                  _filters = _filters.copyWith(searchQuery: '');
+                                  _serverSearchHits = null;
+                                });
+                              },
+                              child: Text(uiTr(context, 'إعادة تعيين')),
+                            ),
+                          ],
                         ],
                       ),
                     );
@@ -243,449 +404,40 @@ class _AdminuserWidgetState extends State<AdminuserWidget> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+                          padding: const EdgeInsets.fromLTRB(14, 8, 14, 4),
                           child: Text(
-                            adminListCountLabel(context, listState, visibleCount: users.length, pageFetched: allUsers.length),
+                            adminListCountLabel(
+                              context,
+                              listState,
+                              visibleCount: rows.length,
+                              pageFetched: allUsers.length,
+                            ),
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
                               color: theme.secondaryText,
                               useGoogleFonts: !theme.labelLargeIsCustom,
-                                        ),
-                                      ),
-                                    ),
-                        const SizedBox(height: 8),
-                        if (isWide)
-                          _UsersTable(
-                            users: users,
-                            onToggle: _toggleActivation,
-                          )
-                        else
-                          ListView.separated(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: const EdgeInsets.all(12),
-                            itemCount: users.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 10),
-                            itemBuilder: (context, index) => _UserCard(
-                              user: users[index],
-                              onToggle: _toggleActivation,
                             ),
                           ),
+                        ),
+                        const SizedBox(height: 2),
+                        AdminCustomersTable(
+                          rows: rows,
+                          onToggle: _toggleActivation,
+                          onOpenDetails: (u) => showAdminCustomerDetailsDrawer(
+                            context: context,
+                            user: u,
+                          ),
+                        ),
                         AdminListLoadMoreFooter(state: listState),
                       ],
-                                                ),
-                                              );
-                                            },
+                    ),
+                  );
+                },
               ),
             ],
-                                        ),
-                                      ),
-                                    ),
-    );
-  }
-
-  Widget _buildAddButton(FFLocalizations l10n) {
-    return AdminPrimaryButton(
-      label: l10n.getText('ojvmhyny'),
-      icon: Icons.person_add_rounded,
-      onPressed: _openAddUserSheet,
-    );
-  }
-}
-
-class _UsersTable extends StatelessWidget {
-  const _UsersTable({
-    required this.users,
-    required this.onToggle,
-  });
-
-  final List<UserRecord> users;
-  final Future<void> Function(UserRecord user, {required bool activate})
-      onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-      child: SizedBox(
-        width: AdminUi.adminTableMinWidth(context),
-                                    child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: [
-                                        Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                          child: Row(
-                                            children: [
-                  _HeaderCell(uiTr(context, 'المستخدم'), flex: 3, theme: theme),
-                  _HeaderCell(uiTr(context, 'البريد'), flex: 3, theme: theme),
-                  _HeaderCell(uiTr(context, 'الجوال'), flex: 2, theme: theme),
-                  _HeaderCell(uiTr(context, 'الحالة'), flex: 2, theme: theme),
-                  _HeaderCell(uiTr(context, 'إجراءات'), flex: 2, theme: theme),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            ...users.map(
-              (user) => _UserTableRow(user: user, onToggle: onToggle),
-            ),
-                                            ],
-                                          ),
-                                        ),
-    );
-  }
-}
-
-class _HeaderCell extends StatelessWidget {
-  const _HeaderCell(this.text, {required this.flex, required this.theme});
-
-  final String text;
-  final int flex;
-  final FlutterFlowTheme theme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        text,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: theme.labelLarge.override(
-          fontFamily: theme.labelLargeFamily,
-          fontWeight: FontWeight.w700,
-          color: AdminUi.brandTeal,
-          useGoogleFonts: !theme.labelLargeIsCustom,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }
-}
-
-class _UserTableRow extends StatelessWidget {
-  const _UserTableRow({
-    required this.user,
-    required this.onToggle,
-  });
-
-  final UserRecord user;
-  final Future<void> Function(UserRecord user, {required bool activate})
-      onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: theme.alternate.withValues(alpha: 0.6)),
+          ),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                                                            child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-                                                              children: [
-                                                                Expanded(
-            flex: 3,
-            child: Row(
-                                                                    children: [
-                _UserAvatar(user: user, size: 36),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    user.displayName.isNotEmpty ? user.displayName : '—',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.bodyMedium.override(
-                      fontFamily: theme.bodyMediumFamily,
-                      fontWeight: FontWeight.w600,
-                      useGoogleFonts: !theme.bodyMediumIsCustom,
-                    ),
-                                                                            ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-          Expanded(
-            flex: 3,
-            child: Text(
-              user.email.isNotEmpty ? user.email : '—',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.bodySmall,
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              user.phoneNumber.isNotEmpty ? user.phoneNumber : '—',
-              style: theme.bodySmall,
-            ),
-          ),
-          Expanded(flex: 2, child: _StatusBadge(active: user.actevUser)),
-          Expanded(
-            flex: 2,
-            child: _UserActions(user: user, onToggle: onToggle),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _UserCard extends StatelessWidget {
-  const _UserCard({
-    required this.user,
-    required this.onToggle,
-  });
-
-  final UserRecord user;
-  final Future<void> Function(UserRecord user, {required bool activate})
-      onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-
-    return Container(
-      decoration: AdminUi.cardDecoration(context, elevated: false).copyWith(
-        color: theme.primaryBackground,
-      ),
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _UserAvatar(user: user),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user.displayName.isNotEmpty ? user.displayName : '—',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.titleSmall.override(
-                        fontFamily: theme.titleSmallFamily,
-                        fontWeight: FontWeight.w700,
-                        color: AdminUi.brandTeal,
-                        useGoogleFonts: !theme.titleSmallIsCustom,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    _StatusBadge(active: user.actevUser),
-                  ],
-                ),
-              ),
-              _UserActions(user: user, onToggle: onToggle),
-            ],
-          ),
-          const SizedBox(height: 14),
-          const Divider(height: 1),
-          const SizedBox(height: 12),
-          _InfoTile(
-            icon: Icons.email_outlined,
-            label: uiTr(context, 'البريد الإلكتروني'),
-            value: user.email.isNotEmpty ? user.email : '—',
-          ),
-          const SizedBox(height: 8),
-          _InfoTile(
-            icon: Icons.phone_rounded,
-            label: uiTr(context, 'رقم الجوال'),
-            value: user.phoneNumber.isNotEmpty ? user.phoneNumber : '—',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InfoTile extends StatelessWidget {
-  const _InfoTile({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-                                                              children: [
-        Icon(icon, size: 18, color: AdminUi.brandTeal.withValues(alpha: 0.8)),
-        const SizedBox(width: 8),
-                                                                Expanded(
-                                                                  child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    children: [
-                                                                      Text(
-                label,
-                style: theme.labelSmall.override(
-                  fontFamily: theme.labelSmallFamily,
-                  color: theme.secondaryText,
-                  useGoogleFonts: !theme.labelSmallIsCustom,
-                ),
-              ),
-              const SizedBox(height: 2),
-                                                                      Text(
-                value,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.bodyMedium,
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                                          ),
-                                                                                        ],
-                                                                                      );
-  }
-}
-
-class _UserAvatar extends StatelessWidget {
-  const _UserAvatar({required this.user, this.size = 44});
-
-  final UserRecord user;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: AdminUi.brandTeal.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(size * 0.28),
-        border: Border.all(color: AdminUi.brandTeal.withValues(alpha: 0.2)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: AdminRecordThumbnail(
-        imageUrl: user.photoUrl,
-        width: size,
-        height: size,
-        fallback: _AvatarFallback(size: size),
-      ),
-    );
-  }
-}
-
-class _AvatarFallback extends StatelessWidget {
-  const _AvatarFallback({required this.size});
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Icon(
-      Icons.person_rounded,
-      color: AdminUi.brandTeal,
-      size: size * 0.5,
-    );
-  }
-}
-
-class _StatusBadge extends StatelessWidget {
-  const _StatusBadge({required this.active});
-
-  final bool active;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: active ? const Color(0xFFE8F5E9) : const Color(0xFFFFEBEE),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        active ? uiTr(context, 'نشط') : uiTr(context, 'موقوف'),
-        style: theme.labelSmall.override(
-          fontFamily: theme.labelSmallFamily,
-          color: active ? const Color(0xFF2E7D32) : theme.error,
-          fontWeight: FontWeight.w600,
-          useGoogleFonts: !theme.labelSmallIsCustom,
-                                                          ),
-                                                        ),
-                                                      );
-  }
-}
-
-class _UserActions extends StatelessWidget {
-  const _UserActions({
-    required this.user,
-    required this.onToggle,
-  });
-
-  final UserRecord user;
-  final Future<void> Function(UserRecord user, {required bool activate})
-      onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 6,
-      runSpacing: 6,
-      children: [
-        FlutterFlowIconButton(
-          borderRadius: 8,
-          buttonSize: 36,
-          fillColor: AdminUi.brandTeal.withValues(alpha: 0.1),
-          icon: const Icon(
-            Icons.visibility_outlined,
-            color: AdminUi.brandTeal,
-            size: 18,
-          ),
-          onPressed: () {
-            context.pushNamed(
-              DriverProfileWidget.routeName,
-              queryParameters: {
-                'iduser': serializeParam(
-                  user.reference,
-                  ParamType.DocumentReference,
-                ),
-              }.withoutNulls,
-                                                  );
-                                                },
-                                              ),
-        if (user.actevUser)
-          FlutterFlowIconButton(
-            borderRadius: 8,
-            buttonSize: 36,
-            fillColor: const Color(0xFFFFEBEE),
-            icon: Icon(
-              Icons.block_rounded,
-              color: FlutterFlowTheme.of(context).error,
-              size: 18,
-            ),
-            onPressed: () => onToggle(user, activate: false),
-          )
-        else
-          FlutterFlowIconButton(
-            borderRadius: 8,
-            buttonSize: 36,
-            fillColor: const Color(0xFFE8F5E9),
-            icon: Icon(
-              Icons.check_circle_outline_rounded,
-              color: FlutterFlowTheme.of(context).success,
-              size: 18,
-            ),
-            onPressed: () => onToggle(user, activate: true),
-          ),
-      ],
     );
   }
 }

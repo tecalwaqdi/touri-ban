@@ -20,13 +20,23 @@ class AdminVehicleTypeEditor extends StatefulWidget {
 
   final TypeCarRecord record;
 
-  static Future<bool?> open(BuildContext context, TypeCarRecord record) {
+  static Future<bool?> open(BuildContext context, TypeCarRecord record) async {
+    TypeCarRecord fresh = record;
+    try {
+      final snap = await record.reference.get(
+        const GetOptions(source: Source.server),
+      );
+      if (snap.exists) {
+        fresh = TypeCarRecord.fromSnapshot(snap);
+      }
+    } catch (_) {}
+    if (!context.mounted) return null;
     return showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-      builder: (ctx) => AdminVehicleTypeEditor(record: record),
+      builder: (ctx) => AdminVehicleTypeEditor(record: fresh),
     );
   }
 
@@ -272,6 +282,14 @@ class _AdminVehicleTypeEditorState extends State<AdminVehicleTypeEditor> {
       }
 
       if (!mounted) return;
+      await AdminCrudFeedback.success(
+        context,
+        action: AdminCrudAction.edit,
+        message: uiTr(context, 'تم حفظ نوع المركبة'),
+        refreshScope: AdminListScope.typeCars,
+        invalidateStats: false,
+      );
+      if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
@@ -341,22 +359,13 @@ class _AdminVehicleTypeEditorState extends State<AdminVehicleTypeEditor> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: SizedBox(
+                          child: adminImagePreview(
+                            imageUrl: _imgUrl,
+                            localBytes: _localImage.bytes,
                             width: 96,
                             height: 72,
-                            child: _imgUrl.isNotEmpty &&
-                                    (_imgUrl.startsWith('http') ||
-                                        _imgUrl.startsWith('data:'))
-                                ? Image.network(
-                                    _imgUrl,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) =>
-                                        const Icon(Icons.directions_car),
-                                  )
-                                : const ColoredBox(
-                                    color: Color(0x11000000),
-                                    child: Icon(Icons.directions_car),
-                                  ),
+                            fit: BoxFit.cover,
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         const SizedBox(width: 12),

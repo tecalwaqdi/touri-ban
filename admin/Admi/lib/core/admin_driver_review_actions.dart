@@ -83,10 +83,16 @@ abstract final class AdminDriverReviewActions {
         'vehicle_review_status': 'approved',
         'document_review_status': 'approved',
         'rejection_reason': FieldValue.delete(),
+        'rejectionReason': FieldValue.delete(),
+        'changeRequestReason': FieldValue.delete(),
+        'fieldsToFix': <dynamic>[],
         'requested_changes': <dynamic>[],
         'reviewed_at': FieldValue.serverTimestamp(),
         'reviewed_by': adminUid,
+        // Dual-write camelCase + snake_case (CF V2 + legacy readers).
         'approved_at': FieldValue.serverTimestamp(),
+        'approvedAt': FieldValue.serverTimestamp(),
+        'approvedBy': adminUid,
       };
 
   static Map<String, dynamic> rejectPatch({
@@ -100,6 +106,9 @@ abstract final class AdminDriverReviewActions {
         'submission_status': 'rejected',
         'account_status': 'inactive',
         'rejection_reason': reason,
+        'rejectionReason': reason,
+        'rejectedAt': FieldValue.serverTimestamp(),
+        'rejectedBy': adminUid,
         'reviewed_at': FieldValue.serverTimestamp(),
         'reviewed_by': adminUid,
       };
@@ -108,29 +117,40 @@ abstract final class AdminDriverReviewActions {
     required String reason,
     required String adminUid,
     String section = 'general',
-  }) =>
-      {
-        'actev_mndob': false,
-        'ngl': false,
-        'registration_status': 'needs_changes',
-        'submission_status': 'changesRequested',
-        'account_status': 'inactive',
-        'operational_status': 'offline',
-        'rejection_reason': reason,
-        'changeRequestReason': reason,
-        'fieldsToFix': [section],
-        'requested_changes': [
-          {
-            'section': section,
-            'adminMessage': reason,
-            'createdBy': adminUid,
-            'resolved': false,
-            'createdAt': FieldValue.serverTimestamp(),
-          }
-        ],
-        'reviewed_at': FieldValue.serverTimestamp(),
-        'reviewed_by': adminUid,
-      };
+    List<String>? fieldsToFix,
+  }) {
+    final fields = (fieldsToFix == null || fieldsToFix.isEmpty)
+        ? <String>[section]
+        : fieldsToFix
+            .where((f) => fieldsToFixAllowlist.contains(f))
+            .toList(growable: false);
+    final effective = fields.isEmpty ? <String>['other'] : fields;
+    return {
+      'actev_mndob': false,
+      'ngl': false,
+      // Canonical V2 + legacy Driver App aliases (read both).
+      'registration_status': 'needs_changes',
+      'submission_status': 'changesRequested',
+      'account_status': 'inactive',
+      'operational_status': 'offline',
+      'rejection_reason': reason,
+      'changeRequestReason': reason,
+      'fieldsToFix': effective,
+      'changesRequestedAt': FieldValue.serverTimestamp(),
+      'changesRequestedBy': adminUid,
+      'requested_changes': [
+        {
+          'section': effective.first,
+          'adminMessage': reason,
+          'createdBy': adminUid,
+          'resolved': false,
+          'createdAt': FieldValue.serverTimestamp(),
+        }
+      ],
+      'reviewed_at': FieldValue.serverTimestamp(),
+      'reviewed_by': adminUid,
+    };
+  }
 
   static Map<String, dynamic> suspendPatch({
     required String reason,

@@ -230,6 +230,8 @@ Map<String, dynamic> createTypeCarRecordData({
       'names_i18n': namesI18n,
       'sr': sr,
       'actev': actev,
+      // Dual-write legacy alias read by some Customer paths.
+      if (actev != null) 'acctev': actev,
       'img': img,
       'ishafelh': ishafelh,
       'not': not,

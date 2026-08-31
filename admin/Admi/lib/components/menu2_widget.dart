@@ -59,7 +59,8 @@ class _Menu2WidgetState extends State<Menu2Widget> {
   }
 
   bool _isActive(BuildContext context, String routeName) {
-    return GoRouterState.of(context).name == routeName;
+    // Do not use GoRouterState.of — go_router 12.1.3 release null-check bug.
+    return adminCurrentRouteName(context) == routeName;
   }
 
   String _menuLabel(BuildContext context, String routeName) =>

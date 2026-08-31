@@ -1,3 +1,4 @@
+import '/admin/admin_m3alm/admin_landmarks_adapter.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_audit_log.dart';
@@ -58,6 +59,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
   AdminLandmarkListFilters _listFilters = const AdminLandmarkListFilters();
   AdminOpsFilterState _opsFilters = const AdminOpsFilterState();
   int? _excludedAliasHint;
+  int _pageSize = kAdminPageSize;
 
   Query _landmarksQuery(Query collection) {
     var q = collection as Query<Map<String, dynamic>>;
@@ -71,12 +73,8 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
   bool get _isCountryAgentList =>
       AdminRoleService.isCountryAgent && _searchFuture == null;
 
-  String _landmarkThumbnail(MkanRecord record) {
-    if (record.img1.isNotEmpty) return record.img1;
-    if (record.img2.isNotEmpty) return record.img2;
-    if (record.img3.isNotEmpty) return record.img3;
-    return '';
-  }
+  String _landmarkThumbnail(MkanRecord record) =>
+      AdminLandmarkRow.primaryImageOf(record);
 
   Future<List<MkanRecord>> _searchLandmarks(String query) async {
     final requestId = ++_searchRequestId;
@@ -156,16 +154,12 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
 
     var scoped = _listFilters.apply(filtered);
 
-    final q = _searchQuery.trim().toLowerCase();
+    final q = _searchQuery.trim();
     if (q.isEmpty) return scoped;
 
-    return scoped.where((m) {
-      return m.naim.toLowerCase().contains(q) ||
-          m.osf.toLowerCase().contains(q) ||
-          m.address.toLowerCase().contains(q) ||
-          m.mdh.toLowerCase().contains(q) ||
-          m.tsnef.toLowerCase().contains(q);
-    }).toList();
+    return scoped
+        .where((m) => AdminLandmarkRow.fromRecord(m).matchesSearch(q))
+        .toList();
   }
 
   Widget _buildPaginatedLandmarksList({
@@ -178,10 +172,10 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
     if (AdminRoleService.isCountryAgent) {
       return AdminAgentLandmarkList(
         key: ValueKey(
-          'm3alm_agent_${widget.partnersOnly}_${AdminCountryScope.activeCountryRef?.path}',
+          'm3alm_agent_${widget.partnersOnly}_${AdminCountryScope.activeCountryRef?.path}_$_pageSize',
         ),
         partnersOnly: widget.partnersOnly,
-        pageSize: kAdminPageSize,
+        pageSize: _pageSize,
         builder: (context, visibleLandmarks, listState) {
           AdminLandmarkIndex.ingest(visibleLandmarks);
           final landmarks = _filterLandmarks(visibleLandmarks);
@@ -203,12 +197,12 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
 
     return AdminFirestoreList<MkanRecord>(
       key: ValueKey(
-        'm3alm_list_${widget.partnersOnly}_${AdminRoleService.isCountryAgent}',
+        'm3alm_list_${widget.partnersOnly}_${AdminRoleService.isCountryAgent}_$_pageSize',
       ),
       refreshScope: AdminListScope.landmarks,
       query: MkanRecord.collection,
       recordBuilder: MkanRecord.fromSnapshot,
-      pageSize: kAdminPageSize,
+      pageSize: _pageSize,
       queryBuilder: _landmarksQuery,
       builder: (context, allLandmarks, listState) {
         AdminLandmarkIndex.ingest(allLandmarks);
@@ -436,6 +430,14 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
         AdminUi.responsiveColumnCount(context, wide: 3, medium: 2, narrow: 1);
     final activeCount = landmarks.where((m) => m.acctev).length;
     final isSearching = _searchQuery.trim().isNotEmpty;
+    final countryIds = <String>{};
+    final cityIds = <String>{};
+    for (final m in landmarks) {
+      final c = m.revDolh?.id;
+      if (c != null && c.isNotEmpty) countryIds.add(c);
+      final city = m.idVill?.id;
+      if (city != null && city.isNotEmpty) cityIds.add(city);
+    }
     // Avoid flash: wait for catalogTotal (final scope) before showing a number.
     final countReady = isSearching || displayTotal != null;
     final count = displayTotal ??
@@ -473,6 +475,8 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
             hasMore: hasMore && displayTotal == null && listState?.totalAvailable == null,
             activeCount: activeCount,
             inactiveCount: landmarks.length - activeCount,
+            countriesOnPage: countryIds.length,
+            citiesOnPage: cityIds.length,
             isSearching: isSearching,
             filteredFromTotal: filteredFromTotal,
             partnerTotal: partnerTotal,
@@ -703,6 +707,29 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Text(
+                          uiTr(context, 'حجم الصفحة'),
+                          style: theme.bodySmall,
+                        ),
+                        const SizedBox(width: 10),
+                        for (final size in const [20, 50, 100]) ...[
+                          Padding(
+                            padding: const EdgeInsetsDirectional.only(end: 6),
+                            child: ChoiceChip(
+                              label: Text('$size'),
+                              selected: _pageSize == size,
+                              onSelected: (_) {
+                                if (_pageSize == size) return;
+                                setState(() => _pageSize = size);
+                              },
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -807,6 +834,8 @@ class _LandmarksSummaryBar extends StatelessWidget {
     required this.activeCount,
     required this.inactiveCount,
     required this.isSearching,
+    this.countriesOnPage = 0,
+    this.citiesOnPage = 0,
     this.filteredFromTotal = false,
     this.partnerTotal,
     this.scopeNote,
@@ -819,6 +848,8 @@ class _LandmarksSummaryBar extends StatelessWidget {
   final int activeCount;
   final int inactiveCount;
   final bool isSearching;
+  final int countriesOnPage;
+  final int citiesOnPage;
   final bool filteredFromTotal;
   final int? partnerTotal;
   final String? scopeNote;
@@ -832,7 +863,7 @@ class _LandmarksSummaryBar extends StatelessWidget {
         : '$count${hasMore ? '+' : ''}';
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
       decoration: BoxDecoration(
         color: AdminUi.brandTeal.withValues(alpha: 0.04),
         border: Border(
@@ -883,6 +914,20 @@ class _LandmarksSummaryBar extends StatelessWidget {
                   value: inactiveCount.toString(),
                   color: const Color(0xFFE65100),
                   background: const Color(0xFFFFF3E0),
+                ),
+                _SummaryChip(
+                  icon: Icons.public_rounded,
+                  label: uiTr(context, 'الدول'),
+                  value: countriesOnPage.toString(),
+                  color: const Color(0xFF1565C0),
+                  background: const Color(0xFFE3F2FD),
+                ),
+                _SummaryChip(
+                  icon: Icons.location_city_rounded,
+                  label: uiTr(context, 'المدن'),
+                  value: citiesOnPage.toString(),
+                  color: const Color(0xFF6A1B9A),
+                  background: const Color(0xFFF3E5F5),
                 ),
               ],
             ),
@@ -1592,6 +1637,7 @@ class _LandmarkImage extends StatelessWidget {
         height: size,
         color: AdminUi.brandTeal.withValues(alpha: 0.08),
         child: AdminRecordThumbnail(
+          key: ValueKey('lm_thumb_${url.hashCode}_$size'),
           imageUrl: url,
           width: size,
           height: size,

@@ -35,6 +35,15 @@ class AdminLandmarkIndex {
     _byPath.removeWhere((_, record) => record.reference.id == documentId);
   }
 
+  /// Replace a cached landmark after CRUD so list/search thumbnails update
+  /// immediately (avoids stale img1 from persistence/index).
+  static void upsert(MkanRecord record) {
+    _byPath[record.reference.path] = record;
+    while (_byPath.length > _maxEntries) {
+      _byPath.remove(_byPath.keys.first);
+    }
+  }
+
   static List<MkanRecord> searchLocal(String query) {
     final q = query.trim().toLowerCase();
     if (q.isEmpty) return const [];
@@ -46,11 +55,26 @@ class AdminLandmarkIndex {
 }
 
 bool landmarkMatchesQuery(MkanRecord record, String qLower) {
-  return record.naim.toLowerCase().contains(qLower) ||
+  if (record.naim.toLowerCase().contains(qLower) ||
       record.osf.toLowerCase().contains(qLower) ||
       record.address.toLowerCase().contains(qLower) ||
       record.mdh.toLowerCase().contains(qLower) ||
-      record.tsnef.toLowerCase().contains(qLower);
+      record.tsnef.toLowerCase().contains(qLower) ||
+      record.reference.id.toLowerCase().contains(qLower)) {
+    return true;
+  }
+  for (final v in record.namesI18n.values) {
+    if (v.toLowerCase().contains(qLower)) return true;
+  }
+  for (final v in record.osfI18n.values) {
+    if (v.toLowerCase().contains(qLower)) return true;
+  }
+  final country = record.revDolh?.id.toLowerCase() ?? '';
+  final region = record.idCit?.id.toLowerCase() ?? '';
+  final city = record.idVill?.id.toLowerCase() ?? '';
+  return country.contains(qLower) ||
+      region.contains(qLower) ||
+      city.contains(qLower);
 }
 
 Query _prefixQuery(String term, bool partnersOnly) {

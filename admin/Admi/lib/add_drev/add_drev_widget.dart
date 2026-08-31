@@ -602,7 +602,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
             ),
             const SizedBox(height: 16),
             AdminEditFormCard(
-              sectionTitle: uiTr(context, '٢ — بيانات المركبة والعمل'),
+              sectionTitle: uiTr(context, '٢ — الموقع والمركبة'),
               children: [
                 _buildFieldHint(
                   uiTr(context, 'اختر شركة النقل (إن وُجدت) ثم نوع السيارة ومدينة العمل.'),

@@ -1,8 +1,8 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/components/profile_photo_image.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'menu_model.dart';
 export 'menu_model.dart';
@@ -121,18 +121,11 @@ class _MenuWidgetState extends State<MenuWidget> {
                               child: Padding(
                                 padding: EdgeInsets.all(2.0),
                                 child: AuthUserStreamWidget(
-                                  builder: (context) => ClipRRect(
+                                  builder: (context) => ProfilePhotoImage(
+                                    photoUrl: currentUserPhoto,
+                                    size: 44.0,
                                     borderRadius: BorderRadius.circular(8.0),
-                                    child: CachedNetworkImage(
-                                      fadeInDuration:
-                                          Duration(milliseconds: 500),
-                                      fadeOutDuration:
-                                          Duration(milliseconds: 500),
-                                      imageUrl: currentUserPhoto,
-                                      width: 44.0,
-                                      height: 44.0,
-                                      fit: BoxFit.cover,
-                                    ),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),

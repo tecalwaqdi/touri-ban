@@ -618,14 +618,21 @@ abstract final class AdminOpsQueryBuilder {
   /// Use [hasActevMndob] — the typed getter coerces null → false.
   static bool isDriverActivationUnknown({required bool hasField}) => !hasField;
 
-  /// App users (non-agent / non-driver) — geo only; role math stays in counters.
+  /// App users (non-agent / non-driver) — geo + registration date; role math
+  /// (exclude drivers/agents) stays client-side / counters.
   static Query applyUserFilters(Query q, AdminOpsFilterState filters) {
     q = AdminOpsCountryScope.applyCountryFieldFilter(
       q,
       field: 'Rev_dolh',
       explicitCountry: filters.effectiveCountryRef,
     );
-    return q.orderBy(FieldPath.documentId);
+    final range = filters.resolvedDateRange;
+    if (range != null) {
+      q = q
+          .where('created_time', isGreaterThanOrEqualTo: range.startTimestamp)
+          .where('created_time', isLessThan: range.endTimestamp);
+    }
+    return q.orderBy('created_time', descending: true);
   }
 
   static Query applySupportFilters(Query q, AdminOpsFilterState filters) {
@@ -634,19 +641,8 @@ abstract final class AdminOpsQueryBuilder {
       field: 'Rev_dolh',
       explicitCountry: filters.effectiveCountryRef,
     );
-    switch (filters.supportStatus) {
-      case AdminSupportStatusFilter.all:
-        break;
-      case AdminSupportStatusFilter.open:
-        q = q.where('halh', isEqualTo: AdminOpsCounters.supportOpenHalh);
-        break;
-      case AdminSupportStatusFilter.closed:
-        q = q.where('halh', isEqualTo: 'Closed');
-        break;
-      case AdminSupportStatusFilter.resolved:
-        q = q.where('halh', isEqualTo: 'Resolved');
-        break;
-    }
+    // Status filters are client-side ([AdminSupportExtraFilters]) because tickets
+    // may use `halh` (customer) or `status` (driver) interchangeably.
     final range = filters.resolvedDateRange;
     if (range != null) {
       q = q

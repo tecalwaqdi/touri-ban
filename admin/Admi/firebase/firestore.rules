@@ -475,13 +475,14 @@ service cloud.firestore {
         && financialOrderFieldsUnchanged()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'halh_text', 'mapuser', 'timestamp', 'START', 'ActiveOrder',
-          'status_code', 'trip_started_at', 'driverArrivedAt',
+          'ALLNOW', 'status_code', 'trip_started_at', 'driverArrivedAt',
           'driver_en_route_at', 'distanceRemainingMeters', 'etaSeconds',
           'waitingStartedAt', 'customerWaitingTimeInSeconds', 'dateend',
-          'halhOrderMndob', 'endTime', 'halh_text_completed_alias',
+          'DATEEND', 'halhOrderMndob', 'endTime', 'halh_text_completed_alias',
           'completedAt', 'payment_status', 'cash_collection_status',
           'naim_mndob_text', 'phone_nu_mndob', 'cancelledAt',
-          'cancelledBy', 'cancelReason'
+          'cancelledBy', 'cancelReason', 'driverHeading', 'speed',
+          'etaApproximate', 'etaUpdatedAt'
         ])
         && (
           (resource.data.status_code in ['driver_assigned', 'driver_arriving']

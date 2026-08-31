@@ -211,6 +211,30 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
           (img3.isNotEmpty && img3 != previousImg3)) {
         await deleteAdminStorageUrl(previousImg3);
       }
+      // Bust stale list/search cache with server-confirmed document.
+      try {
+        final freshSnap = await widget.idmkan!.get(
+          const GetOptions(source: Source.server),
+        );
+        if (freshSnap.exists) {
+          AdminLandmarkIndex.upsert(MkanRecord.fromSnapshot(freshSnap));
+        }
+      } catch (_) {
+        AdminLandmarkIndex.upsert(
+          MkanRecord.getDocumentFromData(
+            {
+              ...record.snapshotData,
+              'img1': img1,
+              'img2': img2,
+              'img3': img3,
+              'naim': name,
+              'osf': _model.textController2?.text.trim() ?? record.osf,
+              'acctev': _model.switchACCTEVValue ?? record.acctev,
+            },
+            widget.idmkan!,
+          ),
+        );
+      }
       if (!mounted) return;
       await AdminCrudFeedback.success(
         context,

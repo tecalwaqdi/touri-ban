@@ -1007,7 +1007,8 @@ class RootPageContext {
   static bool isInactiveRootPage(BuildContext context) {
     final rootPageContext = context.read<RootPageContext?>();
     final isRootPage = rootPageContext?.isRootPage ?? false;
-    final location = GoRouterState.of(context).uri.toString();
+    // Avoid GoRouterState.of — release null-check in go_router 12.1.3 registry.
+    final location = adminCurrentLocation(context);
     return isRootPage &&
         location != '/' &&
         location != rootPageContext?.errorRoute;
@@ -1026,5 +1027,47 @@ extension GoRouterLocationExtension on GoRouter {
         ? lastMatch.matches
         : routerDelegate.currentConfiguration;
     return matchList.uri.toString();
+  }
+
+  /// Safe current [GoRoute.name] without [GoRouterState.of].
+  ///
+  /// go_router 12.1.3 [GoRouterState.of] → `_createPageRouteAssociation` uses
+  /// `registry[page]!`. In release builds the preceding `assert(containsKey)`
+  /// is stripped, so shell widgets (e.g. menu highlight) throw
+  /// "Null check operator used on a null value" during navigation transitions
+  /// when the Page is briefly absent from the registry.
+  String? getCurrentRouteName() {
+    final config = routerDelegate.currentConfiguration;
+    if (config.isEmpty) return null;
+    final RouteMatch lastMatch = config.last;
+    final RouteMatchList matchList = lastMatch is ImperativeRouteMatch
+        ? lastMatch.matches
+        : config;
+    for (final match in matchList.matches.reversed) {
+      final route = match.route;
+      if (route is GoRoute) {
+        final name = route.name;
+        if (name != null && name.isNotEmpty) return name;
+      }
+    }
+    return null;
+  }
+}
+
+/// Admin-safe route name for shell widgets. Never calls [GoRouterState.of].
+String? adminCurrentRouteName(BuildContext context) {
+  try {
+    return GoRouter.of(context).getCurrentRouteName();
+  } catch (_) {
+    return null;
+  }
+}
+
+/// Admin-safe location string. Never calls [GoRouterState.of].
+String adminCurrentLocation(BuildContext context) {
+  try {
+    return GoRouter.of(context).getCurrentLocation();
+  } catch (_) {
+    return '/';
   }
 }

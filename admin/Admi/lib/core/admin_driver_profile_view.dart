@@ -199,17 +199,45 @@ abstract final class AdminDriverProfileView {
     }
   }
 
+  static String _firstNonEmpty(Map<String, dynamic> data, List<String> keys) {
+    for (final k in keys) {
+      final v = _str(data, k);
+      if (v.isNotEmpty) return v;
+    }
+    return '';
+  }
+
   static AdminDriverVehicleSummary vehicle(UserRecord user) {
     final data = user.snapshotData;
     final classification = user.textTypeCarMndob.isNotEmpty
         ? user.textTypeCarMndob
-        : _str(data, 'mdenh_aml');
-    final name = _str(data, 'NameCar');
-    final model = _str(data, 'ModelCar');
-    final plate = _str(data, 'number_lohh_car').isNotEmpty
-        ? _str(data, 'number_lohh_car')
-        : _str(data, 'normalized_plate');
-    final color = _str(data, 'vehicle_color');
+        : _firstNonEmpty(data, [
+            'mdenh_aml',
+            'vehicle_type',
+            'classification',
+            'text_type_car_mndob',
+          ]);
+    final name = _firstNonEmpty(data, [
+      'NameCar',
+      'vehicle_make',
+      'make',
+      'brand',
+    ]);
+    final model = _firstNonEmpty(data, [
+      'ModelCar',
+      'model',
+      'year',
+      'vehicle_year',
+    ]);
+    final plate = _firstNonEmpty(data, [
+      'number_lohh_car',
+      'normalized_plate',
+      'plate',
+    ]);
+    final color = _firstNonEmpty(data, [
+      'vehicle_color',
+      'color',
+    ]);
     final incomplete = classification.isEmpty &&
         name.isEmpty &&
         model.isEmpty &&

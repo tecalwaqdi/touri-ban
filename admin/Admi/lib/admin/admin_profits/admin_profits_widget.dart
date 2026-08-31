@@ -65,15 +65,15 @@ class _AdminProfitsWidgetState extends State<AdminProfitsWidget> {
           backgroundColor: theme.secondaryBackground,
           onRefresh: () async => _panelKey.currentState?.reload(),
           child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: AdminUi.pagePadding(context),
-            children: [
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: AdminUi.pagePadding(context),
+                  children: [
               Text(
                 uiTr(context, 'التقرير المالي'),
                 style: theme.headlineSmall,
               ),
               const SizedBox(height: 4),
-              Text(
+                          Text(
                 uiTr(
                   context,
                   'محاسبة قرائية فقط — بدون تسوية أو تعديل أرصدة',

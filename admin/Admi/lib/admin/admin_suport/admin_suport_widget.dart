@@ -1,18 +1,24 @@
+import '/backend/admin_audit_log.dart';
 import '/backend/admin_ops_filters.dart';
+import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
-import '/backend/schema/enums/enums.dart';
+import '/admin/admin_suport/admin_support_adapter.dart';
+import '/admin/admin_suport/admin_support_details_drawer.dart';
+import '/admin/admin_suport/admin_support_filter_bar.dart';
+import '/admin/admin_suport/admin_support_stats_loader.dart';
+import '/admin/admin_suport/admin_support_summary_strip.dart';
+import '/admin/admin_suport/admin_support_table.dart';
+import '/auth/firebase_auth/auth_util.dart';
 import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_layout_widget.dart';
-import '/components/admin_ops_filter_bar.dart';
 import '/components/admin_ui.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'admin_suport_model.dart';
-import '/core/admin_user_facing_errors.dart';
 export 'admin_suport_model.dart';
 
 class AdminSuportWidget extends StatefulWidget {
@@ -30,12 +36,28 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   AdminOpsFilterState _filters = const AdminOpsFilterState();
+  AdminSupportExtraFilters _extra = AdminSupportExtraFilters.empty;
+  int _pageSize = 20;
+  AdminSupportStats _stats = const AdminSupportStats.empty();
+  bool _statsLoading = true;
+  bool _statsError = false;
+  List<SupportRecord>? _serverSearchHits;
+  int _searchGen = 0;
+  bool _actionBusy = false;
+
+  bool get _canEdit {
+    final role = AdminRoleService.currentRole;
+    return role == AdminRole.superAdmin || role == AdminRole.countryAgent;
+  }
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AdminSuportModel());
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      safeSetState(() {});
+      _loadStats();
+    });
   }
 
   @override
@@ -44,58 +66,191 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
     super.dispose();
   }
 
-  List<SupportRecord> _filterTickets(List<SupportRecord> tickets) {
-    final q = _filters.searchQuery.trim().toLowerCase();
-    if (q.isEmpty) return tickets;
-
-    return tickets.where((t) {
-      return t.naim.toLowerCase().contains(q) ||
-          t.tsnef.toLowerCase().contains(q) ||
-          t.osf.toLowerCase().contains(q) ||
-          t.phone.toString().contains(q) ||
-          t.id.toString().contains(q);
-    }).toList();
+  Future<void> _loadStats() async {
+    setState(() {
+      _statsLoading = true;
+      _statsError = false;
+    });
+    try {
+      final s = await AdminSupportStatsLoader.load(filters: _filters);
+      if (!mounted) return;
+      setState(() {
+        _stats = s;
+        _statsLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _statsError = true;
+        _statsLoading = false;
+      });
+    }
   }
 
-  Future<void> _updateTicketStatus(
-    SupportRecord ticket,
-    HalhSupport status, {
-    required String confirmMessage,
-    required String successMessage,
+  Future<void> _onFiltersChanged(AdminOpsFilterState next) async {
+    setState(() {
+      _filters = next;
+      _serverSearchHits = null;
+    });
+    _loadStats();
+    await _maybeServerSearch(next);
+  }
+
+  Future<void> _maybeServerSearch(AdminOpsFilterState filters) async {
+    final q = filters.searchQuery.trim();
+    if (q.length < 4) {
+      if (_serverSearchHits != null) {
+        setState(() => _serverSearchHits = null);
+      }
+      return;
+    }
+    final gen = ++_searchGen;
+    try {
+      final hits = <SupportRecord>[];
+      try {
+        final doc = await SupportRecord.collection.doc(q).get();
+        if (doc.exists) hits.add(SupportRecord.fromSnapshot(doc));
+      } catch (_) {}
+      if (hits.isEmpty && int.tryParse(q) != null) {
+        final byNum = await querySupportRecordOnce(
+          queryBuilder: (qq) => qq.where('id', isEqualTo: int.parse(q)),
+          limit: 5,
+        );
+        hits.addAll(byNum);
+      }
+      if (!mounted || gen != _searchGen) return;
+      setState(() => _serverSearchHits = hits.isEmpty ? null : hits);
+    } catch (_) {
+      if (!mounted || gen != _searchGen) return;
+      setState(() => _serverSearchHits = null);
+    }
+  }
+
+  List<AdminSupportRow> _buildRows(List<SupportRecord> tickets) {
+    var rows = tickets.map(AdminSupportRow.fromTicket).toList(growable: false);
+
+    final range = _filters.resolvedDateRange;
+    if (range != null) {
+      rows = rows.where((r) {
+        final c = r.createdAt;
+        if (c == null) return false;
+        return !c.isBefore(range.startInclusive) &&
+            c.isBefore(range.endExclusive);
+      }).toList(growable: false);
+    }
+
+    final q = _filters.searchQuery.trim();
+    if (_serverSearchHits == null && q.isNotEmpty) {
+      rows = rows.where((r) => r.matchesSearch(q)).toList(growable: false);
+    }
+
+    switch (_filters.supportStatus) {
+      case AdminSupportStatusFilter.open:
+        rows = rows
+            .where((r) =>
+                r.displayStatus == AdminSupportDisplayStatus.open ||
+                r.displayStatus == AdminSupportDisplayStatus.newTicket)
+            .toList(growable: false);
+        break;
+      case AdminSupportStatusFilter.closed:
+        rows = rows
+            .where((r) => r.displayStatus == AdminSupportDisplayStatus.closed)
+            .toList(growable: false);
+        break;
+      case AdminSupportStatusFilter.resolved:
+        rows = rows
+            .where((r) => r.displayStatus == AdminSupportDisplayStatus.resolved)
+            .toList(growable: false);
+        break;
+      case AdminSupportStatusFilter.all:
+        break;
+    }
+
+    return _extra.apply(rows);
+  }
+
+  List<SupportRecord> _baseTickets(List<SupportRecord> all) {
+    if (_serverSearchHits != null) return _serverSearchHits!;
+    return all;
+  }
+
+  Future<void> _updateStatus(
+    AdminSupportRow row,
+    AdminSupportDisplayStatus target, {
+    required String confirm,
+    required String success,
   }) async {
+    if (_actionBusy) return;
     final confirmed = await showAdminConfirmDialog(
       context: context,
       title: uiTr(context, 'تأكيد'),
-      whatHappens: confirmMessage,
-      subject: ticket.naim.isNotEmpty ? ticket.naim : ticket.reference.id,
+      whatHappens: confirm,
+      subject: row.subject,
       impact: uiTr(context, 'Support ticket status will change.'),
-      destructive: status == HalhSupport.Closed,
+      destructive: target == AdminSupportDisplayStatus.closed,
     );
-
     if (!confirmed) return;
 
+    setState(() => _actionBusy = true);
     try {
-      await ticket.reference.update(
-        createSupportRecordData(halh: status),
+      final patch = adminSupportStatusPatch(
+        target: target,
+        isDriverSchema: row.isDriverSchema,
       );
-
+      await row.ticket.reference.update(patch);
+      await AdminAuditLog.record(
+        action: 'support_status_${target.name}',
+        targetType: 'support_ticket',
+        targetId: row.ticketId,
+        targetLabel: row.subject,
+        metadata: {'status': target.name},
+      );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(successMessage)),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(success)));
+      AdminListRefresh.notify(AdminListScope.support);
+      _loadStats();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${appTr(context, 'adm_update_ticket_failed')}: ${AdminUserFacingErrors.from(context, e)}')),
+        SnackBar(
+          content: Text(
+            '${appTr(context, 'adm_update_ticket_failed')}: ${AdminUserFacingErrors.from(context, e)}',
+          ),
+        ),
       );
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
+    }
+  }
+
+  Future<void> _addInternalNote(AdminSupportRow row, String text) async {
+    if (_actionBusy) return;
+    setState(() => _actionBusy = true);
+    try {
+      await row.ticket.reference.update({
+        'admin_internal_notes': FieldValue.arrayUnion([
+          {
+            'text': text,
+            'adminId': currentUserUid,
+            'at': DateTime.now().toUtc().toIso8601String(),
+          },
+        ]),
+        'updated_at': FieldValue.serverTimestamp(),
+      });
+      await AdminAuditLog.record(
+        action: 'support_internal_note',
+        targetType: 'support_ticket',
+        targetId: row.ticketId,
+        targetLabel: row.subject,
+      );
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = FFLocalizations.of(context);
     final theme = FlutterFlowTheme.of(context);
-    final isWide = AdminUi.useTableLayout(context);
 
     return GestureDetector(
       onTap: () {
@@ -107,45 +262,130 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
         menu2Model: _model.menu2Model,
         updateCallback: () => safeSetState(() {}),
         padContent: false,
-        title: l10n.getText('8d66hs1w'),
+        title: FFLocalizations.of(context).getText('8d66hs1w'),
         child: AdminPageBody(
-          title: l10n.getText('wpcwo7sq'),
-          subtitle: appTr(context, 'scr_support_subtitle'),
+          title: uiTr(context, 'الدعم والتذاكر'),
+          subtitle: uiTr(
+            context,
+            'إدارة استفسارات وشكاوى العملاء والمناديب ومتابعة حالاتها.',
+          ),
           scrollable: true,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AdminOpsFilterBar(
+              AdminSupportFilterBar(
                 value: _filters,
-                config: const AdminOpsFilterConfig(
-                  showDate: true,
-                  showSupportStatus: true,
-                  showCountry: true,
-                  showSearch: true,
-                ),
-                onChanged: (next) => setState(() => _filters = next),
+                extra: _extra,
+                pageSize: _pageSize,
+                onChanged: _onFiltersChanged,
+                onExtraChanged: (e) => setState(() => _extra = e),
+                onPageSizeChanged: (n) => setState(() => _pageSize = n),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
+              AdminSupportSummaryStrip(
+                stats: _stats,
+                loading: _statsLoading,
+                error: _statsError,
+                onRetry: _loadStats,
+              ),
+              const SizedBox(height: 12),
               AdminFirestoreList<SupportRecord>(
-                key: ValueKey('support_${_filters.signature}'),
-                reloadKey: _filters.signature,
+                key: ValueKey(
+                  'support_${_filters.signature}_${_pageSize}_${_extra.signature}',
+                ),
+                reloadKey:
+                    '${_filters.signature}|$_pageSize|${_extra.signature}',
                 refreshScope: AdminListScope.support,
+                pageSize: _pageSize,
+                liveUpdates: true,
                 query: SupportRecord.collection,
                 recordBuilder: SupportRecord.fromSnapshot,
                 queryBuilder: (q) =>
                     AdminOpsQueryBuilder.applySupportFilters(q, _filters),
+                loading: AdminContentCard(
+                  child: Column(
+                    children: List.generate(
+                      4,
+                      (i) => Container(
+                        height: 44,
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: theme.alternate.withValues(alpha: 0.35),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                empty: AdminContentCard(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.support_agent_outlined,
+                        size: 48,
+                        color: AdminUi.brandTeal.withValues(alpha: 0.45),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        uiTr(context, 'لا توجد تذاكر دعم'),
+                        style: theme.titleMedium,
+                      ),
+                    ],
+                  ),
+                ),
                 builder: (context, allTickets, listState) {
-                  final tickets = _filterTickets(allTickets);
+                  if (listState.hasError) {
+                    return AdminContentCard(
+                      child: Column(
+                        children: [
+                          Text(
+                            uiTr(context, 'تعذر تحميل التذاكر'),
+                            style: theme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            onPressed: listState.refresh,
+                            child: Text(uiTr(context, 'إعادة المحاولة')),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  final tickets = _baseTickets(allTickets);
+                  final rows = _buildRows(tickets);
+
+                  if (rows.isEmpty) {
+                    return AdminContentCard(
+                      child: Column(
+                        children: [
+                          Icon(Icons.search_off_rounded, size: 40),
+                          const SizedBox(height: 10),
+                          Text(
+                            _filters.searchQuery.isEmpty && !_extra.hasAny
+                                ? uiTr(context, 'لا توجد تذاكر دعم')
+                                : uiTr(context, 'لا توجد نتائج للبحث'),
+                            style: theme.titleMedium,
+                          ),
+                        ],
+                      ),
+                    );
+                  }
 
                   return AdminContentCard(
-                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+                    padding: EdgeInsets.zero,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                           child: Text(
-                            adminListCountLabel(context, listState, visibleCount: tickets.length, pageFetched: allTickets.length),
+                            adminListCountLabel(
+                              context,
+                              listState,
+                              visibleCount: rows.length,
+                              pageFetched: allTickets.length,
+                            ),
                             style: theme.labelLarge.override(
                               fontFamily: theme.labelLargeFamily,
                               color: theme.secondaryText,
@@ -153,71 +393,42 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
                             ),
                           ),
                         ),
-                        if (tickets.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 32),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.support_agent_outlined,
-                                  size: 48,
-                                  color: AdminUi.brandTeal.withValues(alpha: 0.45),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  _filters.searchQuery.isEmpty
-                                      ? uiTr(context, 'لا توجد تذاكر دعم')
-                                      : uiTr(context, 'لا توجد نتائج للبحث'),
-                                  style: theme.titleMedium,
-                                ),
-                              ],
+                        const SizedBox(height: 6),
+                        AdminSupportTable(
+                          rows: rows,
+                          canEdit: _canEdit,
+                          onOpenDetails: (row) => showAdminSupportDetailsDrawer(
+                            context: context,
+                            row: row,
+                            canEdit: _canEdit,
+                            onStatusChange: (status) => _updateStatus(
+                              row,
+                              status,
+                              confirm: uiTr(context, 'تأكيد تغيير الحالة'),
+                              success: uiTr(context, 'تم تحديث الحالة'),
                             ),
-                          )
-                        else if (isWide)
-                          _TicketsTable(
-                            tickets: tickets,
-                            l10n: l10n,
-                            onResolve: (t) => _updateTicketStatus(
-                              t,
-                              HalhSupport.Resolved,
-                              confirmMessage:
-                                  uiTr(context, 'هل أنت متأكد أنه تم حل هذه التذكرة؟'),
-                              successMessage: uiTr(context, 'تم وضع التذكرة كمحلولة'),
-                            ),
-                            onClose: (t) => _updateTicketStatus(
-                              t,
-                              HalhSupport.Closed,
-                              confirmMessage:
-                                  uiTr(context, 'هل أنت متأكد من إغلاق هذه التذكرة؟'),
-                              successMessage: uiTr(context, 'تم إغلاق التذكرة'),
-                            ),
-                          )
-                        else
-                          ListView.separated(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: tickets.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 10),
-                            itemBuilder: (context, index) => _TicketCard(
-                              ticket: tickets[index],
-                              l10n: l10n,
-                              onResolve: () => _updateTicketStatus(
-                                tickets[index],
-                                HalhSupport.Resolved,
-                                confirmMessage:
-                                    uiTr(context, 'هل أنت متأكد أنه تم حل هذه التذكرة؟'),
-                                successMessage: uiTr(context, 'تم وضع التذكرة كمحلولة'),
-                              ),
-                              onClose: () => _updateTicketStatus(
-                                tickets[index],
-                                HalhSupport.Closed,
-                                confirmMessage:
-                                    uiTr(context, 'هل أنت متأكد من إغلاق هذه التذكرة؟'),
-                                successMessage: uiTr(context, 'تم إغلاق التذكرة'),
-                              ),
-                            ),
+                            onInternalNote: (note) =>
+                                _addInternalNote(row, note),
                           ),
+                          onResolve: (row) => _updateStatus(
+                            row,
+                            AdminSupportDisplayStatus.resolved,
+                            confirm: uiTr(
+                              context,
+                              'هل أنت متأكد أنه تم حل هذه التذكرة؟',
+                            ),
+                            success: uiTr(context, 'تم وضع التذكرة كمحلولة'),
+                          ),
+                          onClose: (row) => _updateStatus(
+                            row,
+                            AdminSupportDisplayStatus.closed,
+                            confirm: uiTr(
+                              context,
+                              'هل أنت متأكد من إغلاق هذه التذكرة؟',
+                            ),
+                            success: uiTr(context, 'تم إغلاق التذكرة'),
+                          ),
+                        ),
                         AdminListLoadMoreFooter(state: listState),
                       ],
                     ),
@@ -228,511 +439,6 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _TicketsTable extends StatelessWidget {
-  const _TicketsTable({
-    required this.tickets,
-    required this.l10n,
-    required this.onResolve,
-    required this.onClose,
-  });
-
-  final List<SupportRecord> tickets;
-  final FFLocalizations l10n;
-  final Future<void> Function(SupportRecord) onResolve;
-  final Future<void> Function(SupportRecord) onClose;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-      child: SizedBox(
-        width: AdminUi.adminTableMinWidth(context),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              child: Row(
-                children: [
-                  _HeaderCell(uiTr(context, 'العميل'), flex: 2, theme: theme),
-                  _HeaderCell(uiTr(context, 'التصنيف'), flex: 2, theme: theme),
-                  _HeaderCell(uiTr(context, 'الوصف'), flex: 3, theme: theme),
-                  _HeaderCell(uiTr(context, 'الحالة'), flex: 2, theme: theme),
-                  _HeaderCell(uiTr(context, 'إجراءات'), flex: 2, theme: theme),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            ...tickets.map(
-              (ticket) => _TicketTableRow(
-                ticket: ticket,
-                onResolve: () => onResolve(ticket),
-                onClose: () => onClose(ticket),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HeaderCell extends StatelessWidget {
-  const _HeaderCell(this.text, {required this.flex, required this.theme});
-
-  final String text;
-  final int flex;
-  final FlutterFlowTheme theme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        text,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: theme.labelLarge.override(
-          fontFamily: theme.labelLargeFamily,
-          fontWeight: FontWeight.w700,
-          color: AdminUi.brandTeal,
-          useGoogleFonts: !theme.labelLargeIsCustom,
-        ),
-      ),
-    );
-  }
-}
-
-class _TicketTableRow extends StatelessWidget {
-  const _TicketTableRow({
-    required this.ticket,
-    required this.onResolve,
-    required this.onClose,
-  });
-
-  final SupportRecord ticket;
-  final VoidCallback onResolve;
-  final VoidCallback onClose;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-    final isClosed = ticket.halh == HalhSupport.Closed ||
-        ticket.halh == HalhSupport.Resolved;
-
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: theme.alternate.withValues(alpha: 0.6)),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  ticket.naim.isNotEmpty ? ticket.naim : '—',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.bodyMedium.override(
-                    fontFamily: theme.bodyMediumFamily,
-                    fontWeight: FontWeight.w600,
-                    useGoogleFonts: !theme.bodyMediumIsCustom,
-                  ),
-                ),
-                if (ticket.phone > 0)
-                  Text(
-                    ticket.phone.toString(),
-                    style: theme.bodySmall.override(
-                      fontFamily: theme.bodySmallFamily,
-                      color: theme.secondaryText,
-                      useGoogleFonts: !theme.bodySmallIsCustom,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              ticket.tsnef.isNotEmpty ? ticket.tsnef : '—',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.bodySmall,
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text(
-              ticket.osf.isNotEmpty ? ticket.osf : '—',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.bodySmall,
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: _TicketStatusBadge(status: ticket.halh),
-          ),
-          Expanded(
-            flex: 2,
-            child: _TicketActions(
-              isClosed: isClosed,
-              onResolve: onResolve,
-              onClose: onClose,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TicketCard extends StatelessWidget {
-  const _TicketCard({
-    required this.ticket,
-    required this.l10n,
-    required this.onResolve,
-    required this.onClose,
-  });
-
-  final SupportRecord ticket;
-  final FFLocalizations l10n;
-  final VoidCallback onResolve;
-  final VoidCallback onClose;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-    final isClosed = ticket.halh == HalhSupport.Closed ||
-        ticket.halh == HalhSupport.Resolved;
-
-    return Container(
-      decoration: AdminUi.cardDecoration(context, elevated: false).copyWith(
-        color: theme.primaryBackground,
-      ),
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: AdminUi.brandTeal.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.confirmation_number_outlined,
-                  color: AdminUi.brandTeal,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      ticket.naim.isNotEmpty ? ticket.naim : '—',
-                      style: theme.titleSmall.override(
-                        fontFamily: theme.titleSmallFamily,
-                        fontWeight: FontWeight.w700,
-                        color: AdminUi.brandTeal,
-                        useGoogleFonts: !theme.titleSmallIsCustom,
-                      ),
-                    ),
-                    if (ticket.id > 0) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        '${uiTr(context, 'تذكرة')} #${ticket.id}',
-                        style: theme.labelSmall.override(
-                          fontFamily: theme.labelSmallFamily,
-                          color: theme.secondaryText,
-                          useGoogleFonts: !theme.labelSmallIsCustom,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 6),
-                    _TicketStatusBadge(status: ticket.halh),
-                  ],
-                ),
-              ),
-              if (!isClosed)
-                _TicketActions(
-                  isClosed: isClosed,
-                  onResolve: onResolve,
-                  onClose: onClose,
-                ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          const Divider(height: 1),
-          const SizedBox(height: 12),
-          if (ticket.tsnef.isNotEmpty)
-            _InfoTile(
-              icon: Icons.category_outlined,
-              label: uiTr(context, 'التصنيف'),
-              value: ticket.tsnef,
-            ),
-          if (ticket.tsnef.isNotEmpty) const SizedBox(height: 8),
-          if (ticket.phone > 0)
-            _InfoTile(
-              icon: Icons.phone_rounded,
-              label: uiTr(context, 'الجوال'),
-              value: ticket.phone.toString(),
-            ),
-          if (ticket.phone > 0) const SizedBox(height: 8),
-          _InfoTile(
-            icon: Icons.description_outlined,
-            label: uiTr(context, 'الوصف'),
-            value: ticket.osf.isNotEmpty ? ticket.osf : '—',
-          ),
-          if (ticket.data != null) ...[
-            const SizedBox(height: 8),
-            _InfoTile(
-              icon: Icons.schedule_rounded,
-              label: uiTr(context, 'التاريخ'),
-              value: dateTimeFormat(
-                'd/M/y – HH:mm',
-                ticket.data,
-                locale: 'ar',
-              ),
-            ),
-          ],
-          if (isClosed) ...[
-            const SizedBox(height: 12),
-            _TicketActions(
-              isClosed: isClosed,
-              onResolve: onResolve,
-              onClose: onClose,
-              fullWidth: true,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _InfoTile extends StatelessWidget {
-  const _InfoTile({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 18, color: AdminUi.brandTeal.withValues(alpha: 0.8)),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: theme.labelSmall.override(
-                  fontFamily: theme.labelSmallFamily,
-                  color: theme.secondaryText,
-                  useGoogleFonts: !theme.labelSmallIsCustom,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-                style: theme.bodyMedium,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _TicketStatusBadge extends StatelessWidget {
-  const _TicketStatusBadge({required this.status});
-
-  final HalhSupport? status;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-    final label = _statusLabel(context, status);
-    final colors = _statusColors(status, theme);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: colors.background,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: theme.labelSmall.override(
-          fontFamily: theme.labelSmallFamily,
-          color: colors.foreground,
-          fontWeight: FontWeight.w600,
-          useGoogleFonts: !theme.labelSmallIsCustom,
-        ),
-      ),
-    );
-  }
-}
-
-String _statusLabel(BuildContext context, HalhSupport? status) {
-  switch (status) {
-    case HalhSupport.Open:
-      return uiTr(context, 'مفتوحة');
-    case HalhSupport.Resolved:
-      return uiTr(context, 'تم الحل');
-    case HalhSupport.Closed:
-      return uiTr(context, 'مغلقة');
-    case null:
-      return uiTr(context, 'غير معرفة');
-  }
-}
-
-class _StatusColors {
-  const _StatusColors({required this.background, required this.foreground});
-
-  final Color background;
-  final Color foreground;
-}
-
-_StatusColors _statusColors(HalhSupport? status, FlutterFlowTheme theme) {
-  switch (status) {
-    case HalhSupport.Open:
-      return _StatusColors(
-        background: const Color(0xFFFFF3E0),
-        foreground: const Color(0xFFE65100),
-      );
-    case HalhSupport.Resolved:
-      return _StatusColors(
-        background: const Color(0xFFE8F5E9),
-        foreground: const Color(0xFF2E7D32),
-      );
-    case HalhSupport.Closed:
-      return _StatusColors(
-        background: const Color(0xFFFFEBEE),
-        foreground: theme.error,
-      );
-    case null:
-      return _StatusColors(
-        background: theme.accent4,
-        foreground: theme.secondaryText,
-      );
-  }
-}
-
-class _TicketActions extends StatelessWidget {
-  const _TicketActions({
-    required this.isClosed,
-    required this.onResolve,
-    required this.onClose,
-    this.fullWidth = false,
-  });
-
-  final bool isClosed;
-  final VoidCallback onResolve;
-  final VoidCallback onClose;
-  final bool fullWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = FFLocalizations.of(context);
-
-    if (isClosed) {
-      return Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Text(
-          uiTr(context, 'تمت المعالجة'),
-          style: FlutterFlowTheme.of(context).labelMedium.override(
-                fontFamily: FlutterFlowTheme.of(context).labelMediumFamily,
-                color: FlutterFlowTheme.of(context).secondaryText,
-                useGoogleFonts:
-                    !FlutterFlowTheme.of(context).labelMediumIsCustom,
-              ),
-        ),
-      );
-    }
-
-    final buttons = [
-      Expanded(
-        child: AdminPrimaryButton(
-          label: l10n.getText('0iw3wb8t'),
-          icon: Icons.check_circle_outline_rounded,
-          onPressed: onResolve,
-        ),
-      ),
-      const SizedBox(width: 8),
-      Expanded(
-        child: AdminPrimaryButton(
-          label: l10n.getText('uon0jgl1'),
-          icon: Icons.close_rounded,
-          outlined: true,
-          onPressed: onClose,
-        ),
-      ),
-    ];
-
-    if (fullWidth) {
-      return Row(children: buttons);
-    }
-
-    return Column(
-      children: [
-        FlutterFlowIconButton(
-          borderRadius: 8,
-          buttonSize: 36,
-          fillColor: const Color(0xFFE8F5E9),
-          icon: Icon(
-            Icons.check_circle_outline_rounded,
-            color: FlutterFlowTheme.of(context).success,
-            size: 18,
-          ),
-          onPressed: onResolve,
-        ),
-        const SizedBox(height: 6),
-        FlutterFlowIconButton(
-          borderRadius: 8,
-          buttonSize: 36,
-          fillColor: const Color(0xFFFFEBEE),
-          icon: Icon(
-            Icons.close_rounded,
-            color: FlutterFlowTheme.of(context).error,
-            size: 18,
-          ),
-          onPressed: onClose,
-        ),
-      ],
     );
   }
 }

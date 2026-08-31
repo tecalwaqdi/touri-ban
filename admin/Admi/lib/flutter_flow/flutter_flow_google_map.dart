@@ -197,7 +197,11 @@ class _FlutterFlowGoogleMapState extends State<FlutterFlowGoogleMap> {
       absorbing: !widget.allowInteraction,
       child: GoogleMap(
         onMapCreated: (controller) {
-          _controller.complete(controller);
+          // Shared Completer from FlutterFlow models may already be completed
+          // when the map rebuilds (e.g. booking details StreamBuilder).
+          if (!_controller.isCompleted) {
+            _controller.complete(controller);
+          }
         },
         style: googleMapStyleStrings[widget.style],
         onCameraIdle: onCameraIdle,
@@ -209,7 +213,8 @@ class _FlutterFlowGoogleMapState extends State<FlutterFlowGoogleMap> {
         mapType: widget.mapType,
         zoomGesturesEnabled: widget.allowZoom,
         zoomControlsEnabled: widget.showZoomControls,
-        myLocationEnabled: widget.showLocation,
+        // Geolocation prompts / null-plugin paths are unreliable on Flutter Web.
+        myLocationEnabled: !kIsWeb && widget.showLocation,
         compassEnabled: widget.showCompass,
         mapToolbarEnabled: widget.showMapToolbar,
         trafficEnabled: widget.showTraffic,

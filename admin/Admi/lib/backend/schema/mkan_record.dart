@@ -164,6 +164,10 @@ class MkanRecord extends FirestoreRecord {
     _naim = snapshotData['naim'] as String?;
     _osf = snapshotData['osf'] as String?;
     _img1 = snapshotData['img1'] as String?;
+    // Dual-read legacy `img` (Customer App does the same).
+    if ((_img1 == null || _img1!.isEmpty) && snapshotData['img'] != null) {
+      _img1 = snapshotData['img'] as String?;
+    }
     _img2 = snapshotData['img2'] as String?;
     _img3 = snapshotData['img3'] as String?;
     _sr = castToType<int>(snapshotData['sr']);
