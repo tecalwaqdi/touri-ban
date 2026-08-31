@@ -1,3 +1,4 @@
+import '/backend/admin_media_resolver.dart';
 import '/backend/backend.dart';
 import '/components/admin_driver_lifecycle_strip.dart';
 import '/components/admin_ui.dart';
@@ -330,23 +331,38 @@ class _DocRow extends StatelessWidget {
       return Center(child: Text(result.userMessageAr));
     }
 
-    return InteractiveViewer(
-      child: Image.network(
-        url,
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => Center(
+    // Prefer Auth SDK bytes over anonymous HTTPS (avoids CORS / 403 noise).
+    return FutureBuilder<AdminMediaResolved>(
+      future: AdminMediaResolver.resolve(url),
+      builder: (context, snap) {
+        if (snap.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final resolved = snap.data;
+        if (resolved != null && resolved.hasBytes) {
+          return InteractiveViewer(
+            child: Image.memory(
+              resolved.bytes!,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => Center(
+                child: Text(uiTr(context, 'تعذر فك صورة الوثيقة')),
+              ),
+            ),
+          );
+        }
+        return Center(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
               uiTr(
                 context,
-                'تعذر تحميل الصورة من الرابط (غالباً CORS على الويب). جرّب فتح الرابط.',
+                'تعذر تحميل الصورة. استخدم فتح الرابط إن وُجد.',
               ),
               textAlign: TextAlign.center,
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

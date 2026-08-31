@@ -55,9 +55,15 @@ abstract final class AdminMediaResolver {
   /// Session negative cache: path → failure kind (avoids repeat getData spam).
   static final Map<String, AdminMediaFailureKind> _negativeCache = {};
 
+  /// In-flight getData by path (coalesce concurrent probes for the same object).
+  static final Map<String, Future<Uint8List?>> _inflight = {};
+
   /// Test / heal helpers.
   @visibleForTesting
-  static void clearNegativeCache() => _negativeCache.clear();
+  static void clearNegativeCache() {
+    _negativeCache.clear();
+    _inflight.clear();
+  }
 
   @visibleForTesting
   static Map<String, AdminMediaFailureKind> get negativeCacheView =>
@@ -190,7 +196,18 @@ abstract final class AdminMediaResolver {
     }
   }
 
-  static Future<Uint8List?> _loadBytes(String path) async {
+  static Future<Uint8List?> _loadBytes(String path) {
+    final existing = _inflight[path];
+    if (existing != null) return existing;
+
+    final future = _loadBytesUncached(path).whenComplete(() {
+      _inflight.remove(path);
+    });
+    _inflight[path] = future;
+    return future;
+  }
+
+  static Future<Uint8List?> _loadBytesUncached(String path) async {
     try {
       final bytes = await FirebaseStorage.instance.ref(path).getData(_maxBytes);
       if (bytes == null || bytes.isEmpty) {
