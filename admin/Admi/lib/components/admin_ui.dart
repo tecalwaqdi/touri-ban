@@ -758,6 +758,7 @@ class AdminPageBody extends StatelessWidget {
     this.actions,
     this.usePadding = true,
     this.scrollable = true,
+    this.compactHeader = false,
   });
 
   final Widget child;
@@ -766,6 +767,8 @@ class AdminPageBody extends StatelessWidget {
   final Widget? actions;
   final bool usePadding;
   final bool scrollable;
+  /// Prefer denser page title (Bookings / similar ops lists).
+  final bool compactHeader;
 
   @override
   Widget build(BuildContext context) {
@@ -789,7 +792,7 @@ class AdminPageBody extends StatelessWidget {
             title: title!,
             subtitle: subtitle,
             trailing: actions,
-            compact: MediaQuery.sizeOf(context).width < 600,
+            compact: compactHeader || MediaQuery.sizeOf(context).width < 600,
           )
         else if (actions != null)
           Padding(

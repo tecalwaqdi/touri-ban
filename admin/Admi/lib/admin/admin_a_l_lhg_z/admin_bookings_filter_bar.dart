@@ -181,13 +181,19 @@ class _AdminBookingsFilterBarState extends State<AdminBookingsFilterBar> {
                   ),
                 ),
               ),
-              TextButton(
+              TextButton.icon(
                 onPressed: () =>
                     setState(() => _advancedOpen = !_advancedOpen),
-                child: Text(
+                icon: Icon(
                   _advancedOpen
-                      ? uiTr(context, 'إخفاء المتقدمة')
-                      : uiTr(context, 'متقدمة'),
+                      ? Icons.expand_less_rounded
+                      : Icons.tune_rounded,
+                  size: 18,
+                ),
+                label: Text(
+                  _advancedOpen
+                      ? uiTr(context, 'إخفاء الفلاتر المتقدمة')
+                      : uiTr(context, 'فلاتر متقدمة'),
                 ),
               ),
               if (_activeCount > 0)
@@ -198,164 +204,170 @@ class _AdminBookingsFilterBarState extends State<AdminBookingsFilterBar> {
             ],
           ),
           const SizedBox(height: 8),
-          // Row 1: search + date + status + geo
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              SizedBox(
-                width: 280,
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: uiTr(
-                      context,
-                      'رقم الحجز / العميل / المندوب / الجوال',
-                    ),
-                    prefixIcon: const Icon(Icons.search_rounded, size: 20),
-                    suffixIcon: f.searchQuery.isEmpty
-                        ? null
-                        : IconButton(
-                            icon: const Icon(Icons.clear_rounded, size: 18),
-                            onPressed: () {
-                              _searchController.clear();
-                              _emit(f.copyWith(searchQuery: ''));
-                            },
-                          ),
-                    isDense: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final wide = constraints.maxWidth >= 960;
+              final searchField = TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: uiTr(
+                    context,
+                    'رقم الحجز / العميل / المندوب / الجوال',
                   ),
-                  onChanged: (v) {
-                    EasyDebounce.debounce(
-                      'admin_bookings_search',
-                      const Duration(milliseconds: 350),
-                      () => _emit(f.copyWith(searchQuery: v)),
-                    );
-                  },
+                  prefixIcon: const Icon(Icons.search_rounded, size: 20),
+                  suffixIcon: f.searchQuery.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: const Icon(Icons.clear_rounded, size: 18),
+                          onPressed: () {
+                            _searchController.clear();
+                            _emit(f.copyWith(searchQuery: ''));
+                          },
+                        ),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-              ),
-              _dropdown<AdminDatePreset>(
-                context,
-                width: 140,
-                value: f.datePreset,
-                label: uiTr(context, 'الفترة'),
-                items: const [
-                  AdminDatePreset.all,
-                  AdminDatePreset.today,
-                  AdminDatePreset.yesterday,
-                  AdminDatePreset.last7Days,
-                  AdminDatePreset.last30Days,
-                  AdminDatePreset.thisMonth,
-                  AdminDatePreset.custom,
-                ],
-                itemLabel: _dateLabel,
                 onChanged: (v) {
-                  if (v == null) return;
-                  if (v == AdminDatePreset.custom) {
-                    _pickCustomRange(f);
-                  } else {
-                    _emit(
-                      f.copyWith(datePreset: v, clearCustomDates: true),
-                    );
-                  }
+                  EasyDebounce.debounce(
+                    'admin_bookings_search',
+                    const Duration(milliseconds: 350),
+                    () => _emit(f.copyWith(searchQuery: v)),
+                  );
                 },
-              ),
-              _dropdown<AdminOrderLifecycleFilter>(
-                context,
-                width: 160,
-                value: f.orderLifecycle,
-                label: uiTr(context, 'الحالة'),
-                items: AdminOrderLifecycleFilter.values,
-                itemLabel: _lifecycleLabel,
-                onChanged: (v) {
-                  if (v == null) return;
-                  _emit(f.copyWith(orderLifecycle: v));
-                },
-              ),
-              if (!_lockCountry)
-                _dropdown<DocumentReference?>(
+              );
+
+              final controls = <Widget>[
+                _dropdown<AdminDatePreset>(
                   context,
-                  width: 150,
-                  value: f.countryRef,
-                  label: uiTr(context, 'الدولة'),
-                  items: [null, ..._countries.map((c) => c.reference)],
-                  itemLabel: (ref) {
-                    if (ref == null) return uiTr(context, 'الكل');
-                    final match = _countries
-                        .where((c) => c.reference.path == ref.path)
-                        .toList();
-                    return match.isEmpty ? ref.id : match.first.naim;
-                  },
-                  onChanged: (ref) {
-                    _emit(
-                      f.copyWith(
-                        countryRef: ref,
-                        clearCountry: ref == null,
-                        clearCity: true,
-                      ),
-                    );
-                    if (ref != null) {
-                      _loadCities(ref);
+                  width: 128,
+                  value: f.datePreset,
+                  label: uiTr(context, 'الفترة'),
+                  items: const [
+                    AdminDatePreset.all,
+                    AdminDatePreset.today,
+                    AdminDatePreset.yesterday,
+                    AdminDatePreset.last7Days,
+                    AdminDatePreset.last30Days,
+                    AdminDatePreset.thisMonth,
+                    AdminDatePreset.custom,
+                  ],
+                  itemLabel: _dateLabel,
+                  onChanged: (v) {
+                    if (v == null) return;
+                    if (v == AdminDatePreset.custom) {
+                      _pickCustomRange(f);
                     } else {
-                      setState(() => _cities = const []);
+                      _emit(
+                        f.copyWith(datePreset: v, clearCustomDates: true),
+                      );
                     }
                   },
-                )
-              else if (_loadingGeo)
-                const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-              if (f.effectiveCountryRef != null)
-                _dropdown<DocumentReference?>(
+                _dropdown<AdminOrderLifecycleFilter>(
                   context,
-                  width: 150,
-                  value: f.cityRef,
-                  label: uiTr(context, 'المدينة'),
-                  items: [null, ..._cities.map((c) => c.reference)],
-                  itemLabel: (ref) {
-                    if (ref == null) return uiTr(context, 'الكل');
-                    final match = _cities
-                        .where((c) => c.reference.path == ref.path)
-                        .toList();
-                    return match.isEmpty ? ref.id : match.first.naim;
-                  },
-                  onChanged: (ref) {
-                    _emit(
-                      f.copyWith(
-                        cityRef: ref,
-                        clearCity: ref == null,
-                      ),
-                    );
+                  width: 140,
+                  value: f.orderLifecycle,
+                  label: uiTr(context, 'الحالة'),
+                  items: AdminOrderLifecycleFilter.values,
+                  itemLabel: _lifecycleLabel,
+                  onChanged: (v) {
+                    if (v == null) return;
+                    _emit(f.copyWith(orderLifecycle: v));
                   },
                 ),
-              _dropdown<AdminBookingsSortKey>(
-                context,
-                width: 150,
-                value: widget.sortKey,
-                label: uiTr(context, 'الترتيب'),
-                items: AdminBookingsSortKey.values,
-                itemLabel: _sortLabel,
-                onChanged: (v) {
-                  if (v != null) widget.onSortChanged(v);
-                },
-              ),
-              _dropdown<int>(
-                context,
-                width: 110,
-                value: widget.pageSize,
-                label: uiTr(context, 'الصفحة'),
-                items: const [20, 50, 100],
-                itemLabel: (n) => '$n',
-                onChanged: (v) {
-                  if (v != null) widget.onPageSizeChanged(v);
-                },
-              ),
-            ],
+                if (!_lockCountry)
+                  _dropdown<DocumentReference?>(
+                    context,
+                    width: 132,
+                    value: f.countryRef,
+                    label: uiTr(context, 'الدولة'),
+                    items: [null, ..._countries.map((c) => c.reference)],
+                    itemLabel: (ref) {
+                      if (ref == null) return uiTr(context, 'الكل');
+                      final match = _countries
+                          .where((c) => c.reference.path == ref.path)
+                          .toList();
+                      return match.isEmpty ? ref.id : match.first.naim;
+                    },
+                    onChanged: (ref) {
+                      _emit(
+                        f.copyWith(
+                          countryRef: ref,
+                          clearCountry: ref == null,
+                          clearCity: true,
+                        ),
+                      );
+                      if (ref != null) {
+                        _loadCities(ref);
+                      } else {
+                        setState(() => _cities = const []);
+                      }
+                    },
+                  )
+                else if (_loadingGeo)
+                  const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                _dropdown<AdminBookingsSortKey>(
+                  context,
+                  width: 128,
+                  value: widget.sortKey,
+                  label: uiTr(context, 'الترتيب'),
+                  items: AdminBookingsSortKey.values,
+                  itemLabel: _sortLabel,
+                  onChanged: (v) {
+                    if (v != null) widget.onSortChanged(v);
+                  },
+                ),
+                _dropdown<int>(
+                  context,
+                  width: 96,
+                  value: widget.pageSize,
+                  label: uiTr(context, 'الصفحة'),
+                  items: const [20, 50, 100],
+                  itemLabel: (n) => '$n',
+                  onChanged: (v) {
+                    if (v != null) widget.onPageSizeChanged(v);
+                  },
+                ),
+              ];
+
+              if (wide) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: searchField),
+                    const SizedBox(width: 8),
+                    for (var i = 0; i < controls.length; i++) ...[
+                      controls[i],
+                      if (i < controls.length - 1) const SizedBox(width: 8),
+                    ],
+                  ],
+                );
+              }
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  searchField,
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: controls,
+                  ),
+                ],
+              );
+            },
           ),
           if (searchPlan.userMessageKey != null &&
               f.searchQuery.trim().isNotEmpty) ...[
@@ -377,6 +389,29 @@ class _AdminBookingsFilterBarState extends State<AdminBookingsFilterBar> {
               spacing: 8,
               runSpacing: 8,
               children: [
+                if (f.effectiveCountryRef != null)
+                  _dropdown<DocumentReference?>(
+                    context,
+                    width: 150,
+                    value: f.cityRef,
+                    label: uiTr(context, 'المدينة'),
+                    items: [null, ..._cities.map((c) => c.reference)],
+                    itemLabel: (ref) {
+                      if (ref == null) return uiTr(context, 'الكل');
+                      final match = _cities
+                          .where((c) => c.reference.path == ref.path)
+                          .toList();
+                      return match.isEmpty ? ref.id : match.first.naim;
+                    },
+                    onChanged: (ref) {
+                      _emit(
+                        f.copyWith(
+                          cityRef: ref,
+                          clearCity: ref == null,
+                        ),
+                      );
+                    },
+                  ),
                 SizedBox(
                   width: 180,
                   child: TextField(

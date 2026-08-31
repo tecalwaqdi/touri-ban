@@ -1,6 +1,10 @@
+import 'dart:ui' as ui show TextDirection;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '/admin/admin_a_l_lhg_z/admin_bookings_adapter.dart';
+import '/admin/admin_a_l_lhg_z/admin_bookings_presentation.dart';
 import '/backend/schema/order_record.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_booking_status_label.dart';
@@ -24,7 +28,7 @@ class AdminBookingsTable extends StatelessWidget {
   final Future<void> Function(OrderRecord) onCancel;
   final bool canCancel;
 
-  static const double _minWidth = 1180;
+  static const double _minWidth = 1120;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +36,9 @@ class AdminBookingsTable extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        final narrow = constraints.maxWidth < 1280;
+        final hidePayment = constraints.maxWidth < 1100;
+        final hideCity = constraints.maxWidth < 1024;
         final width =
             constraints.maxWidth < _minWidth ? _minWidth : constraints.maxWidth;
         return Scrollbar(
@@ -45,8 +52,8 @@ class AdminBookingsTable extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
+                      horizontal: 10,
+                      vertical: 8,
                     ),
                     decoration: BoxDecoration(
                       color: AdminUi.brandTeal.withValues(alpha: 0.06),
@@ -54,27 +61,30 @@ class AdminBookingsTable extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        _h(context, uiTr(context, 'رقم الحجز'), 1.1),
-                        _h(context, uiTr(context, 'العميل'), 1.4),
-                        _h(context, uiTr(context, 'المندوب'), 1.2),
-                        _h(context, uiTr(context, 'الحالة'), 1.3),
-                        _h(context, uiTr(context, 'المدينة'), 1.0),
-                        _h(context, uiTr(context, 'الانطلاق'), 1.3),
-                        _h(context, uiTr(context, 'الوجهة'), 1.3),
-                        _h(context, uiTr(context, 'المبلغ'), 0.9),
-                        _h(context, uiTr(context, 'الدفع'), 0.8),
-                        _h(context, uiTr(context, 'التاريخ'), 1.2),
-                        _h(context, uiTr(context, 'إجراءات'), 0.9),
+                        _h(context, uiTr(context, 'الحجز'), 12),
+                        _h(context, uiTr(context, 'العميل'), 13),
+                        _h(context, uiTr(context, 'المندوب'), 12),
+                        _h(context, uiTr(context, 'الحالة'), 12),
+                        if (!hideCity) _h(context, uiTr(context, 'المدينة'), 9),
+                        _h(context, uiTr(context, 'الانطلاق'), narrow ? 11 : 13),
+                        _h(context, uiTr(context, 'الوجهة'), narrow ? 11 : 13),
+                        _h(context, uiTr(context, 'المبلغ'), 9),
+                        if (!hidePayment)
+                          _h(context, uiTr(context, 'الدفع'), 8),
+                        _h(context, uiTr(context, 'التاريخ'), 10),
+                        _h(context, uiTr(context, 'إجراءات'), 8),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   ...bookings.map((order) {
                     final row = AdminBookingRow.fromOrder(order);
                     return _BookingsTableRow(
                       row: row,
                       theme: theme,
                       canCancel: canCancel && !row.isTerminal,
+                      hideCity: hideCity,
+                      hidePayment: hidePayment,
                       onDetails: () => onDetails(order),
                       onCancel: () => onCancel(order),
                     );
@@ -88,19 +98,20 @@ class AdminBookingsTable extends StatelessWidget {
     );
   }
 
-  Widget _h(BuildContext context, String text, double flex) {
+  Widget _h(BuildContext context, String text, int flex) {
     final theme = FlutterFlowTheme.of(context);
     return Expanded(
-      flex: (flex * 10).round(),
+      flex: flex,
       child: Text(
         text,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: theme.labelMedium.override(
-          fontFamily: theme.labelMediumFamily,
+        style: theme.labelSmall.override(
+          fontFamily: theme.labelSmallFamily,
           fontWeight: FontWeight.w700,
           color: AdminUi.brandTeal,
-          useGoogleFonts: !theme.labelMediumIsCustom,
+          fontSize: 12,
+          useGoogleFonts: !theme.labelSmallIsCustom,
         ),
       ),
     );
@@ -112,6 +123,8 @@ class _BookingsTableRow extends StatelessWidget {
     required this.row,
     required this.theme,
     required this.canCancel,
+    required this.hideCity,
+    required this.hidePayment,
     required this.onDetails,
     required this.onCancel,
   });
@@ -119,151 +132,187 @@ class _BookingsTableRow extends StatelessWidget {
   final AdminBookingRow row;
   final FlutterFlowTheme theme;
   final bool canCancel;
+  final bool hideCity;
+  final bool hidePayment;
   final VoidCallback onDetails;
   final VoidCallback onCancel;
 
   @override
   Widget build(BuildContext context) {
+    final customer = row.customerName.isEmpty ? '—' : row.customerName;
+    final driver =
+        AdminBookingsPresentation.driverCellLabel(context, row.driverName);
+    final amountText = formatNumber(
+      row.amount,
+      formatType: FormatType.decimal,
+      decimalType: DecimalType.automatic,
+      currency: AdminCurrency.asFormatPrefix(row.currencySymbol),
+    );
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onDetails,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
             border: Border(
-              bottom: BorderSide(color: theme.alternate.withValues(alpha: 0.55)),
+              bottom: BorderSide(color: theme.alternate.withValues(alpha: 0.5)),
             ),
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              _cell(_BookingIdCell(orderId: row.orderId, theme: theme), 12),
               _cell(
-                Text(
-                  '#${row.orderId}',
-                  style: theme.bodyMedium.override(
-                    fontFamily: theme.bodyMediumFamily,
-                    fontWeight: FontWeight.w700,
-                    color: AdminUi.brandTeal,
-                    useGoogleFonts: !theme.bodyMediumIsCustom,
+                _EllipsisText(
+                  customer,
+                  maxLines: 2,
+                  style: theme.bodySmall.override(
+                    fontFamily: theme.bodySmallFamily,
+                    fontWeight: FontWeight.w600,
+                    useGoogleFonts: !theme.bodySmallIsCustom,
                   ),
                 ),
-                11,
+                13,
               ),
               _cell(
-                Text(
-                  row.customerName.isEmpty ? '—' : row.customerName,
+                _EllipsisText(
+                  driver,
                   maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                14,
-              ),
-              _cell(
-                Text(
-                  row.driverName.isEmpty
-                      ? uiTr(context, 'لم يُربط')
-                      : row.driverName,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.bodySmall,
+                  style: theme.bodySmall.override(
+                    fontFamily: theme.bodySmallFamily,
+                    color: row.driverName.trim().isEmpty
+                        ? theme.secondaryText
+                        : theme.primaryText,
+                    useGoogleFonts: !theme.bodySmallIsCustom,
+                  ),
                 ),
                 12,
               ),
-              _cell(AdminBookingStatusBadge(order: row.order), 13),
+              _cell(AdminBookingStatusBadge(order: row.order), 12),
+              if (!hideCity)
+                _cell(
+                  _EllipsisText(
+                    row.city.isEmpty ? '—' : row.city,
+                    maxLines: 1,
+                    style: theme.bodySmall,
+                  ),
+                  9,
+                ),
               _cell(
-                Text(
-                  row.city.isEmpty ? '—' : row.city,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                _EllipsisText(
+                  row.pickupLabel.isEmpty ? '—' : row.pickupLabel,
+                  maxLines: 2,
+                  style: theme.bodySmall,
+                ),
+                13,
+              ),
+              _cell(
+                _EllipsisText(
+                  row.destinationLabel.isEmpty ? '—' : row.destinationLabel,
+                  maxLines: 2,
+                  style: theme.bodySmall,
+                ),
+                13,
+              ),
+              _cell(
+                Directionality(
+                  textDirection: ui.TextDirection.ltr,
+                  child: Text(
+                    amountText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.bodySmall.override(
+                      fontFamily: theme.bodySmallFamily,
+                      fontWeight: FontWeight.w700,
+                      color: theme.success,
+                      useGoogleFonts: !theme.bodySmallIsCustom,
+                    ),
+                  ),
+                ),
+                9,
+              ),
+              if (!hidePayment)
+                _cell(
+                  _EllipsisText(
+                    row.paymentLabel.isEmpty
+                        ? '—'
+                        : uiTr(context, row.paymentLabel),
+                    maxLines: 1,
+                    style: theme.bodySmall.override(
+                      fontFamily: theme.bodySmallFamily,
+                      color: theme.secondaryText,
+                      useGoogleFonts: !theme.bodySmallIsCustom,
+                    ),
+                  ),
+                  8,
+                ),
+              _cell(
+                Tooltip(
+                  message: AdminBookingsPresentation.tableDateTimeTooltip(
+                    row.createdAt,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        AdminBookingsPresentation.tableDate(row.createdAt),
+                        maxLines: 1,
+                        style: theme.bodySmall.override(
+                          fontFamily: theme.bodySmallFamily,
+                          fontWeight: FontWeight.w600,
+                          useGoogleFonts: !theme.bodySmallIsCustom,
+                        ),
+                      ),
+                      if (row.createdAt != null)
+                        Text(
+                          AdminBookingsPresentation.tableTime(row.createdAt),
+                          maxLines: 1,
+                          style: theme.labelSmall.override(
+                            fontFamily: theme.labelSmallFamily,
+                            color: theme.secondaryText,
+                            useGoogleFonts: !theme.labelSmallIsCustom,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
                 10,
               ),
               _cell(
-                Text(
-                  row.pickupLabel.isEmpty ? '—' : row.pickupLabel,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.bodySmall,
-                ),
-                13,
-              ),
-              _cell(
-                Text(
-                  row.destinationLabel.isEmpty ? '—' : row.destinationLabel,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.bodySmall,
-                ),
-                13,
-              ),
-              _cell(
-                Text(
-                  formatNumber(
-                    row.amount,
-                    formatType: FormatType.decimal,
-                    decimalType: DecimalType.automatic,
-                    currency: AdminCurrency.asFormatPrefix(row.currencySymbol),
-                  ),
-                  style: theme.bodyMedium.override(
-                    fontFamily: theme.bodyMediumFamily,
-                    fontWeight: FontWeight.w700,
-                    color: theme.success,
-                    useGoogleFonts: !theme.bodyMediumIsCustom,
-                  ),
-                ),
-                9,
-              ),
-              _cell(
-                Text(
-                  row.paymentLabel.isEmpty ? '—' : uiTr(context, row.paymentLabel),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.bodySmall,
-                ),
-                8,
-              ),
-              _cell(
-                Text(
-                  row.createdAt == null
-                      ? '—'
-                      : dateTimeFormat(
-                          'd/M/y HH:mm',
-                          row.createdAt,
-                          locale: 'ar',
-                        ),
-                  style: theme.bodySmall,
-                ),
-                12,
-              ),
-              _cell(
-                Wrap(
-                  spacing: 4,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     FlutterFlowIconButton(
                       borderRadius: 8,
-                      buttonSize: 34,
+                      buttonSize: 32,
                       fillColor: AdminUi.brandTeal.withValues(alpha: 0.1),
                       icon: const Icon(
                         Icons.visibility_outlined,
                         color: AdminUi.brandTeal,
-                        size: 17,
+                        size: 16,
                       ),
                       onPressed: onDetails,
                     ),
-                    if (canCancel)
+                    if (canCancel) ...[
+                      const SizedBox(width: 2),
                       FlutterFlowIconButton(
                         borderRadius: 8,
-                        buttonSize: 34,
+                        buttonSize: 32,
                         fillColor: const Color(0xFFFFEBEE),
                         icon: Icon(
                           Icons.cancel_outlined,
                           color: theme.error,
-                          size: 17,
+                          size: 16,
                         ),
                         onPressed: onCancel,
                       ),
+                    ],
                   ],
                 ),
-                9,
+                8,
               ),
             ],
           ),
@@ -273,6 +322,72 @@ class _BookingsTableRow extends StatelessWidget {
   }
 
   Widget _cell(Widget child, int flex) => Expanded(flex: flex, child: child);
+}
+
+class _BookingIdCell extends StatelessWidget {
+  const _BookingIdCell({required this.orderId, required this.theme});
+
+  final String orderId;
+  final FlutterFlowTheme theme;
+
+  @override
+  Widget build(BuildContext context) {
+    final id = orderId.trim().isEmpty ? '—' : orderId.trim();
+    return Row(
+      children: [
+        Expanded(
+          child: Tooltip(
+            message: id,
+            child: Directionality(
+              textDirection: ui.TextDirection.ltr,
+              child: Text(
+                id,
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+                style: theme.bodySmall.override(
+                  fontFamily: theme.bodySmallFamily,
+                  fontWeight: FontWeight.w700,
+                  color: AdminUi.brandTeal,
+                  useGoogleFonts: !theme.bodySmallIsCustom,
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (id != '—')
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+            tooltip: uiTr(context, 'نسخ'),
+            icon: Icon(Icons.copy_rounded, size: 14, color: theme.secondaryText),
+            onPressed: () => Clipboard.setData(ClipboardData(text: id)),
+          ),
+      ],
+    );
+  }
+}
+
+class _EllipsisText extends StatelessWidget {
+  const _EllipsisText(this.text, {this.maxLines = 1, this.style});
+
+  final String text;
+  final int maxLines;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: text,
+      child: Text(
+        text,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
+        style: style,
+      ),
+    );
+  }
 }
 
 class AdminBookingStatusBadge extends StatelessWidget {
@@ -285,23 +400,27 @@ class AdminBookingStatusBadge extends StatelessWidget {
     final theme = FlutterFlowTheme.of(context);
     final status = AdminBookingStatusLabel.of(order);
     final colors = _statusColors(AdminBookingStatusLabel.toneOf(order), theme);
+    final label =
+        status.isNotEmpty ? uiTr(context, status) : uiTr(context, 'غير محدد');
 
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
         decoration: BoxDecoration(
           color: colors.background,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: colors.foreground.withValues(alpha: 0.18)),
         ),
         child: Text(
-          status.isNotEmpty ? uiTr(context, status) : uiTr(context, 'غير محدد'),
-          maxLines: 2,
+          label,
+          maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: theme.labelSmall.override(
             fontFamily: theme.labelSmallFamily,
             color: colors.foreground,
             fontWeight: FontWeight.w600,
+            fontSize: 11,
             useGoogleFonts: !theme.labelSmallIsCustom,
           ),
         ),
@@ -386,6 +505,8 @@ class AdminBookingListCard extends StatelessWidget {
     final theme = FlutterFlowTheme.of(context);
     final row = AdminBookingRow.fromOrder(order);
     final showCancel = canCancel && !row.isTerminal;
+    final driver =
+        AdminBookingsPresentation.driverCellLabel(context, row.driverName);
 
     return Container(
       decoration: AdminUi.cardDecoration(context, elevated: false).copyWith(
@@ -398,13 +519,18 @@ class AdminBookingListCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  '#${row.orderId}',
-                  style: theme.titleSmall.override(
-                    fontFamily: theme.titleSmallFamily,
-                    fontWeight: FontWeight.w700,
-                    color: AdminUi.brandTeal,
-                    useGoogleFonts: !theme.titleSmallIsCustom,
+                child: Directionality(
+                  textDirection: ui.TextDirection.ltr,
+                  child: Text(
+                    row.orderId.trim().isEmpty ? '—' : row.orderId,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.titleSmall.override(
+                      fontFamily: theme.titleSmallFamily,
+                      fontWeight: FontWeight.w700,
+                      color: AdminUi.brandTeal,
+                      useGoogleFonts: !theme.titleSmallIsCustom,
+                    ),
                   ),
                 ),
               ),
@@ -414,17 +540,23 @@ class AdminBookingListCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             row.customerName.isEmpty ? '—' : row.customerName,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: theme.bodyMedium,
           ),
           const SizedBox(height: 4),
           Text(
-            '${uiTr(context, 'المندوب')}: ${row.driverName.isEmpty ? uiTr(context, 'لم يُربط') : row.driverName}',
+            '${uiTr(context, 'المندوب')}: $driver',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: theme.bodySmall,
           ),
           if (row.city.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
               '${uiTr(context, 'المدينة')}: ${row.city}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: theme.bodySmall,
             ),
           ],
@@ -449,7 +581,8 @@ class AdminBookingListCard extends StatelessWidget {
               ),
               if (row.createdAt != null)
                 Text(
-                  dateTimeFormat('d/M/y HH:mm', row.createdAt, locale: 'ar'),
+                  '${AdminBookingsPresentation.tableDate(row.createdAt)} '
+                  '${AdminBookingsPresentation.tableTime(row.createdAt)}',
                   style: theme.labelSmall,
                 ),
             ],
@@ -493,11 +626,11 @@ class AdminBookingsSkeleton extends StatelessWidget {
     return Column(
       children: List.generate(6, (i) {
         return Container(
-          height: 52,
-          margin: const EdgeInsets.only(bottom: 8),
+          height: 44,
+          margin: const EdgeInsets.only(bottom: 6),
           decoration: BoxDecoration(
             color: theme.alternate.withValues(alpha: 0.35),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
           ),
         );
       }),

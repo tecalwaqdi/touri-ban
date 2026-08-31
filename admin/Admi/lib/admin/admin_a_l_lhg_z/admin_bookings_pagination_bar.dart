@@ -29,21 +29,22 @@ class AdminBookingsPaginationBar extends StatelessWidget {
         : ((total - 1) ~/ pageSize) + 1;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 8, 4, 4),
+      padding: const EdgeInsets.fromLTRB(4, 6, 4, 2),
       child: Row(
         children: [
           Expanded(
             child: Text(
               total == null
-                  ? '${uiTr(context, 'عرض')} $visibleCount'
+                  ? '$visibleCount ${uiTr(context, 'حجزًا معروضة')}'
                       '${state.hasMore ? '+' : ''} · '
                       '${uiTr(context, 'صفحة')} ~$approxPage'
-                  : '${uiTr(context, 'عرض')} $visibleCount ${uiTr(context, 'من')} $total'
+                  : '$total ${uiTr(context, 'حجزًا')} · '
+                      '$visibleCount ${uiTr(context, 'معروضة')}'
                       '${totalPages != null ? ' · ${uiTr(context, 'صفحة')} $approxPage / $totalPages' : ''}',
-              style: theme.labelMedium.override(
-                fontFamily: theme.labelMediumFamily,
+              style: theme.labelSmall.override(
+                fontFamily: theme.labelSmallFamily,
                 color: theme.secondaryText,
-                useGoogleFonts: !theme.labelMediumIsCustom,
+                useGoogleFonts: !theme.labelSmallIsCustom,
               ),
             ),
           ),

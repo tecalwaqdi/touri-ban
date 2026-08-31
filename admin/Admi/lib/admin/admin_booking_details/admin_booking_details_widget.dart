@@ -275,8 +275,8 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
             AdminBookingDetailsHeader(view: view),
             AdminBookingDetailsSummaryStrip(view: view),
             Expanded(
-              child: AdminSafeScrollBody(
-                padding: const EdgeInsets.all(16),
+                child: AdminSafeScrollBody(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 16),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final wide = constraints.maxWidth >= 900;

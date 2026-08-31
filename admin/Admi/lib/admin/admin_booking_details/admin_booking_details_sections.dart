@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '/admin/admin_booking_details/admin_booking_details_adapter.dart';
-import '/backend/schema/enums/enums.dart';
 import '/components/admin_location_service.dart';
 import '/components/admin_ui.dart';
 import '/components/profile_photo_image.dart';
@@ -108,7 +107,7 @@ class AdminBookingDetailsSectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: AdminUi.cardDecoration(context, elevated: false),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -121,6 +120,7 @@ class AdminBookingDetailsSectionCard extends StatelessWidget {
                   style: theme.titleSmall.override(
                     fontFamily: theme.titleSmallFamily,
                     fontWeight: FontWeight.w700,
+                    fontSize: 14,
                     useGoogleFonts: !theme.titleSmallIsCustom,
                   ),
                 ),
@@ -128,7 +128,7 @@ class AdminBookingDetailsSectionCard extends StatelessWidget {
               if (trailing != null) trailing!,
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           ...children,
         ],
       ),
@@ -145,6 +145,7 @@ class AdminBookingDetailsKvRow extends StatelessWidget {
     this.valueWidget,
     this.isLtr = false,
     this.onCopy,
+    this.emphasizeValue = false,
   });
 
   final String label;
@@ -153,32 +154,33 @@ class AdminBookingDetailsKvRow extends StatelessWidget {
   final Widget? valueWidget;
   final bool isLtr;
   final VoidCallback? onCopy;
+  final bool emphasizeValue;
 
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final display = _dash(value);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: 5),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 16, color: theme.secondaryText),
+            Icon(icon, size: 15, color: theme.secondaryText),
             const SizedBox(width: 6),
           ],
           SizedBox(
-            width: 108,
+            width: 100,
             child: Text(
               label,
-              style: theme.bodySmall.override(
-                fontFamily: theme.bodySmallFamily,
+              style: theme.labelSmall.override(
+                fontFamily: theme.labelSmallFamily,
                 color: theme.secondaryText,
-                useGoogleFonts: !theme.bodySmallIsCustom,
+                useGoogleFonts: !theme.labelSmallIsCustom,
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
           Expanded(
             child: Row(
               children: [
@@ -189,10 +191,18 @@ class AdminBookingDetailsKvRow extends StatelessWidget {
                             isLtr ? ui.TextDirection.ltr : ui.TextDirection.rtl,
                         child: Text(
                           display,
-                          style: theme.bodyMedium.override(
-                            fontFamily: theme.bodyMediumFamily,
-                            fontWeight: FontWeight.w500,
-                            useGoogleFonts: !theme.bodyMediumIsCustom,
+                          style: (emphasizeValue
+                                  ? theme.titleSmall
+                                  : theme.bodyMedium)
+                              .override(
+                            fontFamily: emphasizeValue
+                                ? theme.titleSmallFamily
+                                : theme.bodyMediumFamily,
+                            fontWeight:
+                                emphasizeValue ? FontWeight.w700 : FontWeight.w600,
+                            useGoogleFonts: emphasizeValue
+                                ? !theme.titleSmallIsCustom
+                                : !theme.bodyMediumIsCustom,
                           ),
                         ),
                       ),
@@ -207,7 +217,7 @@ class AdminBookingDetailsKvRow extends StatelessWidget {
                     ),
                     icon: Icon(
                       Icons.copy_rounded,
-                      size: 16,
+                      size: 15,
                       color: theme.secondaryText,
                     ),
                     onPressed: onCopy,
@@ -287,7 +297,7 @@ class _AdminBookingDetailsHeaderState extends State<AdminBookingDetailsHeader> {
         : '—';
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
       decoration: BoxDecoration(
         color: theme.secondaryBackground,
         border: Border(
@@ -298,63 +308,51 @@ class _AdminBookingDetailsHeaderState extends State<AdminBookingDetailsHeader> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
                     Text(
-                      uiTr(context, 'تفاصيل الحجز'),
-                      style: theme.titleMedium.override(
-                        fontFamily: theme.titleMediumFamily,
-                        fontWeight: FontWeight.w700,
-                        useGoogleFonts: !theme.titleMediumIsCustom,
+                      uiTr(context, 'رقم الحجز:'),
+                      style: theme.labelSmall.override(
+                        fontFamily: theme.labelSmallFamily,
+                        color: theme.secondaryText,
+                        useGoogleFonts: !theme.labelSmallIsCustom,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          uiTr(context, 'رقم الحجز:'),
-                          style: theme.bodySmall.override(
-                            fontFamily: theme.bodySmallFamily,
-                            color: theme.secondaryText,
-                            useGoogleFonts: !theme.bodySmallIsCustom,
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Directionality(
+                        textDirection: ui.TextDirection.ltr,
+                        child: Text(
+                          row.orderId,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.titleSmall.override(
+                            fontFamily: theme.titleSmallFamily,
+                            fontWeight: FontWeight.w700,
+                            useGoogleFonts: !theme.titleSmallIsCustom,
                           ),
                         ),
-                        const SizedBox(width: 6),
-                        Directionality(
-                          textDirection: ui.TextDirection.ltr,
-                          child: Text(
-                            row.orderId,
-                            style: theme.titleSmall.override(
-                              fontFamily: theme.titleSmallFamily,
-                              fontWeight: FontWeight.w700,
-                              useGoogleFonts: !theme.titleSmallIsCustom,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          visualDensity: VisualDensity.compact,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(
-                            minWidth: 28,
-                            minHeight: 28,
-                          ),
-                          icon: Icon(
-                            _copied
-                                ? Icons.check_rounded
-                                : Icons.copy_rounded,
-                            size: 16,
-                            color: _copied ? theme.success : theme.secondaryText,
-                          ),
-                          onPressed: () => _copyId(row.orderId),
-                          tooltip: _copied
-                              ? uiTr(context, 'تم النسخ')
-                              : uiTr(context, 'نسخ'),
-                        ),
-                      ],
+                      ),
+                    ),
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 28,
+                        minHeight: 28,
+                      ),
+                      icon: Icon(
+                        _copied ? Icons.check_rounded : Icons.copy_rounded,
+                        size: 16,
+                        color: _copied ? theme.success : theme.secondaryText,
+                      ),
+                      onPressed: () => _copyId(row.orderId),
+                      tooltip: _copied
+                          ? uiTr(context, 'تم النسخ')
+                          : uiTr(context, 'نسخ'),
                     ),
                   ],
                 ),
@@ -362,9 +360,9 @@ class _AdminBookingDetailsHeaderState extends State<AdminBookingDetailsHeader> {
               AdminBookingDetailsStatusBadge(view: view),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Wrap(
-            spacing: 16,
+            spacing: 14,
             runSpacing: 4,
             children: [
               _metaChip(context, Icons.calendar_today_outlined,
@@ -373,8 +371,8 @@ class _AdminBookingDetailsHeaderState extends State<AdminBookingDetailsHeader> {
                 _metaChip(context, Icons.route_outlined,
                     uiTr(context, 'نوع الرحلة'), view.tripTypeLabel),
               if (row.city.isNotEmpty)
-                _metaChip(
-                    context, Icons.location_city_outlined, uiTr(context, 'المدينة'), row.city),
+                _metaChip(context, Icons.location_city_outlined,
+                    uiTr(context, 'المدينة'), row.city),
               if (row.paymentLabel.isNotEmpty)
                 _metaChip(context, Icons.payments_outlined,
                     uiTr(context, 'طريقة الدفع'), row.paymentLabel),
@@ -452,9 +450,9 @@ class AdminBookingDetailsSummaryStrip extends StatelessWidget {
     ];
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AdminUi.brandTeal.withValues(alpha: 0.06),
+        color: AdminUi.brandTeal.withValues(alpha: 0.05),
         border: Border(
           bottom: BorderSide(color: theme.alternate.withValues(alpha: 0.5)),
         ),
@@ -467,8 +465,8 @@ class AdminBookingDetailsSummaryStrip extends StatelessWidget {
               if (i > 0)
                 Container(
                   width: 1,
-                  height: 28,
-                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  height: 24,
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
                   color: theme.alternate,
                 ),
               _summaryItem(context, items[i].$1, items[i].$2),
@@ -557,16 +555,9 @@ class AdminBookingDetailsCustomerCard extends StatelessWidget {
         ),
         if (row.city.isNotEmpty)
           AdminBookingDetailsKvRow(
-            label: uiTr(context, 'المدينة'),
+            label: uiTr(context, 'مدينة الحجز'),
             value: row.city,
             icon: Icons.location_city_outlined,
-          ),
-        if (view.customerRef != null)
-          AdminBookingDetailsKvRow(
-            label: uiTr(context, 'معرّف العميل'),
-            value: view.customerRef!.id,
-            icon: Icons.badge_outlined,
-            isLtr: true,
           ),
       ],
     );
@@ -797,11 +788,12 @@ class AdminBookingDetailsPaymentCard extends StatelessWidget {
             value: gatewayId,
             isLtr: true,
           ),
-        const Divider(height: 16),
+        const Divider(height: 14),
         if (row.amount > 0)
           AdminBookingDetailsKvRow(
             label: uiTr(context, 'إجمالي الرحلة'),
             value: AdminBookingDetailsView.money(row.amount, sym),
+            emphasizeValue: true,
           ),
         if (row.commission > 0)
           AdminBookingDetailsKvRow(
@@ -968,7 +960,7 @@ class AdminBookingDetailsRouteSection extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(AdminUi.radiusSm),
           child: SizedBox(
-            height: 200,
+            height: 300,
             child: mapLocation != null &&
                     AdminLocationService.isValidLocation(mapLocation!)
                 ? FlutterFlowGoogleMap(
@@ -1089,29 +1081,29 @@ class _TimelineRow extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(bottom: isLast ? 0 : 12),
-              child: Row(
+              padding: EdgeInsets.only(bottom: isLast ? 0 : 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      event.label,
-                      style: theme.bodyMedium.override(
-                        fontFamily: theme.bodyMediumFamily,
-                        fontWeight: FontWeight.w500,
-                        useGoogleFonts: !theme.bodyMediumIsCustom,
-                      ),
+                  Text(
+                    event.label,
+                    style: theme.bodySmall.override(
+                      fontFamily: theme.bodySmallFamily,
+                      fontWeight: FontWeight.w600,
+                      useGoogleFonts: !theme.bodySmallIsCustom,
                     ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     dateTimeFormat(
-                      'd/M/y – HH:mm',
+                      'd/M/y · HH:mm',
                       event.at,
                       locale: 'ar',
                     ),
-                    style: theme.bodySmall.override(
-                      fontFamily: theme.bodySmallFamily,
+                    style: theme.labelSmall.override(
+                      fontFamily: theme.labelSmallFamily,
                       color: theme.secondaryText,
-                      useGoogleFonts: !theme.bodySmallIsCustom,
+                      useGoogleFonts: !theme.labelSmallIsCustom,
                     ),
                   ),
                 ],
@@ -1140,7 +1132,7 @@ class AdminBookingDetailsTechnicalPanel extends StatelessWidget {
         tilePadding: const EdgeInsets.symmetric(horizontal: 14),
         childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
         title: Text(
-          uiTr(context, 'بيانات تقنية'),
+          uiTr(context, 'معلومات تقنية'),
           style: FlutterFlowTheme.of(context).titleSmall.override(
                 fontFamily:
                     FlutterFlowTheme.of(context).titleSmallFamily,

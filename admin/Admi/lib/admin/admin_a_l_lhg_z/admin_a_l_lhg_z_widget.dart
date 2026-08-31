@@ -232,6 +232,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
         child: AdminPageBody(
           title: l10n.getText('kw5c519x'),
           subtitle: appTr(context, 'scr_bookings_subtitle'),
+          compactHeader: true,
           scrollable: true,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -246,7 +247,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                 onSortChanged: (k) => setState(() => _sortKey = k),
                 onPageSizeChanged: (n) => setState(() => _pageSize = n),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               AdminFirestoreList<OrderRecord>(
                 key: ValueKey('bookings_$_listSignature'),
                 reloadKey: _listSignature,
@@ -276,7 +277,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                       _serverSearchHits == null;
 
                   return AdminContentCard(
-                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 8),
+                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
