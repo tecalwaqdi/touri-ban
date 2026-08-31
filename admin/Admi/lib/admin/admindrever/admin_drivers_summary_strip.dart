@@ -101,16 +101,14 @@ class AdminDriversSummaryStrip extends StatelessWidget {
                   ),
                 ),
               )
-            : SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (var i = 0; i < chips.length; i++) ...[
-                      if (i > 0) const SizedBox(width: 8),
-                      _chip(context, chips[i].$1, chips[i].$2, chips[i].$3),
-                    ],
-                  ],
-                ),
+            : Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                alignment: WrapAlignment.start,
+                children: [
+                  for (final chip in chips)
+                    _chip(context, chip.$1, chip.$2, chip.$3),
+                ],
               ),
       ),
     );

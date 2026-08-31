@@ -34,6 +34,11 @@ void main() {
       expect(v.plate, '9614');
     });
 
+    test('phone display and initials helpers', () {
+      expect(AdminDriverRow.formatPhoneDisplay('0501234567'), contains('050'));
+      expect(AdminDriverRow.initialsOf('محمد أحمد'), isNotEmpty);
+    });
+
     test('review bucket mapping', () {
       expect(
         AdminDriverProfileView.reviewBucketFromRaw('pending_review'),

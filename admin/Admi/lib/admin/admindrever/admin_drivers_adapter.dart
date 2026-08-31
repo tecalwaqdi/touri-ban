@@ -97,7 +97,9 @@ class AdminDriverRow {
       user: user,
       displayName: name,
       secondaryLine: secondary,
-      phone: user.phoneNumber.trim().isNotEmpty ? user.phoneNumber.trim() : '—',
+      phone: formatPhoneDisplay(
+        user.phoneNumber.trim().isNotEmpty ? user.phoneNumber.trim() : '—',
+      ),
       city: registrationCity.isNotEmpty ? registrationCity : '—',
       operatingCity: operating.isNotEmpty ? operating : '—',
       photoUrl: photoUrl,
@@ -146,6 +148,29 @@ class AdminDriverRow {
     if (v is num) return v.toDouble();
     return double.tryParse('$v');
   }
+
+  static String formatPhoneDisplay(String raw) {
+    if (raw.trim().isEmpty || raw == '—') return '—';
+    final digits = raw.replaceAll(RegExp(r'[^\d]'), '');
+    if (digits.length == 12 && digits.startsWith('966')) {
+      return '+966 ${digits.substring(3, 4)} ${digits.substring(4, 7)} ${digits.substring(7)}';
+    }
+    if (digits.length == 10 && digits.startsWith('05')) {
+      return '${digits.substring(0, 3)} ${digits.substring(3, 6)} ${digits.substring(6)}';
+    }
+    return raw.trim();
+  }
+
+  static String initialsOf(String name) {
+    final parts =
+        name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return '';
+    if (parts.length == 1) {
+      final p = parts.first;
+      return p.length >= 2 ? p.substring(0, 2) : p;
+    }
+    return '${parts.first[0]}${parts.last[0]}';
+  }
 }
 
 abstract final class AdminDriverStatusLabels {
@@ -185,9 +210,9 @@ abstract final class AdminDriverStatusLabels {
   ) {
     switch (s) {
       case AdminDriverConnectionStatus.online:
-        return 'Online';
+        return uiTr(context, 'متصل');
       case AdminDriverConnectionStatus.offline:
-        return 'Offline';
+        return uiTr(context, 'غير متصل');
       case AdminDriverConnectionStatus.unknown:
         return uiTr(context, 'غير معروف');
     }
@@ -233,8 +258,12 @@ abstract final class AdminDriverStatusLabels {
     }
   }
 
-  /// Compact operational line: "Online · متاح"
+  /// Compact operational line: "متصل · متاح"
   static String operationalLine(BuildContext context, AdminDriverRow row) {
+    if (row.connection == AdminDriverConnectionStatus.offline ||
+        row.connection == AdminDriverConnectionStatus.unknown) {
+      return connection(context, row.connection);
+    }
     final a = connection(context, row.connection);
     final b = availability(context, row.availability);
     return '$a · $b';

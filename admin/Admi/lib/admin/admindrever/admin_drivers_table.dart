@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '/admin/admindrever/admin_drivers_adapter.dart';
+import '/admin/admindrever/admin_drivers_ui_shared.dart';
 import '/backend/backend.dart';
-import '/components/admin_status_badge.dart';
 import '/components/admin_ui.dart';
-import '/components/profile_photo_image.dart';
+import '/core/admin_driver_profile_view.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -195,40 +195,10 @@ class _DataRow extends StatelessWidget {
             Expanded(flex: 2, child: _text(theme, row.phone, mono: true)),
             Expanded(flex: 2, child: _text(theme, row.city)),
             Expanded(flex: 3, child: _VehicleCell(row: row)),
+            Expanded(flex: 2, child: AdminDriverRegistrationStatusCell(row: row)),
             Expanded(
               flex: 2,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AdminStatusBadgeUnified(
-                    kind: AdminDriverStatusLabels.registrationKind(row.review),
-                    label: AdminDriverStatusLabels.registration(
-                      context,
-                      row.review,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  AdminStatusBadgeUnified(
-                    kind: AdminDriverStatusLabels.accountKind(row.accountActive),
-                    label: AdminDriverStatusLabels.account(
-                      context,
-                      row.accountActive,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Text(
-                AdminDriverStatusLabels.operationalLine(context, row),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.bodySmall.override(
-                  fontFamily: theme.bodySmallFamily,
-                  useGoogleFonts: !theme.bodySmallIsCustom,
-                ),
-              ),
+              child: AdminDriverOperationalStatus(row: row),
             ),
             Expanded(flex: 2, child: _text(theme, row.tripsLabel)),
             Expanded(
@@ -268,12 +238,13 @@ class _DriverIdentity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
+    final email = row.user.email.trim();
     return Row(
       children: [
-        ProfilePhotoImage(
+        AdminDriverAvatar(
           photoUrl: row.photoUrl,
+          displayName: row.displayName,
           size: 40,
-          borderRadius: BorderRadius.circular(20),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -290,16 +261,26 @@ class _DriverIdentity extends StatelessWidget {
                   useGoogleFonts: !theme.titleSmallIsCustom,
                 ),
               ),
-              Text(
-                row.secondaryLine,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.labelSmall.override(
-                  fontFamily: theme.labelSmallFamily,
-                  color: theme.secondaryText,
-                  useGoogleFonts: !theme.labelSmallIsCustom,
+              if (email.isNotEmpty)
+                AdminDriverEmailLine(
+                  email: email,
+                  style: theme.labelSmall.override(
+                    fontFamily: theme.labelSmallFamily,
+                    color: theme.secondaryText,
+                    useGoogleFonts: !theme.labelSmallIsCustom,
+                  ),
+                )
+              else
+                Text(
+                  row.secondaryLine,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.labelSmall.override(
+                    fontFamily: theme.labelSmallFamily,
+                    color: theme.secondaryText,
+                    useGoogleFonts: !theme.labelSmallIsCustom,
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -385,68 +366,52 @@ class _Actions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 4,
-      runSpacing: 4,
+    final showReview = row.review == AdminDriverReviewBucket.pendingReview ||
+        row.review == AdminDriverReviewBucket.needsChanges;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        _icon(
-          context,
-          tip: uiTr(context, 'عرض'),
-          icon: Icons.visibility_outlined,
-          color: AdminUi.brandTeal,
-          onTap: () => onOpenDetails(row.user),
-        ),
-        _icon(
-          context,
-          tip: uiTr(context, 'تعديل'),
-          icon: Icons.edit_outlined,
-          color: Colors.blue.shade700,
-          onTap: () => onEdit(row.user),
-        ),
-        _icon(
-          context,
-          tip: uiTr(context, 'مراجعة التسجيل'),
-          icon: Icons.fact_check_outlined,
-          color: const Color(0xFF3949AB),
-          onTap: () => onReview(row.user),
-        ),
-        _icon(
-          context,
-          tip: uiTr(context, 'الوثائق'),
-          icon: Icons.folder_open_outlined,
-          color: const Color(0xFFEF6C00),
-          onTap: () => onDocuments(row.user),
+        Tooltip(
+          message: uiTr(context, 'عرض التفاصيل'),
+          child: IconButton(
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.visibility_outlined, size: 20),
+            color: AdminUi.brandTeal,
+            onPressed: () => onOpenDetails(row.user),
+          ),
         ),
         PopupMenuButton<String>(
-          tooltip: uiTr(context, 'المزيد'),
+          tooltip: uiTr(context, 'إجراءات'),
+          icon: const Icon(Icons.more_vert_rounded, size: 20),
           onSelected: (v) async {
             switch (v) {
-              case 'approve':
-              case 'reject':
-              case 'needs':
+              case 'edit':
+                onEdit(row.user);
+              case 'docs':
+                onDocuments(row.user);
+              case 'review':
                 onReview(row.user);
-                break;
               case 'suspend':
                 await onToggle(row.user, activate: false);
-                break;
               case 'activate':
                 await onToggle(row.user, activate: true);
-                break;
             }
           },
           itemBuilder: (context) => [
             PopupMenuItem(
-              value: 'approve',
-              child: Text(uiTr(context, 'اعتماد')),
+              value: 'edit',
+              child: Text(uiTr(context, 'تعديل')),
             ),
             PopupMenuItem(
-              value: 'reject',
-              child: Text(uiTr(context, 'رفض')),
+              value: 'docs',
+              child: Text(uiTr(context, 'الوثائق')),
             ),
-            PopupMenuItem(
-              value: 'needs',
-              child: Text(uiTr(context, 'طلب تعديلات')),
-            ),
+            if (showReview)
+              PopupMenuItem(
+                value: 'review',
+                child: Text(uiTr(context, 'مراجعة التسجيل')),
+              ),
             PopupMenuItem(
               value: row.accountActive ? 'suspend' : 'activate',
               child: Text(
@@ -456,38 +421,8 @@ class _Actions extends StatelessWidget {
               ),
             ),
           ],
-          child: const Padding(
-            padding: EdgeInsets.all(6),
-            child: Icon(Icons.more_vert_rounded, size: 20),
-          ),
         ),
       ],
-    );
-  }
-
-  Widget _icon(
-    BuildContext context, {
-    required String tip,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Tooltip(
-      message: tip,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          width: 34,
-          height: 34,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, size: 17, color: color),
-        ),
-      ),
     );
   }
 }
@@ -542,28 +477,9 @@ class _DriverCard extends StatelessWidget {
               const SizedBox(height: 6),
               _VehicleCell(row: row),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  AdminStatusBadgeUnified(
-                    kind: AdminDriverStatusLabels.registrationKind(row.review),
-                    label: AdminDriverStatusLabels.registration(
-                      context,
-                      row.review,
-                    ),
-                  ),
-                  AdminStatusBadgeUnified(
-                    kind: AdminDriverStatusLabels.accountKind(row.accountActive),
-                    label: AdminDriverStatusLabels.account(
-                      context,
-                      row.accountActive,
-                    ),
-                  ),
-                ],
-              ),
+              AdminDriverRegistrationStatusCell(row: row),
               const SizedBox(height: 6),
-              Text(AdminDriverStatusLabels.operationalLine(context, row)),
+              AdminDriverOperationalStatus(row: row),
             ],
           ),
         ),

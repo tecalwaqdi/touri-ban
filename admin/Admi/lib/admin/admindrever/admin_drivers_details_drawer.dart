@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '/admin/admindrever/admin_drivers_adapter.dart';
+import '/admin/admindrever/admin_drivers_ui_shared.dart';
 import '/backend/backend.dart';
 import '/components/admin_driver_documents_panel.dart';
 import '/components/admin_driver_financial_panel.dart';
-import '/components/admin_driver_lifecycle_strip.dart';
 import '/components/admin_driver_review_history_panel.dart';
-import '/components/admin_status_badge.dart';
 import '/components/admin_ui.dart';
-import '/components/profile_photo_image.dart';
 import '/core/admin_driver_profile_view.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -34,7 +32,7 @@ Future<void> showAdminDriverDetailsDrawer({
             color: FlutterFlowTheme.of(ctx).primaryBackground,
             elevation: 8,
             child: SizedBox(
-              width: 460,
+              width: 480,
               height: MediaQuery.sizeOf(ctx).height,
               child: AdminDriversDetailsPanel(user: user),
             ),
@@ -47,6 +45,7 @@ Future<void> showAdminDriverDetailsDrawer({
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
     builder: (ctx) => SizedBox(
       height: MediaQuery.sizeOf(ctx).height * 0.92,
       child: AdminDriversDetailsPanel(user: user),
@@ -61,30 +60,32 @@ class AdminDriversDetailsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
     final row = AdminDriverRow.fromUser(user);
     final vehicle = row.vehicle;
 
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
+          padding: const EdgeInsets.fromLTRB(12, 8, 4, 0),
           child: Row(
             children: [
               Expanded(
                 child: Text(
-                  uiTr(context, 'تفاصيل المندوب'),
-                  style: theme.titleMedium.override(
-                    fontFamily: theme.titleMediumFamily,
-                    fontWeight: FontWeight.w800,
-                    useGoogleFonts: !theme.titleMediumIsCustom,
-                  ),
+                  uiTr(context, 'ملف المندوب'),
+                  style: FlutterFlowTheme.of(context).titleMedium.override(
+                        fontFamily:
+                            FlutterFlowTheme.of(context).titleMediumFamily,
+                        fontWeight: FontWeight.w700,
+                        useGoogleFonts: !FlutterFlowTheme.of(context)
+                            .titleMediumIsCustom,
+                      ),
                 ),
               ),
               IconButton(
+                visualDensity: VisualDensity.compact,
                 tooltip: uiTr(context, 'إغلاق'),
                 onPressed: () => Navigator.of(context).maybePop(),
-                icon: const Icon(Icons.close_rounded),
+                icon: const Icon(Icons.close_rounded, size: 20),
               ),
             ],
           ),
@@ -92,190 +93,117 @@ class AdminDriversDetailsPanel extends StatelessWidget {
         const Divider(height: 1),
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
             children: [
-              Row(
-                children: [
-                  ProfilePhotoImage(
-                    photoUrl: row.photoUrl,
-                    size: 64,
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          row.displayName,
-                          style: theme.titleMedium.override(
-                            fontFamily: theme.titleMediumFamily,
-                            fontWeight: FontWeight.w800,
-                            useGoogleFonts: !theme.titleMediumIsCustom,
-                          ),
-                        ),
-                        Text(row.secondaryLine,
-                            style: theme.bodySmall
-                                .override(
-                                  fontFamily: theme.bodySmallFamily,
-                                  color: theme.secondaryText,
-                                  useGoogleFonts: !theme.bodySmallIsCustom,
-                                )),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              AdminDriverLifecycleStrip(user: user),
-              const SizedBox(height: 14),
-              _section(
-                context,
-                uiTr(context, 'البيانات الأساسية'),
-                [
-                  _kv(context, uiTr(context, 'الهاتف'), row.phone),
-                  _kv(context, uiTr(context, 'مدينة التسجيل'), row.city),
-                  if (row.operatingCity != row.city)
-                    _kv(
+              AdminDriverProfileHeader(row: row),
+              if (row.statusTruth.registrationPendingWithActiveAccount)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: AdminDriverCompactTip(
+                    text: uiTr(
                       context,
-                      uiTr(context, 'مدينة التشغيل'),
-                      row.operatingCity,
+                      'التسجيل بانتظار المراجعة — الحساب نشط (محاور منفصلة)',
                     ),
-                  _kv(context, 'UID', user.reference.id),
-                ],
-              ),
-              _section(
-                context,
-                uiTr(context, 'حالة التسجيل'),
-                [
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      AdminStatusBadgeUnified(
-                        kind: AdminDriverStatusLabels.registrationKind(
-                          row.review,
-                        ),
-                        label: AdminDriverStatusLabels.registration(
-                          context,
-                          row.review,
-                        ),
-                      ),
-                      AdminStatusBadgeUnified(
-                        kind: AdminDriverStatusLabels.accountKind(
-                          row.accountActive,
-                        ),
-                        label: AdminDriverStatusLabels.account(
-                          context,
-                          row.accountActive,
-                        ),
-                      ),
-                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(AdminDriverStatusLabels.operationalLine(context, row)),
-                  if (row.statusTruth.registrationPendingWithActiveAccount)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        uiTr(
-                          context,
-                          'التسجيل بانتظار المراجعة — الحساب نشط (محاور منفصلة)',
-                        ),
-                        style: theme.bodySmall.override(
-                          fontFamily: theme.bodySmallFamily,
-                          color: Colors.orange.shade900,
-                          fontWeight: FontWeight.w600,
-                          useGoogleFonts: !theme.bodySmallIsCustom,
-                        ),
-                      ),
-                    ),
-                  if (row.review == AdminDriverReviewBucket.pendingReview)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Text(
-                        uiTr(context, 'بانتظار المراجعة'),
-                        style: theme.titleSmall.override(
-                          fontFamily: theme.titleSmallFamily,
-                          color: Colors.blue.shade800,
-                          fontWeight: FontWeight.w800,
-                          useGoogleFonts: !theme.titleSmallIsCustom,
-                        ),
-                      ),
+                ),
+              const SizedBox(height: 12),
+              AdminDriverSectionCard(
+                title: uiTr(context, 'البيانات الشخصية'),
+                children: [
+                  AdminDriverKvRow(
+                    label: uiTr(context, 'الهاتف'),
+                    value: row.phone,
+                  ),
+                  AdminDriverKvRow(
+                    label: uiTr(context, 'مدينة التسجيل'),
+                    value: row.city,
+                  ),
+                  if (row.operatingCity != row.city)
+                    AdminDriverKvRow(
+                      label: uiTr(context, 'مدينة التشغيل'),
+                      value: row.operatingCity,
                     ),
                 ],
               ),
-              _section(
-                context,
-                uiTr(context, 'المركبة'),
-                [
+              AdminDriverSectionCard(
+                title: uiTr(context, 'بيانات التسجيل'),
+                children: [
+                  AdminDriverStatusStack(row: row),
+                ],
+              ),
+              AdminDriverSectionCard(
+                title: uiTr(context, 'المركبة'),
+                children: [
                   if (vehicle.isLegacyIncomplete)
                     Text(vehicle.missingLabel(context))
                   else ...[
-                    if (vehicle.titleLine.isNotEmpty) Text(vehicle.titleLine),
-                    if (vehicle.classLine.isNotEmpty) Text(vehicle.classLine),
+                    if (vehicle.titleLine.isNotEmpty)
+                      AdminDriverKvRow(
+                        label: uiTr(context, 'المركبة'),
+                        value: vehicle.titleLine,
+                      ),
+                    if (vehicle.classLine.isNotEmpty)
+                      AdminDriverKvRow(
+                        label: uiTr(context, 'التصنيف'),
+                        value: vehicle.classLine,
+                      ),
                     if (vehicle.plate.isNotEmpty)
-                      Text(vehicle.plateLine(context)),
+                      AdminDriverKvRow(
+                        label: uiTr(context, 'اللوحة'),
+                        value: vehicle.plate,
+                      ),
                   ],
                 ],
               ),
-              _section(
-                context,
-                uiTr(context, 'الوثائق'),
-                [AdminDriverDocumentsPanel(user: user)],
+              AdminDriverSectionCard(
+                title: uiTr(context, 'الوثائق'),
+                children: [AdminDriverDocumentsPanel(user: user)],
               ),
-              _section(
-                context,
-                uiTr(context, 'الحالة التشغيلية'),
-                [
-                  _kv(
-                    context,
-                    uiTr(context, 'الاتصال'),
-                    AdminDriverStatusLabels.connection(context, row.connection),
-                  ),
-                  _kv(
-                    context,
-                    uiTr(context, 'التوفر'),
-                    AdminDriverStatusLabels.availability(
-                      context,
-                      row.availability,
-                    ),
-                  ),
+              AdminDriverSectionCard(
+                title: uiTr(context, 'الحالة التشغيلية'),
+                children: [
+                  AdminDriverOperationalStatus(row: row),
                   if (row.onActiveTrip)
-                    _kv(
-                      context,
-                      uiTr(context, 'رحلة نشطة'),
-                      uiTr(context, 'نعم'),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: AdminDriverKvRow(
+                        label: uiTr(context, 'رحلة نشطة'),
+                        value: uiTr(context, 'نعم'),
+                      ),
                     ),
                 ],
               ),
-              _section(
-                context,
-                uiTr(context, 'الرحلات'),
-                [
-                  _kv(context, uiTr(context, 'الرحلات'), row.tripsLabel),
+              AdminDriverSectionCard(
+                title: uiTr(context, 'النشاط والرحلات'),
+                children: [
+                  AdminDriverKvRow(
+                    label: uiTr(context, 'الرحلات'),
+                    value: row.tripsLabel,
+                  ),
                 ],
               ),
-              _section(
-                context,
-                uiTr(context, 'الأرباح'),
-                [
+              AdminDriverSectionCard(
+                title: uiTr(context, 'الأرباح'),
+                children: [
                   AdminDriverFinancialPanel(
                     driverRef: user.reference,
                     countryRef: user.revDolh,
                   ),
-                  _kv(context, uiTr(context, 'الأرباح'), row.earningsLabel),
+                  AdminDriverKvRow(
+                    label: uiTr(context, 'إجمالي الأرباح'),
+                    value: row.earningsLabel,
+                  ),
                 ],
               ),
-              _section(
-                context,
-                uiTr(context, 'سجل المراجعات'),
-                [AdminDriverReviewHistoryPanel(driverId: user.reference.id)],
+              AdminDriverSectionCard(
+                title: uiTr(context, 'سجل المراجعات'),
+                children: [
+                  AdminDriverReviewHistoryPanel(driverId: user.reference.id),
+                ],
               ),
-              _section(
-                context,
-                uiTr(context, 'إجراءات الإدارة'),
-                [
+              AdminDriverSectionCard(
+                title: uiTr(context, 'الإجراءات الإدارية'),
+                children: [
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -296,22 +224,24 @@ class AdminDriversDetailsPanel extends StatelessWidget {
                         icon: const Icon(Icons.open_in_new_rounded, size: 18),
                         label: Text(uiTr(context, 'عرض كامل')),
                       ),
-                      AdminPrimaryButton(
-                        label: uiTr(context, 'مراجعة التسجيل'),
-                        icon: Icons.fact_check_outlined,
-                        onPressed: () {
-                          Navigator.of(context).maybePop();
-                          context.pushNamed(
-                            DriverActivationWidget.routeName,
-                            queryParameters: {
-                              'dre': serializeParam(
-                                user.reference,
-                                ParamType.DocumentReference,
-                              ),
-                            }.withoutNulls,
-                          );
-                        },
-                      ),
+                      if (row.review == AdminDriverReviewBucket.pendingReview ||
+                          row.review == AdminDriverReviewBucket.needsChanges)
+                        AdminPrimaryButton(
+                          label: uiTr(context, 'مراجعة التسجيل'),
+                          icon: Icons.fact_check_outlined,
+                          onPressed: () {
+                            Navigator.of(context).maybePop();
+                            context.pushNamed(
+                              DriverActivationWidget.routeName,
+                              queryParameters: {
+                                'dre': serializeParam(
+                                  user.reference,
+                                  ParamType.DocumentReference,
+                                ),
+                              }.withoutNulls,
+                            );
+                          },
+                        ),
                       OutlinedButton.icon(
                         onPressed: () {
                           Navigator.of(context).maybePop();
@@ -332,58 +262,11 @@ class AdminDriversDetailsPanel extends StatelessWidget {
                   ),
                 ],
               ),
+              AdminDriverTechnicalSection(user: user),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _section(BuildContext context, String title, List<Widget> children) {
-    final theme = FlutterFlowTheme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: AdminContentCard(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              title,
-              style: theme.titleSmall.override(
-                fontFamily: theme.titleSmallFamily,
-                fontWeight: FontWeight.w800,
-                useGoogleFonts: !theme.titleSmallIsCustom,
-              ),
-            ),
-            const SizedBox(height: 8),
-            ...children,
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _kv(BuildContext context, String k, String v) {
-    final theme = FlutterFlowTheme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 110,
-            child: Text(
-              k,
-              style: theme.labelMedium.override(
-                fontFamily: theme.labelMediumFamily,
-                color: theme.secondaryText,
-                useGoogleFonts: !theme.labelMediumIsCustom,
-              ),
-            ),
-          ),
-          Expanded(child: Text(v)),
-        ],
-      ),
     );
   }
 }

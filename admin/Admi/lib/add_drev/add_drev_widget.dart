@@ -1,3 +1,4 @@
+import '/admin/admindrever/admin_drivers_ui_shared.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_country_sync.dart';
@@ -483,76 +484,89 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
   Widget build(BuildContext context) {
     final isEdit = widget.isEditMode;
     final theme = FlutterFlowTheme.of(context);
+    String? editSubtitle;
+    if (isEdit && widget.editUserRef != null) {
+      // Subtitle filled after load via model if available.
+      editSubtitle = _model.nameTextController?.text.trim();
+    }
 
-    return AdminEditScaffold(
-      title: isEdit ? uiTr(context, 'تعديل بيانات المندوب') : uiTr(context, 'إضافة مندوب جديد'),
-      subtitle: isEdit
-          ? uiTr(context, 'عدّل البيانات المطلوبة ثم اضغط «حفظ التعديلات»')
-          : uiTr(context, 'املأ الحقول المميزة بـ (*) ثم اضغط «إضافة المندوب»'),
+    return AdminDriverModuleScaffold(
+      title: isEdit
+          ? uiTr(context, 'تعديل بيانات المندوب')
+          : uiTr(context, 'إضافة مندوب'),
+      subtitle: isEdit && (editSubtitle?.isNotEmpty ?? false)
+          ? editSubtitle
+          : (isEdit
+              ? uiTr(context, 'عدّل البيانات ثم احفظ')
+              : uiTr(context, 'املأ الحقول المطلوبة')),
       isLoading: _model.isLoadingEdit,
-      floatingAction: AdminPrimaryButton(
-        label: _model.isSubmitting
+      bottomBar: AdminDriverStickyActions(
+        primaryLabel: _model.isSubmitting
             ? uiTr(context, 'جاري الحفظ...')
             : isEdit
                 ? uiTr(context, 'حفظ التعديلات')
                 : uiTr(context, 'إضافة المندوب'),
-        icon: isEdit ? Icons.save_rounded : Icons.person_add_rounded,
-        isLoading: _model.isSubmitting,
-        onPressed: _model.isSubmitting ? null : _submitRepresentative,
+        primaryLoading: _model.isSubmitting,
+        primaryIcon: isEdit ? Icons.save_rounded : Icons.person_add_rounded,
+        onPrimary:
+            _model.isSubmitting ? null : _submitRepresentative,
       ),
-      child: Form(
+      body: Form(
         key: _model.formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ListView(
+          padding: AdminUi.pagePadding(context).copyWith(top: 12, bottom: 24),
           children: [
-            _buildGuideBanner(context, isEdit),
-            const SizedBox(height: 16),
+            AdminDriverCompactTip(
+              text: isEdit
+                  ? uiTr(
+                      context,
+                      'عدّل البيانات المطلوبة — الاسم، الموقع، المركبة، الصورة — ثم احفظ.',
+                    )
+                  : uiTr(
+                      context,
+                      'أدخل البيانات الشخصية، الموقع، المركبة، ثم اضغط «إضافة المندوب».',
+                    ),
+            ),
+            const SizedBox(height: 14),
             AdminEditFormCard(
-              sectionTitle: uiTr(context, '١ — البيانات الشخصية'),
+              sectionTitle: uiTr(context, 'البيانات الشخصية'),
               children: [
-                _buildFieldHint(
-                  uiTr(context, 'أدخل بيانات التواصل الأساسية للمندوب. سيستخدم البريد وكلمة المرور لتسجيل الدخول في تطبيق المناديب.'),
-                ),
-                const SizedBox(height: 12),
-                _buildTextField(
-                  context: context,
-                  controller: _model.nameTextController!,
-                  focusNode: _model.nameFocusNode,
-                  label: uiTr(context, 'الاسم الكامل *'),
-                  hint: uiTr(context, 'مثال: محمد أحمد العتيبي'),
-                  helper: uiTr(context, 'اكتب الاسم الثلاثي كما يظهر في الهوية'),
-                  icon: Icons.person_outline_rounded,
-                  validator: _model.nameTextControllerValidator,
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 14),
-                _buildTextField(
-                  context: context,
-                  controller: _model.emailTextController!,
-                  focusNode: _model.emailFocusNode,
-                  label: uiTr(context, 'البريد الإلكتروني *'),
-                  hint: 'example@email.com',
-                  helper: isEdit
-                      ? uiTr(context, 'لا يمكن تغيير البريد من هنا')
-                      : uiTr(context, 'سيُستخدم كاسم مستخدم لتسجيل دخول المندوب'),
-                  icon: Icons.alternate_email_rounded,
-                  readOnly: isEdit,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: _model.emailTextControllerValidator,
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 14),
-                _buildTextField(
-                  context: context,
-                  controller: _model.mobilTextController!,
-                  focusNode: _model.mobilFocusNode,
-                  label: uiTr(context, 'رقم الجوال *'),
-                  hint: '05xxxxxxxx',
-                  helper: uiTr(context, 'أدخل رقم سعودي يبدأ بـ 05 ويتكون من 10 أرقام'),
-                  icon: Icons.phone_android_rounded,
-                  keyboardType: TextInputType.phone,
-                  validator: _model.mobilTextControllerValidator,
-                  textInputAction: isEdit ? TextInputAction.done : TextInputAction.next,
+                AdminDriverFormGrid(
+                  children: [
+                    _buildTextField(
+                      context: context,
+                      controller: _model.nameTextController!,
+                      focusNode: _model.nameFocusNode,
+                      label: uiTr(context, 'الاسم الكامل *'),
+                      hint: uiTr(context, 'مثال: محمد أحمد العتيبي'),
+                      icon: Icons.person_outline_rounded,
+                      validator: _model.nameTextControllerValidator,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    _buildTextField(
+                      context: context,
+                      controller: _model.mobilTextController!,
+                      focusNode: _model.mobilFocusNode,
+                      label: uiTr(context, 'رقم الجوال *'),
+                      hint: '05xxxxxxxx',
+                      icon: Icons.phone_android_rounded,
+                      keyboardType: TextInputType.phone,
+                      validator: _model.mobilTextControllerValidator,
+                      textInputAction: TextInputAction.next,
+                    ),
+                    _buildTextField(
+                      context: context,
+                      controller: _model.emailTextController!,
+                      focusNode: _model.emailFocusNode,
+                      label: uiTr(context, 'البريد الإلكتروني *'),
+                      hint: 'example@email.com',
+                      icon: Icons.alternate_email_rounded,
+                      readOnly: isEdit,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: _model.emailTextControllerValidator,
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ],
                 ),
                 if (!isEdit) ...[
                   const SizedBox(height: 14),
@@ -602,7 +616,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
             ),
             const SizedBox(height: 16),
             AdminEditFormCard(
-              sectionTitle: uiTr(context, '٢ — الموقع والمركبة'),
+              sectionTitle: uiTr(context, 'الموقع والمركبة'),
               children: [
                 _buildFieldHint(
                   uiTr(context, 'اختر شركة النقل (إن وُجدت) ثم نوع السيارة ومدينة العمل.'),
@@ -720,13 +734,8 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
             ),
             const SizedBox(height: 16),
             AdminEditFormCard(
-              sectionTitle: uiTr(context, '٣ — الصورة الشخصية'),
+              sectionTitle: uiTr(context, 'الصورة الشخصية'),
               children: [
-                _buildFieldHint(
-                  uiTr(context, 'صورة واضحة لوجه المندوب تظهر في التطبيق وفي قائمة المناديب.'),
-                  icon: Icons.photo_camera_outlined,
-                ),
-                const SizedBox(height: 12),
                 _buildPhotoPicker(context, theme),
               ],
             ),
@@ -764,89 +773,6 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
             ],
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildGuideBanner(BuildContext context, bool isEdit) {
-    final theme = FlutterFlowTheme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AdminUi.brandTeal.withValues(alpha: 0.12),
-            AdminUi.brandMint.withValues(alpha: 0.2),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(AdminUi.radiusMd),
-        border: Border.all(color: AdminUi.brandTeal.withValues(alpha: 0.25)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.route_rounded, color: AdminUi.brandTeal, size: 22),
-              const SizedBox(width: 8),
-              Text(
-                isEdit ? uiTr(context, 'خطوات التعديل') : uiTr(context, 'خطوات الإضافة'),
-                style: theme.titleSmall.override(
-                  fontFamily: theme.titleSmallFamily,
-                  fontWeight: FontWeight.w700,
-                  color: AdminUi.brandTeal,
-                  useGoogleFonts: !theme.titleSmallIsCustom,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          _guideStep(uiTr(context, '١'), uiTr(context, 'أدخل البيانات الشخصية ورقم الجوال')),
-          _guideStep(uiTr(context, '٢'), uiTr(context, 'اختر نوع السيارة ومدينة العمل')),
-          _guideStep(uiTr(context, '٣'), uiTr(context, 'أضف صورة شخصية (اختياري)')),
-          if (!isEdit)
-            _guideStep(uiTr(context, '٤'), uiTr(context, 'اضغط «إضافة المندوب» — يُفعَّل تلقائياً')),
-        ],
-      ),
-    );
-  }
-
-  Widget _guideStep(String number, String text) {
-    final theme = FlutterFlowTheme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 24,
-            height: 24,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: AdminUi.brandTeal,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              number,
-              style: theme.labelSmall.override(
-                fontFamily: theme.labelSmallFamily,
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                useGoogleFonts: !theme.labelSmallIsCustom,
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: theme.bodyMedium.override(
-                fontFamily: theme.bodyMediumFamily,
-                useGoogleFonts: !theme.bodyMediumIsCustom,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -905,7 +831,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     required TextEditingController controller,
     required String label,
     required String hint,
-    required String helper,
+    String helper = '',
     required IconData icon,
     FocusNode? focusNode,
     bool readOnly = false,
@@ -942,7 +868,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
           validator: validator?.asValidator(context),
         ),
         const SizedBox(height: 6),
-        _buildHelperText(context, helper),
+        if (helper.isNotEmpty) _buildHelperText(context, helper),
       ],
     );
   }
