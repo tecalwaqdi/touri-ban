@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '/backend/admin_rbac_phase.dart';
 import '/backend/schema/user_record.dart';
 import '/core/auth/auth_claims.dart';
 import '/flutter_flow/internationalization.dart';
-/// Panel roles derived from Firebase Auth custom claims (with Firestore bootstrap).
+
+/// Panel roles derived from Firebase Auth custom claims (bounded profile bootstrap).
 enum AdminRole {
   superAdmin,
   countryAgent,
@@ -18,9 +20,28 @@ class AdminRoleService {
 
   static AuthClaims _claims = AuthClaims.fromToken(null);
   static UserRecord? _boundProfile;
+  static AdminRbacPhase _phase = AdminRbacPhase.loading;
+
+  static AdminRbacPhase get rbacPhase => _phase;
+
+  static void resetSession() {
+    _claims = AuthClaims.fromToken(null);
+    _boundProfile = null;
+    _phase = AdminRbacPhase.loading;
+  }
 
   static void bindProfile(UserRecord? user) {
     _boundProfile = user;
+    if (user == null) return;
+    if (_phase == AdminRbacPhase.loading &&
+        _roleFromUserDoc(user) != AdminRole.none) {
+      _phase = AdminRbacPhase.bootstrap;
+    }
+  }
+
+  /// Call after [refreshMyClaims] + token refresh completes.
+  static void markClaimsAuthoritative() {
+    _phase = AdminRbacPhase.authoritative;
   }
 
   static const int ruleSuperAdmin = 1;
@@ -69,10 +90,16 @@ class AdminRoleService {
 
   static Future<void> refreshClaims({bool forceRefresh = false}) async {
     _claims = await AuthClaims.current(forceRefresh: forceRefresh);
+    if (_claims.hasPanelAccess) {
+      _phase = AdminRbacPhase.authoritative;
+    }
   }
 
   static void bindClaims(AuthClaims claims) {
     _claims = claims;
+    if (_claims.hasPanelAccess) {
+      _phase = AdminRbacPhase.authoritative;
+    }
   }
 
   static AdminRole get currentRole {
@@ -84,8 +111,10 @@ class AdminRoleService {
     if (_claims.isTransportManager) return AdminRole.transportCompany;
     if (_claims.isFinance) return AdminRole.countryAgent;
 
-    // Bootstrap: claims may be stale until Cloud Function sync runs.
-    return _roleFromUserDoc(_boundProfile);
+    if (_phase != AdminRbacPhase.authoritative) {
+      return _roleFromUserDoc(_boundProfile);
+    }
+    return AdminRole.none;
   }
 
   static AdminRole _roleFromUserDoc(UserRecord? user) {
@@ -99,18 +128,18 @@ class AdminRoleService {
     );
   }
 
-  static bool get hasPanelAccess =>
-      _claims.hasPanelAccess ||
-      _roleFromUserDoc(_boundProfile) != AdminRole.none;
+  static bool get hasPanelAccess {
+    if (_claims.hasPanelAccess) return true;
+    if (_phase == AdminRbacPhase.authoritative) return false;
+    return _roleFromUserDoc(_boundProfile) != AdminRole.none;
+  }
 
   /// True while signed-in but profile/claims have not arrived yet.
   /// UI must not show "Unauthorized" during this window.
   static bool get isRoleResolving {
     if (_claims.hasPanelAccess) return false;
     if (_boundProfile != null) return false;
-    // Bound profile null + no claims: either still loading or signed out.
-    // Callers should also check FirebaseAuth.currentUser != null.
-    return true;
+    return _phase == AdminRbacPhase.loading;
   }
 
   static bool get hasClaimsPanelAccess => _claims.hasPanelAccess;
@@ -118,18 +147,13 @@ class AdminRoleService {
   /// Profile-doc role without considering claims (for claims-sync decisions).
   static AdminRole get profileRole => _roleFromUserDoc(_boundProfile);
 
-  static bool get isSuperAdmin =>
-      _claims.isSuperAdmin ||
-      _roleFromUserDoc(_boundProfile) == AdminRole.superAdmin;
+  static bool get isSuperAdmin => currentRole == AdminRole.superAdmin;
 
   /// Country-agent list/dashboard scoping. Super admins always use global scope
   /// even when legacy claims also include country_admin/agent (production QA account).
   static bool get isCountryAgent {
     if (isSuperAdmin) return false;
-    return _claims.isCountryAdmin ||
-        _claims.isAgent ||
-        _claims.isSupport ||
-        _roleFromUserDoc(_boundProfile) == AdminRole.countryAgent;
+    return currentRole == AdminRole.countryAgent;
   }
 
   /// Firestore user doc check (editing/viewing another account).
@@ -141,12 +165,10 @@ class AdminRoleService {
     return user.isAdmin;
   }
 
-  static bool get isPartner =>
-      _claims.isPartner || _roleFromUserDoc(_boundProfile) == AdminRole.partner;
+  static bool get isPartner => currentRole == AdminRole.partner;
 
   static bool get isTransportCompany =>
-      _claims.isTransportManager ||
-      _roleFromUserDoc(_boundProfile) == AdminRole.transportCompany;
+      currentRole == AdminRole.transportCompany;
 
   static bool get isFinance => _claims.isFinance || isSuperAdmin;
 
@@ -161,7 +183,10 @@ class AdminRoleService {
     if (path != null && path.isNotEmpty) {
       return FirebaseFirestore.instance.doc(path);
     }
-    return _boundProfile?.revDlohAgent;
+    if (_phase != AdminRbacPhase.authoritative) {
+      return _boundProfile?.revDlohAgent;
+    }
+    return null;
   }
 
   static String get scopedCountryName => _boundProfile?.dolhAgent ?? '';

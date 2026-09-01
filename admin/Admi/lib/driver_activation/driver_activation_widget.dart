@@ -149,14 +149,18 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
     try {
       final snap = await ref.get();
       final data = snap.data() as Map<String, dynamic>? ?? {};
-      // Merge in-form city/type so prerequisites see intended values.
-      data['mndob_vill'] = FFAppState().workcite ?? data['mndob_vill'];
-      data['mndob_type_car'] =
-          FFAppState().RefTepeCar ?? data['mndob_type_car'];
-      final blockers = AdminDriverReviewActions.approvalBlockingReasons(data)
-          .map((key) => appTr(context, key))
-          .where((text) => text.trim().isNotEmpty)
-          .toList();
+      final reviewData = Map<String, dynamic>.from(data);
+      final workCityRef = FFAppState().workcite;
+      final carTypeRef = FFAppState().RefTepeCar;
+      if (workCityRef != null) reviewData['mndob_vill'] = workCityRef;
+      if (carTypeRef != null) {
+        reviewData['mndob_type_car'] = carTypeRef;
+      }
+      final blockers =
+          AdminDriverReviewActions.approvalBlockingReasons(reviewData)
+              .map((key) => appTr(context, key))
+              .where((text) => text.trim().isNotEmpty)
+              .toList();
       if (blockers.isNotEmpty) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -193,19 +197,21 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
       );
       if (confirm != true) return;
 
-      await ref.update({
-        ...createUserRecordData(
-          displayName: _model.naimTextController.text,
-          mndobVill: FFAppState().workcite,
-          mndobTypeCar: FFAppState().RefTepeCar,
-          mndobVillText: FFAppState().workciteText,
-        ),
-      });
+      final adminProfile = <String, dynamic>{
+        if (_model.naimTextController.text.trim().isNotEmpty)
+          'displayName': _model.naimTextController.text.trim(),
+        if (workCityRef != null) 'mndob_vill': workCityRef.path,
+        if (carTypeRef != null) 'mndob_type_car': carTypeRef.path,
+        if ((FFAppState().workciteText).trim().isNotEmpty)
+          'mndob_vill_text': FFAppState().workciteText.trim(),
+      };
+
       await CloudFunctionsClient.reviewDriver(
         action: 'approved',
         driverId: ref.id,
         useRegistrationV2: isV2,
         reviewVersion: (data['reviewVersion'] as num?)?.toInt(),
+        adminProfile: adminProfile.isEmpty ? null : adminProfile,
       );
       await AdminAuditLog.record(
         action: 'driver_approve',

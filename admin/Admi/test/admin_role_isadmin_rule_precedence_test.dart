@@ -4,8 +4,7 @@ import 'package:admin_arawatan/core/auth/auth_claims.dart';
 
 void main() {
   setUp(() {
-    AdminRoleService.bindClaims(AuthClaims.fromToken(null));
-    AdminRoleService.bindProfile(null);
+    AdminRoleService.resetSession();
   });
 
   test('isAdminRule=2 wins over legacy IsAdmin=true (country agent)', () {

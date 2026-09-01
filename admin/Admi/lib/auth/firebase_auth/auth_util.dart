@@ -38,20 +38,16 @@ bool get currentUserEmailVerified => currentUser?.emailVerified ?? false;
 /// Create a Stream that listens to the current user's JWT Token, since Firebase
 /// generates a new token every hour.
 String? _currentJwtToken;
-final jwtTokenStream = FirebaseAuth.instance
-    .idTokenChanges()
-    .map((user) async {
-      _currentJwtToken = await user?.getIdToken();
-      if (user != null) {
-        await AdminRoleService.refreshClaims(forceRefresh: true);
-      } else {
-        AuthClaims.clearCache();
-        AdminRoleService.bindClaims(AuthClaims.fromToken(null));
-        AdminRoleService.bindProfile(null);
-      }
-      return _currentJwtToken;
-    })
-    .asBroadcastStream();
+final jwtTokenStream = FirebaseAuth.instance.idTokenChanges().map((user) async {
+  _currentJwtToken = await user?.getIdToken();
+  if (user != null) {
+    await AdminRoleService.refreshClaims(forceRefresh: true);
+  } else {
+    AuthClaims.clearCache();
+    AdminRoleService.resetSession();
+  }
+  return _currentJwtToken;
+}).asBroadcastStream();
 
 DocumentReference? get currentUserReference =>
     loggedIn ? UserRecord.collection.doc(currentUser!.uid) : null;
@@ -83,8 +79,7 @@ final authenticatedUserStream = FirebaseAuth.instance
     }
     // JWT may lack custom claims after session restore / Playwright inject.
     // Sync from Firestore via refreshMyClaims when profile says panel access.
-    if (newRole != AdminRole.none &&
-        !AdminRoleService.hasClaimsPanelAccess) {
+    if (newRole != AdminRole.none && !AdminRoleService.hasClaimsPanelAccess) {
       unawaited(refreshAuthClaims());
     }
   }
@@ -154,7 +149,12 @@ Future<void> refreshAuthClaims() async {
     await CloudFunctionsClient.refreshMyClaims();
     await FirebaseAuth.instance.currentUser?.getIdToken(true);
     await AdminRoleService.refreshClaims(forceRefresh: true);
-  } catch (_) {}
+    AppStateNotifier.instance.notifyProfileReady();
+  } catch (_) {
+    // Fall through — still end bootstrap so stale profile cannot retain access.
+  } finally {
+    AdminRoleService.markClaimsAuthoritative();
+  }
 }
 
 Future<void> _syncClaimsFromServer() => refreshAuthClaims();

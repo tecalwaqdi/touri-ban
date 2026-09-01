@@ -61,9 +61,8 @@ class CloudFunctionsClient {
     String? currency,
     String mode = 'totals',
   }) async {
-    final result = await _functions
-        .httpsCallable('aggregateFinancialAccountingV2')
-        .call({
+    final result =
+        await _functions.httpsCallable('aggregateFinancialAccountingV2').call({
       if (countryPath != null) 'countryPath': countryPath,
       if (periodStart != null) 'periodStart': periodStart.toIso8601String(),
       if (periodEnd != null) 'periodEnd': periodEnd.toIso8601String(),
@@ -117,6 +116,7 @@ class CloudFunctionsClient {
     int? reviewVersion,
     String? idempotencyKey,
     bool useRegistrationV2 = false,
+    Map<String, dynamic>? adminProfile,
   }) async {
     if (useRegistrationV2) {
       final v2Action = switch (action) {
@@ -134,6 +134,8 @@ class CloudFunctionsClient {
         if (fieldsToFix != null && fieldsToFix.isNotEmpty)
           'fieldsToFix': fieldsToFix,
         if (reviewVersion != null) 'reviewVersion': reviewVersion,
+        if (adminProfile != null && adminProfile.isNotEmpty)
+          'adminProfile': adminProfile,
         'idempotencyKey': idempotencyKey ??
             'rev_${driverId}_${v2Action}_${DateTime.now().millisecondsSinceEpoch}',
       });
@@ -161,7 +163,8 @@ class CloudFunctionsClient {
     required DateTime periodEnd,
     required String idempotencyKey,
   }) async {
-    final result = await _functions.httpsCallable('createSettlementDraftV2').call({
+    final result =
+        await _functions.httpsCallable('createSettlementDraftV2').call({
       'driverId': driverId,
       'countryId': countryId,
       'currency': currency,
@@ -281,7 +284,8 @@ class CloudFunctionsClient {
       'paymentId': paymentId,
       'reason': reason,
       'idempotencyKey': idempotencyKey,
-      if (reversalAmountMinor != null) 'reversalAmountMinor': reversalAmountMinor,
+      if (reversalAmountMinor != null)
+        'reversalAmountMinor': reversalAmountMinor,
     });
     return Map<String, dynamic>.from(result.data as Map);
   }

@@ -79,8 +79,7 @@ class AdminGeoRegionRow {
   bool get active => record.acctev;
   int get sort => record.sorting;
   String get displayName => nameAr.isNotEmpty ? nameAr : id;
-  bool get isLegacyAlias =>
-      AdminLegacyAliasFilter.isLegacyIntlAliasId(id);
+  bool get isLegacyAlias => AdminLegacyAliasFilter.isLegacyIntlAliasId(id);
 }
 
 /// Presentation row for Cities tab.
@@ -104,8 +103,7 @@ class AdminGeoCityRow {
   String get nameEn => (record.namesI18n['en'] ?? '').trim();
   bool get active => record.acctev;
   String get displayName => nameAr.isNotEmpty ? nameAr : id;
-  bool get isLegacyAlias =>
-      AdminLegacyAliasFilter.isLegacyIntlAliasId(id);
+  bool get isLegacyAlias => AdminLegacyAliasFilter.isLegacyIntlAliasId(id);
 }
 
 class AdminGeoSummaryCounts {
@@ -260,9 +258,7 @@ abstract final class AdminGeoAdapter {
       final orphan = parentId == null || !countryNames.containsKey(parentId);
       return AdminGeoRegionRow(
         record: r,
-        countryName: orphan
-            ? '—'
-            : (countryNames[parentId] ?? parentId),
+        countryName: orphan ? '—' : (countryNames[parentId] ?? parentId),
         cityCount: cityCounts[r.reference.id] ?? 0,
         orphanParent: orphan,
       );
@@ -325,9 +321,8 @@ abstract final class AdminGeoAdapter {
         regionName: region == null
             ? '—'
             : displayName(region.naim, region.reference.id),
-        countryName: countryId == null
-            ? '—'
-            : (countryNames[countryId] ?? countryId),
+        countryName:
+            countryId == null ? '—' : (countryNames[countryId] ?? countryId),
         orphanRegion: orphanRegion,
         countryMismatch: mismatch,
       );
@@ -383,7 +378,17 @@ abstract final class AdminGeoAdapter {
       if (regionId == null || !regionIds.contains(regionId)) {
         orphanCities++;
       } else {
-        final region = regions.firstWhere((r) => r.reference.id == regionId);
+        CitiesRecord? region;
+        for (final r in regions) {
+          if (r.reference.id == regionId) {
+            region = r;
+            break;
+          }
+        }
+        if (region == null) {
+          invalidRelations++;
+          continue;
+        }
         final regionCountry = region.dolh?.id;
         if (countryId != null &&
             regionCountry != null &&
@@ -408,8 +413,7 @@ abstract final class AdminGeoAdapter {
       if (n.isEmpty) continue;
       nameCounts[n] = (nameCounts[n] ?? 0) + 1;
     }
-    final duplicateNames =
-        nameCounts.values.where((count) => count > 1).length;
+    final duplicateNames = nameCounts.values.where((count) => count > 1).length;
 
     return {
       'orphanRegions': orphanRegions,

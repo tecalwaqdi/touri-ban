@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '/admin/admin_a_l_lhg_z/admin_bookings_adapter.dart';
 import '/backend/schema/order_record.dart';
 import '/core/admin_booking_status_label.dart';
+import '/core/admin_booking_geography.dart';
 import '/core/finance/financial_engine.dart';
 import '/core/toury_system_status_codes.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -27,6 +28,7 @@ class AdminBookingDetailsView {
     required this.showDiscount,
     required this.discountAmount,
     required this.tripTypeLabel,
+    required this.geography,
   });
 
   final AdminBookingRow row;
@@ -46,6 +48,7 @@ class AdminBookingDetailsView {
   final bool showDiscount;
   final double discountAmount;
   final String tripTypeLabel;
+  final AdminBookingGeography geography;
 
   factory AdminBookingDetailsView.fromOrder(OrderRecord order) {
     final row = AdminBookingRow.fromOrder(order);
@@ -54,8 +57,7 @@ class AdminBookingDetailsView {
     return AdminBookingDetailsView(
       row: row,
       statusCode: AdminBookingStatusLabel.codeOf(order),
-      paymentStatusLabel:
-          OrderStatusHelper.paymentStatusArabicLabel(order),
+      paymentStatusLabel: OrderStatusHelper.paymentStatusArabicLabel(order),
       cancellationByLabel: _cancellationBy(data, row),
       cancellationReason: _str(data, [
         'cancel_reason',
@@ -75,6 +77,7 @@ class AdminBookingDetailsView {
       showDiscount: _discount(data) > 0,
       discountAmount: _discount(data),
       tripTypeLabel: _tripType(data, order),
+      geography: AdminBookingGeography.fromOrder(order),
     );
   }
 

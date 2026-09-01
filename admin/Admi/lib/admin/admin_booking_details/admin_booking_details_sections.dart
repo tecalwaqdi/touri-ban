@@ -560,12 +560,6 @@ class AdminBookingDetailsCustomerCard extends StatelessWidget {
                   )
               : null,
         ),
-        if (row.city.isNotEmpty)
-          AdminBookingDetailsKvRow(
-            label: uiTr(context, 'مدينة الحجز'),
-            value: row.city,
-            icon: Icons.location_city_outlined,
-          ),
       ],
     );
   }
@@ -709,11 +703,19 @@ class AdminBookingDetailsTripCard extends StatelessWidget {
             label: uiTr(context, 'عدد الركاب'),
             value: passengers.toString(),
           ),
-        if (row.city.isNotEmpty)
-          AdminBookingDetailsKvRow(
-            label: uiTr(context, 'مدينة الحجز'),
-            value: row.city,
-          ),
+        const Divider(height: 14),
+        AdminBookingDetailsKvRow(
+          label: uiTr(context, 'دولة الرحلة'),
+          value: view.geography.tripCountry,
+        ),
+        AdminBookingDetailsKvRow(
+          label: uiTr(context, 'منطقة الرحلة'),
+          value: view.geography.tripRegion,
+        ),
+        AdminBookingDetailsKvRow(
+          label: uiTr(context, 'مدينة الرحلة'),
+          value: view.geography.tripCity,
+        ),
       ],
     );
   }

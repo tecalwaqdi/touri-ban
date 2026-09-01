@@ -91,6 +91,24 @@ function profilePhotoPresent(driver) {
   return docStatus.profilePhotoOk(driver);
 }
 
+function parseAdminProfile(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const out = {};
+  const name = String(raw.displayName || '').trim();
+  if (name) out.displayName = name;
+  const villPath = String(raw.mndob_vill || '').trim();
+  if (villPath && /^villages\/[^/]+$/.test(villPath)) {
+    out.mndob_vill = db.doc(villPath);
+  }
+  const carPath = String(raw.mndob_type_car || '').trim();
+  if (carPath && /^type_car\/[^/]+$/.test(carPath)) {
+    out.mndob_type_car = db.doc(carPath);
+  }
+  const villText = String(raw.mndob_vill_text || '').trim();
+  if (villText) out.mndob_vill_text = villText;
+  return Object.keys(out).length ? out : null;
+}
+
 /**
  * Phone: required presence on profile (E.164 / digits).
  * OTP / Auth phoneNumber / PhoneAuthCredential: NOT required.
@@ -124,7 +142,7 @@ function approvalBlockingReasonsV2(driver, authUser) {
   if (!docAssetPresent(driver, 'doc_vehicle_registration', 'img_id_car')) {
     blockers.push('vehicle_registration_required');
   }
-  if (!docAssetPresent(driver, 'doc_driver_license', '')) {
+  if (!docStatus.driverLicenseSubmitOk(driver, null)) {
     blockers.push('driver_license_required');
   }
   if (!profilePhotoPresent(driver)) blockers.push('profile_photo_required');
@@ -566,7 +584,11 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
 
     const snap = await tx.get(ref);
     if (!snap.exists) fail('not-found', 'Driver profile not found.');
-    const driver = snap.data() || {};
+    let driver = snap.data() || {};
+    const adminProfile = parseAdminProfile(data && data.adminProfile);
+    if (adminProfile) {
+      driver = {...driver, ...adminProfile};
+    }
     if (driver.ismndob !== true && driver.ismndom !== true) {
       fail('failed-precondition', 'Target is not a driver.');
     }
@@ -629,6 +651,7 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
         requested_changes: [],
         auto_activated: false,
       });
+      if (adminProfile) Object.assign(patch, adminProfile);
     } else if (action === 'reject') {
       newStatus = 'rejected';
       auditAction = 'DRIVER_APPLICATION_REJECTED';

@@ -117,312 +117,396 @@ class _Menu2WidgetState extends State<Menu2Widget> {
             AdminRoleService.isRoleResolving &&
             currentUserDocument == null;
 
-        final sections = <({String key, List<({String route, IconData icon})> items})>[
-      (
-        key: 'operations',
-        items: [
-          (route: Home22DashboardWidget.routeName, icon: Icons.dashboard_rounded),
-          (route: AdminALLhgZWidget.routeName, icon: Icons.bookmark_added_rounded),
-          (route: AdminuserWidget.routeName, icon: Icons.groups_rounded),
-          (route: AdmindreverWidget.routeName, icon: Icons.directions_car_rounded),
-          (route: AdminDriverExpiryQueueWidget.routeName, icon: Icons.event_busy_rounded),
-          (route: AdmintypecarWidget.routeName, icon: Icons.airport_shuttle_rounded),
-          (route: AdminSuportWidget.routeName, icon: Icons.support_agent_rounded),
-        ],
-      ),
-      (
-        key: 'catalog',
-        items: [
-          (route: AdmintypecarWidget.routeName, icon: Icons.airport_shuttle_rounded),
-          (route: AdminDolWidget.routeName, icon: Icons.flag_rounded),
-          (route: AdminregionWidget.routeName, icon: Icons.filter_hdr_rounded),
-          (route: AdminvillWidget.routeName, icon: Icons.location_city_rounded),
-          (route: AdminM3almWidget.routeName, icon: Icons.place_rounded),
-        ],
-      ),
-      (
-        key: 'partners',
-        items: [
-          (route: AdminAgentWidget.routeName, icon: Icons.real_estate_agent_rounded),
-          (route: AdminTransportCompaniesWidget.routeName, icon: Icons.local_shipping_rounded),
-          (route: CompanyDriversWidget.routeName, icon: Icons.directions_car_filled_rounded),
-          (route: AdminTourGuidesWidget.routeName, icon: Icons.tour_rounded),
-          (route: AdminPartnersWidget.routeName, icon: Icons.handshake_rounded),
-          (route: PartnerBookingsWidget.routeName, icon: Icons.receipt_long_rounded),
-        ],
-      ),
-      (
-        key: 'finance',
-        items: [
-          (route: AdminFinanceHubWidget.routeName, icon: Icons.account_balance_rounded),
-          (route: AdminProfitsWidget.routeName, icon: Icons.account_balance_wallet_rounded),
-          (route: AdminSettlementsWidget.routeName, icon: Icons.receipt_long_outlined),
-          (route: AdminReconciliationWidget.routeName, icon: Icons.rule_folder_outlined),
-          (route: AdminFinancialPeriodsWidget.routeName, icon: Icons.date_range_outlined),
-          (route: AdminFinanceReportsWidget.routeName, icon: Icons.table_chart_outlined),
-          (route: AdminFinanceAuditWidget.routeName, icon: Icons.manage_search_rounded),
-          (route: AdminDriverWalletsWidget.routeName, icon: Icons.wallet_rounded),
-        ],
-      ),
-      (
-        key: 'system',
-        items: [
-          (route: AdminDiagnosticsWidget.routeName, icon: Icons.monitor_heart_outlined),
-          (route: AdminSuperAdminsWidget.routeName, icon: Icons.admin_panel_settings_rounded),
-          (route: AdminAuditLogWidget.routeName, icon: Icons.history_rounded),
-          (route: AdminReportsHubWidget.routeName, icon: Icons.assessment_rounded),
-          (route: SettingsWidget.routeName, icon: Icons.settings_rounded),
-        ],
-      ),
-    ];
+        final sections =
+            <({String key, List<({String route, IconData icon})> items})>[
+          (
+            key: 'operations',
+            items: [
+              (
+                route: Home22DashboardWidget.routeName,
+                icon: Icons.dashboard_rounded
+              ),
+              (
+                route: AdminALLhgZWidget.routeName,
+                icon: Icons.bookmark_added_rounded
+              ),
+              (route: AdminuserWidget.routeName, icon: Icons.groups_rounded),
+              (
+                route: AdmindreverWidget.routeName,
+                icon: Icons.directions_car_rounded
+              ),
+              (
+                route: AdminDriverExpiryQueueWidget.routeName,
+                icon: Icons.event_busy_rounded
+              ),
+              (
+                route: AdminSuportWidget.routeName,
+                icon: Icons.support_agent_rounded
+              ),
+            ],
+          ),
+          (
+            key: 'catalog',
+            items: [
+              (
+                route: AdmintypecarWidget.routeName,
+                icon: Icons.airport_shuttle_rounded
+              ),
+              (route: AdminDolWidget.routeName, icon: Icons.flag_rounded),
+              (
+                route: AdminregionWidget.routeName,
+                icon: Icons.filter_hdr_rounded
+              ),
+              (
+                route: AdminvillWidget.routeName,
+                icon: Icons.location_city_rounded
+              ),
+              (route: AdminM3almWidget.routeName, icon: Icons.place_rounded),
+            ],
+          ),
+          (
+            key: 'partners',
+            items: [
+              (
+                route: AdminAgentWidget.routeName,
+                icon: Icons.real_estate_agent_rounded
+              ),
+              (
+                route: AdminTransportCompaniesWidget.routeName,
+                icon: Icons.local_shipping_rounded
+              ),
+              (
+                route: CompanyDriversWidget.routeName,
+                icon: Icons.directions_car_filled_rounded
+              ),
+              (
+                route: AdminTourGuidesWidget.routeName,
+                icon: Icons.tour_rounded
+              ),
+              (
+                route: AdminPartnersWidget.routeName,
+                icon: Icons.handshake_rounded
+              ),
+              (
+                route: PartnerBookingsWidget.routeName,
+                icon: Icons.receipt_long_rounded
+              ),
+            ],
+          ),
+          (
+            key: 'finance',
+            items: [
+              (
+                route: AdminFinanceHubWidget.routeName,
+                icon: Icons.account_balance_rounded
+              ),
+              (
+                route: AdminProfitsWidget.routeName,
+                icon: Icons.account_balance_wallet_rounded
+              ),
+              (
+                route: AdminSettlementsWidget.routeName,
+                icon: Icons.receipt_long_outlined
+              ),
+              (
+                route: AdminReconciliationWidget.routeName,
+                icon: Icons.rule_folder_outlined
+              ),
+              (
+                route: AdminFinancialPeriodsWidget.routeName,
+                icon: Icons.date_range_outlined
+              ),
+              (
+                route: AdminFinanceReportsWidget.routeName,
+                icon: Icons.table_chart_outlined
+              ),
+              (
+                route: AdminFinanceAuditWidget.routeName,
+                icon: Icons.manage_search_rounded
+              ),
+              (
+                route: AdminDriverWalletsWidget.routeName,
+                icon: Icons.wallet_rounded
+              ),
+            ],
+          ),
+          (
+            key: 'system',
+            items: [
+              (
+                route: AdminDiagnosticsWidget.routeName,
+                icon: Icons.monitor_heart_outlined
+              ),
+              (
+                route: AdminSuperAdminsWidget.routeName,
+                icon: Icons.admin_panel_settings_rounded
+              ),
+              (
+                route: AdminAuditLogWidget.routeName,
+                icon: Icons.history_rounded
+              ),
+              (
+                route: AdminReportsHubWidget.routeName,
+                icon: Icons.assessment_rounded
+              ),
+              (route: SettingsWidget.routeName, icon: Icons.settings_rounded),
+            ],
+          ),
+        ];
 
-    final visibleSections = rolePending
-        ? <({String key, List<({String route, IconData icon})> items})>[]
-        : sections
-            .map((s) => (
-                  key: s.key,
-                  items: s.items.where((i) => _canShow(i.route)).toList(),
-                ))
-            .where((s) => s.items.isNotEmpty)
-            .toList();
+        final visibleSections = rolePending
+            ? <({String key, List<({String route, IconData icon})> items})>[]
+            : sections
+                .map((s) => (
+                      key: s.key,
+                      items: s.items.where((i) => _canShow(i.route)).toList(),
+                    ))
+                .where((s) => s.items.isNotEmpty)
+                .toList();
 
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: AdminUi.sidebarGradient(),
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            decoration: AdminUi.sidebarHeaderDecoration(),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+        return Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: AdminUi.sidebarGradient(),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                decoration: AdminUi.sidebarHeaderDecoration(),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(
-                          Icons.admin_panel_settings_rounded,
-                          color: Colors.white,
-                          size: 26,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          l10n.getText('hrrt489c' /* Admin */),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.headlineSmall.override(
-                            fontFamily: theme.headlineSmallFamily,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.0,
-                            useGoogleFonts: !theme.headlineSmallIsCustom,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Container(
-                        width: 46,
-                        height: 46,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.4),
-                            width: 2,
-                          ),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: AuthUserStreamWidget(
-                            builder: (context) => ProfilePhotoImage(
-                              photoUrl: currentUserPhoto,
-                              size: 46,
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(10),
-                              loadingColor: Colors.white,
+                            ),
+                            child: const Icon(
+                              Icons.admin_panel_settings_rounded,
+                              color: Colors.white,
+                              size: 26,
                             ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AuthUserStreamWidget(
-                              builder: (context) => Text(
-                                currentUserDisplayName,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.bodyMedium.override(
-                                  fontFamily: theme.bodyMediumFamily,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.0,
-                                  useGoogleFonts: !theme.bodyMediumIsCustom,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                rolePending
-                                    ? uiTr(context, 'Resolving role…')
-                                    : (countryLabel.isNotEmpty
-                                        ? '${AdminRoleService.roleLabelL10n(context, role)} · $countryLabel'
-                                        : AdminRoleService.roleLabelL10n(
-                                            context, role)),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.labelSmall.override(
-                                  fontFamily: theme.labelSmallFamily,
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.0,
-                                  useGoogleFonts: !theme.labelSmallIsCustom,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              currentUserEmail,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              l10n.getText('hrrt489c' /* Admin */),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: theme.labelSmall.override(
-                                fontFamily: theme.labelSmallFamily,
-                                color: Colors.white.withValues(alpha: 0.75),
+                              style: theme.headlineSmall.override(
+                                fontFamily: theme.headlineSmallFamily,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
                                 letterSpacing: 0.0,
-                                useGoogleFonts: !theme.labelSmallIsCustom,
+                                useGoogleFonts: !theme.headlineSmallIsCustom,
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            TextButton.icon(
-                              onPressed: () async {
-                                closeDrawerIfOpen(context);
-                                GoRouter.of(context).prepareAuthEvent();
-                                await authManager.signOut();
-                                GoRouter.of(context).clearRedirectLocation();
-                                if (!context.mounted) return;
-                                context.goNamedAuth(
-                                  HomePageWidget.routeName,
-                                  context.mounted,
-                                );
-                              },
-                              icon: const Icon(
-                                Icons.logout_rounded,
-                                size: 16,
-                                color: Color(0xFFFFB4B8),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Container(
+                            width: 46,
+                            height: 46,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.4),
+                                width: 2,
                               ),
-                              label: Text(
-                                l10n.getText('wj2hxjyt' /* Log out */),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.labelMedium.override(
-                                  fontFamily: theme.labelMediumFamily,
-                                  color: const Color(0xFFFFB4B8),
-                                  letterSpacing: 0.0,
-                                  useGoogleFonts: !theme.labelMediumIsCustom,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: AuthUserStreamWidget(
+                                builder: (context) => ProfilePhotoImage(
+                                  photoUrl: currentUserPhoto,
+                                  size: 46,
+                                  borderRadius: BorderRadius.circular(10),
+                                  loadingColor: Colors.white,
                                 ),
                               ),
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AuthUserStreamWidget(
+                                  builder: (context) => Text(
+                                    currentUserDisplayName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.bodyMedium.override(
+                                      fontFamily: theme.bodyMediumFamily,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.0,
+                                      useGoogleFonts: !theme.bodyMediumIsCustom,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 3,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.15),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    rolePending
+                                        ? uiTr(context, 'Resolving role…')
+                                        : (countryLabel.isNotEmpty
+                                            ? '${AdminRoleService.roleLabelL10n(context, role)} · $countryLabel'
+                                            : AdminRoleService.roleLabelL10n(
+                                                context, role)),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.labelSmall.override(
+                                      fontFamily: theme.labelSmallFamily,
+                                      color:
+                                          Colors.white.withValues(alpha: 0.9),
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.0,
+                                      useGoogleFonts: !theme.labelSmallIsCustom,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  currentUserEmail,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.labelSmall.override(
+                                    fontFamily: theme.labelSmallFamily,
+                                    color: Colors.white.withValues(alpha: 0.75),
+                                    letterSpacing: 0.0,
+                                    useGoogleFonts: !theme.labelSmallIsCustom,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                TextButton.icon(
+                                  onPressed: () async {
+                                    closeDrawerIfOpen(context);
+                                    GoRouter.of(context).prepareAuthEvent();
+                                    await authManager.signOut();
+                                    GoRouter.of(context)
+                                        .clearRedirectLocation();
+                                    if (!context.mounted) return;
+                                    context.goNamedAuth(
+                                      HomePageWidget.routeName,
+                                      context.mounted,
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.logout_rounded,
+                                    size: 16,
+                                    color: Color(0xFFFFB4B8),
+                                  ),
+                                  label: Text(
+                                    l10n.getText('wj2hxjyt' /* Log out */),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.labelMedium.override(
+                                      fontFamily: theme.labelMediumFamily,
+                                      color: const Color(0xFFFFB4B8),
+                                      letterSpacing: 0.0,
+                                      useGoogleFonts:
+                                          !theme.labelMediumIsCustom,
+                                    ),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size.zero,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.only(bottom: 12),
-              children: [
-                for (final section in visibleSections) ...[
-                  AdminMenuSectionHeader(
-                    label: _sectionLabel(context, section.key),
-                  ),
-                  for (final item in section.items)
-                    item.route == AdminFinanceHubWidget.routeName
-                        ? StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                            stream: FirebaseFirestore.instance
-                                .collection('financial_settlement_payments')
-                                .where('status', isEqualTo: 'pending')
-                                .limit(50)
-                                .snapshots(),
-                            builder: (context, paySnap) {
-                              final pending = paySnap.data?.size ?? 0;
-                              return StreamBuilder<
-                                  QuerySnapshot<Map<String, dynamic>>>(
-                                stream: FirebaseFirestore.instance
-                                    .collection('financial_settlements')
-                                    .where('status', isEqualTo: 'draft')
-                                    .limit(50)
-                                    .snapshots(),
-                                builder: (context, draftSnap) {
-                                  final drafts = draftSnap.data?.size ?? 0;
-                                  return AdminMenuTile(
-                                    icon: item.icon,
-                                    label: _menuLabel(context, item.route),
-                                    isActive: _isActive(context, item.route),
-                                    attentionCount: pending + drafts,
-                                    onTap: () =>
-                                        _navigate(context, item.route),
-                                  );
-                                },
-                              );
-                            },
-                          )
-                        : AdminMenuTile(
-                            icon: item.icon,
-                            label: _menuLabel(context, item.route),
-                            isActive: _isActive(context, item.route),
-                            onTap: () => _navigate(context, item.route),
-                          ),
-                ],
-              ],
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: Colors.white.withValues(alpha: 0.12),
                 ),
               ),
-            ),
-            padding: const EdgeInsets.fromLTRB(8, 6, 8, 10),
-            child: const AdminThemeToggle(onTealChrome: true),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  children: [
+                    for (final section in visibleSections) ...[
+                      AdminMenuSectionHeader(
+                        label: _sectionLabel(context, section.key),
+                      ),
+                      for (final item in section.items)
+                        item.route == AdminFinanceHubWidget.routeName
+                            ? StreamBuilder<
+                                QuerySnapshot<Map<String, dynamic>>>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('financial_settlement_payments')
+                                    .where('status', isEqualTo: 'pending')
+                                    .limit(50)
+                                    .snapshots(),
+                                builder: (context, paySnap) {
+                                  final pending = paySnap.data?.size ?? 0;
+                                  return StreamBuilder<
+                                      QuerySnapshot<Map<String, dynamic>>>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection('financial_settlements')
+                                        .where('status', isEqualTo: 'draft')
+                                        .limit(50)
+                                        .snapshots(),
+                                    builder: (context, draftSnap) {
+                                      final drafts = draftSnap.data?.size ?? 0;
+                                      return AdminMenuTile(
+                                        icon: item.icon,
+                                        label: _menuLabel(context, item.route),
+                                        isActive:
+                                            _isActive(context, item.route),
+                                        attentionCount: pending + drafts,
+                                        onTap: () =>
+                                            _navigate(context, item.route),
+                                      );
+                                    },
+                                  );
+                                },
+                              )
+                            : AdminMenuTile(
+                                icon: item.icon,
+                                label: _menuLabel(context, item.route),
+                                isActive: _isActive(context, item.route),
+                                onTap: () => _navigate(context, item.route),
+                              ),
+                    ],
+                  ],
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.12),
+                    ),
+                  ),
+                ),
+                padding: const EdgeInsets.fromLTRB(8, 6, 8, 10),
+                child: const AdminThemeToggle(onTealChrome: true),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        );
       },
     );
   }

@@ -1,14 +1,14 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:admin_arawatan/backend/admin_role_service.dart';
 import 'package:admin_arawatan/core/auth/auth_claims.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   setUp(() {
-    AdminRoleService.bindClaims(AuthClaims.fromToken(null));
-    AdminRoleService.bindProfile(null);
+    AdminRoleService.resetSession();
   });
 
-  test('super_admin claim suppresses isCountryAgent even with country_admin', () {
+  test('super_admin claim suppresses isCountryAgent even with country_admin',
+      () {
     AdminRoleService.bindClaims(
       AuthClaims.fromToken({
         'super_admin': true,
