@@ -93,7 +93,7 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
           Text(
             uiTr(
               context,
-              'Internal reports only — not a tax invoice. Copies CSV to clipboard (not a file download). PDF: DEFERRED_PDF (no pdf package).',
+              'تقارير محاسبية داخلية — ليست فاتورة ضريبية. النسخ إلى الحافظة متاح (CSV). تصدير PDF غير متوفر حالياً.',
             ),
             softWrap: true,
             style: theme.bodySmall,

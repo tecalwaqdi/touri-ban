@@ -15,6 +15,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 /// Admin view: driver wallets, top-ups, company payments, ledger.
 ///
 /// LEGACY wallet tool — NOT settlement. Adjust is SuperAdmin-only.
+/// Wallet balance is NOT trip earnings.
 class AdminDriverWalletsWidget extends StatefulWidget {
   const AdminDriverWalletsWidget({super.key});
 
@@ -200,7 +201,7 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
                     child: Text(
                       uiTr(
                         context,
-                        'LEGACY wallet tool — NOT settlement. Only SuperAdmin can adjust.',
+                        'دفتر المحفظة منفصل عن أرباح الرحلات والتسويات. رصيد المحفظة ليس صافي أرباح المندوب من الرحلات. التعديل اليدوي لسوبر أدمن فقط.',
                       ),
                       style: theme.bodySmall.override(
                         fontFamily: 'Cairo',
@@ -216,7 +217,7 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
               child: Text(
-                uiTr(context, 'Wallet adjust is disabled for your role.'),
+                uiTr(context, 'تعديل المحفظة غير متاح لدورك.'),
                 style: theme.bodySmall.override(
                   fontFamily: 'Cairo',
                   color: theme.secondaryText,

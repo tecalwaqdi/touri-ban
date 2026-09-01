@@ -78,17 +78,23 @@ class AdminBookingDetailsExtras extends StatelessWidget {
                 _kv(
                   context,
                   uiTr(context, 'المبلغ'),
-                  row.amount.toStringAsFixed(2),
+                  row.amount > 0
+                      ? '${row.amount.toStringAsFixed(2)} ${row.currencySymbol}'
+                      : '—',
                 ),
                 _kv(
                   context,
-                  uiTr(context, 'العمولة'),
-                  row.commission.toStringAsFixed(2),
+                  uiTr(context, 'عمولة الشركة'),
+                  row.commission > 0
+                      ? '${row.commission.toStringAsFixed(2)} ${row.currencySymbol}'
+                      : '—',
                 ),
                 _kv(
                   context,
-                  uiTr(context, 'صافي المندوب'),
-                  row.driverNet.toStringAsFixed(2),
+                  row.driverNetIsDerived
+                      ? uiTr(context, 'صافي المندوب (مشتق)')
+                      : uiTr(context, 'صافي المندوب'),
+                  row.driverNetLabel,
                 ),
                 _kv(
                   context,

@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '/backend/schema/enums/enums.dart';
 import '/backend/schema/order_record.dart';
 import '/core/admin_booking_status_label.dart';
-import '/core/admin_currency.dart';
+import '/core/finance/admin_money_presentation.dart';
 
 /// Admin-only view model over [OrderRecord] — does not mutate Firestore contracts.
 class AdminBookingRow {
@@ -25,6 +25,7 @@ class AdminBookingRow {
     required this.amount,
     required this.commission,
     required this.driverNet,
+    required this.driverNetIsDerived,
     required this.currencySymbol,
     required this.paymentLabel,
     required this.createdAt,
@@ -55,7 +56,10 @@ class AdminBookingRow {
   final String plateLabel;
   final double amount;
   final double commission;
-  final double driverNet;
+
+  /// Driver net from canonical V2 engine. Null when unprovable — never gross.
+  final double? driverNet;
+  final bool driverNetIsDerived;
   final String currencySymbol;
   final String paymentLabel;
   final DateTime? createdAt;
@@ -74,6 +78,7 @@ class AdminBookingRow {
     final landmarks = _landmarkNames(order);
     final pickup = _pickupLabel(order, landmarks);
     final destination = _destinationLabel(order, landmarks);
+    final money = AdminOrderMoneyDisplay.fromOrder(order);
 
     return AdminBookingRow(
       order: order,
@@ -99,14 +104,14 @@ class AdminBookingRow {
         _str(data['normalized_plate']),
         _str(data['car_plate']),
       ]),
-      amount: order.total,
-      // Canonical: total_app = platform fee; total_mndob = driver net.
-      // Never prefer total_mndob2 here — that field is gross base fare.
-      commission: order.totalApp,
-      driverNet: order.hasTotalMndob()
-          ? order.totalMndob
-          : order.totalMndob2,
-      currencySymbol: AdminCurrency.displaySymbolForOrder(order),
+      // Presentation: prefer engine gross/customer paid; else stored total.
+      amount: money.gross?.majorUnits ?? order.total,
+      commission: money.platformFee?.majorUnits ??
+          (order.hasTotalApp() ? order.totalApp : 0),
+      // Never fallback total_mndob2 (gross) → driver net.
+      driverNet: money.driverNetMajor,
+      driverNetIsDerived: money.driverNetIsDerived,
+      currencySymbol: money.currencySymbol,
       paymentLabel: _paymentLabel(order),
       createdAt: order.dataOrder ?? _asDate(data['createdAt']),
       acceptedAt: _asDate(data['acceptedAt']),
@@ -120,6 +125,15 @@ class AdminBookingRow {
       isActivePool: order.allnow ||
           data['ActiveOrder'] == true ||
           data['ALLNOW'] == true,
+    );
+  }
+
+  /// Display string for driver net (`42.50 ر.س` or `—`).
+  String get driverNetLabel {
+    if (driverNet == null) return '—';
+    return AdminOrderMoneyDisplay.formatMajor(
+      driverNet,
+      symbol: currencySymbol,
     );
   }
 

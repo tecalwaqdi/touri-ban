@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '/backend/admin_role_service.dart';
+import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_user_facing_errors.dart';
@@ -55,7 +56,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
           Text(
             uiTr(
               context,
-              'Accounting ledger only — no wallet or payment movement',
+              'دفتر التسويات المحاسبية فقط — لا حركة محفظة أو دفع من هذه الشاشة.',
             ),
             softWrap: true,
             style: theme.bodySmall,
@@ -200,28 +201,39 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                   ),
                   const SizedBox(height: 12),
                   if (docs.isEmpty)
-                    Text(uiTr(context, 'لا توجد تسويات')),
-                  for (final d in docs)
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(
-                        '${d.data()['settlementCode'] ?? d.id} · ${d.data()['status']}',
-                        softWrap: true,
+                    AdminEmptyState(
+                      title: uiTr(
+                        context,
+                        'لا توجد تسويات مالية مسجلة حتى الآن.',
                       ),
-                      subtitle: Text(
-                        '${d.data()['currency']} · ${d.data()['direction']} · '
-                        'net ${(d.data()['netTripPositionMinor'] ?? 0)} minor · '
-                        'driver ${d.data()['driverId']}',
-                        softWrap: true,
+                      message: uiTr(
+                        context,
+                        'ستظهر التسويات هنا بعد أن تصبح العمليات مؤهلة للتسوية.',
                       ),
-                      onTap: () => context.pushNamed(
-                        AdminSettlementDetailsWidget.routeName,
-                        queryParameters: {
-                          'settlementId': serializeParam(
-                            d.id,
-                            ParamType.String,
-                          ),
-                        }.withoutNulls,
+                      icon: Icons.receipt_long_outlined,
+                    )
+                  else
+                    ...docs.map(
+                      (d) => ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          '${d.data()['settlementCode'] ?? d.id} · ${d.data()['status']}',
+                          softWrap: true,
+                        ),
+                        subtitle: Text(
+                          '${d.data()['currency']} · ${d.data()['direction']} · '
+                          'driver ${d.data()['driverId']}',
+                          softWrap: true,
+                        ),
+                        onTap: () => context.pushNamed(
+                          AdminSettlementDetailsWidget.routeName,
+                          queryParameters: {
+                            'settlementId': serializeParam(
+                              d.id,
+                              ParamType.String,
+                            ),
+                          }.withoutNulls,
+                        ),
                       ),
                     ),
                 ],

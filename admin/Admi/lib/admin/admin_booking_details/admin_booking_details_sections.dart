@@ -800,10 +800,17 @@ class AdminBookingDetailsPaymentCard extends StatelessWidget {
             label: uiTr(context, 'رسوم التطبيق'),
             value: AdminBookingDetailsView.money(row.commission, sym),
           ),
-        if (row.driverNet > 0)
+        if (row.driverNet != null)
+          AdminBookingDetailsKvRow(
+            label: row.driverNetIsDerived
+                ? uiTr(context, 'صافي المندوب (مشتق)')
+                : uiTr(context, 'صافي المندوب'),
+            value: AdminBookingDetailsView.money(row.driverNet!, sym),
+          )
+        else
           AdminBookingDetailsKvRow(
             label: uiTr(context, 'صافي المندوب'),
-            value: AdminBookingDetailsView.money(row.driverNet, sym),
+            value: '—',
           ),
         if (view.showVat)
           AdminBookingDetailsKvRow(

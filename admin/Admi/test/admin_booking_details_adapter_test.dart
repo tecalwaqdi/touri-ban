@@ -189,23 +189,31 @@ void main() {
       final row = AdminBookingRow.fromOrder(_order({
         'total': 50,
         'total_app': 7.5,
+        'total_vat': 0,
         'total_mndob': 42.5,
         'total_mndob2': 50,
+        'currency': 'SAR',
+        'status_code': 'completed',
+        'PaymentMethod': 'Cash',
       }));
       expect(row.driverNet, 42.5);
       expect(row.commission, 7.5);
       expect(row.amount, 50.0);
     });
 
-    test('preserves fractional platform fee without int rounding', () {
+    test('missing total_mndob derives 42.50 — never uses gross 50', () {
       final row = AdminBookingRow.fromOrder(_order({
         'total': 50.0,
         'total_app': 7.5,
         'total_vat': 0,
-        'total_mndob': 42.5,
+        'currency': 'SAR',
+        'status_code': 'completed',
+        'PaymentMethod': 'Cash',
       }));
       expect(row.commission, 7.5);
       expect(row.commission, isNot(8));
+      expect(row.driverNet, 42.5);
+      expect(row.driverNetIsDerived, isTrue);
     });
   });
 }

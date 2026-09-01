@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/finance_ledger_service.dart';
-import '/core/finance/finance_controls_client.dart';
+import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 
-/// مركز مالي Enterprise: إيرادات، عمولات، أرصدة، سجل عمليات، فواتير.
+/// مركز مالي: نظرة موحدة من محاسبة V2 فقط (عرض — بدون كتابة).
 class AdminFinanceHubWidget extends StatefulWidget {
   const AdminFinanceHubWidget({super.key});
 
@@ -27,7 +28,6 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   late Menu2Model _menu2Model;
   String _period = 'month';
   Future<FinanceHubSnapshot>? _future;
-  Future<Map<String, dynamic>>? _home;
 
   @override
   void initState() {
@@ -42,36 +42,30 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
     super.dispose();
   }
 
-  (DateTime, DateTime, String) _range() {
-    final now = DateTime.now();
+  (AdminDatePreset, String) _preset() {
     switch (_period) {
       case 'day':
-        final from = DateTime(now.year, now.month, now.day);
-        return (from, now, 'ent_period_today');
+        return (AdminDatePreset.today, 'ent_period_today');
       case 'year':
-        final from = DateTime(now.year, 1, 1);
-        return (from, now, 'ent_period_this_year');
+        return (AdminDatePreset.thisYear, 'ent_period_this_year');
       case 'month':
       default:
-        final from = DateTime(now.year, now.month, 1);
-        return (from, now, 'ent_period_this_month');
+        return (AdminDatePreset.thisMonth, 'ent_period_this_month');
     }
   }
 
   void _reload() {
-    final r = _range();
+    final p = _preset();
     setState(() {
       _future = FinanceLedgerService.load(
-        from: r.$1,
-        to: r.$2,
-        periodLabel: r.$3,
+        datePreset: p.$1,
+        periodLabel: p.$2,
       );
-      _home = FinanceControlsClient.accountantHome();
     });
   }
 
-  /// LTR isolate keeps decimals/minus stable under Arabic/Urdu RTL.
-  String _fmt(double v) => '\u2066${v.toStringAsFixed(2)}\u2069';
+  String _money(MoneyAmount? m, String symbol) =>
+      financeHubMoneyLabel(m, symbol);
 
   @override
   Widget build(BuildContext context) {
@@ -81,11 +75,12 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
-      title: appTr(context, 'ent_finance_title'),
+      title: uiTr(context, 'المالية'),
       child: FutureBuilder<FinanceHubSnapshot>(
         future: _future,
         builder: (context, snapshot) {
           return SingleChildScrollView(
+            padding: AdminUi.pagePadding(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -93,188 +88,73 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                   title: uiTr(context, 'المالية'),
                   subtitle: uiTr(
                     context,
-                    'إيرادات الرحلات وعمولة المنصة والضريبة ومستحقات المناديب والتسويات',
+                    'نظرة موحدة على الإيرادات والعمولات وصافي أرباح المناديب والتسويات.',
                   ),
                 ),
+                const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: [
                     AdminPrimaryButton(
-                      label: appTr(context, 'ent_finance_detailed_profits'),
+                      label: uiTr(context, 'التقرير المالي'),
                       outlined: true,
                       icon: Icons.open_in_new_rounded,
                       onPressed: () => context.pushNamed(
                         AdminProfitsWidget.routeName,
                       ),
                     ),
+                    AdminPrimaryButton(
+                      label: uiTr(context, 'التسويات'),
+                      outlined: true,
+                      icon: Icons.receipt_long_outlined,
+                      onPressed: () => context.pushNamed(
+                        AdminSettlementsWidget.routeName,
+                      ),
+                    ),
+                    AdminPrimaryButton(
+                      label: uiTr(context, 'المطابقة'),
+                      outlined: true,
+                      onPressed: () => context.pushNamed(
+                        AdminReconciliationWidget.routeName,
+                      ),
+                    ),
+                    AdminPrimaryButton(
+                      label: uiTr(context, 'الفترات المحاسبية'),
+                      outlined: true,
+                      onPressed: () => context.pushNamed(
+                        AdminFinancialPeriodsWidget.routeName,
+                      ),
+                    ),
+                    AdminPrimaryButton(
+                      label: uiTr(context, 'التقارير المحاسبية'),
+                      outlined: true,
+                      onPressed: () => context.pushNamed(
+                        AdminFinanceReportsWidget.routeName,
+                      ),
+                    ),
+                    AdminPrimaryButton(
+                      label: uiTr(context, 'سجل التدقيق'),
+                      outlined: true,
+                      onPressed: () => context.pushNamed(
+                        AdminFinanceAuditWidget.routeName,
+                      ),
+                    ),
+                    AdminPrimaryButton(
+                      label: uiTr(context, 'المحافظ'),
+                      outlined: true,
+                      onPressed: () => context.pushNamed(
+                        AdminDriverWalletsWidget.routeName,
+                      ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                FutureBuilder<Map<String, dynamic>>(
-                  future: _home,
-                  builder: (context, homeSnap) {
-                    if (!homeSnap.hasData) {
-                      return const SizedBox.shrink();
-                    }
-                    final h = homeSnap.data!;
-                    final today = Map<String, dynamic>.from(h['today'] as Map? ?? {});
-                    final action = Map<String, dynamic>.from(
-                      h['actionRequired'] as Map? ?? {},
-                    );
-                    final dq = Map<String, dynamic>.from(
-                      h['dataQuality'] as Map? ?? {},
-                    );
-                    final exposure = Map<String, dynamic>.from(
-                      h['exposure'] as Map? ?? {},
-                    );
-                    final warnings = (h['warnings'] as List?) ?? [];
-                    final flags = Map<String, dynamic>.from(
-                      h['featureFlags'] as Map? ?? {},
-                    );
-                    final approverOk = h['independentApproverConfigured'] == true;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (!approverOk)
-                          Container(
-                            width: double.infinity,
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: theme.error.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: theme.error),
-                            ),
-                            child: Text(
-                              uiTr(
-                                context,
-                                'Financial pilot blocked: no independent approver configured',
-                              ),
-                              softWrap: true,
-                              style: theme.titleSmall.copyWith(
-                                color: theme.error,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                        Text(uiTr(context, 'Accountant Home'), style: theme.titleMedium),
-                        if (warnings.isNotEmpty) ...[
-                          for (final w in warnings)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 6),
-                              child: AdminStatusBadge(
-                                label: '$w',
-                                tone: AdminBadgeTone.warning,
-                              ),
-                            ),
-                        ],
-                        Text(
-                          uiTr(context, 'Action Required'),
-                          style: theme.titleSmall.copyWith(
-                            color: theme.error,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        Text(
-                          'Pending approvals ${action['settlementsAwaitingApproval']}/${action['paymentsAwaitingConfirmation']} · '
-                          'Critical recon ${action['criticalReconciliation']} · '
-                          'Unallocated ${action['unallocatedPayments']} · '
-                          'Period blockers ${action['periodCloseBlockers']} · '
-                          'Missing statuses ${action['missingStatuses'] ?? dq['missingStatuses']}',
-                          softWrap: true,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(uiTr(context, 'Cash / Online Position'), style: theme.titleSmall),
-                        Text(
-                          'Today completed ${today['newCompletedTrips']} · '
-                          'cash ${today['cashCollectedMinor']} · '
-                          'online ${today['onlineCollectedMinor']}',
-                          softWrap: true,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(uiTr(context, 'Receivables / Payables'), style: theme.titleSmall),
-                        Text('$exposure', softWrap: true),
-                        const SizedBox(height: 8),
-                        Text(uiTr(context, 'Aging'), style: theme.titleSmall),
-                        Text(
-                          uiTr(context, 'See exposure aging buckets above (per currency).'),
-                          softWrap: true,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(uiTr(context, 'Data Quality'), style: theme.titleSmall),
-                        Text(
-                          'Incomplete ${dq['incomplete']} · missing statuses ${dq['missingStatuses']}',
-                          softWrap: true,
-                        ),
-                        Text(
-                          'Flags: settlementWrites=${flags['FINANCIAL_SETTLEMENT_WRITES_ENABLED']} · '
-                          'paymentConfirm=${flags['FINANCIAL_PAYMENT_CONFIRM_ENABLED']} · '
-                          'wallet=${flags['WALLET_SETTLEMENT_ENABLED']} · '
-                          'payout=${flags['AUTOMATIC_PAYOUT_ENABLED']}',
-                          softWrap: true,
-                          style: theme.labelSmall,
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            AdminPrimaryButton(
-                              label: uiTr(context, 'التسويات'),
-                              outlined: true,
-                              icon: Icons.receipt_long_outlined,
-                              onPressed: () => context.pushNamed(
-                                AdminSettlementsWidget.routeName,
-                              ),
-                            ),
-                            AdminPrimaryButton(
-                              label: uiTr(context, 'Reconciliation'),
-                              outlined: true,
-                              onPressed: () => context.pushNamed(
-                                AdminReconciliationWidget.routeName,
-                              ),
-                            ),
-                            AdminPrimaryButton(
-                              label: uiTr(context, 'Periods'),
-                              outlined: true,
-                              onPressed: () => context.pushNamed(
-                                AdminFinancialPeriodsWidget.routeName,
-                              ),
-                            ),
-                            AdminPrimaryButton(
-                              label: uiTr(context, 'Reports'),
-                              outlined: true,
-                              onPressed: () => context.pushNamed(
-                                AdminFinanceReportsWidget.routeName,
-                              ),
-                            ),
-                            AdminPrimaryButton(
-                              label: uiTr(context, 'Finance Audit'),
-                              outlined: true,
-                              onPressed: () => context.pushNamed(
-                                AdminFinanceAuditWidget.routeName,
-                              ),
-                            ),
-                            AdminPrimaryButton(
-                              label: uiTr(context, 'Diagnostics'),
-                              outlined: true,
-                              onPressed: () => context.pushNamed(
-                                AdminDiagnosticsWidget.routeName,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-                    );
-                  },
-                ),
+                const SizedBox(height: 12),
                 AdminFilterBar(
-                  hint: appTr(context, 'ent_period'),
+                  hint: uiTr(context, 'الفترة'),
                   chips: [
                     AdminFilterChip(
-                      label: appTr(context, 'ent_daily'),
+                      label: uiTr(context, 'اليوم'),
                       selected: _period == 'day',
                       onSelected: (_) {
                         _period = 'day';
@@ -282,7 +162,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                       },
                     ),
                     AdminFilterChip(
-                      label: appTr(context, 'ent_monthly'),
+                      label: uiTr(context, 'هذا الشهر'),
                       selected: _period == 'month',
                       onSelected: (_) {
                         _period = 'month';
@@ -290,7 +170,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                       },
                     ),
                     AdminFilterChip(
-                      label: appTr(context, 'ent_yearly'),
+                      label: uiTr(context, 'هذه السنة'),
                       selected: _period == 'year',
                       onSelected: (_) {
                         _period = 'year';
@@ -299,206 +179,246 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                     ),
                   ],
                   trailing: IconButton(
-                    tooltip: appTr(context, 'ent_refresh'),
+                    tooltip: uiTr(context, 'تحديث'),
                     onPressed: _reload,
                     icon: const Icon(Icons.refresh_rounded),
                   ),
                 ),
                 if (!snapshot.hasData && !snapshot.hasError)
                   AdminLoadingState(
-                      label: appTr(context, 'ent_finance_loading'))
+                    label: uiTr(context, 'جاري تحميل البيانات المالية'),
+                  )
                 else if (snapshot.hasError)
                   AdminEmptyState(
-                    title: appTr(context, 'ent_finance_load_failed'),
+                    title: uiTr(context, 'تعذر تحميل المركز المالي'),
                     message: '${snapshot.error}',
                     icon: Icons.error_outline,
                     action: AdminPrimaryButton(
-                      label: appTr(context, 'ent_retry'),
+                      label: uiTr(context, 'إعادة المحاولة'),
                       onPressed: _reload,
                     ),
                   )
-                else ...[
-                  Builder(
-                    builder: (context) {
-                      final data = snapshot.data!;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            appTrFormat(
-                              context,
-                              'ent_period_label',
-                              appTr(context, data.periodLabel),
-                            ),
-                            style: theme.labelLarge.override(
-                              fontFamily: theme.labelLargeFamily,
-                              color: AdminUi.brandTeal,
-                              fontWeight: FontWeight.w700,
-                              useGoogleFonts: !theme.labelLargeIsCustom,
-                            ),
-                          ),
-                          if (data.isApproximate) ...[
-                            const SizedBox(height: 8),
-                            AdminStatusBadge(
-                              label: uiTr(
-                                context,
-                                'Financial data is approximate — financial writes unavailable',
-                              ),
-                              tone: AdminBadgeTone.warning,
-                            ),
-                          ] else ...[
-                            const SizedBox(height: 8),
-                            AdminStatusBadge(
-                              label: uiTr(context, 'بيانات من الخادم'),
-                              tone: AdminBadgeTone.success,
-                            ),
-                          ],
-                          const SizedBox(height: 12),
-                          AdminKpiStrip(
-                            items: [
-                              (
-                                label: appTr(context, 'ent_finance_revenue'),
-                                value: _fmt(data.revenue),
-                                icon: Icons.trending_up_rounded,
-                                color: AdminUi.brandTeal,
-                              ),
-                              (
-                                label: appTr(context, 'ent_finance_app_profit'),
-                                value: _fmt(data.appProfit),
-                                icon: Icons.savings_rounded,
-                                color: const Color(0xFF0F7A4A),
-                              ),
-                              (
-                                label:
-                                    appTr(context, 'ent_finance_commissions'),
-                                value: _fmt(data.commissions),
-                                icon: Icons.payments_rounded,
-                                color: const Color(0xFFB06A00),
-                              ),
-                              (
-                                label: appTr(
-                                    context, 'ent_finance_pending_settlement'),
-                                value: _fmt(data.pendingSettlements),
-                                icon: Icons.hourglass_top_rounded,
-                                color: theme.error,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          AdminContentCard(
-                            title:
-                                appTr(context, 'ent_finance_bookings_summary'),
-                            child: Wrap(
-                              spacing: 12,
-                              runSpacing: 12,
-                              children: [
-                                _chip(
-                                    appTr(context, 'ent_finance_paid'),
-                                    '${data.paidOrders}',
-                                    AdminBadgeTone.success),
-                                _chip(
-                                    appTr(context, 'ent_finance_pending'),
-                                    '${data.pendingOrders}',
-                                    AdminBadgeTone.warning),
-                                _chip(
-                                    appTr(context, 'ent_finance_canceled'),
-                                    '${data.canceledOrders}',
-                                    AdminBadgeTone.danger),
-                                _chip(
-                                  appTr(
-                                      context, 'ent_finance_driver_balances'),
-                                  '${data.driverBalances.length}',
-                                  AdminBadgeTone.info,
-                                ),
-                                _chip(
-                                  appTr(
-                                      context, 'ent_finance_company_balances'),
-                                  '${data.companyBalances.length}',
-                                  AdminBadgeTone.info,
-                                ),
-                                _chip(
-                                  appTr(
-                                      context, 'ent_finance_agent_balances'),
-                                  '${data.agentBalances.length}',
-                                  AdminBadgeTone.info,
-                                ),
-                              ],
-                            ),
-                          ),
-                          AdminDataTable(
-                            emptyTitle: appTr(context, 'ent_finance_no_ops'),
-                            columns: [
-                              AdminTableColumn(
-                                  label: appTr(
-                                      context, 'ent_finance_col_type'),
-                                  flex: 2),
-                              AdminTableColumn(
-                                  label: appTr(
-                                      context, 'ent_finance_col_amount'),
-                                  flex: 2),
-                              AdminTableColumn(
-                                  label: appTr(
-                                      context, 'ent_finance_col_party'),
-                                  flex: 2),
-                              AdminTableColumn(
-                                  label: appTr(
-                                      context, 'ent_finance_col_note'),
-                                  flex: 3),
-                            ],
-                            rows: [
-                              for (final e in data.ledger.take(40))
-                                [
-                                  Text(e.type),
-                                  Text(_fmt(e.amount)),
-                                  Text(e.partyLabel,
-                                      overflow: TextOverflow.ellipsis),
-                                  Text(
-                                    e.note.startsWith('ent_')
-                                        ? appTr(context, e.note)
-                                        : (e.note.isEmpty ? '—' : e.note),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                            ],
-                          ),
-                          AdminContentCard(
-                            title: appTr(context, 'ent_finance_quick_links'),
-                            child: Wrap(
-                              spacing: 10,
-                              runSpacing: 10,
-                              children: [
-                                if (AdminRoleService.canAccessRoute(
-                                  AdminReportsHubWidget.routeName,
-                                ))
-                                  AdminPrimaryButton(
-                                    label: appTr(
-                                        context, 'ent_finance_admin_reports'),
-                                    outlined: true,
-                                    onPressed: () => context.pushNamed(
-                                      AdminReportsHubWidget.routeName,
-                                    ),
-                                  ),
-                                AdminPrimaryButton(
-                                  label:
-                                      appTr(context, 'ent_finance_bookings'),
-                                  outlined: true,
-                                  onPressed: () => context.pushNamed(
-                                    AdminALLhgZWidget.routeName,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ],
+                else
+                  _buildBody(context, theme, snapshot.data!),
               ],
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildBody(
+    BuildContext context,
+    FlutterFlowTheme theme,
+    FinanceHubSnapshot data,
+  ) {
+    final sym = data.currencySymbol;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                appTrFormat(
+                  context,
+                  'ent_period_label',
+                  appTr(context, data.periodLabel),
+                ),
+                style: theme.labelLarge.override(
+                  fontFamily: theme.labelLargeFamily,
+                  color: AdminUi.brandTeal,
+                  fontWeight: FontWeight.w700,
+                  useGoogleFonts: !theme.labelLargeIsCustom,
+                ),
+              ),
+            ),
+            Tooltip(
+              message: uiTr(
+                context,
+                'الأرقام المعروضة للمحصّل والمؤهل للتسوية فقط. الرحلات المكتملة بانتظار إثبات التحصيل تُعرض كعدد منفصل.',
+              ),
+              child: AdminStatusBadge(
+                label: data.isApproximate
+                    ? uiTr(context, 'مصدر تقريبي (مسح عميل)')
+                    : uiTr(context, 'المصدر: المحاسبة V2'),
+                tone: data.isApproximate
+                    ? AdminBadgeTone.warning
+                    : AdminBadgeTone.success,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        AdminKpiStrip(
+          items: [
+            (
+              label: uiTr(context, 'إجمالي المحصّل'),
+              value: _money(data.collectedTripValue, sym),
+              icon: Icons.trending_up_rounded,
+              color: AdminUi.brandTeal,
+            ),
+            (
+              label: uiTr(context, 'عمولة الشركة'),
+              value: _money(data.platformFees, sym),
+              icon: Icons.savings_rounded,
+              color: const Color(0xFF0F7A4A),
+            ),
+            (
+              label: uiTr(context, 'ضريبة القيمة المضافة'),
+              value: _money(data.recordedVat, sym),
+              icon: Icons.receipt_outlined,
+              color: const Color(0xFF5B6B7A),
+            ),
+            (
+              label: uiTr(context, 'صافي أرباح المناديب'),
+              value: _money(data.driverNet, sym),
+              icon: Icons.payments_rounded,
+              color: const Color(0xFFB06A00),
+            ),
+            (
+              label: uiTr(context, 'المستحق المؤهل للتسوية'),
+              value: _money(data.settlementEligibleDue, sym),
+              icon: Icons.account_balance_rounded,
+              color: theme.error,
+            ),
+            (
+              label: uiTr(context, 'مستحق للمناديب'),
+              value: _money(data.companyOwesDrivers, sym),
+              icon: Icons.outbound_rounded,
+              color: const Color(0xFF2F6FED),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        AdminContentCard(
+          title: uiTr(context, 'حالة التحصيل والتسوية'),
+          child: Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              _chip(
+                uiTr(context, 'محصّل ومكتمل'),
+                '${data.completedAndCollected}',
+                AdminBadgeTone.success,
+              ),
+              _chip(
+                uiTr(context, 'رحلات نقدية بانتظار إثبات التحصيل'),
+                '${data.completedButNotCollected}',
+                AdminBadgeTone.warning,
+              ),
+              _chip(
+                uiTr(context, 'بانتظار الدفع'),
+                '${data.pendingPayment}',
+                AdminBadgeTone.info,
+              ),
+              _chip(
+                uiTr(context, 'ملغى / منتهي'),
+                '${data.cancelledOrExpired}',
+                AdminBadgeTone.danger,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          uiTr(
+            context,
+            'المستحق المؤهل للتسوية يعتمد على الرحلات المحصّلة فقط. لا يُحسب إجمالي الرحلات غير المحصّلة كمستحق دفتر.',
+          ),
+          softWrap: true,
+          style: theme.labelSmall,
+        ),
+        const SizedBox(height: 16),
+        AdminContentCard(
+          title: uiTr(context, 'أرصدة المحافظ (دفتر منفصل)'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                uiTr(
+                  context,
+                  'رصيد المحفظة ليس صافي أرباح الرحلات. المحفظة دفتر منفصل عن محاسبة الرحلات والتسويات.',
+                ),
+                softWrap: true,
+                style: theme.bodySmall,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${uiTr(context, 'محافظ محمّلة')}: ${data.driverBalances.length}',
+                style: theme.titleSmall,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        AdminDataTable(
+          emptyTitle: uiTr(context, 'لا توجد عمليات محفظة حديثة'),
+          columns: [
+            AdminTableColumn(
+              label: uiTr(context, 'النوع'),
+              flex: 2,
+            ),
+            AdminTableColumn(
+              label: uiTr(context, 'المبلغ'),
+              flex: 2,
+            ),
+            AdminTableColumn(
+              label: uiTr(context, 'الطرف'),
+              flex: 2,
+            ),
+            AdminTableColumn(
+              label: uiTr(context, 'ملاحظة'),
+              flex: 3,
+            ),
+          ],
+          rows: [
+            for (final e in data.ledger.take(40))
+              [
+                Text(e.type),
+                Text(_money(
+                  MoneyAmount.fromMajor(data.primaryCurrency, e.amount),
+                  sym,
+                )),
+                Text(e.partyLabel, overflow: TextOverflow.ellipsis),
+                Text(
+                  e.note.startsWith('ent_')
+                      ? appTr(context, e.note)
+                      : (e.note.isEmpty ? '—' : e.note),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+          ],
+        ),
+        const SizedBox(height: 12),
+        AdminContentCard(
+          title: uiTr(context, 'روابط سريعة'),
+          child: Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              if (AdminRoleService.canAccessRoute(
+                AdminReportsHubWidget.routeName,
+              ))
+                AdminPrimaryButton(
+                  label: uiTr(context, 'التقارير التشغيلية'),
+                  outlined: true,
+                  onPressed: () => context.pushNamed(
+                    AdminReportsHubWidget.routeName,
+                  ),
+                ),
+              AdminPrimaryButton(
+                label: uiTr(context, 'الحجوزات'),
+                outlined: true,
+                onPressed: () => context.pushNamed(
+                  AdminALLhgZWidget.routeName,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

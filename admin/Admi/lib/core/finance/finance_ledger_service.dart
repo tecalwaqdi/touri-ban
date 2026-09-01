@@ -1,45 +1,70 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '/backend/admin_country_scope.dart';
-import '/backend/admin_role_service.dart';
-import '/backend/schema/order_record.dart';
-import '/core/cloud_functions/cloud_functions_client.dart';
+import '/backend/admin_ops_filters.dart';
+import '/backend/financial_accounting_loader.dart';
+import '/core/admin_currency.dart';
+import '/core/finance/admin_money_presentation.dart';
 import '/core/finance/finance_runtime_gate.dart';
-import '/core/finance/financial_engine.dart';
+import '/core/finance/financial_accounting_engine.dart';
+import '/core/finance/money_amount.dart';
 
-/// Aggregated finance snapshot for the Enterprise Finance Hub.
+/// Aggregated finance snapshot for the Enterprise Finance Hub (V2 only).
 class FinanceHubSnapshot {
   const FinanceHubSnapshot({
-    required this.revenue,
-    required this.appProfit,
-    required this.commissions,
-    required this.pendingSettlements,
-    required this.paidOrders,
-    required this.pendingOrders,
-    required this.canceledOrders,
-    required this.driverBalances,
-    required this.companyBalances,
-    required this.agentBalances,
-    required this.ledger,
+    required this.primaryCurrency,
+    required this.collectedTripValue,
+    required this.platformFees,
+    required this.recordedVat,
+    required this.driverNet,
+    required this.settlementEligibleDue,
+    required this.companyOwesDrivers,
+    required this.completedAndCollected,
+    required this.completedButNotCollected,
+    required this.cancelledOrExpired,
+    required this.pendingPayment,
+    required this.totalsSource,
     required this.periodLabel,
+    required this.driverBalances,
+    required this.ledger,
     this.isApproximate = false,
   });
 
-  final double revenue;
-  final double appProfit;
-  final double commissions;
-  final double pendingSettlements;
-  final int paidOrders;
-  final int pendingOrders;
-  final int canceledOrders;
-  final Map<String, double> driverBalances;
-  final Map<String, double> companyBalances;
-  final Map<String, double> agentBalances;
-  final List<FinanceLedgerEntry> ledger;
-  final String periodLabel;
+  final String primaryCurrency;
 
-  /// True when KPIs came from a client sample fallback (not CF aggregates).
+  /// Realized collected trip value (V2 customerPaidAll — collected only).
+  final MoneyAmount collectedTripValue;
+
+  /// Realized platform fees on collected trips.
+  final MoneyAmount platformFees;
+
+  /// Recorded VAT on collected trips.
+  final MoneyAmount recordedVat;
+
+  /// Driver net on collected trips.
+  final MoneyAmount driverNet;
+
+  /// Settlement-eligible cash position (drivers owe company).
+  final MoneyAmount settlementEligibleDue;
+
+  /// Company owes drivers (cash + online entitlements owed).
+  final MoneyAmount companyOwesDrivers;
+
+  final int completedAndCollected;
+  final int completedButNotCollected;
+  final int cancelledOrExpired;
+  final int pendingPayment;
+
+  /// `server_v2` | `client_full`
+  final String totalsSource;
+  final String periodLabel;
+  final Map<String, double> driverBalances;
+  final List<FinanceLedgerEntry> ledger;
+
+  /// True when KPIs came from client full-scan fallback.
   final bool isApproximate;
+
+  String get currencySymbol =>
+      AdminCurrency.symbolByCode[primaryCurrency] ?? primaryCurrency;
 }
 
 class FinanceLedgerEntry {
@@ -62,58 +87,67 @@ class FinanceLedgerEntry {
   final String note;
 }
 
-/// Builds finance hub views from server aggregates + real wallet/ledger docs.
+/// Builds Finance Hub views from canonical Financial Accounting V2 only.
+///
+/// Does not call legacy `aggregateFinancialSummary` / [FinancialEngine].
 abstract final class FinanceLedgerService {
   FinanceLedgerService._();
 
   static Future<FinanceHubSnapshot> load({
-    required DateTime from,
-    required DateTime to,
+    required AdminDatePreset datePreset,
     String periodLabel = '',
   }) async {
-    Map<String, dynamic>? remote;
-    try {
-      remote = await CloudFunctionsClient.aggregateFinancialSummary(
-        countryPath: AdminCountryScope.activeCountryRef?.path,
-        periodStart: from,
-      );
-    } catch (_) {
-      remote = null;
-    }
+    final filter = FinancialReportFilter(datePreset: datePreset);
+    final result = await FinancialAccountingLoader.load(filter);
+
+    final byCurrency = result.byCurrency;
+    final primary = _pickPrimaryCurrency(byCurrency);
+    final t = byCurrency[primary] ?? FinancialCurrencyTotals(currency: primary);
+
+    final eligibleDue = t.cashDriversOweCompany;
+    final owesDrivers = MoneyAmount(
+      currency: primary,
+      minorUnits: t.cashCompanyOwesDrivers.minorUnits +
+          t.onlineCompanyOwesDrivers.minorUnits,
+    );
+
+    final approximate = result.totalsSource == 'client_full';
+    FinanceRuntimeGate.setAuthoritativeBackendData(!approximate);
 
     final driverBal = await _loadWalletBalances();
     final ledger = await _loadTransactionLedger();
 
-    if (remote != null) {
-      FinanceRuntimeGate.setAuthoritativeBackendData(true);
-      return FinanceHubSnapshot(
-        revenue: (remote['totalSales'] as num?)?.toDouble() ?? 0,
-        appProfit: (remote['appProfit'] as num?)?.toDouble() ?? 0,
-        commissions: (remote['repCommission'] as num?)?.toDouble() ?? 0,
-        pendingSettlements:
-            (remote['pendingSettlements'] as num?)?.toDouble() ?? 0,
-        // Cloud Functions may return doubles (e.g. 67.5); never cast with `as int`.
-        paidOrders: (remote['paidCount'] as num?)?.round() ?? 0,
-        pendingOrders: (remote['pendingCount'] as num?)?.round() ?? 0,
-        canceledOrders: (remote['canceledCount'] as num?)?.round() ?? 0,
-        driverBalances: driverBal,
-        companyBalances: const {},
-        agentBalances: const {},
-        ledger: ledger,
-        periodLabel: periodLabel,
-        isApproximate: false,
-      );
-    }
-
-    // Fallback: limited client sample — marked approximate in UI.
-    FinanceRuntimeGate.setAuthoritativeBackendData(false);
-    return _loadApproximateFromOrders(
-      from: from,
-      to: to,
+    return FinanceHubSnapshot(
+      primaryCurrency: primary,
+      collectedTripValue: t.customerPaidAll,
+      platformFees: t.platformFeeAll,
+      recordedVat: t.recordedVatAll,
+      driverNet: t.driverEntitlementAll,
+      settlementEligibleDue: eligibleDue,
+      companyOwesDrivers: owesDrivers,
+      completedAndCollected: t.completedAndCollected,
+      completedButNotCollected: t.completedButNotCollected,
+      cancelledOrExpired: t.cancelledOrExpired,
+      pendingPayment: t.pendingPayment,
+      totalsSource: result.totalsSource,
       periodLabel: periodLabel,
       driverBalances: driverBal,
       ledger: ledger,
+      isApproximate: approximate,
     );
+  }
+
+  static String _pickPrimaryCurrency(
+    Map<String, FinancialCurrencyTotals> byCurrency,
+  ) {
+    if (byCurrency.isEmpty) return 'SAR';
+    if (byCurrency.containsKey('SAR')) return 'SAR';
+    final entries = byCurrency.entries.toList()
+      ..sort(
+        (a, b) => b.value.customerPaidAll.minorUnits
+            .compareTo(a.value.customerPaidAll.minorUnits),
+      );
+    return entries.first.key;
   }
 
   static Future<Map<String, double>> _loadWalletBalances() async {
@@ -164,100 +198,8 @@ abstract final class FinanceLedgerService {
       return const [];
     }
   }
-
-  static Future<FinanceHubSnapshot> _loadApproximateFromOrders({
-    required DateTime from,
-    required DateTime to,
-    required String periodLabel,
-    required Map<String, double> driverBalances,
-    required List<FinanceLedgerEntry> ledger,
-  }) async {
-    QuerySnapshot<Map<String, dynamic>> snap;
-    try {
-      snap = await FirebaseFirestore.instance
-          .collection('order')
-          .orderBy('data_order', descending: true)
-          .limit(120)
-          .get();
-    } catch (_) {
-      snap = await FirebaseFirestore.instance.collection('order').limit(80).get();
-    }
-
-    final country = AdminCountryScope.activeCountryRef;
-    final orders = snap.docs
-        .map((d) => OrderRecord.fromSnapshot(d))
-        .where((o) {
-          final t = o.dataOrder;
-          if (t == null) return true;
-          return !t.isBefore(from) && !t.isAfter(to);
-        })
-        .where((o) {
-          if (country == null) return true;
-          if (!AdminRoleService.isCountryAgent &&
-              !AdminCountryScope.hasActiveCountryScope) {
-            return true;
-          }
-          final rev = o.snapshotData['Rev_dolh'];
-          if (rev is DocumentReference) return rev.path == country.path;
-          return true;
-        })
-        .toList();
-
-    double revenue = 0;
-    double appProfit = 0;
-    double commissions = 0;
-    double pending = 0;
-    var paid = 0;
-    var pendingCount = 0;
-    var canceled = 0;
-    final fallbackLedger = <FinanceLedgerEntry>[...ledger];
-
-    for (final order in orders) {
-      final econ = FinancialEngine.orderFinancials(order);
-      if (OrderStatusHelper.isCanceled(order)) {
-        canceled++;
-        continue;
-      }
-      if (OrderStatusHelper.isPaid(order)) {
-        paid++;
-        revenue += econ.totalSales;
-        appProfit += econ.appProfit;
-        commissions += econ.repCommission;
-        if (fallbackLedger.length < 80) {
-          fallbackLedger.add(
-            FinanceLedgerEntry(
-              id: order.reference.id,
-              type: 'revenue',
-              amount: econ.totalSales,
-              partyLabel: order.mndobUser?.id ?? order.reference.id,
-              createdAt: order.dataOrder,
-              orderPath: order.reference.path,
-              note: 'ent_ledger_revenue',
-            ),
-          );
-        }
-      } else if (OrderStatusHelper.isPending(order)) {
-        pendingCount++;
-        pending += econ.totalSales > 0
-            ? econ.totalSales
-            : order.total.toDouble();
-      }
-    }
-
-    return FinanceHubSnapshot(
-      revenue: revenue,
-      appProfit: appProfit,
-      commissions: commissions,
-      pendingSettlements: pending,
-      paidOrders: paid,
-      pendingOrders: pendingCount,
-      canceledOrders: canceled,
-      driverBalances: driverBalances,
-      companyBalances: const {},
-      agentBalances: const {},
-      ledger: fallbackLedger,
-      periodLabel: periodLabel,
-      isApproximate: true,
-    );
-  }
 }
+
+/// Shared Hub money label helper (presentation only).
+String financeHubMoneyLabel(MoneyAmount? m, String symbol) =>
+    AdminOrderMoneyDisplay.formatMoneyAmount(m, symbolOverride: symbol);
