@@ -146,19 +146,19 @@ class OrderRecord extends FirestoreRecord {
   int get norder => _norder ?? 0;
   bool hasNorder() => _norder != null;
 
-  // "total_mndob" field.
-  int? _totalMndob;
-  int get totalMndob => _totalMndob ?? 0;
+  // "total_mndob" field — Driver Net (SAR major). Keep fractional (e.g. 42.50).
+  double? _totalMndob;
+  double get totalMndob => _totalMndob ?? 0;
   bool hasTotalMndob() => _totalMndob != null;
 
-  // "total_vat" field.
-  int? _totalVat;
-  int get totalVat => _totalVat ?? 0;
+  // "total_vat" field — Recorded VAT (SAR major). Keep fractional.
+  double? _totalVat;
+  double get totalVat => _totalVat ?? 0;
   bool hasTotalVat() => _totalVat != null;
 
-  // "total_app" field.
-  int? _totalApp;
-  int get totalApp => _totalApp ?? 0;
+  // "total_app" field — Platform fee (SAR major). Keep fractional (e.g. 7.50).
+  double? _totalApp;
+  double get totalApp => _totalApp ?? 0;
   bool hasTotalApp() => _totalApp != null;
 
   // "halh_order" field.
@@ -214,9 +214,9 @@ class OrderRecord extends FirestoreRecord {
   String get idMoyser => paymentGatewayOrderId;
   bool hasIdMoyser() => hasNgeniusOrderId() || _idMoyser != null;
 
-  // "total_mndob2" field.
-  int? _totalMndob2;
-  int get totalMndob2 => _totalMndob2 ?? 0;
+  // "total_mndob2" field — Gross base fare (SAR major). Keep fractional.
+  double? _totalMndob2;
+  double get totalMndob2 => _totalMndob2 ?? 0;
   bool hasTotalMndob2() => _totalMndob2 != null;
 
   void _initializeFields() {
@@ -251,9 +251,9 @@ class OrderRecord extends FirestoreRecord {
     _halh = snapshotData['halh'] as String?;
     _iDorder = snapshotData['IDorder'] as String?;
     _norder = castToType<int>(snapshotData['norder']);
-    _totalMndob = castToType<int>(snapshotData['total_mndob']);
-    _totalVat = castToType<int>(snapshotData['total_vat']);
-    _totalApp = castToType<int>(snapshotData['total_app']);
+    _totalMndob = castToType<double>(snapshotData['total_mndob']);
+    _totalVat = castToType<double>(snapshotData['total_vat']);
+    _totalApp = castToType<double>(snapshotData['total_app']);
     _halhOrder = snapshotData['halh_order'] is Halh
         ? snapshotData['halh_order']
         : deserializeEnum<Halh>(snapshotData['halh_order']);
@@ -269,7 +269,7 @@ class OrderRecord extends FirestoreRecord {
     _ngeniusOrderId = (snapshotData['ngeniusOrderId'] ?? snapshotData['idMoyser'])
         as String?;
     _idMoyser = snapshotData['idMoyser'] as String?;
-    _totalMndob2 = castToType<int>(snapshotData['total_mndob2']);
+    _totalMndob2 = castToType<double>(snapshotData['total_mndob2']);
   }
 
   static CollectionReference get collection =>
@@ -329,9 +329,9 @@ Map<String, dynamic> createOrderRecordData({
   String? halh,
   String? iDorder,
   int? norder,
-  int? totalMndob,
-  int? totalVat,
-  int? totalApp,
+  double? totalMndob,
+  double? totalVat,
+  double? totalApp,
   Halh? halhOrder,
   DateTime? schedule,
   String? fullSchedule,
@@ -341,7 +341,7 @@ Map<String, dynamic> createOrderRecordData({
   LatLng? mapuser,
   PaymentMethod? paymentMethod,
   String? ngeniusOrderId,
-  int? totalMndob2,
+  double? totalMndob2,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{

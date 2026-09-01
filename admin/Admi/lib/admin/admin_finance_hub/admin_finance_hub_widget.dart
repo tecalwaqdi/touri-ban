@@ -90,8 +90,11 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 AdminPageHeader(
-                  title: appTr(context, 'ent_finance_title'),
-                  subtitle: appTr(context, 'ent_finance_subtitle'),
+                  title: uiTr(context, 'المالية'),
+                  subtitle: uiTr(
+                    context,
+                    'إيرادات الرحلات وعمولة المنصة والضريبة ومستحقات المناديب والتسويات',
+                  ),
                 ),
                 Wrap(
                   spacing: 8,

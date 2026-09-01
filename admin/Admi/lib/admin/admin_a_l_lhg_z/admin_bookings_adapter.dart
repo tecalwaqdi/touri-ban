@@ -100,10 +100,12 @@ class AdminBookingRow {
         _str(data['car_plate']),
       ]),
       amount: order.total,
-      commission: order.totalApp.toDouble(),
-      driverNet: order.hasTotalMndob2()
-          ? order.totalMndob2.toDouble()
-          : order.totalMndob.toDouble(),
+      // Canonical: total_app = platform fee; total_mndob = driver net.
+      // Never prefer total_mndob2 here — that field is gross base fare.
+      commission: order.totalApp,
+      driverNet: order.hasTotalMndob()
+          ? order.totalMndob
+          : order.totalMndob2,
       currencySymbol: AdminCurrency.displaySymbolForOrder(order),
       paymentLabel: _paymentLabel(order),
       createdAt: order.dataOrder ?? _asDate(data['createdAt']),

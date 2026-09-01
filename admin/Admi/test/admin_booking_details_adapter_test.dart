@@ -49,8 +49,9 @@ void main() {
         'IDorder': 'CASH-ABC123',
         'status_code': TourySystemStatusCodes.completed,
         'total': 50.0,
-        'total_app': 8,
-        'total_mndob2': 42,
+        'total_app': 7.5,
+        'total_mndob': 42.5,
+        'total_mndob2': 50.0,
         'total_vat': 0,
         'naim_user_text': 'شاكر',
         'phone_numper': 555075548,
@@ -62,8 +63,8 @@ void main() {
 
       expect(view.row.orderId, 'CASH-ABC123');
       expect(view.row.amount, 50.0);
-      expect(view.row.commission, 8.0);
-      expect(view.row.driverNet, 42.0);
+      expect(view.row.commission, 7.5);
+      expect(view.row.driverNet, 42.5);
       expect(view.showVat, isFalse);
       expect(view.row.statusLabel, 'مكتملة');
     });
@@ -184,15 +185,27 @@ void main() {
   });
 
   group('AdminBookingRow financial invariant', () {
-    test('driver net prefers total_mndob2 when set', () {
+    test('driver net prefers total_mndob (not gross total_mndob2)', () {
       final row = AdminBookingRow.fromOrder(_order({
         'total': 50,
-        'total_app': 8,
-        'total_mndob': 40,
-        'total_mndob2': 42,
+        'total_app': 7.5,
+        'total_mndob': 42.5,
+        'total_mndob2': 50,
       }));
-      expect(row.driverNet, 42.0);
-      expect(row.commission, 8.0);
+      expect(row.driverNet, 42.5);
+      expect(row.commission, 7.5);
+      expect(row.amount, 50.0);
+    });
+
+    test('preserves fractional platform fee without int rounding', () {
+      final row = AdminBookingRow.fromOrder(_order({
+        'total': 50.0,
+        'total_app': 7.5,
+        'total_vat': 0,
+        'total_mndob': 42.5,
+      }));
+      expect(row.commission, 7.5);
+      expect(row.commission, isNot(8));
     });
   });
 }
