@@ -147,19 +147,19 @@ class OrderRecord extends FirestoreRecord {
   int get norder => _norder ?? 0;
   bool hasNorder() => _norder != null;
 
-  // "total_mndob" field.
-  int? _totalMndob;
-  int get totalMndob => _totalMndob ?? 0;
+  // "total_mndob" field — Driver Net (SAR major).
+  double? _totalMndob;
+  double get totalMndob => _totalMndob ?? 0;
   bool hasTotalMndob() => _totalMndob != null;
 
-  // "total_vat" field.
-  int? _totalVat;
-  int get totalVat => _totalVat ?? 0;
+  // "total_vat" field — Recorded VAT (SAR major).
+  double? _totalVat;
+  double get totalVat => _totalVat ?? 0;
   bool hasTotalVat() => _totalVat != null;
 
-  // "total_app" field.
-  int? _totalApp;
-  int get totalApp => _totalApp ?? 0;
+  // "total_app" field — Platform fee (SAR major).
+  double? _totalApp;
+  double get totalApp => _totalApp ?? 0;
   bool hasTotalApp() => _totalApp != null;
 
   // "halh_order" field.
@@ -324,9 +324,9 @@ class OrderRecord extends FirestoreRecord {
     _halh = castToType<String>(snapshotData['halh']);
     _iDorder = castToType<String>(snapshotData['IDorder']);
     _norder = castToType<int>(snapshotData['norder']);
-    _totalMndob = castToType<int>(snapshotData['total_mndob']);
-    _totalVat = castToType<int>(snapshotData['total_vat']);
-    _totalApp = castToType<int>(snapshotData['total_app']);
+    _totalMndob = castToType<double>(snapshotData['total_mndob']);
+    _totalVat = castToType<double>(snapshotData['total_vat']);
+    _totalApp = castToType<double>(snapshotData['total_app']);
     _halhOrder = snapshotData['halh_order'] is Halh
         ? snapshotData['halh_order']
         : deserializeEnum<Halh>(castToType<String>(snapshotData['halh_order']));

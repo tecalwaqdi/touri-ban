@@ -22,8 +22,8 @@ class OrderRecord extends FirestoreRecord {
   bool hasRhlh() => _rhlh != null;
 
   // "total" field.
-  int? _total;
-  int get total => _total ?? 0;
+  double? _total;
+  double get total => _total ?? 0;
   bool hasTotal() => _total != null;
 
   // "USER" field.
@@ -167,14 +167,14 @@ class OrderRecord extends FirestoreRecord {
   String get imgProfileClent => _imgProfileClent ?? '';
   bool hasImgProfileClent() => _imgProfileClent != null;
 
-  // "total_mndob" field.
-  int? _totalMndob;
-  int get totalMndob => _totalMndob ?? 0;
+  // "total_mndob" field — Driver Net (SAR major).
+  double? _totalMndob;
+  double get totalMndob => _totalMndob ?? 0;
   bool hasTotalMndob() => _totalMndob != null;
 
-  // "total_app" field.
-  int? _totalApp;
-  int get totalApp => _totalApp ?? 0;
+  // "total_app" field — Platform fee (SAR major).
+  double? _totalApp;
+  double get totalApp => _totalApp ?? 0;
   bool hasTotalApp() => _totalApp != null;
 
   // "loceshStreng" field.
@@ -192,9 +192,9 @@ class OrderRecord extends FirestoreRecord {
   bool get allnow => _allnow ?? false;
   bool hasAllnow() => _allnow != null;
 
-  // "total_vat" field.
-  int? _totalVat;
-  int get totalVat => _totalVat ?? 0;
+  // "total_vat" field — Recorded VAT (SAR major).
+  double? _totalVat;
+  double get totalVat => _totalVat ?? 0;
   bool hasTotalVat() => _totalVat != null;
 
   // "DATEEND" field.
@@ -279,7 +279,7 @@ class OrderRecord extends FirestoreRecord {
 
   void _initializeFields() {
     _rhlh = getDataList(snapshotData['rhlh']);
-    _total = castToType<int>(snapshotData['total']);
+    _total = castToType<double>(snapshotData['total']);
     _user = snapshotData['USER'] as DocumentReference?;
     _mndobUser = snapshotData['mndob_user'] as DocumentReference?;
     _halhText = snapshotData['halh_text'] as String?;
@@ -314,12 +314,12 @@ class OrderRecord extends FirestoreRecord {
     _dropoffTimestamp = snapshotData['dropoffTimestamp'] as String?;
     _start = snapshotData['START'] as DateTime?;
     _imgProfileClent = snapshotData['imgProfileClent'] as String?;
-    _totalMndob = castToType<int>(snapshotData['total_mndob']);
-    _totalApp = castToType<int>(snapshotData['total_app']);
+    _totalMndob = castToType<double>(snapshotData['total_mndob']);
+    _totalApp = castToType<double>(snapshotData['total_app']);
     _loceshStreng = snapshotData['loceshStreng'] as String?;
     _lokeshn = snapshotData['LOKESHN'] as LatLng?;
     _allnow = snapshotData['ALLNOW'] as bool?;
-    _totalVat = castToType<int>(snapshotData['total_vat']);
+    _totalVat = castToType<double>(snapshotData['total_vat']);
     _dateend = snapshotData['DATEEND'] as DateTime?;
     _activeOrder = snapshotData['ActiveOrder'] as bool?;
     _totalMndob2 = castToType<double>(snapshotData['total_mndob2']);
@@ -404,12 +404,12 @@ Map<String, dynamic> createOrderRecordData({
   String? dropoffTimestamp,
   DateTime? start,
   String? imgProfileClent,
-  int? totalMndob,
-  int? totalApp,
+  double? totalMndob,
+  double? totalApp,
   String? loceshStreng,
   LatLng? lokeshn,
   bool? allnow,
-  int? totalVat,
+  double? totalVat,
   DateTime? dateend,
   bool? activeOrder,
   double? totalMndob2,

@@ -77,7 +77,7 @@ class DriverDailyStatsCard extends StatelessWidget {
               Expanded(
                 child: _StatTile(
                   label: driverTr(context, "Today's earnings"),
-                  value: stats.earningsToday.toString(),
+                  value: stats.earningsTodayLabel,
                   icon: Icons.payments_outlined,
                   color: colors.primaryStrong,
                 ),

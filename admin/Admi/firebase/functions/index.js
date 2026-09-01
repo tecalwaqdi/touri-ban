@@ -1106,9 +1106,29 @@ exports.requestExistingPaymentAllocationV2 = functions
 // Driver Registration V2 (shared Firebase project) — also exported from
 // ara_oatan_app; keep both deployable without losing callables.
 const driverRegistrationV2 = require('./driver_registration_v2.js');
+const driverFinancialSummaryV2 = require('./driver_financial_summary_v2.js');
 exports.submitDriverApplicationV2 = functions
   .region('us-central1')
   .https.onCall(driverRegistrationV2.submitDriverApplicationV2);
 exports.reviewDriverApplicationV2 = functions
   .region('us-central1')
   .https.onCall(driverRegistrationV2.reviewDriverApplicationV2);
+
+// Driver app — read-only financial summary (completed trips only).
+exports.getDriverFinancialSummaryV2 = functions
+  .region('us-central1')
+  .runWith({timeoutSeconds: 60, memory: '256MB'})
+  .https.onCall(async (data, context) => {
+    try {
+      return await driverFinancialSummaryV2.getDriverFinancialSummaryV2({
+        db,
+        auth: context.auth,
+        data: data || {},
+      });
+    } catch (e) {
+      const code = e.code === 'permission-denied' || e.code === 'unauthenticated'
+        ? e.code
+        : 'internal';
+      throw new functions.https.HttpsError(code, e.message || 'Summary failed');
+    }
+  });

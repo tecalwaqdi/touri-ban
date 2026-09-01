@@ -60,31 +60,29 @@ double? addnsbh(int? sum) {
   }
 }
 
-int? vat(
+double? vat(
   double? nesbh,
-  int? sum,
+  num? sum,
 ) {
-  // نسبة من المجموع الكلي
+  // Percent of total — preserve fractional SAR (e.g. 7.50 not 7 or 8).
   if (nesbh == null || sum == null || nesbh <= 0 || sum <= 0) {
     return null;
   }
-
-  double vatAmount = (nesbh / 100) * sum;
-  return vatAmount.toInt();
+  return (nesbh / 100) * sum.toDouble();
 }
 
-int? nesbhmnrgmen(
-  int? sum1,
-  int? sum2,
-  int? nesbh,
+/// Alias kept for explicit fractional reads in checkout widgets.
+double? vatAmount(double? nesbh, num? sum) => vat(nesbh, sum);
+
+double? nesbhmnrgmen(
+  num? sum1,
+  num? sum2,
+  num? nesbh,
 ) {
-  //  النسبة المئوية من خلال جميع رقمين
   if (sum1 != null && sum2 != null && nesbh != null) {
-    double result = (nesbh * (sum1 + sum2)) / 100;
-    return result.round();
-  } else {
-    return null;
+    return (nesbh.toDouble() * (sum1.toDouble() + sum2.toDouble())) / 100;
   }
+  return null;
 }
 
 double? totalAll(

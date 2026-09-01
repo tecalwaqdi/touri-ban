@@ -101,12 +101,12 @@ TouryPriceQuote touryRecalculateCheckoutPrice([FFAppState? state]) {
   );
 
   app.update(() {
-    app.TOTALmndob2 = (quote.baseFareHalalas / 100).round();
-    app.totalapp2 = (quote.appFeeHalalas / 100).round();
-    app.vat2 = (quote.vatHalalas / 100).round();
+    app.TOTALmndob2 = quote.baseFareHalalas / 100;
+    app.totalapp2 = quote.appFeeHalalas / 100;
+    app.vat2 = quote.vatHalalas / 100;
     app.totalKsm2 = quote.discountSar;
     app.totalmndob3 = quote.driverNetSar;
-    app.totalAllNow2 = (quote.customerTotalHalalas / 100).round();
+    app.totalAllNow2 = quote.customerTotalHalalas / 100;
     app.totalAllnow3 = quote.customerTotalSar;
   });
   return quote;

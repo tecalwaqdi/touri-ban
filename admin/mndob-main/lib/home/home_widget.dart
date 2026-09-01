@@ -4,6 +4,7 @@ import '/components/driver_order_stat_card.dart';
 import '/core/driver_daily_stats_service.dart';
 import '/core/driver_design_system.dart';
 import '/core/driver_dialogs.dart';
+import '/core/driver_financial_summary_service.dart';
 import '/core/driver_legacy_field_compat.dart';
 import '/core/driver_order_match.dart';
 import '/core/driver_eligibility_service.dart';
@@ -58,11 +59,13 @@ class _HomeWidgetState extends State<HomeWidget> {
   late HomeModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  Future<DriverFinancialSummaryResult>? _financeFuture;
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => HomeModel());
+    _reloadFinance();
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
@@ -76,6 +79,12 @@ class _HomeWidgetState extends State<HomeWidget> {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  void _reloadFinance() {
+    setState(() {
+      _financeFuture = DriverFinancialSummaryService.load(forceRefresh: true);
+    });
   }
 
   @override
@@ -565,19 +574,118 @@ class _HomeWidgetState extends State<HomeWidget> {
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                                AuthUserStreamWidget(
-                                  builder: (context) => _FinanceMetricTile(
-                                    label: FFLocalizations.of(context).getText(
-                                      '5w1bmqit' /* Total Earnings */,
-                                    ),
-                                    value: valueOrDefault(
-                                            currentUserDocument?.totalMndob, 0)
-                                        .toString(),
-                                    valueColor: context.dsColors.success,
-                                    background: context.dsColors.success
-                                        .withValues(alpha: 0.08),
-                                    icon: Icons.trending_up_rounded,
-                                  ),
+                                FutureBuilder<DriverFinancialSummaryResult>(
+                                  future: _financeFuture,
+                                  builder: (context, finSnap) {
+                                    if (finSnap.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: DsSpacing.sm,
+                                        ),
+                                        child: Center(child: DsLoading()),
+                                      );
+                                    }
+                                    final fin = finSnap.data;
+                                    if (fin == null || !fin.ok || fin.summary == null) {
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          Text(
+                                            driverTr(
+                                              context,
+                                              'Finance data unavailable',
+                                            ),
+                                            style: context.dsTypography.bodyMedium,
+                                          ),
+                                          DsButton.secondary(
+                                            label: driverTr(context, 'Retry'),
+                                            onPressed: _reloadFinance,
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                    final s = fin.summary!;
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        _FinanceMetricTile(
+                                          label: FFLocalizations.of(context)
+                                              .getText(
+                                            '5w1bmqit' /* Total Earnings */,
+                                          ),
+                                          value: s.lifetime.driverNet
+                                              .toStringAsFixed(2),
+                                          valueColor: context.dsColors.success,
+                                          background: context.dsColors.success
+                                              .withValues(alpha: 0.08),
+                                          icon: Icons.trending_up_rounded,
+                                        ),
+                                        _FinanceMetricTile(
+                                          label: driverTr(
+                                            context,
+                                            "Today's net earnings",
+                                          ),
+                                          value: s.today.driverNetLabel,
+                                          valueColor:
+                                              context.dsColors.primaryStrong,
+                                          background: context.dsColors.primarySoft
+                                              .withValues(alpha: 0.35),
+                                          icon: Icons.payments_outlined,
+                                        ),
+                                        _FinanceMetricTile(
+                                          label: driverTr(
+                                            context,
+                                            'Company due (outstanding)',
+                                          ),
+                                          value: s.settlements.outstanding
+                                              .toStringAsFixed(2),
+                                          valueColor: s.settlements.outstanding >
+                                                  0
+                                              ? context.dsColors.error
+                                              : context.dsColors.textSecondary,
+                                          background: (s.settlements.outstanding >
+                                                      0
+                                                  ? context.dsColors.error
+                                                  : context.dsColors.primarySoft)
+                                              .withValues(alpha: 0.12),
+                                          icon: Icons.account_balance_outlined,
+                                        ),
+                                        _FinanceMetricTile(
+                                          label: driverTr(
+                                            context,
+                                            'Paid to company',
+                                          ),
+                                          value: s.settlements.paid
+                                              .toStringAsFixed(2),
+                                          valueColor:
+                                              context.dsColors.textSecondary,
+                                          background: context.dsColors.card,
+                                          icon: Icons.check_circle_outline,
+                                        ),
+                                        if (s.settlements.outstanding > 0)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: DsSpacing.xs,
+                                            ),
+                                            child: DsButton.danger(
+                                              label: FFLocalizations.of(context)
+                                                  .getText(
+                                                '3hqugl0j' /* Pay commissions now */,
+                                              ),
+                                              icon: Icons.payments_rounded,
+                                              expanded: true,
+                                              onPressed: () async {
+                                                context.pushNamed(
+                                                    SuportWidget.routeName);
+                                              },
+                                            ),
+                                          ),
+                                      ],
+                                    );
+                                  },
                                 ),
                                 if (valueOrDefault(
                                         currentUserDocument
@@ -798,127 +906,6 @@ class _HomeWidgetState extends State<HomeWidget> {
                                       ],
                                     ),
                                   ),
-                                AuthUserStreamWidget(
-                                  builder: (context) {
-                                    final colors = context.dsColors;
-                                    final typography = context.dsTypography;
-                                    final unpaid = valueOrDefault(
-                                        currentUserDocument?.totalApp, 0);
-                                    final hasUnpaid = unpaid > 0;
-
-                                    if (!hasUnpaid) {
-                                      return _FinanceMetricTile(
-                                        label: FFLocalizations.of(context)
-                                            .getText(
-                                          'p9lt26gd' /* Unpaid app commissions */,
-                                        ),
-                                        value: '0',
-                                        valueColor: colors.textSecondary,
-                                        background: colors.primarySoft
-                                            .withValues(alpha: 0.55),
-                                        icon: Icons
-                                            .check_circle_outline_rounded,
-                                      );
-                                    }
-
-                                    return Container(
-                                      width: double.infinity,
-                                      padding:
-                                          const EdgeInsets.all(DsSpacing.sm),
-                                      decoration: BoxDecoration(
-                                        color: colors.error
-                                            .withValues(alpha: 0.08),
-                                        borderRadius: DsRadius.medium,
-                                        border: Border.all(
-                                          color: colors.error
-                                              .withValues(alpha: 0.28),
-                                        ),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Icon(
-                                                Icons.warning_amber_rounded,
-                                                color: colors.error,
-                                                size: 22,
-                                              ),
-                                              const SizedBox(
-                                                  width: DsSpacing.xs),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      FFLocalizations.of(
-                                                              context)
-                                                          .getText(
-                                                        'p9lt26gd' /* Unpaid app commissions */,
-                                                      ),
-                                                      softWrap: true,
-                                                      style: typography
-                                                          .titleSmall
-                                                          .copyWith(
-                                                        color: colors.error,
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        height: 1.3,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 4),
-                                                    Text(
-                                                      unpaid.toString(),
-                                                      style: typography
-                                                          .headlineSmall
-                                                          .copyWith(
-                                                        color: colors.error,
-                                                        fontWeight:
-                                                            FontWeight.w800,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: DsSpacing.xs),
-                                          Text(
-                                            FFLocalizations.of(context)
-                                                .getText(
-                                              '7rctg8a4' /* Due payment notice */,
-                                            ),
-                                            softWrap: true,
-                                            style:
-                                                typography.bodySmall.copyWith(
-                                              color: colors.error
-                                                  .withValues(alpha: 0.92),
-                                              height: 1.45,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          const SizedBox(height: DsSpacing.sm),
-                                          DsButton.danger(
-                                            label: FFLocalizations.of(context)
-                                                .getText(
-                                              '3hqugl0j' /* Pay commissions now */,
-                                            ),
-                                            icon: Icons.payments_rounded,
-                                            expanded: true,
-                                            onPressed: () async {
-                                              context.pushNamed(
-                                                  SuportWidget.routeName);
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
                                 DriverGradientButton(
                                   label: driverTr(
                                       context, 'Wallet and transactions'),

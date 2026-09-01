@@ -98,7 +98,7 @@ class _Checkout66Copy2WidgetState extends State<Checkout66Copy2Widget> {
         FFAppState().totalsaat.toDouble(),
       );
 
-  int? get _appFee => functions.vat(10.0, _baseTotal);
+  double? get _appFee => functions.vat(10.0, _baseTotal);
 
   String get _vatAmount => valueOrDefault<String>(
         functions.nesbhmnrgmen(_baseTotal, _appFee, 15)?.toString(),

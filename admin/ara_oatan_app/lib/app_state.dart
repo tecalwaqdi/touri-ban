@@ -805,21 +805,21 @@ class FFAppState extends ChangeNotifier {
     _totalAllNew = value;
   }
 
-  int _totalapp2 = 0;
-  int get totalapp2 => _totalapp2;
-  set totalapp2(int value) {
+  double _totalapp2 = 0;
+  double get totalapp2 => _totalapp2;
+  set totalapp2(double value) {
     _totalapp2 = value;
   }
 
-  int _TOTALmndob2 = 0;
-  int get TOTALmndob2 => _TOTALmndob2;
-  set TOTALmndob2(int value) {
+  double _TOTALmndob2 = 0;
+  double get TOTALmndob2 => _TOTALmndob2;
+  set TOTALmndob2(double value) {
     _TOTALmndob2 = value;
   }
 
-  int _vat2 = 0;
-  int get vat2 => _vat2;
-  set vat2(int value) {
+  double _vat2 = 0;
+  double get vat2 => _vat2;
+  set vat2(double value) {
     _vat2 = value;
   }
 
@@ -829,9 +829,9 @@ class FFAppState extends ChangeNotifier {
     _totalAllnowPrent = value;
   }
 
-  int _totalAllNow2 = 0;
-  int get totalAllNow2 => _totalAllNow2;
-  set totalAllNow2(int value) {
+  double _totalAllNow2 = 0;
+  double get totalAllNow2 => _totalAllNow2;
+  set totalAllNow2(double value) {
     _totalAllNow2 = value;
   }
 

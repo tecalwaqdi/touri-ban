@@ -66,7 +66,7 @@ class _ListCarWidgetState extends State<ListCarWidget> {
       int lineTotal(int? price, double h) =>
           functions.total(price, h) ?? 0;
 
-      int lineVat(double percent, int sum) {
+      double lineVat(double percent, int sum) {
         if (sum <= 0) return 0;
         return functions.vat(percent, sum) ?? 0;
       }
@@ -97,7 +97,7 @@ class _ListCarWidgetState extends State<ListCarWidget> {
       FFAppState().totalKsm2 = 0.0;
       FFAppState().totalmndob3 = lineTotal(FFAppState().srtypecar, hours).toDouble();
 
-      FFAppState().TOTALmndob2 = hoursTotal;
+      FFAppState().TOTALmndob2 = hoursTotal.toDouble();
       FFAppState().totalapp2 = serviceVat;
       FFAppState().vat2 = countryVat;
       FFAppState().totalAllNow2 =

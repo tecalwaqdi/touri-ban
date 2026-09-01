@@ -18,8 +18,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 #version: 11.0.0+5 last one for ios version
 #version: 2.0.0+3 last one for android version
 
-version: 11.1.6+21
-#version: 11.1.6+20 previous App Store review build
+version: 11.1.12+36
+#version: 11.1.6+21 previous (pre-finance-canonical-fix)
 #version: 2.0.6+13 previous (blocked by ASC: must be > approved 11.1.1)
 #version: 2.0.1+8 previous
 

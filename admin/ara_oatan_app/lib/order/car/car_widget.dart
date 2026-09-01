@@ -70,10 +70,11 @@ class _CarWidgetState extends State<CarWidget> {
       FFAppState().vat2 = 0;
       FFAppState().totalAllNow2 = 0;
       FFAppState().update(() {});
-      FFAppState().TOTALmndob2 = functions.total(
+      FFAppState().TOTALmndob2 = (functions.total(
         FFAppState().srtypecar,
         FFAppState().totalsaat.toDouble(),
-      )!;
+      ) ?? 0)
+          .toDouble();
       FFAppState().totalapp2 = functions.vat(
         15.0,
         functions.total(
