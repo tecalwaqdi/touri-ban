@@ -115,7 +115,7 @@ abstract final class DriverTripService {
         ok: false,
         code: 'BOOKING_SERVICE_UNAVAILABLE',
         message:
-            'تعذّر التحقق من رصيد المحفظة. تحقق من الاتصال ثم حاول مرة أخرى.',
+            'Could not verify wallet balance. Check your connection and try again.',
       );
     }
     if (balance < minimum) {
@@ -123,7 +123,11 @@ abstract final class DriverTripService {
         ok: false,
         code: 'DRIVER_WALLET_INSUFFICIENT',
         message:
-            'يجب أن يكون رصيد محفظتك ${minimum.toStringAsFixed(0)} ريال على الأقل لقبول الطلبات النقدية.',
+            'Your wallet balance must be at least {amount} to accept cash orders.'
+                .replaceAll(
+          '{amount}',
+          minimum.toStringAsFixed(0),
+        ),
       );
     }
     return const DriverWalletGateResult(ok: true);
@@ -160,14 +164,14 @@ abstract final class DriverTripService {
       return const DriverWalletGateResult(
         ok: false,
         code: 'ACCEPT_IN_PROGRESS',
-        message: 'جاري قبول الطلب، يرجى الانتظار.',
+        message: 'Accepting order, please wait.',
       );
     }
     if (_acceptInFlightOrderId != null) {
       return const DriverWalletGateResult(
         ok: false,
         code: 'ACCEPT_IN_PROGRESS',
-        message: 'عملية قبول أخرى قيد التنفيذ. حاول مرة أخرى.',
+        message: 'Another accept is already in progress. Try again.',
       );
     }
     _acceptInFlightOrderId = orderId;
@@ -1411,40 +1415,40 @@ abstract final class DriverTripService {
   static String _messageForCode(String code) {
     switch (code) {
       case 'BOOKING_NOT_FOUND':
-        return 'الطلب غير موجود.';
+        return 'Order not found.';
       case 'BOOKING_ALREADY_ASSIGNED':
-        return 'تم قبول هذه الرحلة بواسطة مندوب آخر.';
+        return 'This trip was accepted by another driver.';
       case 'BOOKING_INVALID_STATE':
-        return 'لا يمكن تحديث هذا الطلب في حالته الحالية.';
+        return 'This order cannot be updated in its current state.';
       case 'BOOKING_EXPIRED':
-        return 'انتهت مهلة قبول الطلب. لم يعد بإمكانك قبول هذا الطلب.';
+        return 'Acceptance window expired. You can no longer accept this order.';
       case 'DRIVER_WALLET_INSUFFICIENT':
       case 'insufficient-wallet':
-        return 'يجب أن يكون رصيد محفظتك 200 ريال على الأقل لقبول الطلبات النقدية.';
+        return 'Your wallet balance must be at least {amount} to accept cash orders.';
       case 'DRIVER_DISABLED':
       case 'driver-disabled':
-        return 'حساب المندوب غير مفعّل أو موقوف.';
+        return 'Driver account is inactive or suspended.';
       case 'BOOKING_SERVICE_UNAVAILABLE':
-        return 'خدمة القبول غير متاحة مؤقتًا. حاول مرة أخرى.';
+        return 'Accept service is temporarily unavailable. Try again.';
       case 'BOOKING_TOO_FAR_OR_TOO_EARLY':
-        return 'لا يمكن إنهاء الرحلة قبل انتهاء وقتها المحجوز.';
+        return 'Cannot complete the trip before the booked time ends.';
       case 'TOO_FAR_FROM_DROPOFF':
-        return 'يجب أن تكون قريبًا من نقطة التسليم لإنهاء الرحلة.';
+        return 'You must be near the drop-off point to complete the trip.';
       case 'TOO_FAR_FROM_PICKUP':
-        return 'يجب أن تكون قريبًا من موقع العميل لتأكيد الوصول.';
+        return 'You must be near the customer location to confirm arrival.';
       case 'LOCATION_REQUIRED':
-        return 'تعذّر تحديد موقعك. فعّل GPS ثم حاول مرة أخرى.';
+        return 'Could not determine your location. Enable GPS and try again.';
       case 'PERMISSION_DENIED':
-        return 'ليس لديك صلاحية لتنفيذ هذا الإجراء.';
+        return 'You do not have permission to perform this action.';
       case 'OFFLINE':
-        return 'لا يوجد اتصال بالإنترنت. تحقق من الشبكة ثم حاول مرة أخرى.';
+        return 'No internet connection. Check your network and try again.';
       case 'ACCEPT_IN_PROGRESS':
-        return 'جاري قبول الطلب، يرجى الانتظار.';
+        return 'Accepting order, please wait.';
       case 'INTERNAL':
       case 'internal':
-        return 'تعذّر القبول بسبب خطأ في الخادم. حاول مرة أخرى.';
+        return 'Could not accept due to a server error. Try again.';
       default:
-        return 'تعذّر القبول. حاول مرة أخرى.';
+        return 'Could not accept. Try again.';
     }
   }
 }

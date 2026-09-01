@@ -163,7 +163,7 @@ class _ReviewScreenWidgetState extends State<ReviewScreenWidget> {
                     if (!context.mounted) return;
                     DsSnackBar.show(
                       context,
-                      message: 'تعذر إرسال التقييم: بيانات ناقصة',
+                      message: driverTr(context, 'Could not submit review: missing data'),
                       tone: DsSnackTone.error,
                     );
                     return;
@@ -181,7 +181,7 @@ class _ReviewScreenWidgetState extends State<ReviewScreenWidget> {
                   if (!context.mounted) return;
                   DsSnackBar.show(
                     context,
-                    message: 'تم إرسال التقييم بنجاح',
+                    message: driverTr(context, 'Review submitted successfully'),
                     tone: DsSnackTone.success,
                   );
 

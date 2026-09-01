@@ -138,9 +138,14 @@ class _ChatWidgetState extends State<ChatWidget> {
                   '7h5d8vnk' /* Chat */,
                 ),
               ),
-              body: const SafeArea(
+              body: SafeArea(
                 child: Center(
-                  child: Text('تعذر فتح المحادثة: بيانات ناقصة'),
+                  child: Text(
+                    driverTr(
+                      context,
+                      'Could not open chat: missing data',
+                    ),
+                  ),
                 ),
               ),
             );

@@ -6,6 +6,7 @@ import '/app_state.dart';
 import '/backend/backend.dart';
 import '/backend/schema/countries_record.dart';
 import '/core/driver_country_service.dart';
+import '/core/driver_geo_display.dart';
 import '/core/driver_location_catalog_service.dart';
 import '/design_system/design_system.dart';
 
@@ -156,9 +157,10 @@ class _DriverRegLocationCascadeState extends State<DriverRegLocationCascade> {
   }
 
   Future<void> _onRegionSelected(CitiesRecord region) async {
+    final label = driverLocalizedRegionLabel(region);
     FFAppState().update(() {
       FFAppState().mdenh = region.reference;
-      FFAppState().naimmdenh = region.naim;
+      FFAppState().naimmdenh = label;
     });
     _clearCityOnly();
     widget.onChanged?.call();
@@ -169,14 +171,20 @@ class _DriverRegLocationCascadeState extends State<DriverRegLocationCascade> {
   }
 
   void _onCitySelected(VillagesRecord city) {
+    final cityLabel = driverLocalizedCityLabel(city);
     FFAppState().update(() {
       FFAppState().villmndoBREV = city.reference;
-      FFAppState().textvill = city.naim;
+      FFAppState().textvill = cityLabel;
       if (city.cities != null) {
         FFAppState().mdenh = city.cities;
       }
       if (city.naimciteText.isNotEmpty && FFAppState().naimmdenh.isEmpty) {
-        FFAppState().naimmdenh = city.naimciteText;
+        final cite = city.naimciteText.trim();
+        final locale = driverActiveContentLocaleKey();
+        final lang = locale.split(RegExp(r'[_-]')).first.toLowerCase();
+        if (lang == 'ar' || !RegExp(r'[\u0600-\u06FF]').hasMatch(cite)) {
+          FFAppState().naimmdenh = cite;
+        }
       }
     });
     widget.onChanged?.call();
@@ -221,16 +229,19 @@ class _DriverRegLocationCascadeState extends State<DriverRegLocationCascade> {
             decoration: _decoration(context, widget.t('Select country')),
             items: _countries
                 .map(
-                  (c) => DropdownMenuItem(
-                    value: c.reference.path,
-                    child: Text(
-                      c.naim.isNotEmpty
-                          ? c.naim
-                          : (DriverCountryService.isoOfCountry(c) ??
-                              c.reference.id),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                  (c) {
+                    final label = driverLocalizedCountryLabel(c);
+                    return DropdownMenuItem(
+                      value: c.reference.path,
+                      child: Text(
+                        label.isNotEmpty
+                            ? label
+                            : (DriverCountryService.isoOfCountry(c) ??
+                                c.reference.id),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                  },
                 )
                 .toList(),
             onChanged: (path) async {
@@ -263,7 +274,10 @@ class _DriverRegLocationCascadeState extends State<DriverRegLocationCascade> {
                 .map(
                   (r) => DropdownMenuItem(
                     value: r.reference.path,
-                    child: Text(r.naim, overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      driverLocalizedRegionLabel(r),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 )
                 .toList(),
@@ -301,7 +315,10 @@ class _DriverRegLocationCascadeState extends State<DriverRegLocationCascade> {
                 .map(
                   (c) => DropdownMenuItem(
                     value: c.reference.path,
-                    child: Text(c.naim, overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      driverLocalizedCityLabel(c),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 )
                 .toList(),

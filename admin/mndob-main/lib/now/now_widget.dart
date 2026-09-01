@@ -283,11 +283,7 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                     await DriverDialogs.showAlert(
                                       context,
                                       title: driverTr(context, 'Error'),
-                                      message: driverTr(
-                                        context,
-                                        result.message ??
-                                            'Something went wrong. Please try again.',
-                                      ),
+                                      message: driverTrOrFallback(context, result.message, 'Something went wrong. Please try again.'),
                                       type: DriverMessageType.error,
                                     );
                                   }

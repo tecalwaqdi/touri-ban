@@ -214,9 +214,7 @@ class _DriverRideRequestSheetState extends State<DriverRideRequestSheet> {
       );
     }
     if (msg.isNotEmpty) {
-      // Already localized Arabic/English phrases from acceptOrder.
-      final viaKey = driverTr(context, msg);
-      return viaKey;
+      return driverTrMessage(context, msg);
     }
     return driverTr(
       context,

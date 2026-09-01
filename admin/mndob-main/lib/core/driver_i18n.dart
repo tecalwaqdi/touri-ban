@@ -38,3 +38,35 @@ String driverTrNamed(
   }
   return text;
 }
+
+final _walletAmountFilled = RegExp(
+  r'^Your wallet balance must be at least (.+) to accept cash orders\.$',
+);
+
+/// Localize trip/wallet gate messages that may already include substituted args.
+String driverTrMessage(BuildContext? context, String? message) {
+  final msg = (message ?? '').trim();
+  if (msg.isEmpty) return msg;
+  final filled = _walletAmountFilled.firstMatch(msg);
+  if (filled != null) {
+    return driverTrNamed(
+      context,
+      'Your wallet balance must be at least {amount} to accept cash orders.',
+      {'amount': filled.group(1)!},
+    );
+  }
+  if (msg.contains('{amount}')) {
+    return driverTrNamed(context, msg, const {'amount': '—'});
+  }
+  return driverTr(context, msg);
+}
+
+String driverTrOrFallback(
+  BuildContext? context,
+  String? message,
+  String fallbackKey,
+) {
+  final msg = (message ?? '').trim();
+  if (msg.isEmpty) return driverTr(context, fallbackKey);
+  return driverTrMessage(context, msg);
+}

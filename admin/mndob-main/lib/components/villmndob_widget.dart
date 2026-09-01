@@ -1,6 +1,7 @@
 import '/backend/backend.dart';
 import '/backend/schema/countries_record.dart';
 import '/core/driver_country_service.dart';
+import '/core/driver_geo_display.dart';
 import '/core/toury_country_registry.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -80,8 +81,12 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
                   Expanded(
                     child: Text(
                       countryName.isNotEmpty
-                          ? 'الدولة: $countryName'
-                          : 'اختر الدولة أولاً',
+                          ? driverTrNamed(
+                              context,
+                              'Country: {name}',
+                              {'name': countryName},
+                            )
+                          : driverTr(context, 'Select a country first'),
                       style: typography.titleSmall.copyWith(
                         color: colors.primaryStrong,
                         fontWeight: FontWeight.bold,
@@ -89,7 +94,7 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
                     ),
                   ),
                   DsButton.text(
-                    label: 'تغيير',
+                    label: driverTr(context, 'Change'),
                     onPressed: _loadingCountries
                         ? null
                         : () => safeSetState(() {
@@ -103,10 +108,10 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
               DsSpacing.gapXxs,
               Text(
                 _pickingCountry
-                    ? 'اختر دولة العمل'
+                    ? driverTr(context, 'Select work country')
                     : _showVillages
-                        ? 'اختر منطقة العمل'
-                        : 'اختر المحافظة / المنطقة',
+                        ? driverTr(context, 'Select work area')
+                        : driverTr(context, 'Select region / area'),
                 style: typography.bodySmall.copyWith(
                   color: colors.textSecondary,
                 ),
@@ -118,7 +123,7 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
           Padding(
             padding: DsSpacing.pagePaddingHorizontal,
             child: DsButton.text(
-              label: 'العودة للمحافظات',
+              label: driverTr(context, 'Back to regions'),
               icon: Icons.arrow_back,
               onPressed: () => safeSetState(() {
                 _showVillages = false;
@@ -130,7 +135,7 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
           Padding(
             padding: DsSpacing.pagePaddingHorizontal,
             child: DsButton.text(
-              label: 'العودة لاختيار الدولة',
+              label: driverTr(context, 'Back to country selection'),
               icon: Icons.public,
               onPressed: () => safeSetState(() {
                 _pickingCountry = true;
@@ -153,10 +158,10 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
 
   Widget _buildNeedCountry(BuildContext context) {
     return DsEmptyState(
-      title: 'يجب اختيار الدولة لعرض المحافظات',
+      title: driverTr(context, 'Select a country to view regions'),
       icon: Icons.public_outlined,
       action: DsButton.primary(
-        label: 'اختيار الدولة',
+        label: driverTr(context, 'Select country'),
         onPressed: () => safeSetState(() => _pickingCountry = true),
       ),
     );
@@ -167,8 +172,8 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
       return const Center(child: DsLoading(size: 48));
     }
     if (_countries.isEmpty) {
-      return const DsEmptyState(
-        title: 'لا توجد دول متاحة',
+      return DsEmptyState(
+        title: driverTr(context, 'No countries available'),
         icon: Icons.public_off_outlined,
       );
     }
@@ -181,7 +186,7 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
         final selected = FFAppState().dolh?.path == country.reference.path;
         return _regionTile(
           context,
-          title: country.naim,
+          title: driverLocalizedCountryLabel(country),
           subtitle: DriverCountryService.isoOfCountry(country),
           selected: selected,
           onTap: () async {
@@ -217,10 +222,10 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return DsErrorState(
-            title: 'تعذر تحميل المحافظات',
-            message: 'تحقق من الاتصال ثم أعد المحاولة.',
+            title: driverTr(context, 'Could not load regions'),
+            message: driverTr(context, 'Check your connection and try again.'),
             onRetry: () => safeSetState(() {}),
-            retryLabel: 'إعادة المحاولة',
+            retryLabel: driverTr(context, 'Retry'),
           );
         }
         if (!snapshot.hasData) {
@@ -232,14 +237,14 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
 
         if (provinces.isEmpty) {
           return DsEmptyState(
-            title: 'لا توجد محافظات لهذه الدولة',
-            message: 'يمكنك اختيار المناطق مباشرة إن وُجدت.',
+            title: driverTr(context, 'No regions for this country'),
+            message: driverTr(context, 'You can select cities directly if available.'),
             icon: Icons.location_city_outlined,
             action: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 DsButton.primary(
-                  label: 'عرض المناطق',
+                  label: driverTr(context, 'Show cities'),
                   onPressed: () => safeSetState(() {
                     _showVillages = true;
                     _selectedProvince = null;
@@ -248,7 +253,7 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
                 ),
                 DsSpacing.gapXs,
                 DsButton.text(
-                  label: 'تغيير الدولة',
+                  label: driverTr(context, 'Change country'),
                   onPressed: () => safeSetState(() => _pickingCountry = true),
                 ),
               ],
@@ -262,14 +267,15 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
           separatorBuilder: (_, __) => DsSpacing.gapXs,
           itemBuilder: (context, index) {
             final province = provinces[index];
+            final regionLabel = driverLocalizedRegionLabel(province);
             return _regionTile(
               context,
-              title: province.naim,
+              title: regionLabel,
               onTap: () => safeSetState(() {
                 _selectedProvince = province.reference;
                 _showVillages = true;
                 FFAppState().mdenh = province.reference;
-                FFAppState().naimmdenh = province.naim;
+                FFAppState().naimmdenh = regionLabel;
               }),
             );
           },
@@ -303,9 +309,9 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return DsErrorState(
-            title: 'تعذر تحميل المناطق',
+            title: driverTr(context, 'Could not load cities'),
             onRetry: () => safeSetState(() {}),
-            retryLabel: 'إعادة المحاولة',
+            retryLabel: driverTr(context, 'Retry'),
           );
         }
         if (!snapshot.hasData) {
@@ -314,8 +320,11 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
         final villages = snapshot.data!.toList()
           ..sort((a, b) => a.naim.compareTo(b.naim));
         if (villages.isEmpty) {
-          return const DsEmptyState(
-            title: 'لا توجد مناطق متاحة لهذه المحافظة حالياً',
+          return DsEmptyState(
+            title: driverTr(
+              context,
+              'No cities available for this region currently',
+            ),
             icon: Icons.map_outlined,
           );
         }
@@ -325,15 +334,18 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
           separatorBuilder: (_, __) => DsSpacing.gapXs,
           itemBuilder: (context, index) {
             final village = villages[index];
+            final cityLabel = driverLocalizedCityLabel(village);
             return _regionTile(
               context,
-              title: village.naim,
-              subtitle: village.naimciteText.isNotEmpty
+              title: cityLabel,
+              subtitle: village.naimciteText.isNotEmpty &&
+                      !RegExp(r'[\u0600-\u06FF]')
+                          .hasMatch(village.naimciteText)
                   ? village.naimciteText
                   : null,
               onTap: () async {
                 FFAppState().villmndoBREV = village.reference;
-                FFAppState().textvill = village.naim;
+                FFAppState().textvill = cityLabel;
                 if (village.cities != null) {
                   FFAppState().mdenh = village.cities;
                 }
@@ -349,7 +361,7 @@ class _VillmndobWidgetState extends State<VillmndobWidget> {
                       match,
                     );
                     FFAppState().villmndoBREV = village.reference;
-                    FFAppState().textvill = village.naim;
+                    FFAppState().textvill = cityLabel;
                     if (village.cities != null) {
                       FFAppState().mdenh = village.cities;
                     }

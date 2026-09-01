@@ -1861,15 +1861,15 @@ class _NewDriverRegistrationWidgetState
                           }
                           await DsDialog.show(
                             context: context,
-                            title: 'نتيجة الأهلية',
+                            title: driverTr(context, 'Eligibility result'),
                             message: _model.mseg ?? '',
                             confirmLabel: 'Ok',
                           );
                         } else {
                           await DsDialog.show(
                             context: context,
-                            title: 'خطا',
-                            message: 'يوجد خطا في البيانات المدخلة',
+                            title: driverTr(context, 'Error'),
+                            message: driverTr(context, 'There is an error in the entered data'),
                             confirmLabel: 'Ok',
                           );
                         }

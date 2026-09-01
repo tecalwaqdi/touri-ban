@@ -224,7 +224,7 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 4),
           action: SnackBarAction(
-            label: 'فتح',
+            label: driverTr(null, 'Open'),
             onPressed: () => _handlePushNotification(message),
           ),
         ),

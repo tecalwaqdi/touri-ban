@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 
 import '/backend/schema/countries_record.dart';
+import '/core/driver_geo_display.dart';
 import '/core/toury_country_registry.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -144,7 +145,7 @@ abstract final class DriverCountryService {
       final fixed = await canonicalize(current);
       if (fixed != null) {
         app.dolh = fixed.reference;
-        app.naimdolh = fixed.naim;
+        app.naimdolh = driverLocalizedCountryLabel(fixed);
       }
       return;
     }
@@ -152,7 +153,7 @@ abstract final class DriverCountryService {
     final country = await resolveFromDevice();
     if (country == null) return;
     app.dolh = country.reference;
-    app.naimdolh = country.naim;
+    app.naimdolh = driverLocalizedCountryLabel(country);
   }
 
   static Future<void> applyCountry(
@@ -161,7 +162,7 @@ abstract final class DriverCountryService {
   ) async {
     final fixed = await canonicalize(country) ?? country;
     app.dolh = fixed.reference;
-    app.naimdolh = fixed.naim;
+    app.naimdolh = driverLocalizedCountryLabel(fixed);
     app.mdenh = null;
     app.naimmdenh = '';
     app.villmndoBREV = null;

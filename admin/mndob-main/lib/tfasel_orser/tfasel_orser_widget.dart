@@ -1178,11 +1178,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                                 .showSnackBar(
                                                               SnackBar(
                                                                 content: Text(
-                                                                  driverTr(
-                                                                    context,
-                                                                    result.message ??
-                                                                        'Something went wrong. Please try again.',
-                                                                  ),
+                                                                  driverTrOrFallback(context, result.message, 'Something went wrong. Please try again.'),
                                                                 ),
                                                               ),
                                                             );

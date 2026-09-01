@@ -192,7 +192,7 @@ class _UpdetBankWidgetState extends State<UpdetBankWidget> {
                               ));
                               DsSnackBar.show(
                                 context,
-                                message: 'تم تحديث البيانات بنجاح',
+                                message: driverTr(context, 'Data updated successfully'),
                                 tone: DsSnackTone.success,
                               );
 
@@ -200,7 +200,7 @@ class _UpdetBankWidgetState extends State<UpdetBankWidget> {
                             } else {
                               DsSnackBar.show(
                                 context,
-                                message: 'يرجى كتابة رقم الحساب والأيبان',
+                                message: driverTr(context, 'Please enter account number and IBAN'),
                                 tone: DsSnackTone.error,
                               );
                             }

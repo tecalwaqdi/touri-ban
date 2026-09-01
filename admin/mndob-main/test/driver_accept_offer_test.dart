@@ -11,22 +11,22 @@ void main() {
       );
       expect(
         DriverTripService.messageForCode('internal'),
-        contains('الخادم'),
+        contains('server error'),
       );
     });
 
     test('maps race and expiry codes clearly', () {
       expect(
         DriverTripService.messageForCode('BOOKING_ALREADY_ASSIGNED'),
-        contains('مندوب آخر'),
+        contains('another driver'),
       );
       expect(
         DriverTripService.messageForCode('BOOKING_EXPIRED'),
-        contains('انتهت'),
+        contains('expired'),
       );
       expect(
         DriverTripService.messageForCode('OFFLINE'),
-        contains('الإنترنت'),
+        contains('internet'),
       );
     });
   });

@@ -21,6 +21,7 @@ import '/core/driver_email_verification_service.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_document_upload_service.dart';
 import '/core/driver_lifecycle_state.dart';
+import '/core/driver_geo_display.dart';
 import '/core/driver_location_catalog_service.dart';
 import '/core/driver_phone_number_service.dart';
 import '/core/driver_registration_draft.dart';
@@ -2063,13 +2064,7 @@ class _TransportCompanyDropdownState extends State<_TransportCompanyDropdown> {
   }
 
   static String _companyDisplayName(Map<String, dynamic> data, String id) {
-    final naim = (data['naim'] as String?)?.trim() ?? '';
-    if (naim.isNotEmpty) return naim;
-    final name = (data['name'] as String?)?.trim() ?? '';
-    if (name.isNotEmpty) return name;
-    final companyName = (data['company_name'] as String?)?.trim() ?? '';
-    if (companyName.isNotEmpty) return companyName;
-    return id;
+    return driverLocalizedMapLabel(data, fallbackId: id);
   }
 
   /// Only companies explicitly marked active (schema: `actev`).
@@ -2513,14 +2508,14 @@ class _VehicleStep extends StatelessWidget {
           children: [
             _affiliationChoiceChip(
               context: context,
-              label: t('تابع لشركة نقل'),
+              label: t('Affiliated with a transport company'),
               selected: affiliationType == 'company',
               onTap: () => onAffiliationChanged('company'),
             ),
             const SizedBox(width: 10),
             _affiliationChoiceChip(
               context: context,
-              label: t('سائق مستقل'),
+              label: t('Independent driver'),
               selected: affiliationType != 'company',
               onTap: () => onAffiliationChanged('independent'),
             ),
@@ -2689,8 +2684,8 @@ class _ReviewStep extends StatelessWidget {
             '${birthDate!.month.toString().padLeft(2, '0')}-'
             '${birthDate!.day.toString().padLeft(2, '0')}';
     final affiliationLabel = affiliationType == 'company'
-        ? t('تابع لشركة نقل')
-        : t('سائق مستقل');
+        ? t('Affiliated with a transport company')
+        : t('Independent driver');
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [

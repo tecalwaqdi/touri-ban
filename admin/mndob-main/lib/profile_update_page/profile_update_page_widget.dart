@@ -259,7 +259,7 @@ class _ProfileUpdatePageWidgetState extends State<ProfileUpdatePageWidget> {
                           ));
                           DsSnackBar.show(
                             context,
-                            message: 'تم تحديث البيانات بنجاح',
+                            message: driverTr(context, 'Data updated successfully'),
                             tone: DsSnackTone.success,
                           );
 

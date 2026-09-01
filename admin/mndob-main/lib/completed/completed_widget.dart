@@ -293,7 +293,10 @@ class _CompletedWidgetState extends State<CompletedWidget> {
                                                                   SnackBar(
                                                                     content:
                                                                         Text(
-                                                                      'تم ا',
+                                                                      driverTr(
+                                                                        context,
+                                                                        'Done',
+                                                                      ),
                                                                       style:
                                                                           TextStyle(
                                                                         color: colors

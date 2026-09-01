@@ -91,15 +91,15 @@ class _RegCompneWidgetState extends State<RegCompneWidget> {
     if ((_model.apiResultjrx?.succeeded ?? true)) {
       await DsDialog.show(
         context: context,
-        title: 'تم التسجيل بنجاح',
-        message: 'تم التسجيلل',
+        title: driverTr(context, 'Registration successful'),
+        message: driverTr(context, 'Registration successful'),
         confirmLabel: 'Ok',
       );
     } else {
       await DsDialog.show(
         context: context,
-        title: 'يوجد خطا',
-        message: 'خطا',
+        title: driverTr(context, 'There is an error'),
+        message: driverTr(context, 'Error'),
         confirmLabel: 'Ok',
       );
     }

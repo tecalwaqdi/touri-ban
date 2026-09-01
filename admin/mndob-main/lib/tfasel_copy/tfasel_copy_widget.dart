@@ -519,25 +519,30 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                     builder:
                                                         (alertDialogContext) {
                                                       return AlertDialog(
-                                                        title: const Text(
-                                                            'تأكيد القبول'),
-                                                        content: const Text(
-                                                            'هل أنت متأكد من قبول هذا الطلب؟'),
+                                                        title: Text(driverTr(
+                                                            alertDialogContext,
+                                                            'Confirm acceptance')),
+                                                        content: Text(driverTr(
+                                                            alertDialogContext,
+                                                            'Are you sure you want to accept this order?')),
                                                         actions: [
                                                           TextButton(
                                                             onPressed: () =>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     false),
-                                                            child: const Text('لا'),
+                                                            child: Text(driverTr(
+                                                                alertDialogContext,
+                                                                'No')),
                                                           ),
                                                           TextButton(
                                                             onPressed: () =>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     true),
-                                                            child: const Text(
-                                                                'تأكيد القبول'),
+                                                            child: Text(driverTr(
+                                                                alertDialogContext,
+                                                                'Confirm acceptance')),
                                                           ),
                                                         ],
                                                       );
@@ -561,16 +566,20 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                 await showDialog(
                                                   context: context,
                                                   builder: (c) => AlertDialog(
-                                                    title: const Text(
-                                                        'تعذّر القبول'),
+                                                    title: Text(driverTr(
+                                                        c, 'Could not accept')),
                                                     content: Text(
-                                                        acceptResult.message!),
+                                                      driverTrMessage(
+                                                        c,
+                                                        acceptResult.message,
+                                                      ),
+                                                    ),
                                                     actions: [
                                                       TextButton(
                                                         onPressed: () =>
                                                             Navigator.pop(c),
-                                                        child: const Text(
-                                                            'حسناً'),
+                                                        child: Text(
+                                                            driverTr(c, 'OK')),
                                                       ),
                                                     ],
                                                   ),
@@ -716,25 +725,30 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                   builder:
                                                       (alertDialogContext) {
                                                     return AlertDialog(
-                                                      title: const Text(
-                                                          'هل أنت متأكد من بدء هذه الرحلة؟'),
-                                                      content: const Text(
-                                                          'يرجى التأكد من وصولك إلى موقع العميل قبل تأكيد البدء.'),
+                                                      title: Text(driverTr(
+                                                          alertDialogContext,
+                                                          'Are you sure you want to start this trip?')),
+                                                      content: Text(driverTr(
+                                                          alertDialogContext,
+                                                          'Please confirm you arrived at the customer location before starting.')),
                                                       actions: [
                                                         TextButton(
                                                           onPressed: () =>
                                                               Navigator.pop(
                                                                   alertDialogContext,
                                                                   false),
-                                                          child: const Text('لا'),
+                                                          child: Text(driverTr(
+                                                              alertDialogContext,
+                                                              'No')),
                                                         ),
                                                         TextButton(
                                                           onPressed: () =>
                                                               Navigator.pop(
                                                                   alertDialogContext,
                                                                   true),
-                                                          child: const Text(
-                                                              'تأكيد البداية'),
+                                                          child: Text(driverTr(
+                                                              alertDialogContext,
+                                                              'Confirm start')),
                                                         ),
                                                       ],
                                                     );
@@ -801,23 +815,30 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                     builder:
                                                         (alertDialogContext) {
                                                       return AlertDialog(
-                                                        title: const Text('تأكيد'),
-                                                        content: const Text(
-                                                            'هل أنت متأكد ان هذه الرحلة مكتملة؟'),
+                                                        title: Text(driverTr(
+                                                            alertDialogContext,
+                                                            'Confirm')),
+                                                        content: Text(driverTr(
+                                                            alertDialogContext,
+                                                            'Are you sure this trip is completed?')),
                                                         actions: [
                                                           TextButton(
                                                             onPressed: () =>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     false),
-                                                            child: const Text('لا'),
+                                                            child: Text(driverTr(
+                                                                alertDialogContext,
+                                                                'No')),
                                                           ),
                                                           TextButton(
                                                             onPressed: () =>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     true),
-                                                            child: const Text('نعم'),
+                                                            child: Text(driverTr(
+                                                                alertDialogContext,
+                                                                'Yes')),
                                                           ),
                                                         ],
                                                       );
@@ -864,23 +885,30 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                     builder:
                                                         (alertDialogContext) {
                                                       return AlertDialog(
-                                                        title: const Text('تأكيد'),
-                                                        content: const Text(
-                                                            'هل أنت متأكد ان هذه الرحلة مكتملة؟'),
+                                                        title: Text(driverTr(
+                                                            alertDialogContext,
+                                                            'Confirm')),
+                                                        content: Text(driverTr(
+                                                            alertDialogContext,
+                                                            'Are you sure this trip is completed?')),
                                                         actions: [
                                                           TextButton(
                                                             onPressed: () =>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     false),
-                                                            child: const Text('لا'),
+                                                            child: Text(driverTr(
+                                                                alertDialogContext,
+                                                                'No')),
                                                           ),
                                                           TextButton(
                                                             onPressed: () =>
                                                                 Navigator.pop(
                                                                     alertDialogContext,
                                                                     true),
-                                                            child: const Text('نعم'),
+                                                            child: Text(driverTr(
+                                                                alertDialogContext,
+                                                                'Yes')),
                                                           ),
                                                         ],
                                                       );
@@ -1662,7 +1690,14 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                       ),
                                     ),
                                     Text(
-                                      '${columnOrderRecord.totalTaim.toString()} ساعات ',
+                                      driverTrNamed(
+                                        context,
+                                        '{hours} hours',
+                                        {
+                                          'hours': columnOrderRecord.totalTaim
+                                              .toString(),
+                                        },
+                                      ),
                                       style: FlutterFlowTheme.of(context)
                                           .bodyMedium
                                           .override(
@@ -1914,7 +1949,45 @@ class _TfaselCopyWidgetState extends State<TfaselCopyWidget>
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          mkanItem.naim,
+                                                          () {
+                                                            final lang =
+                                                                FFLocalizations.of(
+                                                                        context)
+                                                                    .languageCode;
+                                                            final name =
+                                                                mkanItem.naim
+                                                                    .trim();
+                                                            if (name.isEmpty) {
+                                                              return mkanItem
+                                                                  .address;
+                                                            }
+                                                            final langOnly = lang
+                                                                .split(RegExp(
+                                                                    r'[_-]'))
+                                                                .first
+                                                                .toLowerCase();
+                                                            if (langOnly !=
+                                                                    'ar' &&
+                                                                RegExp(r'[\u0600-\u06FF]')
+                                                                    .hasMatch(
+                                                                        name)) {
+                                                              final addr =
+                                                                  mkanItem
+                                                                      .address
+                                                                      .trim();
+                                                              if (addr
+                                                                      .isNotEmpty &&
+                                                                  !RegExp(r'[\u0600-\u06FF]')
+                                                                      .hasMatch(
+                                                                          addr)) {
+                                                                return addr;
+                                                              }
+                                                              return driverTr(
+                                                                  context,
+                                                                  'Stop');
+                                                            }
+                                                            return name;
+                                                          }(),
                                                           style: FlutterFlowTheme
                                                                   .of(context)
                                                               .bodyLarge

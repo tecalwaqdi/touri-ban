@@ -45,6 +45,9 @@ class MkanRecord extends FirestoreRecord {
   String get mdh => _mdh ?? '';
   bool hasMdh() => _mdh != null;
 
+  Map<String, String>? _namesI18n;
+  Map<String, String> get namesI18n => _namesI18n ?? const {};
+
   void _initializeFields() {
     _naim = snapshotData['naim'] as String?;
     _osf = snapshotData['osf'] as String?;
@@ -52,6 +55,42 @@ class MkanRecord extends FirestoreRecord {
     _sr = castToType<int>(snapshotData['sr']);
     _location = snapshotData['Location'] as LatLng?;
     _mdh = snapshotData['mdh'] as String?;
+    _namesI18n = _parseI18nStringMap(snapshotData['names_i18n']);
+  }
+
+  static Map<String, String>? _parseI18nStringMap(dynamic raw) {
+    if (raw == null || raw is! Map) return null;
+    final out = <String, String>{};
+    raw.forEach((key, value) {
+      final text = value?.toString().trim() ?? '';
+      if (text.isNotEmpty) out[key.toString()] = text;
+    });
+    return out.isEmpty ? null : out;
+  }
+
+  String localizedName(String languageCode) {
+    final lang = languageCode.split(RegExp(r'[_-]')).first.toLowerCase();
+    final map = namesI18n;
+    final ordered = <String>[
+      if (lang.isNotEmpty) lang,
+      if (lang != 'en') 'en',
+    ];
+    for (final key in ordered) {
+      final v = map[key]?.trim();
+      if (v != null && v.isNotEmpty) return v;
+    }
+    for (final entry in map.entries) {
+      if (lang != 'ar' && entry.key == 'ar') continue;
+      final v = entry.value.trim();
+      if (v.isNotEmpty) return v;
+    }
+    final legacy = naim.trim();
+    if (lang != 'ar' && RegExp(r'[\u0600-\u06FF]').hasMatch(legacy)) {
+      final en = map['en']?.trim();
+      if (en != null && en.isNotEmpty) return en;
+      return '';
+    }
+    return legacy;
   }
 
   static CollectionReference get collection =>

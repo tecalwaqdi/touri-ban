@@ -366,9 +366,9 @@ class _SuportWidgetState extends State<SuportWidget> {
                                       ));
                                   await DsDialog.show(
                                     context: context,
-                                    title: 'تم',
+                                    title: driverTr(context, 'Done'),
                                     message:
-                                        'تم إرسال طلبك بنجاح وسيتم تحديث البيانات قريبا بعد التحقق منها',
+                                        driverTr(context, 'Your request was submitted successfully and will be updated soon after verification.'),
                                     confirmLabel: 'Ok',
                                   );
 
@@ -376,8 +376,8 @@ class _SuportWidgetState extends State<SuportWidget> {
                                 } else {
                                   await DsDialog.show(
                                     context: context,
-                                    title: 'خطا',
-                                    message: 'يرجى تعبئة جميع البيانات',
+                                    title: driverTr(context, 'Error'),
+                                    message: driverTr(context, 'Please fill in all fields'),
                                     confirmLabel: 'Ok',
                                   );
                                 }

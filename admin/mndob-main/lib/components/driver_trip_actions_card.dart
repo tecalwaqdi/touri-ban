@@ -182,8 +182,11 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
                   title: Text(driverTr(context, 'Wallet')),
                   content: Text(
                     phrase.isNotEmpty
-                        ? phrase
-                        : 'يجب أن يكون رصيد محفظتك 200 ريال على الأقل لقبول الطلبات النقدية.',
+                        ? driverTrMessage(context, phrase)
+                        : driverTr(
+                            context,
+                            'Your wallet balance must be at least {amount} to accept cash orders.',
+                          ).replaceAll('{amount}', '200'),
                   ),
                   actions: [
                     TextButton(
@@ -307,7 +310,7 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
                 ? 'Something went wrong. Please try again.'
                 : DriverTripService.messageForCode(code));
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(driverTr(context, key))),
+          SnackBar(content: Text(driverTrMessage(context, key))),
         );
         return;
       }
