@@ -135,14 +135,14 @@ class UserRecord extends FirestoreRecord {
   DocumentReference? get revDolh => _revDolh;
   bool hasRevDolh() => _revDolh != null;
 
-  // "total_mndob" field.
-  int? _totalMndob;
-  int get totalMndob => _totalMndob ?? 0;
+  // "total_mndob" field — legacy aggregate (SAR major); keep fractional.
+  double? _totalMndob;
+  double get totalMndob => _totalMndob ?? 0;
   bool hasTotalMndob() => _totalMndob != null;
 
-  // "total_app" field.
-  int? _totalApp;
-  int get totalApp => _totalApp ?? 0;
+  // "total_app" field — legacy aggregate (SAR major); keep fractional.
+  double? _totalApp;
+  double get totalApp => _totalApp ?? 0;
   bool hasTotalApp() => _totalApp != null;
 
   // "text_type_car_mndob" field.
@@ -255,8 +255,8 @@ class UserRecord extends FirestoreRecord {
     _mndobTypeCar = snapshotData['mndob_type_car'] as DocumentReference?;
     _ismndom = snapshotData['ismndom'] as bool?;
     _revDolh = snapshotData['Rev_dolh'] as DocumentReference?;
-    _totalMndob = castToType<int>(snapshotData['total_mndob']);
-    _totalApp = castToType<int>(snapshotData['total_app']);
+    _totalMndob = castToType<double>(snapshotData['total_mndob']);
+    _totalApp = castToType<double>(snapshotData['total_app']);
     _textTypeCarMndob = snapshotData['text_type_car_mndob'] as String?;
     _totalMndob2 = castToType<double>(snapshotData['totalMndob2']);
     _reteng = getDataList(snapshotData['Reteng']);
@@ -344,8 +344,8 @@ Map<String, dynamic> createUserRecordData({
   DocumentReference? mndobTypeCar,
   bool? ismndom,
   DocumentReference? revDolh,
-  int? totalMndob,
-  int? totalApp,
+  double? totalMndob,
+  double? totalApp,
   String? textTypeCarMndob,
   double? totalMndob2,
   bool? ngl,

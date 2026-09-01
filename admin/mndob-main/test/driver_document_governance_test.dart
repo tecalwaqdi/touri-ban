@@ -293,6 +293,93 @@ void main() {
       );
       expect(r.allowed, isTrue);
     });
+
+    test('suspended driver blocked', () {
+      final r = DriverOperationalEligibilityResolver.evaluate(
+        emailVerified: true,
+        actevMndob: true,
+        suspended: true,
+        onActiveTrip: false,
+        requirements: const [],
+        userData: const {},
+        now: now,
+      );
+      expect(r.allowed, isFalse);
+      expect(r.reasonCode, 'account_suspended');
+    });
+
+    test('pending / not approved driver blocked', () {
+      final r = DriverOperationalEligibilityResolver.evaluate(
+        emailVerified: true,
+        actevMndob: false,
+        suspended: false,
+        onActiveTrip: false,
+        requirements: const [],
+        userData: const {},
+        now: now,
+      );
+      expect(r.allowed, isFalse);
+      expect(r.reasonCode, 'application_not_approved');
+    });
+
+    test('needs_replacement review blocks when rollout enforceable', () {
+      const enforceableLicense = DriverDocumentRequirement(
+        type: 'driverLicense',
+        firestoreField: 'doc_driver_license',
+        required: true,
+        expiryRequired: true,
+        operationalBlockingOnExpiry: true,
+        expiryWarningDays: 30,
+        localizedTitleKey: 'Driver license',
+        effectiveFrom: '2026-01-01',
+        gracePeriodDays: 0,
+      );
+      final r = DriverOperationalEligibilityResolver.evaluate(
+        emailVerified: true,
+        actevMndob: true,
+        suspended: false,
+        onActiveTrip: false,
+        requirements: const [enforceableLicense],
+        userData: {
+          'reviewed_at': DateTime.utc(2025, 1, 1),
+          'doc_driver_license': {
+            'storagePath': 'users/u/uploads/lic.jpg',
+            'reviewStatus': 'needs_replacement',
+            'expiryDate': DateTime.utc(2026, 12, 1),
+          },
+        },
+        now: now,
+      );
+      expect(r.allowed, isFalse);
+      expect(r.reasonCode, 'document_needs_replacement');
+    });
+
+    test('missing required document blocks when rollout enforceable', () {
+      const enforceableLicense = DriverDocumentRequirement(
+        type: 'driverLicense',
+        firestoreField: 'doc_driver_license',
+        required: true,
+        expiryRequired: true,
+        operationalBlockingOnExpiry: true,
+        expiryWarningDays: 30,
+        localizedTitleKey: 'Driver license',
+        effectiveFrom: '2026-01-01',
+        gracePeriodDays: 0,
+      );
+      final r = DriverOperationalEligibilityResolver.evaluate(
+        emailVerified: true,
+        actevMndob: true,
+        suspended: false,
+        onActiveTrip: false,
+        requirements: const [enforceableLicense],
+        userData: {
+          'reviewed_at': DateTime.utc(2025, 1, 1),
+        },
+        now: now,
+      );
+      expect(r.allowed, isFalse);
+      expect(r.reasonCode, 'document_missing');
+    });
   });
 
   group('DriverDocumentRequirementResolver', () {

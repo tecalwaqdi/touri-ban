@@ -376,7 +376,7 @@ class OrderRecord extends FirestoreRecord {
 }
 
 Map<String, dynamic> createOrderRecordData({
-  int? total,
+  double? total,
   DocumentReference? user,
   DocumentReference? mndobUser,
   String? halhText,

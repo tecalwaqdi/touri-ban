@@ -956,6 +956,7 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         photoUrl: _model.uploadedFileUrl_uploadDataLbm,
         idImageUrl: _model.uploadedFileUrl_uploadData1k33,
         carImageUrl: _carImageUrl,
+        licenseImageUrl: _licenseUrl,
         location: _regLocation,
         isResubmit: isResubmit,
         uploadInFlight: _uploadingPhoto ||
