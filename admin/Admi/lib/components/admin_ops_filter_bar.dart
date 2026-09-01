@@ -6,6 +6,7 @@ import '/backend/admin_ops_search.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_ui.dart';
+import '/core/finance/admin_finance_date_range.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -648,6 +649,20 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
               : null,
     );
     if (picked == null) return;
+    if (AdminFinanceDateRangeResolver.isInvalidCustom(
+      customStart: picked.start,
+      customEnd: picked.end,
+    )) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            uiTr(context, 'نطاق التاريخ غير صالح: تاريخ البداية بعد النهاية'),
+          ),
+        ),
+      );
+      return;
+    }
     _emit(
       widget.value.copyWith(
         datePreset: AdminDatePreset.custom,
@@ -687,7 +702,7 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
         AdminDatePreset.today => uiTr(context, 'اليوم'),
         AdminDatePreset.yesterday => uiTr(context, 'أمس'),
         AdminDatePreset.last7Days => uiTr(context, 'آخر 7 أيام'),
-        AdminDatePreset.last30Days => uiTr(context, 'آخر 30 يوم'),
+        AdminDatePreset.last30Days => uiTr(context, 'آخر 30 يومًا'),
         AdminDatePreset.thisMonth => uiTr(context, 'هذا الشهر'),
         AdminDatePreset.lastMonth => uiTr(context, 'الشهر السابق'),
         AdminDatePreset.thisYear => uiTr(context, 'هذه السنة'),

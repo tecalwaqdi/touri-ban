@@ -236,7 +236,7 @@ abstract final class FinancialAccountingLoader {
       byCurrency: byCurrency,
       quality: quality,
       tableRows: table,
-      loadedAt: DateTime.now(),
+      loadedAt: DateTime.now().toUtc(),
       docsScanned: docsScanned,
       filterSignature: scopedFilter.signature,
       totalsSource: totalsSource,

@@ -57,23 +57,15 @@ abstract final class AdminDataClassification {
   };
 }
 
-/// Timezone policy (Phase 3.1) — no country.timezone field in schema today.
+/// Accounting date policy for Admin presets.
 ///
-/// TIMEZONE_POLICY:
-/// - countries collection has: naim, iso_code, currency_*, bounds, vat/commission
-///   rates — **no timezone / utc_offset field**.
-/// - Do **not** invent TZ from country name.
-/// - **SuperAdmin (global date presets):** use **UTC** calendar day for
-///   Today/Yesterday/Month until a trusted per-country TZ exists.
-/// - **Country Agent:** same as SuperAdmin for now (UTC), ready to switch to
-///   `countries.timezone` when added and verified.
-/// - **Custom range:** calendar dates chosen in the picker are interpreted as
-///   whole UTC days (start inclusive / end exclusive next day).
-/// - Display timestamps in the admin UI may still follow device locale.
+/// Finance Hub / Profits / Finance Reports / Ops date chips all use
+/// **Asia/Riyadh** (UTC+03, no DST) via [AdminFinanceDateRangeResolver].
+/// Booking financial country SoT remains `order.Rev_dolh` (not driver/customer).
 abstract final class AdminTimezonePolicy {
   AdminTimezonePolicy._();
 
-  static const String policyId = 'UTC_UNTIL_COUNTRY_TZ';
+  static const String policyId = 'ASIA_RIYADH_ACCOUNTING';
   static const String note =
-      'No countries.timezone in Firestore SoT — date presets use UTC days.';
+      'Date presets use Asia/Riyadh calendar days (UTC+03, no DST).';
 }

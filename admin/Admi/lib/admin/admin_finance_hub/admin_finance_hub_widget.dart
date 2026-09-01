@@ -6,6 +6,7 @@ import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
+import '/core/finance/admin_finance_date_range.dart';
 import '/core/finance/finance_ledger_service.dart';
 import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -45,12 +46,12 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   (AdminDatePreset, String) _preset() {
     switch (_period) {
       case 'day':
-        return (AdminDatePreset.today, 'ent_period_today');
+        return (AdminDatePreset.today, 'اليوم');
       case 'year':
-        return (AdminDatePreset.thisYear, 'ent_period_this_year');
+        return (AdminDatePreset.thisYear, 'هذه السنة');
       case 'month':
       default:
-        return (AdminDatePreset.thisMonth, 'ent_period_this_month');
+        return (AdminDatePreset.thisMonth, 'هذا الشهر');
     }
   }
 
@@ -221,11 +222,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
           children: [
             Expanded(
               child: Text(
-                appTrFormat(
-                  context,
-                  'ent_period_label',
-                  appTr(context, data.periodLabel),
-                ),
+                '${uiTr(context, 'الفترة')}: ${data.periodLabel} · ${uiTr(context, 'توقيت الرياض')}',
                 style: theme.labelLarge.override(
                   fontFamily: theme.labelLargeFamily,
                   color: AdminUi.brandTeal,
@@ -249,6 +246,10 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
               ),
             ),
           ],
+        ),
+        Text(
+          '${uiTr(context, 'تم الإنشاء')}: ${AdminFinanceRiyadhClock.formatDateTime(DateTime.now().toUtc())}',
+          style: theme.labelSmall,
         ),
         const SizedBox(height: 12),
         AdminKpiStrip(

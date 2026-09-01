@@ -19,36 +19,38 @@ void main() {
     });
   });
 
-  group('AdminDateRangeResolver UTC', () {
-    final now = DateTime.utc(2026, 8, 22, 12);
+  group('AdminDateRangeResolver Asia/Riyadh', () {
+    // 12:00 Riyadh on 22 Aug 2026 = 09:00 UTC
+    final now = DateTime.utc(2026, 8, 22, 9);
 
-    test('today UTC day', () {
+    test('today Riyadh day', () {
       final range = AdminDateRangeResolver.resolve(
         preset: AdminDatePreset.today,
         now: now,
       )!;
-      expect(range.startInclusive, DateTime.utc(2026, 8, 22));
-      expect(range.endExclusive, DateTime.utc(2026, 8, 23));
+      expect(range.startInclusive, DateTime.utc(2026, 8, 21, 21));
+      // Today ends at now (half-open), not end-of-Riyadh-day.
+      expect(range.endExclusive, now);
     });
 
-    test('yesterday UTC day', () {
+    test('yesterday Riyadh day', () {
       final range = AdminDateRangeResolver.resolve(
         preset: AdminDatePreset.yesterday,
         now: now,
       )!;
-      expect(range.startInclusive, DateTime.utc(2026, 8, 21));
-      expect(range.endExclusive, DateTime.utc(2026, 8, 22));
+      expect(range.startInclusive, DateTime.utc(2026, 8, 20, 21));
+      expect(range.endExclusive, DateTime.utc(2026, 8, 21, 21));
     });
 
-    test('custom UTC days', () {
+    test('custom Riyadh days', () {
       final range = AdminDateRangeResolver.resolve(
         preset: AdminDatePreset.custom,
         customStart: DateTime(2026, 8, 1),
         customEnd: DateTime(2026, 8, 3),
         now: now,
       )!;
-      expect(range.startInclusive, DateTime.utc(2026, 8, 1));
-      expect(range.endExclusive, DateTime.utc(2026, 8, 4));
+      expect(range.startInclusive, DateTime.utc(2026, 7, 31, 21));
+      expect(range.endExclusive, DateTime.utc(2026, 8, 3, 21));
     });
   });
 
@@ -77,8 +79,8 @@ void main() {
   });
 
   group('AdminTimezonePolicy', () {
-    test('documents UTC until country tz', () {
-      expect(AdminTimezonePolicy.policyId, 'UTC_UNTIL_COUNTRY_TZ');
+    test('documents Asia/Riyadh accounting', () {
+      expect(AdminTimezonePolicy.policyId, 'ASIA_RIYADH_ACCOUNTING');
     });
   });
 }

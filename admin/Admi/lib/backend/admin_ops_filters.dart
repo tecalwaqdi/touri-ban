@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '/backend/admin_cache_policy.dart';
 import '/backend/admin_ops_country_scope.dart';
 import '/backend/admin_ops_counters.dart';
 import '/backend/admin_role_service.dart';
+import '/core/finance/admin_finance_date_range.dart';
 import '/core/toury_system_status_codes.dart';
 
 /// Preset date windows for ops list filters.
 ///
-/// See [AdminTimezonePolicy]: calendar days in **UTC** until countries gain a
-/// trusted timezone field. Range is **start inclusive / end exclusive**.
+/// Finance (+ shared ops presets) resolve calendar days in **Asia/Riyadh**
+/// via [AdminFinanceDateRangeResolver]. Range is **start inclusive / end exclusive**.
 enum AdminDatePreset {
   all,
   today,
@@ -277,14 +277,12 @@ class AdminDateRange {
   Timestamp get endTimestamp => Timestamp.fromDate(endExclusive);
 }
 
-/// Resolves presets as **UTC calendar days** ([AdminTimezonePolicy]).
+/// Resolves presets as **Asia/Riyadh** calendar days (half-open UTC instants).
+///
+/// Delegates to [AdminFinanceDateRangeResolver] so Finance Hub / Profits /
+/// Reports / Ops filters share one contract.
 abstract final class AdminDateRangeResolver {
   AdminDateRangeResolver._();
-
-  static DateTime _utcNow([DateTime? now]) => (now ?? DateTime.now()).toUtc();
-
-  static DateTime _startOfUtcDay(DateTime utc) =>
-      DateTime.utc(utc.year, utc.month, utc.day);
 
   static AdminDateRange? resolve({
     required AdminDatePreset preset,
@@ -292,61 +290,13 @@ abstract final class AdminDateRangeResolver {
     DateTime? customEnd,
     DateTime? now,
   }) {
-    final utc = _utcNow(now);
-    switch (preset) {
-      case AdminDatePreset.all:
-        return null;
-      case AdminDatePreset.today:
-        final start = _startOfUtcDay(utc);
-        return AdminDateRange(
-          startInclusive: start,
-          endExclusive: start.add(const Duration(days: 1)),
-        );
-      case AdminDatePreset.yesterday:
-        final todayStart = _startOfUtcDay(utc);
-        return AdminDateRange(
-          startInclusive: todayStart.subtract(const Duration(days: 1)),
-          endExclusive: todayStart,
-        );
-      case AdminDatePreset.last7Days:
-        final todayStart = _startOfUtcDay(utc);
-        return AdminDateRange(
-          startInclusive: todayStart.subtract(const Duration(days: 6)),
-          endExclusive: todayStart.add(const Duration(days: 1)),
-        );
-      case AdminDatePreset.last30Days:
-        final todayStart = _startOfUtcDay(utc);
-        return AdminDateRange(
-          startInclusive: todayStart.subtract(const Duration(days: 29)),
-          endExclusive: todayStart.add(const Duration(days: 1)),
-        );
-      case AdminDatePreset.thisMonth:
-        final start = DateTime.utc(utc.year, utc.month, 1);
-        final end = DateTime.utc(utc.year, utc.month + 1, 1);
-        return AdminDateRange(startInclusive: start, endExclusive: end);
-      case AdminDatePreset.lastMonth:
-        final start = DateTime.utc(utc.year, utc.month - 1, 1);
-        final end = DateTime.utc(utc.year, utc.month, 1);
-        return AdminDateRange(startInclusive: start, endExclusive: end);
-      case AdminDatePreset.thisYear:
-        final start = DateTime.utc(utc.year, 1, 1);
-        final end = DateTime.utc(utc.year + 1, 1, 1);
-        return AdminDateRange(startInclusive: start, endExclusive: end);
-      case AdminDatePreset.custom:
-        if (customStart == null || customEnd == null) return null;
-        final start = DateTime.utc(
-          customStart.year,
-          customStart.month,
-          customStart.day,
-        );
-        final end = DateTime.utc(
-          customEnd.year,
-          customEnd.month,
-          customEnd.day,
-        ).add(const Duration(days: 1));
-        if (!end.isAfter(start)) return null;
-        return AdminDateRange(startInclusive: start, endExclusive: end);
-    }
+    final finance = AdminFinanceDateRangeResolver.resolve(
+      preset: preset,
+      customStart: customStart,
+      customEnd: customEnd,
+      now: now,
+    );
+    return finance?.toAdminDateRange();
   }
 }
 

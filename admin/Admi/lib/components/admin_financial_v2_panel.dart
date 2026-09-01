@@ -4,6 +4,7 @@ import '/backend/financial_accounting_loader.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_ops_filter_bar.dart';
 import '/components/admin_ui.dart';
+import '/core/finance/admin_finance_date_range.dart';
 import '/core/finance/financial_accounting_engine.dart';
 import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -136,7 +137,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
               },
             ),
             _chip(
-              label: 'Cash',
+              label: uiTr(context, 'نقدًا'),
               selected: _filter.channel == FinancialPaymentChannel.cash,
               onTap: () {
                 _filter = _copy(channel: FinancialPaymentChannel.cash);
@@ -144,7 +145,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
               },
             ),
             _chip(
-              label: 'Online',
+              label: uiTr(context, 'إلكتروني'),
               selected: _filter.channel == FinancialPaymentChannel.online,
               onTap: () {
                 _filter = _copy(channel: FinancialPaymentChannel.online);
@@ -152,7 +153,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
               },
             ),
             _chip(
-              label: 'Completed',
+              label: uiTr(context, 'مكتملة'),
               selected: _filter.lifecycle == FinancialLifecycle.completed,
               onTap: () {
                 _filter = _copy(lifecycle: FinancialLifecycle.completed);
@@ -160,7 +161,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
               },
             ),
             _chip(
-              label: 'cash_collected',
+              label: uiTr(context, 'محصّل نقدًا'),
               selected: _filter.payment == FinancialPaymentState.cashCollected,
               onTap: () {
                 _filter = _copy(payment: FinancialPaymentState.cashCollected);
@@ -168,7 +169,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
               },
             ),
             _chip(
-              label: 'pending_cash',
+              label: uiTr(context, 'بانتظار التحصيل'),
               selected: _filter.payment == FinancialPaymentState.pendingCash,
               onTap: () {
                 _filter = _copy(payment: FinancialPaymentState.pendingCash);
@@ -176,7 +177,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
               },
             ),
             _chip(
-              label: 'HIGH',
+              label: uiTr(context, 'مؤكد'),
               selected: _filter.confidence == FinancialConfidence.high,
               onTap: () {
                 _filter = _copy(confidence: FinancialConfidence.high);
@@ -184,7 +185,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
               },
             ),
             _chip(
-              label: 'DERIVED',
+              label: uiTr(context, 'مشتق'),
               selected: _filter.confidence == FinancialConfidence.derived,
               onTap: () {
                 _filter = _copy(confidence: FinancialConfidence.derived);
@@ -192,7 +193,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
               },
             ),
             _chip(
-              label: 'INCOMPLETE',
+              label: uiTr(context, 'ناقص'),
               selected: _filter.confidence == FinancialConfidence.incomplete,
               onTap: () {
                 _filter = _copy(confidence: FinancialConfidence.incomplete);
@@ -262,11 +263,10 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          '${uiTr(context, 'آخر تحديث')}: ${dateTimeFormat('Hm', result.loadedAt)}'
+          '${uiTr(context, 'آخر تحديث')}: ${AdminFinanceRiyadhClock.formatDateTime(result.loadedAt)}'
           ' · ${result.docsScanned} ${uiTr(context, 'مستندات')}'
-          ' · totals=${result.totalsSource}'
-          ' · sig=${result.filterSignature.split('|').take(3).join('|')}…'
-          '${result.truncated ? ' · truncated' : ''}',
+          ' · ${uiTr(context, 'المصدر')}: ${result.totalsSource}'
+          '${result.truncated ? ' · ${uiTr(context, 'مقتطع')}' : ''}',
           style: theme.labelSmall,
         ),
         const SizedBox(height: 8),
@@ -310,21 +310,16 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
             spacing: 16,
             runSpacing: 8,
             children: [
-              Text('Total ${q.totalLines}'),
-              Text('HIGH ${q.high}'),
-              Text('DERIVED ${q.derived}'),
+              Text('${uiTr(context, 'الإجمالي')}: ${q.totalLines}'),
+              Text('${uiTr(context, 'مؤكد')}: ${q.high}'),
+              Text('${uiTr(context, 'مشتق')}: ${q.derived}'),
               Text(
-                'INCOMPLETE ${q.incomplete}',
+                '${uiTr(context, 'ناقص')}: ${q.incomplete}',
                 style: TextStyle(
                   color: q.incomplete > 0 ? Colors.orange.shade800 : null,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              Text('Reconciled ${q.reconciled}'),
-              Text('ReconΔ ${q.reconciliationDifference}'),
-              Text('Missing pay ${q.missingPaymentStatus}'),
-              Text('Missing life ${q.missingLifecycle}'),
-              Text('Missing driver ${q.missingDriver}'),
             ],
           ),
         ],
@@ -338,7 +333,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            uiTr(context, 'Company Exposure (Trip)'),
+            uiTr(context, 'تعرض الشركة (رحلات)'),
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 6),
@@ -346,9 +341,8 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Text(
-                '${e.key}: Drivers owe ${_money(e.value.cashDriversOweCompany)} · '
-                'Company owes ${_money(MoneyAmount(currency: e.key, minorUnits: e.value.cashCompanyOwesDrivers.minorUnits + e.value.onlineCompanyOwesDrivers.minorUnits))} · '
-                'Net ${_money(MoneyAmount(currency: e.key, minorUnits: e.value.cashDriversOweCompany.minorUnits - e.value.cashCompanyOwesDrivers.minorUnits - e.value.onlineCompanyOwesDrivers.minorUnits))}',
+                '${e.key}: ${uiTr(context, 'المناديب يدينون')} ${_money(e.value.cashDriversOweCompany)} · '
+                '${uiTr(context, 'الشركة تدين')} ${_money(MoneyAmount(currency: e.key, minorUnits: e.value.cashCompanyOwesDrivers.minorUnits + e.value.onlineCompanyOwesDrivers.minorUnits))}',
               ),
             ),
           Text(
