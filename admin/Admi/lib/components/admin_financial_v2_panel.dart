@@ -4,7 +4,9 @@ import '/backend/financial_accounting_loader.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_ops_filter_bar.dart';
 import '/components/admin_ui.dart';
+import '/core/finance/admin_finance_canonical_ui.dart';
 import '/core/finance/admin_finance_date_range.dart';
+import '/core/finance/financial_accounting_unavailable.dart';
 import '/core/finance/financial_accounting_engine.dart';
 import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -34,7 +36,10 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
   void _reload() {
     setState(() {
       _loading = true;
-      _future = FinancialAccountingLoader.load(_filter).whenComplete(() {
+      _future = FinancialAccountingLoader.load(
+        _filter,
+        requireCanonicalServer: true,
+      ).whenComplete(() {
         if (mounted) setState(() => _loading = false);
       });
     });
@@ -221,6 +226,11 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
           future: _future,
           builder: (context, snap) {
             if (snap.hasError) {
+              if (snap.error is FinancialAccountingUnavailableException) {
+                return AdminFinanceCanonicalUnavailablePanel(
+                  onRetry: _reload,
+                );
+              }
               return AdminContentCard(
                 child: Text(
                   '${uiTr(context, 'تعذر تحميل التقرير المالي')}: ${snap.error}',
@@ -527,7 +537,8 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
               if (line.reconciliationDifference != null)
                 _kv('RECONCILIATION_DIFFERENCE',
                     _money(line.reconciliationDifference)),
-              if (line.notes.isNotEmpty) Text('Notes: ${line.notes.join(', ')}'),
+              if (line.notes.isNotEmpty)
+                Text('Notes: ${line.notes.join(', ')}'),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () {

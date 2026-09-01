@@ -1,4 +1,3 @@
-
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_performance.dart';
@@ -6,6 +5,7 @@ import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/core/cloud_functions/cloud_functions_client.dart';
 import '/core/finance/financial_accounting_engine.dart';
+import '/core/finance/financial_accounting_unavailable.dart';
 import '/core/finance/financial_order_adapter.dart';
 import '/core/finance/money_amount.dart';
 import '/core/finance/settlement_preview.dart';
@@ -159,9 +159,14 @@ abstract final class FinancialAccountingLoader {
   }
 
   /// Full load: totals via CF (or client full scan) + first table page.
+  ///
+  /// When [requireCanonicalServer] is true and the query is not driver-scoped,
+  /// a CF failure throws [FinancialAccountingUnavailableException] instead of
+  /// falling back to [client_full] totals.
   static Future<FinancialReportResult> load(
     FinancialReportFilter filter, {
     int tablePage = 0,
+    bool requireCanonicalServer = false,
   }) async {
     final range = filter.dateRange;
     final country = _effectiveCountry(filter);
@@ -185,8 +190,10 @@ abstract final class FinancialAccountingLoader {
     var truncated = false;
     var allLines = <FinancialOrderLine>[];
 
+    final driverScoped = filter.driverRef != null;
+
     // Driver-scoped: prefer full client scan (small set) so statement lines exist.
-    if (filter.driverRef != null) {
+    if (driverScoped) {
       final scanned = await _clientFullScan(scopedFilter);
       byCurrency = scanned.byCurrency;
       quality = scanned.quality;
@@ -214,7 +221,13 @@ abstract final class FinancialAccountingLoader {
             ? ((remote['quality'] as Map)['docsScanned'] as num?)?.toInt() ?? 0
             : 0;
         totalsSource = (remote['source'] as String?) ?? 'server_v2';
-      } catch (_) {
+      } catch (e) {
+        if (!financeAllowsClientFullFallback(
+          requireCanonicalServer: requireCanonicalServer,
+          driverScoped: driverScoped,
+        )) {
+          throw FinancialAccountingUnavailableException(e);
+        }
         final scanned = await _clientFullScan(scopedFilter);
         byCurrency = scanned.byCurrency;
         quality = scanned.quality;
@@ -253,7 +266,8 @@ abstract final class FinancialAccountingLoader {
     required String currency,
     FinancialReportFilter? filter,
   }) async {
-    final base = filter ?? const FinancialReportFilter(datePreset: AdminDatePreset.all);
+    final base =
+        filter ?? const FinancialReportFilter(datePreset: AdminDatePreset.all);
     final f = FinancialReportFilter(
       datePreset: base.datePreset,
       customStart: base.customStart,
@@ -332,7 +346,8 @@ abstract final class FinancialAccountingLoader {
         if (range != null && filter.driverRef != null) {
           final d = order.dataOrder;
           if (d == null) continue;
-          if (d.isBefore(range.startInclusive) || !d.isBefore(range.endExclusive)) {
+          if (d.isBefore(range.startInclusive) ||
+              !d.isBefore(range.endExclusive)) {
             continue;
           }
         }
@@ -350,8 +365,9 @@ abstract final class FinancialAccountingLoader {
 
     final start = page * pageSize;
     if (start >= collected.length) return const [];
-    final end =
-        (start + pageSize > collected.length) ? collected.length : start + pageSize;
+    final end = (start + pageSize > collected.length)
+        ? collected.length
+        : start + pageSize;
     return collected.sublist(start, end);
   }
 
@@ -393,7 +409,8 @@ abstract final class FinancialAccountingLoader {
         if (range != null && filter.driverRef != null) {
           final d = order.dataOrder;
           if (d == null) continue;
-          if (d.isBefore(range.startInclusive) || !d.isBefore(range.endExclusive)) {
+          if (d.isBefore(range.startInclusive) ||
+              !d.isBefore(range.endExclusive)) {
             continue;
           }
         }
@@ -428,9 +445,11 @@ abstract final class FinancialAccountingLoader {
       byCurrency: FinancialAccountingEngine.aggregateByCurrency(lines),
       quality: FinancialQualityStats(
         totalLines: lines.length,
-        high: lines.where((l) => l.confidence == FinancialConfidence.high).length,
-        derived:
-            lines.where((l) => l.confidence == FinancialConfidence.derived).length,
+        high:
+            lines.where((l) => l.confidence == FinancialConfidence.high).length,
+        derived: lines
+            .where((l) => l.confidence == FinancialConfidence.derived)
+            .length,
         incomplete: lines
             .where((l) => l.confidence == FinancialConfidence.incomplete)
             .length,
@@ -458,8 +477,7 @@ abstract final class FinancialAccountingLoader {
       final code = key.toString();
       final t = FinancialCurrencyTotals(currency: code);
       int i(String k) => (value[k] as num?)?.toInt() ?? 0;
-      MoneyAmount m(String k) =>
-          MoneyAmount(currency: code, minorUnits: i(k));
+      MoneyAmount m(String k) => MoneyAmount(currency: code, minorUnits: i(k));
 
       t.cashCollectedTrips = i('cashCollectedTrips');
       t.onlinePaidTrips = i('onlinePaidTrips');

@@ -98,7 +98,10 @@ abstract final class FinanceLedgerService {
     String periodLabel = '',
   }) async {
     final filter = FinancialReportFilter(datePreset: datePreset);
-    final result = await FinancialAccountingLoader.load(filter);
+    final result = await FinancialAccountingLoader.load(
+      filter,
+      requireCanonicalServer: true,
+    );
 
     final byCurrency = result.byCurrency;
     final primary = _pickPrimaryCurrency(byCurrency);
@@ -153,8 +156,10 @@ abstract final class FinanceLedgerService {
   static Future<Map<String, double>> _loadWalletBalances() async {
     final out = <String, double>{};
     try {
-      final snap =
-          await FirebaseFirestore.instance.collection('wallets').limit(200).get();
+      final snap = await FirebaseFirestore.instance
+          .collection('wallets')
+          .limit(200)
+          .get();
       for (final doc in snap.docs) {
         final d = doc.data();
         final bal = (d['currentBalance'] as num?)?.toDouble() ?? 0;

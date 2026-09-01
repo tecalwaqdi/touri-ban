@@ -9,10 +9,12 @@ import '/components/admin_ops_filter_bar.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_user_facing_errors.dart';
+import '/core/finance/admin_finance_canonical_ui.dart';
 import '/core/finance/admin_finance_date_range.dart';
 import '/core/finance/csv_export.dart';
 import '/core/finance/finance_comparable_kpis.dart';
 import '/core/finance/finance_controls_client.dart';
+import '/core/finance/financial_accounting_unavailable.dart';
 import '/core/finance/financial_accounting_engine.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -58,6 +60,7 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
   Map<String, dynamic>? _ledgerReport;
   bool _busy = false;
   String? _error;
+  bool _canonicalFinanceUnavailable = false;
 
   bool get _isV2 => _v2Types.containsKey(_type);
 
@@ -90,10 +93,14 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
     setState(() {
       _busy = true;
       _error = null;
+      _canonicalFinanceUnavailable = false;
     });
     try {
       if (_isV2) {
-        final data = await FinancialAccountingLoader.load(_filter);
+        final data = await FinancialAccountingLoader.load(
+          _filter,
+          requireCanonicalServer: true,
+        );
         setState(() {
           _v2Result = data;
           _ledgerReport = null;
@@ -109,7 +116,11 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
       }
     } catch (e) {
       setState(() {
-        _error = AdminUserFacingErrors.from(context, e);
+        _canonicalFinanceUnavailable =
+            e is FinancialAccountingUnavailableException;
+        _error = _canonicalFinanceUnavailable
+            ? null
+            : AdminUserFacingErrors.from(context, e);
         _v2Result = null;
         _ledgerReport = null;
       });
@@ -118,8 +129,7 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
     }
   }
 
-  String _typeLabel(String key) =>
-      _v2Types[key] ?? _ledgerTypes[key] ?? key;
+  String _typeLabel(String key) => _v2Types[key] ?? _ledgerTypes[key] ?? key;
 
   @override
   Widget build(BuildContext context) {
@@ -262,6 +272,10 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
           if (_busy) ...[
             const SizedBox(height: 12),
             const LinearProgressIndicator(minHeight: 2),
+          ],
+          if (_canonicalFinanceUnavailable) ...[
+            const SizedBox(height: 12),
+            AdminFinanceCanonicalUnavailablePanel(onRetry: _run),
           ],
           if (_error != null) ...[
             const SizedBox(height: 12),

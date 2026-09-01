@@ -1,0 +1,3 @@
+# Backup for hosts that read _redirects (Netlify-style).
+# Render production MUST use Dashboard rewrite: /* -> /index.html (Rewrite).
+/*    /index.html   200

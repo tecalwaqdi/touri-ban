@@ -1,4 +1,5 @@
 import '/admin/admin_booking_details/admin_booking_details_adapter.dart';
+import '/admin/admin_booking_details/admin_booking_journey_section.dart';
 import '/admin/admin_booking_details/admin_booking_details_sections.dart';
 import '/backend/admin_resource_guard.dart';
 import '/backend/admin_role_service.dart';
@@ -101,9 +102,8 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                 child: Text(uiTr(context, 'إلغاء')),
               ),
               FilledButton(
-                onPressed: remainingMinor <= 0
-                    ? null
-                    : () => Navigator.pop(ctx, true),
+                onPressed:
+                    remainingMinor <= 0 ? null : () => Navigator.pop(ctx, true),
                 child: Text(uiTr(context, 'تأكيد')),
               ),
             ],
@@ -114,9 +114,9 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
 
     setState(() => _refundSubmitting = true);
     try {
-      final sessionId = (order.snapshotData['payment_session_id'] ??
-              order.reference.id)
-          .toString();
+      final sessionId =
+          (order.snapshotData['payment_session_id'] ?? order.reference.id)
+              .toString();
       await AdminPaymentApiClient().refund(
         sessionId: sessionId,
         idempotencyKey:
@@ -173,8 +173,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
         style: FlutterFlowTheme.of(context).titleMedium.override(
               fontFamily: FlutterFlowTheme.of(context).titleMediumFamily,
               fontWeight: FontWeight.w600,
-              useGoogleFonts:
-                  !FlutterFlowTheme.of(context).titleMediumIsCustom,
+              useGoogleFonts: !FlutterFlowTheme.of(context).titleMediumIsCustom,
             ),
       ),
       centerTitle: false,
@@ -229,8 +228,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
           builder: (context, accessSnap) {
             if (!accessSnap.hasData) {
               return Scaffold(
-                backgroundColor:
-                    FlutterFlowTheme.of(context).primaryBackground,
+                backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
                 appBar: _appBar(context),
                 body: const AdminBookingDetailsSkeleton(),
               );
@@ -238,8 +236,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
 
             if (accessSnap.data != true) {
               return Scaffold(
-                backgroundColor:
-                    FlutterFlowTheme.of(context).primaryBackground,
+                backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
                 appBar: _appBar(context),
                 body: Center(
                   child: Text(uiTr(context, 'لا تملك صلاحية عرض هذا الحجز')),
@@ -275,7 +272,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
             AdminBookingDetailsHeader(view: view),
             AdminBookingDetailsSummaryStrip(view: view),
             Expanded(
-                child: AdminSafeScrollBody(
+              child: AdminSafeScrollBody(
                 padding: const EdgeInsets.fromLTRB(14, 12, 14, 16),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
@@ -292,8 +289,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                       AdminBookingDetailsCancellationCard(view: view),
                       if (view.row.statusTone !=
                               AdminBookingStatusTone.canceled &&
-                          view.row.statusTone !=
-                              AdminBookingStatusTone.expired)
+                          view.row.statusTone != AdminBookingStatusTone.expired)
                         const SizedBox(height: 12),
                       AdminBookingDetailsTimeline(view: view),
                     ];
@@ -304,6 +300,8 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                       AdminBookingDetailsDriverCard(view: view),
                       const SizedBox(height: 12),
                       AdminBookingDetailsTripCard(view: view),
+                      const SizedBox(height: 12),
+                      AdminBookingJourneySection(order: order),
                     ];
 
                     final bottom = <Widget>[

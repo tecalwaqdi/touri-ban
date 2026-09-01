@@ -6,6 +6,8 @@ import '/backend/backend.dart';
 import '/components/admin_driver_documents_panel.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_ui.dart';
+import '/components/admin_status_badge.dart';
+import '/core/admin_driver_email_verification.dart';
 import '/core/admin_driver_review_actions.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -32,6 +34,7 @@ class DriverRegistrationReviewBody extends StatelessWidget {
   final TextEditingController cityController;
   final TextEditingController carTypeController;
   final bool busy;
+
   /// When false, show a clear status and hide decision actions (no blank screen).
   final bool awaitingReview;
   final VoidCallback onPickCity;
@@ -51,6 +54,7 @@ class DriverRegistrationReviewBody extends StatelessWidget {
         .map((k) => appTr(context, k))
         .where((t) => t.trim().isNotEmpty)
         .toList();
+    final emailVerification = AdminDriverEmailVerification.fromUserData(data);
 
     return ListView(
       padding: AdminUi.pagePadding(context).copyWith(top: 12, bottom: 24),
@@ -76,7 +80,8 @@ class DriverRegistrationReviewBody extends StatelessWidget {
             ),
             AdminDriverKvRow(
               label: uiTr(context, 'رقم المحاولة'),
-              value: '${data['reviewAttemptCount'] ?? data['review_attempt_count'] ?? '—'}',
+              value:
+                  '${data['reviewAttemptCount'] ?? data['review_attempt_count'] ?? '—'}',
             ),
             if (data['reviewVersion'] != null)
               AdminDriverKvRow(
@@ -109,6 +114,38 @@ class DriverRegistrationReviewBody extends StatelessWidget {
             AdminDriverKvRow(
               label: uiTr(context, 'البريد'),
               value: user.email.trim().isNotEmpty ? user.email : '—',
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 108,
+                    child: Text(
+                      uiTr(context, 'حالة التحقق'),
+                      style: theme.labelSmall.override(
+                        fontFamily: theme.labelSmallFamily,
+                        color: theme.secondaryText,
+                        useGoogleFonts: !theme.labelSmallIsCustom,
+                      ),
+                    ),
+                  ),
+                  AdminStatusBadgeUnified(
+                    label: AdminDriverEmailVerification.labelArabic(
+                      emailVerification,
+                    ),
+                    kind: switch (emailVerification) {
+                      AdminDriverEmailVerificationDisplay.verified =>
+                        AdminStatusKind.active,
+                      AdminDriverEmailVerificationDisplay.unverified =>
+                        AdminStatusKind.pending,
+                      AdminDriverEmailVerificationDisplay.unknown =>
+                        AdminStatusKind.unknown,
+                    },
+                  ),
+                ],
+              ),
             ),
             AdminDriverKvRow(
               label: uiTr(context, 'الهاتف'),
@@ -240,7 +277,8 @@ class DriverRegistrationReviewBody extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: busy ? null : onRequestChanges,
                       icon: const Icon(Icons.edit_note_rounded, size: 18),
-                      label: Text(appTr(context, 'adm_drv_request_changes_btn')),
+                      label:
+                          Text(appTr(context, 'adm_drv_request_changes_btn')),
                     ),
                   ),
                   Semantics(
@@ -308,7 +346,8 @@ Future<({String reason, List<String> fields})?> showDriverNeedsChangesDialog({
                   children: [
                     Text(uiTr(context, 'ما الذي يحتاج إلى تعديل؟')),
                     const SizedBox(height: 8),
-                    for (final key in AdminDriverReviewActions.fieldsToFixAllowlist)
+                    for (final key
+                        in AdminDriverReviewActions.fieldsToFixAllowlist)
                       CheckboxListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,

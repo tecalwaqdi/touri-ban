@@ -6,8 +6,10 @@ import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
+import '/core/finance/admin_finance_canonical_ui.dart';
 import '/core/finance/admin_finance_date_range.dart';
 import '/core/finance/finance_ledger_service.dart';
+import '/core/finance/financial_accounting_unavailable.dart';
 import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -190,15 +192,19 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                     label: uiTr(context, 'جاري تحميل البيانات المالية'),
                   )
                 else if (snapshot.hasError)
-                  AdminEmptyState(
-                    title: uiTr(context, 'تعذر تحميل المركز المالي'),
-                    message: '${snapshot.error}',
-                    icon: Icons.error_outline,
-                    action: AdminPrimaryButton(
-                      label: uiTr(context, 'إعادة المحاولة'),
-                      onPressed: _reload,
-                    ),
-                  )
+                  snapshot.error is FinancialAccountingUnavailableException
+                      ? AdminFinanceCanonicalUnavailablePanel(
+                          onRetry: _reload,
+                        )
+                      : AdminEmptyState(
+                          title: uiTr(context, 'تعذر تحميل المركز المالي'),
+                          message: '${snapshot.error}',
+                          icon: Icons.error_outline,
+                          action: AdminPrimaryButton(
+                            label: uiTr(context, 'إعادة المحاولة'),
+                            onPressed: _reload,
+                          ),
+                        )
                 else
                   _buildBody(context, theme, snapshot.data!),
               ],
