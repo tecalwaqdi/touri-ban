@@ -39,11 +39,30 @@ abstract final class DriverPaymentStatusMapper {
     return TourySystemStatusCodes.unpaid;
   }
 
+  /// Cash-method only — online `paid` must not count as cash collected.
   static bool isCashCollected(OrderRecord order) {
+    if (!DriverPaymentLabels.isCash(
+      order.paymentMethod,
+      fallbackRaw: order.snapshotData['PaymentMethod']?.toString(),
+    )) {
+      return false;
+    }
     if (order.snapshotData['cashCollectedByDriver'] == true) return true;
-    final s = normalizeStatus(order);
-    return s == TourySystemStatusCodes.cashCollected ||
-        s == TourySystemStatusCodes.paid;
+    final cashStatus =
+        (order.snapshotData['cash_collection_status'] ?? '').toString().trim();
+    if (cashStatus == 'collected') return true;
+    return normalizeStatus(order) == TourySystemStatusCodes.cashCollected;
+  }
+
+  static bool isCashCollectionPending(OrderRecord order) {
+    if (!DriverPaymentLabels.isCash(
+      order.paymentMethod,
+      fallbackRaw: order.snapshotData['PaymentMethod']?.toString(),
+    )) {
+      return false;
+    }
+    return !isCashCollected(order) &&
+        normalizeStatus(order) == TourySystemStatusCodes.pendingCash;
   }
 
   static bool isElectronic(PaymentMethod? method) =>

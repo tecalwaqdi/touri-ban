@@ -172,6 +172,16 @@ class AdminRoleService {
 
   static bool get isFinance => _claims.isFinance || isSuperAdmin;
 
+  /// Agent claim without SuperAdmin (defense-in-depth for own-account finance).
+  static bool get isAgentAccount => _claims.isAgent && !isSuperAdmin;
+
+  /// Pure Finance staff (global finance UI) — not country/agent scoped.
+  static bool get isFinanceStaff =>
+      _claims.isFinance &&
+      !_claims.isSuperAdmin &&
+      !_claims.isCountryAdmin &&
+      !_claims.isAgent;
+
   /// SuperAdmin / Finance-only writers. Country agents are read-only in Phase 6A.
   static bool get canWriteSettlements =>
       isSuperAdmin ||
@@ -225,6 +235,9 @@ class AdminRoleService {
   static const _financeRoutes = {
     'AdminProfits',
     'AdminFinanceHub',
+    'AdminFinanceChannels',
+    'AdminFinanceReceivables',
+    'AdminAgentFinance',
     // AdminDriverWallets is LEGACY_WALLET_TOOL — SuperAdmin only (not settlement V2).
     'AdminSettlements',
     'AdminSettlementDetails',
@@ -236,8 +249,26 @@ class AdminRoleService {
     'AdminDiagnostics',
   };
 
+  /// Global finance administration — country agents/agents must not open these.
+  static const _globalFinanceAdminRoutes = {
+    'AdminFinanceHub',
+    'AdminProfits',
+    'AdminFinanceChannels',
+    'AdminFinanceReceivables',
+    'AdminSettlements',
+    'AdminSettlementDetails',
+    'AdminSettlementReceipt',
+    'AdminReconciliation',
+    'AdminFinancialPeriods',
+    'AdminFinanceReports',
+    'AdminFinanceAudit',
+    'AdminDiagnostics',
+    'AdminDriverWallets',
+  };
+
   static bool canAccessRoute(String routeName) {
-    if (_claims.isFinance && !_claims.isSuperAdmin && !_claims.isCountryAdmin) {
+    // Pure Finance staff: global finance surfaces only (not Agent-scoped).
+    if (isFinanceStaff) {
       return _financeRoutes.contains(routeName) || routeName == 'Settings';
     }
 
@@ -246,13 +277,11 @@ class AdminRoleService {
         return routeName != 'adminRegesr';
       case AdminRole.countryAgent:
         if (_superAdminOnlyRoutes.contains(routeName)) {
-          if (_claims.isFinance && _financeRoutes.contains(routeName)) {
-            return true;
-          }
           return false;
         }
-        // Hard deny cross-country admin surfaces even if allowlist drifts.
-        if (routeName == 'AdminDol' ||
+        // Hard deny global finance admin + cross-country admin surfaces.
+        if (_globalFinanceAdminRoutes.contains(routeName) ||
+            routeName == 'AdminDol' ||
             routeName == 'AdminAgent' ||
             routeName == 'AdminSuperAdmins' ||
             routeName == 'AdminAuditLog' ||
@@ -293,16 +322,8 @@ class AdminRoleService {
     'EdetTransportCompany',
     'AdminALLhgZ',
     'AdminBookingDetails',
-    'AdminProfits',
-    'AdminFinanceHub',
-    'AdminSettlements',
-    'AdminSettlementDetails',
-    'AdminSettlementReceipt',
-    'AdminReconciliation',
-    'AdminFinancialPeriods',
-    'AdminFinanceReports',
-    'AdminFinanceAudit',
-    'AdminDiagnostics',
+    // Agent own finance only — not global settlement/audit/periods admin.
+    'AdminAgentFinance',
     'AdminTourGuides',
     'AdminSuport',
     'Settings',

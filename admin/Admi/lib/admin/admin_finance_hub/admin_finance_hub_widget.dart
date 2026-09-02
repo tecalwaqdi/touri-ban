@@ -117,57 +117,78 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    AdminPrimaryButton(
-                      label: uiTr(context, 'التقرير المالي'),
-                      outlined: true,
-                      icon: Icons.open_in_new_rounded,
-                      onPressed: () => context.pushNamed(
-                        AdminProfitsWidget.routeName,
+                    if (AdminRoleService.canAccessRoute(
+                      AdminProfitsWidget.routeName,
+                    ))
+                      AdminPrimaryButton(
+                        label: uiTr(context, 'التقرير المالي'),
+                        outlined: true,
+                        icon: Icons.open_in_new_rounded,
+                        onPressed: () => context.pushNamed(
+                          AdminProfitsWidget.routeName,
+                        ),
                       ),
-                    ),
-                    AdminPrimaryButton(
-                      label: uiTr(context, 'النقدي / الإلكتروني'),
-                      outlined: true,
-                      onPressed: () => context.pushNamed(
-                        AdminFinanceChannelsWidget.routeName,
+                    if (AdminRoleService.canAccessRoute(
+                      AdminFinanceChannelsWidget.routeName,
+                    ))
+                      AdminPrimaryButton(
+                        label: uiTr(context, 'النقدي / الإلكتروني'),
+                        outlined: true,
+                        onPressed: () => context.pushNamed(
+                          AdminFinanceChannelsWidget.routeName,
+                        ),
                       ),
-                    ),
-                    AdminPrimaryButton(
-                      label: uiTr(context, 'التسويات'),
-                      outlined: true,
-                      icon: Icons.receipt_long_outlined,
-                      onPressed: () => context.pushNamed(
-                        AdminSettlementsWidget.routeName,
+                    if (AdminRoleService.canAccessRoute(
+                      AdminSettlementsWidget.routeName,
+                    ))
+                      AdminPrimaryButton(
+                        label: uiTr(context, 'التسويات'),
+                        outlined: true,
+                        icon: Icons.receipt_long_outlined,
+                        onPressed: () => context.pushNamed(
+                          AdminSettlementsWidget.routeName,
+                        ),
                       ),
-                    ),
-                    AdminPrimaryButton(
-                      label: uiTr(context, 'المطابقة'),
-                      outlined: true,
-                      onPressed: () => context.pushNamed(
-                        AdminReconciliationWidget.routeName,
+                    if (AdminRoleService.canAccessRoute(
+                      AdminReconciliationWidget.routeName,
+                    ))
+                      AdminPrimaryButton(
+                        label: uiTr(context, 'المطابقة'),
+                        outlined: true,
+                        onPressed: () => context.pushNamed(
+                          AdminReconciliationWidget.routeName,
+                        ),
                       ),
-                    ),
-                    AdminPrimaryButton(
-                      label: uiTr(context, 'الذمم المالية'),
-                      outlined: true,
-                      onPressed: () => context.pushNamed(
-                        AdminFinanceReceivablesWidget.routeName,
+                    if (AdminRoleService.canAccessRoute(
+                      AdminFinanceReceivablesWidget.routeName,
+                    ))
+                      AdminPrimaryButton(
+                        label: uiTr(context, 'الذمم المالية'),
+                        outlined: true,
+                        onPressed: () => context.pushNamed(
+                          AdminFinanceReceivablesWidget.routeName,
+                        ),
                       ),
-                    ),
-                    AdminPrimaryButton(
-                      label: uiTr(context, 'مالية الوكلاء'),
-                      outlined: true,
-                      onPressed: () => context.pushNamed(
-                        AdminAgentFinanceWidget.routeName,
+                    if (AdminRoleService.canAccessRoute(
+                      AdminAgentFinanceWidget.routeName,
+                    ))
+                      AdminPrimaryButton(
+                        label: uiTr(context, 'مالية الوكلاء'),
+                        outlined: true,
+                        onPressed: () => context.pushNamed(
+                          AdminAgentFinanceWidget.routeName,
+                        ),
                       ),
-                    ),
-                    AdminPrimaryButton(
-                      label: uiTr(context, 'سجل التدقيق'),
-                      outlined: true,
-                      onPressed: () => context.pushNamed(
-                        AdminFinanceAuditWidget.routeName,
+                    if (AdminRoleService.canAccessRoute(
+                      AdminFinanceAuditWidget.routeName,
+                    ))
+                      AdminPrimaryButton(
+                        label: uiTr(context, 'سجل التدقيق'),
+                        outlined: true,
+                        onPressed: () => context.pushNamed(
+                          AdminFinanceAuditWidget.routeName,
+                        ),
                       ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 12),

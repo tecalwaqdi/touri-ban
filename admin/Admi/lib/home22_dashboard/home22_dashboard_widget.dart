@@ -354,6 +354,12 @@ class _DashboardQuickActionsGrid extends StatelessWidget {
         colors: const [Color(0xFF1F7372), Color(0xFF39D2C0)],
       ),
       (
+        route: AdminAgentFinanceWidget.routeName,
+        icon: Icons.handshake_outlined,
+        label: navLabel(context, AdminAgentFinanceWidget.routeName),
+        colors: const [Color(0xFF1F7372), Color(0xFF2A9D8A)],
+      ),
+      (
         route: AdminProfitsWidget.routeName,
         icon: Icons.account_balance_wallet_rounded,
         label: l10n.getText('nn2n9yup'),

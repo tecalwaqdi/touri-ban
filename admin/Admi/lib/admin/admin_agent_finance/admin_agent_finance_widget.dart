@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
@@ -61,7 +62,15 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
     final scoped = AdminRoleService.isCountryAgent
         ? agents.where((a) {
             final scope = AdminRoleService.scopedCountryRef?.path;
-            return scope != null && a.revDlohAgent?.path == scope;
+            if (scope == null || a.revDlohAgent?.path != scope) {
+              return false;
+            }
+            // Agent accounts only see their own finance — not peer agents.
+            if (AdminRoleService.isAgentAccount) {
+              final me = currentUserUid;
+              return me.isNotEmpty && a.reference.id == me;
+            }
+            return true;
           }).toList()
         : agents;
 
