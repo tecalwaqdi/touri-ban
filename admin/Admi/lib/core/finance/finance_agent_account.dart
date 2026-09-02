@@ -70,7 +70,15 @@ class AgentFinanceAccount {
         : AgentAttributionScope.countryScopeOnly;
 
     MoneyAmount commission = MoneyAmount.zero(code);
-    if (confidence == AgentAttributionConfidence.provable && rate > 0) {
+    var snapshottedMinor = 0;
+    for (final line in filtered) {
+      if (line.agentId == agent.reference.id && line.hasProvableAgentSnapshot) {
+        snapshottedMinor += line.agentAmount!.minorUnits;
+      }
+    }
+    if (snapshottedMinor > 0) {
+      commission = MoneyAmount(currency: code, minorUnits: snapshottedMinor);
+    } else if (confidence == AgentAttributionConfidence.provable && rate > 0) {
       commission = MoneyAmount(
         currency: code,
         minorUnits: (realizedSales.minorUnits * rate / 100).round(),
@@ -126,6 +134,9 @@ class AgentStatementRow {
   final double agentRatePercent;
 
   MoneyAmount? agentCommission(String currency) {
+    if (line.hasProvableAgentSnapshot && line.agentAmount != null) {
+      return line.agentAmount;
+    }
     if (agentRatePercent <= 0 || !line.qualifiesCollectedCash) return null;
     final base = line.platformFee ?? line.customerPaid;
     if (base == null) return null;

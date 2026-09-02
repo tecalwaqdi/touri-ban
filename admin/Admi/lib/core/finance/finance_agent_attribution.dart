@@ -2,7 +2,7 @@
 ///
 /// Historical orders do NOT store per-order agent identity. Attribution uses:
 /// - [AgentAttributionScope.country]: order `Rev_dolh` matches agent `Rev_dloh_agent`
-/// - Agent commission rate from user `Agent_total` (percentage)
+/// - Agent commission rate from user `Agent_total` (percentage of platform fee / total_app)
 ///
 /// Multiple agents may share a country in data model; production commission is
 /// only provable when exactly one active agent holds the country scope.

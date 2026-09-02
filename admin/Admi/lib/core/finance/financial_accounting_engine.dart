@@ -82,6 +82,14 @@ class FinancialOrderSnapshot {
     this.driverId,
     this.countryPath,
     this.orderedAt,
+    this.agentId,
+    this.agentScope,
+    this.agentRate,
+    this.agentRateType,
+    this.agentAmountMinor,
+    this.agentCurrency,
+    this.agentSnapshotAt,
+    this.agentAttributionStatus,
   });
 
   final String orderId;
@@ -107,6 +115,14 @@ class FinancialOrderSnapshot {
   final String? driverId;
   final String? countryPath;
   final DateTime? orderedAt;
+  final String? agentId;
+  final String? agentScope;
+  final double? agentRate;
+  final String? agentRateType;
+  final int? agentAmountMinor;
+  final String? agentCurrency;
+  final String? agentSnapshotAt;
+  final String? agentAttributionStatus;
 }
 
 /// Per-order accounting line for Admin reporting (read-only).
@@ -135,6 +151,12 @@ class FinancialOrderLine {
     this.settlementEligible = false,
     this.exclusionReason,
     this.notes = const [],
+    this.agentId,
+    this.agentScope,
+    this.agentRate,
+    this.agentRateType,
+    this.agentAmount,
+    this.agentAttributionStatus,
   });
 
   final String orderId;
@@ -172,6 +194,27 @@ class FinancialOrderLine {
   final String? exclusionReason;
 
   final List<String> notes;
+
+  /// FIN-9 immutable prospective agent snapshot (when attributed).
+  final String? agentId;
+  final String? agentScope;
+  final double? agentRate;
+  final String? agentRateType;
+  final MoneyAmount? agentAmount;
+  final String? agentAttributionStatus;
+
+  bool get hasProvableAgentSnapshot =>
+      agentAttributionStatus == 'attributed' &&
+      agentId != null &&
+      agentId!.isNotEmpty &&
+      agentAmount != null;
+
+  bool get isAgentUnattributed =>
+      agentAttributionStatus == null ||
+      agentAttributionStatus == 'none' ||
+      agentAttributionStatus == 'ambiguous' ||
+      agentAttributionStatus == 'platform_missing' ||
+      agentAttributionStatus == 'rate_missing';
 
   bool get isFinanciallyPaid =>
       payment == FinancialPaymentState.paid ||
@@ -776,6 +819,14 @@ abstract final class FinancialAccountingEngine {
       settlementEligible: eligible,
       exclusionReason: exclusionReason,
       notes: notes,
+      agentId: o.agentId,
+      agentScope: o.agentScope,
+      agentRate: o.agentRate,
+      agentRateType: o.agentRateType,
+      agentAmount: o.agentAmountMinor != null
+          ? MoneyAmount(currency: currency, minorUnits: o.agentAmountMinor!)
+          : null,
+      agentAttributionStatus: o.agentAttributionStatus,
     );
   }
 

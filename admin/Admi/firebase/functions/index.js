@@ -981,6 +981,28 @@ exports.adminAdjustDriverWallet = functions.https.onCall(async (data, context) =
   return result;
 });
 
+// ── FIN-9 Agent prospective snapshot (new orders only, onCreate) ────────────
+const agentOrderSnapshot = require('./agent_order_snapshot.js');
+
+exports.syncAgentSnapshotOnOrderCreate = functions.firestore
+  .document('order/{orderId}')
+  .onCreate(async (snap, context) => {
+    try {
+      await agentOrderSnapshot.applyAgentSnapshotOnCreate({
+        db,
+        orderId: context.params.orderId,
+        order: snap.data() || {},
+      });
+    } catch (e) {
+      console.error(
+        'syncAgentSnapshotOnOrderCreate failed',
+        context.params.orderId,
+        e.message || e,
+      );
+    }
+    return null;
+  });
+
 // ── Settlement Ledger V2 (accounting records only; no wallet/order writes) ──
 const settlementLedger = require('./settlement_ledger');
 
@@ -1107,6 +1129,7 @@ exports.requestExistingPaymentAllocationV2 = functions
 // ara_oatan_app; keep both deployable without losing callables.
 const driverRegistrationV2 = require('./driver_registration_v2.js');
 const driverFinancialSummaryV2 = require('./driver_financial_summary_v2.js');
+const cashCollectionRealization = require('./cash_collection_realization.js');
 exports.submitDriverApplicationV2 = functions
   .region('us-central1')
   .https.onCall(driverRegistrationV2.submitDriverApplicationV2);
@@ -1132,3 +1155,46 @@ exports.getDriverFinancialSummaryV2 = functions
       throw new functions.https.HttpsError(code, e.message || 'Summary failed');
     }
   });
+
+// Phase C — server-authoritative cash collection (future trips only; flag-gated).
+exports.confirmCashCollectionV2 = functions
+  .region('us-central1')
+  .runWith({timeoutSeconds: 60, memory: '256MB'})
+  .https.onCall(async (data, context) => {
+    try {
+      return await cashCollectionRealization.confirmCashCollectionV2({
+        db,
+        auth: context.auth,
+        data: data || {},
+        admin,
+      });
+    } catch (e) {
+      const code =
+        e.code === 'permission-denied' ||
+        e.code === 'unauthenticated' ||
+        e.code === 'failed-precondition' ||
+        e.code === 'invalid-argument' ||
+        e.code === 'not-found'
+          ? e.code
+          : 'internal';
+      throw new functions.https.HttpsError(code, e.message || 'Cash collection failed', e.details);
+    }
+  });
+
+// Driver Email OTP verification (Resend) — replaces email link for Registration V2.
+const emailVerificationOtp = require('./email_verification_otp.js');
+const emailOtpSecrets = ['RESEND_API_KEY', 'EMAIL_OTP_HMAC_SECRET'];
+
+exports.requestEmailVerificationOtp = functions
+  .region('us-central1')
+  .runWith({timeoutSeconds: 30, memory: '256MB', secrets: emailOtpSecrets})
+  .https.onCall((data, context) =>
+    emailVerificationOtp.requestEmailVerificationOtp(data || {}, context),
+  );
+
+exports.verifyEmailVerificationOtp = functions
+  .region('us-central1')
+  .runWith({timeoutSeconds: 30, memory: '256MB', secrets: emailOtpSecrets})
+  .https.onCall((data, context) =>
+    emailVerificationOtp.verifyEmailVerificationOtp(data || {}, context),
+  );

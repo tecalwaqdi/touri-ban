@@ -48,6 +48,29 @@ abstract final class FinancialOrderAdapter {
       driverId: order.mndobUser?.id,
       countryPath: order.revDolh?.path,
       orderedAt: order.dataOrder,
+      agentId: (data['agent_id'] ?? '').toString().trim().isEmpty
+          ? null
+          : (data['agent_id'] ?? '').toString(),
+      agentScope: (data['agent_scope'] ?? '').toString().trim().isEmpty
+          ? null
+          : (data['agent_scope'] ?? '').toString(),
+      agentRate: _num(data, 'agent_rate')?.toDouble(),
+      agentRateType: (data['agent_rate_type'] ?? '').toString().trim().isEmpty
+          ? null
+          : (data['agent_rate_type'] ?? '').toString(),
+      agentAmountMinor: data['agent_amount_minor'] is int
+          ? data['agent_amount_minor'] as int
+          : int.tryParse('${data['agent_amount_minor'] ?? ''}'),
+      agentCurrency: (data['agent_currency'] ?? '').toString().trim().isEmpty
+          ? null
+          : (data['agent_currency'] ?? '').toString(),
+      agentSnapshotAt: (data['agent_snapshot_at'] ?? '').toString().trim().isEmpty
+          ? null
+          : (data['agent_snapshot_at'] ?? '').toString(),
+      agentAttributionStatus:
+          (data['agent_attribution_status'] ?? '').toString().trim().isEmpty
+              ? null
+              : (data['agent_attribution_status'] ?? '').toString(),
     );
   }
 
