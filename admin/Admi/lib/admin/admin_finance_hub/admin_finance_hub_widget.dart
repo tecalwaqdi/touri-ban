@@ -3,11 +3,16 @@ import 'package:flutter/material.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
+import '/components/admin_finance_kpi_groups.dart';
 import '/components/admin_layout_widget.dart';
+import '/core/admin_currency.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/admin_finance_canonical_ui.dart';
 import '/core/finance/admin_finance_date_range.dart';
+import '/core/finance/admin_money_presentation.dart';
+import '/core/finance/finance_company_service.dart';
+import '/core/finance/finance_company_snapshot.dart';
 import '/core/finance/finance_ledger_service.dart';
 import '/core/finance/financial_accounting_unavailable.dart';
 import '/core/finance/money_amount.dart';
@@ -29,8 +34,19 @@ class AdminFinanceHubWidget extends StatefulWidget {
 class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late Menu2Model _menu2Model;
-  String _period = 'month';
-  Future<FinanceHubSnapshot>? _future;
+  AdminDatePreset _preset = AdminDatePreset.thisMonth;
+  Future<({FinanceCompanySnapshot company, FinanceHubSnapshot? wallet})>?
+      _future;
+
+  static const _presetLabels = <AdminDatePreset, String>{
+    AdminDatePreset.today: 'اليوم',
+    AdminDatePreset.yesterday: 'أمس',
+    AdminDatePreset.last7Days: 'آخر 7 أيام',
+    AdminDatePreset.thisMonth: 'هذا الشهر',
+    AdminDatePreset.last30Days: 'آخر 30 يومًا',
+    AdminDatePreset.lastMonth: 'الشهر السابق',
+    AdminDatePreset.thisYear: 'هذه السنة',
+  };
 
   @override
   void initState() {
@@ -45,30 +61,31 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
     super.dispose();
   }
 
-  (AdminDatePreset, String) _preset() {
-    switch (_period) {
-      case 'day':
-        return (AdminDatePreset.today, 'اليوم');
-      case 'year':
-        return (AdminDatePreset.thisYear, 'هذه السنة');
-      case 'month':
-      default:
-        return (AdminDatePreset.thisMonth, 'هذا الشهر');
-    }
-  }
-
   void _reload() {
-    final p = _preset();
+    final label = _presetLabels[_preset] ?? _preset.name;
     setState(() {
-      _future = FinanceLedgerService.load(
-        datePreset: p.$1,
-        periodLabel: p.$2,
-      );
+      _future = _loadBundle(label);
     });
   }
 
+  Future<({FinanceCompanySnapshot company, FinanceHubSnapshot? wallet})>
+      _loadBundle(String label) async {
+    final company = await FinanceCompanyService.load(
+      datePreset: _preset,
+      periodLabel: label,
+    );
+    FinanceHubSnapshot? wallet;
+    try {
+      wallet = await FinanceLedgerService.load(
+        datePreset: _preset,
+        periodLabel: label,
+      );
+    } catch (_) {}
+    return (company: company, wallet: wallet);
+  }
+
   String _money(MoneyAmount? m, String symbol) =>
-      financeHubMoneyLabel(m, symbol);
+      AdminOrderMoneyDisplay.formatMoneyAmount(m, symbolOverride: symbol);
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +96,8 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
       title: uiTr(context, 'المالية'),
-      child: FutureBuilder<FinanceHubSnapshot>(
+      child: FutureBuilder<
+          ({FinanceCompanySnapshot company, FinanceHubSnapshot? wallet})>(
         future: _future,
         builder: (context, snapshot) {
           return SingleChildScrollView(
@@ -91,7 +109,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                   title: uiTr(context, 'المالية'),
                   subtitle: uiTr(
                     context,
-                    'نظرة موحدة على الإيرادات والعمولات وصافي أرباح المناديب والتسويات.',
+                    'مركز التحكم المحاسبي — المبيعات مقابل الإيراد المحقق.',
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -105,6 +123,13 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                       icon: Icons.open_in_new_rounded,
                       onPressed: () => context.pushNamed(
                         AdminProfitsWidget.routeName,
+                      ),
+                    ),
+                    AdminPrimaryButton(
+                      label: uiTr(context, 'النقدي / الإلكتروني'),
+                      outlined: true,
+                      onPressed: () => context.pushNamed(
+                        AdminFinanceChannelsWidget.routeName,
                       ),
                     ),
                     AdminPrimaryButton(
@@ -123,17 +148,10 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                       ),
                     ),
                     AdminPrimaryButton(
-                      label: uiTr(context, 'الفترات المحاسبية'),
+                      label: uiTr(context, 'مالية الوكلاء'),
                       outlined: true,
                       onPressed: () => context.pushNamed(
-                        AdminFinancialPeriodsWidget.routeName,
-                      ),
-                    ),
-                    AdminPrimaryButton(
-                      label: uiTr(context, 'التقارير المحاسبية'),
-                      outlined: true,
-                      onPressed: () => context.pushNamed(
-                        AdminFinanceReportsWidget.routeName,
+                        AdminAgentFinanceWidget.routeName,
                       ),
                     ),
                     AdminPrimaryButton(
@@ -143,43 +161,21 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                         AdminFinanceAuditWidget.routeName,
                       ),
                     ),
-                    AdminPrimaryButton(
-                      label: uiTr(context, 'المحافظ'),
-                      outlined: true,
-                      onPressed: () => context.pushNamed(
-                        AdminDriverWalletsWidget.routeName,
-                      ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
                 AdminFilterBar(
                   hint: uiTr(context, 'الفترة'),
                   chips: [
-                    AdminFilterChip(
-                      label: uiTr(context, 'اليوم'),
-                      selected: _period == 'day',
-                      onSelected: (_) {
-                        _period = 'day';
-                        _reload();
-                      },
-                    ),
-                    AdminFilterChip(
-                      label: uiTr(context, 'هذا الشهر'),
-                      selected: _period == 'month',
-                      onSelected: (_) {
-                        _period = 'month';
-                        _reload();
-                      },
-                    ),
-                    AdminFilterChip(
-                      label: uiTr(context, 'هذه السنة'),
-                      selected: _period == 'year',
-                      onSelected: (_) {
-                        _period = 'year';
-                        _reload();
-                      },
-                    ),
+                    for (final e in _presetLabels.entries)
+                      AdminFilterChip(
+                        label: uiTr(context, e.value),
+                        selected: _preset == e.key,
+                        onSelected: (_) {
+                          _preset = e.key;
+                          _reload();
+                        },
+                      ),
                   ],
                   trailing: IconButton(
                     tooltip: uiTr(context, 'تحديث'),
@@ -206,7 +202,12 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                           ),
                         )
                 else
-                  _buildBody(context, theme, snapshot.data!),
+                  _buildBody(
+                    context,
+                    theme,
+                    snapshot.data!.company,
+                    snapshot.data!.wallet,
+                  ),
               ],
             ),
           );
@@ -218,9 +219,10 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   Widget _buildBody(
     BuildContext context,
     FlutterFlowTheme theme,
-    FinanceHubSnapshot data,
+    FinanceCompanySnapshot data,
+    FinanceHubSnapshot? wallet,
   ) {
-    final sym = data.currencySymbol;
+    final sym = AdminCurrency.symbolByCode[data.currency] ?? data.currency;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -240,7 +242,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
             Tooltip(
               message: uiTr(
                 context,
-                'الأرقام المعروضة للمحصّل والمؤهل للتسوية فقط. الرحلات المكتملة بانتظار إثبات التحصيل تُعرض كعدد منفصل.',
+                'الإيراد المحقق = رحلات مكتملة ومحصّلة فقط. غير المحصّل ≠ إيراد.',
               ),
               child: AdminStatusBadge(
                 label: data.isApproximate
@@ -258,49 +260,57 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
           style: theme.labelSmall,
         ),
         const SizedBox(height: 12),
-        AdminKpiStrip(
-          items: [
-            (
-              label: uiTr(context, 'إجمالي المحصّل'),
-              value: _money(data.collectedTripValue, sym),
-              icon: Icons.trending_up_rounded,
-              color: AdminUi.brandTeal,
+        if (data.realizedRevenue.minorUnits == 0 &&
+            (data.completedButNotCollected > 0 ||
+                data.cancelledOrExpired > 0 ||
+                data.financiallyIncomplete > 0))
+          AdminContentCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  uiTr(context, 'لماذا تظهر الأرقام 0.00؟'),
+                  style: theme.titleSmall,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  uiTr(
+                    context,
+                    'الإيراد المحقق يعرض فقط الرحلات المكتملة والمحصّلة. الرحلات الملغاة أو بانتظار التحصيل لا تُحسب كإيراد.',
+                  ),
+                  style: theme.bodySmall,
+                ),
+                if (data.completedButNotCollected > 0) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    '${uiTr(context, 'رحلات نقدية بانتظار إثبات التحصيل')}: '
+                    '${data.completedButNotCollected} · '
+                    '${_money(data.unCollectedTripValue, sym)}',
+                    style: theme.labelMedium,
+                  ),
+                ],
+                if (data.financiallyIncomplete > 0) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    '${uiTr(context, 'بيانات مالية تاريخية ناقصة')}: '
+                    '${data.financiallyIncomplete}',
+                    style: theme.labelMedium.copyWith(
+                      color: theme.error,
+                    ),
+                  ),
+                ],
+              ],
             ),
-            (
-              label: uiTr(context, 'عمولة الشركة'),
-              value: _money(data.platformFees, sym),
-              icon: Icons.savings_rounded,
-              color: const Color(0xFF0F7A4A),
-            ),
-            (
-              label: uiTr(context, 'ضريبة القيمة المضافة'),
-              value: _money(data.recordedVat, sym),
-              icon: Icons.receipt_outlined,
-              color: const Color(0xFF5B6B7A),
-            ),
-            (
-              label: uiTr(context, 'صافي أرباح المناديب'),
-              value: _money(data.driverNet, sym),
-              icon: Icons.payments_rounded,
-              color: const Color(0xFFB06A00),
-            ),
-            (
-              label: uiTr(context, 'المستحق المؤهل للتسوية'),
-              value: _money(data.settlementEligibleDue, sym),
-              icon: Icons.account_balance_rounded,
-              color: theme.error,
-            ),
-            (
-              label: uiTr(context, 'مستحق للمناديب'),
-              value: _money(data.companyOwesDrivers, sym),
-              icon: Icons.outbound_rounded,
-              color: const Color(0xFF2F6FED),
-            ),
-          ],
-        ),
+          ),
+        if (data.realizedRevenue.minorUnits == 0 &&
+            (data.completedButNotCollected > 0 ||
+                data.cancelledOrExpired > 0 ||
+                data.financiallyIncomplete > 0))
+          const SizedBox(height: 12),
+        AdminFinanceKpiGroups(snapshot: data, symbol: sym),
         const SizedBox(height: 12),
         AdminContentCard(
-          title: uiTr(context, 'حالة التحصيل والتسوية'),
+          title: uiTr(context, 'حالة التحصيل'),
           child: Wrap(
             spacing: 12,
             runSpacing: 12,
@@ -311,93 +321,36 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                 AdminBadgeTone.success,
               ),
               _chip(
-                uiTr(context, 'رحلات نقدية بانتظار إثبات التحصيل'),
+                uiTr(context, 'بانتظار التحصيل'),
                 '${data.completedButNotCollected}',
                 AdminBadgeTone.warning,
-              ),
-              _chip(
-                uiTr(context, 'بانتظار الدفع'),
-                '${data.pendingPayment}',
-                AdminBadgeTone.info,
               ),
               _chip(
                 uiTr(context, 'ملغى / منتهي'),
                 '${data.cancelledOrExpired}',
                 AdminBadgeTone.danger,
               ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          uiTr(
-            context,
-            'المستحق المؤهل للتسوية يعتمد على الرحلات المحصّلة فقط. لا يُحسب إجمالي الرحلات غير المحصّلة كمستحق دفتر.',
-          ),
-          softWrap: true,
-          style: theme.labelSmall,
-        ),
-        const SizedBox(height: 16),
-        AdminContentCard(
-          title: uiTr(context, 'أرصدة المحافظ (دفتر منفصل)'),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                uiTr(
-                  context,
-                  'رصيد المحفظة ليس صافي أرباح الرحلات. المحفظة دفتر منفصل عن محاسبة الرحلات والتسويات.',
-                ),
-                softWrap: true,
-                style: theme.bodySmall,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${uiTr(context, 'محافظ محمّلة')}: ${data.driverBalances.length}',
-                style: theme.titleSmall,
+              _chip(
+                uiTr(context, 'رحلات تحتاج مراجعة'),
+                '${data.financiallyIncomplete}',
+                AdminBadgeTone.info,
               ),
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        AdminDataTable(
-          emptyTitle: uiTr(context, 'لا توجد عمليات محفظة حديثة'),
-          columns: [
-            AdminTableColumn(
-              label: uiTr(context, 'النوع'),
-              flex: 2,
+        if (wallet != null) ...[
+          const SizedBox(height: 16),
+          AdminContentCard(
+            title: uiTr(context, 'المحفظة (دفتر منفصل)'),
+            child: Text(
+              uiTr(
+                context,
+                'رصيد المحفظة ليس صافي أرباح الرحلات. المحافظ: ${wallet.driverBalances.length}',
+              ),
+              style: theme.bodySmall,
             ),
-            AdminTableColumn(
-              label: uiTr(context, 'المبلغ'),
-              flex: 2,
-            ),
-            AdminTableColumn(
-              label: uiTr(context, 'الطرف'),
-              flex: 2,
-            ),
-            AdminTableColumn(
-              label: uiTr(context, 'ملاحظة'),
-              flex: 3,
-            ),
-          ],
-          rows: [
-            for (final e in data.ledger.take(40))
-              [
-                Text(e.type),
-                Text(_money(
-                  MoneyAmount.fromMajor(data.primaryCurrency, e.amount),
-                  sym,
-                )),
-                Text(e.partyLabel, overflow: TextOverflow.ellipsis),
-                Text(
-                  e.note.startsWith('ent_')
-                      ? appTr(context, e.note)
-                      : (e.note.isEmpty ? '—' : e.note),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-          ],
-        ),
+          ),
+        ],
         const SizedBox(height: 12),
         AdminContentCard(
           title: uiTr(context, 'روابط سريعة'),

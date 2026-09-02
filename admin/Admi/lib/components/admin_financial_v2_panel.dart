@@ -4,10 +4,13 @@ import '/backend/financial_accounting_loader.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_ops_filter_bar.dart';
 import '/components/admin_ui.dart';
+import '/components/admin_legacy_finance_panel.dart';
 import '/core/finance/admin_finance_canonical_ui.dart';
 import '/core/finance/admin_finance_date_range.dart';
+import '/core/finance/admin_money_presentation.dart';
 import '/core/finance/financial_accounting_unavailable.dart';
 import '/core/finance/financial_accounting_engine.dart';
+import '/core/finance/financial_state_labels.dart';
 import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -77,15 +80,11 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
   }
 
   String _money(MoneyAmount? m) {
-    if (m == null) return '—';
-    return '${m.majorUnits.toStringAsFixed(2)} ${m.code}';
+    return AdminOrderMoneyDisplay.formatMoneyAmount(m, symbolOverride: 'ر.س');
   }
 
-  String _confLabel(FinancialConfidence c) => switch (c) {
-        FinancialConfidence.high => 'HIGH',
-        FinancialConfidence.derived => 'DERIVED',
-        FinancialConfidence.incomplete => 'INCOMPLETE',
-      };
+  String _confLabel(FinancialConfidence c) =>
+      FinancialStateLabels.confidenceAr(c);
 
   @override
   Widget build(BuildContext context) {
@@ -301,6 +300,8 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
         ),
         const SizedBox(height: 8),
         _ordersTable(context, theme, result.tableRows),
+        const SizedBox(height: 20),
+        const AdminLegacyFinancePanel(),
       ],
     );
   }
@@ -392,7 +393,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
           _kv(uiTr(context, 'مستحق المندوب'), _money(t.driverEntitlementAll)),
           _kv(uiTr(context, 'خصم مسجّل'), _money(t.recordedDiscountsAll)),
           const Divider(),
-          Text('CASH', style: theme.titleSmall),
+          Text(uiTr(context, 'النقدي'), style: theme.titleSmall),
           _kv(uiTr(context, 'رحلات نقدية محصّلة'), '${t.cashCollectedTrips}'),
           _kv(uiTr(context, 'نقد بيد المندوبين'), _money(t.cashHeldByDrivers)),
           _kv(uiTr(context, 'المندوب مدين للشركة'),
@@ -402,7 +403,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
           if (t.cashUnreconciled.minorUnits != 0)
             _kv('RECONCILIATION_DIFFERENCE', _money(t.cashUnreconciled)),
           const Divider(),
-          Text('ONLINE', style: theme.titleSmall),
+          Text(uiTr(context, 'الإلكتروني'), style: theme.titleSmall),
           if (t.onlinePaidTrips == 0)
             Text(uiTr(context, 'لا رحلات أونلاين مكتملة ومدفوعة مؤهلة'))
           else ...[
@@ -415,13 +416,41 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
                 _money(t.onlineCompanyOwesDrivers)),
           ],
           const Divider(),
-          Text(uiTr(context, 'التصنيفات'), style: theme.titleSmall),
-          _kv('Completed & Collected', '${t.completedAndCollected}'),
-          _kv('Paid Not Completed', '${t.paidButNotCompleted}'),
-          _kv('Completed Not Collected', '${t.completedButNotCollected}'),
-          _kv('Pending Payment', '${t.pendingPayment}'),
-          _kv('Cancelled / Expired', '${t.cancelledOrExpired}'),
-          _kv('INCOMPLETE', '${t.incompleteLines}'),
+          Text(uiTr(context, 'التصنифات'), style: theme.titleSmall),
+          _kv(
+            FinancialStateLabels.bucketAr(
+              FinancialCollectionBucket.completedAndCollected,
+            ),
+            '${t.completedAndCollected}',
+          ),
+          _kv(
+            FinancialStateLabels.bucketAr(
+              FinancialCollectionBucket.paidButNotCompleted,
+            ),
+            '${t.paidButNotCompleted}',
+          ),
+          _kv(
+            FinancialStateLabels.bucketAr(
+              FinancialCollectionBucket.completedButNotCollected,
+            ),
+            '${t.completedButNotCollected}',
+          ),
+          _kv(
+            FinancialStateLabels.bucketAr(
+              FinancialCollectionBucket.pendingPayment,
+            ),
+            '${t.pendingPayment}',
+          ),
+          _kv(
+            FinancialStateLabels.bucketAr(
+              FinancialCollectionBucket.cancelledOrExpired,
+            ),
+            '${t.cancelledOrExpired}',
+          ),
+          _kv(
+            uiTr(context, 'بيانات مالية ناقصة'),
+            '${t.incompleteLines}',
+          ),
         ],
       ),
     );
@@ -467,7 +496,8 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
             DataColumn(label: Text(uiTr(context, 'ضريبة مسجّلة'))),
             DataColumn(label: Text(uiTr(context, 'خصم مسجّل'))),
             DataColumn(label: Text(uiTr(context, 'صافي المندوب'))),
-            DataColumn(label: Text('Confidence')),
+            DataColumn(label: Text(uiTr(context, 'الحالة المالية'))),
+            DataColumn(label: Text(uiTr(context, 'جودة البيانات'))),
           ],
           rows: [
             for (final r in show)
@@ -490,14 +520,17 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
                     ),
                   ),
                   DataCell(Text(r.line.currency)),
-                  DataCell(Text(r.line.channel.name)),
-                  DataCell(Text(r.line.lifecycle.name)),
-                  DataCell(Text(r.line.payment.name)),
+                  DataCell(Text(FinancialStateLabels.channelAr(r.line.channel))),
+                  DataCell(Text(FinancialStateLabels.lifecycleAr(r.line.lifecycle))),
+                  DataCell(Text(FinancialStateLabels.paymentAr(r.line.payment))),
                   DataCell(Text(_money(r.line.customerPaid))),
                   DataCell(Text(_money(r.line.platformFee))),
                   DataCell(Text(_money(r.line.recordedVat))),
                   DataCell(Text(_money(r.line.recordedDiscount))),
                   DataCell(Text(_money(r.line.driverNet))),
+                  DataCell(
+                    Text(FinancialStateLabels.financialStatusAr(r.line)),
+                  ),
                   DataCell(Text(_confLabel(r.line.confidence))),
                 ],
               ),

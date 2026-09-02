@@ -170,6 +170,15 @@ function emptyCurrency(code) {
     pendingPaymentMinor: 0,
     cancelledOrExpiredMinor: 0,
     incompleteMinor: 0,
+    completedPendingPlatformMinor: 0,
+    completedPendingDriverNetMinor: 0,
+    cashCompletedPending: 0,
+    onlineCompletedPending: 0,
+    cashCompletedPendingMinor: 0,
+    onlineCompletedPendingMinor: 0,
+    lifecycleCompleted: 0,
+    lifecycleCancelled: 0,
+    lifecycleExpired: 0,
   };
 }
 
@@ -389,6 +398,10 @@ function accumulate(byCurrency, line) {
   if (line.reconStatus === 'reconciled') t.reconciledCount++;
   if (line.reconStatus === 'difference') t.reconDifferenceCount++;
 
+  if (line.lifecycle === 'completed') t.lifecycleCompleted++;
+  else if (line.lifecycle === 'cancelled') t.lifecycleCancelled++;
+  else if (line.lifecycle === 'expired') t.lifecycleExpired++;
+
   switch (line.bucket) {
     case 'completedAndCollected':
       t.completedAndCollected++;
@@ -402,6 +415,23 @@ function accumulate(byCurrency, line) {
       t.completedButNotCollected++;
       if (line.customerPaidMinor != null) {
         t.completedButNotCollectedMinor += line.customerPaidMinor;
+      }
+      if (line.platformFeeMinor != null) {
+        t.completedPendingPlatformMinor += line.platformFeeMinor;
+      }
+      if (line.driverNetMinor != null) {
+        t.completedPendingDriverNetMinor += line.driverNetMinor;
+      }
+      if (line.channel === 'cash') {
+        t.cashCompletedPending++;
+        if (line.customerPaidMinor != null) {
+          t.cashCompletedPendingMinor += line.customerPaidMinor;
+        }
+      } else if (line.channel === 'online') {
+        t.onlineCompletedPending++;
+        if (line.customerPaidMinor != null) {
+          t.onlineCompletedPendingMinor += line.customerPaidMinor;
+        }
       }
       break;
     case 'pendingPayment':

@@ -5,6 +5,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/finance_controls_client.dart';
+import '/core/finance/financial_state_labels.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -66,7 +67,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  'INCOMPLETE = ${data['count']}',
+                  '${uiTr(ctx, 'سجلات ناقصة')}: ${data['count']}',
                   style: FlutterFlowTheme.of(ctx).titleMedium,
                 ),
               ),
@@ -106,7 +107,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
-      title: uiTr(context, 'Financial Reconciliation'),
+      title: uiTr(context, 'المطابقة المالية'),
       child: FutureBuilder<Map<String, dynamic>>(
         future: _future,
         builder: (context, snap) {
@@ -135,12 +136,13 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                   builder: (context) {
                     final it = Map<String, dynamic>.from(raw as Map);
                     final code = '${it['code']}';
+                    final label = FinancialStateLabels.exceptionCodeAr(code);
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text(code, softWrap: true),
+                      title: Text(label, softWrap: true),
                       subtitle: Text(
                         '${it['severity']} · ${it['count']}'
-                        '${it['blocksClose'] == true ? ' · close blocker' : ''}',
+                        '${it['blocksClose'] == true ? ' · ${uiTr(context, 'يمنع الإغلاق')}' : ''}',
                         softWrap: true,
                       ),
                       leading: Icon(
@@ -157,7 +159,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                                   final maxW =
                                       MediaQuery.sizeOf(ctx).width - 48;
                                   return AlertDialog(
-                                    title: Text(code),
+                                    title: Text(label),
                                     content: ConstrainedBox(
                                       constraints: BoxConstraints(
                                         maxWidth: maxW.clamp(280.0, 480.0),

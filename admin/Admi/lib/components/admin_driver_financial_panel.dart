@@ -5,10 +5,12 @@ import '/backend/financial_accounting_loader.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/core/finance/financial_accounting_engine.dart';
-import '/core/finance/money_amount.dart';
+import '/core/finance/admin_money_presentation.dart';
+import '/core/finance/financial_state_labels.dart';
 import '/core/finance/settlement_ledger_client.dart';
 import '/core/finance/settlement_preview.dart';
 import '/core/finance/finance_controls_client.dart';
+import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -59,7 +61,7 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
 
   String _money(MoneyAmount? m) {
     if (m == null) return '—';
-    return '${m.majorUnits.toStringAsFixed(2)} ${m.code}';
+    return AdminOrderMoneyDisplay.formatMoneyAmount(m);
   }
 
   MoneyAmount _tripNet(FinancialCurrencyTotals t) {
@@ -279,7 +281,7 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(uiTr(context, 'Settlement Summary'),
+                      Text(uiTr(context, 'ملخص التسويات'),
                           style: theme.titleSmall),
                       for (final e in by.entries)
                         Text(
@@ -300,15 +302,17 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                   _kv(uiTr(context, 'نقدي'), '$cash'),
                   _kv(uiTr(context, 'أونلاين'), '$online'),
                   _kv(
-                    'HIGH',
+                    uiTr(context, 'مؤكد'),
                     '${lines.where((l) => l.confidence == FinancialConfidence.high).length}',
                   ),
                   _kv(
-                    'DERIVED',
+                    uiTr(context, 'مشتق'),
                     '${lines.where((l) => l.confidence == FinancialConfidence.derived).length}',
                   ),
-                  _kv('INCOMPLETE', '$incomplete'),
-                  _kv('totals', result.totalsSource),
+                  _kv(
+                    uiTr(context, 'ناقص'),
+                    '$incomplete',
+                  ),
                 ],
               ),
             ),
@@ -468,11 +472,8 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
     );
   }
 
-  String _confLabel(FinancialConfidence c) => switch (c) {
-        FinancialConfidence.high => 'HIGH',
-        FinancialConfidence.derived => 'DERIVED',
-        FinancialConfidence.incomplete => 'INCOMPLETE',
-      };
+  String _confLabel(FinancialConfidence c) =>
+      FinancialStateLabels.confidenceAr(c);
 
   Widget _kv(String k, String v) {
     return Padding(

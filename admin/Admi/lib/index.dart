@@ -29,6 +29,10 @@ export '/admin/admin_settlements/admin_settlement_receipt_widget.dart'
     show AdminSettlementReceiptWidget;
 export '/admin/admin_finance_hub/admin_finance_hub_widget.dart'
     show AdminFinanceHubWidget;
+export '/admin/admin_finance_channels/admin_finance_channels_widget.dart'
+    show AdminFinanceChannelsWidget;
+export '/admin/admin_agent_finance/admin_agent_finance_widget.dart'
+    show AdminAgentFinanceWidget;
 export '/admin/admin_reconciliation/admin_reconciliation_widget.dart'
     show AdminReconciliationWidget;
 export '/admin/admin_financial_periods/admin_financial_periods_widget.dart'

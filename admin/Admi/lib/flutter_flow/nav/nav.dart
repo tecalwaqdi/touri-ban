@@ -624,6 +624,18 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => const AdminFinanceHubWidget(),
         ),
         FFRoute(
+          name: AdminFinanceChannelsWidget.routeName,
+          path: AdminFinanceChannelsWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminFinanceChannelsWidget(),
+        ),
+        FFRoute(
+          name: AdminAgentFinanceWidget.routeName,
+          path: AdminAgentFinanceWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminAgentFinanceWidget(),
+        ),
+        FFRoute(
           name: AdminReconciliationWidget.routeName,
           path: AdminReconciliationWidget.routePath,
           requireAuth: true,

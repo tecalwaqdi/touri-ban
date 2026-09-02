@@ -221,7 +221,15 @@ class FinancialCurrencyTotals {
         platformFeeAll = MoneyAmount.zero(currency),
         recordedVatAll = MoneyAmount.zero(currency),
         driverEntitlementAll = MoneyAmount.zero(currency),
-        recordedDiscountsAll = MoneyAmount.zero(currency);
+        recordedDiscountsAll = MoneyAmount.zero(currency),
+        completedAndCollectedMinor = MoneyAmount.zero(currency),
+        completedButNotCollectedMinor = MoneyAmount.zero(currency),
+        cancelledOrExpiredMinor = MoneyAmount.zero(currency),
+        incompleteMinor = MoneyAmount.zero(currency),
+        expectedPlatformAfterCollection = MoneyAmount.zero(currency),
+        expectedDriverNetAfterCollection = MoneyAmount.zero(currency),
+        cashCompletedPendingMinor = MoneyAmount.zero(currency),
+        onlineCompletedPendingMinor = MoneyAmount.zero(currency);
 
   final String currency;
 
@@ -262,6 +270,25 @@ class FinancialCurrencyTotals {
   int completedButNotCollected = 0;
   int pendingPayment = 0;
   int cancelledOrExpired = 0;
+
+  /// Bucket face values (customer paid where applicable).
+  MoneyAmount completedAndCollectedMinor;
+  MoneyAmount completedButNotCollectedMinor;
+  MoneyAmount cancelledOrExpiredMinor;
+  MoneyAmount incompleteMinor;
+
+  /// Theoretical commission/entitlement after collection (not realized).
+  MoneyAmount expectedPlatformAfterCollection;
+  MoneyAmount expectedDriverNetAfterCollection;
+
+  int cashCompletedPending = 0;
+  int onlineCompletedPending = 0;
+  MoneyAmount cashCompletedPendingMinor;
+  MoneyAmount onlineCompletedPendingMinor;
+
+  int lifecycleCompleted = 0;
+  int lifecycleCancelled = 0;
+  int lifecycleExpired = 0;
 }
 
 /// Financial Accounting Engine V2 — Admin reporting only (no writes).
@@ -781,24 +808,76 @@ abstract final class FinancialAccountingEngine {
           break;
       }
 
+      switch (line.lifecycle) {
+        case FinancialLifecycle.completed:
+          t.lifecycleCompleted++;
+          break;
+        case FinancialLifecycle.cancelled:
+          t.lifecycleCancelled++;
+          break;
+        case FinancialLifecycle.expired:
+          t.lifecycleExpired++;
+          break;
+        default:
+          break;
+      }
+
       switch (line.bucket) {
         case FinancialCollectionBucket.completedAndCollected:
           t.completedAndCollected++;
+          if (line.customerPaid != null) {
+            t.completedAndCollectedMinor =
+                t.completedAndCollectedMinor + line.customerPaid!;
+          }
           break;
         case FinancialCollectionBucket.paidButNotCompleted:
           t.paidButNotCompleted++;
           break;
         case FinancialCollectionBucket.completedButNotCollected:
           t.completedButNotCollected++;
+          if (line.customerPaid != null) {
+            t.completedButNotCollectedMinor =
+                t.completedButNotCollectedMinor + line.customerPaid!;
+          }
+          if (line.platformFee != null) {
+            t.expectedPlatformAfterCollection =
+                t.expectedPlatformAfterCollection + line.platformFee!;
+          }
+          if (line.driverNet != null) {
+            t.expectedDriverNetAfterCollection =
+                t.expectedDriverNetAfterCollection + line.driverNet!;
+          }
+          if (line.channel == FinancialPaymentChannel.cash) {
+            t.cashCompletedPending++;
+            if (line.customerPaid != null) {
+              t.cashCompletedPendingMinor =
+                  t.cashCompletedPendingMinor + line.customerPaid!;
+            }
+          } else if (line.channel == FinancialPaymentChannel.online) {
+            t.onlineCompletedPending++;
+            if (line.customerPaid != null) {
+              t.onlineCompletedPendingMinor =
+                  t.onlineCompletedPendingMinor + line.customerPaid!;
+            }
+          }
           break;
         case FinancialCollectionBucket.pendingPayment:
           t.pendingPayment++;
           break;
         case FinancialCollectionBucket.cancelledOrExpired:
           t.cancelledOrExpired++;
+          if (line.customerPaid != null) {
+            t.cancelledOrExpiredMinor =
+                t.cancelledOrExpiredMinor + line.customerPaid!;
+          }
           break;
         case FinancialCollectionBucket.other:
           break;
+      }
+
+      if (line.confidence == FinancialConfidence.incomplete &&
+          line.customerPaid != null) {
+        t.incompleteMinor = t.incompleteMinor + line.customerPaid!;
       }
 
       if (line.qualifiesCollectedCash) {
