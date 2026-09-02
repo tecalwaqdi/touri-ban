@@ -12,6 +12,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
+import '/components/admin_enterprise_kit.dart' hide showAdminConfirmDialog;
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_user_facing_errors.dart';
@@ -78,7 +79,8 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
         _stats = s;
         _statsLoading = false;
       });
-    } catch (_) {
+    } catch (e, st) {
+      AdminUi.logDiagnostic('support_stats', e, st);
       if (!mounted) return;
       setState(() {
         _statsError = true;
@@ -110,7 +112,9 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
       try {
         final doc = await SupportRecord.collection.doc(q).get();
         if (doc.exists) hits.add(SupportRecord.fromSnapshot(doc));
-      } catch (_) {}
+      } catch (e, st) {
+        AdminUi.logDiagnostic('support_search_doc', e, st);
+      }
       if (hits.isEmpty && int.tryParse(q) != null) {
         final byNum = await querySupportRecordOnce(
           queryBuilder: (qq) => qq.where('id', isEqualTo: int.parse(q)),
@@ -120,7 +124,8 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
       }
       if (!mounted || gen != _searchGen) return;
       setState(() => _serverSearchHits = hits.isEmpty ? null : hits);
-    } catch (_) {
+    } catch (e, st) {
+      AdminUi.logDiagnostic('support_server_search', e, st);
       if (!mounted || gen != _searchGen) return;
       setState(() => _serverSearchHits = null);
     }
@@ -206,7 +211,8 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
         metadata: {'status': target.name},
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(success)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(success)));
       AdminListRefresh.notify(AdminListScope.support);
       _loadStats();
     } catch (e) {
@@ -318,36 +324,17 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
                   ),
                 ),
                 empty: AdminContentCard(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.support_agent_outlined,
-                        size: 48,
-                        color: AdminUi.brandTeal.withValues(alpha: 0.45),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        uiTr(context, 'لا توجد تذاكر دعم'),
-                        style: theme.titleMedium,
-                      ),
-                    ],
+                  child: AdminEmptyState(
+                    title: uiTr(context, 'لا توجد تذاكر دعم'),
+                    icon: Icons.support_agent_outlined,
                   ),
                 ),
                 builder: (context, allTickets, listState) {
                   if (listState.hasError) {
                     return AdminContentCard(
-                      child: Column(
-                        children: [
-                          Text(
-                            uiTr(context, 'تعذر تحميل التذاكر'),
-                            style: theme.titleMedium,
-                          ),
-                          const SizedBox(height: 8),
-                          TextButton(
-                            onPressed: listState.refresh,
-                            child: Text(uiTr(context, 'إعادة المحاولة')),
-                          ),
-                        ],
+                      child: AdminErrorState(
+                        title: uiTr(context, 'تعذر تحميل التذاكر'),
+                        onRetry: listState.refresh,
                       ),
                     );
                   }
@@ -357,17 +344,17 @@ class _AdminSuportWidgetState extends State<AdminSuportWidget> {
 
                   if (rows.isEmpty) {
                     return AdminContentCard(
-                      child: Column(
-                        children: [
-                          Icon(Icons.search_off_rounded, size: 40),
-                          const SizedBox(height: 10),
-                          Text(
-                            _filters.searchQuery.isEmpty && !_extra.hasAny
-                                ? uiTr(context, 'لا توجد تذاكر دعم')
-                                : uiTr(context, 'لا توجد نتائج للبحث'),
-                            style: theme.titleMedium,
-                          ),
-                        ],
+                      child: AdminEmptyState(
+                        title: _filters.searchQuery.isEmpty && !_extra.hasAny
+                            ? uiTr(context, 'لا توجد تذاكر دعم')
+                            : uiTr(context, 'لا توجد نتائج للبحث'),
+                        message: _filters.searchQuery.isNotEmpty
+                            ? uiTr(
+                                context,
+                                'جرّب رقم التذكرة الكامل (4+ أحرف) أو غيّر الفلاتر',
+                              )
+                            : null,
+                        icon: Icons.search_off_rounded,
                       ),
                     );
                   }

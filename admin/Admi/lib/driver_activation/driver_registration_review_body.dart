@@ -338,7 +338,7 @@ Future<({String reason, List<String> fields})?> showDriverNeedsChangesDialog({
           return AlertDialog(
             title: Text(appTr(context, 'adm_drv_request_changes_title')),
             content: SizedBox(
-              width: 420,
+              width: AdminUi.dialogMaxWidth(ctx),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -5,8 +5,8 @@ import '/admin/admin_suport/admin_support_adapter.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
+import '/components/admin_enterprise_kit.dart';
 import '/components/admin_ui.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 class AdminSupportFilterBar extends StatefulWidget {
@@ -32,9 +32,9 @@ class AdminSupportFilterBar extends StatefulWidget {
 }
 
 class _AdminSupportFilterBarState extends State<AdminSupportFilterBar> {
-  late final TextEditingController _searchController;
   List<CountriesRecord> _countries = const [];
   bool _advancedOpen = false;
+  int _searchResetGen = 0;
 
   bool get _lockCountry => AdminRoleService.isCountryAgent;
 
@@ -44,23 +44,12 @@ class _AdminSupportFilterBarState extends State<AdminSupportFilterBar> {
   @override
   void initState() {
     super.initState();
-    _searchController = TextEditingController(text: widget.value.searchQuery);
     _loadCountries();
-  }
-
-  @override
-  void didUpdateWidget(covariant AdminSupportFilterBar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.value.searchQuery != widget.value.searchQuery &&
-        _searchController.text != widget.value.searchQuery) {
-      _searchController.text = widget.value.searchQuery;
-    }
   }
 
   @override
   void dispose() {
     EasyDebounce.cancel('admin_support_search');
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -70,83 +59,113 @@ class _AdminSupportFilterBarState extends State<AdminSupportFilterBar> {
       final docs = await queryCountriesRecordOnce(limit: 80);
       if (!mounted) return;
       setState(() => _countries = docs);
-    } catch (_) {}
+    } catch (e, st) {
+      AdminUi.logDiagnostic('support_filter_countries', e, st);
+    }
   }
 
   void _reset() {
-    _searchController.clear();
+    setState(() => _searchResetGen++);
     widget.onChanged(const AdminOpsFilterState());
     widget.onExtraChanged(AdminSupportExtraFilters.empty);
   }
 
+  Widget _pageSizeDropdown() {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<int>(
+        value: widget.pageSize,
+        items: const [
+          DropdownMenuItem(value: 20, child: Text('20')),
+          DropdownMenuItem(value: 50, child: Text('50')),
+          DropdownMenuItem(value: 100, child: Text('100')),
+        ],
+        onChanged: (v) {
+          if (v != null) widget.onPageSizeChanged(v);
+        },
+      ),
+    );
+  }
+
+  Widget _searchField() {
+    return AdminSearchField(
+      key: ValueKey('support_search_$_searchResetGen'),
+      debounceTag: 'admin_support_search',
+      hint: uiTr(
+        context,
+        'بحث برقم التذكرة / الاسم / الهاتف / الحجز',
+      ),
+      helperText: uiTr(
+        context,
+        'بحث الصفحة الحالية؛ رقم التذكرة الكامل (4+) يبحث عالمياً',
+      ),
+      initialValue: widget.value.searchQuery,
+      onChanged: (v) => widget.onChanged(widget.value.copyWith(searchQuery: v)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final stacked = AdminUi.useStackedHeader(context);
+
     return AdminContentCard(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (v) {
-                    EasyDebounce.debounce(
-                      'admin_support_search',
-                      const Duration(milliseconds: 320),
-                      () => widget.onChanged(
-                        widget.value.copyWith(searchQuery: v),
-                      ),
-                    );
-                  },
-                  decoration: InputDecoration(
-                    isDense: true,
-                    hintText: uiTr(
-                      context,
-                      'بحث برقم التذكرة / الاسم / الهاتف / الحجز',
-                    ),
-                    prefixIcon: const Icon(Icons.search_rounded, size: 20),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+          if (stacked) ...[
+            _searchField(),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(child: _pageSizeDropdown()),
+                IconButton(
+                  onPressed: () =>
+                      setState(() => _advancedOpen = !_advancedOpen),
+                  icon: Badge(
+                    isLabelVisible: _activeCount > 0,
+                    label: Text('$_activeCount'),
+                    child: Icon(
+                      _advancedOpen
+                          ? Icons.filter_alt_rounded
+                          : Icons.filter_alt_outlined,
+                      color: AdminUi.brandTeal,
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              DropdownButtonHideUnderline(
-                child: DropdownButton<int>(
-                  value: widget.pageSize,
-                  items: const [
-                    DropdownMenuItem(value: 20, child: Text('20')),
-                    DropdownMenuItem(value: 50, child: Text('50')),
-                    DropdownMenuItem(value: 100, child: Text('100')),
-                  ],
-                  onChanged: (v) {
-                    if (v != null) widget.onPageSizeChanged(v);
-                  },
-                ),
-              ),
-              IconButton(
-                onPressed: () => setState(() => _advancedOpen = !_advancedOpen),
-                icon: Badge(
-                  isLabelVisible: _activeCount > 0,
-                  label: Text('$_activeCount'),
-                  child: Icon(
-                    _advancedOpen
-                        ? Icons.filter_alt_rounded
-                        : Icons.filter_alt_outlined,
-                    color: AdminUi.brandTeal,
+                if (_activeCount > 0)
+                  TextButton(
+                    onPressed: _reset,
+                    child: Text(uiTr(context, 'إعادة تعيين')),
+                  ),
+              ],
+            ),
+          ] else
+            Row(
+              children: [
+                Expanded(child: _searchField()),
+                const SizedBox(width: 8),
+                _pageSizeDropdown(),
+                IconButton(
+                  onPressed: () =>
+                      setState(() => _advancedOpen = !_advancedOpen),
+                  icon: Badge(
+                    isLabelVisible: _activeCount > 0,
+                    label: Text('$_activeCount'),
+                    child: Icon(
+                      _advancedOpen
+                          ? Icons.filter_alt_rounded
+                          : Icons.filter_alt_outlined,
+                      color: AdminUi.brandTeal,
+                    ),
                   ),
                 ),
-              ),
-              if (_activeCount > 0)
-                TextButton(
-                  onPressed: _reset,
-                  child: Text(uiTr(context, 'إعادة تعيين')),
-                ),
-            ],
-          ),
+                if (_activeCount > 0)
+                  TextButton(
+                    onPressed: _reset,
+                    child: Text(uiTr(context, 'إعادة تعيين')),
+                  ),
+              ],
+            ),
           if (_advancedOpen) ...[
             const SizedBox(height: 10),
             Wrap(
@@ -224,7 +243,8 @@ class _AdminSupportFilterBarState extends State<AdminSupportFilterBar> {
                 ),
                 SizedBox(
                   width: 150,
-                  child: DropdownButtonFormField<AdminSupportTicketStatusFilter>(
+                  child:
+                      DropdownButtonFormField<AdminSupportTicketStatusFilter>(
                     initialValue: widget.extra.status,
                     isExpanded: true,
                     decoration: _dec(uiTr(context, 'الحالة')),

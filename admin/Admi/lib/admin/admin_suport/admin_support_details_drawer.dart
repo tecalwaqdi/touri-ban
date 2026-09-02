@@ -35,7 +35,7 @@ Future<void> showAdminSupportDetailsDrawer({
           color: FlutterFlowTheme.of(ctx).primaryBackground,
           elevation: 8,
           child: SizedBox(
-            width: 480,
+            width: AdminUi.drawerWidth(ctx),
             height: MediaQuery.sizeOf(ctx).height,
             child: AdminSupportDetailsPanel(
               row: row,
@@ -109,20 +109,23 @@ class _AdminSupportDetailsPanelState extends State<AdminSupportDetailsPanel> {
         } else if (user.ismndob || user.ismndom) {
           driverTruth = AdminDriverStatusTruth.fromMap(user.snapshotData);
         }
-      } catch (_) {}
+      } catch (e, st) {
+        AdminUi.logDiagnostic('support_drawer_user', e, st);
+      }
     }
 
     if (row.orderRef != null) {
       try {
         order = await OrderRecord.getDocumentOnce(row.orderRef!);
         bookingRow = AdminBookingRow.fromOrder(order);
-      } catch (_) {}
+      } catch (e, st) {
+        AdminUi.logDiagnostic('support_drawer_order', e, st);
+      }
     }
 
     final notes = _readInternalNotes(row.ticket.snapshotData);
-    final ownerType = user != null
-        ? AdminSupportRow.ownerTypeFromUser(user)
-        : row.ownerType;
+    final ownerType =
+        user != null ? AdminSupportRow.ownerTypeFromUser(user) : row.ownerType;
 
     return _SupportContext(
       user: user,
@@ -135,7 +138,8 @@ class _AdminSupportDetailsPanelState extends State<AdminSupportDetailsPanel> {
     );
   }
 
-  static List<Map<String, String>> _readInternalNotes(Map<String, dynamic> data) {
+  static List<Map<String, String>> _readInternalNotes(
+      Map<String, dynamic> data) {
     final raw = data['admin_internal_notes'];
     if (raw is! List) return const [];
     final out = <Map<String, String>>[];
@@ -239,8 +243,7 @@ class _AdminSupportDetailsPanelState extends State<AdminSupportDetailsPanel> {
                           _kv(
                             context,
                             uiTr(context, 'حالة الحساب'),
-                            AdminCustomerRow.accountStatusOf(ctx.user!)
-                                .name,
+                            AdminCustomerRow.accountStatusOf(ctx.user!).name,
                           ),
                         if (ctx.ownerType == AdminSupportOwnerType.driver &&
                             ctx.driverTruth != null)
@@ -301,7 +304,8 @@ class _AdminSupportDetailsPanelState extends State<AdminSupportDetailsPanel> {
                                 AdminBookingDetailsWidget.routeName,
                                 queryParameters: {
                                   'orderRef': serializeParam(
-                                    row.orderRef ?? ctx.bookingRow!.order.reference,
+                                    row.orderRef ??
+                                        ctx.bookingRow!.order.reference,
                                     ParamType.DocumentReference,
                                   ),
                                 }.withoutNulls,
@@ -439,7 +443,8 @@ class _AdminSupportDetailsPanelState extends State<AdminSupportDetailsPanel> {
                                     setState(() => _submitting = true);
                                     await widget.row.ticket.reference.update({
                                       'admin_assigned_to': currentUserUid,
-                                      'updated_at': FieldValue.serverTimestamp(),
+                                      'updated_at':
+                                          FieldValue.serverTimestamp(),
                                     });
                                     if (mounted) {
                                       setState(() => _submitting = false);

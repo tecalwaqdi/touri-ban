@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 
 import '/components/admin_ui.dart';
@@ -147,29 +150,34 @@ class AdminEmptyState extends StatelessWidget {
     this.message,
     this.icon = Icons.inbox_outlined,
     this.action,
+    this.compact = false,
   });
 
   final String title;
   final String? message;
   final IconData icon;
   final Widget? action;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
+      padding: EdgeInsets.symmetric(
+        vertical: compact ? 28 : 48,
+        horizontal: compact ? 16 : 24,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 64,
-            height: 64,
+            width: compact ? 52 : 64,
+            height: compact ? 52 : 64,
             decoration: BoxDecoration(
               color: AdminUi.brandTeal.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(18),
             ),
-            child: Icon(icon, color: AdminUi.brandTeal, size: 32),
+            child: Icon(icon, color: AdminUi.brandTeal, size: compact ? 26 : 32),
           ),
           const SizedBox(height: 16),
           Text(
@@ -201,6 +209,235 @@ class AdminEmptyState extends StatelessWidget {
             action!,
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// Consistent error panel with retry — never shows stack traces.
+class AdminErrorState extends StatelessWidget {
+  const AdminErrorState({
+    super.key,
+    required this.title,
+    this.message,
+    this.onRetry,
+    this.icon = Icons.cloud_off_rounded,
+    this.compact = false,
+    this.retryLabel,
+  });
+
+  final String title;
+  final String? message;
+  final VoidCallback? onRetry;
+  final IconData icon;
+  final bool compact;
+  final String? retryLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    final vPad = compact ? 24.0 : 40.0;
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: vPad, horizontal: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: compact ? 36 : 44,
+            color: AdminUi.brandTeal.withValues(alpha: 0.55),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: theme.titleMedium.override(
+              fontFamily: theme.titleMediumFamily,
+              fontWeight: FontWeight.w700,
+              useGoogleFonts: !theme.titleMediumIsCustom,
+            ),
+          ),
+          if (message != null) ...[
+            const SizedBox(height: 6),
+            Text(
+              message!,
+              textAlign: TextAlign.center,
+              style: theme.bodyMedium.override(
+                fontFamily: theme.bodyMediumFamily,
+                color: theme.secondaryText,
+                useGoogleFonts: !theme.bodyMediumIsCustom,
+              ),
+            ),
+          ],
+          if (onRetry != null) ...[
+            const SizedBox(height: 14),
+            TextButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: Text(retryLabel ?? uiTr(context, 'إعادة المحاولة')),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Section title inside cards / detail panels.
+class AdminSectionHeader extends StatelessWidget {
+  const AdminSectionHeader({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+  });
+
+  final String title;
+  final String? subtitle;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: theme.titleSmall.override(
+                    fontFamily: theme.titleSmallFamily,
+                    fontWeight: FontWeight.w700,
+                    useGoogleFonts: !theme.titleSmallIsCustom,
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle!,
+                    style: theme.bodySmall.override(
+                      fontFamily: theme.bodySmallFamily,
+                      color: theme.secondaryText,
+                      useGoogleFonts: !theme.bodySmallIsCustom,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (trailing != null) trailing!,
+        ],
+      ),
+    );
+  }
+}
+
+/// Debounced search field with clear button and optional loading indicator.
+class AdminSearchField extends StatefulWidget {
+  const AdminSearchField({
+    super.key,
+    required this.hint,
+    this.helperText,
+    this.initialValue = '',
+    this.debounceTag = 'admin_search',
+    this.debounceMs = AdminUi.searchDebounceMs,
+    this.loading = false,
+    required this.onChanged,
+    this.onSubmitted,
+  });
+
+  final String hint;
+  final String? helperText;
+  final String initialValue;
+  final String debounceTag;
+  final int debounceMs;
+  final bool loading;
+  final ValueChanged<String> onChanged;
+  final ValueChanged<String>? onSubmitted;
+
+  @override
+  State<AdminSearchField> createState() => _AdminSearchFieldState();
+}
+
+class _AdminSearchFieldState extends State<AdminSearchField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  void didUpdateWidget(covariant AdminSearchField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialValue != widget.initialValue &&
+        _controller.text != widget.initialValue) {
+      _controller.text = widget.initialValue;
+    }
+  }
+
+  @override
+  void dispose() {
+    EasyDebounce.cancel(widget.debounceTag);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _emit(String value) {
+    EasyDebounce.debounce(
+      widget.debounceTag,
+      Duration(milliseconds: widget.debounceMs),
+      () => widget.onChanged(value),
+    );
+  }
+
+  void _clear() {
+    _controller.clear();
+    EasyDebounce.cancel(widget.debounceTag);
+    widget.onChanged('');
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasText = _controller.text.isNotEmpty;
+    Widget? suffix;
+    if (widget.loading) {
+      suffix = const Padding(
+        padding: EdgeInsets.all(12),
+        child: SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    } else if (hasText) {
+      suffix = IconButton(
+        icon: const Icon(Icons.close_rounded, size: 18),
+        onPressed: _clear,
+        tooltip: uiTr(context, 'مسح'),
+      );
+    }
+
+    return TextField(
+      controller: _controller,
+      onChanged: (v) {
+        setState(() {});
+        _emit(v);
+      },
+      onSubmitted: widget.onSubmitted,
+      textInputAction: TextInputAction.search,
+      decoration: AdminUi.compactSearchDecoration(
+        context,
+        hint: widget.hint,
+        helperText: widget.helperText,
+        suffixIcon: suffix,
       ),
     );
   }
@@ -289,8 +526,7 @@ Future<bool> showAdminConfirmDialog(
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  destructive ? theme.error : AdminUi.brandTeal,
+              backgroundColor: destructive ? theme.error : AdminUi.brandTeal,
               foregroundColor: Colors.white,
               elevation: 0,
             ),
@@ -357,7 +593,7 @@ class AdminDataTable extends StatelessWidget {
           width: tableMin,
           child: Column(
             children: [
-                Container(
+              Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(

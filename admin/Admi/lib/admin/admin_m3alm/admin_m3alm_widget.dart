@@ -138,9 +138,8 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
   bool get _isCountryScopedList => _isCountryAgentList;
 
   List<MkanRecord> _filterLandmarks(List<MkanRecord> items) {
-    final list = _isCountryScopedList
-        ? items
-        : AdminCountryScope.filterLandmarks(items);
+    final list =
+        _isCountryScopedList ? items : AdminCountryScope.filterLandmarks(items);
     final withoutAliases = AdminLegacyAliasFilter.keepWhereId(
       list,
       (m) => m.reference.id,
@@ -219,7 +218,9 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
           totalLabel: uiTr(context, 'العدد'),
           listState: listState,
           partnerTotal: listState.totalAvailable ?? partnerTotal,
-          filteredFromTotal: (listState.totalAvailable ?? allLandmarks.length) != (catalogTotal ?? landmarks.length),
+          filteredFromTotal:
+              (listState.totalAvailable ?? allLandmarks.length) !=
+                  (catalogTotal ?? landmarks.length),
           displayTotal: catalogTotal ?? landmarks.length,
         );
       },
@@ -252,7 +253,8 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
         'Soft-disable this landmark (acctev=false). Historical bookings keep their reference.',
       ),
       subject: record.naim.isNotEmpty ? record.naim : record.reference.id,
-      impact: uiTr(context, 'Landmark hidden from active lists; not hard-deleted'),
+      impact:
+          uiTr(context, 'Landmark hidden from active lists; not hard-deleted'),
       confirmLabel: uiTr(context, 'تعطيل المعلم'),
       cancelLabel: appTr(context, 'adm_no'),
       destructive: true,
@@ -287,7 +289,8 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      AdminCrudFeedback.error(context, AdminCrudFeedback.updateFailed(context, e));
+      AdminCrudFeedback.error(
+          context, AdminCrudFeedback.updateFailed(context, e));
     }
   }
 
@@ -318,7 +321,8 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
   void _editLandmark(MkanRecord record) {
     if (!AdminResourceGuard.canEditMkan(record)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(uiTr(context, 'لا تملك صلاحية تعديل هذا المعلم'))),
+        SnackBar(
+            content: Text(uiTr(context, 'لا تملك صلاحية تعديل هذا المعلم'))),
       );
       return;
     }
@@ -455,9 +459,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
             context,
             'تم استبعاد $aliasExcluded سجل توافق legacy من العدد الإجمالي',
           )
-        : (partnerTotal != null &&
-                catalog != null &&
-                partnerTotal > catalog
+        : (partnerTotal != null && catalog != null && partnerTotal > catalog
             ? uiTr(
                 context,
                 'تم استبعاد ${partnerTotal - catalog} معلم alias قديم من العدد الإجمالي',
@@ -472,7 +474,9 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
           _LandmarksSummaryBar(
             totalLabel: totalLabel,
             count: countReady ? count : null,
-            hasMore: hasMore && displayTotal == null && listState?.totalAvailable == null,
+            hasMore: hasMore &&
+                displayTotal == null &&
+                listState?.totalAvailable == null,
             activeCount: activeCount,
             inactiveCount: landmarks.length - activeCount,
             countriesOnPage: countryIds.length,
@@ -664,9 +668,9 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
                       children: [
                         FilterChip(
                           label: Text(uiTr(context, 'الكل')),
-                          selected:
-                              _listFilters.status == AdminLandmarkStatusFilter.all &&
-                                  !_listFilters.imageMissingOnly,
+                          selected: _listFilters.status ==
+                                  AdminLandmarkStatusFilter.all &&
+                              !_listFilters.imageMissingOnly,
                           onSelected: (_) => setState(() {
                             _listFilters = _listFilters.copyWith(
                               status: AdminLandmarkStatusFilter.all,
@@ -747,7 +751,8 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
                             child: SizedBox(
                               width: 40,
                               height: 40,
-                              child: CircularProgressIndicator(strokeWidth: 2.5),
+                              child:
+                                  CircularProgressIndicator(strokeWidth: 2.5),
                             ),
                           ),
                         ),
@@ -783,29 +788,34 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
   }
 
   Widget _buildSearch(FFLocalizations l10n) {
-    return TextFormField(
-      controller: _model.textController,
-      focusNode: _model.textFieldFocusNode,
-      onChanged: (_) => EasyDebounce.debounce(
-        '_admin_m3alm_search',
-        const Duration(milliseconds: 450),
-        () {
-          if (mounted) {
-            _triggerSearch(_model.textController?.text ?? '');
-          }
-        },
-      ),
-      decoration: AdminUi.inputDecoration(
-        context,
-        label: widget.partnersOnly
-            ? appTr(context, 'adm_search_partners')
-            : l10n.getText('3kbdqyee'),
-        hint: widget.partnersOnly
-            ? appTr(context, 'adm_search_partners_hint')
-            : appTr(context, 'adm_search_landmarks_hint'),
-        prefixIcon: Icons.search_rounded,
-      ),
-      validator: _model.textControllerValidator.asValidator(context),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextFormField(
+          controller: _model.textController,
+          focusNode: _model.textFieldFocusNode,
+          onChanged: (_) => EasyDebounce.debounce(
+            '_admin_m3alm_search',
+            const Duration(milliseconds: 450),
+            () {
+              if (mounted) {
+                _triggerSearch(_model.textController?.text ?? '');
+              }
+            },
+          ),
+          decoration: AdminUi.compactSearchDecoration(
+            context,
+            hint: widget.partnersOnly
+                ? appTr(context, 'adm_search_partners_hint')
+                : appTr(context, 'adm_search_landmarks_hint'),
+            helperText: uiTr(
+              context,
+              'بحث عالمي في المعالم (حد أقصى 40 نتيجة)؛ بدون بحث تُعرض الصفحة الحالية فقط',
+            ),
+          ),
+          validator: _model.textControllerValidator.asValidator(context),
+        ),
+      ],
     );
   }
 
@@ -858,9 +868,7 @@ class _LandmarksSummaryBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
-    final countText = count == null
-        ? '…'
-        : '$count${hasMore ? '+' : ''}';
+    final countText = count == null ? '…' : '$count${hasMore ? '+' : ''}';
 
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
@@ -1038,12 +1046,18 @@ class _LandmarksTable extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               child: Row(
                 children: [
-                  _TableHeaderCell(uiTr(context, 'المعلم'), flex: 4, theme: theme),
-                  _TableHeaderCell(uiTr(context, 'الموقع'), flex: 3, theme: theme),
-                  _TableHeaderCell(uiTr(context, 'التصنيف'), flex: 2, theme: theme),
-                  _TableHeaderCell(uiTr(context, 'الحالة'), flex: 2, theme: theme),
-                  _TableHeaderCell(uiTr(context, 'الخدمات'), flex: 2, theme: theme),
-                  _TableHeaderCell(uiTr(context, 'إجراءات'), flex: 2, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'المعلم'),
+                      flex: 4, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'الموقع'),
+                      flex: 3, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'التصنيف'),
+                      flex: 2, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'الحالة'),
+                      flex: 2, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'الخدمات'),
+                      flex: 2, theme: theme),
+                  _TableHeaderCell(uiTr(context, 'إجراءات'),
+                      flex: 2, theme: theme),
                 ],
               ),
             ),
@@ -1493,11 +1507,20 @@ class _LandmarkServices extends StatelessWidget {
   Widget build(BuildContext context) {
     final services = <Widget>[
       if (record.ismsgd)
-        _ServiceChip(icon: Icons.mosque_outlined, label: uiTr(context, 'مسجد'), compact: compact),
+        _ServiceChip(
+            icon: Icons.mosque_outlined,
+            label: uiTr(context, 'مسجد'),
+            compact: compact),
       if (record.isfood)
-        _ServiceChip(icon: Icons.restaurant_outlined, label: uiTr(context, 'طعام'), compact: compact),
+        _ServiceChip(
+            icon: Icons.restaurant_outlined,
+            label: uiTr(context, 'طعام'),
+            compact: compact),
       if (record.ishmam)
-        _ServiceChip(icon: Icons.wc_outlined, label: uiTr(context, 'حمامات'), compact: compact),
+        _ServiceChip(
+            icon: Icons.wc_outlined,
+            label: uiTr(context, 'حمامات'),
+            compact: compact),
       if (record.rate > 0)
         _ServiceChip(
           icon: Icons.star_rounded,

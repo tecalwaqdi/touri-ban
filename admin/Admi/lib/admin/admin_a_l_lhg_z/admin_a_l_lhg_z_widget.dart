@@ -17,6 +17,7 @@ import '/backend/schema/enums/enums.dart';
 import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
+import '/components/admin_enterprise_kit.dart' hide showAdminConfirmDialog;
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_booking_status_label.dart';
@@ -215,7 +216,6 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
   @override
   Widget build(BuildContext context) {
     final l10n = FFLocalizations.of(context);
-    final theme = FlutterFlowTheme.of(context);
     final isWide = AdminUi.useTableLayout(context);
 
     return GestureDetector(
@@ -256,7 +256,8 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                 refreshScope: AdminListScope.bookings,
                 query: OrderRecord.collection,
                 recordBuilder: OrderRecord.fromSnapshot,
-                queryBuilder: (q) => AdminBookingsQuery.applyFilters(q, _filters),
+                queryBuilder: (q) =>
+                    AdminBookingsQuery.applyFilters(q, _filters),
                 countQueryBuilder: (q) =>
                     AdminBookingsQuery.applyFiltersCore(q, _filters),
                 loading: const Padding(
@@ -269,12 +270,11 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                     results: bookings.length,
                     queryTotal: listState.totalAvailable,
                   );
-                  final waitingServerSearch = _filters.searchQuery
-                          .trim()
-                          .isNotEmpty &&
-                      AdminOpsSearch.classify(_filters.searchQuery)
-                          .isServerSide &&
-                      _serverSearchHits == null;
+                  final waitingServerSearch =
+                      _filters.searchQuery.trim().isNotEmpty &&
+                          AdminOpsSearch.classify(_filters.searchQuery)
+                              .isServerSide &&
+                          _serverSearchHits == null;
 
                   return AdminContentCard(
                     padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
@@ -293,42 +293,23 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                               child: SizedBox(
                                 width: 28,
                                 height: 28,
-                                child: CircularProgressIndicator(strokeWidth: 2.5),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2.5),
                               ),
                             ),
                           )
                         else if (bookings.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 36),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.event_note_outlined,
-                                  size: 44,
-                                  color:
-                                      AdminUi.brandTeal.withValues(alpha: 0.45),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  _filters.searchQuery.isEmpty && !_extra.hasAny
-                                      ? uiTr(context, 'لا توجد حجوزات')
-                                      : uiTr(context, 'لا توجد نتائج للبحث'),
-                                  style: theme.titleMedium,
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  uiTr(
-                                    context,
-                                    'جرّب تغيير الفلاتر أو إعادة الضبط',
-                                  ),
-                                  style: theme.bodySmall.override(
-                                    fontFamily: theme.bodySmallFamily,
-                                    color: theme.secondaryText,
-                                    useGoogleFonts: !theme.bodySmallIsCustom,
-                                  ),
-                                ),
-                              ],
+                          AdminEmptyState(
+                            title:
+                                _filters.searchQuery.isEmpty && !_extra.hasAny
+                                    ? uiTr(context, 'لا توجد حجوزات')
+                                    : uiTr(context, 'لا توجد نتائج للبحث'),
+                            message: uiTr(
+                              context,
+                              'جرّب تغيير الفلاتر أو إعادة الضبط',
                             ),
+                            icon: Icons.event_note_outlined,
+                            compact: true,
                           )
                         else if (isWide)
                           AdminBookingsTable(
@@ -347,10 +328,8 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                             itemBuilder: (context, index) =>
                                 AdminBookingListCard(
                               order: bookings[index],
-                              onDetails: () =>
-                                  _openDetails(bookings[index]),
-                              onCancel: () =>
-                                  _cancelBooking(bookings[index]),
+                              onDetails: () => _openDetails(bookings[index]),
+                              onCancel: () => _cancelBooking(bookings[index]),
                               canCancel: _canCancelBooking,
                             ),
                           ),

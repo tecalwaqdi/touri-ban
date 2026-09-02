@@ -11,6 +11,7 @@ import '/backend/admin_stats_coordinator.dart';
 import '/backend/backend.dart';
 import '/backend/dashboard_metric_keys.dart';
 import '/backend/dashboard_stats_loader.dart';
+import '/components/admin_enterprise_kit.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -98,9 +99,11 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
       _watchedScope = _loadedScope;
     }
     _userDocSub = authenticatedUserStream.listen(_onUserProfileChanged);
-    _agentReadySub = AdminAgentSessionReady.onReady.listen(_onAgentSessionReady);
-    _statsInvalidationSub =
-        AdminStatsCoordinator.instance.stream(StatsDomain.dashboard).listen((_) {
+    _agentReadySub =
+        AdminAgentSessionReady.onReady.listen(_onAgentSessionReady);
+    _statsInvalidationSub = AdminStatsCoordinator.instance
+        .stream(StatsDomain.dashboard)
+        .listen((_) {
       if (!mounted) return;
       _loadGeneration++;
       _scheduleLoad(force: true);
@@ -326,8 +329,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
         scopeChanged ||
         (cachedPeek != null && !cachedPeek.loadComplete);
 
-    final manualRefresh =
-        force && _stats != null && _loadedScope == scope;
+    final manualRefresh = force && _stats != null && _loadedScope == scope;
 
     loadDashboardStats(
       forceRefresh: refreshFromServer,
@@ -383,16 +385,15 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
       if (DateTime.now().difference(started) < const Duration(seconds: 20)) {
         return;
       }
-      if (!_loading &&
-          _stats != null &&
-          _stats!.loadComplete) {
+      if (!_loading && _stats != null && _stats!.loadComplete) {
         return;
       }
       setState(() {
         _loading = false;
         _error ??= 'dashboard_stats_ui_timeout';
         if (_stats == null || !_stats!.loadComplete) {
-          _stats = DashboardStats.empty(loadError: 'dashboard_stats_ui_timeout');
+          _stats =
+              DashboardStats.empty(loadError: 'dashboard_stats_ui_timeout');
         }
         _inFlightScope = null;
         _spinnerGuardStartedAt = null;
@@ -426,25 +427,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
 
     if (_error != null && (_stats == null || !_stats!.loadComplete)) {
       return AdminContentCard(
-        child: Column(
-          children: [
-            Icon(
-              Icons.cloud_off_rounded,
-              size: 40,
-              color: AdminUi.brandTeal.withValues(alpha: 0.6),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              appTr(context, 'dash_stats_load_failed'),
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            TextButton.icon(
-              onPressed: () => _scheduleLoad(force: true),
-              icon: const Icon(Icons.refresh_rounded),
-              label: Text(appTr(context, 'adm_retry')),
-            ),
-          ],
+        child: AdminErrorState(
+          title: appTr(context, 'dash_stats_load_failed'),
+          onRetry: () => _scheduleLoad(force: true),
         ),
       );
     }
@@ -1086,11 +1071,9 @@ class _DashboardSyncNote extends StatelessWidget {
       locale: FFLocalizations.of(context).languageCode,
     );
     final ttlMin = kAdminStatsTtl.inMinutes;
-    final staleHint = ageMin >= ttlMin
-        ? ' · ${uiTr(context, 'قديمة — حدّث')}'
-        : '';
-    final reliableHint =
-        reliable ? '' : ' · ${uiTr(context, 'غير مؤكد')}';
+    final staleHint =
+        ageMin >= ttlMin ? ' · ${uiTr(context, 'قديمة — حدّث')}' : '';
+    final reliableHint = reliable ? '' : ' · ${uiTr(context, 'غير مؤكد')}';
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

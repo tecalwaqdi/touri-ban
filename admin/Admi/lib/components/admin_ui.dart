@@ -1,7 +1,10 @@
 import 'dart:ui' as ui;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+import '/flutter_flow/flutter_flow_util.dart';
 
 import '/backend/admin_reports_country_scope.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -60,6 +63,70 @@ class AdminUi {
 
   static const double sectionGap = 14.0;
   static const double fieldGap = 12.0;
+
+  /// Standard debounce for server/search fields (ms).
+  static const int searchDebounceMs = 320;
+
+  static bool isNarrowMobile(BuildContext context) =>
+      MediaQuery.sizeOf(context).width < 430;
+
+  static bool isTabletWidth(BuildContext context) {
+    final w = MediaQuery.sizeOf(context).width;
+    return w >= 768 && w < 1100;
+  }
+
+  /// Max width for dialogs/sheets — fits 390px with safe margins.
+  static double dialogMaxWidth(BuildContext context) {
+    final w = MediaQuery.sizeOf(context).width;
+    if (w < 430) return w - 24;
+    if (w < 768) return w - 40;
+    return 520;
+  }
+
+  /// Side drawer / detail panel width on narrow screens.
+  static double drawerWidth(BuildContext context) {
+    final w = MediaQuery.sizeOf(context).width;
+    if (w < 430) return w;
+    if (w < 768) return w * 0.92;
+    return 480;
+  }
+
+  /// Safe diagnostic logging — never logs secrets in release.
+  static void logDiagnostic(String scope, Object error, [StackTrace? stack]) {
+    if (!kDebugMode) return;
+    debugPrint('[$scope] $error');
+    if (stack != null) {
+      debugPrint(stack.toString());
+    }
+  }
+
+  static InputDecoration compactSearchDecoration(
+    BuildContext context, {
+    required String hint,
+    Widget? suffixIcon,
+    String? helperText,
+  }) {
+    final theme = FlutterFlowTheme.of(context);
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(radiusSm),
+      borderSide: BorderSide(color: theme.alternate),
+    );
+    return InputDecoration(
+      hintText: hint,
+      helperText: helperText,
+      helperMaxLines: 2,
+      prefixIcon: const Icon(Icons.search_rounded, size: 20),
+      suffixIcon: suffixIcon,
+      isDense: true,
+      filled: true,
+      fillColor: theme.secondaryBackground,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      enabledBorder: border,
+      focusedBorder: border.copyWith(
+        borderSide: BorderSide(color: theme.primary, width: 1.5),
+      ),
+    );
+  }
 
   /// Theme-aware fill for text fields and locked/muted surfaces.
   static Color fieldFill(BuildContext context, {bool muted = false}) {
@@ -417,7 +484,8 @@ class AdminMenuTile extends StatelessWidget {
                 if ((attentionCount ?? 0) > 0)
                   Container(
                     margin: const EdgeInsetsDirectional.only(end: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFB4B8),
                       borderRadius: BorderRadius.circular(10),
@@ -767,6 +835,7 @@ class AdminPageBody extends StatelessWidget {
   final Widget? actions;
   final bool usePadding;
   final bool scrollable;
+
   /// Prefer denser page title (Bookings / similar ops lists).
   final bool compactHeader;
 
@@ -900,8 +969,7 @@ class AdminPrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final onPrimary =
-        isDark ? const Color(0xFF0F1414) : Colors.white;
+    final onPrimary = isDark ? const Color(0xFF0F1414) : Colors.white;
     final hPad = compact ? 14.0 : 20.0;
     final vPad = compact ? 10.0 : 14.0;
     final child = isLoading
