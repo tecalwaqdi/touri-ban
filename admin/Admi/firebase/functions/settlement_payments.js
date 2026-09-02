@@ -143,7 +143,7 @@ async function createSettlementPayment({db, auth, data, now}) {
   return db.runTransaction(async (tx) => {
     const {ref: idempRef, snap: idempSnap} = await ledger.readIdempotency(db, tx, idempId);
     if (idempSnap.exists && idempSnap.data().status === 'completed') {
-      return idempSnap.data().result;
+      return {...idempSnap.data().result, idempotent: true};
     }
     const live = await tx.get(settlementRef);
     if (!live.exists) ledger.fail('not-found', 'Settlement not found');
@@ -229,7 +229,7 @@ async function confirmSettlementPayment({db, auth, data, now}) {
   return db.runTransaction(async (tx) => {
     const {ref: idempRef, snap: idempSnap} = await ledger.readIdempotency(db, tx, idempId);
     if (idempSnap.exists && idempSnap.data().status === 'completed') {
-      return idempSnap.data().result;
+      return {...idempSnap.data().result, idempotent: true};
     }
     const paySnap = await tx.get(payRef);
     if (!paySnap.exists) ledger.fail('not-found', 'Payment not found');
@@ -371,7 +371,7 @@ async function reverseSettlementPayment({db, auth, data, now}) {
   return db.runTransaction(async (tx) => {
     const {ref: idempRef, snap: idempSnap} = await ledger.readIdempotency(db, tx, idempId);
     if (idempSnap.exists && idempSnap.data().status === 'completed') {
-      return idempSnap.data().result;
+      return {...idempSnap.data().result, idempotent: true};
     }
     const origSnap = await tx.get(origRef);
     if (!origSnap.exists) ledger.fail('not-found', 'Payment not found');
@@ -501,7 +501,7 @@ async function allocateExistingPayment({db, auth, data, now}) {
   return db.runTransaction(async (tx) => {
     const {ref: idempRef, snap: idempSnap} = await ledger.readIdempotency(db, tx, idempId);
     if (idempSnap.exists && idempSnap.data().status === 'completed') {
-      return idempSnap.data().result;
+      return {...idempSnap.data().result, idempotent: true};
     }
     const sSnap = await tx.get(settlementRef);
     const srcSnap = await tx.get(sourceRef);

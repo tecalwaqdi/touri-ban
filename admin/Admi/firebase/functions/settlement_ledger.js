@@ -376,7 +376,16 @@ async function createSettlementDraft({db, auth, data, now}) {
       settlementCode: code,
       driverId,
     });
-    const result = {settlementId, settlementCode: code, status: 'draft', previewHash: hash, currency, ...snapshot};
+    const eligibleOrderIds = eligibleLines.map((l) => l.orderId).sort();
+    const result = {
+      settlementId,
+      settlementCode: code,
+      status: 'draft',
+      previewHash: hash,
+      currency,
+      eligibleOrderIds,
+      ...snapshot,
+    };
     tx.set(idempRef, {
       status: 'completed',
       op: 'createDraft',

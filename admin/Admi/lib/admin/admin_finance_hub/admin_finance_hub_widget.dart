@@ -148,6 +148,13 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                       ),
                     ),
                     AdminPrimaryButton(
+                      label: uiTr(context, 'الذمم المالية'),
+                      outlined: true,
+                      onPressed: () => context.pushNamed(
+                        AdminFinanceReceivablesWidget.routeName,
+                      ),
+                    ),
+                    AdminPrimaryButton(
                       label: uiTr(context, 'مالية الوكلاء'),
                       outlined: true,
                       onPressed: () => context.pushNamed(

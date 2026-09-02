@@ -6,6 +6,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/core/finance/settlement_exposure.dart';
+import '/core/finance/settlement_state_labels.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -140,14 +141,16 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                     spacing: 16,
                     runSpacing: 8,
                     children: [
-                      Text('Draft ${n('draft')}'),
-                      Text('Locked ${n('locked')}'),
-                      Text('Settled ${n('settled')}'),
+                      Text('${uiTr(context, 'مسودة')} ${n('draft')}'),
+                      Text('${uiTr(context, 'مقفلة')} ${n('locked')}'),
+                      Text('${uiTr(context, 'مسدد')} ${n('settled')}'),
                       Text(
-                        'Driver Pays ${docs.where((d) => d.data()['direction'] == 'DRIVER_PAYS_COMPANY').length}',
+                        '${SettlementStateLabels.directionAr('DRIVER_PAYS_COMPANY')} '
+                        '${docs.where((d) => d.data()['direction'] == 'DRIVER_PAYS_COMPANY').length}',
                       ),
                       Text(
-                        'Company Pays ${docs.where((d) => d.data()['direction'] == 'COMPANY_PAYS_DRIVER').length}',
+                        '${SettlementStateLabels.directionAr('COMPANY_PAYS_DRIVER')} '
+                        '${docs.where((d) => d.data()['direction'] == 'COMPANY_PAYS_DRIVER').length}',
                       ),
                     ],
                   ),
@@ -217,12 +220,14 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                       (d) => ListTile(
                         contentPadding: EdgeInsets.zero,
                         title: Text(
-                          '${d.data()['settlementCode'] ?? d.id} · ${d.data()['status']}',
+                          '${d.data()['settlementCode'] ?? d.id} · '
+                          '${SettlementStateLabels.statusAr('${d.data()['status']}')}',
                           softWrap: true,
                         ),
                         subtitle: Text(
-                          '${d.data()['currency']} · ${d.data()['direction']} · '
-                          'driver ${d.data()['driverId']}',
+                          '${d.data()['currency']} · '
+                          '${SettlementStateLabels.directionAr('${d.data()['direction']}')} · '
+                          '${uiTr(context, 'مندوب')} ${d.data()['driverId']}',
                           softWrap: true,
                         ),
                         onTap: () => context.pushNamed(

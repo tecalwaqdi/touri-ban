@@ -188,6 +188,7 @@ async function createPay(db, settlementId, amountMinor, extra = {}) {
       db, auth: financeAuth(), data: {paymentId: p.paymentId, idempotencyKey: 'same-conf'},
     });
     assert.strictEqual(c1.receiptNumber, c2.receiptNumber);
+    assert.strictEqual(c2.idempotent, true);
   }
 
   // concurrent confirmation — only one full remaining slot

@@ -33,6 +33,8 @@ export '/admin/admin_finance_channels/admin_finance_channels_widget.dart'
     show AdminFinanceChannelsWidget;
 export '/admin/admin_agent_finance/admin_agent_finance_widget.dart'
     show AdminAgentFinanceWidget;
+export '/admin/admin_finance_receivables/admin_finance_receivables_widget.dart'
+    show AdminFinanceReceivablesWidget;
 export '/admin/admin_reconciliation/admin_reconciliation_widget.dart'
     show AdminReconciliationWidget;
 export '/admin/admin_financial_periods/admin_financial_periods_widget.dart'

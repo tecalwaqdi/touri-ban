@@ -75,6 +75,7 @@ async function draft(db, extra = {}) {
     assert.strictEqual(r.status, 'draft');
     assert.strictEqual(r.eligibleTripCount, 5);
     assert.ok(r.settlementCode.startsWith('STL-'));
+    assert.strictEqual(r.eligibleOrderIds.length, 5);
     const snap = await db.collection('financial_settlements').doc(r.settlementId).get();
     assert.strictEqual(snap.data().status, 'draft');
     const claims = await db.collection('financial_settlement_claims').get();
