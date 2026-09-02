@@ -370,6 +370,15 @@ const kNavTranslations = <String, Map<String, String>>{
     'az': 'Dəstək',
     'ka': 'მხარდაჭერა',
   },
+  'nav_notifications': {
+    'en': 'Notifications',
+    'ar': 'الإشعارات',
+    'ur': 'اطلاعات',
+    'pt': 'Notificações',
+    'fr': 'Notifications',
+    'ru': 'Уведомления',
+    'ky': 'Билдирүүлөр',
+  },
   'nav_settings': {
     'en': 'Settings',
     'pt': 'Configurações',
@@ -1258,6 +1267,7 @@ const kNavRouteKeys = <String, String>{
   'CompanyDrivers': 'nav_company_drivers',
   'PartnerBookings': 'nav_partner_bookings',
   'AdminSuport': 'nav_support',
+  'AdminNotifications': 'nav_notifications',
   'Settings': 'nav_settings',
 };
 

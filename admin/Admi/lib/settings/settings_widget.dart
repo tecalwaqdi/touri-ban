@@ -17,6 +17,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'settings_model.dart';
 export 'settings_model.dart';
 
@@ -39,11 +40,13 @@ class _SettingsWidgetState extends State<SettingsWidget> {
   bool _i18nGeminiRunning = false;
   bool _boundsBackfillRunning = false;
   String? _i18nBackfillStatus;
+  String _appVersion = '—';
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => SettingsModel());
+    _loadAppVersion();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _model.loadProfileFromUser();
@@ -60,6 +63,16 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       _model.applyUserProfile(user);
       safeSetState(() {});
     });
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      setState(() => _appVersion = '${info.version}+${info.buildNumber}');
+    } catch (e, st) {
+      AdminUi.logDiagnostic('settings_version', e, st);
+    }
   }
 
   @override
@@ -159,8 +172,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
             FFUploadedFile(bytes: Uint8List.fromList([]));
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(AdminCrudFeedback.uploadFailed(context, e))),
+        SnackBar(content: Text(AdminCrudFeedback.uploadFailed(context, e))),
       );
     } finally {
       if (mounted) {
@@ -662,6 +674,21 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 ),
               ],
               const SizedBox(height: 16),
+              AdminContentCard(
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.info_outline_rounded),
+                  title: Text(uiTr(context, 'إصدار لوحة التحكم')),
+                  subtitle: Text(
+                    _appVersion,
+                    style: theme.titleMedium.override(
+                      fontFamily: theme.titleMediumFamily,
+                      fontWeight: FontWeight.w700,
+                      useGoogleFonts: !theme.titleMediumIsCustom,
+                    ),
+                  ),
+                ),
+              ),
               AdminContentCard(
                 child: const AdminThemeModeCard(),
               ),

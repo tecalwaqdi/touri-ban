@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '/backend/admin_role_service.dart';
 import '/components/admin_layout_widget.dart';
@@ -24,6 +25,7 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late Menu2Model _menu2Model;
   String _status = 'idle';
+  String _appVersion = '—';
   Map<String, dynamic>? _home;
   int _metricCount = 0;
   Map<String, dynamic>? _lastMetric;
@@ -32,7 +34,18 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
   void initState() {
     super.initState();
     _menu2Model = createModel(context, () => Menu2Model());
+    _loadVersion();
     _ping();
+  }
+
+  Future<void> _loadVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      setState(() => _appVersion = '${info.version}+${info.buildNumber}');
+    } catch (e, st) {
+      AdminUi.logDiagnostic('diagnostics_version', e, st);
+    }
   }
 
   @override
@@ -44,7 +57,10 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
   Future<void> _ping() async {
     setState(() => _status = 'checking');
     try {
-      await FirebaseFirestore.instance.collection('financial_config').limit(1).get();
+      await FirebaseFirestore.instance
+          .collection('financial_config')
+          .limit(1)
+          .get();
       final home = await FinanceControlsClient.accountantHome();
       int metrics = 0;
       Map<String, dynamic>? last;
@@ -86,7 +102,8 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
-    final flags = Map<String, dynamic>.from(_home?['featureFlags'] as Map? ?? {});
+    final flags =
+        Map<String, dynamic>.from(_home?['featureFlags'] as Map? ?? {});
     final ordersScanned = (_lastMetric?['ordersScanned'] as num?)?.toInt() ?? 0;
     final expensive = ordersScanned > 5000;
     final approverOk = _home?['independentApproverConfigured'] == true;
@@ -106,6 +123,7 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
             style: theme.bodySmall,
           ),
           const SizedBox(height: 12),
+          Text('Admin build: $_appVersion', softWrap: true),
           Text(
             'Firestore: ${_status == 'ok' ? 'reachable' : _status}',
             softWrap: true,
@@ -151,7 +169,8 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
           Text(
             approverOk
                 ? uiTr(context, 'Approver availability: configured')
-                : uiTr(context, 'Approver availability: missing / not configured'),
+                : uiTr(
+                    context, 'Approver availability: missing / not configured'),
             softWrap: true,
             style: theme.bodyMedium.override(
               fontFamily: 'Cairo',
@@ -161,11 +180,14 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
           ),
           if (_lastMetric != null) ...[
             const SizedBox(height: 8),
-            Text(uiTr(context, 'Last aggregation metric'), style: theme.titleSmall),
+            Text(uiTr(context, 'Last aggregation metric'),
+                style: theme.titleSmall),
             Text('op: ${_lastMetric!['op'] ?? '—'}', softWrap: true),
             Text('ordersScanned: $ordersScanned', softWrap: true),
-            Text('durationMs: ${_lastMetric!['durationMs'] ?? '—'}', softWrap: true),
-            Text('cacheHit: ${_lastMetric!['cacheHit'] ?? '—'}', softWrap: true),
+            Text('durationMs: ${_lastMetric!['durationMs'] ?? '—'}',
+                softWrap: true),
+            Text('cacheHit: ${_lastMetric!['cacheHit'] ?? '—'}',
+                softWrap: true),
             Text('at: ${_lastMetric!['at'] ?? '—'}', softWrap: true),
             if (expensive)
               Padding(

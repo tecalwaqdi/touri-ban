@@ -409,6 +409,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => AdminSuportWidget(),
         ),
         FFRoute(
+          name: AdminNotificationsWidget.routeName,
+          path: AdminNotificationsWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminNotificationsWidget(),
+        ),
+        FFRoute(
           name: AdminUserManagementSystemWidget.routeName,
           path: AdminUserManagementSystemWidget.routePath,
           requireAuth: true,

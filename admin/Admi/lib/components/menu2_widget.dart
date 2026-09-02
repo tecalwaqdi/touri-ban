@@ -70,10 +70,12 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     const map = {
       'overview': 'ent_section_overview',
       'operations': 'ent_section_operations',
+      'reviews': 'ent_section_reviews',
       'catalog': 'ent_section_catalog',
       'partners': 'ent_section_partners',
       'geography': 'ent_section_geography',
       'finance': 'ent_section_finance',
+      'reports': 'ent_section_reports',
       'system': 'ent_section_system',
     };
     final trKey = map[key];
@@ -136,12 +138,21 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 icon: Icons.directions_car_rounded
               ),
               (
-                route: AdminDriverExpiryQueueWidget.routeName,
-                icon: Icons.event_busy_rounded
-              ),
-              (
                 route: AdminSuportWidget.routeName,
                 icon: Icons.support_agent_rounded
+              ),
+            ],
+          ),
+          (
+            key: 'reviews',
+            items: [
+              (
+                route: AdminNotificationsWidget.routeName,
+                icon: Icons.notifications_rounded
+              ),
+              (
+                route: AdminDriverExpiryQueueWidget.routeName,
+                icon: Icons.event_busy_rounded
               ),
             ],
           ),
@@ -231,6 +242,19 @@ class _Menu2WidgetState extends State<Menu2Widget> {
             ],
           ),
           (
+            key: 'reports',
+            items: [
+              (
+                route: AdminReportsHubWidget.routeName,
+                icon: Icons.assessment_rounded
+              ),
+              (
+                route: AdminAuditLogWidget.routeName,
+                icon: Icons.history_rounded
+              ),
+            ],
+          ),
+          (
             key: 'system',
             items: [
               (
@@ -240,14 +264,6 @@ class _Menu2WidgetState extends State<Menu2Widget> {
               (
                 route: AdminSuperAdminsWidget.routeName,
                 icon: Icons.admin_panel_settings_rounded
-              ),
-              (
-                route: AdminAuditLogWidget.routeName,
-                icon: Icons.history_rounded
-              ),
-              (
-                route: AdminReportsHubWidget.routeName,
-                icon: Icons.assessment_rounded
               ),
               (route: SettingsWidget.routeName, icon: Icons.settings_rounded),
             ],

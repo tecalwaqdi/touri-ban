@@ -67,6 +67,8 @@ export '/admin/admin_add_super_admin/admin_add_super_admin_widget.dart'
 export '/admin/edet_super_admin/edet_super_admin_widget.dart'
     show EdetSuperAdminWidget;
 export '/admin/admin_suport/admin_suport_widget.dart' show AdminSuportWidget;
+export '/admin/admin_notifications/admin_notifications_widget.dart'
+    show AdminNotificationsWidget;
 export '/admin/admin_user_management_system/admin_user_management_system_widget.dart'
     show AdminUserManagementSystemWidget;
 export '/admin_regesr/admin_regesr_widget.dart' show AdminRegesrWidget;

@@ -2,6 +2,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_push_service.dart';
 import '/components/admin_layout_widget.dart';
+import '/components/admin_operational_alerts.dart';
 import '/components/admin_ui.dart';
 import '/backend/admin_role_service.dart';
 import '/components/dashboard_stats_section.dart';
@@ -69,7 +70,8 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
     final l10n = FFLocalizations.of(context);
     final theme = FlutterFlowTheme.of(context);
     final displayName = currentUserDisplayName.trim();
-    final name = displayName.isNotEmpty ? displayName : l10n.getText('hrrt489c');
+    final name =
+        displayName.isNotEmpty ? displayName : l10n.getText('hrrt489c');
     final photo = currentUserPhoto;
 
     final role = AdminRoleService.currentRole;
@@ -111,6 +113,8 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
                   photoUrl: photo,
                   onRefresh: _onRefresh,
                 ),
+                const SizedBox(height: 18),
+                const AdminOperationalAlerts(),
                 const SizedBox(height: 18),
                 _DashboardQuickActionsGrid(onNavigate: _navigate),
                 const SizedBox(height: 22),
@@ -281,6 +285,15 @@ class _DashboardHeroBanner extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                ),
+                IconButton(
+                  tooltip: uiTr(context, 'الإشعارات'),
+                  onPressed: () =>
+                      context.pushNamed(AdminNotificationsWidget.routeName),
+                  icon: Icon(
+                    Icons.notifications_outlined,
+                    color: Colors.white.withValues(alpha: 0.92),
                   ),
                 ),
                 IconButton(

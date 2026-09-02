@@ -22,6 +22,12 @@ class AuditLogEntry {
   String get targetLabel => data['target_label'] as String? ?? '';
   String get actorEmail => data['actor_email'] as String? ?? '';
   String get actorRole => data['actor_role'] as String? ?? '';
+  String get targetId => data['target_id'] as String? ?? '';
+  String get metadataRaw {
+    final m = data['metadata'];
+    if (m == null) return '';
+    return m.toString();
+  }
   Timestamp? get createdAt => data['created_at'] as Timestamp?;
 }
 

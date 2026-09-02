@@ -286,6 +286,7 @@ class AdminRoleService {
     'AdminDrivers',
     'AdminDriverExpiryQueue',
     'DriverActivation',
+    'AdminNotifications',
     'addDrev',
     'AdminTransportCompanies',
     'AddTransportCompany',

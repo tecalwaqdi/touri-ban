@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/backend/driver_admin_stats_loader.dart';
+import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -64,7 +65,9 @@ class AdminDriverNotificationsSheet extends StatelessWidget {
         'read': true,
         'readAt': FieldValue.serverTimestamp(),
       });
-    } catch (_) {}
+    } catch (e, st) {
+      AdminUi.logDiagnostic('notification_sheet_mark_read', e, st);
+    }
   }
 
   @override
