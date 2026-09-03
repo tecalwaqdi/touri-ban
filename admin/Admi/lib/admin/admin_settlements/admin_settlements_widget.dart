@@ -5,6 +5,7 @@ import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_user_facing_errors.dart';
+import '/core/admin_currency.dart';
 import '/core/finance/admin_finance_ui_labels.dart';
 import '/core/finance/settlement_exposure.dart';
 import '/core/finance/settlement_state_labels.dart';
@@ -262,7 +263,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                           softWrap: true,
                         ),
                         subtitle: Text(
-                          '${d.data()['currency']} · '
+                          '${AdminCurrency.symbolByCode['${d.data()['currency']}'] ?? d.data()['currency']} · '
                           '${SettlementStateLabels.directionAr('${d.data()['direction']}')} · '
                           '${uiTr(context, 'مندوب')} ${d.data()['driverId']}',
                           softWrap: true,
