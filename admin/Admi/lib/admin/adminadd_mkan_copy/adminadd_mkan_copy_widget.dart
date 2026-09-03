@@ -82,11 +82,22 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
         return;
       }
 
-      final nextCountry = AdminCountryScope.mkanCountryRefForSave() ??
+      var nextCountry = AdminCountryScope.mkanCountryRefForSave() ??
           record.revDolh ??
           FFAppState().RevDolh;
-      final nextRegion = FFAppState().Revreg ?? record.idCit;
-      final nextCity = FFAppState().REvCITE ?? record.idVill;
+      var nextRegion = FFAppState().Revreg ?? record.idCit;
+      var nextCity = FFAppState().REvCITE ?? record.idVill;
+
+      // If AppState still points at a different country than this landmark,
+      // keep the landmark's own parents (stale picker from another screen).
+      final recordCountry = record.revDolh;
+      if (recordCountry != null &&
+          nextCountry != null &&
+          nextCountry.path != recordCountry.path) {
+        nextCountry = recordCountry;
+        nextRegion = record.idCit;
+        nextCity = record.idVill;
+      }
       final nextLocation = AdminLocationService.isValidLocation(
             _model.placePickerValue.latLng)
           ? _model.placePickerValue.latLng
@@ -565,9 +576,19 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
     try {
       final city = await VillagesRecord.getDocumentOnce(record.idVill!);
       if (!mounted) return;
+      // Seed AppState from the landmark itself so save does not overwrite
+      // Africa (or any) parents with a stale city selected elsewhere in Admin.
+      FFAppState().REvCITE = record.idVill;
       FFAppState().RevciteTEXT = city.naim;
       if (city.cities != null) {
         FFAppState().Revreg = city.cities;
+      } else if (record.idCit != null) {
+        FFAppState().Revreg = record.idCit;
+      }
+      if (record.revDolh != null) {
+        FFAppState().RevDolh = record.revDolh;
+      } else if (city.dolh != null) {
+        FFAppState().RevDolh = city.dolh;
       }
       setState(() => _model.cityLabelLoaded = true);
     } catch (_) {}

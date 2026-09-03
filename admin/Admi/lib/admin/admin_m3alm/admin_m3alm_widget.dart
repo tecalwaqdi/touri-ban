@@ -3,6 +3,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_reports_country_scope.dart';
 import '/backend/admin_landmark_catalog_stats.dart';
 import '/backend/admin_landmark_list_filters.dart';
 import '/backend/admin_landmark_search.dart';
@@ -67,8 +68,37 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
       q = q.where('isShrek', isEqualTo: true);
     }
     q = AdminCountryScope.applyLandmarkCountryFilter(q);
+
+    // Server-side geo filters — do NOT rely on client filter of one page.
+    // Africa landmarks (lm_ng_*/lm_td_*/lm_ne_*) sit mid/late in documentId order
+    // and vanish when country is filtered only on the current page.
+    final country = _listFilters.countryRef;
+    if (country != null &&
+        !(AdminRoleService.isCountryAgent ||
+            AdminReportsCountryScope.isActive)) {
+      q = q.where('Rev_dolh', isEqualTo: country);
+    }
+    final region = _listFilters.regionRef;
+    if (region != null) {
+      q = q.where('id_cit', isEqualTo: region);
+    }
+    final city = _listFilters.cityRef;
+    if (city != null) {
+      q = q.where('id_vill', isEqualTo: city);
+    }
+
     return q.orderBy(FieldPath.documentId);
   }
+
+  String get _landmarksListSignature => [
+        widget.partnersOnly ? 'p1' : 'p0',
+        AdminRoleService.isCountryAgent ? 'agent' : 'sa',
+        _listFilters.countryRef?.path ?? '',
+        _listFilters.regionRef?.path ?? '',
+        _listFilters.cityRef?.path ?? '',
+        _pageSize,
+      ].join('|');
+
 
   bool get _isCountryAgentList =>
       AdminRoleService.isCountryAgent && _searchFuture == null;
@@ -195,14 +225,14 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
     }
 
     return AdminFirestoreList<MkanRecord>(
-      key: ValueKey(
-        'm3alm_list_${widget.partnersOnly}_${AdminRoleService.isCountryAgent}_$_pageSize',
-      ),
+      key: ValueKey('m3alm_list_$_landmarksListSignature'),
+      reloadKey: _landmarksListSignature,
       refreshScope: AdminListScope.landmarks,
       query: MkanRecord.collection,
       recordBuilder: MkanRecord.fromSnapshot,
       pageSize: _pageSize,
       queryBuilder: _landmarksQuery,
+      countQueryBuilder: _landmarksQuery,
       builder: (context, allLandmarks, listState) {
         AdminLandmarkIndex.ingest(allLandmarks);
         final landmarks = _filterLandmarks(allLandmarks);
