@@ -18,6 +18,7 @@ class FinancialReportFilter {
     this.customEnd,
     this.countryRef,
     this.driverRef,
+    this.agentRef,
     this.channel,
     this.lifecycle,
     this.payment,
@@ -30,6 +31,9 @@ class FinancialReportFilter {
   final DateTime? customEnd;
   final DocumentReference? countryRef;
   final DocumentReference? driverRef;
+
+  /// First-class agent dimension (V3). Optional; null = no agent filter.
+  final DocumentReference? agentRef;
   final FinancialPaymentChannel? channel;
   final FinancialLifecycle? lifecycle;
   final FinancialPaymentState? payment;
@@ -48,6 +52,7 @@ class FinancialReportFilter {
         customEnd?.toUtc().toIso8601String() ?? '',
         countryRef?.path ?? '',
         driverRef?.path ?? '',
+        agentRef?.path ?? '',
         channel?.name ?? '',
         lifecycle?.name ?? '',
         payment?.name ?? '',
@@ -176,6 +181,7 @@ abstract final class FinancialAccountingLoader {
       customEnd: filter.customEnd,
       countryRef: country,
       driverRef: filter.driverRef,
+      agentRef: filter.agentRef,
       channel: filter.channel,
       lifecycle: filter.lifecycle,
       payment: filter.payment,
@@ -274,6 +280,7 @@ abstract final class FinancialAccountingLoader {
       customEnd: base.customEnd,
       countryRef: _effectiveCountry(base),
       driverRef: driverRef,
+      agentRef: base.agentRef,
       channel: base.channel,
       lifecycle: base.lifecycle,
       payment: base.payment,

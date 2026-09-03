@@ -9,8 +9,11 @@
 const DEFAULT_FLAGS = {
   FINANCIAL_SETTLEMENT_WRITES_ENABLED: false,
   FINANCIAL_PAYMENT_CONFIRM_ENABLED: false,
+  FINANCIAL_CASH_REALIZATION_V2_ENABLED: false,
   WALLET_SETTLEMENT_ENABLED: false,
   AUTOMATIC_PAYOUT_ENABLED: false,
+  /// Recognition engine: v2 (production) | v3 (snapshot-prefer when present).
+  FINANCIAL_ENGINE_VERSION: 'v2',
 };
 
 async function loadFinanceFeatureFlags(db, tx) {
@@ -20,8 +23,13 @@ async function loadFinanceFeatureFlags(db, tx) {
   return {
     FINANCIAL_SETTLEMENT_WRITES_ENABLED: data.FINANCIAL_SETTLEMENT_WRITES_ENABLED === true,
     FINANCIAL_PAYMENT_CONFIRM_ENABLED: data.FINANCIAL_PAYMENT_CONFIRM_ENABLED === true,
+    FINANCIAL_CASH_REALIZATION_V2_ENABLED: data.FINANCIAL_CASH_REALIZATION_V2_ENABLED === true,
     WALLET_SETTLEMENT_ENABLED: data.WALLET_SETTLEMENT_ENABLED === true,
     AUTOMATIC_PAYOUT_ENABLED: data.AUTOMATIC_PAYOUT_ENABLED === true,
+    FINANCIAL_ENGINE_VERSION:
+      typeof data.FINANCIAL_ENGINE_VERSION === 'string' && data.FINANCIAL_ENGINE_VERSION
+        ? String(data.FINANCIAL_ENGINE_VERSION)
+        : DEFAULT_FLAGS.FINANCIAL_ENGINE_VERSION,
     independentApproverUids: Array.isArray(data.independentApproverUids)
       ? data.independentApproverUids.map(String)
       : [],

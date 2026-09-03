@@ -1,5 +1,6 @@
 import '/backend/backend.dart';
 import '/core/finance/financial_accounting_engine.dart';
+import '/core/finance/v3/trip_financial_snapshot.dart';
 
 /// Maps Firestore [OrderRecord] → historical financial snapshot (no rates).
 abstract final class FinancialOrderAdapter {
@@ -24,6 +25,11 @@ abstract final class FinancialOrderAdapter {
         ? order.paymentMethod!.name
         : (data['PaymentMethod'] ?? '').toString();
 
+    final snapMap = data['financial_snapshot'];
+    final snap = snapMap is Map
+        ? TripFinancialSnapshot.tryParse(Map<String, dynamic>.from(snapMap))
+        : null;
+
     return FinancialOrderSnapshot(
       orderId: order.reference.id,
       currency: currency.isEmpty ? 'SAR' : currency,
@@ -45,31 +51,33 @@ abstract final class FinancialOrderAdapter {
       hasTotalMndob: _has(data, 'total_mndob'),
       hasTotalMndob2: _has(data, 'total_mndob2'),
       hasKsm: _has(data, 'ksm'),
-      driverId: order.mndobUser?.id,
-      countryPath: order.revDolh?.path,
+      driverId: order.mndobUser?.id ?? snap?.driverId,
+      countryPath: order.revDolh?.path ?? snap?.countryId,
       orderedAt: order.dataOrder,
       agentId: (data['agent_id'] ?? '').toString().trim().isEmpty
-          ? null
+          ? snap?.agentId
           : (data['agent_id'] ?? '').toString(),
       agentScope: (data['agent_scope'] ?? '').toString().trim().isEmpty
-          ? null
+          ? snap?.agentScopeId
           : (data['agent_scope'] ?? '').toString(),
-      agentRate: _num(data, 'agent_rate')?.toDouble(),
+      agentRate: _num(data, 'agent_rate')?.toDouble() ??
+          snap?.agentCommissionRate,
       agentRateType: (data['agent_rate_type'] ?? '').toString().trim().isEmpty
-          ? null
+          ? snap?.agentCommissionType
           : (data['agent_rate_type'] ?? '').toString(),
       agentAmountMinor: data['agent_amount_minor'] is int
           ? data['agent_amount_minor'] as int
-          : int.tryParse('${data['agent_amount_minor'] ?? ''}'),
+          : int.tryParse('${data['agent_amount_minor'] ?? ''}') ??
+              snap?.agentCommissionMinor,
       agentCurrency: (data['agent_currency'] ?? '').toString().trim().isEmpty
-          ? null
+          ? snap?.currency
           : (data['agent_currency'] ?? '').toString(),
       agentSnapshotAt: (data['agent_snapshot_at'] ?? '').toString().trim().isEmpty
-          ? null
+          ? snap?.generatedAt.toUtc().toIso8601String()
           : (data['agent_snapshot_at'] ?? '').toString(),
       agentAttributionStatus:
           (data['agent_attribution_status'] ?? '').toString().trim().isEmpty
-              ? null
+              ? snap?.agentAttributionStatus
               : (data['agent_attribution_status'] ?? '').toString(),
     );
   }
