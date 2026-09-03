@@ -214,7 +214,7 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
               ),
             ),
           ),
-          if (!_canAdjust)
+          if (!_canAdjust && !AdminRoleService.isRoleResolving)
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
               child: Text(

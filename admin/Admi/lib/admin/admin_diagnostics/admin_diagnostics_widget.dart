@@ -157,7 +157,7 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
             softWrap: true,
           ),
           Text(
-            '${uiTr(context, 'وظائف المالية')}: ${_home != null ? uiTr(context, 'متصلة') : '—'}',
+            '${uiTr(context, 'وظائف المالية')}: ${_home != null ? uiTr(context, 'متصلة') : (_status == 'checking' ? uiTr(context, 'جاري التحميل…') : '—')}',
             softWrap: true,
           ),
           Text(
@@ -173,6 +173,13 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
             '${uiTr(context, 'عينات مقاييس التجميع')}: $_metricCount',
             softWrap: true,
           ),
+          if (_home == null)
+            Text(
+              uiTr(context, 'بانتظار تشخيص المالية من الخادم…'),
+              softWrap: true,
+              style: theme.bodyMedium,
+            )
+          else ...[
           Text(
             approverOk
                 ? AdminFinanceUiLabels.pilotConfiguredAr()
@@ -210,6 +217,7 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
             '${uiTr(context, 'الاعتماد الذاتي')}: ${selfApproval ? uiTr(context, 'مفعّل') : uiTr(context, 'متوقف')}',
             softWrap: true,
           ),
+          ],
           if (_lastMetric != null) ...[
             const SizedBox(height: 8),
             Text(uiTr(context, 'آخر مقياس تجميع'), style: theme.titleSmall),
