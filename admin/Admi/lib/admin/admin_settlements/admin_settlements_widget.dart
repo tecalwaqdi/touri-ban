@@ -5,6 +5,7 @@ import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_user_facing_errors.dart';
+import '/core/finance/admin_finance_ui_labels.dart';
 import '/core/finance/settlement_exposure.dart';
 import '/core/finance/settlement_state_labels.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -69,7 +70,11 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
             children: [
               for (final s in [null, 'draft', 'locked', 'settled', 'voided'])
                 ChoiceChip(
-                  label: Text(s ?? uiTr(context, 'الكل')),
+                  label: Text(
+                    s == null
+                        ? uiTr(context, 'الكل')
+                        : AdminFinanceUiLabels.settlementStatusAr(s),
+                  ),
                   selected: _status == s,
                   onSelected: (_) => setState(() => _status = s),
                 ),
@@ -127,7 +132,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                   Text(
                     uiTr(
                       context,
-                      'List scope ≤200 settlements — counts below are for this page, not global ledger totals.',
+                      'عرض حتى 200 تسوية في هذه الصفحة — الأرقام أدناه لنطاق القائمة فقط.',
                     ),
                     softWrap: true,
                     style: theme.labelSmall.override(
@@ -155,7 +160,12 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text('By currency: $byCur', softWrap: true, style: theme.labelSmall),
+                  Text(
+                    '${uiTr(context, 'حسب العملة')}: '
+                    '${AdminFinanceUiLabels.formatCurrencyCountMap(byCur)}',
+                    softWrap: true,
+                    style: theme.labelSmall,
+                  ),
                   const SizedBox(height: 8),
                   Builder(
                     builder: (context) {
@@ -190,14 +200,41 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(uiTr(context, 'Receivables / Payables (list scope)'),
-                              style: theme.titleSmall),
-                          Text('Receivables outstanding: $recv', softWrap: true),
-                          Text('Payables outstanding: $pay', softWrap: true),
-                          Text('Collected: $collected', softWrap: true),
-                          Text('Partially paid ${n('partially_paid')}', softWrap: true),
-                          Text('Receivables aging: $agingRecv',
-                              softWrap: true, style: theme.labelSmall),
+                          Text(
+                            uiTr(context, 'الذمم ضمن نطاق القائمة'),
+                            style: theme.titleSmall,
+                          ),
+                          Text(
+                            '${AdminFinanceUiLabels.receivablesAr()}: '
+                            '${AdminFinanceUiLabels.formatMinorByCurrency(recv)}',
+                            softWrap: true,
+                          ),
+                          Text(
+                            '${AdminFinanceUiLabels.payablesAr()}: '
+                            '${AdminFinanceUiLabels.formatMinorByCurrency(pay)}',
+                            softWrap: true,
+                          ),
+                          Text(
+                            '${AdminFinanceUiLabels.collectedAr()}: '
+                            '${AdminFinanceUiLabels.formatMinorByCurrency(collected)}',
+                            softWrap: true,
+                          ),
+                          Text(
+                            '${AdminFinanceUiLabels.partiallyPaidAr()} ${n('partially_paid')}',
+                            softWrap: true,
+                          ),
+                          Text(
+                            '${uiTr(context, 'أعمار المستحقات')}: '
+                            '${AdminFinanceUiLabels.formatMinorByCurrency({
+                                  for (final e in agingRecv.entries)
+                                    e.key: e.value.values.fold<int>(
+                                      0,
+                                      (a, b) => a + b,
+                                    ),
+                                })}',
+                            softWrap: true,
+                            style: theme.labelSmall,
+                          ),
                         ],
                       );
                     },

@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 
 import '/backend/admin_role_service.dart';
 import '/components/admin_confirm_dialog.dart';
+import '/components/admin_enterprise_kit.dart' hide showAdminConfirmDialog;
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_error_messages.dart';
+import '/core/finance/admin_finance_ui_labels.dart';
 import '/core/finance/finance_runtime_gate.dart';
 import '/core/finance/finance_controls_client.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -52,9 +54,9 @@ class _AdminFinancialPeriodsWidgetState
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: name, decoration: const InputDecoration(labelText: 'Name')),
-            TextField(controller: start, decoration: const InputDecoration(labelText: 'Start YYYY-MM-DD')),
-            TextField(controller: end, decoration: const InputDecoration(labelText: 'End YYYY-MM-DD')),
+            TextField(controller: name, decoration: InputDecoration(labelText: uiTr(context, 'الاسم'))),
+            TextField(controller: start, decoration: InputDecoration(labelText: uiTr(context, 'البداية YYYY-MM-DD'))),
+            TextField(controller: end, decoration: InputDecoration(labelText: uiTr(context, 'النهاية YYYY-MM-DD'))),
           ],
         ),
         actions: [
@@ -104,14 +106,14 @@ class _AdminFinancialPeriodsWidgetState
     }
     final confirmed = await showAdminConfirmDialog(
       context: context,
-      title: uiTr(context, 'Period Close Checklist'),
+      title: uiTr(context, 'قائمة إغلاق الفترة'),
       whatHappens: uiTr(
         context,
-        'Closing blocks backdated postings for this period.',
+        'الإغلاق يمنع إضافة قيود مالية بأثر رجعي لهذه الفترة.',
       ),
       subject: '${data['name'] ?? id}',
-      impact: uiTr(context, 'Closed periods block backdated postings'),
-      confirmLabel: uiTr(context, 'Close'),
+      impact: uiTr(context, 'الفترات المغلقة تمنع إضافة قيود مالية بأثر رجعي.'),
+      confirmLabel: uiTr(context, 'إغلاق'),
       destructive: true,
       irreversible: true,
       currency: '${data['currency'] ?? ''}',
@@ -189,14 +191,14 @@ class _AdminFinancialPeriodsWidgetState
     }
     final confirmed = await showAdminConfirmDialog(
       context: context,
-      title: uiTr(context, 'Reopen period'),
+      title: uiTr(context, 'إعادة فتح الفترة'),
       whatHappens: uiTr(
         context,
-        'Reopening allows postings again. Requires SuperAdmin + reason.',
+        'إعادة الفتح تسمح بالترحيل مجددًا. تتطلب سوبر أدمن وسببًا مسجّلًا.',
       ),
       subject: '${data['name'] ?? id}',
-      impact: uiTr(context, 'Backdated postings become possible again'),
-      confirmLabel: uiTr(context, 'Reopen'),
+      impact: uiTr(context, 'يصبح الترحيل بأثر رجعي ممكنًا مجددًا'),
+      confirmLabel: uiTr(context, 'إعادة فتح'),
       destructive: true,
       irreversible: false,
       currency: '${data['currency'] ?? ''}',
@@ -208,11 +210,11 @@ class _AdminFinancialPeriodsWidgetState
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(uiTr(ctx, 'Reopen period')),
-        content: TextField(controller: reason, decoration: const InputDecoration(labelText: 'Reason')),
+        title: Text(uiTr(ctx, 'إعادة فتح الفترة')),
+        content: TextField(controller: reason, decoration: InputDecoration(labelText: uiTr(ctx, 'السبب'))),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(uiTr(ctx, 'إلغاء'))),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(uiTr(ctx, 'Reopen'))),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(uiTr(ctx, 'إعادة فتح'))),
         ],
       ),
     );
@@ -263,7 +265,10 @@ class _AdminFinancialPeriodsWidgetState
             children: [
               Text(uiTr(context, 'الفترات المالية'), style: theme.headlineSmall),
           Text(
-            uiTr(context, 'Closed periods block backdated postings. Reopen requires SuperAdmin + reason.'),
+            uiTr(
+              context,
+              'الفترات المغلقة تمنع إضافة قيود مالية بأثر رجعي. إعادة فتح الفترة متاحة للسوبر أدمن فقط مع تسجيل السبب.',
+            ),
             softWrap: true,
             style: theme.bodySmall,
           ),
@@ -272,10 +277,18 @@ class _AdminFinancialPeriodsWidgetState
                   alignment: AlignmentDirectional.centerStart,
                   child: TextButton(
                     onPressed: _busy ? null : _create,
-                    child: Text(uiTr(context, 'فترة جديدة')),
+                    child: Text(uiTr(context, '+ إنشاء فترة مالية')),
                   ),
                 ),
-              if (docs.isEmpty) Text(uiTr(context, 'لا توجد فترات')),
+              if (docs.isEmpty)
+                AdminEmptyState(
+                  title: uiTr(context, 'لا توجد فترات مالية حتى الآن'),
+                  message: uiTr(
+                    context,
+                    'أنشئ فترة مالية لتنظيم القيود ومنع الترحيل بأثر رجعي بعد الإغلاق.',
+                  ),
+                  icon: Icons.date_range_outlined,
+                ),
               for (final d in docs)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
@@ -283,7 +296,7 @@ class _AdminFinancialPeriodsWidgetState
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        '${d.data()['name']} · ${d.data()['status']}',
+                        '${d.data()['name']} · ${AdminFinanceUiLabels.periodStatusAr('${d.data()['status']}')}',
                         softWrap: true,
                         style: theme.titleSmall,
                       ),
@@ -308,7 +321,7 @@ class _AdminFinancialPeriodsWidgetState
                                   final maxW =
                                       MediaQuery.sizeOf(ctx).width - 48;
                                   return AlertDialog(
-                                    title: Text(uiTr(ctx, 'Period dashboard')),
+                                    title: Text(uiTr(ctx, 'لوحة الفترة')),
                                     content: ConstrainedBox(
                                       constraints: BoxConstraints(
                                         maxWidth: maxW.clamp(280.0, 560.0),
@@ -329,13 +342,13 @@ class _AdminFinancialPeriodsWidgetState
                             TextButton(
                               onPressed:
                                   _busy ? null : () => _close(d.id, d.data()),
-                              child: Text(uiTr(context, 'Close')),
+                              child: Text(uiTr(context, 'إغلاق')),
                             ),
                           if (d.data()['status'] == 'closed' &&
                               AdminRoleService.isSuperAdmin)
                             TextButton(
                               onPressed: () => _reopen(d.id, d.data()),
-                              child: Text(uiTr(context, 'Reopen')),
+                              child: Text(uiTr(context, 'إعادة فتح')),
                             ),
                         ],
                       ),

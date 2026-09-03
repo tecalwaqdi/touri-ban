@@ -229,6 +229,7 @@ class AdminRoleService {
     'AdminAgentReport',
     'AdminAuditLog',
     'AdminReportsHub',
+    'AdminDiagnostics',
     'adminRegesr',
   };
 
@@ -246,7 +247,6 @@ class AdminRoleService {
     'AdminFinancialPeriods',
     'AdminFinanceReports',
     'AdminFinanceAudit',
-    'AdminDiagnostics',
   };
 
   /// Global finance administration — country agents/agents must not open these.

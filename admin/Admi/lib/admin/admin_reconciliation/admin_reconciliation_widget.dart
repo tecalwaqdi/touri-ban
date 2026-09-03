@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '/backend/admin_role_service.dart';
+import '/components/admin_enterprise_kit.dart' show AdminEmptyState;
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
+import '/core/finance/admin_finance_ui_labels.dart';
 import '/core/finance/finance_controls_client.dart';
 import '/core/finance/financial_state_labels.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -51,6 +53,21 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
     }
   }
 
+  String _whyItMatters(String code) {
+    switch (code) {
+      case 'MISSING_DRIVER':
+        return 'رحلة مكتملة بدون مندوب معيّن — جودة بيانات تشغيلية.';
+      case 'UNALLOCATED_PAYMENT':
+        return 'دفعة شركة قديمة غير مربوطة بتسوية — سجل تاريخي للمراجعة.';
+      case 'INCOMPLETE_FINANCIAL_RECORD':
+        return 'حقول مالية ناقصة تمنع الاعتماد المحاسبي الكامل.';
+      case 'ORPHAN_CLAIM':
+        return 'مطالبة تسوية بلا تسوية صالحة.';
+      default:
+        return 'يحتاج مراجعة محاسبية قبل إغلاق الفترة عند اللزوم.';
+    }
+  }
+
   Future<void> _openIncomplete() async {
     final data = await FinanceControlsClient.listIncomplete();
     if (!mounted) return;
@@ -81,11 +98,12 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                     return ListTile(
                       title: Text('${o['orderId']}', softWrap: true),
                       subtitle: Text(
-                        '${o['reason']} · ${o['currency']} · '
-                        'driver ${o['driverId'] ?? '—'} · '
+                        '${FinancialStateLabels.exceptionCodeAr('${o['reason']}')} · '
+                        '${o['currency']} · '
+                        '${uiTr(ctx, 'المندوب')}: ${o['driverId'] ?? '—'} · '
                         '${o['paymentMethod']} · ${o['lifecycle']}\n'
-                        'missing: ${missing.join(', ')}\n'
-                        'blocks settlement: ${o['blocksSettlement']}',
+                        '${uiTr(ctx, 'الحقول الناقصة')}: ${missing.join(', ')}\n'
+                        '${uiTr(ctx, 'يمنع التسوية')}: ${o['blocksSettlement'] == true ? uiTr(ctx, 'نعم') : uiTr(ctx, 'لا')}',
                         softWrap: true,
                       ),
                       isThreeLine: true,
@@ -94,6 +112,38 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                 ),
               ),
             ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _openSample(String label, List sample) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        final maxW = MediaQuery.sizeOf(ctx).width - 48;
+        return AlertDialog(
+          title: Text(label),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: maxW.clamp(280.0, 520.0),
+              maxHeight: MediaQuery.sizeOf(ctx).height * 0.7,
+            ),
+            child: SingleChildScrollView(
+              child: Text(
+                sample
+                    .map((e) => e is Map
+                        ? (e['orderId'] ??
+                                e['settlementCode'] ??
+                                e['paymentId'] ??
+                                e.toString())
+                            .toString()
+                        : e.toString())
+                    .join('\n'),
+                softWrap: true,
+              ),
+            ),
           ),
         );
       },
@@ -119,70 +169,142 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
             padding: AdminUi.pagePadding(context),
             children: [
               Text(
-                uiTr(context, 'مركز مراجعة المحاسب — مشاكل فقط'),
+                uiTr(context, 'مركز مراجعة المحاسب'),
                 style: theme.headlineSmall,
                 softWrap: true,
               ),
               Text(
-                uiTr(context, 'Read-only. Orders are not edited from this page.'),
-                style: theme.bodySmall,
+                uiTr(
+                  context,
+                  'عرض للقراءة فقط — لا يتم تعديل الطلبات من هذه الصفحة.',
+                ),
+                style: theme.bodySmall?.copyWith(
+                  color: theme.secondaryText,
+                ),
                 softWrap: true,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               if (items.isEmpty)
-                Text(uiTr(context, 'لا توجد استثناءات')),
+                AdminEmptyState(
+                  title: uiTr(context, 'لا توجد استثناءات'),
+                  message: uiTr(
+                    context,
+                    'لا توجد مشاكل مفتوحة في المطابقة المالية حالياً.',
+                  ),
+                  icon: Icons.verified_outlined,
+                ),
               for (final raw in items)
                 Builder(
                   builder: (context) {
                     final it = Map<String, dynamic>.from(raw as Map);
                     final code = '${it['code']}';
                     final label = FinancialStateLabels.exceptionCodeAr(code);
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(label, softWrap: true),
-                      subtitle: Text(
-                        '${it['severity']} · ${it['count']}'
-                        '${it['blocksClose'] == true ? ' · ${uiTr(context, 'يمنع الإغلاق')}' : ''}',
-                        softWrap: true,
-                      ),
-                      leading: Icon(
-                        Icons.warning_amber_rounded,
-                        color: _tone('${it['severity']}', theme),
-                      ),
-                      onTap: code == 'INCOMPLETE_FINANCIAL_RECORD'
-                          ? _openIncomplete
-                          : () {
-                              final sample = (it['sample'] as List?) ?? [];
-                              showDialog<void>(
-                                context: context,
-                                builder: (ctx) {
-                                  final maxW =
-                                      MediaQuery.sizeOf(ctx).width - 48;
-                                  return AlertDialog(
-                                    title: Text(label),
-                                    content: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        maxWidth: maxW.clamp(280.0, 480.0),
-                                        maxHeight:
-                                            MediaQuery.sizeOf(ctx).height * 0.7,
+                    final severityRaw = '${it['severity']}';
+                    final severity =
+                        AdminFinanceUiLabels.severityAr(severityRaw);
+                    final count = it['count'] ?? 0;
+                    final blocks = it['blocksClose'] == true;
+                    final sample = (it['sample'] as List?) ?? [];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Material(
+                        color: theme.secondaryBackground,
+                        borderRadius:
+                            BorderRadius.circular(AdminUi.radiusMd),
+                        child: InkWell(
+                          borderRadius:
+                              BorderRadius.circular(AdminUi.radiusMd),
+                          onTap: code == 'INCOMPLETE_FINANCIAL_RECORD'
+                              ? _openIncomplete
+                              : () => _openSample(label, sample),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.warning_amber_rounded,
+                                      color: _tone(severityRaw, theme),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        label,
+                                        style: theme.titleSmall,
+                                        softWrap: true,
                                       ),
-                                      child: SingleChildScrollView(
-                                        child: Text(
-                                          sample.join('\n'),
-                                          softWrap: true,
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: _tone(severityRaw, theme)
+                                            .withValues(alpha: 0.12),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        severity,
+                                        style: theme.labelSmall?.copyWith(
+                                          color: _tone(severityRaw, theme),
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
                                     ),
-                                  );
-                                },
-                              );
-                            },
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '${uiTr(context, 'العدد')}: $count',
+                                  style: theme.bodyMedium,
+                                ),
+                                Text(
+                                  _whyItMatters(code),
+                                  style: theme.bodySmall?.copyWith(
+                                    color: theme.secondaryText,
+                                  ),
+                                  softWrap: true,
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  blocks
+                                      ? uiTr(context, 'يمنع إغلاق الفترة: نعم')
+                                      : uiTr(
+                                          context,
+                                          'يمنع إغلاق الفترة: لا',
+                                        ),
+                                  style: theme.labelMedium?.copyWith(
+                                    color: blocks
+                                        ? theme.error
+                                        : AdminUi.brandTeal,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Align(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: TextButton(
+                                    onPressed:
+                                        code == 'INCOMPLETE_FINANCIAL_RECORD'
+                                            ? _openIncomplete
+                                            : () =>
+                                                _openSample(label, sample),
+                                    child: Text(uiTr(context, 'عرض الحالات')),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     );
                   },
                 ),
               if (AdminRoleService.canWriteSettlements) ...[
-                const SizedBox(height: 16),
-                TextButton(
+                const SizedBox(height: 8),
+                OutlinedButton(
                   onPressed: () async {
                     final o = await FinanceControlsClient.detectOrphans();
                     if (!context.mounted) return;
@@ -192,15 +314,16 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                       builder: (ctx) {
                         final maxW = MediaQuery.sizeOf(ctx).width - 48;
                         return AlertDialog(
-                          title: Text(uiTr(ctx, 'Orphan Detection')),
+                          title:
+                              Text(AdminFinanceUiLabels.orphanDetectionAr()),
                           content: ConstrainedBox(
                             constraints: BoxConstraints(
                               maxWidth: maxW.clamp(280.0, 480.0),
                             ),
                             child: SingleChildScrollView(
                               child: Text(
-                                'Report only — no auto-repair.\n'
-                                '${items.map((e) => e is Map ? '${e['code']}: ${e['count']}' : e).join('\n')}',
+                                '${uiTr(ctx, 'تقرير فقط — بدون إصلاح تلقائي.')}\n'
+                                '${items.map((e) => e is Map ? '${FinancialStateLabels.exceptionCodeAr('${e['code']}')}: ${e['count']}' : e).join('\n')}',
                                 softWrap: true,
                               ),
                             ),
@@ -209,7 +332,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                       },
                     );
                   },
-                  child: Text(uiTr(context, 'Orphan report')),
+                  child: Text(AdminFinanceUiLabels.orphanReportAr()),
                 ),
               ],
             ],

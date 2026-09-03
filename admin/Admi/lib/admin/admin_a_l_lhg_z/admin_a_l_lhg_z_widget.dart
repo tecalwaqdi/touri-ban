@@ -23,7 +23,6 @@ import '/components/admin_ui.dart';
 import '/core/admin_booking_status_label.dart';
 import '/core/finance/financial_engine.dart';
 import '/core/toury_system_status_codes.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +49,8 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
   AdminBookingsExtraFilters _extra = AdminBookingsExtraFilters.empty;
   AdminBookingsSortKey _sortKey = AdminBookingsSortKey.dateDesc;
   int _pageSize = 20;
+  /// Super Admin only — default hides controlled finance QA fixtures.
+  bool _showQaFixtures = false;
 
   List<OrderRecord>? _serverSearchHits;
   int _searchGen = 0;
@@ -71,7 +72,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
       AdminRoleService.isSuperAdmin || AdminRoleService.isCountryAgent;
 
   String get _listSignature =>
-      '${_filters.signature}|${_extra.signature}|$_pageSize|${_sortKey.name}';
+      '${_filters.signature}|${_extra.signature}|$_pageSize|${_sortKey.name}|qa:$_showQaFixtures';
 
   Future<void> _onFiltersChanged(AdminOpsFilterState next) async {
     setState(() {
@@ -93,6 +94,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
       filters: _filters,
       extra: _extra,
       serverSearchHits: _serverSearchHits,
+      includeQaFixtures: _showQaFixtures,
     );
     // Server already sorts by data_order desc; re-sort when user picks other keys
     // or when search hits arrive unsorted.
@@ -106,22 +108,34 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
   AdminBookingsSummaryCounts _summaryFor({
     required int results,
     required int? queryTotal,
+    required List<OrderRecord> prepared,
   }) {
-    final stats = peekDashboardStats();
-    if (stats == null) {
-      return AdminBookingsSummaryCounts(
-        results: results,
-        total: queryTotal,
-      );
+    // Operational KPIs from the filtered (QA-excluded) working set.
+    var active = 0;
+    var completed = 0;
+    var cancelled = 0;
+    var expired = 0;
+    for (final o in prepared) {
+      final tone = AdminBookingStatusLabel.toneOf(o);
+      if (tone == AdminBookingStatusTone.completed) {
+        completed++;
+      } else if (tone == AdminBookingStatusTone.canceled) {
+        cancelled++;
+      } else if (tone == AdminBookingStatusTone.expired) {
+        expired++;
+      } else if (AdminBookingsLifecycle.isActiveTone(tone)) {
+        active++;
+      }
     }
+    final stats = peekDashboardStats();
     return AdminBookingsSummaryCounts(
       results: results,
-      total: queryTotal ?? stats.bookingsTotal,
-      active: stats.activeBookings,
-      completed: stats.bookingsCompleted,
-      cancelled: stats.bookingsCancelled,
-      expired: stats.bookingsExpired,
-      fromDashboard: true,
+      total: queryTotal,
+      active: active,
+      completed: completed,
+      cancelled: cancelled,
+      expired: expired,
+      fromDashboard: stats != null,
     );
   }
 
@@ -247,6 +261,17 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                 onSortChanged: (k) => setState(() => _sortKey = k),
                 onPageSizeChanged: (n) => setState(() => _pageSize = n),
               ),
+              if (AdminRoleService.isSuperAdmin) ...[
+                const SizedBox(height: 4),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: FilterChip(
+                    selected: _showQaFixtures,
+                    label: Text(uiTr(context, 'إظهار سجلات الاختبار')),
+                    onSelected: (v) => setState(() => _showQaFixtures = v),
+                  ),
+                ),
+              ],
               const SizedBox(height: 8),
               AdminFirestoreList<OrderRecord>(
                 key: ValueKey('bookings_$_listSignature'),
@@ -269,6 +294,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                   final summary = _summaryFor(
                     results: bookings.length,
                     queryTotal: listState.totalAvailable,
+                    prepared: bookings,
                   );
                   final waitingServerSearch =
                       _filters.searchQuery.trim().isNotEmpty &&

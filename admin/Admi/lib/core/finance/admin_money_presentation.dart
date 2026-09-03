@@ -61,7 +61,7 @@ class AdminOrderMoneyDisplay {
     );
   }
 
-  /// Formats major money for Admin UI: `42.50 ر.س` (LTR-isolated).
+  /// Formats major money for Admin UI: `4,250.00 ر.س` (LTR-isolated).
   static String formatMajor(
     num? major, {
     required String symbol,
@@ -69,8 +69,24 @@ class AdminOrderMoneyDisplay {
   }) {
     if (major == null) return '—';
     final raw =
-        '${major.toDouble().toStringAsFixed(fractionDigits)} $symbol';
+        '${_thousands(major.toDouble(), fractionDigits)} $symbol';
     return '\u2066$raw\u2069';
+  }
+
+  static String _thousands(double value, int fractionDigits) {
+    final fixed = value.toStringAsFixed(fractionDigits);
+    final parts = fixed.split('.');
+    final neg = parts[0].startsWith('-');
+    var intPart = neg ? parts[0].substring(1) : parts[0];
+    final buf = StringBuffer();
+    for (var i = 0; i < intPart.length; i++) {
+      final fromEnd = intPart.length - i;
+      if (i > 0 && fromEnd % 3 == 0) buf.write(',');
+      buf.write(intPart[i]);
+    }
+    final head = neg ? '-${buf.toString()}' : buf.toString();
+    if (parts.length == 1) return head;
+    return '$head.${parts[1]}';
   }
 
   static String formatMoneyAmount(MoneyAmount? m, {String? symbolOverride}) {

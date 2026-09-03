@@ -6,10 +6,13 @@ import '/components/admin_enterprise_kit.dart' show AdminStatusBadge, AdminBadge
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_error_messages.dart';
+import '/core/admin_currency.dart';
+import '/core/finance/admin_money_presentation.dart';
 import '/core/finance/finance_runtime_gate.dart';
 import '/core/finance/money_amount.dart';
 import '/core/finance/settlement_ledger_client.dart';
 import '/core/finance/finance_controls_client.dart';
+import '/core/finance/settlement_state_labels.dart';
 import '/core/finance/settlement_visual_fixture.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -53,8 +56,9 @@ class _AdminSettlementDetailsWidgetState
   }
 
   String _money(int? minor, String currency) {
-    final m = MoneyAmount(currency: currency, minorUnits: minor ?? 0);
-    return m.displayLabel;
+    final symbol = AdminCurrency.symbolByCode[currency] ?? currency;
+    final major = (minor ?? 0) / 100.0;
+    return AdminOrderMoneyDisplay.formatMajor(major, symbol: symbol);
   }
 
   void _snackError(Object e) {
@@ -72,7 +76,7 @@ class _AdminSettlementDetailsWidgetState
           content: Text(
             uiTr(
               context,
-              'Financial data is approximate — financial writes unavailable',
+              'البيانات المالية تقريبية — الكتابة المالية غير متاحة',
             ),
           ),
         ),
@@ -85,16 +89,18 @@ class _AdminSettlementDetailsWidgetState
     final ok = await showAdminConfirmDialog(
       context: context,
       title: uiTr(context, 'تأكيد قفل التسوية'),
-      whatHappens:
-          '${uiTr(context, 'الرحلات')}: ${data['eligibleTripCount']}\n'
-          'Cash liability: ${_money(data['driverCashLiabilityMinor'] as int?, cur)}\n'
-          'Online liability: ${_money(data['companyOnlineLiabilityMinor'] as int?, cur)}\n'
-          'Net: ${_money(data['netTripPositionMinor'] as int?, cur)}\n'
-          '${derived > 0 ? 'This settlement includes $derived DERIVED financial records.\n' : ''}'
-          '${uiTr(context, 'Accounting record only — no wallet movement')}',
+      whatHappens: [
+        '${uiTr(context, 'الرحلات')}: ${data['eligibleTripCount']}',
+        '${uiTr(context, 'ذمة نقدية')}: ${_money(data['driverCashLiabilityMinor'] as int?, cur)}',
+        '${uiTr(context, 'ذمة إلكترونية')}: ${_money(data['companyOnlineLiabilityMinor'] as int?, cur)}',
+        '${uiTr(context, 'الصافي')}: ${_money(data['netTripPositionMinor'] as int?, cur)}',
+        if (derived > 0)
+          '${uiTr(context, 'تتضمن هذه التسوية')} $derived ${uiTr(context, 'سجلاً مالياً مشتقاً.')}',
+        uiTr(context, 'سجل محاسبي فقط — بدون حركة محفظة'),
+      ].join('\n'),
       subject: '${data['settlementCode'] ?? widget.settlementId}',
-      impact: uiTr(context, 'Locks trip lines; no wallet movement'),
-      confirmLabel: uiTr(context, 'Lock Settlement'),
+      impact: uiTr(context, 'يقفل بنود الرحلات؛ بدون حركة محفظة'),
+      confirmLabel: uiTr(context, 'قفل التسوية'),
       irreversible: true,
       currency: cur,
       amount: _money(due, cur),
@@ -119,14 +125,14 @@ class _AdminSettlementDetailsWidgetState
     final cur = data['currency'] as String? ?? 'SAR';
     final confirmed = await showAdminConfirmDialog(
       context: context,
-      title: uiTr(context, 'Void settlement'),
+      title: uiTr(context, 'إلغاء التسوية'),
       whatHappens: uiTr(
         context,
-        'Voids this settlement. Accounting only — no wallet movement.',
+        'يلغي هذه التسوية. محاسبي فقط — بدون حركة محفظة.',
       ),
       subject: '${data['settlementCode'] ?? widget.settlementId}',
-      impact: uiTr(context, 'Settlement becomes void and cannot be paid'),
-      confirmLabel: uiTr(context, 'Void'),
+      impact: uiTr(context, 'تصبح التسوية ملغاة ولا يمكن دفعها'),
+      confirmLabel: uiTr(context, 'إلغاء'),
       destructive: true,
       irreversible: true,
       currency: cur,
@@ -153,7 +159,7 @@ class _AdminSettlementDetailsWidgetState
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(uiTr(ctx, 'Void')),
+            child: Text(uiTr(ctx, 'إلغاء')),
           ),
         ],
       ),
@@ -186,7 +192,7 @@ class _AdminSettlementDetailsWidgetState
         return StatefulBuilder(
           builder: (ctx, setLocal) {
             return AlertDialog(
-              title: Text(uiTr(ctx, 'Record Payment')),
+              title: Text(uiTr(ctx, 'تسجيل دفعة')),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -200,11 +206,11 @@ class _AdminSettlementDetailsWidgetState
                     ),
                     DropdownButton<String>(
                       value: method,
-                      items: const [
-                        DropdownMenuItem(value: 'bank_transfer', child: Text('bank_transfer')),
-                        DropdownMenuItem(value: 'cash', child: Text('cash')),
-                        DropdownMenuItem(value: 'external_transfer', child: Text('external_transfer')),
-                        DropdownMenuItem(value: 'other', child: Text('other')),
+                      items: [
+                        DropdownMenuItem(value: 'bank_transfer', child: Text(SettlementStateLabels.methodAr('bank_transfer'))),
+                        DropdownMenuItem(value: 'cash', child: Text(SettlementStateLabels.methodAr('cash'))),
+                        DropdownMenuItem(value: 'external_transfer', child: Text(SettlementStateLabels.methodAr('external_transfer'))),
+                        DropdownMenuItem(value: 'other', child: Text(SettlementStateLabels.methodAr('other'))),
                       ],
                       onChanged: (v) {
                         if (v == null) return;
@@ -218,7 +224,7 @@ class _AdminSettlementDetailsWidgetState
                     if (method == 'cash')
                       TextField(
                         controller: receivedCtrl,
-                        decoration: InputDecoration(labelText: 'receivedBy'),
+                        decoration: InputDecoration(labelText: uiTr(ctx, 'المستلم')),
                       ),
                     Text(
                       uiTr(ctx, 'يحفظ كـ Pending — لا يخفض Outstanding حتى التأكيد'),
@@ -234,7 +240,7 @@ class _AdminSettlementDetailsWidgetState
                 ),
                 FilledButton(
                   onPressed: () => Navigator.pop(ctx, true),
-                  child: Text(uiTr(ctx, 'Save as Pending')),
+                  child: Text(uiTr(ctx, 'حفظ كقيد انتظار')),
                 ),
               ],
             );
@@ -277,7 +283,7 @@ class _AdminSettlementDetailsWidgetState
           content: Text(
             uiTr(
               context,
-              'Financial data is approximate — financial writes unavailable',
+              'البيانات المالية تقريبية — الكتابة المالية غير متاحة',
             ),
           ),
         ),
@@ -291,15 +297,16 @@ class _AdminSettlementDetailsWidgetState
     final remaining = due - paid - thisAmt;
     final ok = await showAdminConfirmDialog(
       context: context,
-      title: uiTr(context, 'Confirm Payment'),
-      whatHappens:
-          'Settlement: ${_money(due, cur)}\n'
-          'Paid: ${_money(paid, cur)}\n'
-          'This payment: ${_money(thisAmt, cur)}\n'
-          'Remaining after confirm: ${_money(remaining, cur)}',
+      title: uiTr(context, 'تأكيد الدفعة'),
+      whatHappens: [
+        '${uiTr(context, 'التسوية')}: ${_money(due, cur)}',
+        '${uiTr(context, 'المدفوع')}: ${_money(paid, cur)}',
+        '${uiTr(context, 'هذه الدفعة')}: ${_money(thisAmt, cur)}',
+        '${uiTr(context, 'المتبقي بعد التأكيد')}: ${_money(remaining, cur)}',
+      ].join('\n'),
       subject: '${settlement['settlementCode'] ?? widget.settlementId}',
-      impact: uiTr(context, 'Reduces outstanding; accounting only'),
-      confirmLabel: uiTr(context, 'Confirm Payment'),
+      impact: uiTr(context, 'يخفض المتبقي؛ محاسبي فقط'),
+      confirmLabel: uiTr(context, 'تأكيد الدفعة'),
       irreversible: true,
       currency: cur,
       amount: _money(thisAmt, cur),
@@ -331,11 +338,11 @@ class _AdminSettlementDetailsWidgetState
       await showDialog<void>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text(uiTr(ctx, 'Verify Against Current Source')),
+          title: Text(uiTr(ctx, 'التحقق من المصدر الحالي')),
           content: Text(
             flag == 'SOURCE_CHANGED_AFTER_LOCK'
-                ? 'SOURCE_CHANGED_AFTER_LOCK — snapshot unchanged'
-                : 'Snapshot matches current source. mutated=${r['mutated']}',
+                ? uiTr(ctx, 'تغير المصدر بعد القفل — اللقطة دون تغيير')
+                : '${uiTr(ctx, 'اللقطة مطابقة للمصدر الحالي.')} mutated=${r['mutated']}',
           ),
         ),
       );
@@ -354,14 +361,14 @@ class _AdminSettlementDetailsWidgetState
     final thisAmt = (pay['amountMinor'] as num?)?.toInt() ?? 0;
     final confirmed = await showAdminConfirmDialog(
       context: context,
-      title: uiTr(context, 'Reverse Payment'),
+      title: uiTr(context, 'عكس الدفعة'),
       whatHappens: uiTr(
         context,
-        'Reverses a confirmed payment. Outstanding will increase.',
+        'يعكس دفعة مؤكدة. سيزداد المتبقي.',
       ),
       subject: '${settlement['settlementCode'] ?? widget.settlementId}',
-      impact: uiTr(context, 'Increases outstanding; accounting only'),
-      confirmLabel: uiTr(context, 'Reverse'),
+      impact: uiTr(context, 'يزيد المتبقي؛ محاسبي فقط'),
+      confirmLabel: uiTr(context, 'عكس'),
       destructive: true,
       irreversible: true,
       currency: currency,
@@ -376,7 +383,7 @@ class _AdminSettlementDetailsWidgetState
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(uiTr(ctx, 'Reverse Payment')),
+        title: Text(uiTr(ctx, 'عكس الدفعة')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -462,7 +469,7 @@ class _AdminSettlementDetailsWidgetState
           padding: AdminUi.pagePadding(context),
           children: [
             AdminStatusBadge(
-              label: uiTr(context, 'Visual fixture — not production data'),
+              label: uiTr(context, 'عرض تجريبي — ليس بيانات إنتاج'),
               tone: AdminBadgeTone.info,
             ),
             const SizedBox(height: 8),
@@ -481,15 +488,15 @@ class _AdminSettlementDetailsWidgetState
             ),
             const SizedBox(height: 12),
             Text(
-              '${uiTr(context, 'Amount Due')}: '
+              '${uiTr(context, 'المبلغ المستحق')}: '
               '${_money(fixture['amountDueMinor'] as int?, 'SAR')}',
             ),
             Text(
-              '${uiTr(context, 'Paid')}: '
+              '${uiTr(context, 'المدفوع')}: '
               '${_money(fixture['paidMinor'] as int?, 'SAR')}',
             ),
             Text(
-              '${uiTr(context, 'Outstanding')}: '
+              '${uiTr(context, 'المتبقي')}: '
               '${_money(fixture['outstandingMinor'] as int?, 'SAR')}',
             ),
             const SizedBox(height: 16),
@@ -499,13 +506,13 @@ class _AdminSettlementDetailsWidgetState
               children: [
                 OutlinedButton(
                   onPressed: () => _lock(fixture),
-                  child: Text(uiTr(context, 'Lock Settlement')),
+                  child: Text(uiTr(context, 'قفل التسوية')),
                 ),
                 OutlinedButton(
                   onPressed: () async {
                     await showAdminConfirmDialog(
                       context: context,
-                      title: uiTr(context, 'Confirm Payment'),
+                      title: uiTr(context, 'تأكيد الدفعة'),
                       whatHappens: uiTr(
                         context,
                         'Fixture only — Cancel to dismiss',
@@ -515,16 +522,16 @@ class _AdminSettlementDetailsWidgetState
                       amount: _money(50000, 'SAR'),
                       direction: 'DRIVER_PAYS_COMPANY',
                       reference: id,
-                      confirmLabel: uiTr(context, 'Confirm Payment'),
+                      confirmLabel: uiTr(context, 'تأكيد الدفعة'),
                     );
                   },
-                  child: Text(uiTr(context, 'Confirm Payment')),
+                  child: Text(uiTr(context, 'تأكيد الدفعة')),
                 ),
                 OutlinedButton(
                   onPressed: () async {
                     await showAdminConfirmDialog(
                       context: context,
-                      title: uiTr(context, 'Reverse Payment'),
+                      title: uiTr(context, 'عكس الدفعة'),
                       whatHappens: uiTr(
                         context,
                         'Fixture only — Cancel to dismiss',
@@ -538,13 +545,13 @@ class _AdminSettlementDetailsWidgetState
                       irreversible: true,
                     );
                   },
-                  child: Text(uiTr(context, 'Reverse Payment')),
+                  child: Text(uiTr(context, 'عكس الدفعة')),
                 ),
                 OutlinedButton(
                   onPressed: () async {
                     await showAdminConfirmDialog(
                       context: context,
-                      title: uiTr(context, 'Void Settlement'),
+                      title: uiTr(context, 'إلغاء التسوية'),
                       whatHappens: uiTr(
                         context,
                         'Fixture only — Cancel to dismiss',
@@ -558,7 +565,7 @@ class _AdminSettlementDetailsWidgetState
                       irreversible: true,
                     );
                   },
-                  child: Text(uiTr(context, 'Void Settlement')),
+                  child: Text(uiTr(context, 'إلغاء التسوية')),
                 ),
               ],
             ),
@@ -597,23 +604,23 @@ class _AdminSettlementDetailsWidgetState
               Text('${d['periodStart']} → ${d['periodEnd']}', softWrap: true),
               const SizedBox(height: 12),
               Text(uiTr(context, 'الإجماليات'), style: theme.titleMedium),
-              Text('Cash collected ${_money(d['cashCustomerCollectedMinor'] as int?, cur)}', softWrap: true),
-              Text('Cash entitlement ${_money(d['cashDriverEntitlementMinor'] as int?, cur)}', softWrap: true),
-              Text('Driver cash liability ${_money(d['driverCashLiabilityMinor'] as int?, cur)}', softWrap: true),
-              Text('Online collected ${_money(d['onlineCustomerCollectedMinor'] as int?, cur)}', softWrap: true),
-              Text('Company online liability ${_money(d['companyOnlineLiabilityMinor'] as int?, cur)}', softWrap: true),
-              Text('Platform ${_money(d['platformFeeMinor'] as int?, cur)}', softWrap: true),
-              Text('VAT ${_money(d['recordedVatMinor'] as int?, cur)}', softWrap: true),
-              Text('Discount ${_money(d['recordedDiscountMinor'] as int?, cur)}', softWrap: true),
-              Text('Net ${_money(d['netTripPositionMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'التحصيل النقدي')}: ${_money(d['cashCustomerCollectedMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'استحقاق المندوب النقدي')}: ${_money(d['cashDriverEntitlementMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'ذمة المندوب النقدية')}: ${_money(d['driverCashLiabilityMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'التحصيل الإلكتروني')}: ${_money(d['onlineCustomerCollectedMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'ذمة الشركة الإلكترونية')}: ${_money(d['companyOnlineLiabilityMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'عمولة المنصة')}: ${_money(d['platformFeeMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'الضريبة')}: ${_money(d['recordedVatMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'الخصم')}: ${_money(d['recordedDiscountMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'الصافي')}: ${_money(d['netTripPositionMinor'] as int?, cur)}', softWrap: true),
               const SizedBox(height: 12),
-              Text(uiTr(context, 'Amount Due'), style: theme.titleMedium),
+              Text(uiTr(context, 'المبلغ المستحق'), style: theme.titleMedium),
               Text(_money(d['absoluteSettlementAmountMinor'] as int?, cur), softWrap: true),
-              Text('${uiTr(context, 'Paid')}: ${_money(d['paidConfirmedMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'Outstanding')}: ${_money(d['outstandingMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'Direction')}: ${d['direction']}', softWrap: true),
+              Text('${uiTr(context, 'المدفوع')}: ${_money(d['paidConfirmedMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'المتبقي')}: ${_money(d['outstandingMinor'] as int?, cur)}', softWrap: true),
+              Text('${uiTr(context, 'الاتجاه')}: ${SettlementStateLabels.directionAr('${d['direction']}')}', softWrap: true),
               Text(
-                'Eligible ${d['eligibleTripCount']} · Excluded ${d['excludedTripCount']} · DERIVED ${d['derivedCount']}',
+                '${uiTr(context, 'مؤهلة')}: ${d['eligibleTripCount']} · ${uiTr(context, 'مستبعدة')}: ${d['excludedTripCount']} · ${uiTr(context, 'مشتقة')}: ${d['derivedCount']}',
                 softWrap: true,
               ),
               const SizedBox(height: 12),
@@ -627,15 +634,15 @@ class _AdminSettlementDetailsWidgetState
                         onPressed: () async {
                           await SettlementLedgerClient.refreshDraft(settlementId: id);
                         },
-                        child: Text(uiTr(context, 'Refresh Preview')),
+                        child: Text(uiTr(context, 'تحديث المعاينة')),
                       ),
                       FilledButton(
                         onPressed: () => _lock(d),
-                        child: Text(uiTr(context, 'Lock Settlement')),
+                        child: Text(uiTr(context, 'قفل التسوية')),
                       ),
                       OutlinedButton(
                         onPressed: () => _voidLocked(d),
-                        child: Text(uiTr(context, 'Void draft')),
+                        child: Text(uiTr(context, 'إلغاء المسودة')),
                       ),
                     ],
                   ),
@@ -646,17 +653,17 @@ class _AdminSettlementDetailsWidgetState
                     children: [
                       FilledButton(
                         onPressed: () => _recordPayment(d),
-                        child: Text(uiTr(context, 'Record Payment')),
+                        child: Text(uiTr(context, 'تسجيل دفعة')),
                       ),
                       OutlinedButton(
                         onPressed: () => _voidLocked(d),
-                        child: Text(uiTr(context, 'Void locked')),
+                        child: Text(uiTr(context, 'إلغاء المقفلة')),
                       ),
                     ],
                   ),
               ],
               const SizedBox(height: 16),
-              Text(uiTr(context, 'Payments'), style: theme.titleMedium),
+              Text(uiTr(context, 'الدفعات'), style: theme.titleMedium),
               StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
                     .collection('financial_settlement_payments')
@@ -686,7 +693,7 @@ class _AdminSettlementDetailsWidgetState
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                '${p.data()['method']} · ${_money(p.data()['amountMinor'] as int?, cur)} · ${p.data()['status']}',
+                                '${SettlementStateLabels.methodAr('${p.data()['method']}')} · ${_money(p.data()['amountMinor'] as int?, cur)} · ${SettlementStateLabels.statusAr('${p.data()['status']}')}',
                                 softWrap: true,
                               ),
                               Text(
@@ -704,7 +711,7 @@ class _AdminSettlementDetailsWidgetState
                                           d,
                                           {...p.data(), 'paymentId': p.id},
                                         ),
-                                        child: Text(uiTr(context, 'Confirm')),
+                                        child: Text(uiTr(context, 'تأكيد')),
                                       ),
                                     if (p.data()['status'] == 'confirmed')
                                       TextButton(
@@ -713,7 +720,7 @@ class _AdminSettlementDetailsWidgetState
                                           {...p.data(), 'paymentId': p.id},
                                           cur,
                                         ),
-                                        child: Text(uiTr(context, 'Reverse')),
+                                        child: Text(uiTr(context, 'عكس')),
                                       ),
                                     if (p.data()['receiptNumber'] != null)
                                       TextButton(
@@ -726,7 +733,7 @@ class _AdminSettlementDetailsWidgetState
                                             ),
                                           }.withoutNulls,
                                         ),
-                                        child: Text(uiTr(context, 'Receipt')),
+                                        child: Text(uiTr(context, 'إيصال')),
                                       ),
                                   ],
                                 )
@@ -743,7 +750,7 @@ class _AdminSettlementDetailsWidgetState
                                         ),
                                       }.withoutNulls,
                                     ),
-                                    child: Text(uiTr(context, 'Receipt')),
+                                    child: Text(uiTr(context, 'إيصال')),
                                   ),
                                 ),
                             ],
@@ -805,7 +812,7 @@ class _AdminSettlementDetailsWidgetState
                   softWrap: true,
                 ),
               const SizedBox(height: 12),
-              Text(uiTr(context, 'Unallocated Payments'), style: theme.titleMedium),
+              Text(uiTr(context, 'دفعات غير مخصصة'), style: theme.titleMedium),
               Text(
                 uiTr(
                   context,
@@ -816,17 +823,17 @@ class _AdminSettlementDetailsWidgetState
               ),
               if (d['paymentEvidence'] is Map) ...[
                 const SizedBox(height: 12),
-                Text(uiTr(context, 'Payment Evidence'), style: theme.titleMedium),
+                Text(uiTr(context, 'أدلة الدفع'), style: theme.titleMedium),
                 Text('${d['paymentEvidence']}', softWrap: true),
               ],
               const SizedBox(height: 12),
-              Text(uiTr(context, 'Audit Timeline'), style: theme.titleMedium),
+              Text(uiTr(context, 'سجل التدقيق'), style: theme.titleMedium),
               if (d['status'] != 'draft')
                 Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: TextButton(
                     onPressed: _busy ? null : _verifySource,
-                    child: Text(uiTr(context, 'Verify Against Current Source')),
+                    child: Text(uiTr(context, 'التحقق من المصدر الحالي')),
                   ),
                 ),
               StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(

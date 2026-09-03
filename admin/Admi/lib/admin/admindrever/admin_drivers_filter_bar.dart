@@ -218,7 +218,7 @@ class _AdminDriversFilterBarState extends State<AdminDriversFilterBar> {
                 const Spacer(),
                 TextButton(
                   onPressed: _reset,
-                  child: Text(uiTr(context, 'Reset Filters')),
+                  child: Text(uiTr(context, 'إعادة ضبط الفلاتر')),
                 ),
               ],
             ],

@@ -59,6 +59,15 @@ function item(code, severity, blocksClose, count, sample, extra = {}) {
   };
 }
 
+function isQaFixtureOrder(order) {
+  if (!order) return false;
+  if (order.is_test_fixture === true || order.qa_fixture === true || order.test_fixture === true) {
+    return true;
+  }
+  const id = String(order.id || '');
+  return /^(fin7_ctrl_|fin9_ctrl_|fin_rt_cash_|fin_rt_cash_ui_|fin_rt_)/.test(id);
+}
+
 function missingFieldsOf(order, line) {
   const missing = [];
   if (line.confidence === 'incomplete') {
@@ -239,14 +248,21 @@ async function scanFinancialExceptions({db, auth, data}) {
   const companyPays = await collectDocs(db, 'company_payments');
 
   const buckets = {};
-  const push = (code, sampleRow, extra) => {
-    const severity = classifyException(code);
-    const blocksClose = severity === 'critical' || severity === 'high';
+  const push = (code, sampleRow, extra = {}) => {
+    const severity = extra.severity || classifyException(code);
+    const blocksClose = Object.prototype.hasOwnProperty.call(extra, 'blocksClose')
+      ? !!extra.blocksClose
+      : severity === 'critical' || severity === 'high';
+    const {severity: _sev, blocksClose: _bc, ...rest} = extra;
     if (!buckets[code]) {
-      buckets[code] = item(code, severity, blocksClose, 0, [], extra);
+      buckets[code] = item(code, severity, blocksClose, 0, [], rest);
     }
     buckets[code].count += 1;
     if (sampleRow) buckets[code].sample.push(sampleRow);
+    if (Object.prototype.hasOwnProperty.call(extra, 'blocksClose')) {
+      // Keep non-blocking if any sample is historical/QA-tagged non-blocker.
+      buckets[code].blocksClose = buckets[code].blocksClose && blocksClose;
+    }
   };
 
   const claimByOrder = {};
@@ -291,7 +307,19 @@ async function scanFinancialExceptions({db, auth, data}) {
     if (!order.status_code && !order.halh && !order.halh_order) {
       push('MISSING_STATUS_CODE', drill);
     }
-    if (!line.driverId) push('MISSING_DRIVER', drill);
+    // Cancelled / expired / searching trips routinely have no driver.
+    // Only completed lifecycle without a driver is a data-quality exception.
+    if (!line.driverId && line.lifecycle === 'completed') {
+      const qa = isQaFixtureOrder(order);
+      push('MISSING_DRIVER', {
+        ...drill,
+        isTestFixture: qa,
+      }, {
+        // QA fixtures remain visible in Finance Audit but must not block period close.
+        blocksClose: !qa,
+        severity: qa ? 'medium' : 'high',
+      });
+    }
     if (line.currencySupported === false) push('UNSUPPORTED_CURRENCY', drill);
   }
 
@@ -366,7 +394,14 @@ async function scanFinancialExceptions({db, auth, data}) {
     if (st && st !== 'completed') continue;
     const key = `company_payment_${cp.id}`;
     if (!claimedSources.has(key)) {
-      push('UNALLOCATED_PAYMENT', cp.id);
+      // Legacy company_payments are frozen historical artifacts (no migration).
+      // Surface for review; do not permanently block period close.
+      push('UNALLOCATED_PAYMENT', cp.id, {
+        severity: 'high',
+        blocksClose: false,
+        historical: true,
+        ledger: 'company_payments',
+      });
     }
   }
 

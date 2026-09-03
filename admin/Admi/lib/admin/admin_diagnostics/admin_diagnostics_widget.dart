@@ -5,12 +5,13 @@ import '/backend/admin_role_service.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
+import '/core/finance/admin_finance_ui_labels.dart';
 import '/core/finance/finance_controls_client.dart';
 import '/core/finance/finance_runtime_gate.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
-/// Lightweight operational health (no secrets).
+/// Technical health for Super Admin only (not a business finance screen).
 class AdminDiagnosticsWidget extends StatefulWidget {
   const AdminDiagnosticsWidget({super.key});
 
@@ -102,62 +103,101 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
+    if (!AdminRoleService.isSuperAdmin) {
+      return AdminLayoutWidget(
+        scaffoldKey: scaffoldKey,
+        menu2Model: _menu2Model,
+        updateCallback: () => safeSetState(() {}),
+        title: AdminFinanceUiLabels.diagnosticsTitleAr(),
+        child: Center(
+          child: Text(
+            uiTr(context, 'هذه الشاشة للسوبر أدمن فقط.'),
+            softWrap: true,
+          ),
+        ),
+      );
+    }
+
     final flags =
         Map<String, dynamic>.from(_home?['featureFlags'] as Map? ?? {});
+    final policy =
+        Map<String, dynamic>.from(_home?['policy'] as Map? ?? {});
     final ordersScanned = (_lastMetric?['ordersScanned'] as num?)?.toInt() ?? 0;
     final expensive = ordersScanned > 5000;
     final approverOk = _home?['independentApproverConfigured'] == true;
+    final selfApproval = policy['allowSelfApproval'] == true;
+    final warnings = (_home?['warnings'] as List?) ?? const [];
+    final pilotHardBlock = warnings.any(
+          (w) => '$w'.contains('Financial pilot blocked'),
+        ) ||
+        (!selfApproval && !approverOk);
 
     return AdminLayoutWidget(
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
-      title: uiTr(context, 'Admin Diagnostics'),
+      title: AdminFinanceUiLabels.diagnosticsTitleAr(),
       child: ListView(
         padding: AdminUi.pagePadding(context),
         children: [
-          Text(uiTr(context, 'Admin Diagnostics'), style: theme.headlineSmall),
           Text(
-            uiTr(context, 'No environment secrets are shown here.'),
+            AdminFinanceUiLabels.diagnosticsTitleAr(),
+            style: theme.headlineSmall,
+            softWrap: true,
+          ),
+          Text(
+            uiTr(context, 'لا تُعرض هنا أي أسرار للبيئة.'),
             softWrap: true,
             style: theme.bodySmall,
           ),
           const SizedBox(height: 12),
-          Text('Admin build: $_appVersion', softWrap: true),
+          Text('${uiTr(context, 'إصدار اللوحة')}: $_appVersion', softWrap: true),
           Text(
-            'Firestore: ${_status == 'ok' ? 'reachable' : _status}',
+            '${uiTr(context, 'Firestore')}: ${_status == 'ok' ? uiTr(context, 'متصل') : _status}',
             softWrap: true,
           ),
           Text(
-            'Finance functions: ${_home != null ? 'reachable' : '—'}',
+            '${uiTr(context, 'وظائف المالية')}: ${_home != null ? uiTr(context, 'متصلة') : '—'}',
             softWrap: true,
           ),
           Text(
-            'Authenticated role: ${AdminRoleService.roleLabel(AdminRoleService.currentRole)}'
-            '${AdminRoleService.isRoleResolving ? ' (resolving…)' : ''}',
+            '${uiTr(context, 'الدور')}: ${AdminRoleService.roleLabelL10n(context, AdminRoleService.currentRole)}'
+            '${AdminRoleService.isRoleResolving ? ' …' : ''}',
             softWrap: true,
           ),
           Text(
-            'Authoritative backend data: ${FinanceRuntimeGate.authoritativeBackendData}',
+            '${uiTr(context, 'بيانات خلفية موثوقة')}: ${FinanceRuntimeGate.authoritativeBackendData}',
             softWrap: true,
           ),
           Text(
-            'Approximate / fallback mode: ${!FinanceRuntimeGate.authoritativeBackendData}',
+            '${uiTr(context, 'عينات مقاييس التجميع')}: $_metricCount',
             softWrap: true,
           ),
-          Text('Aggregation metric samples: $_metricCount', softWrap: true),
           Text(
-            'Independent approver (accountantHome): $approverOk',
+            approverOk
+                ? AdminFinanceUiLabels.pilotConfiguredAr()
+                : AdminFinanceUiLabels.pilotMissingAr(),
             softWrap: true,
+            style: theme.bodyMedium.override(
+              fontFamily: 'Cairo',
+              color: approverOk ? Colors.green.shade700 : theme.error,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          if (!approverOk)
+          if (selfApproval && !approverOk)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Text(
-                uiTr(
-                  context,
-                  'Financial pilot blocked: no independent approver configured',
-                ),
+                AdminFinanceUiLabels.pilotOptionalWhenSelfApprovalAr(),
+                softWrap: true,
+                style: theme.bodyMedium,
+              ),
+            )
+          else if (pilotHardBlock)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                AdminFinanceUiLabels.pilotBlockedAr(),
                 softWrap: true,
                 style: theme.bodyMedium.override(
                   fontFamily: 'Cairo',
@@ -167,35 +207,23 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
               ),
             ),
           Text(
-            approverOk
-                ? uiTr(context, 'Approver availability: configured')
-                : uiTr(
-                    context, 'Approver availability: missing / not configured'),
+            '${uiTr(context, 'الاعتماد الذاتي')}: ${selfApproval ? uiTr(context, 'مفعّل') : uiTr(context, 'متوقف')}',
             softWrap: true,
-            style: theme.bodyMedium.override(
-              fontFamily: 'Cairo',
-              color: approverOk ? Colors.green.shade700 : theme.error,
-              fontWeight: FontWeight.w600,
-            ),
           ),
           if (_lastMetric != null) ...[
             const SizedBox(height: 8),
-            Text(uiTr(context, 'Last aggregation metric'),
-                style: theme.titleSmall),
+            Text(uiTr(context, 'آخر مقياس تجميع'), style: theme.titleSmall),
             Text('op: ${_lastMetric!['op'] ?? '—'}', softWrap: true),
             Text('ordersScanned: $ordersScanned', softWrap: true),
             Text('durationMs: ${_lastMetric!['durationMs'] ?? '—'}',
                 softWrap: true),
-            Text('cacheHit: ${_lastMetric!['cacheHit'] ?? '—'}',
-                softWrap: true),
-            Text('at: ${_lastMetric!['at'] ?? '—'}', softWrap: true),
             if (expensive)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
                   uiTr(
                     context,
-                    'Expensive query warning: ordersScanned > 5000. Prefer narrower filters or cache.',
+                    'تحذير استعلام ثقيل: ordersScanned > 5000. فضّل فلاتر أضيق أو التخزين المؤقت.',
                   ),
                   softWrap: true,
                   style: theme.bodyMedium.override(
@@ -207,22 +235,24 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
               ),
           ],
           const SizedBox(height: 8),
-          Text(uiTr(context, 'Feature flags'), style: theme.titleSmall),
+          Text(uiTr(context, 'أعلام الميزات'), style: theme.titleSmall),
           for (final e in flags.entries)
             Text('${e.key}=${e.value}', softWrap: true),
-          if ((_home?['warnings'] as List?)?.isNotEmpty == true) ...[
+          if (warnings.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(uiTr(context, 'Warnings'), style: theme.titleSmall),
-            for (final w in (_home!['warnings'] as List))
-              Text('• $w', softWrap: true),
+            Text(uiTr(context, 'تحذيرات'), style: theme.titleSmall),
+            for (final w in warnings) Text('• $w', softWrap: true),
           ],
-          if (AdminRoleService.isSuperAdmin || AdminRoleService.isFinance)
-            TextButton(
-              onPressed: _ping,
-              child: Text(uiTr(context, 'Refresh')),
-            ),
+          TextButton(
+            onPressed: _busySafePing,
+            child: Text(uiTr(context, 'إعادة الفحص')),
+          ),
         ],
       ),
     );
+  }
+
+  void _busySafePing() {
+    _ping();
   }
 }

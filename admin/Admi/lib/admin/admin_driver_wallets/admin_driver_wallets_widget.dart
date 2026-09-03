@@ -9,6 +9,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/core/cloud_functions/cloud_functions_client.dart';
+import '/core/finance/admin_money_presentation.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -69,7 +70,7 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
             Text(
               '${uiTr(context, 'المندوب')}: $driverId\n'
               '${uiTr(context, 'الرصيد الحالي')}: '
-              '${currentBalance.toStringAsFixed(2)} $currency',
+              '${AdminOrderMoneyDisplay.formatMajor(currentBalance, symbol: currency == 'SAR' ? 'ر.س' : currency)}',
             ),
             const SizedBox(height: 12),
             TextField(
@@ -136,12 +137,12 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
       ),
       subject: driverId,
       impact:
-          '${uiTr(context, 'الرصيد الحالي')}: ${currentBalance.toStringAsFixed(2)} $currency',
+          '${uiTr(context, 'الرصيد الحالي')}: ${AdminOrderMoneyDisplay.formatMajor(currentBalance, symbol: currency == 'SAR' ? 'ر.س' : currency)}',
       confirmLabel: uiTr(context, 'تأكيد التعديل'),
       destructive: amount < 0,
       irreversible: true,
       currency: currency,
-      amount: '${amount.toStringAsFixed(2)} $currency',
+      amount: AdminOrderMoneyDisplay.formatMajor(amount, symbol: currency == 'SAR' ? 'ر.س' : currency),
       direction: amount >= 0 ? 'credit' : 'debit',
       reference: note.isEmpty ? driverId : note,
     );
@@ -162,7 +163,7 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
           content: Text(
             after == null
                 ? uiTr(context, 'تم تعديل الرصيد')
-                : '${uiTr(context, 'تم تعديل الرصيد')}: ${after.toStringAsFixed(2)}',
+                : '${uiTr(context, 'تم تعديل الرصيد')}: ${AdminOrderMoneyDisplay.formatMajor(after, symbol: currency == 'SAR' ? 'ر.س' : currency)}',
           ),
         ),
       );
@@ -369,7 +370,7 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '${bal.toStringAsFixed(2)} $currency',
+                        AdminOrderMoneyDisplay.formatMajor(bal, symbol: currency == 'SAR' ? 'ر.س' : currency),
                         style: theme.bodyMedium.override(
                           fontFamily: 'Cairo',
                           fontWeight: FontWeight.bold,

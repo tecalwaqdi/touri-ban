@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '/backend/schema/enums/enums.dart';
 import '/backend/schema/order_record.dart';
 import '/core/admin_booking_status_label.dart';
+import '/core/admin_qa_fixture.dart';
 import '/core/finance/admin_money_presentation.dart';
 
 /// Admin-only view model over [OrderRecord] — does not mutate Firestore contracts.
@@ -38,6 +39,8 @@ class AdminBookingRow {
     required this.durationMinutes,
     required this.isTerminal,
     required this.isActivePool,
+    this.isQaFixture = false,
+    this.qaBadgeLabel,
   });
 
   final OrderRecord order;
@@ -72,6 +75,8 @@ class AdminBookingRow {
   final int durationMinutes;
   final bool isTerminal;
   final bool isActivePool;
+  final bool isQaFixture;
+  final String? qaBadgeLabel;
 
   factory AdminBookingRow.fromOrder(OrderRecord order) {
     final data = order.snapshotData;
@@ -79,6 +84,7 @@ class AdminBookingRow {
     final pickup = _pickupLabel(order, landmarks);
     final destination = _destinationLabel(order, landmarks);
     final money = AdminOrderMoneyDisplay.fromOrder(order);
+    final qa = AdminQaFixture.isFixtureOrder(order);
 
     return AdminBookingRow(
       order: order,
@@ -87,7 +93,11 @@ class AdminBookingRow {
           : order.reference.id,
       customerName: order.naimUserText.trim(),
       customerPhone: _phoneString(order.phoneNumper, data['phone_numper']),
-      driverName: order.naimMndobText.trim(),
+      driverName: order.naimMndobText.trim().isNotEmpty
+          ? order.naimMndobText.trim()
+          : (qa && order.mndobUser == null
+              ? '—'
+              : order.naimMndobText.trim()),
       driverPhone: _phoneString(order.phoneNuMndob, data['phone_nu_mndob']),
       statusLabel: AdminBookingStatusLabel.of(order),
       statusTone: AdminBookingStatusLabel.toneOf(order),
@@ -125,6 +135,8 @@ class AdminBookingRow {
       isActivePool: order.allnow ||
           data['ActiveOrder'] == true ||
           data['ALLNOW'] == true,
+      isQaFixture: qa,
+      qaBadgeLabel: qa ? AdminQaFixture.badgeAr(order) : null,
     );
   }
 

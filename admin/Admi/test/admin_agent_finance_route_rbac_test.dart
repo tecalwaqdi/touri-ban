@@ -80,6 +80,7 @@ void main() {
       expect(AdminRoleService.canAccessRoute('AdminFinancialPeriods'), isTrue);
       expect(AdminRoleService.canAccessRoute('AdminAgentFinance'), isTrue);
       expect(AdminRoleService.canAccessRoute('AdminReconciliation'), isTrue);
+      expect(AdminRoleService.canAccessRoute('AdminDiagnostics'), isFalse);
       expect(AdminRoleService.canAccessRoute('Home22Dashboard'), isFalse);
       expect(AdminRoleService.canWriteSettlements, isTrue);
     });
@@ -99,6 +100,7 @@ void main() {
       expect(AdminRoleService.canAccessRoute('AdminSettlements'), isTrue);
       expect(AdminRoleService.canAccessRoute('AdminFinanceAudit'), isTrue);
       expect(AdminRoleService.canAccessRoute('AdminFinancialPeriods'), isTrue);
+      expect(AdminRoleService.canAccessRoute('AdminDiagnostics'), isTrue);
       expect(AdminRoleService.canWriteSettlements, isTrue);
     });
   });

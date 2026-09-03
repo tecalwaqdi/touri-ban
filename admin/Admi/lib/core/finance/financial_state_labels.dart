@@ -106,8 +106,16 @@ abstract final class FinancialStateLabels {
         return 'حالة الرحلة ناقصة';
       case 'MISSING_DRIVER':
         return 'المندوب ناقص';
+      case 'UNALLOCATED_PAYMENT':
+        return 'دفعة غير مخصصة';
       case 'UNSUPPORTED_CURRENCY':
         return 'عملة غير مدعومة';
+      case 'DRAFT_SETTLEMENT':
+        return 'تسوية مسودة';
+      case 'LOCKED_UNPAID':
+        return 'تسوية مقفلة غير مسددة';
+      case 'PAYMENT_PENDING':
+        return 'دفعة قيد التأكيد';
       default:
         return 'استثناء مالي';
     }

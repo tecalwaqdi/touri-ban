@@ -215,7 +215,7 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
                             : base,
                       );
                     },
-                    child: Text(uiTr(context, 'Reset')),
+                    child: Text(uiTr(context, 'إعادة الضبط')),
                   ),
               ],
             ),

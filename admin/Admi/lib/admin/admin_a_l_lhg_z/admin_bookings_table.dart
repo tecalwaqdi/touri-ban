@@ -9,6 +9,7 @@ import '/backend/schema/order_record.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_booking_status_label.dart';
 import '/core/admin_currency.dart';
+import '/core/admin_qa_fixture.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -402,28 +403,56 @@ class AdminBookingStatusBadge extends StatelessWidget {
     final colors = _statusColors(AdminBookingStatusLabel.toneOf(order), theme);
     final label =
         status.isNotEmpty ? uiTr(context, status) : uiTr(context, 'غير محدد');
+    final qa = AdminQaFixture.isFixtureOrder(order);
 
     return Align(
       alignment: AlignmentDirectional.centerStart,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-        decoration: BoxDecoration(
-          color: colors.background,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: colors.foreground.withValues(alpha: 0.18)),
-        ),
-        child: Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: theme.labelSmall.override(
-            fontFamily: theme.labelSmallFamily,
-            color: colors.foreground,
-            fontWeight: FontWeight.w600,
-            fontSize: 11,
-            useGoogleFonts: !theme.labelSmallIsCustom,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+            decoration: BoxDecoration(
+              color: colors.background,
+              borderRadius: BorderRadius.circular(6),
+              border:
+                  Border.all(color: colors.foreground.withValues(alpha: 0.18)),
+            ),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.labelSmall.override(
+                fontFamily: theme.labelSmallFamily,
+                color: colors.foreground,
+                fontWeight: FontWeight.w600,
+                fontSize: 11,
+                useGoogleFonts: !theme.labelSmallIsCustom,
+              ),
+            ),
           ),
-        ),
+          if (qa) ...[
+            const SizedBox(height: 3),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: theme.warning.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                AdminQaFixture.badgeAr(order),
+                style: theme.labelSmall.override(
+                  fontFamily: theme.labelSmallFamily,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: theme.warning,
+                  useGoogleFonts: !theme.labelSmallIsCustom,
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

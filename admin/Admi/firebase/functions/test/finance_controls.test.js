@@ -557,6 +557,45 @@ async function twoPartyLocked(db, extra = {}) {
     assert.strictEqual(e.debitMinor, 0);
   }
 
+  // MISSING_DRIVER only for completed lifecycle (not cancelled/expired)
+  {
+    const db = new FakeFirestore();
+    await db.collection('order').doc('cancelled_no_drv').set({
+      status_code: 'cancelled_by_customer',
+      payment_status: 'unpaid',
+      PaymentMethod: 'Cash',
+      total: 10,
+      total_app: 1,
+      total_vat: 0,
+      total_mndob: 9,
+      currency: 'SAR',
+      data_order: new Date('2026-04-01T00:00:00Z'),
+      Rev_dolh: db.doc('countries/sa'),
+    });
+    await db.collection('order').doc('completed_no_drv').set({
+      status_code: 'completed',
+      payment_status: 'cash_collected',
+      PaymentMethod: 'Cash',
+      total: 10,
+      total_app: 1,
+      total_vat: 0,
+      total_mndob: 9,
+      currency: 'SAR',
+      data_order: new Date('2026-04-01T00:00:00Z'),
+      Rev_dolh: db.doc('countries/sa'),
+      is_test_fixture: true,
+    });
+    const recon = await controls.scanFinancialExceptions({db, auth: superAuth(), data: {}});
+    const md = recon.items.find((i) => i.code === 'MISSING_DRIVER');
+    assert.ok(md, 'expected MISSING_DRIVER for completed');
+    assert.strictEqual(md.count, 1);
+    assert.strictEqual(md.blocksClose, false, 'QA fixture must not block close');
+    const cancelledHit = (md.sample || []).some(
+      (s) => s && s.orderId === 'cancelled_no_drv',
+    );
+    assert.strictEqual(cancelledHit, false);
+  }
+
   console.log('finance_controls tests OK');
 })().catch((e) => {
   console.error(e);

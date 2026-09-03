@@ -6,6 +6,7 @@ import '/backend/admin_ops_search.dart';
 import '/backend/backend.dart';
 import '/backend/schema/enums/enums.dart';
 import '/core/admin_booking_status_label.dart';
+import '/core/admin_qa_fixture.dart';
 import '/core/toury_system_status_codes.dart';
 
 /// Bookings-page-only filter extensions (never written into shared ops state).
@@ -126,12 +127,16 @@ abstract final class AdminBookingsQuery {
     required AdminOpsFilterState filters,
     required AdminBookingsExtraFilters extra,
     List<OrderRecord>? serverSearchHits,
+    bool includeQaFixtures = false,
   }) {
     if (serverSearchHits != null) {
-      return _applyExtra(serverSearchHits, extra);
+      return _applyExtra(
+        _applyQaFilter(serverSearchHits, includeQaFixtures),
+        extra,
+      );
     }
 
-    var list = bookings;
+    var list = _applyQaFilter(bookings, includeQaFixtures);
     final q = filters.searchQuery.trim().toLowerCase();
     if (q.isNotEmpty) {
       final plan = AdminOpsSearch.classify(q);
@@ -142,6 +147,14 @@ abstract final class AdminBookingsQuery {
       list = list.where((b) => AdminBookingsSearch.matchesLoadedPage(b, q)).toList();
     }
     return _applyExtra(list, extra);
+  }
+
+  static List<OrderRecord> _applyQaFilter(
+    List<OrderRecord> list,
+    bool includeQaFixtures,
+  ) {
+    if (includeQaFixtures) return list;
+    return list.where((b) => !AdminQaFixture.isFixtureOrder(b)).toList();
   }
 
   static List<OrderRecord> _applyExtra(
