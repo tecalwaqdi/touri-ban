@@ -10,8 +10,9 @@ void main() {
     final money = AdminFormat.money(
       MoneyAmount(currency: 'SAR', minorUnits: 124550),
     );
-    expect(money.contains('SAR'), isTrue);
-    expect(money.contains('1245.50') || money.contains('1,245.50'), isTrue);
+    expect(money.contains('ر.س'), isTrue);
+    expect(money.contains('1,245.50'), isTrue);
+    expect(money.contains('SAR'), isFalse);
   });
 
   test('role matrix includes settlements approve for finance', () {

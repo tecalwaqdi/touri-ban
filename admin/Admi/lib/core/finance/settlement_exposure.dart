@@ -1,3 +1,4 @@
+import '/core/finance/admin_money_presentation.dart';
 import '/core/finance/money_amount.dart';
 
 /// Client display of server settlement payment snapshots. Not a write SoT.
@@ -26,7 +27,7 @@ class SettlementExposureBucket {
 
   String money(int minor) {
     final m = MoneyAmount(currency: currency, minorUnits: minor);
-    return '${m.majorUnits.toStringAsFixed(2)} ${m.code}';
+    return AdminOrderMoneyDisplay.formatMoneyAmount(m);
   }
 
   static String agingBucket(DateTime? lockedAt, DateTime now) {

@@ -312,4 +312,113 @@ abstract final class AdminBookingsLifecycle {
       tone == AdminBookingStatusTone.arrived ||
       tone == AdminBookingStatusTone.inTrip ||
       tone == AdminBookingStatusTone.pending;
+
+  /// Operational lifecycle counts from a working set (not a capped page).
+  ///
+  /// Excludes QA fixtures unless [includeQaFixtures] is true.
+  static ({
+    int active,
+    int completed,
+    int cancelled,
+    int expired,
+  }) countOperational(
+    Iterable<OrderRecord> orders, {
+    bool includeQaFixtures = false,
+  }) {
+    final list = includeQaFixtures
+        ? orders.toList(growable: false)
+        : orders.where((o) => !AdminQaFixture.isFixtureOrder(o)).toList();
+    var active = 0;
+    var completed = 0;
+    var cancelled = 0;
+    var expired = 0;
+    for (final o in list) {
+      final tone = AdminBookingStatusLabel.toneOf(o);
+      if (tone == AdminBookingStatusTone.completed) {
+        completed++;
+      } else if (tone == AdminBookingStatusTone.canceled) {
+        cancelled++;
+      } else if (tone == AdminBookingStatusTone.expired) {
+        expired++;
+      } else if (isActiveTone(tone)) {
+        active++;
+      }
+    }
+    return (
+      active: active,
+      completed: completed,
+      cancelled: cancelled,
+      expired: expired,
+    );
+  }
+
+  /// Loads lifecycle buckets via status queries (not page `.length`).
+  ///
+  /// Completed / cancelled / expired use status_code sets; active uses ALLNOW.
+  static Future<({
+    int active,
+    int completed,
+    int cancelled,
+    int expired,
+  })> loadOperational({
+    DocumentReference? countryRef,
+    bool includeQaFixtures = false,
+    int limitPerBucket = 500,
+  }) async {
+    Future<List<OrderRecord>> byStatusCodes(List<String> codes) async {
+      if (codes.isEmpty) return const [];
+      return queryOrderRecordOnce(
+        queryBuilder: (q) {
+          var qq = q.where('status_code', whereIn: codes);
+          if (countryRef != null) {
+            qq = qq.where('Rev_dolh', isEqualTo: countryRef);
+          }
+          return qq;
+        },
+        limit: limitPerBucket,
+      );
+    }
+
+    Future<List<OrderRecord>> activeNow() => queryOrderRecordOnce(
+          queryBuilder: (q) {
+            var qq = q.where('ALLNOW', isEqualTo: true);
+            if (countryRef != null) {
+              qq = qq.where('Rev_dolh', isEqualTo: countryRef);
+            }
+            return qq;
+          },
+          limit: limitPerBucket,
+        );
+
+    final parts = await Future.wait([
+      activeNow(),
+      byStatusCodes(AdminOpsCounters.completedStatusCodes),
+      byStatusCodes(AdminOpsCounters.cancelledStatusCodes),
+      byStatusCodes([TourySystemStatusCodes.expired]),
+    ]);
+
+    final activeN = countOperational(
+      parts[0],
+      includeQaFixtures: includeQaFixtures,
+    ).active;
+    final completedN = countOperational(
+      parts[1],
+      includeQaFixtures: includeQaFixtures,
+    ).completed;
+    final cancelledN = countOperational(
+      parts[2],
+      includeQaFixtures: includeQaFixtures,
+    ).cancelled;
+    final expiredN = countOperational(
+      parts[3],
+      includeQaFixtures: includeQaFixtures,
+    ).expired;
+
+    return (
+      active: activeN,
+      completed: completedN,
+      cancelled: cancelledN,
+      expired: expiredN,
+    );
+  }
 }

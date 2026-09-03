@@ -1,3 +1,5 @@
+import '/core/admin_currency.dart';
+
 /// Explicit currency minor-unit precision for admin financial math.
 ///
 /// Never assume `* 100` for every currency.
@@ -129,11 +131,27 @@ class MoneyAmount {
   @override
   int get hashCode => Object.hash(code, minorUnits);
 
-  /// Major units + currency code, wrapped in an LTR isolate so RTL UIs
-  /// do not reorder digits / the minus sign / the ISO code.
+  /// Major units + currency symbol, LTR-isolated (Arabic UI: `5,000.00 ر.س`).
   String get displayLabel {
-    final raw = '${majorUnits.toStringAsFixed(exponent)} $code';
+    final symbol = AdminCurrency.symbolByCode[code] ?? code;
+    final raw = '${_thousands(majorUnits, exponent)} $symbol';
     return '\u2066$raw\u2069';
+  }
+
+  static String _thousands(double value, int fractionDigits) {
+    final fixed = value.toStringAsFixed(fractionDigits);
+    final parts = fixed.split('.');
+    final neg = parts[0].startsWith('-');
+    var intPart = neg ? parts[0].substring(1) : parts[0];
+    final buf = StringBuffer();
+    for (var i = 0; i < intPart.length; i++) {
+      final fromEnd = intPart.length - i;
+      if (i > 0 && fromEnd % 3 == 0) buf.write(',');
+      buf.write(intPart[i]);
+    }
+    final head = neg ? '-${buf.toString()}' : buf.toString();
+    if (parts.length == 1) return head;
+    return '$head.${parts[1]}';
   }
 
   @override

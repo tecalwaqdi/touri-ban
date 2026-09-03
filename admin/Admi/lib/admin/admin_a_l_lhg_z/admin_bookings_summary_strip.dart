@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/admin/admin_a_l_lhg_z/admin_bookings_query.dart';
+import '/backend/admin_ops_filters.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -11,10 +12,14 @@ class AdminBookingsSummaryStrip extends StatelessWidget {
     super.key,
     required this.counts,
     this.isLoading = false,
+    this.selectedLifecycle = AdminOrderLifecycleFilter.all,
+    this.onLifecycleSelected,
   });
 
   final AdminBookingsSummaryCounts counts;
   final bool isLoading;
+  final AdminOrderLifecycleFilter selectedLifecycle;
+  final ValueChanged<AdminOrderLifecycleFilter>? onLifecycleSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +71,7 @@ class AdminBookingsSummaryStrip extends StatelessWidget {
                       uiTr(context, 'الحالية'),
                       counts.active!.toString(),
                       const Color(0xFFE65100),
+                      lifecycle: AdminOrderLifecycleFilter.active,
                     ),
                   if (counts.completed != null)
                     _chip(
@@ -73,6 +79,7 @@ class AdminBookingsSummaryStrip extends StatelessWidget {
                       uiTr(context, 'المكتملة'),
                       counts.completed!.toString(),
                       theme.success,
+                      lifecycle: AdminOrderLifecycleFilter.completed,
                     ),
                   if (counts.cancelled != null)
                     _chip(
@@ -80,6 +87,7 @@ class AdminBookingsSummaryStrip extends StatelessWidget {
                       uiTr(context, 'الملغية'),
                       counts.cancelled!.toString(),
                       theme.error,
+                      lifecycle: AdminOrderLifecycleFilter.cancelled,
                     ),
                   if (counts.expired != null)
                     _chip(
@@ -87,6 +95,7 @@ class AdminBookingsSummaryStrip extends StatelessWidget {
                       uiTr(context, 'المنتهية'),
                       counts.expired!.toString(),
                       theme.secondaryText,
+                      lifecycle: AdminOrderLifecycleFilter.expired,
                     ),
                 ],
               ),
@@ -98,16 +107,22 @@ class AdminBookingsSummaryStrip extends StatelessWidget {
     BuildContext context,
     String label,
     String value,
-    Color accent,
-  ) {
+    Color accent, {
+    AdminOrderLifecycleFilter? lifecycle,
+  }) {
     final theme = FlutterFlowTheme.of(context);
-    return Container(
+    final selected =
+        lifecycle != null && selectedLifecycle == lifecycle;
+    final child = Container(
       margin: const EdgeInsetsDirectional.only(end: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.08),
+        color: accent.withValues(alpha: selected ? 0.18 : 0.08),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: accent.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: accent.withValues(alpha: selected ? 0.55 : 0.2),
+          width: selected ? 1.4 : 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -132,6 +147,18 @@ class AdminBookingsSummaryStrip extends StatelessWidget {
           ),
         ],
       ),
+    );
+    if (lifecycle == null || onLifecycleSelected == null) return child;
+    return InkWell(
+      onTap: () {
+        if (selectedLifecycle == lifecycle) {
+          onLifecycleSelected!(AdminOrderLifecycleFilter.all);
+        } else {
+          onLifecycleSelected!(lifecycle);
+        }
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: child,
     );
   }
 }

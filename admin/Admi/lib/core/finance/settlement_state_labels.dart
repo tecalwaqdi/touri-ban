@@ -42,7 +42,7 @@ abstract final class SettlementStateLabels {
       case 'partially_paid':
         return 'مدفوع جزئيًا';
       case 'settled':
-        return 'مسدد';
+        return 'مسددة';
       case 'voided':
         return 'ملغاة';
       case 'pending':

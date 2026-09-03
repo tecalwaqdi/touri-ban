@@ -12,7 +12,6 @@ import '/backend/admin_ops_search.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_stats_coordinator.dart';
 import '/backend/backend.dart';
-import '/backend/dashboard_stats_loader.dart';
 import '/backend/schema/enums/enums.dart';
 import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
@@ -55,11 +54,23 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
   List<OrderRecord>? _serverSearchHits;
   int _searchGen = 0;
 
+  /// Operational lifecycle KPIs (full bucket queries, QA-aware) — not page `.length`.
+  ({
+    int active,
+    int completed,
+    int cancelled,
+    int expired,
+  })? _opsLifecycle;
+  int _opsKpiGen = 0;
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AdminALLhgZModel());
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      safeSetState(() {});
+      _reloadOpsKpi();
+    });
   }
 
   @override
@@ -75,16 +86,40 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
       '${_filters.signature}|${_extra.signature}|$_pageSize|${_sortKey.name}|qa:$_showQaFixtures';
 
   Future<void> _onFiltersChanged(AdminOpsFilterState next) async {
+    final countryChanged =
+        next.effectiveCountryRef?.path != _filters.effectiveCountryRef?.path;
     setState(() {
       _filters = next;
       _serverSearchHits = null;
     });
+    if (countryChanged) {
+      _reloadOpsKpi();
+    }
     final plan = AdminOpsSearch.classify(next.searchQuery);
     if (!plan.isServerSide) return;
     final gen = ++_searchGen;
     final hits = await AdminBookingsSearch.searchServer(plan, next);
     if (!mounted || gen != _searchGen) return;
     setState(() => _serverSearchHits = hits);
+  }
+
+  Future<void> _reloadOpsKpi() async {
+    final gen = ++_opsKpiGen;
+    try {
+      final counts = await AdminBookingsLifecycle.loadOperational(
+        countryRef: _filters.effectiveCountryRef,
+        includeQaFixtures: _showQaFixtures,
+      );
+      if (!mounted || gen != _opsKpiGen) return;
+      setState(() => _opsLifecycle = counts);
+    } catch (_) {
+      if (!mounted || gen != _opsKpiGen) return;
+      // Keep prior KPI if any; do not invent zeros.
+    }
+  }
+
+  void _onLifecycleChip(AdminOrderLifecycleFilter lifecycle) {
+    _onFiltersChanged(_filters.copyWith(orderLifecycle: lifecycle));
   }
 
   List<OrderRecord> _prepareBookings(List<OrderRecord> allBookings) {
@@ -110,32 +145,51 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
     required int? queryTotal,
     required List<OrderRecord> prepared,
   }) {
-    // Operational KPIs from the filtered (QA-excluded) working set.
-    var active = 0;
-    var completed = 0;
-    var cancelled = 0;
-    var expired = 0;
-    for (final o in prepared) {
-      final tone = AdminBookingStatusLabel.toneOf(o);
-      if (tone == AdminBookingStatusTone.completed) {
-        completed++;
-      } else if (tone == AdminBookingStatusTone.canceled) {
-        cancelled++;
-      } else if (tone == AdminBookingStatusTone.expired) {
-        expired++;
-      } else if (AdminBookingsLifecycle.isActiveTone(tone)) {
-        active++;
+    // Prefer operational bucket loads (QA-aware). Never use capped page `.length`
+    // as the sole source for lifecycle KPIs.
+    final ops = _opsLifecycle;
+    if (ops != null) {
+      int? total = queryTotal;
+      switch (_filters.orderLifecycle) {
+        case AdminOrderLifecycleFilter.completed:
+          total = ops.completed;
+          break;
+        case AdminOrderLifecycleFilter.cancelled:
+          total = ops.cancelled;
+          break;
+        case AdminOrderLifecycleFilter.expired:
+          total = ops.expired;
+          break;
+        case AdminOrderLifecycleFilter.active:
+          total = ops.active;
+          break;
+        case AdminOrderLifecycleFilter.all:
+        case AdminOrderLifecycleFilter.pending:
+          break;
       }
+      return AdminBookingsSummaryCounts(
+        results: results,
+        total: total,
+        active: ops.active,
+        completed: ops.completed,
+        cancelled: ops.cancelled,
+        expired: ops.expired,
+        fromDashboard: false,
+      );
     }
-    final stats = peekDashboardStats();
+    // Fallback while ops KPI loads: classify current prepared set only.
+    final page = AdminBookingsLifecycle.countOperational(
+      prepared,
+      includeQaFixtures: true, // already QA-filtered in prepared
+    );
     return AdminBookingsSummaryCounts(
       results: results,
       total: queryTotal,
-      active: active,
-      completed: completed,
-      cancelled: cancelled,
-      expired: expired,
-      fromDashboard: stats != null,
+      active: page.active,
+      completed: page.completed,
+      cancelled: page.cancelled,
+      expired: page.expired,
+      fromDashboard: false,
     );
   }
 
@@ -268,7 +322,10 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                   child: FilterChip(
                     selected: _showQaFixtures,
                     label: Text(uiTr(context, 'إظهار سجلات الاختبار')),
-                    onSelected: (v) => setState(() => _showQaFixtures = v),
+                    onSelected: (v) => setState(() {
+                      _showQaFixtures = v;
+                      _reloadOpsKpi();
+                    }),
                   ),
                 ),
               ],
@@ -310,6 +367,8 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                         AdminBookingsSummaryStrip(
                           counts: summary,
                           isLoading: listState.isLoading && bookings.isEmpty,
+                          selectedLifecycle: _filters.orderLifecycle,
+                          onLifecycleSelected: _onLifecycleChip,
                         ),
                         const SizedBox(height: 10),
                         if (waitingServerSearch)

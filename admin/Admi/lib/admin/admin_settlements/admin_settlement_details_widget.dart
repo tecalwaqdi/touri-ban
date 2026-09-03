@@ -7,6 +7,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_error_messages.dart';
 import '/core/admin_currency.dart';
+import '/core/finance/admin_finance_ui_labels.dart';
 import '/core/finance/admin_money_presentation.dart';
 import '/core/finance/finance_runtime_gate.dart';
 import '/core/finance/money_amount.dart';
@@ -474,12 +475,14 @@ class _AdminSettlementDetailsWidgetState
             ),
             const SizedBox(height: 8),
             Text(
-              '${fixture['settlementCode']} · ${fixture['status']}',
+              '${fixture['settlementCode']} · ${AdminFinanceUiLabels.settlementStatusAr('${fixture['status']}')}',
               style: theme.headlineSmall,
             ),
             Text(
-              'Driver ${fixture['driverId']} · ${fixture['countryId']} · '
-              '${fixture['currency']} · ${fixture['direction']}',
+              '${uiTr(context, 'المندوب')}: ${fixture['driverId'] ?? '—'} · '
+              '${uiTr(context, 'الدولة')}: ${fixture['countryId'] ?? '—'} · '
+              '${AdminCurrency.symbolByCode['${fixture['currency']}'] ?? fixture['currency']} · '
+              '${AdminFinanceUiLabels.settlementDirectionAr('${fixture['direction']}')}',
               softWrap: true,
             ),
             Text(
@@ -596,9 +599,15 @@ class _AdminSettlementDetailsWidgetState
           return ListView(
             padding: AdminUi.pagePadding(context),
             children: [
-              Text('${d['settlementCode']} · ${d['status']}', style: theme.headlineSmall),
               Text(
-                'Driver ${d['driverId']} · ${d['countryId']} · $cur · ${d['direction']}',
+                '${d['settlementCode']} · ${AdminFinanceUiLabels.settlementStatusAr('${d['status']}')}',
+                style: theme.headlineSmall,
+              ),
+              Text(
+                '${uiTr(context, 'المندوب')}: ${d['driverId'] ?? '—'} · '
+                '${uiTr(context, 'الدولة')}: ${d['countryId'] ?? '—'} · '
+                '${AdminCurrency.symbolByCode[cur] ?? cur} · '
+                '${AdminFinanceUiLabels.settlementDirectionAr('${d['direction']}')}',
                 softWrap: true,
               ),
               Text('${d['periodStart']} → ${d['periodEnd']}', softWrap: true),

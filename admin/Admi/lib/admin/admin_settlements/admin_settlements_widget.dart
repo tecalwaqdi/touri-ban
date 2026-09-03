@@ -148,7 +148,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                     children: [
                       Text('${uiTr(context, 'مسودة')} ${n('draft')}'),
                       Text('${uiTr(context, 'مقفلة')} ${n('locked')}'),
-                      Text('${uiTr(context, 'مسدد')} ${n('settled')}'),
+                      Text('${uiTr(context, 'مسددة')} ${n('settled')}'),
                       Text(
                         '${SettlementStateLabels.directionAr('DRIVER_PAYS_COMPANY')} '
                         '${docs.where((d) => d.data()['direction'] == 'DRIVER_PAYS_COMPANY').length}',
