@@ -15,6 +15,26 @@ import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
+/// Reload gate for [AdminFirestoreList.didUpdateWidget].
+///
+/// Intentionally ignores [queryBuilder]/[countQueryBuilder] identity —
+/// parents recreate those lambdas on every setState.
+///
+/// Semantic reload is driven by [reloadKey], [pageSize], and [query]
+/// (collection identity). Filter/search/sort changes must update [reloadKey].
+bool adminFirestoreListShouldReset({
+  required Object? oldQuery,
+  required Object? newQuery,
+  required int oldPageSize,
+  required int newPageSize,
+  required String? oldReloadKey,
+  required String? newReloadKey,
+}) {
+  return oldQuery != newQuery ||
+      oldPageSize != newPageSize ||
+      oldReloadKey != newReloadKey;
+}
+
 /// Fast paginated Firestore list: cache-first load, limited live sync on first page.
 class AdminFirestoreList<T> extends StatefulWidget {
   const AdminFirestoreList({
@@ -35,20 +55,25 @@ class AdminFirestoreList<T> extends StatefulWidget {
   final Query query;
   final RecordBuilder<T> recordBuilder;
   final Query Function(Query)? queryBuilder;
+
   /// Optional aggregate query without `orderBy` (matches list filters).
   final Query Function(Query)? countQueryBuilder;
+
   /// When this changes, the list reloads (use filter signature).
   final String? reloadKey;
   final int pageSize;
+
   /// Real-time listener on page 1 — off by default to cut Firestore reads.
   final bool liveUpdates;
   final Widget Function(
     BuildContext context,
     List<T> items,
     AdminFirestoreListMeta<T> state,
-  ) builder;
+  )
+  builder;
   final Widget? empty;
   final Widget? loading;
+
   /// When set, [AdminListRefresh.notify] reloads this list after CRUD.
   final String? refreshScope;
 
@@ -79,6 +104,7 @@ class AdminFirestoreListMeta<T> {
   final Future<void> Function() refresh;
   final Future<void> Function() loadMore;
   final int totalFetched;
+
   /// Full list size when using client-side pagination (country agents).
   final int? totalAvailable;
 }
@@ -120,7 +146,8 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   Future<void> _refreshTotalCount() async {
     final gen = ++_countGeneration;
     try {
-      final builder = widget.countQueryBuilder ?? widget.queryBuilder ?? (q) => q;
+      final builder =
+          widget.countQueryBuilder ?? widget.queryBuilder ?? (q) => q;
       final count = await queryCollectionCount(
         widget.query,
         queryBuilder: builder,
@@ -150,8 +177,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
       _syncGeneration++;
       setState(() {
         _items.removeWhere(
-          (item) =>
-              item is FirestoreRecord && item.reference.id == docId,
+          (item) => item is FirestoreRecord && item.reference.id == docId,
         );
       });
     };
@@ -214,16 +240,24 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   @override
   void didUpdateWidget(covariant AdminFirestoreList<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Parents recreate queryBuilder lambdas on every setState — ignore identity.
-    // Reload when collection, page size, or explicit filter reloadKey changes.
-    if (oldWidget.query != widget.query ||
-        oldWidget.pageSize != widget.pageSize ||
-        oldWidget.reloadKey != widget.reloadKey ||
-        oldWidget.countQueryBuilder != widget.countQueryBuilder) {
+    // Parents recreate queryBuilder / countQueryBuilder lambdas on every
+    // setState — never compare them by identity (that caused visible list
+    // flicker: loaded → skeleton → loaded within <1s).
+    // Reload only when collection, page size, or explicit filter reloadKey changes.
+    if (adminFirestoreListShouldReset(
+      oldQuery: oldWidget.query,
+      newQuery: widget.query,
+      oldPageSize: oldWidget.pageSize,
+      newPageSize: widget.pageSize,
+      oldReloadKey: oldWidget.reloadKey,
+      newReloadKey: widget.reloadKey,
+    )) {
       _resetAndLoad();
     }
   }
 
+  /// Hard reset when the query semantics changed (filter/pageSize/collection).
+  /// Clears rows because prior page content is no longer valid for the new query.
   void _resetAndLoad() {
     _liveSub?.cancel();
     _items.clear();
@@ -286,7 +320,10 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     );
   }
 
-  Future<void> _refreshFromServerInBackground(Query query, int generation) async {
+  Future<void> _refreshFromServerInBackground(
+    Query query,
+    int generation,
+  ) async {
     try {
       final snap = await query.get(const GetOptions(source: Source.server));
       if (!mounted || generation != _syncGeneration) return;
@@ -450,22 +487,29 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     }
   }
 
+  /// Explicit refresh: keep prior rows visible (REFRESHING) unless empty.
   Future<void> _resetAndReload() async {
     _liveSub?.cancel();
     _loadAttempt = 0;
     setState(() {
-      _loading = true;
-      _items.clear();
-      _lastDoc = null;
-      _hasMore = true;
-      _page = 1;
+      // Soft refresh: do not clear loaded rows — avoids loaded→skeleton flash.
+      _loading = _items.isEmpty;
       _hasError = false;
       _errorMessage = null;
+      if (_items.isEmpty) {
+        _lastDoc = null;
+        _hasMore = true;
+        _page = 1;
+      }
     });
     final ready = await _ensureListScopeReady();
     if (!mounted) return;
     if (!ready && AdminRoleService.isCountryAgent) {
-      setState(() => _loading = true);
+      setState(() => _loading = _items.isEmpty);
+      return;
+    }
+    if (_items.isNotEmpty) {
+      await _lightRefresh();
       return;
     }
     await _loadInitial();
@@ -527,17 +571,17 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   }
 
   AdminFirestoreListMeta<T> _meta() => AdminFirestoreListMeta<T>(
-        isLoading: _loading,
-        isLoadingMore: _loadingMore,
-        hasMore: _hasMore,
-        fromCache: _fromCache,
-        hasError: _hasError,
-        errorMessage: _errorMessage,
-        refresh: refresh,
-        loadMore: loadMore,
-        totalFetched: _items.length,
-        totalAvailable: _totalAvailable,
-      );
+    isLoading: _loading,
+    isLoadingMore: _loadingMore,
+    hasMore: _hasMore,
+    fromCache: _fromCache,
+    hasError: _hasError,
+    errorMessage: _errorMessage,
+    refresh: refresh,
+    loadMore: loadMore,
+    totalFetched: _items.length,
+    totalAvailable: _totalAvailable,
+  );
 
   String _localizedError(BuildContext context, String? key) {
     if (key == null) {
@@ -581,11 +625,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
             message: _localizedError(context, _errorMessage),
             onRetry: refresh,
           ),
-        widget.builder(
-          context,
-          List<T>.unmodifiable(_items),
-          _meta(),
-        ),
+        widget.builder(context, List<T>.unmodifiable(_items), _meta()),
       ],
     );
   }
@@ -623,9 +663,7 @@ class AdminListErrorState extends StatelessWidget {
             onPressed: onRetry,
             icon: const Icon(Icons.refresh_rounded, size: 20),
             label: Text(appTr(context, 'adm_retry')),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AdminUi.brandTeal,
-            ),
+            style: OutlinedButton.styleFrom(foregroundColor: AdminUi.brandTeal),
           ),
         ],
       ),
@@ -655,9 +693,7 @@ class AdminListErrorBanner extends StatelessWidget {
           children: [
             Icon(Icons.warning_amber_rounded, size: 20, color: theme.error),
             const SizedBox(width: 8),
-            Expanded(
-              child: Text(message, style: theme.labelMedium),
-            ),
+            Expanded(child: Text(message, style: theme.labelMedium)),
             TextButton(
               onPressed: onRetry,
               child: Text(appTr(context, 'adm_refresh')),
@@ -742,7 +778,9 @@ class AdminListLoadMoreFooter extends StatelessWidget {
                 ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AdminUi.brandTeal,
-                  side: BorderSide(color: AdminUi.brandTeal.withValues(alpha: 0.5)),
+                  side: BorderSide(
+                    color: AdminUi.brandTeal.withValues(alpha: 0.5),
+                  ),
                 ),
               ),
       ),
