@@ -19,16 +19,22 @@ class AdminDriverDocumentsPanel extends StatelessWidget {
   const AdminDriverDocumentsPanel({
     super.key,
     required this.user,
+    this.showLifecycleStrip = true,
   });
 
   final UserRecord user;
+
+  /// When false, omit registration/activation chips already owned by a parent
+  /// profile header (avoids duplicate business status fields).
+  final bool showLifecycleStrip;
 
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final docs = AdminDriverProfileView.documents(user);
-    final authStatus =
-        AdminDriverProfileView.authoritativeDocumentsStatus(user);
+    final authStatus = AdminDriverProfileView.authoritativeDocumentsStatus(
+      user,
+    );
     final complete = AdminDriverProfileView.documentsComplete(user);
     final scopeOk = AdminDriverDocumentAccess.canAccessDriverDocuments(user);
     final statusLabel = switch (authStatus) {
@@ -36,9 +42,7 @@ class AdminDriverDocumentsPanel extends StatelessWidget {
       'missing' => uiTr(context, 'ناقصة'),
       'needs_reupload' => uiTr(context, 'تحتاج إعادة رفع'),
       'unknown_legacy' => uiTr(context, 'غير معروفة (Legacy)'),
-      _ => complete
-          ? uiTr(context, 'مكتملة')
-          : uiTr(context, 'ناقصة'),
+      _ => complete ? uiTr(context, 'مكتملة') : uiTr(context, 'ناقصة'),
     };
 
     return AdminContentCard(
@@ -49,8 +53,10 @@ class AdminDriverDocumentsPanel extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AdminDriverLifecycleStrip(user: user),
-            const SizedBox(height: 12),
+            if (showLifecycleStrip) ...[
+              AdminDriverLifecycleStrip(user: user),
+              const SizedBox(height: 12),
+            ],
             Row(
               children: [
                 Expanded(
@@ -65,11 +71,14 @@ class AdminDriverDocumentsPanel extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                    color: (complete ? Colors.green : Colors.orange)
-                        .withValues(alpha: 0.12),
+                    color: (complete ? Colors.green : Colors.orange).withValues(
+                      alpha: 0.12,
+                    ),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
@@ -107,17 +116,7 @@ class AdminDriverDocumentsPanel extends StatelessWidget {
                 useGoogleFonts: !theme.labelSmallIsCustom,
               ),
             ),
-            if (authStatus.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                '${uiTr(context, 'حالة النظام')}: $authStatus',
-                style: theme.labelSmall.override(
-                  fontFamily: theme.labelSmallFamily,
-                  color: theme.secondaryText,
-                  useGoogleFonts: !theme.labelSmallIsCustom,
-                ),
-              ),
-            ],
+            // Completeness shown via localized chip above — never raw enum.
             const SizedBox(height: 12),
             for (final d in docs) ...[
               _DocRow(user: user, slot: d, scopeOk: scopeOk),
@@ -148,9 +147,9 @@ class _DocRow extends StatelessWidget {
       AdminDriverDocPresence.present => uiTr(context, 'متوفرة'),
       AdminDriverDocPresence.missing => uiTr(context, 'ناقصة'),
       AdminDriverDocPresence.legacy => uiTr(
-          context,
-          AdminDriverDocumentAccess.legacyAccessLabel,
-        ),
+        context,
+        AdminDriverDocumentAccess.legacyAccessLabel,
+      ),
     };
     final present = slot.presence != AdminDriverDocPresence.missing;
 
@@ -163,9 +162,7 @@ class _DocRow extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            present
-                ? Icons.check_circle_outline
-                : Icons.warning_amber_rounded,
+            present ? Icons.check_circle_outline : Icons.warning_amber_rounded,
             color: present ? Colors.green.shade700 : theme.secondaryText,
             size: 22,
           ),
@@ -183,24 +180,21 @@ class _DocRow extends StatelessWidget {
                     useGoogleFonts: !theme.bodyMediumIsCustom,
                   ),
                 ),
-                Text(
-                  presenceLabel,
-                  style: theme.labelSmall,
-                ),
+                Text(presenceLabel, style: theme.labelSmall),
                 if (slot.expiryDate != null)
                   Text(
                     slot.isExpired
                         ? '${uiTr(context, 'منتهية')}: ${dateTimeFormat('yMMMd', slot.expiryDate)}'
                         : slot.isExpiringSoon
-                            ? '${uiTr(context, 'تنتهي قريبًا')}: ${dateTimeFormat('yMMMd', slot.expiryDate)}'
-                            : '${uiTr(context, 'تنتهي')}: ${dateTimeFormat('yMMMd', slot.expiryDate)}',
+                        ? '${uiTr(context, 'تنتهي قريبًا')}: ${dateTimeFormat('yMMMd', slot.expiryDate)}'
+                        : '${uiTr(context, 'تنتهي')}: ${dateTimeFormat('yMMMd', slot.expiryDate)}',
                     style: theme.labelSmall.override(
                       fontFamily: theme.labelSmallFamily,
                       color: slot.isExpired
                           ? Colors.red.shade700
                           : slot.isExpiringSoon
-                              ? Colors.deepOrange.shade700
-                              : theme.secondaryText,
+                          ? Colors.deepOrange.shade700
+                          : theme.secondaryText,
                       fontWeight: (slot.isExpired || slot.isExpiringSoon)
                           ? FontWeight.w700
                           : FontWeight.w500,
@@ -319,9 +313,8 @@ class _DocRow extends StatelessWidget {
         child: Image.memory(
           result.bytes!,
           fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => Center(
-            child: Text(uiTr(context, 'تعذر فك صورة الوثيقة')),
-          ),
+          errorBuilder: (_, __, ___) =>
+              Center(child: Text(uiTr(context, 'تعذر فك صورة الوثيقة'))),
         ),
       );
     }
@@ -344,9 +337,8 @@ class _DocRow extends StatelessWidget {
             child: Image.memory(
               resolved.bytes!,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => Center(
-                child: Text(uiTr(context, 'تعذر فك صورة الوثيقة')),
-              ),
+              errorBuilder: (_, __, ___) =>
+                  Center(child: Text(uiTr(context, 'تعذر فك صورة الوثيقة'))),
             ),
           );
         }
@@ -354,10 +346,7 @@ class _DocRow extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
-              uiTr(
-                context,
-                'تعذر تحميل الصورة. استخدم فتح الرابط إن وُجد.',
-              ),
+              uiTr(context, 'تعذر تحميل الصورة. استخدم فتح الرابط إن وُجد.'),
               textAlign: TextAlign.center,
             ),
           ),

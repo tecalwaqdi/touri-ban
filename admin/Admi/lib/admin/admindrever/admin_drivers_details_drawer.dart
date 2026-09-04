@@ -73,12 +73,12 @@ class AdminDriversDetailsPanel extends StatelessWidget {
                 child: Text(
                   uiTr(context, 'ملف المندوب'),
                   style: FlutterFlowTheme.of(context).titleMedium.override(
-                        fontFamily:
-                            FlutterFlowTheme.of(context).titleMediumFamily,
-                        fontWeight: FontWeight.w700,
-                        useGoogleFonts: !FlutterFlowTheme.of(context)
-                            .titleMediumIsCustom,
-                      ),
+                    fontFamily: FlutterFlowTheme.of(context).titleMediumFamily,
+                    fontWeight: FontWeight.w700,
+                    useGoogleFonts: !FlutterFlowTheme.of(
+                      context,
+                    ).titleMediumIsCustom,
+                  ),
                 ),
               ),
               IconButton(
@@ -95,7 +95,11 @@ class AdminDriversDetailsPanel extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
             children: [
-              AdminDriverProfileHeader(row: row),
+              AdminDriverProfileHeader(
+                row: row,
+                // Operational axes owned by الحالة التشغيلية section below.
+                includeOperationalAxes: false,
+              ),
               if (row.statusTruth.registrationPendingWithActiveAccount)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -110,10 +114,7 @@ class AdminDriversDetailsPanel extends StatelessWidget {
               AdminDriverSectionCard(
                 title: uiTr(context, 'البيانات الشخصية'),
                 children: [
-                  AdminDriverKvRow(
-                    label: uiTr(context, 'الهاتف'),
-                    value: row.phone,
-                  ),
+                  // Phone already shown in header — keep city ownership here.
                   AdminDriverKvRow(
                     label: uiTr(context, 'مدينة التسجيل'),
                     value: row.city,
@@ -125,12 +126,8 @@ class AdminDriversDetailsPanel extends StatelessWidget {
                     ),
                 ],
               ),
-              AdminDriverSectionCard(
-                title: uiTr(context, 'بيانات التسجيل'),
-                children: [
-                  AdminDriverStatusStack(row: row),
-                ],
-              ),
+              // Registration/account badges already live in AdminDriverProfileHeader
+              // via AdminDriverStatusStack — do not render a second StatusStack.
               AdminDriverSectionCard(
                 title: uiTr(context, 'المركبة'),
                 children: [
@@ -157,21 +154,17 @@ class AdminDriversDetailsPanel extends StatelessWidget {
               ),
               AdminDriverSectionCard(
                 title: uiTr(context, 'الوثائق'),
-                children: [AdminDriverDocumentsPanel(user: user)],
+                children: [
+                  AdminDriverDocumentsPanel(
+                    user: user,
+                    // Header already owns registration/activation chips.
+                    showLifecycleStrip: false,
+                  ),
+                ],
               ),
               AdminDriverSectionCard(
                 title: uiTr(context, 'الحالة التشغيلية'),
-                children: [
-                  AdminDriverOperationalStatus(row: row),
-                  if (row.onActiveTrip)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: AdminDriverKvRow(
-                        label: uiTr(context, 'رحلة نشطة'),
-                        value: uiTr(context, 'نعم'),
-                      ),
-                    ),
-                ],
+                children: [AdminDriverOperationalStatus(row: row)],
               ),
               AdminDriverSectionCard(
                 title: uiTr(context, 'النشاط والرحلات'),

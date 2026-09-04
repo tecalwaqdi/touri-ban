@@ -100,8 +100,11 @@ class AdminDriverCompactTip extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline_rounded,
-              size: 16, color: AdminUi.brandTeal.withValues(alpha: 0.9)),
+          Icon(
+            Icons.info_outline_rounded,
+            size: 16,
+            color: AdminUi.brandTeal.withValues(alpha: 0.9),
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -383,11 +386,16 @@ class AdminDriverProfileHeader extends StatelessWidget {
     required this.row,
     this.showEmail = true,
     this.showPhone = true,
+    this.includeOperationalAxes = true,
   });
 
   final AdminDriverRow row;
   final bool showEmail;
   final bool showPhone;
+
+  /// When false, connection/availability are owned by a sibling
+  /// [AdminDriverOperationalStatus] section (one visual owner per axis).
+  final bool includeOperationalAxes;
 
   @override
   Widget build(BuildContext context) {
@@ -437,7 +445,10 @@ class AdminDriverProfileHeader extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: 8),
-              AdminDriverStatusStack(row: row),
+              AdminDriverStatusStack(
+                row: row,
+                includeOperationalAxes: includeOperationalAxes,
+              ),
             ],
           ),
         ),
@@ -447,9 +458,14 @@ class AdminDriverProfileHeader extends StatelessWidget {
 }
 
 class AdminDriverStatusStack extends StatelessWidget {
-  const AdminDriverStatusStack({super.key, required this.row});
+  const AdminDriverStatusStack({
+    super.key,
+    required this.row,
+    this.includeOperationalAxes = true,
+  });
 
   final AdminDriverRow row;
+  final bool includeOperationalAxes;
 
   @override
   Widget build(BuildContext context) {
@@ -467,13 +483,15 @@ class AdminDriverStatusStack extends StatelessWidget {
           AdminDriverStatusLabels.accountKind(row.accountActive),
           AdminDriverStatusLabels.account(context, row.accountActive),
         ),
-        if (row.connection != AdminDriverConnectionStatus.unknown)
+        if (includeOperationalAxes &&
+            row.connection != AdminDriverConnectionStatus.unknown)
           _miniBadge(
             context,
             AdminDriverStatusLabels.connectionKind(row.connection),
             AdminDriverStatusLabels.connection(context, row.connection),
           ),
-        if (row.availability != AdminDriverAvailabilityStatus.unknown)
+        if (includeOperationalAxes &&
+            row.availability != AdminDriverAvailabilityStatus.unknown)
           _miniBadge(
             context,
             AdminDriverStatusLabels.availabilityKind(row.availability),
@@ -601,11 +619,7 @@ class AdminDriverRegistrationStatusCell extends StatelessWidget {
 }
 
 class AdminDriverEmailLine extends StatelessWidget {
-  const AdminDriverEmailLine({
-    super.key,
-    required this.email,
-    this.style,
-  });
+  const AdminDriverEmailLine({super.key, required this.email, this.style});
 
   final String email;
   final TextStyle? style;
