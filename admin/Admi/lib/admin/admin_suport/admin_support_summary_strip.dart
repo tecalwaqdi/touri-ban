@@ -33,7 +33,8 @@ class AdminSupportSummaryStrip extends StatelessWidget {
           children: [
             Expanded(child: Text(uiTr(context, 'تعذر تحميل الإحصائيات'))),
             if (onRetry != null)
-              TextButton(onPressed: onRetry, child: Text(uiTr(context, 'إعادة'))),
+              TextButton(
+                  onPressed: onRetry, child: Text(uiTr(context, 'إعادة'))),
           ],
         ),
       );

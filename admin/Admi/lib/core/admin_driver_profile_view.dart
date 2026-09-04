@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '/backend/backend.dart';
 import '/components/admin_status_badge.dart';
+import '/core/driver_license_document.dart';
 import '/core/driver_registration_document_status.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -23,7 +24,9 @@ enum AdminDriverDocKind {
   nationalId,
   vehiclePhoto,
   vehicleRegistration,
-  driverLicense,
+  driverLicenseFront,
+  driverLicenseBack,
+  driverLicenseLegacy,
   tourGuidePermit,
 }
 
@@ -404,10 +407,15 @@ abstract final class AdminDriverProfileView {
               storagePathOf('doc_vehicle_registration')) &&
           urlFromMap('doc_vehicle_registration').isEmpty)
         slot(AdminDriverDocKind.vehiclePhoto, 'img_id_car'),
-      slot(AdminDriverDocKind.driverLicense, 'doc_driver_license'),
+      slot(AdminDriverDocKind.driverLicenseFront, 'doc_driver_license_front'),
+      slot(AdminDriverDocKind.driverLicenseBack, 'doc_driver_license_back'),
+      if (!DriverLicenseDocument.hasFront(user.snapshotData) &&
+          !DriverLicenseDocument.hasBack(user.snapshotData))
+        slot(AdminDriverDocKind.driverLicenseLegacy, 'doc_driver_license'),
     ];
     if (user.isTourGuide || legacyUrlOf('tour_guide_permit_url').isNotEmpty) {
-      out.add(slot(AdminDriverDocKind.tourGuidePermit, 'tour_guide_permit_url'));
+      out.add(
+          slot(AdminDriverDocKind.tourGuidePermit, 'tour_guide_permit_url'));
     }
     return out;
   }
@@ -496,8 +504,12 @@ abstract final class AdminDriverProfileView {
         return uiTr(context, 'صورة / استمارة السيارة');
       case AdminDriverDocKind.vehicleRegistration:
         return uiTr(context, 'استمارة السيارة');
-      case AdminDriverDocKind.driverLicense:
-        return uiTr(context, 'رخصة القيادة');
+      case AdminDriverDocKind.driverLicenseFront:
+        return uiTr(context, 'رخصة القيادة (الوجه الأمامي)');
+      case AdminDriverDocKind.driverLicenseBack:
+        return uiTr(context, 'رخصة القيادة (الوجه الخلفي)');
+      case AdminDriverDocKind.driverLicenseLegacy:
+        return uiTr(context, 'رخصة القيادة (قديم)');
       case AdminDriverDocKind.tourGuidePermit:
         return uiTr(context, 'تصريح المرشد');
     }

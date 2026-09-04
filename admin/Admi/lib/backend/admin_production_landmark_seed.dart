@@ -247,8 +247,8 @@ class AdminProductionLandmarkSeed {
             {
               ...createOrderRecordData(
                 total: total,
-                totalApp: (total * 0.12).round(),
-                totalVat: (total * 0.15).round(),
+                totalApp: (total * 0.12).roundToDouble(),
+                totalVat: (total * 0.15).roundToDouble(),
                 allnow: !isCanceled && !isPaid,
                 revDolh: countryRef,
                 dataOrder: orderDate,

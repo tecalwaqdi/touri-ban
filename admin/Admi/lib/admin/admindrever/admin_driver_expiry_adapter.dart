@@ -34,10 +34,12 @@ class AdminDriverExpiryRow {
   final AdminDriverExpiryDisplayStatus status;
   final AdminDriverDocumentSlot? documentSlot;
 
-  static AdminDriverExpiryRow fromUser(UserRecord user, {required String bucket}) {
+  static AdminDriverExpiryRow fromUser(UserRecord user,
+      {required String bucket}) {
     final data = user.snapshotData;
     final docType = '${data['doc_expiry_document_type'] ?? ''}'.trim();
-    final expiry = AdminDriverProfileView.parseDocExpiry(data['doc_expiry_date']);
+    final expiry =
+        AdminDriverProfileView.parseDocExpiry(data['doc_expiry_date']);
     final daysRaw = data['doc_expiry_days'];
     num? daysField;
     if (daysRaw is num) {
@@ -73,7 +75,7 @@ class AdminDriverExpiryRow {
       case 'national_id':
         kind = AdminDriverDocKind.nationalId;
       case 'driver_license':
-        kind = AdminDriverDocKind.driverLicense;
+        kind = AdminDriverDocKind.driverLicenseFront;
       case 'vehicle_registration':
         kind = AdminDriverDocKind.vehicleRegistration;
       case 'profile_photo':

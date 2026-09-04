@@ -168,6 +168,126 @@ const COPY = {
       body: 'Atualize os campos pedidos e reenvie.',
     },
   },
+  driver_document_approved: {
+    ar: {
+      title: 'تم اعتماد وثيقتك',
+      body: 'تمت مراجعة الوثيقة واعتمادها.',
+    },
+    en: {
+      title: 'Document approved',
+      body: 'Your document was reviewed and approved.',
+    },
+    ru: {
+      title: 'Документ одобрен',
+      body: 'Ваш документ проверен и одобрен.',
+    },
+    ky: {
+      title: 'Документ жактырылды',
+      body: 'Документиңиз текшерилип, жактырылды.',
+    },
+    fr: {
+      title: 'Document approuvé',
+      body: 'Votre document a été examiné et approuvé.',
+    },
+    ur: {
+      title: 'دستاویز منظور ہو گئی',
+      body: 'آپ کی دستاویز کا جائزہ لے کر منظور کر دی گئی۔',
+    },
+    pt: {
+      title: 'Documento aprovado',
+      body: 'O seu documento foi revisto e aprovado.',
+    },
+  },
+  driver_document_needs_changes: {
+    ar: {
+      title: 'وثيقتك تحتاج إلى تعديل',
+      body: 'حدّث الوثيقة: {reason}',
+    },
+    en: {
+      title: 'Document needs changes',
+      body: 'Update document: {reason}',
+    },
+    ru: {
+      title: 'Документ требует изменений',
+      body: 'Обновите документ: {reason}',
+    },
+    ky: {
+      title: 'Документ өзгөртүүнү талап кылат',
+      body: 'Документти жаңыртыңыз: {reason}',
+    },
+    fr: {
+      title: 'Document à modifier',
+      body: 'Mettez à jour le document : {reason}',
+    },
+    ur: {
+      title: 'دستاویز میں ترمیم درکار ہے',
+      body: 'دستاویز اپ ڈیٹ کریں: {reason}',
+    },
+    pt: {
+      title: 'Documento precisa de alterações',
+      body: 'Atualize o documento: {reason}',
+    },
+  },
+  driver_document_expired: {
+    ar: {
+      title: 'انتهت صلاحية إحدى وثائقك',
+      body: 'حدّث الوثيقة المطلوبة لاستعادة إمكانية استقبال الرحلات.',
+    },
+    en: {
+      title: 'A document has expired',
+      body: 'Update the required document to receive trips again.',
+    },
+    ru: {
+      title: 'Срок действия документа истёк',
+      body: 'Обновите документ, чтобы снова получать поездки.',
+    },
+    ky: {
+      title: 'Документтин мөөнөтү бүттү',
+      body: 'Сапарларды кабыл алуу үчүн талап кылынган документти жаңыртыңыз.',
+    },
+    fr: {
+      title: 'Un document a expiré',
+      body: 'Mettez à jour le document requis pour recevoir à nouveau des courses.',
+    },
+    ur: {
+      title: 'ایک دستاویز کی میعاد ختم ہو گئی',
+      body: 'سفر وصول کرنے کے لیے مطلوبہ دستاویز اپ ڈیٹ کریں۔',
+    },
+    pt: {
+      title: 'Um documento expirou',
+      body: 'Atualize o documento exigido para voltar a receber viagens.',
+    },
+  },
+  driver_document_expiring: {
+    ar: {
+      title: 'وثيقة ستنتهي قريبًا',
+      body: 'حدّث الوثيقة قبل انتهاء صلاحيتها لتجنب توقف استقبال الرحلات.',
+    },
+    en: {
+      title: 'Document expiring soon',
+      body: 'Update the document before it expires to keep receiving trips.',
+    },
+    ru: {
+      title: 'Срок действия документа скоро истечёт',
+      body: 'Обновите документ до истечения срока, чтобы продолжать получать поездки.',
+    },
+    ky: {
+      title: 'Документ жакында бүтөт',
+      body: 'Сапарларды кабыл алууну улантуу үчүн мөөнөт бүткөнчө документти жаңыртыңыз.',
+    },
+    fr: {
+      title: 'Document bientôt expiré',
+      body: 'Mettez à jour le document avant expiration pour continuer à recevoir des courses.',
+    },
+    ur: {
+      title: 'دستاویز جلد ختم ہو رہی ہے',
+      body: 'سفر وصول کرتے رہنے کے لیے میعاد ختم ہونے سے پہلے دستاویز اپ ڈیٹ کریں۔',
+    },
+    pt: {
+      title: 'Documento a expirar em breve',
+      body: 'Atualize o documento antes de expirar para continuar a receber viagens.',
+    },
+  },
 };
 
 function localize(key, locale, args = {}) {

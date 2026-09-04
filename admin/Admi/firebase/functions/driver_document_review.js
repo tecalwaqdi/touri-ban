@@ -6,14 +6,20 @@
 const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
 const crypto = require('crypto');
+const regNotif = require('./driver_registration_notifications.js');
 
 const DOC_FIELD_BY_TYPE = {
   nationalId: 'doc_national_id',
   national_id: 'doc_national_id',
   vehicleRegistration: 'doc_vehicle_registration',
   vehicle_registration: 'doc_vehicle_registration',
-  driverLicense: 'doc_driver_license',
-  driver_license: 'doc_driver_license',
+  driverLicense: 'doc_driver_license_front',
+  driver_license: 'doc_driver_license_front',
+  driverLicenseFront: 'doc_driver_license_front',
+  driver_license_front: 'doc_driver_license_front',
+  driverLicenseBack: 'doc_driver_license_back',
+  driver_license_back: 'doc_driver_license_back',
+  driverLicenseLegacy: 'doc_driver_license',
   vehicleInsurance: 'doc_vehicle_insurance',
   vehicle_insurance: 'doc_vehicle_insurance',
 };
@@ -69,24 +75,14 @@ async function notifyDocumentReview({driverId, documentType, action, reason, ver
       await notifRef.set({deliveryStatus: 'failed', pushError: 'NO_TOKENS'}, {merge: true});
       return {ok: false, stage: 'no_tokens'};
     }
-    const locale = String(data.preferred_locale || 'en').slice(0, 2);
+    const locale = regNotif.normalizeLocale(data.preferred_locale);
     const approved = action === 'approve';
-    const title =
-      locale === 'ar'
-        ? approved
-          ? 'تم اعتماد وثيقتك'
-          : 'وثيقتك تحتاج إلى تعديل'
-        : approved
-          ? 'Document approved'
-          : 'Document needs changes';
-    const body =
-      locale === 'ar'
-        ? approved
-          ? 'تمت مراجعة الوثيقة واعتمادها.'
-          : `حدّث الوثيقة: ${String(reason || '').slice(0, 80)}`
-        : approved
-          ? 'Your document was reviewed and approved.'
-          : `Update document: ${String(reason || '').slice(0, 80)}`;
+    const copyKey = approved
+      ? 'driver_document_approved'
+      : 'driver_document_needs_changes';
+    const {title, body} = regNotif.localize(copyKey, locale, {
+      reason: String(reason || '').slice(0, 80),
+    });
     await admin.messaging().sendEachForMulticast({
       tokens: [...set],
       notification: {title, body},
@@ -203,29 +199,37 @@ async function reviewDriverDocument(data, context) {
 }
 
 /** Soft gate: each required slot must be explicitly approved (V2). */
-function allRequiredDocumentsApproved(driver) {
-  const slots = [
-    ['doc_national_id', 'img_id_rksh'],
-    ['doc_vehicle_registration', 'img_id_car'],
-    ['doc_driver_license', ''],
-  ];
-  for (const [v2, legacy] of slots) {
-    const slot = driver[v2];
-    if (slot && typeof slot === 'object') {
-      const st = String(slot.reviewStatus || slot.status || '').toLowerCase();
-      if (st === 'approved') continue;
-      if (['rejected', 'needs_replacement', 'needs_reupload', 'pending_review', 'uploaded'].includes(st)) {
-        return false;
-      }
-      const hasAsset = !!(slot.storagePath || slot.url);
-      // Unreviewed asset cannot approve application.
-      if (hasAsset) return false;
+function slotApproved(driver, v2Key, legacyKey) {
+  const slot = driver[v2Key];
+  if (slot && typeof slot === 'object') {
+    const st = String(slot.reviewStatus || slot.status || '').toLowerCase();
+    if (st === 'approved') return true;
+    if (['rejected', 'needs_replacement', 'needs_reupload', 'pending_review', 'uploaded'].includes(st)) {
       return false;
     }
-    // Legacy string presence — migration only (no reviewStatus map).
-    if (legacy && typeof driver[legacy] === 'string' && driver[legacy].trim()) continue;
+    const hasAsset = !!(slot.storagePath || slot.url);
+    if (hasAsset) return false;
     return false;
   }
+  if (legacyKey && typeof driver[legacyKey] === 'string' && driver[legacyKey].trim()) return true;
+  return false;
+}
+
+function allRequiredDocumentsApproved(driver) {
+  const docStatus = require('./driver_registration_document_status.js');
+  const base = [
+    ['doc_national_id', 'img_id_rksh'],
+    ['doc_vehicle_registration', 'img_id_car'],
+  ];
+  for (const [v2, legacy] of base) {
+    if (!slotApproved(driver, v2, legacy)) return false;
+  }
+  if (docStatus.isApprovedLegacyLicenseOnly(driver)) {
+    return slotApproved(driver, 'doc_driver_license', '');
+  }
+  const backRequired = docStatus.isLicenseBackRequired(null);
+  if (!slotApproved(driver, 'doc_driver_license_front', '')) return false;
+  if (backRequired && !slotApproved(driver, 'doc_driver_license_back', '')) return false;
   return true;
 }
 

@@ -1,6 +1,6 @@
 /**
  * Registration V2 document completeness — shared with Admin/Driver Dart helper.
- * Required slots: national_id, vehicle_registration, driver_license.
+ * Required slots: national_id, vehicle_registration, driver_license (front+back).
  * Profile photo is checked separately for submit/approve blockers.
  */
 'use strict';
@@ -14,7 +14,7 @@ const REQUIRED_TYPES = [
 const TYPE_KEYS = {
   national_id: ['doc_national_id', 'img_id_rksh'],
   vehicle_registration: ['doc_vehicle_registration', 'img_id_car'],
-  driver_license: ['doc_driver_license', ''],
+  driver_license: ['doc_driver_license_front', 'doc_driver_license_back', 'doc_driver_license'],
 };
 
 function isStoragePath(raw) {
@@ -56,9 +56,53 @@ function slotStatusRaw(data, v2Key) {
   return '';
 }
 
+function sidePresent(data, v2Key, legacyKey) {
+  if (storagePathFrom(data, v2Key)) return true;
+  const url = urlFrom(data, v2Key, legacyKey);
+  return url && (isStoragePath(url) || isHttps(url));
+}
+
+function isApprovedLegacyLicenseOnly(data) {
+  const status = String(data.registration_status || '').trim();
+  const approved = status === 'approved' && data.actev_mndob === true;
+  const legacy = sidePresent(data, 'doc_driver_license', '');
+  const front = sidePresent(data, 'doc_driver_license_front', '');
+  const back = sidePresent(data, 'doc_driver_license_back', '');
+  return approved && legacy && !front && !back;
+}
+
+function driverLicenseSubmitOk(data, countryRequirements) {
+  const backRequired = isLicenseBackRequired(countryRequirements);
+  const front = sidePresent(data, 'doc_driver_license_front', '');
+  const back = sidePresent(data, 'doc_driver_license_back', '');
+  if (front && (!backRequired || back)) return true;
+  return false;
+}
+
+function isLicenseBackRequired(countryRequirements) {
+  if (!countryRequirements || typeof countryRequirements !== 'object') return true;
+  const cfg = countryRequirements.driverLicenseBack || countryRequirements.driver_license_back;
+  if (cfg && typeof cfg === 'object' && cfg.required === false) return false;
+  return true;
+}
+
 function statusForType(data, type) {
   const keys = TYPE_KEYS[type];
   if (!keys) return 'missing';
+  if (type === 'driver_license') {
+    for (const key of keys) {
+      const raw = slotStatusRaw(data, key);
+      if (raw === 'rejected') return 'rejected';
+      if (raw === 'needs_reupload') return 'needs_reupload';
+    }
+    const front = sidePresent(data, 'doc_driver_license_front', '');
+    const back = sidePresent(data, 'doc_driver_license_back', '');
+    if (front && back) return 'complete';
+    if (isApprovedLegacyLicenseOnly(data)) return 'complete';
+    const legacy = sidePresent(data, 'doc_driver_license', '');
+    if (legacy && !front && !back) return 'missing';
+    return 'missing';
+  }
   const [v2, legacy] = keys;
   const raw = slotStatusRaw(data, v2);
   if (raw === 'rejected') return 'rejected';
@@ -74,10 +118,6 @@ function profilePhotoOk(data) {
   return isHttps(data.photo_url || '');
 }
 
-/**
- * Overall required-docs status (excludes profile photo).
- * Maps rejected → needs_reupload for the authoritative field.
- */
 function overallRequiredDocs(data) {
   const slots = REQUIRED_TYPES.map((t) => statusForType(data, t));
   if (slots.some((s) => s === 'rejected' || s === 'needs_reupload')) {
@@ -87,10 +127,6 @@ function overallRequiredDocs(data) {
   return 'complete';
 }
 
-/**
- * Authoritative field value for V2 drivers.
- * Legacy (non-V2) → unknown_legacy (caller may omit writing).
- */
 function registrationDocumentsStatus(data) {
   const flow = Number(data.registration_flow_version || 0);
   if (flow !== 2) return 'unknown_legacy';
@@ -122,4 +158,8 @@ module.exports = {
   registrationDocumentsStatus,
   isCompleteForSubmit,
   phonePresent,
+  driverLicenseSubmitOk,
+  isLicenseBackRequired,
+  sidePresent,
+  isApprovedLegacyLicenseOnly,
 };

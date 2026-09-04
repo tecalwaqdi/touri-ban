@@ -21,6 +21,8 @@ class AdminDriverRequirementsEditor extends StatefulWidget {
     'profilePhoto',
     'nationalId',
     'vehicleRegistration',
+    'driverLicenseFront',
+    'driverLicenseBack',
     'driverLicense',
     'vehicleInsurance',
   ];
@@ -30,10 +32,12 @@ class AdminDriverRequirementsEditor extends StatefulWidget {
           t: {
             'enabled': t != 'vehicleInsurance',
             'required': t != 'vehicleInsurance',
-            'expiryRequired':
-                t == 'driverLicense' || t == 'vehicleRegistration',
-            'operationalBlockingOnExpiry':
-                t == 'driverLicense' || t == 'vehicleRegistration',
+            'expiryRequired': t == 'driverLicenseFront' ||
+                t == 'driverLicense' ||
+                t == 'vehicleRegistration',
+            'operationalBlockingOnExpiry': t == 'driverLicenseFront' ||
+                t == 'driverLicense' ||
+                t == 'vehicleRegistration',
             'expiryWarningDays': 30,
             'effectiveFrom': null,
             'gracePeriodDays': null,
@@ -47,8 +51,9 @@ class AdminDriverRequirementsEditor extends StatefulWidget {
           t: {
             'enabled': true,
             'required': t != 'vehicleInsurance',
-            'expiryRequired':
-                t == 'driverLicense' || t == 'vehicleRegistration',
+            'expiryRequired': t == 'driverLicenseFront' ||
+                t == 'driverLicense' ||
+                t == 'vehicleRegistration',
             'operationalBlockingOnExpiry': false,
             'expiryWarningDays': 30,
             'effectiveFrom': null,
@@ -117,6 +122,10 @@ class _AdminDriverRequirementsEditorState
         return uiTr(context, 'الهوية');
       case 'vehicleRegistration':
         return uiTr(context, 'استمارة المركبة');
+      case 'driverLicenseFront':
+        return uiTr(context, 'رخصة القيادة (الوجه الأمامي)');
+      case 'driverLicenseBack':
+        return uiTr(context, 'رخصة القيادة (الوجه الخلفي)');
       case 'driverLicense':
         return uiTr(context, 'رخصة القيادة');
       case 'vehicleInsurance':
@@ -269,13 +278,11 @@ class _DocConfigTile extends StatelessWidget {
                               ),
                               actions: [
                                 TextButton(
-                                  onPressed: () =>
-                                      Navigator.of(ctx).pop(false),
+                                  onPressed: () => Navigator.of(ctx).pop(false),
                                   child: Text(uiTr(ctx, 'إلغاء')),
                                 ),
                                 TextButton(
-                                  onPressed: () =>
-                                      Navigator.of(ctx).pop(true),
+                                  onPressed: () => Navigator.of(ctx).pop(true),
                                   child: Text(uiTr(ctx, 'متابعة')),
                                 ),
                               ],
@@ -351,8 +358,7 @@ class _DocConfigTile extends StatelessWidget {
                             ? null
                             : (raw) {
                                 final n = int.tryParse(raw.trim()) ?? 30;
-                                final next =
-                                    Map<String, dynamic>.from(config);
+                                final next = Map<String, dynamic>.from(config);
                                 next['expiryWarningDays'] = n.clamp(1, 365);
                                 onChanged(next);
                               },

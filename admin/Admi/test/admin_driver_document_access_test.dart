@@ -10,7 +10,8 @@ void main() {
   group('AdminDriverDocumentAccess.mapStorageErrorCode', () {
     test('maps not-found family', () {
       expect(
-        AdminDriverDocumentAccess.mapStorageErrorCode('firebase_storage/object-not-found'),
+        AdminDriverDocumentAccess.mapStorageErrorCode(
+            'firebase_storage/object-not-found'),
         'not_found',
       );
       expect(
@@ -32,7 +33,8 @@ void main() {
 
     test('maps network family', () {
       expect(
-        AdminDriverDocumentAccess.mapStorageErrorCode('storage/retry-limit-exceeded'),
+        AdminDriverDocumentAccess.mapStorageErrorCode(
+            'storage/retry-limit-exceeded'),
         'network',
       );
     });
@@ -47,7 +49,8 @@ void main() {
 
     test('detects pdf magic', () {
       final pdf = Uint8List.fromList([0x25, 0x50, 0x44, 0x46, 0x2d]); // %PDF-
-      final r = AdminDriverDocViewResult(bytes: pdf, contentType: 'application/pdf');
+      final r =
+          AdminDriverDocViewResult(bytes: pdf, contentType: 'application/pdf');
       expect(r.isPdf, isTrue);
       expect(r.ok, isTrue);
     });
@@ -71,7 +74,8 @@ void main() {
   group('AdminDriverProfileView documents status', () {
     test('storage path recognition matches shared helper', () {
       expect(
-        DriverRegistrationDocumentStatus.isStoragePath('users/abc/uploads/p.jpg'),
+        DriverRegistrationDocumentStatus.isStoragePath(
+            'users/abc/uploads/p.jpg'),
         isTrue,
       );
       expect(
@@ -91,7 +95,8 @@ void main() {
           'photo_storage_path': 'users/u1/photo.jpg',
           'doc_national_id': {'storagePath': 'users/u1/id.jpg'},
           'doc_vehicle_registration': {'storagePath': 'users/u1/reg.jpg'},
-          'doc_driver_license': {'storagePath': 'users/u1/lic.jpg'},
+          'doc_driver_license_front': {'storagePath': 'users/u1/front.jpg'},
+          'doc_driver_license_back': {'storagePath': 'users/u1/back.jpg'},
         }),
         isTrue,
       );

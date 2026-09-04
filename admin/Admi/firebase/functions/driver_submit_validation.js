@@ -101,7 +101,7 @@ function legacySubmitBlockers(driver, authUser) {
   if (!docAssetPresent(driver, 'doc_vehicle_registration', 'img_id_car')) {
     blockers.push('vehicle_registration_required');
   }
-  if (!docAssetPresent(driver, 'doc_driver_license', '')) {
+  if (!docStatus.driverLicenseSubmitOk(driver, null)) {
     blockers.push('driver_license_required');
   }
   return blockers;

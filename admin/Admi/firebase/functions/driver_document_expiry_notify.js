@@ -12,6 +12,7 @@ const {
   buildExpiryEventId,
   firstBlockingExpiredDocument,
 } = require('./driver_document_review.js');
+const regNotif = require('./driver_registration_notifications.js');
 
 function utcDay(d) {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
@@ -115,7 +116,7 @@ async function notifyDriverDocumentExpiryForUser(driverId, driver, countryRequir
     const warn = Number(cfg.expiryWarningDays || 30);
     const remaining = daysUntil(expiry, now);
     const expiryIso = utcDay(expiry).toISOString().slice(0, 10);
-    const locale = String(driver.preferred_locale || 'ar').slice(0, 2);
+    const locale = regNotif.normalizeLocale(driver.preferred_locale);
     const blockingOn = cfg.operationalBlockingOnExpiry === true;
 
     if (remaining < 0) {
@@ -135,12 +136,9 @@ async function notifyDriverDocumentExpiryForUser(driverId, driver, countryRequir
         expiryIso,
         threshold: '0',
       });
-      const title =
-        locale === 'ar' ? 'انتهت صلاحية إحدى وثائقك' : 'A document has expired';
-      const body =
-        locale === 'ar'
-          ? 'حدّث الوثيقة المطلوبة لاستعادة إمكانية استقبال الرحلات.'
-          : 'Update the required document to receive trips again.';
+      const expiredCopy = regNotif.localize('driver_document_expired', locale);
+      const title = expiredCopy.title;
+      const body = expiredCopy.body;
       const r = await queuePushOnce({
         eventId,
         driverId,
@@ -170,12 +168,9 @@ async function notifyDriverDocumentExpiryForUser(driverId, driver, countryRequir
         expiryIso,
         threshold: String(warn),
       });
-      const title =
-        locale === 'ar' ? 'وثيقة ستنتهي قريبًا' : 'Document expiring soon';
-      const body =
-        locale === 'ar'
-          ? 'حدّث الوثيقة قبل انتهاء صلاحيتها لتجنب توقف استقبال الرحلات.'
-          : 'Update the document before it expires to keep receiving trips.';
+      const expiringCopy = regNotif.localize('driver_document_expiring', locale);
+      const title = expiringCopy.title;
+      const body = expiringCopy.body;
       const r = await queuePushOnce({
         eventId,
         driverId,

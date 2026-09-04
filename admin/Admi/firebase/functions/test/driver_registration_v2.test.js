@@ -24,6 +24,8 @@ function baseDriver(overrides = {}) {
     photo_url: 'https://example.com/photo.jpg',
     img_id_rksh: 'https://example.com/id.jpg',
     img_id_car: 'https://example.com/car.jpg',
+    doc_driver_license_front: {url: 'https://example.com/license-front.jpg'},
+    doc_driver_license_back: {url: 'https://example.com/license-back.jpg'},
     doc_driver_license: {url: 'https://example.com/license.jpg'},
     ...overrides,
   };
@@ -111,7 +113,12 @@ describe('registration_documents_status authoritative', () => {
   it('missing when one required doc absent', () => {
     assert.strictEqual(
       docStatus.registrationDocumentsStatus(
-        baseDriver({doc_driver_license: null, img_id_car: 'https://x/c.jpg'}),
+        baseDriver({
+          doc_driver_license: null,
+          doc_driver_license_front: null,
+          doc_driver_license_back: null,
+          img_id_car: 'https://x/c.jpg',
+        }),
       ),
       'missing',
     );

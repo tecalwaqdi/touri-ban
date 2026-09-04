@@ -21,7 +21,8 @@ void main() {
     expect(blockers, isNot(contains('adm_drv_blocker_photo')));
     expect(blockers, isNot(contains('adm_drv_blocker_id_doc')));
     expect(blockers, contains('adm_drv_blocker_open_changes'));
-    expect(blockers.any((b) => RegExp(r'[\u0600-\u06FF]').hasMatch(b)), isFalse);
+    expect(
+        blockers.any((b) => RegExp(r'[\u0600-\u06FF]').hasMatch(b)), isFalse);
   });
 
   test('approvalBlockingReasons empty when prerequisites met without docs', () {
@@ -48,9 +49,11 @@ void main() {
       'photo_url': '',
       'doc_national_id': {'storagePath': 'users/u/id.jpg'},
       'doc_vehicle_registration': {'storagePath': 'users/u/reg.jpg'},
-      'doc_driver_license': {'storagePath': 'users/u/lic.jpg'},
+      'doc_driver_license_front': {'storagePath': 'users/u/front.jpg'},
+      'doc_driver_license_back': {'storagePath': 'users/u/back.jpg'},
     });
     expect(blockers, contains('adm_drv_blocker_photo'));
     expect(blockers, isNot(contains('adm_drv_blocker_national_id')));
+    expect(blockers, isNot(contains('adm_drv_blocker_driver_license')));
   });
 }

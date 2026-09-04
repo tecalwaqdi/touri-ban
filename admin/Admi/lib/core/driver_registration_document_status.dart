@@ -1,6 +1,8 @@
+import '/core/driver_license_document.dart';
+
 /// Canonical Registration V2 document completeness (Admin + Driver shared logic).
 ///
-/// Required V2 slots: national_id, vehicle_registration, driver_license.
+/// Required V2 slots: national_id, vehicle_registration, driver_license (front+back).
 /// Profile photo is also required for submit (kept separate in [profilePhotoOk]).
 ///
 /// V2 SoT: `doc_*.storagePath` under `users/{uid}/...`.
@@ -49,7 +51,8 @@ abstract final class DriverRegistrationDocumentStatus {
     return null;
   }
 
-  static String? _urlFrom(Map<String, dynamic> data, String v2Key, String legacyKey) {
+  static String? _urlFrom(
+      Map<String, dynamic> data, String v2Key, String legacyKey) {
     final slot = data[v2Key];
     if (slot is Map && slot['url'] is String) {
       final u = (slot['url'] as String).trim();
@@ -94,16 +97,38 @@ abstract final class DriverRegistrationDocumentStatus {
         legacy = 'img_id_car';
         break;
       case 'driver_license':
-        v2 = 'doc_driver_license';
-        legacy = '';
-        break;
+        return _driverLicenseAggregateStatus(data);
       default:
         return DriverRegistrationDocStatus.missing;
     }
     final raw = _slotStatusRaw(data, v2);
     if (raw == 'rejected') return DriverRegistrationDocStatus.rejected;
-    if (raw == 'needs_reupload') return DriverRegistrationDocStatus.needsReupload;
+    if (raw == 'needs_reupload')
+      return DriverRegistrationDocStatus.needsReupload;
     if (_hasPresentAsset(data, v2, legacy)) {
+      return DriverRegistrationDocStatus.complete;
+    }
+    return DriverRegistrationDocStatus.missing;
+  }
+
+  static DriverRegistrationDocStatus _driverLicenseAggregateStatus(
+    Map<String, dynamic> data,
+  ) {
+    for (final key in [
+      DriverLicenseDocumentFields.front,
+      DriverLicenseDocumentFields.back,
+      DriverLicenseDocumentFields.legacy,
+    ]) {
+      final raw = _slotStatusRaw(data, key);
+      if (raw == 'rejected') return DriverRegistrationDocStatus.rejected;
+      if (raw == 'needs_reupload') {
+        return DriverRegistrationDocStatus.needsReupload;
+      }
+    }
+    if (DriverLicenseDocument.isCompleteForSubmit(data)) {
+      return DriverRegistrationDocStatus.complete;
+    }
+    if (DriverLicenseDocument.isApprovedLegacyLicenseOnly(data)) {
       return DriverRegistrationDocStatus.complete;
     }
     return DriverRegistrationDocStatus.missing;
@@ -137,7 +162,8 @@ abstract final class DriverRegistrationDocumentStatus {
 
   static List<String> missingTypes(Map<String, dynamic> data) {
     return requiredTypes
-        .where((t) => statusForType(data, t) != DriverRegistrationDocStatus.complete)
+        .where((t) =>
+            statusForType(data, t) != DriverRegistrationDocStatus.complete)
         .toList();
   }
 }

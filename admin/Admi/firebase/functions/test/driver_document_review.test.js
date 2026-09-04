@@ -11,13 +11,26 @@ describe('driver_document_review gates', () => {
     const driver = {
       doc_national_id: {storagePath: 'users/a/uploads/x', reviewStatus: 'pending_review'},
       doc_vehicle_registration: {storagePath: 'users/a/uploads/y', reviewStatus: 'approved'},
-      doc_driver_license: {storagePath: 'users/a/uploads/z', reviewStatus: 'approved'},
+      doc_driver_license_front: {storagePath: 'users/a/uploads/z-front', reviewStatus: 'approved'},
+      doc_driver_license_back: {storagePath: 'users/a/uploads/z-back', reviewStatus: 'pending_review'},
     };
     assert.equal(review.allRequiredDocumentsApproved(driver), false);
   });
 
   it('allRequiredDocumentsApproved passes when all approved', () => {
     const driver = {
+      doc_national_id: {storagePath: 'users/a/uploads/x', reviewStatus: 'approved'},
+      doc_vehicle_registration: {storagePath: 'users/a/uploads/y', reviewStatus: 'approved'},
+      doc_driver_license_front: {storagePath: 'users/a/uploads/z-front', reviewStatus: 'approved'},
+      doc_driver_license_back: {storagePath: 'users/a/uploads/z-back', reviewStatus: 'approved'},
+    };
+    assert.equal(review.allRequiredDocumentsApproved(driver), true);
+  });
+
+  it('allRequiredDocumentsApproved accepts approved legacy single license', () => {
+    const driver = {
+      registration_status: 'approved',
+      actev_mndob: true,
       doc_national_id: {storagePath: 'users/a/uploads/x', reviewStatus: 'approved'},
       doc_vehicle_registration: {storagePath: 'users/a/uploads/y', reviewStatus: 'approved'},
       doc_driver_license: {storagePath: 'users/a/uploads/z', reviewStatus: 'approved'},
@@ -27,7 +40,7 @@ describe('driver_document_review gates', () => {
 
   it('firstBlockingExpiredDocument null without country config', () => {
     const driver = {
-      doc_driver_license: {
+      doc_driver_license_front: {
         reviewStatus: 'approved',
         expiryDate: new Date('2020-01-01T00:00:00Z'),
       },
@@ -45,7 +58,7 @@ describe('driver_document_review gates', () => {
       },
     };
     const driver = {
-      doc_driver_license: {
+      doc_driver_license_front: {
         reviewStatus: 'approved',
         expiryDate: new Date('2026-08-01T00:00:00Z'),
       },

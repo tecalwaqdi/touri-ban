@@ -220,8 +220,7 @@ class AdminSupportRow {
     final data = ticket.snapshotData;
     final driverSchema = isDriverSchemaData(data);
     final msg = messageOf(data);
-    final preview =
-        msg.length > 120 ? '${msg.substring(0, 117)}…' : msg;
+    final preview = msg.length > 120 ? '${msg.substring(0, 117)}…' : msg;
     final halh = ticket.halh;
     final status = _str(data, 'status');
     final wf = _str(data, 'admin_workflow');

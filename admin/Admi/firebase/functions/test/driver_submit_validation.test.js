@@ -25,8 +25,14 @@ function baseDriver(overrides = {}) {
     photo_storage_path: 'users/u/uploads/photo.jpg',
     img_id_rksh: 'https://example.com/id.jpg',
     img_id_car: 'https://example.com/car.jpg',
-    doc_driver_license: {
-      storagePath: 'users/u/uploads/license.jpg',
+    doc_driver_license_front: {
+      storagePath: 'users/u/uploads/license-front.jpg',
+      side: 'front',
+      status: 'pending_review',
+    },
+    doc_driver_license_back: {
+      storagePath: 'users/u/uploads/license-back.jpg',
+      side: 'back',
       status: 'pending_review',
     },
     Rev_dolh: {path: 'countries/kg'},
@@ -93,8 +99,12 @@ describe('driver_submit_validation structured rejects', () => {
     };
     const {blockers, missingExpiryTypes} = submitValidation.collectSubmitBlockers(
       baseDriver({
-        doc_driver_license: {
-          storagePath: 'users/u/uploads/license.jpg',
+        doc_driver_license_front: {
+          storagePath: 'users/u/uploads/license-front.jpg',
+          status: 'pending_review',
+        },
+        doc_driver_license_back: {
+          storagePath: 'users/u/uploads/license-back.jpg',
           status: 'pending_review',
         },
       }),

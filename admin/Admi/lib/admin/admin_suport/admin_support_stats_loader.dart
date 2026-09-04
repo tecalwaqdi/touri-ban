@@ -39,7 +39,8 @@ abstract final class AdminSupportStatsLoader {
   }) async {
     try {
       final sample = await querySupportRecordOnce(
-        queryBuilder: (q) => AdminOpsQueryBuilder.applySupportFilters(q, filters),
+        queryBuilder: (q) =>
+            AdminOpsQueryBuilder.applySupportFilters(q, filters),
         limit: 150,
       );
       var open = 0;
