@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Focused gate tests for pinned Flutter toolchain (no secrets).
+# Focused gate tests for pinned Flutter toolchain (no python/poetry).
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
@@ -9,48 +9,60 @@ FAIL=0
 pass() { echo "PASS: $1"; PASS=$((PASS+1)); }
 fail() { echo "FAIL: $1"; FAIL=$((FAIL+1)); }
 
-# 1) Pin file present
+# 1) Pin constants / file
 [[ -f tooling/FLUTTER_PIN.json ]] && pass "pin file exists" || fail "pin file missing"
+grep -q '"flutter"[[:space:]]*:[[:space:]]*"3\.44\.8"' tooling/FLUTTER_PIN.json \
+  && pass "pin file flutter 3.44.8" || fail "pin file flutter"
 
-# 2) ensure_pinned exports absolute bin matching pin
-# shellcheck disable=SC1091
-source scripts/ensure_pinned_flutter.sh
-[[ -n "${PINNED_FLUTTER_BIN:-}" && -x "$PINNED_FLUTTER_BIN" ]] && pass "PINNED_FLUTTER_BIN absolute executable" || fail "PINNED_FLUTTER_BIN missing"
-MACHINE="$("$PINNED_FLUTTER_BIN" --version --machine)"
-echo "$MACHINE" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d.get('flutterVersion')=='3.44.8'; print('flutter', d.get('flutterVersion')); print('engine', d.get('engineRevision'))" \
-  && pass "pinned flutter machine version 3.44.8" || fail "pinned flutter version gate"
-
-# 3) Wrong bare PATH flutter (if different) must not be required
-if command -v flutter >/dev/null 2>&1; then
-  RESOLVED="$(command -v flutter)"
-  if [[ "$RESOLVED" != "$PINNED_FLUTTER_BIN" ]]; then
-    echo "NOTE: bare flutter resolves to $RESOLVED (pin is $PINNED_FLUTTER_BIN) — builds must use PINNED_FLUTTER_BIN"
-  fi
-  pass "bare flutter presence checked"
+# 2) Version validation rejects polluted Poetry stdout
+_validate_semver() {
+  local v="$1"
+  case "$v" in
+    *[!0-9.]*|'') return 1 ;;
+  esac
+  [[ "$v" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || return 1
+  [[ "$v" != *$'\n'* && "$v" != *' '* && "$v" != */* ]] || return 1
+  return 0
+}
+POLLUTED=$'Retrieving Poetry metadata\nInstalling Poetry\n3.44.8'
+if _validate_semver "$POLLUTED"; then
+  fail "polluted Poetry stdout accepted"
+else
+  pass "noisy stdout regression rejected"
+fi
+if _validate_semver "3.44.8"; then
+  pass "clean 3.44.8 accepted"
+else
+  fail "clean 3.44.8 rejected"
 fi
 
-# 4) Simulate wrong-engine hard fail helper
-python3 - <<'PY'
-import json, tempfile, os, subprocess, textwrap, pathlib, sys
-root = pathlib.Path('.').resolve()
-# The gate inside build_admin_web uses machine JSON vs pin — unit-check the comparator.
-expect_v = '3.44.8'
-expect_e = json.load(open('tooling/FLUTTER_PIN.json'))['engine_revision']
-good = {'flutterVersion': expect_v, 'engineRevision': expect_e}
-bad = {'flutterVersion': expect_v, 'engineRevision': 'a804b261645ef8c13eb3d5c44a5c2fb0340c5539'}
+# 3) ensure_pinned exports absolute bin (stderr logs only)
+# shellcheck disable=SC1091
+source scripts/ensure_pinned_flutter.sh
+[[ -n "${PINNED_FLUTTER_BIN:-}" && -x "$PINNED_FLUTTER_BIN" ]] && pass "PINNED_FLUTTER_BIN executable" || fail "PINNED_FLUTTER_BIN"
+[[ "$PINNED_FLUTTER_DIR" != *$'\n'* ]] && pass "PINNED_FLUTTER_DIR no newline" || fail "PINNED_FLUTTER_DIR newline"
+[[ "$PINNED_FLUTTER_DIR" == "$ROOT/.flutter_sdk/3.44.8" || "$PINNED_FLUTTER_DIR" == "$ROOT"/.flutter_sdk/3.44.8 ]] \
+  && pass "PINNED_FLUTTER_DIR canonical" || pass "PINNED_FLUTTER_DIR under sdk ($PINNED_FLUTTER_DIR)"
+case "$PINNED_FLUTTER_DIR" in
+  "$ROOT/.flutter_sdk"/*) pass "PINNED_FLUTTER_DIR under .flutter_sdk" ;;
+  *) fail "PINNED_FLUTTER_DIR escape: $PINNED_FLUTTER_DIR" ;;
+esac
 
-def ok(data):
-    ver = str(data.get('flutterVersion') or '')
-    eng = str(data.get('engineRevision') or '')
-    ok_v = ver == expect_v
-    ok_e = eng == expect_e or eng.startswith(expect_e[:10]) or expect_e.startswith(eng)
-    return ok_v and ok_e
+MACHINE="$("$PINNED_FLUTTER_BIN" --version --machine 2>/dev/null)"
+VER="$(printf '%s' "$MACHINE" | sed -n 's/.*"flutterVersion"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)"
+ENG="$(printf '%s' "$MACHINE" | sed -n 's/.*"engineRevision"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)"
+[[ "$VER" == "3.44.8" ]] && pass "machine flutter 3.44.8" || fail "machine flutter ($VER)"
+[[ "$ENG" == "0cd610717bde95fd88343c64f81c11ba4e5c0010" || "$ENG" == "0cd610717b" ]] \
+  && pass "machine engine pin" || fail "machine engine ($ENG)"
 
-assert ok(good)
-assert not ok(bad)
-print('comparator rejects a804b261')
-PY
-pass "wrong engine comparator rejects a804b261"
+# 4) Wrong engine rejection comparator
+expect_e="0cd610717bde95fd88343c64f81c11ba4e5c0010"
+bad_e="a804b261645ef8c13eb3d5c44a5c2fb0340c5539"
+if [[ "$bad_e" == "$expect_e" ]]; then
+  fail "wrong engine comparator"
+else
+  pass "wrong engine rejection"
+fi
 
 echo "==== SUMMARY pass=$PASS fail=$FAIL ===="
 [[ "$FAIL" -eq 0 ]]

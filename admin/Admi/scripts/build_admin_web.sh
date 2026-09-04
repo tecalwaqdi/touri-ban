@@ -4,9 +4,10 @@
 #   bash scripts/build_admin_web.sh /
 #   bash scripts/build_admin_web.sh /admin/
 #
-# Always uses the absolute pinned Flutter executable from ensure_pinned_flutter.sh.
-# Hard-fails on wrong Flutter version/engine before compiling.
+# No python/poetry. Absolute pinned Flutter only.
 set -euo pipefail
+
+_log() { printf '%s\n' "$*" >&2; }
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
@@ -17,70 +18,77 @@ case "$BASE_HREF" in
   *) BASE_HREF="${BASE_HREF}/" ;;
 esac
 
-echo "============================================================"
-echo "TOURI ADMIN WEB BUILD — TOOLCHAIN PROVENANCE"
-echo "============================================================"
-echo "pwd: $(pwd)"
-echo "git: $(git rev-parse HEAD 2>/dev/null || echo unknown)"
-echo "PATH: $PATH"
-echo "FLUTTER_ROOT(before): ${FLUTTER_ROOT:-<unset>}"
-echo "command -v flutter(before): $(command -v flutter 2>/dev/null || echo none)"
-echo "which flutter(before): $(which flutter 2>/dev/null || echo none)"
+_log "============================================================"
+_log "TOURI ADMIN WEB BUILD — TOOLCHAIN PROVENANCE"
+_log "============================================================"
+_log "pwd: $(pwd)"
+_log "git: $(git rev-parse HEAD 2>/dev/null || echo unknown)"
+_log "PATH: $PATH"
+_log "FLUTTER_ROOT(before): ${FLUTTER_ROOT:-<unset>}"
+_log "command -v flutter(before): $(command -v flutter 2>/dev/null || echo none)"
 
 # shellcheck disable=SC1091
 source "$ROOT/scripts/ensure_pinned_flutter.sh"
 
-echo "FLUTTER_ROOT(after): $FLUTTER_ROOT"
-echo "PINNED_FLUTTER_BIN: $PINNED_FLUTTER_BIN"
-echo "command -v flutter(after): $(command -v flutter 2>/dev/null || echo none)"
-echo "---- flutter --version ----"
-"$PINNED_FLUTTER_BIN" --version
-echo "---- flutter --version --machine ----"
-MACHINE_JSON="$("$PINNED_FLUTTER_BIN" --version --machine)"
-echo "$MACHINE_JSON"
-echo "---- dart --version ----"
-"$PINNED_FLUTTER_BIN" dart --version || true
+_json_str_field() {
+  local key="$1"
+  local json="$2"
+  printf '%s' "$json" | sed -n "s/.*\"${key}\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p" | head -n 1
+}
 
-python3 - "$MACHINE_JSON" "$PINNED_FLUTTER_VERSION" "$PINNED_ENGINE_REVISION" <<'PY'
-import json, sys
-raw, expect_v, expect_e = sys.argv[1], sys.argv[2], sys.argv[3]
-data = json.loads(raw)
-ver = str(data.get("flutterVersion") or data.get("frameworkVersion") or "")
-eng = str(data.get("engineRevision") or "")
-print("PARSED_FLUTTER:", ver)
-print("PARSED_ENGINE:", eng)
-ok_v = ver == expect_v
-ok_e = eng == expect_e or (len(eng) == 10 and expect_e.startswith(eng))
-if not ok_v or not ok_e:
-    print("ERROR: WRONG_FLUTTER_TOOLCHAIN", file=sys.stderr)
-    print("EXPECTED_FLUTTER:", expect_v, file=sys.stderr)
-    print("ACTUAL_FLUTTER:", ver, file=sys.stderr)
-    print("EXPECTED_ENGINE:", expect_e, file=sys.stderr)
-    print("ACTUAL_ENGINE:", eng, file=sys.stderr)
-    sys.exit(1)
-print("TOOLCHAIN_GATE: PASS")
-PY
+_log "FLUTTER_ROOT(after): $FLUTTER_ROOT"
+_log "PINNED_FLUTTER_BIN: $PINNED_FLUTTER_BIN"
+_log "---- flutter --version ----"
+"$PINNED_FLUTTER_BIN" --version >&2
+_log "---- flutter --version --machine ----"
+MACHINE_JSON="$("$PINNED_FLUTTER_BIN" --version --machine 2>/dev/null)"
+_log "$MACHINE_JSON"
+_log "---- dart --version ----"
+"$PINNED_FLUTTER_BIN" dart --version >&2 || true
 
-echo "==> Cleaning stale build/web"
+ACTUAL_FLUTTER="$(_json_str_field flutterVersion "$MACHINE_JSON")"
+[[ -n "$ACTUAL_FLUTTER" ]] || ACTUAL_FLUTTER="$(_json_str_field frameworkVersion "$MACHINE_JSON")"
+ACTUAL_ENGINE="$(_json_str_field engineRevision "$MACHINE_JSON")"
+ACTUAL_DART="$(_json_str_field dartSdkVersion "$MACHINE_JSON")"
+ACTUAL_FRAMEWORK="$(_json_str_field frameworkRevision "$MACHINE_JSON")"
+
+_log "PARSED_FLUTTER: $ACTUAL_FLUTTER"
+_log "PARSED_ENGINE: $ACTUAL_ENGINE"
+
+if [[ "$ACTUAL_FLUTTER" != "$PINNED_FLUTTER_VERSION" ]]; then
+  _log "ERROR: WRONG_FLUTTER_TOOLCHAIN"
+  _log "EXPECTED_FLUTTER: $PINNED_FLUTTER_VERSION"
+  _log "ACTUAL_FLUTTER: $ACTUAL_FLUTTER"
+  exit 1
+fi
+if [[ "$ACTUAL_ENGINE" != "$PINNED_ENGINE_REVISION" ]]; then
+  if ! [[ ${#ACTUAL_ENGINE} -eq 10 && "$PINNED_ENGINE_REVISION" == "$ACTUAL_ENGINE"* ]]; then
+    _log "ERROR: WRONG_FLUTTER_TOOLCHAIN"
+    _log "EXPECTED_ENGINE: $PINNED_ENGINE_REVISION"
+    _log "ACTUAL_ENGINE: $ACTUAL_ENGINE"
+    exit 1
+  fi
+fi
+_log "TOOLCHAIN_GATE=PASS"
+
+_log "==> Cleaning stale build/web"
 rm -rf build/web
-"$PINNED_FLUTTER_BIN" clean >/dev/null || true
+"$PINNED_FLUTTER_BIN" clean >/dev/null 2>&1 || true
 
-echo "==> flutter pub get (pinned)"
+_log "==> flutter pub get (pinned)"
 "$PINNED_FLUTTER_BIN" pub get
 
-echo "==> flutter build web (pinned) base-href=${BASE_HREF}"
+_log "==> flutter build web (pinned) base-href=${BASE_HREF}"
 "$PINNED_FLUTTER_BIN" build web --release \
   --base-href="${BASE_HREF}" \
   --no-web-resources-cdn \
   --no-wasm-dry-run
 
-# Host helpers
 cp -f build/web/index.html build/web/404.html
 if [[ -f web/_redirects ]]; then
   cp -f web/_redirects build/web/_redirects
 fi
 
-# version.json from committed web/version.json (canonical app version)
 if [[ -f web/version.json ]]; then
   cp -f web/version.json build/web/version.json
 else
@@ -91,75 +99,71 @@ else
     > build/web/version.json
 fi
 
-# Real provenance from the binary that compiled this artifact (not aspirational pin alone).
-python3 - "$MACHINE_JSON" "$BASE_HREF" <<'PY'
-import json, subprocess, pathlib, sys, datetime
-machine = json.loads(sys.argv[1])
-base_href = sys.argv[2]
-root = pathlib.Path('.')
-ver = json.loads((root / 'build' / 'web' / 'version.json').read_text())
-pin = json.loads((root / 'tooling' / 'FLUTTER_PIN.json').read_text())
-try:
-    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
-except Exception:
-    commit = 'unknown'
-out = {
-    'app_version': f"{ver['version']}+{ver['build_number']}",
-    'build_number': ver['build_number'],
-    'git_commit': commit,
-    'flutter_version': machine.get('flutterVersion') or machine.get('frameworkVersion'),
-    'dart_version': machine.get('dartSdkVersion') or pin.get('dart'),
-    'framework_revision': machine.get('frameworkRevision') or pin.get('framework_revision'),
-    'engine_revision': machine.get('engineRevision'),
-    'base_href': base_href,
-    'build_command_id': 'scripts/build_admin_web.sh',
-    'build_flags': [
-        '--release',
-        f'--base-href={base_href}',
-        '--no-web-resources-cdn',
-        '--no-wasm-dry-run',
-    ],
-    'generated_at': datetime.datetime.utcnow().replace(microsecond=0).isoformat() + 'Z',
-}
-# Hard consistency with pin
-if out['flutter_version'] != pin['flutter']:
-    raise SystemExit(f"provenance flutter mismatch: {out['flutter_version']} != {pin['flutter']}")
-eng = out['engine_revision'] or ''
-if eng != pin['engine_revision'] and not pin['engine_revision'].startswith(eng[:10]):
-    raise SystemExit(f"provenance engine mismatch: {eng} != {pin['engine_revision']}")
-path = root / 'build' / 'web' / 'build_provenance.json'
-path.write_text(json.dumps(out, indent=2) + '\n', encoding='utf-8')
-print('wrote', path)
-print(json.dumps(out, indent=2))
-PY
+APP_VERSION="$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' build/web/version.json | head -1)"
+BUILD_NUMBER="$(sed -n 's/.*"build_number"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' build/web/version.json | head -1)"
+GIT_COMMIT="$(git rev-parse HEAD 2>/dev/null || echo unknown)"
+GENERATED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+ENGINE_OUT="$ACTUAL_ENGINE"
+if [[ ${#ENGINE_OUT} -eq 10 ]]; then
+  ENGINE_OUT="$PINNED_ENGINE_REVISION"
+fi
+DART_OUT="${ACTUAL_DART:-$PINNED_DART_VERSION}"
+FRAMEWORK_OUT="${ACTUAL_FRAMEWORK:-$PINNED_FRAMEWORK_REVISION}"
 
-# Prove provenance is a real file in the publish directory (SPA must not invent it).
+cat > build/web/build_provenance.json <<EOF
+{
+  "app_version": "${APP_VERSION}+${BUILD_NUMBER}",
+  "build_number": "${BUILD_NUMBER}",
+  "git_commit": "${GIT_COMMIT}",
+  "flutter_version": "${ACTUAL_FLUTTER}",
+  "dart_version": "${DART_OUT}",
+  "framework_revision": "${FRAMEWORK_OUT}",
+  "engine_revision": "${ENGINE_OUT}",
+  "base_href": "${BASE_HREF}",
+  "build_command_id": "scripts/build_admin_web.sh",
+  "build_flags": [
+    "--release",
+    "--base-href=${BASE_HREF}",
+    "--no-web-resources-cdn",
+    "--no-wasm-dry-run"
+  ],
+  "generated_at": "${GENERATED_AT}"
+}
+EOF
+
 test -f build/web/build_provenance.json
-python3 -c "import json; json.load(open('build/web/build_provenance.json')); print('provenance JSON: OK')"
+head -c 1 build/web/build_provenance.json | grep -q '{'
+grep -q "\"engine_revision\": \"${PINNED_ENGINE_REVISION}\"" build/web/build_provenance.json \
+  || grep -q "\"engine_revision\": \"${ACTUAL_ENGINE}\"" build/web/build_provenance.json
 test -f build/web/main.dart.js
 test -f build/web/flutter_bootstrap.js
 test -f build/web/version.json
+_log "provenance JSON: OK"
 
-echo "==> Artifact SHA256"
-python3 <<'PY'
-import hashlib, pathlib
-root = pathlib.Path('build/web')
-names = [
-  'main.dart.js', 'flutter_bootstrap.js', 'flutter_service_worker.js',
-  'index.html', 'version.json', 'build_provenance.json',
-  'assets/AssetManifest.bin', 'assets/AssetManifest.bin.json',
-]
-report = {}
-for n in names:
-    p = root / n
-    if not p.exists():
-        report[n] = None
-        continue
-    b = p.read_bytes()
-    report[n] = {'sha256': hashlib.sha256(b).hexdigest(), 'size': len(b)}
-path = root / 'artifact_hashes.json'
-path.write_text(__import__('json').dumps(report, indent=2) + '\n')
-print(path.read_text())
-PY
+_log "==> Artifact SHA256"
+: > build/web/artifact_hashes.json
+{
+  printf '{\n'
+  first=1
+  for n in \
+    main.dart.js flutter_bootstrap.js flutter_service_worker.js \
+    index.html version.json build_provenance.json \
+    assets/AssetManifest.bin assets/AssetManifest.bin.json
+  do
+    p="build/web/$n"
+    if [[ ! -f "$p" ]]; then
+      continue
+    fi
+    if command -v shasum >/dev/null 2>&1; then
+      h="$(shasum -a 256 "$p" | awk '{print $1}')"
+    else
+      h="$(sha256sum "$p" | awk '{print $1}')"
+    fi
+    sz="$(wc -c < "$p" | tr -d ' ')"
+    if [[ "$first" -eq 1 ]]; then first=0; else printf ',\n'; fi
+    printf '  "%s": {"sha256": "%s", "size": %s}' "$n" "$h" "$sz"
+  done
+  printf '\n}\n'
+} | tee build/web/artifact_hashes.json >&2
 
-echo "==> build_admin_web.sh DONE (base-href=${BASE_HREF})"
+_log "==> build_admin_web.sh DONE (base-href=${BASE_HREF})"
