@@ -26,8 +26,9 @@ flutter build web --release --base-href=/ --no-web-resources-cdn --no-wasm-dry-r
 | Setting | Value |
 |---------|--------|
 | Root Directory | `admin/Admi` |
-| Build Command | `bash scripts/render_build.sh` |
+| Build Command | `bash scripts/render_build.sh` (**required** — must use absolute pinned Flutter; do not substitute bare `flutter build web`) |
 | Publish Directory | `build/web` |
+| Clear build cache | **Yes** if a prior deploy still shows engine `a804b261…` despite this script |
 
 ## SPA routing (critical)
 

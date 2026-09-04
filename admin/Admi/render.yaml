@@ -1,7 +1,9 @@
 # Render Blueprint — Admin static site (SPA).
 # Existing service: sync Redirects/Rewrites + Headers in Dashboard OR recreate from this file.
 # Critical: /* -> /index.html (Rewrite) or deep links return 404.
-# Toolchain: scripts/render_build.sh pins Flutter via tooling/FLUTTER_PIN.json (no floating stable).
+# Toolchain: scripts/render_build.sh → build_admin_web.sh with ABSOLUTE pinned Flutter 3.44.8.
+# Dashboard Build Command MUST be: bash scripts/render_build.sh
+# If Manual Deploy still emits engine a804b261…, Clear build cache & deploy (wrong SDK may be cached).
 services:
   - type: web
     name: touri-ban-admin
