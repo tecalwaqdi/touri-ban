@@ -9,6 +9,7 @@ import '/components/dashboard_stats_section.dart';
 import '/components/profile_photo_image.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/home22_dashboard/dashboard_presentation.dart';
 import '/index.dart';
 import '/l10n/nav_translations.dart';
 import 'package:flutter/material.dart';
@@ -70,8 +71,9 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
     final l10n = FFLocalizations.of(context);
     final theme = FlutterFlowTheme.of(context);
     final displayName = currentUserDisplayName.trim();
-    final name =
-        displayName.isNotEmpty ? displayName : l10n.getText('hrrt489c');
+    final name = displayName.isNotEmpty
+        ? displayName
+        : l10n.getText('hrrt489c');
     final photo = currentUserPhoto;
 
     final role = AdminRoleService.currentRole;
@@ -80,8 +82,8 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
         : uiTr(context, 'إحصائيات المنصة');
     final statsSubtitle = role == AdminRole.countryAgent
         ? (AdminRoleService.scopedCountryName.isNotEmpty
-            ? '${uiTr(context, 'أرقام')} ${AdminRoleService.scopedCountryName} ${uiTr(context, 'فقط')}'
-            : uiTr(context, 'أرقام دولتك فقط'))
+              ? '${uiTr(context, 'أرقام')} ${AdminRoleService.scopedCountryName} ${uiTr(context, 'فقط')}'
+              : uiTr(context, 'أرقام دولتك فقط'))
         : uiTr(context, 'أرقام متزامنة مع صفحات الإدارة');
 
     return GestureDetector(
@@ -111,13 +113,12 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
                   greeting: _greeting(),
                   name: name,
                   photoUrl: photo,
-                  onRefresh: _onRefresh,
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 14),
                 const AdminOperationalAlerts(),
-                const SizedBox(height: 18),
+                const SizedBox(height: 14),
                 _DashboardQuickActionsGrid(onNavigate: _navigate),
-                const SizedBox(height: 22),
+                const SizedBox(height: 16),
                 AdminPageHeader(
                   title: statsTitle,
                   subtitle: statsSubtitle,
@@ -128,9 +129,9 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
                     icon: Icon(Icons.refresh_rounded, color: theme.primary),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 DashboardStatsSection(key: _statsKey),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -145,13 +146,11 @@ class _DashboardHeroBanner extends StatelessWidget {
     required this.greeting,
     required this.name,
     required this.photoUrl,
-    required this.onRefresh,
   });
 
   final String greeting;
   final String name;
   final String photoUrl;
-  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -165,149 +164,74 @@ class _DashboardHeroBanner extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: AlignmentDirectional.topStart,
-          end: AlignmentDirectional.bottomEnd,
-          colors: [AdminUi.brandTeal, Color(0xFF185E5D), Color(0xFF123F3E)],
-        ),
-        borderRadius: BorderRadius.circular(AdminUi.radiusLg),
+        color: AdminUi.brandTeal,
+        borderRadius: BorderRadius.circular(AdminUi.radiusMd),
         boxShadow: [
           BoxShadow(
-            color: AdminUi.brandTeal.withValues(alpha: 0.28),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
+            color: AdminUi.brandTeal.withValues(alpha: 0.16),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            left: -30,
-            top: -20,
-            child: Icon(
-              Icons.landscape_rounded,
-              size: 140,
-              color: Colors.white.withValues(alpha: 0.06),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
+        child: Row(
+          children: [
+            ProfilePhotoImage(
+              photoUrl: photoUrl,
+              size: 40,
+              borderRadius: BorderRadius.circular(20),
+              loadingColor: Colors.white,
             ),
-          ),
-          Positioned(
-            right: -20,
-            bottom: -30,
-            child: Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.05),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 18, 10, 18),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.45),
-                      width: 2,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$greeting، $name',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.titleSmall.override(
+                      fontFamily: theme.titleSmallFamily,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      useGoogleFonts: !theme.titleSmallIsCustom,
                     ),
                   ),
-                  child: ProfilePhotoImage(
-                    photoUrl: photoUrl,
-                    size: 54,
-                    borderRadius: BorderRadius.circular(27),
-                    loadingColor: Colors.white,
+                  const SizedBox(height: 2),
+                  Text(
+                    '${uiTr(context, 'لوحة تحكم أرى وطن')} · $dateLabel',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.labelSmall.override(
+                      fontFamily: theme.labelSmallFamily,
+                      color: Colors.white.withValues(alpha: 0.88),
+                      useGoogleFonts: !theme.labelSmallIsCustom,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '$greeting، $name',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.titleMedium.override(
-                          fontFamily: theme.titleMediumFamily,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                          useGoogleFonts: !theme.titleMediumIsCustom,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        uiTr(context, 'لوحة تحكم أرى وطن'),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.bodySmall.override(
-                          fontFamily: theme.bodySmallFamily,
-                          color: Colors.white.withValues(alpha: 0.88),
-                          useGoogleFonts: !theme.bodySmallIsCustom,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Align(
-                        alignment: AlignmentDirectional.centerStart,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.14),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.calendar_month_rounded,
-                                size: 14,
-                                color: Colors.white.withValues(alpha: 0.9),
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                dateLabel,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.labelSmall.override(
-                                  fontFamily: theme.labelSmallFamily,
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  useGoogleFonts: !theme.labelSmallIsCustom,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  tooltip: uiTr(context, 'الإشعارات'),
-                  onPressed: () =>
-                      context.pushNamed(AdminNotificationsWidget.routeName),
-                  icon: Icon(
-                    Icons.notifications_outlined,
-                    color: Colors.white.withValues(alpha: 0.92),
-                  ),
-                ),
-                IconButton(
-                  tooltip: uiTr(context, 'تحديث البيانات'),
-                  onPressed: onRefresh,
-                  icon: Icon(
-                    Icons.sync_rounded,
-                    color: Colors.white.withValues(alpha: 0.92),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+            IconButton(
+              tooltip: uiTr(context, 'الإشعارات'),
+              onPressed: () {
+                if (!AdminRoleService.canAccessRoute(
+                  AdminNotificationsWidget.routeName,
+                )) {
+                  return;
+                }
+                context.pushNamed(AdminNotificationsWidget.routeName);
+              },
+              icon: const Icon(
+                Icons.notifications_outlined,
+                color: Colors.white,
+                size: 22,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -323,61 +247,49 @@ class _DashboardQuickActionsGrid extends StatelessWidget {
     final l10n = FFLocalizations.of(context);
     final theme = FlutterFlowTheme.of(context);
 
-    final actions = <({
-      String route,
-      IconData icon,
-      String label,
-      List<Color> colors,
-    })>[
-      (
-        route: AdminaddMkanWidget.routeName,
+    final catalog = <String, ({IconData icon, String label})>{
+      AdminaddMkanWidget.routeName: (
         icon: Icons.add_location_alt_rounded,
         label: appTr(context, 'dash_add_landmark'),
-        colors: const [Color(0xFF1F7372), Color(0xFF2A9D8A)],
       ),
-      (
-        route: AdminAddAgentWidget.routeName,
+      AdminAddAgentWidget.routeName: (
         icon: Icons.person_add_alt_1_rounded,
         label: appTr(context, 'dash_add_agent'),
-        colors: const [Color(0xFF39D2C0), Color(0xFF1F9A8A)],
       ),
-      (
-        route: AdminALLhgZWidget.routeName,
+      AdminALLhgZWidget.routeName: (
         icon: Icons.event_note_rounded,
         label: l10n.getText('kw5c519x'),
-        colors: const [Color(0xFF5C6BC0), Color(0xFF3F51B5)],
       ),
-      (
-        route: AdminFinanceHubWidget.routeName,
+      AdminFinanceHubWidget.routeName: (
         icon: Icons.account_balance_rounded,
         label: navLabel(context, AdminFinanceHubWidget.routeName),
-        colors: const [Color(0xFF1F7372), Color(0xFF39D2C0)],
       ),
-      (
-        route: AdminAgentFinanceWidget.routeName,
+      AdminAgentFinanceWidget.routeName: (
         icon: Icons.handshake_outlined,
         label: navLabel(context, AdminAgentFinanceWidget.routeName),
-        colors: const [Color(0xFF1F7372), Color(0xFF2A9D8A)],
       ),
-      (
-        route: AdminProfitsWidget.routeName,
+      AdminProfitsWidget.routeName: (
         icon: Icons.account_balance_wallet_rounded,
         label: l10n.getText('nn2n9yup'),
-        colors: const [Color(0xFF2A9D8A), Color(0xFF1F7372)],
       ),
-      (
-        route: AdminTourGuidesWidget.routeName,
+      AdminTourGuidesWidget.routeName: (
         icon: Icons.tour_rounded,
         label: navLabel(context, AdminTourGuidesWidget.routeName),
-        colors: const [Color(0xFF5C6BC0), Color(0xFF3949AB)],
       ),
-      (
-        route: AdminSuportWidget.routeName,
+      AdminSuportWidget.routeName: (
         icon: Icons.support_agent_rounded,
         label: l10n.getText('8d66hs1w'),
-        colors: const [Color(0xFFFF8A65), Color(0xFFE64A19)],
       ),
-    ].where((a) => AdminRoleService.canAccessRoute(a.route)).toList();
+    };
+
+    final routes = DashboardPresentation.filterQuickActionRoutes(
+      candidates: catalog.keys,
+      canAccess: AdminRoleService.canAccessRoute,
+    );
+
+    if (routes.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -393,31 +305,29 @@ class _DashboardQuickActionsGrid extends StatelessWidget {
             useGoogleFonts: !theme.titleSmallIsCustom,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         LayoutBuilder(
           builder: (context, constraints) {
             final isWide = constraints.maxWidth >= 600;
-            final columns = isWide ? 3 : 2;
-            final gap = 12.0;
+            final columns = isWide ? 4 : 2;
+            final gap = 8.0;
             final itemWidth =
                 (constraints.maxWidth - gap * (columns - 1)) / columns;
 
             return Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: actions
-                  .map(
-                    (action) => SizedBox(
-                      width: itemWidth,
-                      child: _QuickActionTile(
-                        icon: action.icon,
-                        label: action.label,
-                        colors: action.colors,
-                        onTap: () => onNavigate(action.route),
-                      ),
+              spacing: gap,
+              runSpacing: gap,
+              children: [
+                for (final route in routes)
+                  SizedBox(
+                    width: itemWidth,
+                    child: _QuickActionTile(
+                      icon: catalog[route]!.icon,
+                      label: catalog[route]!.label,
+                      onTap: () => onNavigate(route),
                     ),
-                  )
-                  .toList(),
+                  ),
+              ],
             );
           },
         ),
@@ -426,87 +336,52 @@ class _DashboardQuickActionsGrid extends StatelessWidget {
   }
 }
 
-class _QuickActionTile extends StatefulWidget {
+class _QuickActionTile extends StatelessWidget {
   const _QuickActionTile({
     required this.icon,
     required this.label,
-    required this.colors,
     required this.onTap,
   });
 
   final IconData icon;
   final String label;
-  final List<Color> colors;
   final VoidCallback onTap;
 
   @override
-  State<_QuickActionTile> createState() => _QuickActionTileState();
-}
-
-class _QuickActionTileState extends State<_QuickActionTile> {
-  bool _pressed = false;
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedScale(
-      scale: _pressed ? 0.97 : 1,
-      duration: const Duration(milliseconds: 100),
-      child: Material(
-        color: Colors.transparent,
+    final theme = FlutterFlowTheme.of(context);
+    return Material(
+      color: theme.secondaryBackground,
+      borderRadius: BorderRadius.circular(AdminUi.radiusSm),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(AdminUi.radiusSm),
-        child: InkWell(
-          onTap: widget.onTap,
-          onHighlightChanged: (v) => setState(() => _pressed = v),
-          borderRadius: BorderRadius.circular(AdminUi.radiusSm),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 78),
-            child: Ink(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AdminUi.radiusSm),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: widget.colors,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: widget.colors.first.withValues(alpha: 0.22),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.18),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(widget.icon, color: Colors.white, size: 20),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        widget.label,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13,
-                          fontFamily: 'cairo',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 52),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AdminUi.radiusSm),
+            border: Border.all(
+              color: AdminUi.brandTeal.withValues(alpha: 0.18),
             ),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: AdminUi.brandTeal, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.labelMedium.override(
+                    fontFamily: theme.labelMediumFamily,
+                    fontWeight: FontWeight.w600,
+                    useGoogleFonts: !theme.labelMediumIsCustom,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

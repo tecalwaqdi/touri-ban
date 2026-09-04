@@ -94,7 +94,7 @@ class _AdminOperationalAlertsState extends State<AdminOperationalAlerts> {
   }
 
   List<({String label, int count, String route, _AlertSeverity severity})>
-      _buildAlerts(BuildContext context) {
+  _buildAlerts(BuildContext context) {
     final c = _counts ?? const _AlertCounts();
     final out =
         <({String label, int count, String route, _AlertSeverity severity})>[];
@@ -163,11 +163,29 @@ class _AdminOperationalAlertsState extends State<AdminOperationalAlerts> {
 
     if (_loading) {
       return AdminContentCard(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
-        child: SizedBox(
-          height: 20,
-          width: 20,
-          child: CircularProgressIndicator(strokeWidth: 2),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+        child: Row(
+          children: [
+            SizedBox(
+              height: 16,
+              width: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AdminUi.brandTeal,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                uiTr(context, 'جاري تحميل التنبيهات…'),
+                style: theme.labelMedium.override(
+                  fontFamily: theme.labelMediumFamily,
+                  color: theme.secondaryText,
+                  useGoogleFonts: !theme.labelMediumIsCustom,
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
@@ -188,8 +206,11 @@ class _AdminOperationalAlertsState extends State<AdminOperationalAlerts> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
           children: [
-            Icon(Icons.check_circle_outline,
-                color: theme.secondaryText, size: 20),
+            Icon(
+              Icons.check_circle_outline,
+              color: theme.secondaryText,
+              size: 20,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -237,8 +258,10 @@ class _AdminOperationalAlertsState extends State<AdminOperationalAlerts> {
                     ),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color:
-                            _color(a.severity, theme).withValues(alpha: 0.35),
+                        color: _color(
+                          a.severity,
+                          theme,
+                        ).withValues(alpha: 0.35),
                       ),
                       borderRadius: BorderRadius.circular(AdminUi.radiusSm),
                     ),
