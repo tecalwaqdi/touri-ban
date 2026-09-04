@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:admin_arawatan/core/finance/finance_agent_attribution.dart';
-import 'package:admin_arawatan/core/finance/finance_company_snapshot.dart';
 import 'package:admin_arawatan/core/finance/finance_exception_classifier.dart';
 import 'package:admin_arawatan/core/finance/financial_accounting_engine.dart';
 import 'package:admin_arawatan/core/finance/financial_state_labels.dart';
@@ -79,8 +78,7 @@ void main() {
       final hits = FinanceExceptionClassifier.classify(line);
       expect(
         hits.any(
-          (h) =>
-              h.code == FinanceExceptionCode.cancelledWithStalePendingCash,
+          (h) => h.code == FinanceExceptionCode.cancelledWithStalePendingCash,
         ),
         isTrue,
       );

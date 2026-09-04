@@ -164,9 +164,7 @@ class _AdminCustomersFilterBarState extends State<AdminCustomersFilterBar> {
                 context,
                 tooltip: uiTr(context, 'فلاتر'),
                 onPressed: () => setState(() => _advancedOpen = !_advancedOpen),
-                icon: _advancedOpen
-                    ? Icons.tune_rounded
-                    : Icons.tune_outlined,
+                icon: _advancedOpen ? Icons.tune_rounded : Icons.tune_outlined,
                 badge: _activeCount > 0 ? '$_activeCount' : null,
               ),
               _pageSizeChip(theme),
@@ -424,7 +422,6 @@ class _AdminCustomersFilterBarState extends State<AdminCustomersFilterBar> {
     required IconData icon,
     String? badge,
   }) {
-    final theme = FlutterFlowTheme.of(context);
     return IconButton(
       tooltip: tooltip,
       visualDensity: VisualDensity.compact,

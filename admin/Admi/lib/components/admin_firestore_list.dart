@@ -15,6 +15,23 @@ import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
+/// Reload gate for [AdminFirestoreList.didUpdateWidget].
+///
+/// Intentionally ignores [queryBuilder]/[countQueryBuilder] identity —
+/// parents recreate those lambdas on every setState.
+bool adminFirestoreListShouldReset({
+  required Object? oldQuery,
+  required Object? newQuery,
+  required int oldPageSize,
+  required int newPageSize,
+  required String? oldReloadKey,
+  required String? newReloadKey,
+}) {
+  return oldQuery != newQuery ||
+      oldPageSize != newPageSize ||
+      oldReloadKey != newReloadKey;
+}
+
 /// Fast paginated Firestore list: cache-first load, limited live sync on first page.
 class AdminFirestoreList<T> extends StatefulWidget {
   const AdminFirestoreList({
@@ -49,8 +66,7 @@ class AdminFirestoreList<T> extends StatefulWidget {
     BuildContext context,
     List<T> items,
     AdminFirestoreListMeta<T> state,
-  )
-  builder;
+  ) builder;
   final Widget? empty;
   final Widget? loading;
 
@@ -224,9 +240,14 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     // setState — never compare them by identity (that caused visible list
     // flicker: loaded → skeleton → loaded within <1s).
     // Reload only when collection, page size, or explicit filter reloadKey changes.
-    if (oldWidget.query != widget.query ||
-        oldWidget.pageSize != widget.pageSize ||
-        oldWidget.reloadKey != widget.reloadKey) {
+    if (adminFirestoreListShouldReset(
+      oldQuery: oldWidget.query,
+      newQuery: widget.query,
+      oldPageSize: oldWidget.pageSize,
+      newPageSize: widget.pageSize,
+      oldReloadKey: oldWidget.reloadKey,
+      newReloadKey: widget.reloadKey,
+    )) {
       _resetAndLoad();
     }
   }
@@ -488,9 +509,8 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     setState(() => _loadingMore = true);
 
     try {
-      final query = _baseQuery()
-          .startAfterDocument(_lastDoc!)
-          .limit(widget.pageSize);
+      final query =
+          _baseQuery().startAfterDocument(_lastDoc!).limit(widget.pageSize);
 
       QuerySnapshot snap;
       final cachedMore = await _getCacheBounded(query);
@@ -537,17 +557,17 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
   }
 
   AdminFirestoreListMeta<T> _meta() => AdminFirestoreListMeta<T>(
-    isLoading: _loading,
-    isLoadingMore: _loadingMore,
-    hasMore: _hasMore,
-    fromCache: _fromCache,
-    hasError: _hasError,
-    errorMessage: _errorMessage,
-    refresh: refresh,
-    loadMore: loadMore,
-    totalFetched: _items.length,
-    totalAvailable: _totalAvailable,
-  );
+        isLoading: _loading,
+        isLoadingMore: _loadingMore,
+        hasMore: _hasMore,
+        fromCache: _fromCache,
+        hasError: _hasError,
+        errorMessage: _errorMessage,
+        refresh: refresh,
+        loadMore: loadMore,
+        totalFetched: _items.length,
+        totalAvailable: _totalAvailable,
+      );
 
   String _localizedError(BuildContext context, String? key) {
     if (key == null) {

@@ -70,6 +70,10 @@ class TouryMkanPaginationController extends ChangeNotifier {
   bool _disposed = false;
   int _bindGeneration = 0;
 
+  /// Test/QA: how many soft network refreshes were scheduled via bindVillage.
+  @visibleForTesting
+  int softRefreshInvocations = 0;
+
   String? get villagePath => _villageRef?.path;
 
   void _notifySafe() {
@@ -95,6 +99,7 @@ class TouryMkanPaginationController extends ChangeNotifier {
     if (_villageRef?.path == villageRef.path && items.isNotEmpty) {
       isLoading = false;
       _notifySafe();
+      softRefreshInvocations++;
       unawaited(
         _refreshInitialFromNetwork(
           villageRef,
@@ -124,6 +129,7 @@ class TouryMkanPaginationController extends ChangeNotifier {
 
       // Always background-refresh after painting cache so new Admin writes
       // land without requiring reinstall / clearing app data.
+      softRefreshInvocations++;
       unawaited(
         _refreshInitialFromNetwork(
           villageRef,
@@ -267,13 +273,10 @@ class TouryMkanPaginationController extends ChangeNotifier {
     bool preferServer = true,
     bool replaceOnlyIfChanged = false,
   }) async {
-    final snap = await _pageQuery(village)
-        .limit(pageSize)
-        .get(
+    final snap = await _pageQuery(village).limit(pageSize).get(
           GetOptions(
-            source: preferServer
-                ? Source.serverAndCache
-                : Source.serverAndCache,
+            source:
+                preferServer ? Source.serverAndCache : Source.serverAndCache,
           ),
         );
     if (_disposed || generation != _bindGeneration) return;

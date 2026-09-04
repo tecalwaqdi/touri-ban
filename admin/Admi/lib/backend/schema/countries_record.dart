@@ -95,6 +95,13 @@ class CountriesRecord extends FirestoreRecord {
   Map<String, String>? _namesI18n;
   Map<String, String> get namesI18n => _namesI18n ?? const {};
 
+  // "driver_requirements" field — country document governance map.
+  Map<String, dynamic>? _driverRequirements;
+  Map<String, dynamic> get driverRequirements =>
+      _driverRequirements ?? const {};
+  bool hasDriverRequirements() =>
+      _driverRequirements != null && _driverRequirements!.isNotEmpty;
+
   void _initializeFields() {
     _naim = snapshotData['naim'] as String?;
     _osf = snapshotData['osf'] as String?;
@@ -127,6 +134,18 @@ class CountriesRecord extends FirestoreRecord {
     _boundsSw = snapshotData['bounds_sw'] as LatLng?;
     _boundsNe = snapshotData['bounds_ne'] as LatLng?;
     _namesI18n = _parseI18nStringMap(snapshotData['names_i18n']);
+    _driverRequirements = _parseDriverRequirements(
+      snapshotData['driver_requirements'],
+    );
+  }
+
+  static Map<String, dynamic>? _parseDriverRequirements(dynamic raw) {
+    if (raw == null || raw is! Map) return null;
+    final out = <String, dynamic>{};
+    raw.forEach((key, value) {
+      out[key.toString()] = value;
+    });
+    return out.isEmpty ? null : out;
   }
 
   static Map<String, String>? _parseI18nStringMap(dynamic raw) {

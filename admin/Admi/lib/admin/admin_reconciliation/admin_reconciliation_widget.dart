@@ -178,7 +178,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                   context,
                   'عرض للقراءة فقط — لا يتم تعديل الطلبات من هذه الصفحة.',
                 ),
-                style: theme.bodySmall?.copyWith(
+                style: theme.bodySmall.copyWith(
                   color: theme.secondaryText,
                 ),
                 softWrap: true,
@@ -209,11 +209,9 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Material(
                         color: theme.secondaryBackground,
-                        borderRadius:
-                            BorderRadius.circular(AdminUi.radiusMd),
+                        borderRadius: BorderRadius.circular(AdminUi.radiusMd),
                         child: InkWell(
-                          borderRadius:
-                              BorderRadius.circular(AdminUi.radiusMd),
+                          borderRadius: BorderRadius.circular(AdminUi.radiusMd),
                           onTap: code == 'INCOMPLETE_FINANCIAL_RECORD'
                               ? _openIncomplete
                               : () => _openSample(label, sample),
@@ -248,7 +246,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                                       ),
                                       child: Text(
                                         severity,
-                                        style: theme.labelSmall?.copyWith(
+                                        style: theme.labelSmall.copyWith(
                                           color: _tone(severityRaw, theme),
                                           fontWeight: FontWeight.w700,
                                         ),
@@ -263,7 +261,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                                 ),
                                 Text(
                                   _whyItMatters(code),
-                                  style: theme.bodySmall?.copyWith(
+                                  style: theme.bodySmall.copyWith(
                                     color: theme.secondaryText,
                                   ),
                                   softWrap: true,
@@ -276,7 +274,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                                           context,
                                           'يمنع إغلاق الفترة: لا',
                                         ),
-                                  style: theme.labelMedium?.copyWith(
+                                  style: theme.labelMedium.copyWith(
                                     color: blocks
                                         ? theme.error
                                         : AdminUi.brandTeal,
@@ -289,8 +287,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                                     onPressed:
                                         code == 'INCOMPLETE_FINANCIAL_RECORD'
                                             ? _openIncomplete
-                                            : () =>
-                                                _openSample(label, sample),
+                                            : () => _openSample(label, sample),
                                     child: Text(uiTr(context, 'عرض الحالات')),
                                   ),
                                 ),
@@ -314,8 +311,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                       builder: (ctx) {
                         final maxW = MediaQuery.sizeOf(ctx).width - 48;
                         return AlertDialog(
-                          title:
-                              Text(AdminFinanceUiLabels.orphanDetectionAr()),
+                          title: Text(AdminFinanceUiLabels.orphanDetectionAr()),
                           content: ConstrainedBox(
                             constraints: BoxConstraints(
                               maxWidth: maxW.clamp(280.0, 480.0),

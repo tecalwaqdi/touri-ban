@@ -29,15 +29,13 @@ int touryPurgeBannedCartItems([FFAppState? state]) {
   final app = state ?? FFAppState();
   final before = app.cartmkss.length;
   final expected = touryResolveActiveSaudiCity(app);
-  final kept = app.cartmkss
-      .where((e) {
-        if (touryIsBannedLandmarkName(e.naim)) return false;
-        if (expected == null) return true;
-        final loc = e.loceshn;
-        if (loc == null) return true;
-        return touryLatLngInSaudiCity(loc, expected);
-      })
-      .toList(growable: false);
+  final kept = app.cartmkss.where((e) {
+    if (touryIsBannedLandmarkName(e.naim)) return false;
+    if (expected == null) return true;
+    final loc = e.loceshn;
+    if (loc == null) return true;
+    return touryLatLngInSaudiCity(loc, expected);
+  }).toList(growable: false);
   final changed = kept.length != before;
   if (changed) {
     app.update(() {
@@ -91,9 +89,8 @@ SaudiCityDefinition? touryResolveActiveSaudiCity([FFAppState? state]) {
   final fromVillage = SaudiCityRegistry.cityFromVillageDocId(village?.id);
   if (fromVillage != null) return fromVillage;
 
-  final label = app.naimvillatext.trim().isNotEmpty
-      ? app.naimvillatext
-      : app.villtextnow;
+  final label =
+      app.naimvillatext.trim().isNotEmpty ? app.naimvillatext : app.villtextnow;
   final fromLabel = SaudiCityRegistry.cityFromName(label);
   if (fromLabel != null) return fromLabel;
 
@@ -148,8 +145,7 @@ String touryLandmarkCartSubtitle(MkanRecord record, [FFAppState? state]) {
   final fromCoords = record.location != null
       ? SaudiCityRegistry.cityFromCoordinates(record.location!)
       : null;
-  final city =
-      fromCoords?.displayNameAr ??
+  final city = fromCoords?.displayNameAr ??
       SaudiCityRegistry.cityFromVillageDocId(
         record.idVill?.id,
       )?.displayNameAr ??
@@ -176,9 +172,8 @@ List<MkanRecord> touryFilterLandmarksForUi(
       localeKey: userLocaleKey,
     );
     final enName = touryLocalizedText(m.namesI18n, m.naim, localeKey: 'en');
-    final visible = name.isNotEmpty
-        ? name
-        : (enName.isNotEmpty ? enName : m.naim.trim());
+    final visible =
+        name.isNotEmpty ? name : (enName.isNotEmpty ? enName : m.naim.trim());
     if (visible.isEmpty) return false;
     if (touryIsBannedLandmarkName(visible)) return false;
     if (touryIsBannedLandmarkName(m.naim)) return false;

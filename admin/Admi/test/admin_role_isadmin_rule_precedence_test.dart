@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:admin_arawatan/backend/admin_role_service.dart';
-import 'package:admin_arawatan/core/auth/auth_claims.dart';
 
 void main() {
   setUp(() {

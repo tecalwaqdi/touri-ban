@@ -35,9 +35,8 @@ void main() {
 
   test('non-Saudi village keeps Admin landmarks (no Saudi bbox drop)', () {
     final app = FFAppState();
-    final africaVillage = FirebaseFirestore.instance
-        .collection('villages')
-        .doc('city_ng_abuja');
+    final africaVillage =
+        FirebaseFirestore.instance.collection('villages').doc('city_ng_abuja');
     app.villa = africaVillage;
     app.naimvillatext = 'الرياض'; // leftover Saudi label must not filter
 
@@ -54,9 +53,8 @@ void main() {
 
   test('Admin write contract fields survive filter when active+named', () {
     final app = FFAppState();
-    final village = FirebaseFirestore.instance
-        .collection('villages')
-        .doc('city_ng_abuja');
+    final village =
+        FirebaseFirestore.instance.collection('villages').doc('city_ng_abuja');
     app.villa = village;
 
     final landmark = _mkan(
