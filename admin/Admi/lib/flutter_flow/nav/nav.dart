@@ -14,7 +14,6 @@ import '/backend/admin_role_service.dart';
 
 import '/core/admin_splash_screen.dart';
 import '/core/admin_qa_fixtures.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 import '/index.dart';
@@ -129,19 +128,13 @@ String? globalAuthRedirect(AppStateNotifier notifier, GoRouterState state) {
   return homePathForCurrentUser();
 }
 
+/// Auth/session gate loading — same branded chrome as app boot splash.
+/// Avoids white-spinner ↔ teal-splash shell flicker during claims/profile wait.
 class _AuthLoadingScreen extends StatelessWidget {
   const _AuthLoadingScreen();
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(
-          color: FlutterFlowTheme.of(context).primary,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const AdminSplashScreen();
 }
 
 class AppStateNotifier extends ChangeNotifier {
@@ -213,8 +206,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       debugLogDiagnostics: kDebugMode,
       refreshListenable: appStateNotifier,
       navigatorKey: appNavigatorKey,
-      redirect: (context, state) =>
-          globalAuthRedirect(appStateNotifier, state),
+      redirect: (context, state) => globalAuthRedirect(appStateNotifier, state),
       errorBuilder: (context, state) => appStateNotifier.loggedIn
           ? AuthUserStreamWidget(
               builder: (context) {
@@ -241,7 +233,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               : HomePageWidget(),
         ),
         //add_page
-         FFRoute(
+        FFRoute(
           name: AddPlacePage.routeName,
           path: AddPlacePage.routePath,
           requireAuth: true,
@@ -976,9 +968,8 @@ class FFRoute {
                   builder: (context, _) => builder(context, ffParams),
                 )
               : builder(context, ffParams);
-          final child = appStateNotifier.loading
-              ? const AdminSplashScreen()
-              : page;
+          final child =
+              appStateNotifier.loading ? const AdminSplashScreen() : page;
 
           final transitionInfo = state.transitionInfo;
           return transitionInfo.hasTransition
@@ -1064,9 +1055,8 @@ extension GoRouterLocationExtension on GoRouter {
     final config = routerDelegate.currentConfiguration;
     if (config.isEmpty) return null;
     final RouteMatch lastMatch = config.last;
-    final RouteMatchList matchList = lastMatch is ImperativeRouteMatch
-        ? lastMatch.matches
-        : config;
+    final RouteMatchList matchList =
+        lastMatch is ImperativeRouteMatch ? lastMatch.matches : config;
     for (final match in matchList.matches.reversed) {
       final route = match.route;
       if (route is GoRoute) {

@@ -3,6 +3,7 @@ import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_theme_toggle.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_shell_rules.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/l10n/nav_translations.dart';
@@ -115,9 +116,11 @@ class _Menu2WidgetState extends State<Menu2Widget> {
       builder: (context) {
         final role = AdminRoleService.currentRole;
         final countryLabel = AdminRoleService.scopedCountryName;
-        final rolePending = loggedIn &&
-            AdminRoleService.isRoleResolving &&
-            currentUserDocument == null;
+        final rolePending = AdminShellRules.shouldHideNavItems(
+          loggedIn: loggedIn,
+          isRoleResolving: AdminRoleService.isRoleResolving,
+          hasUserDocument: currentUserDocument != null,
+        );
 
         final sections =
             <({String key, List<({String route, IconData icon})> items})>[

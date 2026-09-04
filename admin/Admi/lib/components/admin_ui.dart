@@ -50,14 +50,15 @@ class AdminUi {
     return narrow;
   }
 
+  /// Compact global page gutter (shell density contract).
   static EdgeInsets pagePadding(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
-    final top = MediaQuery.paddingOf(context).top > 0 ? 8.0 : 12.0;
+    final top = MediaQuery.paddingOf(context).top > 0 ? 6.0 : 10.0;
     return EdgeInsets.fromLTRB(
-      w < 600 ? 12 : 20,
+      w < 600 ? 12 : 16,
       top,
-      w < 600 ? 12 : 20,
-      20,
+      w < 600 ? 12 : 16,
+      16,
     );
   }
 

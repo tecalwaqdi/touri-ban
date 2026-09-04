@@ -47,6 +47,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     return AdminLayoutWidget(
+      padContent: false,
       scaffoldKey: scaffoldKey,
       menu2Model: _model.menu2Model,
       updateCallback: () => safeSetState(() {}),
@@ -54,7 +55,8 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
       child: ListView(
         padding: AdminUi.pagePadding(context),
         children: [
-          Text(uiTr(context, 'سجل التسويات المحاسبية'), style: theme.headlineSmall),
+          Text(uiTr(context, 'سجل التسويات المحاسبية'),
+              style: theme.headlineSmall),
           const SizedBox(height: 4),
           Text(
             uiTr(
@@ -116,7 +118,8 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                 }
               }
               if (_status != null) {
-                docs = docs.where((d) => d.data()['status'] == _status).toList();
+                docs =
+                    docs.where((d) => d.data()['status'] == _status).toList();
               }
 
               int n(String status) =>
@@ -181,8 +184,10 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                           continue;
                         }
                         final c = (s['currency'] as String?) ?? '?';
-                        final out = (s['outstandingMinor'] as num?)?.toInt() ?? 0;
-                        final paid = (s['paidConfirmedMinor'] as num?)?.toInt() ?? 0;
+                        final out =
+                            (s['outstandingMinor'] as num?)?.toInt() ?? 0;
+                        final paid =
+                            (s['paidConfirmedMinor'] as num?)?.toInt() ?? 0;
                         collected[c] = (collected[c] ?? 0) + paid;
                         DateTime? lockedAt;
                         final raw = s['lockedAt'];

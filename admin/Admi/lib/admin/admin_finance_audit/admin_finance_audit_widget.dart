@@ -84,7 +84,8 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
         labelText: label,
         isDense: true,
         border: const OutlineInputBorder(),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       );
 
   @override
@@ -92,6 +93,7 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
     final theme = FlutterFlowTheme.of(context);
     final wide = MediaQuery.sizeOf(context).width >= 900;
     return AdminLayoutWidget(
+      padContent: false,
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),

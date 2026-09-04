@@ -54,14 +54,26 @@ class _AdminFinancialPeriodsWidgetState
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: name, decoration: InputDecoration(labelText: uiTr(context, 'الاسم'))),
-            TextField(controller: start, decoration: InputDecoration(labelText: uiTr(context, 'البداية YYYY-MM-DD'))),
-            TextField(controller: end, decoration: InputDecoration(labelText: uiTr(context, 'النهاية YYYY-MM-DD'))),
+            TextField(
+                controller: name,
+                decoration: InputDecoration(labelText: uiTr(context, 'الاسم'))),
+            TextField(
+                controller: start,
+                decoration: InputDecoration(
+                    labelText: uiTr(context, 'البداية YYYY-MM-DD'))),
+            TextField(
+                controller: end,
+                decoration: InputDecoration(
+                    labelText: uiTr(context, 'النهاية YYYY-MM-DD'))),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(uiTr(ctx, 'إلغاء'))),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(uiTr(ctx, 'إنشاء'))),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(uiTr(ctx, 'إلغاء'))),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(uiTr(ctx, 'إنشاء'))),
         ],
       ),
     );
@@ -130,7 +142,9 @@ class _AdminFinancialPeriodsWidgetState
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: reason, decoration: const InputDecoration(labelText: 'Reason')),
+            TextField(
+                controller: reason,
+                decoration: const InputDecoration(labelText: 'Reason')),
             TextField(
               controller: override,
               decoration: const InputDecoration(
@@ -140,8 +154,12 @@ class _AdminFinancialPeriodsWidgetState
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(uiTr(ctx, 'إلغاء'))),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(uiTr(ctx, 'Close'))),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(uiTr(ctx, 'إلغاء'))),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(uiTr(ctx, 'Close'))),
         ],
       ),
     );
@@ -211,10 +229,16 @@ class _AdminFinancialPeriodsWidgetState
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(uiTr(ctx, 'إعادة فتح الفترة')),
-        content: TextField(controller: reason, decoration: InputDecoration(labelText: uiTr(ctx, 'السبب'))),
+        content: TextField(
+            controller: reason,
+            decoration: InputDecoration(labelText: uiTr(ctx, 'السبب'))),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(uiTr(ctx, 'إلغاء'))),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(uiTr(ctx, 'إعادة فتح'))),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(uiTr(ctx, 'إلغاء'))),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(uiTr(ctx, 'إعادة فتح'))),
         ],
       ),
     );
@@ -235,6 +259,7 @@ class _AdminFinancialPeriodsWidgetState
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     return AdminLayoutWidget(
+      padContent: false,
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
@@ -263,15 +288,16 @@ class _AdminFinancialPeriodsWidgetState
           return ListView(
             padding: AdminUi.pagePadding(context),
             children: [
-              Text(uiTr(context, 'الفترات المالية'), style: theme.headlineSmall),
-          Text(
-            uiTr(
-              context,
-              'الفترات المغلقة تمنع إضافة قيود مالية بأثر رجعي. إعادة فتح الفترة متاحة للسوبر أدمن فقط مع تسجيل السبب.',
-            ),
-            softWrap: true,
-            style: theme.bodySmall,
-          ),
+              Text(uiTr(context, 'الفترات المالية'),
+                  style: theme.headlineSmall),
+              Text(
+                uiTr(
+                  context,
+                  'الفترات المغلقة تمنع إضافة قيود مالية بأثر رجعي. إعادة فتح الفترة متاحة للسوبر أدمن فقط مع تسجيل السبب.',
+                ),
+                softWrap: true,
+                style: theme.bodySmall,
+              ),
               if (AdminRoleService.canWriteSettlements)
                 Align(
                   alignment: AlignmentDirectional.centerStart,

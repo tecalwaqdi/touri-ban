@@ -1,5 +1,6 @@
 import '/components/admin_theme_toggle.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_shell_rules.dart';
 import 'menu2_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -59,7 +60,7 @@ class AdminLayoutWidget extends StatelessWidget {
         FFLocalizations.of(context).getText(
           'hrrt489c' /* Admin */,
         );
-    final contentMax = width >= 1600 ? 1520.0 : 1370.0;
+    final contentMax = AdminShellRules.contentMaxWidth(width);
 
     return Scaffold(
       key: scaffoldKey,

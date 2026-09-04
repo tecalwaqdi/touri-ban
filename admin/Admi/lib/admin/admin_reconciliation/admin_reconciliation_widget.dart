@@ -154,6 +154,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     return AdminLayoutWidget(
+      padContent: false,
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
@@ -209,11 +210,9 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Material(
                         color: theme.secondaryBackground,
-                        borderRadius:
-                            BorderRadius.circular(AdminUi.radiusMd),
+                        borderRadius: BorderRadius.circular(AdminUi.radiusMd),
                         child: InkWell(
-                          borderRadius:
-                              BorderRadius.circular(AdminUi.radiusMd),
+                          borderRadius: BorderRadius.circular(AdminUi.radiusMd),
                           onTap: code == 'INCOMPLETE_FINANCIAL_RECORD'
                               ? _openIncomplete
                               : () => _openSample(label, sample),
@@ -289,8 +288,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                                     onPressed:
                                         code == 'INCOMPLETE_FINANCIAL_RECORD'
                                             ? _openIncomplete
-                                            : () =>
-                                                _openSample(label, sample),
+                                            : () => _openSample(label, sample),
                                     child: Text(uiTr(context, 'عرض الحالات')),
                                   ),
                                 ),
@@ -314,8 +312,7 @@ class _AdminReconciliationWidgetState extends State<AdminReconciliationWidget> {
                       builder: (ctx) {
                         final maxW = MediaQuery.sizeOf(ctx).width - 48;
                         return AlertDialog(
-                          title:
-                              Text(AdminFinanceUiLabels.orphanDetectionAr()),
+                          title: Text(AdminFinanceUiLabels.orphanDetectionAr()),
                           content: ConstrainedBox(
                             constraints: BoxConstraints(
                               maxWidth: maxW.clamp(280.0, 480.0),

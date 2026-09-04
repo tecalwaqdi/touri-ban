@@ -105,6 +105,7 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
     final theme = FlutterFlowTheme.of(context);
     if (!AdminRoleService.isSuperAdmin) {
       return AdminLayoutWidget(
+        padContent: false,
         scaffoldKey: scaffoldKey,
         menu2Model: _menu2Model,
         updateCallback: () => safeSetState(() {}),
@@ -120,8 +121,7 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
 
     final flags =
         Map<String, dynamic>.from(_home?['featureFlags'] as Map? ?? {});
-    final policy =
-        Map<String, dynamic>.from(_home?['policy'] as Map? ?? {});
+    final policy = Map<String, dynamic>.from(_home?['policy'] as Map? ?? {});
     final ordersScanned = (_lastMetric?['ordersScanned'] as num?)?.toInt() ?? 0;
     final expensive = ordersScanned > 5000;
     final approverOk = _home?['independentApproverConfigured'] == true;
@@ -151,7 +151,8 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
             style: theme.bodySmall,
           ),
           const SizedBox(height: 12),
-          Text('${uiTr(context, 'إصدار اللوحة')}: $_appVersion', softWrap: true),
+          Text('${uiTr(context, 'إصدار اللوحة')}: $_appVersion',
+              softWrap: true),
           Text(
             '${uiTr(context, 'Firestore')}: ${_status == 'ok' ? uiTr(context, 'متصل') : _status}',
             softWrap: true,
@@ -180,43 +181,43 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
               style: theme.bodyMedium,
             )
           else ...[
-          Text(
-            approverOk
-                ? AdminFinanceUiLabels.pilotConfiguredAr()
-                : AdminFinanceUiLabels.pilotMissingAr(),
-            softWrap: true,
-            style: theme.bodyMedium.override(
-              fontFamily: 'Cairo',
-              color: approverOk ? Colors.green.shade700 : theme.error,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          if (selfApproval && !approverOk)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                AdminFinanceUiLabels.pilotOptionalWhenSelfApprovalAr(),
-                softWrap: true,
-                style: theme.bodyMedium,
+            Text(
+              approverOk
+                  ? AdminFinanceUiLabels.pilotConfiguredAr()
+                  : AdminFinanceUiLabels.pilotMissingAr(),
+              softWrap: true,
+              style: theme.bodyMedium.override(
+                fontFamily: 'Cairo',
+                color: approverOk ? Colors.green.shade700 : theme.error,
+                fontWeight: FontWeight.w600,
               ),
-            )
-          else if (pilotHardBlock)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                AdminFinanceUiLabels.pilotBlockedAr(),
-                softWrap: true,
-                style: theme.bodyMedium.override(
-                  fontFamily: 'Cairo',
-                  color: theme.error,
-                  fontWeight: FontWeight.w800,
+            ),
+            if (selfApproval && !approverOk)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  AdminFinanceUiLabels.pilotOptionalWhenSelfApprovalAr(),
+                  softWrap: true,
+                  style: theme.bodyMedium,
+                ),
+              )
+            else if (pilotHardBlock)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  AdminFinanceUiLabels.pilotBlockedAr(),
+                  softWrap: true,
+                  style: theme.bodyMedium.override(
+                    fontFamily: 'Cairo',
+                    color: theme.error,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
+            Text(
+              '${uiTr(context, 'الاعتماد الذاتي')}: ${selfApproval ? uiTr(context, 'مفعّل') : uiTr(context, 'متوقف')}',
+              softWrap: true,
             ),
-          Text(
-            '${uiTr(context, 'الاعتماد الذاتي')}: ${selfApproval ? uiTr(context, 'مفعّل') : uiTr(context, 'متوقف')}',
-            softWrap: true,
-          ),
           ],
           if (_lastMetric != null) ...[
             const SizedBox(height: 8),

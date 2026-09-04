@@ -129,13 +129,11 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
           scope: exclusiveCountry
               ? AgentAttributionScope.countryExclusive
               : AgentAttributionScope.countryScopeOnly,
-          attributionConfidence:
-              exclusiveCountry && agent.agentTotal > 0
-                  ? AgentAttributionConfidence.provable
-                  : AgentAttributionConfidence.scopeOnly,
+          attributionConfidence: exclusiveCountry && agent.agentTotal > 0
+              ? AgentAttributionConfidence.provable
+              : AgentAttributionConfidence.scopeOnly,
           commissionRatePercent: agent.agentTotal,
-          attributedTrips:
-              t.completedAndCollected + t.completedButNotCollected,
+          attributedTrips: t.completedAndCollected + t.completedButNotCollected,
           completedTrips: t.lifecycleCompleted,
           cancelledTrips: t.lifecycleCancelled + t.lifecycleExpired,
           attributedSales: MoneyAmount(
@@ -181,9 +179,8 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
       // Totals stay 0 — never invent confirmed commission after a load failure.
       return AgentFinanceAccount(
         agentId: agent.reference.id,
-        agentName: agent.displayName.isNotEmpty
-            ? agent.displayName
-            : agent.email,
+        agentName:
+            agent.displayName.isNotEmpty ? agent.displayName : agent.email,
         countryPath: countryRef.path,
         scope: exclusiveCountry
             ? AgentAttributionScope.countryExclusive
@@ -216,6 +213,7 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
     final theme = FlutterFlowTheme.of(context);
     final contract = AgentAttributionContract.canonical;
     return AdminLayoutWidget(
+      padContent: false,
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
@@ -289,9 +287,7 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
                 ),
               for (final a in accounts) ...[
                 AdminContentCard(
-                  title: a.agentName.isNotEmpty
-                      ? a.agentName
-                      : a.agentId,
+                  title: a.agentName.isNotEmpty ? a.agentName : a.agentId,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [

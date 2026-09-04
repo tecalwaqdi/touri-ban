@@ -92,6 +92,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
     final theme = FlutterFlowTheme.of(context);
 
     return AdminLayoutWidget(
+      padContent: false,
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),

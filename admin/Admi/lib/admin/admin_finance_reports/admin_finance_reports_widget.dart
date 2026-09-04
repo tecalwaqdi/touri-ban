@@ -135,6 +135,7 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     return AdminLayoutWidget(
+      padContent: false,
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),

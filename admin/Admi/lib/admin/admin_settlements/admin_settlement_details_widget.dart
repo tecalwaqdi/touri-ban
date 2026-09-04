@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '/backend/admin_role_service.dart';
 import '/components/admin_confirm_dialog.dart';
-import '/components/admin_enterprise_kit.dart' show AdminStatusBadge, AdminBadgeTone;
+import '/components/admin_enterprise_kit.dart'
+    show AdminStatusBadge, AdminBadgeTone;
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_error_messages.dart';
@@ -208,10 +209,22 @@ class _AdminSettlementDetailsWidgetState
                     DropdownButton<String>(
                       value: method,
                       items: [
-                        DropdownMenuItem(value: 'bank_transfer', child: Text(SettlementStateLabels.methodAr('bank_transfer'))),
-                        DropdownMenuItem(value: 'cash', child: Text(SettlementStateLabels.methodAr('cash'))),
-                        DropdownMenuItem(value: 'external_transfer', child: Text(SettlementStateLabels.methodAr('external_transfer'))),
-                        DropdownMenuItem(value: 'other', child: Text(SettlementStateLabels.methodAr('other'))),
+                        DropdownMenuItem(
+                            value: 'bank_transfer',
+                            child: Text(SettlementStateLabels.methodAr(
+                                'bank_transfer'))),
+                        DropdownMenuItem(
+                            value: 'cash',
+                            child:
+                                Text(SettlementStateLabels.methodAr('cash'))),
+                        DropdownMenuItem(
+                            value: 'external_transfer',
+                            child: Text(SettlementStateLabels.methodAr(
+                                'external_transfer'))),
+                        DropdownMenuItem(
+                            value: 'other',
+                            child:
+                                Text(SettlementStateLabels.methodAr('other'))),
                       ],
                       onChanged: (v) {
                         if (v == null) return;
@@ -220,15 +233,18 @@ class _AdminSettlementDetailsWidgetState
                     ),
                     TextField(
                       controller: refCtrl,
-                      decoration: InputDecoration(labelText: uiTr(ctx, 'المرجع')),
+                      decoration:
+                          InputDecoration(labelText: uiTr(ctx, 'المرجع')),
                     ),
                     if (method == 'cash')
                       TextField(
                         controller: receivedCtrl,
-                        decoration: InputDecoration(labelText: uiTr(ctx, 'المستلم')),
+                        decoration:
+                            InputDecoration(labelText: uiTr(ctx, 'المستلم')),
                       ),
                     Text(
-                      uiTr(ctx, 'يحفظ كـ Pending — لا يخفض Outstanding حتى التأكيد'),
+                      uiTr(ctx,
+                          'يحفظ كـ Pending — لا يخفض Outstanding حتى التأكيد'),
                       style: Theme.of(ctx).textTheme.bodySmall,
                     ),
                   ],
@@ -267,7 +283,8 @@ class _AdminSettlementDetailsWidgetState
         method: method,
         idempotencyKey: SettlementLedgerClient.newIdempotencyKey('pay'),
         externalReference: refCtrl.text.trim(),
-        receivedBy: receivedCtrl.text.trim().isEmpty ? null : receivedCtrl.text.trim(),
+        receivedBy:
+            receivedCtrl.text.trim().isEmpty ? null : receivedCtrl.text.trim(),
       );
     } catch (e) {
       _snackError(e);
@@ -276,7 +293,8 @@ class _AdminSettlementDetailsWidgetState
     }
   }
 
-  Future<void> _confirmPayment(Map<String, dynamic> settlement, Map<String, dynamic> pay) async {
+  Future<void> _confirmPayment(
+      Map<String, dynamic> settlement, Map<String, dynamic> pay) async {
     if (!FinanceRuntimeGate.canAttemptFinanceWrites) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -292,7 +310,8 @@ class _AdminSettlementDetailsWidgetState
       return;
     }
     final cur = settlement['currency'] as String? ?? 'SAR';
-    final due = (settlement['absoluteSettlementAmountMinor'] as num?)?.toInt() ?? 0;
+    final due =
+        (settlement['absoluteSettlementAmountMinor'] as num?)?.toInt() ?? 0;
     final paid = (settlement['paidConfirmedMinor'] as num?)?.toInt() ?? 0;
     final thisAmt = (pay['amountMinor'] as num?)?.toInt() ?? 0;
     final remaining = due - paid - thisAmt;
@@ -451,6 +470,7 @@ class _AdminSettlementDetailsWidgetState
         FinanceRuntimeGate.canAttemptFinanceWrites;
     if (id == null || id.isEmpty) {
       return AdminLayoutWidget(
+        padContent: false,
         scaffoldKey: scaffoldKey,
         menu2Model: _model.menu2Model,
         updateCallback: () => safeSetState(() {}),
@@ -613,21 +633,46 @@ class _AdminSettlementDetailsWidgetState
               Text('${d['periodStart']} → ${d['periodEnd']}', softWrap: true),
               const SizedBox(height: 12),
               Text(uiTr(context, 'الإجماليات'), style: theme.titleMedium),
-              Text('${uiTr(context, 'التحصيل النقدي')}: ${_money(d['cashCustomerCollectedMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'استحقاق المندوب النقدي')}: ${_money(d['cashDriverEntitlementMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'ذمة المندوب النقدية')}: ${_money(d['driverCashLiabilityMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'التحصيل الإلكتروني')}: ${_money(d['onlineCustomerCollectedMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'ذمة الشركة الإلكترونية')}: ${_money(d['companyOnlineLiabilityMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'عمولة المنصة')}: ${_money(d['platformFeeMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'الضريبة')}: ${_money(d['recordedVatMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'الخصم')}: ${_money(d['recordedDiscountMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'الصافي')}: ${_money(d['netTripPositionMinor'] as int?, cur)}', softWrap: true),
+              Text(
+                  '${uiTr(context, 'التحصيل النقدي')}: ${_money(d['cashCustomerCollectedMinor'] as int?, cur)}',
+                  softWrap: true),
+              Text(
+                  '${uiTr(context, 'استحقاق المندوب النقدي')}: ${_money(d['cashDriverEntitlementMinor'] as int?, cur)}',
+                  softWrap: true),
+              Text(
+                  '${uiTr(context, 'ذمة المندوب النقدية')}: ${_money(d['driverCashLiabilityMinor'] as int?, cur)}',
+                  softWrap: true),
+              Text(
+                  '${uiTr(context, 'التحصيل الإلكتروني')}: ${_money(d['onlineCustomerCollectedMinor'] as int?, cur)}',
+                  softWrap: true),
+              Text(
+                  '${uiTr(context, 'ذمة الشركة الإلكترونية')}: ${_money(d['companyOnlineLiabilityMinor'] as int?, cur)}',
+                  softWrap: true),
+              Text(
+                  '${uiTr(context, 'عمولة المنصة')}: ${_money(d['platformFeeMinor'] as int?, cur)}',
+                  softWrap: true),
+              Text(
+                  '${uiTr(context, 'الضريبة')}: ${_money(d['recordedVatMinor'] as int?, cur)}',
+                  softWrap: true),
+              Text(
+                  '${uiTr(context, 'الخصم')}: ${_money(d['recordedDiscountMinor'] as int?, cur)}',
+                  softWrap: true),
+              Text(
+                  '${uiTr(context, 'الصافي')}: ${_money(d['netTripPositionMinor'] as int?, cur)}',
+                  softWrap: true),
               const SizedBox(height: 12),
               Text(uiTr(context, 'المبلغ المستحق'), style: theme.titleMedium),
-              Text(_money(d['absoluteSettlementAmountMinor'] as int?, cur), softWrap: true),
-              Text('${uiTr(context, 'المدفوع')}: ${_money(d['paidConfirmedMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'المتبقي')}: ${_money(d['outstandingMinor'] as int?, cur)}', softWrap: true),
-              Text('${uiTr(context, 'الاتجاه')}: ${SettlementStateLabels.directionAr('${d['direction']}')}', softWrap: true),
+              Text(_money(d['absoluteSettlementAmountMinor'] as int?, cur),
+                  softWrap: true),
+              Text(
+                  '${uiTr(context, 'المدفوع')}: ${_money(d['paidConfirmedMinor'] as int?, cur)}',
+                  softWrap: true),
+              Text(
+                  '${uiTr(context, 'المتبقي')}: ${_money(d['outstandingMinor'] as int?, cur)}',
+                  softWrap: true),
+              Text(
+                  '${uiTr(context, 'الاتجاه')}: ${SettlementStateLabels.directionAr('${d['direction']}')}',
+                  softWrap: true),
               Text(
                 '${uiTr(context, 'مؤهلة')}: ${d['eligibleTripCount']} · ${uiTr(context, 'مستبعدة')}: ${d['excludedTripCount']} · ${uiTr(context, 'مشتقة')}: ${d['derivedCount']}',
                 softWrap: true,
@@ -641,7 +686,8 @@ class _AdminSettlementDetailsWidgetState
                     children: [
                       FilledButton(
                         onPressed: () async {
-                          await SettlementLedgerClient.refreshDraft(settlementId: id);
+                          await SettlementLedgerClient.refreshDraft(
+                              settlementId: id);
                         },
                         child: Text(uiTr(context, 'تحديث المعاينة')),
                       ),
@@ -734,7 +780,8 @@ class _AdminSettlementDetailsWidgetState
                                     if (p.data()['receiptNumber'] != null)
                                       TextButton(
                                         onPressed: () => context.pushNamed(
-                                          AdminSettlementReceiptWidget.routeName,
+                                          AdminSettlementReceiptWidget
+                                              .routeName,
                                           queryParameters: {
                                             'paymentId': serializeParam(
                                               p.id,
