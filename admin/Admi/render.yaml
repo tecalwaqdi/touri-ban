@@ -36,4 +36,4 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
-# last_manual_trigger: 2026-09-04T08:20Z (web artifact parity 1.0.15+2017)
+# last_manual_trigger: 2026-09-04T08:35Z (parity pin 1.0.15+2017 nudge)
