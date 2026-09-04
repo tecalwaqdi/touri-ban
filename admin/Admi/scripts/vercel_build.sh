@@ -5,17 +5,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-if ! command -v flutter >/dev/null 2>&1; then
-  echo "==> Flutter not found — installing stable SDK for CI"
-  FLUTTER_DIR="${FLUTTER_HOME:-$ROOT/.flutter_sdk}"
-  if [[ ! -x "$FLUTTER_DIR/bin/flutter" ]]; then
-    git clone https://github.com/flutter/flutter.git -b stable --depth 1 "$FLUTTER_DIR"
-  fi
-  export PATH="$FLUTTER_DIR/bin:$PATH"
-fi
+# Never float to latest stable — pin matches Firebase Safari-proven toolchain.
+# shellcheck disable=SC1091
+source "$ROOT/scripts/ensure_pinned_flutter.sh"
 
-flutter --version
-flutter config --enable-web
 flutter pub get
 flutter build web --release \
   --base-href=/ \

@@ -1,6 +1,7 @@
 # Render Blueprint — Admin static site (SPA).
-# Existing service: sync Redirects/Rewrites in Dashboard OR recreate from this file.
+# Existing service: sync Redirects/Rewrites + Headers in Dashboard OR recreate from this file.
 # Critical: /* -> /index.html (Rewrite) or deep links return 404.
+# Toolchain: scripts/render_build.sh pins Flutter via tooling/FLUTTER_PIN.json (no floating stable).
 services:
   - type: web
     name: touri-ban-admin
@@ -8,8 +9,31 @@ services:
     rootDir: admin/Admi
     buildCommand: bash scripts/render_build.sh
     staticPublishPath: build/web
+    headers:
+      # Entry + version must not stick on Safari/CDN (mixed-generation forbidden).
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+      - path: /version.json
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+      - path: /build_provenance.json
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+      - path: /flutter_service_worker.js
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+      - path: /flutter_bootstrap.js
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+      - path: /flutter.js
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+      - path: /main.dart.js
+        name: Cache-Control
+        value: no-cache, must-revalidate
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
-# last_manual_trigger: 2026-09-03T07:15Z (admin finance hotfix 1.0.13+2015)
+# last_manual_trigger: 2026-09-04T08:20Z (web artifact parity 1.0.15+2017)

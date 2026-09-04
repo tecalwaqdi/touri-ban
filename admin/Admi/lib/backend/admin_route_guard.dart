@@ -1,7 +1,6 @@
 import '/auth/firebase_auth/auth_util.dart';
-
+import '/backend/admin_rbac_phase.dart';
 import '/backend/admin_role_service.dart';
-
 import '/index.dart';
 
 
@@ -73,20 +72,22 @@ String? adminRouteRedirect(String? routeName) {
 
 
   if (!AdminRoleService.hasPanelAccess) {
-
+    // Auth/profile still resolving — keep deep link; do not bounce to login/home.
+    if (AdminRoleService.isRoleResolving ||
+        AdminRoleService.rbacPhase != AdminRbacPhase.authoritative) {
+      return null;
+    }
     return HomePageWidget.routePath;
-
   }
-
-
 
   if (!AdminRoleService.canAccessRoute(routeName)) {
-
+    // Wait for authoritative claims before RBAC hard-redirect (Safari race).
+    // Does not weaken final RBAC — bounce only after claims are resolved.
+    if (AdminRoleService.rbacPhase != AdminRbacPhase.authoritative) {
+      return null;
+    }
     return _homePathFor(AdminRoleService.currentRole);
-
   }
-
-
 
   return null;
 

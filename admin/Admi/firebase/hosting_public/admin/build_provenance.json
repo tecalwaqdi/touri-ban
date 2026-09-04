@@ -1,0 +1,14 @@
+{
+  "app_version": "1.0.15+2017",
+  "git_commit": "358783a83977e608c35658601961a54e934a40e9",
+  "flutter": "3.44.8",
+  "dart": "3.12.2",
+  "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+  "base_href": "/admin/",
+  "build_flags": [
+    "--release",
+    "--base-href=/admin/",
+    "--no-web-resources-cdn",
+    "--no-wasm-dry-run"
+  ]
+}

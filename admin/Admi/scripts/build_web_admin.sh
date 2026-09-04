@@ -13,6 +13,8 @@ case "$BASE_HREF" in
 esac
 
 echo "==> Building admin web (base-href=${BASE_HREF})"
+# shellcheck disable=SC1091
+source "$ROOT/scripts/ensure_pinned_flutter.sh"
 flutter pub get
 flutter build web --release \
   --base-href="${BASE_HREF}" \
@@ -93,3 +95,65 @@ if [[ -f "$ROOT/web/_redirects" ]]; then
   fi
   echo "==> Copied web/_redirects for SPA hosting"
 fi
+
+# Provenance for live parity (same pin as Render).
+python3 - <<PY
+import json, subprocess, pathlib
+root = pathlib.Path('$ROOT')
+pin = json.loads((root / 'tooling' / 'FLUTTER_PIN.json').read_text())
+ver = json.loads((root / 'web' / 'version.json').read_text())
+try:
+  commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+except Exception:
+  commit = 'unknown'
+out = {
+  'app_version': f"{ver['version']}+{ver['build_number']}",
+  'git_commit': commit,
+  'flutter': pin['flutter'],
+  'dart': pin['dart'],
+  'engine_revision': pin['engine_revision'],
+  'base_href': '${BASE_HREF}',
+  'build_flags': ['--release', '--base-href=${BASE_HREF}', '--no-web-resources-cdn', '--no-wasm-dry-run'],
+}
+for rel in ('build/web', 'build/web_hosting/admin', 'firebase/hosting_public/admin'):
+  d = root / rel
+  if d.is_dir():
+    p = d / 'build_provenance.json'
+    p.write_text(json.dumps(out, indent=2) + '\n')
+    print('wrote', p)
+PY
+
+# Provenance for live parity (same pin as Render).
+python3 - <<PY
+import json, subprocess, pathlib
+root = pathlib.Path(r"$ROOT")
+pin = json.loads((root / "tooling" / "FLUTTER_PIN.json").read_text())
+ver = json.loads((root / "web" / "version.json").read_text())
+try:
+    commit = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True, cwd=root).strip()
+except Exception:
+    commit = "unknown"
+out = {
+    "app_version": f"{ver['version']}+{ver['build_number']}",
+    "git_commit": commit,
+    "flutter": pin["flutter"],
+    "dart": pin["dart"],
+    "engine_revision": pin["engine_revision"],
+    "base_href": "$BASE_HREF",
+    "build_flags": [
+        "--release",
+        "--base-href=$BASE_HREF",
+        "--no-web-resources-cdn",
+        "--no-wasm-dry-run",
+    ],
+}
+targets = [
+    root / "build" / "web" / "build_provenance.json",
+    root / "firebase" / "hosting_public" / "admin" / "build_provenance.json",
+    root / "firebase" / "hosting_public" / "build_provenance.json",
+]
+for p in targets:
+    if p.parent.exists():
+        p.write_text(json.dumps(out, indent=2) + "\\n")
+        print("wrote", p)
+PY
