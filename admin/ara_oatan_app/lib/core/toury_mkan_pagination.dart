@@ -90,9 +90,18 @@ class TouryMkanPaginationController extends ChangeNotifier {
   void bindVillage(DocumentReference? villageRef) {
     if (villageRef == null) return;
 
-    // نفس القرية وبيانات معروضة مسبقاً — لا إعادة جلب.
+    // Same village with in-memory items: keep UI stable, but always soft-refresh
+    // from network so Admin-created landmarks appear without app reinstall.
     if (_villageRef?.path == villageRef.path && items.isNotEmpty) {
       isLoading = false;
+      _notifySafe();
+      unawaited(
+        _refreshInitialFromNetwork(
+          villageRef,
+          generation: _bindGeneration,
+          silent: true,
+        ),
+      );
       return;
     }
 
@@ -113,15 +122,15 @@ class TouryMkanPaginationController extends ChangeNotifier {
       isLoadingMore = false;
       _notifySafe();
 
-      if (cached.needsBackgroundRefresh) {
-        unawaited(
-          _refreshInitialFromNetwork(
-            villageRef,
-            generation: generation,
-            silent: true,
-          ),
-        );
-      }
+      // Always background-refresh after painting cache so new Admin writes
+      // land without requiring reinstall / clearing app data.
+      unawaited(
+        _refreshInitialFromNetwork(
+          villageRef,
+          generation: generation,
+          silent: true,
+        ),
+      );
       return;
     }
 
@@ -134,6 +143,18 @@ class TouryMkanPaginationController extends ChangeNotifier {
     unawaited(loadInitial(generation: generation));
   }
 
+  /// Explicit refresh for pull-to-refresh / returning to the landmarks screen.
+  Future<void> refreshFromServer({bool silent = true}) async {
+    final village = _villageRef;
+    if (village == null || _disposed) return;
+    TouryFirestoreCache.invalidateMkanPage(village);
+    await _refreshInitialFromNetwork(
+      village,
+      generation: _bindGeneration,
+      silent: silent,
+    );
+  }
+
   Future<void> loadInitial({int? generation}) async {
     if (_disposed) return;
     final village = _villageRef;
@@ -142,11 +163,7 @@ class TouryMkanPaginationController extends ChangeNotifier {
 
     if (items.isNotEmpty) {
       unawaited(
-        _refreshInitialFromNetwork(
-          village,
-          generation: gen,
-          silent: true,
-        ),
+        _refreshInitialFromNetwork(village, generation: gen, silent: true),
       );
       return;
     }
@@ -191,9 +208,9 @@ class TouryMkanPaginationController extends ChangeNotifier {
     required int generation,
   }) async {
     try {
-      final snap = await _pageQuery(village).limit(pageSize).get(
-            const GetOptions(source: Source.cache),
-          );
+      final snap = await _pageQuery(
+        village,
+      ).limit(pageSize).get(const GetOptions(source: Source.cache));
       if (_disposed || generation != _bindGeneration) return false;
       if (_villageRef?.path != village.path) return false;
       if (snap.docs.isEmpty) return false;
@@ -250,9 +267,13 @@ class TouryMkanPaginationController extends ChangeNotifier {
     bool preferServer = true,
     bool replaceOnlyIfChanged = false,
   }) async {
-    final snap = await _pageQuery(village).limit(pageSize).get(
+    final snap = await _pageQuery(village)
+        .limit(pageSize)
+        .get(
           GetOptions(
-            source: preferServer ? Source.serverAndCache : Source.serverAndCache,
+            source: preferServer
+                ? Source.serverAndCache
+                : Source.serverAndCache,
           ),
         );
     if (_disposed || generation != _bindGeneration) return;
@@ -308,9 +329,9 @@ class TouryMkanPaginationController extends ChangeNotifier {
 
     for (final id in TouryLandmarkDisplayOrder.masjidAlHaramDocIds) {
       try {
-        final snap = await MkanRecord.collection.doc(id).get(
-              const GetOptions(source: Source.serverAndCache),
-            );
+        final snap = await MkanRecord.collection
+            .doc(id)
+            .get(const GetOptions(source: Source.serverAndCache));
         if (_disposed) return;
         if (!snap.exists) continue;
         final rec = MkanRecord.fromSnapshot(snap);
@@ -448,8 +469,7 @@ class TouryLoadMoreTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: Center(
             child: Text(
-              'landmarks_loaded_count'
-                  .tr(namedArgs: {'count': '$loadedCount'}),
+              'landmarks_loaded_count'.tr(namedArgs: {'count': '$loadedCount'}),
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
@@ -473,10 +493,12 @@ class TouryLoadMoreTile extends StatelessWidget {
               icon: const Icon(Icons.expand_more_rounded),
               label: Text(
                 itemCount != null
-                    ? 'load_more_landmarks_count'.tr(namedArgs: {
-                        'loaded': '$loadedCount',
-                        'total': '$itemCount',
-                      })
+                    ? 'load_more_landmarks_count'.tr(
+                        namedArgs: {
+                          'loaded': '$loadedCount',
+                          'total': '$itemCount',
+                        },
+                      )
                     : 'load_more_landmarks'.tr(),
               ),
             ),

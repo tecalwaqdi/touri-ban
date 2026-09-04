@@ -115,79 +115,82 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     Map<String, dynamic> data,
   ) {
     return [
-        AdminDriverSectionCard(
-          title: uiTr(context, 'البيانات الشخصية'),
-          children: [
-            AdminDriverKvRow(label: uiTr(context, 'الاسم'), value: row.displayName),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'البيانات الشخصية'),
+        children: [
+          AdminDriverKvRow(
+            label: uiTr(context, 'الاسم'),
+            value: row.displayName,
+          ),
+          AdminDriverKvRow(
+            label: uiTr(context, 'البريد'),
+            value: widget.user.email.trim().isNotEmpty
+                ? widget.user.email
+                : '—',
+          ),
+          AdminDriverKvRow(label: uiTr(context, 'الهاتف'), value: row.phone),
+          AdminDriverKvRow(
+            label: uiTr(context, 'الدولة'),
+            value: _countryDisplay(data),
+          ),
+          if (_regionDisplay(data).isNotEmpty)
             AdminDriverKvRow(
-              label: uiTr(context, 'البريد'),
-              value: widget.user.email.trim().isNotEmpty
-                  ? widget.user.email
-                  : '—',
+              label: uiTr(context, 'المنطقة'),
+              value: _regionDisplay(data),
             ),
-            AdminDriverKvRow(label: uiTr(context, 'الهاتف'), value: row.phone),
+          AdminDriverKvRow(
+            label: uiTr(context, 'مدينة التسجيل'),
+            value: row.city,
+          ),
+          if (row.operatingCity != row.city)
             AdminDriverKvRow(
-              label: uiTr(context, 'الدولة'),
-              value: _countryDisplay(data),
+              label: uiTr(context, 'مدينة التشغيل'),
+              value: row.operatingCity,
             ),
-            if (_regionDisplay(data).isNotEmpty)
+        ],
+      ),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'حالة الحساب'),
+        children: [
+          AdminDriverStatusStack(row: row),
+          const SizedBox(height: 8),
+          AdminDriverOperationalStatus(row: row),
+        ],
+      ),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'المركبة'),
+        children: [
+          if (vehicle.isLegacyIncomplete)
+            Text(vehicle.missingLabel(context))
+          else ...[
+            if (vehicle.classificationLabel.isNotEmpty)
               AdminDriverKvRow(
-                label: uiTr(context, 'المنطقة'),
-                value: _regionDisplay(data),
+                label: uiTr(context, 'التصنيف'),
+                value: vehicle.classificationLabel,
               ),
-            AdminDriverKvRow(
-              label: uiTr(context, 'مدينة التسجيل'),
-              value: row.city,
-            ),
-            if (row.operatingCity != row.city)
+            if (vehicle.name.isNotEmpty)
               AdminDriverKvRow(
-                label: uiTr(context, 'مدينة التشغيل'),
-                value: row.operatingCity,
+                label: uiTr(context, 'الماركة'),
+                value: vehicle.name,
+              ),
+            if (vehicle.modelYear.isNotEmpty)
+              AdminDriverKvRow(
+                label: uiTr(context, 'السنة'),
+                value: vehicle.modelYear,
+              ),
+            if (vehicle.color.isNotEmpty)
+              AdminDriverKvRow(
+                label: uiTr(context, 'اللون'),
+                value: vehicle.color,
+              ),
+            if (vehicle.plate.isNotEmpty)
+              AdminDriverKvRow(
+                label: uiTr(context, 'اللوحة'),
+                value: vehicle.plate,
               ),
           ],
-        ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'حالة الحساب'),
-          children: [
-            AdminDriverStatusStack(row: row),
-            const SizedBox(height: 8),
-            AdminDriverOperationalStatus(row: row),
-          ],
-        ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'المركبة'),
-          children: [
-            if (vehicle.isLegacyIncomplete)
-              Text(vehicle.missingLabel(context))
-            else ...[
-              if (vehicle.classificationLabel.isNotEmpty)
-                AdminDriverKvRow(
-                  label: uiTr(context, 'التصنيف'),
-                  value: vehicle.classificationLabel,
-                ),
-              if (vehicle.name.isNotEmpty)
-                AdminDriverKvRow(
-                  label: uiTr(context, 'الماركة'),
-                  value: vehicle.name,
-                ),
-              if (vehicle.modelYear.isNotEmpty)
-                AdminDriverKvRow(
-                  label: uiTr(context, 'السنة'),
-                  value: vehicle.modelYear,
-                ),
-              if (vehicle.color.isNotEmpty)
-                AdminDriverKvRow(
-                  label: uiTr(context, 'اللون'),
-                  value: vehicle.color,
-                ),
-              if (vehicle.plate.isNotEmpty)
-                AdminDriverKvRow(
-                  label: uiTr(context, 'اللوحة'),
-                  value: vehicle.plate,
-                ),
-            ],
-          ],
-        ),
+        ],
+      ),
     ];
   }
 
@@ -198,114 +201,116 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     Map<String, dynamic> data,
   ) {
     return [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: AdminDriverDocumentsPanel(user: widget.user),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: AdminDriverDocumentsPanel(
+          user: widget.user,
+          // Left column already owns registration/account status chips.
+          showLifecycleStrip: false,
         ),
-        _ActiveTripSection(future: _activeTripFuture, row: row),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'النشاط والرحلات'),
-          children: [
-            AdminDriverKvRow(
-              label: uiTr(context, 'إجمالي الرحلات'),
-              value: row.tripsLabel,
+      ),
+      _ActiveTripSection(future: _activeTripFuture, row: row),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'النشاط والرحلات'),
+        children: [
+          AdminDriverKvRow(
+            label: uiTr(context, 'إجمالي الرحلات'),
+            value: row.tripsLabel,
+          ),
+        ],
+      ),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'الأرباح'),
+        children: [
+          AdminDriverFinancialPanel(
+            driverRef: widget.user.reference,
+            countryRef: widget.user.revDolh,
+          ),
+          AdminDriverKvRow(
+            label: uiTr(context, 'إجمالي الأرباح'),
+            value: row.earningsLabel,
+          ),
+        ],
+      ),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'سجل التسجيل والمراجعات'),
+        children: [
+          AdminDriverKvRow(
+            label: uiTr(context, 'تاريخ الإرسال'),
+            value: _formatTs(data['submittedAt'] ?? data['submitted_at']),
+          ),
+          AdminDriverKvRow(
+            label: uiTr(context, 'تاريخ الاعتماد'),
+            value: _formatTs(data['approvedAt'] ?? data['approved_at']),
+          ),
+          AdminDriverKvRow(
+            label: uiTr(context, 'تاريخ الرفض'),
+            value: _formatTs(data['rejectedAt'] ?? data['rejected_at']),
+          ),
+          AdminDriverKvRow(
+            label: uiTr(context, 'طلب تعديلات'),
+            value: _formatTs(
+              data['changesRequestedAt'] ?? data['changes_requested_at'],
             ),
-          ],
-        ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'الأرباح'),
-          children: [
-            AdminDriverFinancialPanel(
-              driverRef: widget.user.reference,
-              countryRef: widget.user.revDolh,
-            ),
+          ),
+          AdminDriverKvRow(
+            label: uiTr(context, 'رقم المحاولة'),
+            value:
+                '${data['reviewAttemptCount'] ?? data['review_attempt_count'] ?? '—'}',
+          ),
+          if (data['reviewVersion'] != null)
             AdminDriverKvRow(
-              label: uiTr(context, 'إجمالي الأرباح'),
-              value: row.earningsLabel,
+              label: 'Review Version',
+              value: '${data['reviewVersion']}',
+              muted: true,
             ),
-          ],
-        ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'سجل التسجيل والمراجعات'),
-          children: [
-            AdminDriverKvRow(
-              label: uiTr(context, 'تاريخ الإرسال'),
-              value: _formatTs(data['submittedAt'] ?? data['submitted_at']),
-            ),
-            AdminDriverKvRow(
-              label: uiTr(context, 'تاريخ الاعتماد'),
-              value: _formatTs(data['approvedAt'] ?? data['approved_at']),
-            ),
-            AdminDriverKvRow(
-              label: uiTr(context, 'تاريخ الرفض'),
-              value: _formatTs(data['rejectedAt'] ?? data['rejected_at']),
-            ),
-            AdminDriverKvRow(
-              label: uiTr(context, 'طلب تعديلات'),
-              value: _formatTs(
-                data['changesRequestedAt'] ?? data['changes_requested_at'],
+          const SizedBox(height: 8),
+          AdminDriverReviewHistoryPanel(driverId: widget.user.reference.id),
+        ],
+      ),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'الإجراءات الإدارية'),
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton.icon(
+                onPressed: () => _openEdit(context),
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                label: Text(uiTr(context, 'تعديل')),
               ),
-            ),
-            AdminDriverKvRow(
-              label: uiTr(context, 'رقم المحاولة'),
-              value:
-                  '${data['reviewAttemptCount'] ?? data['review_attempt_count'] ?? '—'}',
-            ),
-            if (data['reviewVersion'] != null)
-              AdminDriverKvRow(
-                label: 'Review Version',
-                value: '${data['reviewVersion']}',
-                muted: true,
+              if (row.review == AdminDriverReviewBucket.pendingReview ||
+                  row.review == AdminDriverReviewBucket.needsChanges)
+                AdminPrimaryButton(
+                  label: uiTr(context, 'مراجعة التسجيل'),
+                  icon: Icons.fact_check_outlined,
+                  onPressed: () => _openReview(context),
+                ),
+              OutlinedButton.icon(
+                onPressed: () => _openDocuments(context),
+                icon: const Icon(Icons.folder_open_outlined, size: 18),
+                label: Text(uiTr(context, 'عرض الوثائق')),
               ),
-            const SizedBox(height: 8),
-            AdminDriverReviewHistoryPanel(
-              driverId: widget.user.reference.id,
-            ),
-          ],
-        ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'الإجراءات الإدارية'),
-          children: [
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
+              if (row.accountActive)
                 OutlinedButton.icon(
-                  onPressed: () => _openEdit(context),
-                  icon: const Icon(Icons.edit_outlined, size: 18),
-                  label: Text(uiTr(context, 'تعديل')),
-                ),
-                if (row.review == AdminDriverReviewBucket.pendingReview ||
-                    row.review == AdminDriverReviewBucket.needsChanges)
-                  AdminPrimaryButton(
-                    label: uiTr(context, 'مراجعة التسجيل'),
-                    icon: Icons.fact_check_outlined,
-                    onPressed: () => _openReview(context),
+                  onPressed: () => _suspend(context),
+                  icon: const Icon(Icons.person_off_outlined, size: 18),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.error,
                   ),
-                OutlinedButton.icon(
-                  onPressed: () => _openDocuments(context),
-                  icon: const Icon(Icons.folder_open_outlined, size: 18),
-                  label: Text(uiTr(context, 'عرض الوثائق')),
+                  label: Text(uiTr(context, 'إيقاف الحساب')),
+                )
+              else
+                AdminPrimaryButton(
+                  label: uiTr(context, 'تفعيل الحساب'),
+                  icon: Icons.check_circle_outline,
+                  onPressed: () => _activate(context),
                 ),
-                if (row.accountActive)
-                  OutlinedButton.icon(
-                    onPressed: () => _suspend(context),
-                    icon: const Icon(Icons.person_off_outlined, size: 18),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.error,
-                    ),
-                    label: Text(uiTr(context, 'إيقاف الحساب')),
-                  )
-                else
-                  AdminPrimaryButton(
-                    label: uiTr(context, 'تفعيل الحساب'),
-                    icon: Icons.check_circle_outline,
-                    onPressed: () => _activate(context),
-                  ),
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
+      ),
     ];
   }
 
@@ -332,10 +337,7 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     context.pushNamed(
       AddDrevWidget.routeName,
       queryParameters: {
-        'editUser': serializeParam(
-          widget.userRef,
-          ParamType.DocumentReference,
-        ),
+        'editUser': serializeParam(widget.userRef, ParamType.DocumentReference),
       }.withoutNulls,
     );
   }
@@ -344,10 +346,7 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     context.pushNamed(
       DriverActivationWidget.routeName,
       queryParameters: {
-        'dre': serializeParam(
-          widget.userRef,
-          ParamType.DocumentReference,
-        ),
+        'dre': serializeParam(widget.userRef, ParamType.DocumentReference),
       }.withoutNulls,
     );
   }
@@ -388,8 +387,7 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     );
     if (ok != true || !mounted) return;
     try {
-      final adminUid =
-          currentUserUid.isNotEmpty ? currentUserUid : 'admin';
+      final adminUid = currentUserUid.isNotEmpty ? currentUserUid : 'admin';
       await widget.userRef.update(
         AdminDriverReviewActions.suspendPatch(
           reason: 'suspended_by_admin',
@@ -433,11 +431,7 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     if (ok != true || !mounted) return;
     try {
       await widget.userRef.update(
-        createUserRecordData(
-          actevMndob: true,
-          ismndob: true,
-          ismndom: true,
-        ),
+        createUserRecordData(actevMndob: true, ismndob: true, ismndom: true),
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -544,7 +538,10 @@ extension _AdminDriverStatusStackBadges on AdminDriverStatusStack {
       if (row.availability != AdminDriverAvailabilityStatus.unknown)
         AdminStatusBadgeUnified(
           kind: AdminDriverStatusLabels.availabilityKind(row.availability),
-          label: AdminDriverStatusLabels.availability(context, row.availability),
+          label: AdminDriverStatusLabels.availability(
+            context,
+            row.availability,
+          ),
         ),
     ];
   }
@@ -607,10 +604,7 @@ class _QuickSummary extends StatelessWidget {
 }
 
 class _ActiveTripSection extends StatelessWidget {
-  const _ActiveTripSection({
-    required this.future,
-    required this.row,
-  });
+  const _ActiveTripSection({required this.future, required this.row});
 
   final Future<AdminDriverActiveTripTruth> future;
   final AdminDriverRow row;
@@ -620,9 +614,7 @@ class _ActiveTripSection extends StatelessWidget {
     if (!row.onActiveTrip) {
       return AdminDriverSectionCard(
         title: uiTr(context, 'الرحلة الحالية'),
-        children: [
-          Text(uiTr(context, 'لا توجد رحلة نشطة')),
-        ],
+        children: [Text(uiTr(context, 'لا توجد رحلة نشطة'))],
       );
     }
 
@@ -645,9 +637,7 @@ class _ActiveTripSection extends StatelessWidget {
         if (!trip.hasLiveTrip || trip.order == null) {
           return AdminDriverSectionCard(
             title: uiTr(context, 'الرحلة الحالية'),
-            children: [
-              Text(uiTr(context, 'لا توجد رحلة نشطة')),
-            ],
+            children: [Text(uiTr(context, 'لا توجد رحلة نشطة'))],
           );
         }
         final o = trip.order!;

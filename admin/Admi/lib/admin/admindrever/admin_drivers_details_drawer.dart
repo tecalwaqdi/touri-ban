@@ -73,12 +73,12 @@ class AdminDriversDetailsPanel extends StatelessWidget {
                 child: Text(
                   uiTr(context, 'ملف المندوب'),
                   style: FlutterFlowTheme.of(context).titleMedium.override(
-                        fontFamily:
-                            FlutterFlowTheme.of(context).titleMediumFamily,
-                        fontWeight: FontWeight.w700,
-                        useGoogleFonts: !FlutterFlowTheme.of(context)
-                            .titleMediumIsCustom,
-                      ),
+                    fontFamily: FlutterFlowTheme.of(context).titleMediumFamily,
+                    fontWeight: FontWeight.w700,
+                    useGoogleFonts: !FlutterFlowTheme.of(
+                      context,
+                    ).titleMediumIsCustom,
+                  ),
                 ),
               ),
               IconButton(
@@ -110,10 +110,7 @@ class AdminDriversDetailsPanel extends StatelessWidget {
               AdminDriverSectionCard(
                 title: uiTr(context, 'البيانات الشخصية'),
                 children: [
-                  AdminDriverKvRow(
-                    label: uiTr(context, 'الهاتف'),
-                    value: row.phone,
-                  ),
+                  // Phone already shown in header — keep city ownership here.
                   AdminDriverKvRow(
                     label: uiTr(context, 'مدينة التسجيل'),
                     value: row.city,
@@ -125,12 +122,8 @@ class AdminDriversDetailsPanel extends StatelessWidget {
                     ),
                 ],
               ),
-              AdminDriverSectionCard(
-                title: uiTr(context, 'بيانات التسجيل'),
-                children: [
-                  AdminDriverStatusStack(row: row),
-                ],
-              ),
+              // Registration/account badges already live in AdminDriverProfileHeader
+              // via AdminDriverStatusStack — do not render a second StatusStack.
               AdminDriverSectionCard(
                 title: uiTr(context, 'المركبة'),
                 children: [
@@ -157,7 +150,13 @@ class AdminDriversDetailsPanel extends StatelessWidget {
               ),
               AdminDriverSectionCard(
                 title: uiTr(context, 'الوثائق'),
-                children: [AdminDriverDocumentsPanel(user: user)],
+                children: [
+                  AdminDriverDocumentsPanel(
+                    user: user,
+                    // Header already owns registration/activation chips.
+                    showLifecycleStrip: false,
+                  ),
+                ],
               ),
               AdminDriverSectionCard(
                 title: uiTr(context, 'الحالة التشغيلية'),

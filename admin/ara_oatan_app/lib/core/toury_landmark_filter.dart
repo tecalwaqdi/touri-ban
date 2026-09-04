@@ -29,13 +29,15 @@ int touryPurgeBannedCartItems([FFAppState? state]) {
   final app = state ?? FFAppState();
   final before = app.cartmkss.length;
   final expected = touryResolveActiveSaudiCity(app);
-  final kept = app.cartmkss.where((e) {
-    if (touryIsBannedLandmarkName(e.naim)) return false;
-    if (expected == null) return true;
-    final loc = e.loceshn;
-    if (loc == null) return true;
-    return touryLatLngInSaudiCity(loc, expected);
-  }).toList(growable: false);
+  final kept = app.cartmkss
+      .where((e) {
+        if (touryIsBannedLandmarkName(e.naim)) return false;
+        if (expected == null) return true;
+        final loc = e.loceshn;
+        if (loc == null) return true;
+        return touryLatLngInSaudiCity(loc, expected);
+      })
+      .toList(growable: false);
   final changed = kept.length != before;
   if (changed) {
     app.update(() {
@@ -67,10 +69,7 @@ void tourySyncCartMkanRefs([FFAppState? state]) {
 }
 
 /// True when this landmark ref is already in the trip cart.
-bool touryLandmarkAlreadyInCart(
-  DocumentReference? ref, [
-  FFAppState? state,
-]) {
+bool touryLandmarkAlreadyInCart(DocumentReference? ref, [FFAppState? state]) {
   if (ref == null) return false;
   final app = state ?? FFAppState();
   if (app.mkan.any((e) => e.path == ref.path)) return true;
@@ -89,8 +88,7 @@ bool touryMkanLooksLikeJunk(MkanRecord record) {
 SaudiCityDefinition? touryResolveActiveSaudiCity([FFAppState? state]) {
   final app = state ?? FFAppState();
   final village = app.villnow ?? app.villa ?? app.vil;
-  final fromVillage =
-      SaudiCityRegistry.cityFromVillageDocId(village?.id);
+  final fromVillage = SaudiCityRegistry.cityFromVillageDocId(village?.id);
   if (fromVillage != null) return fromVillage;
 
   final label = app.naimvillatext.trim().isNotEmpty
@@ -118,11 +116,19 @@ bool touryLatLngInSaudiCity(LatLng point, SaudiCityDefinition city) {
 
 /// True when landmark coords belong to the user's active city.
 /// Mis-tagged OSM docs (Jeddah under Makkah village id) are dropped here.
-bool touryLandmarkMatchesActiveCity(
-  MkanRecord record, [
-  FFAppState? state,
-]) {
-  final expected = touryResolveActiveSaudiCity(state);
+///
+/// Non-Saudi villages must not be filtered by [SaudiCityRegistry] — Admin
+/// landmarks outside KSA would otherwise disappear when leftover Saudi labels
+/// remain in [FFAppState].
+bool touryLandmarkMatchesActiveCity(MkanRecord record, [FFAppState? state]) {
+  final app = state ?? FFAppState();
+  final village = app.villnow ?? app.villa ?? app.vil;
+  final fromVillage = SaudiCityRegistry.cityFromVillageDocId(village?.id);
+  // Outside Saudi registry: id_vill query is authoritative — keep landmark.
+  if (fromVillage == null && village != null) {
+    return true;
+  }
+  final expected = fromVillage ?? touryResolveActiveSaudiCity(app);
   if (expected == null) return true;
   final loc = record.location;
   if (loc == null) return true;
@@ -134,10 +140,7 @@ bool touryLandmarkMatchesActiveCity(
 }
 
 /// Cart subtitle: country + landmark's real city (not always user's city).
-String touryLandmarkCartSubtitle(
-  MkanRecord record, [
-  FFAppState? state,
-]) {
+String touryLandmarkCartSubtitle(MkanRecord record, [FFAppState? state]) {
   final app = state ?? FFAppState();
   final country = app.naimdolh.trim().isNotEmpty
       ? app.naimdolh.trim()
@@ -145,9 +148,11 @@ String touryLandmarkCartSubtitle(
   final fromCoords = record.location != null
       ? SaudiCityRegistry.cityFromCoordinates(record.location!)
       : null;
-  final city = fromCoords?.displayNameAr ??
-      SaudiCityRegistry.cityFromVillageDocId(record.idVill?.id)
-          ?.displayNameAr ??
+  final city =
+      fromCoords?.displayNameAr ??
+      SaudiCityRegistry.cityFromVillageDocId(
+        record.idVill?.id,
+      )?.displayNameAr ??
       app.naimvillatext.trim();
   if (city.isEmpty) return country;
   return '$country- $city';
@@ -170,11 +175,7 @@ List<MkanRecord> touryFilterLandmarksForUi(
       m.naim,
       localeKey: userLocaleKey,
     );
-    final enName = touryLocalizedText(
-      m.namesI18n,
-      m.naim,
-      localeKey: 'en',
-    );
+    final enName = touryLocalizedText(m.namesI18n, m.naim, localeKey: 'en');
     final visible = name.isNotEmpty
         ? name
         : (enName.isNotEmpty ? enName : m.naim.trim());
