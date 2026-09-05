@@ -30,17 +30,9 @@ enum AdminDriverDocKind {
   tourGuidePermit,
 }
 
-enum AdminDriverDocPresence {
-  present,
-  missing,
-  legacy,
-}
+enum AdminDriverDocPresence { present, missing, legacy }
 
-enum AdminDriverDocAccessMode {
-  v2StoragePath,
-  legacyUrl,
-  missing,
-}
+enum AdminDriverDocAccessMode { v2StoragePath, legacyUrl, missing }
 
 /// Single document slot on the driver profile.
 class AdminDriverDocumentSlot {
@@ -237,11 +229,9 @@ abstract final class AdminDriverProfileView {
       'normalized_plate',
       'plate',
     ]);
-    final color = _firstNonEmpty(data, [
-      'vehicle_color',
-      'color',
-    ]);
-    final incomplete = classification.isEmpty &&
+    final color = _firstNonEmpty(data, ['vehicle_color', 'color']);
+    final incomplete =
+        classification.isEmpty &&
         name.isEmpty &&
         model.isEmpty &&
         plate.isEmpty &&
@@ -270,8 +260,10 @@ abstract final class AdminDriverProfileView {
     if (raw is Map) {
       final sec = raw['seconds'] ?? raw['_seconds'];
       if (sec is num) {
-        return DateTime.fromMillisecondsSinceEpoch(sec.toInt() * 1000,
-            isUtc: true);
+        return DateTime.fromMillisecondsSinceEpoch(
+          sec.toInt() * 1000,
+          isUtc: true,
+        );
       }
     }
     return null;
@@ -359,8 +351,8 @@ abstract final class AdminDriverProfileView {
       final path = DriverRegistrationDocumentStatus.isStoragePath(photoPath)
           ? photoPath
           : (DriverRegistrationDocumentStatus.isStoragePath(mapPath)
-              ? mapPath
-              : '');
+                ? mapPath
+                : '');
       final fallbackUrl = photoUrl.startsWith('https://')
           ? photoUrl
           : (mapUrl.startsWith('https://') ? mapUrl : '');
@@ -399,25 +391,50 @@ abstract final class AdminDriverProfileView {
       photoSlot(),
       slot(AdminDriverDocKind.nationalId, 'doc_national_id'),
       if (!DriverRegistrationDocumentStatus.isStoragePath(
-              storagePathOf('doc_national_id')) &&
+            storagePathOf('doc_national_id'),
+          ) &&
           urlFromMap('doc_national_id').isEmpty)
         slot(AdminDriverDocKind.nationalId, 'img_id_rksh'),
       slot(AdminDriverDocKind.vehicleRegistration, 'doc_vehicle_registration'),
       if (!DriverRegistrationDocumentStatus.isStoragePath(
-              storagePathOf('doc_vehicle_registration')) &&
+            storagePathOf('doc_vehicle_registration'),
+          ) &&
           urlFromMap('doc_vehicle_registration').isEmpty)
         slot(AdminDriverDocKind.vehiclePhoto, 'img_id_car'),
-      slot(AdminDriverDocKind.driverLicenseFront, 'doc_driver_license_front'),
-      slot(AdminDriverDocKind.driverLicenseBack, 'doc_driver_license_back'),
-      if (!DriverLicenseDocument.hasFront(user.snapshotData) &&
-          !DriverLicenseDocument.hasBack(user.snapshotData))
-        slot(AdminDriverDocKind.driverLicenseLegacy, 'doc_driver_license'),
+      ..._licenseSlots(user, slot),
     ];
     if (user.isTourGuide || legacyUrlOf('tour_guide_permit_url').isNotEmpty) {
       out.add(
-          slot(AdminDriverDocKind.tourGuidePermit, 'tour_guide_permit_url'));
+        slot(AdminDriverDocKind.tourGuidePermit, 'tour_guide_permit_url'),
+      );
     }
     return out;
+  }
+
+  /// License visual contract:
+  /// A) front and/or back present → show front+back only (no legacy card)
+  /// B) legacy only → one license card
+  /// C) nothing → one missing license card
+  static List<AdminDriverDocumentSlot> _licenseSlots(
+    UserRecord user,
+    AdminDriverDocumentSlot Function(AdminDriverDocKind, String) slot,
+  ) {
+    final data = user.snapshotData;
+    final hasF = DriverLicenseDocument.hasFront(data);
+    final hasB = DriverLicenseDocument.hasBack(data);
+    final hasL = DriverLicenseDocument.hasLegacySingle(data);
+    if (hasF || hasB) {
+      return [
+        slot(AdminDriverDocKind.driverLicenseFront, 'doc_driver_license_front'),
+        slot(AdminDriverDocKind.driverLicenseBack, 'doc_driver_license_back'),
+      ];
+    }
+    if (hasL) {
+      return [
+        slot(AdminDriverDocKind.driverLicenseLegacy, 'doc_driver_license'),
+      ];
+    }
+    return [slot(AdminDriverDocKind.driverLicenseLegacy, 'doc_driver_license')];
   }
 
   /// Complete = shared V2 helper (national ID + vehicle reg + license + photo).
@@ -436,8 +453,8 @@ abstract final class AdminDriverProfileView {
 
   /// Backend-controlled `registration_documents_status` when present.
   static String authoritativeDocumentsStatus(UserRecord user) {
-    final raw =
-        '${user.snapshotData['registration_documents_status'] ?? ''}'.trim();
+    final raw = '${user.snapshotData['registration_documents_status'] ?? ''}'
+        .trim();
     return raw;
   }
 
@@ -509,7 +526,8 @@ abstract final class AdminDriverProfileView {
       case AdminDriverDocKind.driverLicenseBack:
         return uiTr(context, 'رخصة القيادة (الوجه الخلفي)');
       case AdminDriverDocKind.driverLicenseLegacy:
-        return uiTr(context, 'رخصة القيادة (قديم)');
+        // Single-slot presentation (legacy-only or fully missing).
+        return uiTr(context, 'رخصة القيادة');
       case AdminDriverDocKind.tourGuidePermit:
         return uiTr(context, 'تصريح المرشد');
     }

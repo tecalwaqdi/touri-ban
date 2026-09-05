@@ -8,6 +8,11 @@ class AddDrevModel extends FlutterFlowModel<AddDrevWidget> {
   final formKey = GlobalKey<FormState>();
   bool isSubmitting = false;
   bool isLoadingEdit = false;
+
+  /// Explicit edit-page phases — never blank body + Save.
+  /// creating | loading | loaded | error | notFound | unauthorized
+  String editPhase = 'creating';
+  Object? editLoadError;
   bool passVisibility = false;
   bool cpassVisibility = false;
 
@@ -44,8 +49,10 @@ class AddDrevModel extends FlutterFlowModel<AddDrevWidget> {
   TextEditingController? workcityTextController;
   String? Function(BuildContext, String?)? workcityTextControllerValidator;
   bool isDataUploading_uploadDataLbm = false;
-  FFUploadedFile uploadedLocalFile_uploadDataLbm =
-      FFUploadedFile(bytes: Uint8List.fromList([]), originalFilename: '');
+  FFUploadedFile uploadedLocalFile_uploadDataLbm = FFUploadedFile(
+    bytes: Uint8List.fromList([]),
+    originalFilename: '',
+  );
   String uploadedFileUrl_uploadDataLbm = '';
 
   @override

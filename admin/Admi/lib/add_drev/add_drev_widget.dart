@@ -12,6 +12,7 @@ import '/components/admin_image_picker.dart';
 import '/components/admin_region_picker.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_driver_plate.dart';
+import '/core/admin_driver_route_params.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -32,8 +33,6 @@ class AddDrevWidget extends StatefulWidget {
   static String routeName = 'addDrev';
   static String routePath = '/addDrev';
 
-  bool get isEditMode => editUserRef != null;
-
   @override
   State<AddDrevWidget> createState() => _AddDrevWidgetState();
 }
@@ -43,6 +42,17 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
   List<TransportCompanyRecord> _companies = [];
   TransportCompanyRecord? _selectedCompany;
   bool _companiesLoading = true;
+  DocumentReference? _resolvedEditRef;
+
+  bool get _isEdit => _resolvedEditRef != null;
+
+  String? _rawEditUser() {
+    try {
+      return GoRouterState.of(context).uri.queryParameters['editUser'];
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   void initState() {
@@ -51,6 +61,10 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
 
     AdminAgentCountryLock.applyToAppState();
 
+    if (widget.editUserRef != null) {
+      _model.editPhase = 'loading';
+      _model.isLoadingEdit = true;
+    }
     _model.nameTextController ??= TextEditingController();
     _model.nameFocusNode ??= FocusNode();
 
@@ -84,7 +98,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         return null;
       };
       _model.emailTextControllerValidator = (context, val) {
-        if (widget.isEditMode) return null;
+        if (_isEdit) return null;
         if (val == null || val.trim().isEmpty)
           return uiTr(context, 'يرجى إدخال البريد الإلكتروني');
         if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(val.trim())) {
@@ -105,6 +119,28 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
   }
 
   Future<void> _bootstrapForm() async {
+    final raw = _rawEditUser();
+    _resolvedEditRef = AdminDriverRouteParams.resolveUserRef(
+      rawQuery: raw,
+      deserialized: widget.editUserRef,
+    );
+    final wantsEdit =
+        (raw != null && raw.trim().isNotEmpty) || widget.editUserRef != null;
+    if (wantsEdit && _resolvedEditRef == null) {
+      safeSetState(() {
+        _model.editPhase = 'notFound';
+        _model.isLoadingEdit = false;
+      });
+      return;
+    }
+
+    if (_isEdit) {
+      safeSetState(() {
+        _model.editPhase = 'loading';
+        _model.isLoadingEdit = true;
+      });
+    }
+
     if (AdminRoleService.isTransportCompany) {
       final companyRef = AdminRoleService.transportCompanyRef;
       if (companyRef != null) {
@@ -129,7 +165,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
 
     if (!mounted) return;
 
-    if (widget.isEditMode) {
+    if (_isEdit) {
       await _loadRepresentativeForEdit();
     } else {
       FFAppState().update(() {
@@ -137,6 +173,10 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         FFAppState().RefTepeCar = null;
         FFAppState().workciteText = '';
         FFAppState().workcite = null;
+      });
+      safeSetState(() {
+        _model.editPhase = 'creating';
+        _model.isLoadingEdit = false;
       });
     }
   }
@@ -184,13 +224,24 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
   }
 
   Future<void> _loadRepresentativeForEdit() async {
-    final ref = widget.editUserRef;
+    final ref = _resolvedEditRef;
     if (ref == null) return;
 
-    safeSetState(() => _model.isLoadingEdit = true);
+    safeSetState(() {
+      _model.isLoadingEdit = true;
+      _model.editPhase = 'loading';
+      _model.editLoadError = null;
+    });
     try {
-      final snap = await ref.get();
-      if (!snap.exists || !mounted) return;
+      final snap = await ref.get().timeout(const Duration(seconds: 20));
+      if (!mounted) return;
+      if (!snap.exists) {
+        safeSetState(() {
+          _model.editPhase = 'notFound';
+          _model.isLoadingEdit = false;
+        });
+        return;
+      }
 
       final user = UserRecord.fromSnapshot(snap);
 
@@ -198,12 +249,10 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         final allowed = await AdminResourceGuard.canEditDriver(user);
         if (!allowed) {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(uiTr(context, 'لا تملك صلاحية تعديل هذا السائق')),
-            ),
-          );
-          context.safePop();
+          safeSetState(() {
+            _model.editPhase = 'unauthorized';
+            _model.isLoadingEdit = false;
+          });
           return;
         }
       }
@@ -252,20 +301,18 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
           });
         }
       }
+      if (!mounted) return;
+      safeSetState(() {
+        _model.editPhase = 'loaded';
+        _model.isLoadingEdit = false;
+      });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${appTr(context, 'adm_load_courier_failed')}: '
-            '${AdminUserFacingErrors.from(context, e)}',
-          ),
-        ),
-      );
-    } finally {
-      if (mounted) {
-        safeSetState(() => _model.isLoadingEdit = false);
-      }
+      safeSetState(() {
+        _model.editPhase = 'error';
+        _model.editLoadError = e;
+        _model.isLoadingEdit = false;
+      });
     }
   }
 
@@ -371,9 +418,9 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     // Busy immediately before any await — blocks double-submit.
     safeSetState(() => _model.isSubmitting = true);
 
-    if (widget.isEditMode && widget.editUserRef != null) {
+    if (_isEdit && _resolvedEditRef != null) {
       try {
-        final snap = await widget.editUserRef!.get();
+        final snap = await _resolvedEditRef!.get();
         if (!snap.exists) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
@@ -410,7 +457,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       }
     }
 
-    if (!widget.isEditMode) {
+    if (!_isEdit) {
       if (_model.passTextController!.text.length < 6) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -440,7 +487,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     try {
       final countryRef = await AdminCountrySync.countryFromVillage(workCityRef);
 
-      if (widget.isEditMode) {
+      if (_isEdit) {
         final plateDisplay = AdminDriverPlate.display(plate);
         final plateNorm = AdminDriverPlate.normalize(plate);
         final update = createUserRecordData(
@@ -461,14 +508,14 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
           plateFields['normalized_plate'] = plateNorm;
         }
         if (_selectedCompany == null) {
-          await widget.editUserRef!.update({
+          await _resolvedEditRef!.update({
             ...update,
             ...plateFields,
             'transport_company': FieldValue.delete(),
             'transport_company_text': FieldValue.delete(),
           });
         } else {
-          await widget.editUserRef!.update({...update, ...plateFields});
+          await _resolvedEditRef!.update({...update, ...plateFields});
         }
 
         AdminListRefresh.notify(AdminListScope.representatives);
@@ -548,7 +595,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            widget.isEditMode
+            _isEdit
                 ? '${uiTr(context, 'تعذر تحديث المندوب')}: ${AdminUserFacingErrors.from(context, e)}'
                 : '${uiTr(context, 'تعذر إضافة المندوب')}: ${AdminUserFacingErrors.from(context, e)}',
           ),
@@ -563,35 +610,67 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final isEdit = widget.isEditMode;
+    final isEdit = _isEdit;
     final theme = FlutterFlowTheme.of(context);
     String? editSubtitle;
-    if (isEdit && widget.editUserRef != null) {
+    if (isEdit && _resolvedEditRef != null) {
       // Subtitle filled after load via model if available.
       editSubtitle = _model.nameTextController?.text.trim();
     }
 
-    return AdminDriverModuleScaffold(
-      title: isEdit
-          ? uiTr(context, 'تعديل بيانات المندوب')
-          : uiTr(context, 'إضافة مندوب'),
-      subtitle: isEdit && (editSubtitle?.isNotEmpty ?? false)
-          ? editSubtitle
-          : (isEdit
-                ? uiTr(context, 'عدّل البيانات ثم احفظ')
-                : uiTr(context, 'املأ الحقول المطلوبة')),
-      isLoading: _model.isLoadingEdit,
-      bottomBar: AdminDriverStickyActions(
-        primaryLabel: _model.isSubmitting
-            ? uiTr(context, 'جاري الحفظ...')
-            : isEdit
-            ? uiTr(context, 'حفظ التعديلات')
-            : uiTr(context, 'إضافة المندوب'),
-        primaryLoading: _model.isSubmitting,
-        primaryIcon: isEdit ? Icons.save_rounded : Icons.person_add_rounded,
-        onPrimary: _model.isSubmitting ? null : _submitRepresentative,
-      ),
-      body: Form(
+    final phase = _model.editPhase;
+    final canMutate =
+        (!isEdit && phase == 'creating') || (isEdit && phase == 'loaded');
+    final Widget phaseBody;
+    if (isEdit && phase == 'loading') {
+      phaseBody = const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: CircularProgressIndicator(strokeWidth: 2.5),
+        ),
+      );
+    } else if (isEdit && phase == 'notFound') {
+      phaseBody = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            uiTr(context, 'المندوب غير موجود'),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    } else if (isEdit && phase == 'unauthorized') {
+      phaseBody = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            uiTr(context, 'لا تملك صلاحية تعديل هذا السائق'),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    } else if (isEdit && phase == 'error') {
+      phaseBody = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                uiTr(context, 'تعذر تحميل بيانات المندوب'),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: _bootstrapForm,
+                child: Text(uiTr(context, 'إعادة المحاولة')),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      phaseBody = Form(
         key: _model.formKey,
         child: ListView(
           padding: AdminUi.pagePadding(context).copyWith(top: 12, bottom: 24),
@@ -868,7 +947,34 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
             ],
           ],
         ),
-      ),
+      );
+    }
+
+    return AdminDriverModuleScaffold(
+      title: isEdit
+          ? uiTr(context, 'تعديل بيانات المندوب')
+          : uiTr(context, 'إضافة مندوب'),
+      subtitle: isEdit && (editSubtitle?.isNotEmpty ?? false)
+          ? editSubtitle
+          : (isEdit
+                ? uiTr(context, 'عدّل البيانات ثم احفظ')
+                : uiTr(context, 'املأ الحقول المطلوبة')),
+      isLoading: false,
+      bottomBar: canMutate
+          ? AdminDriverStickyActions(
+              primaryLabel: _model.isSubmitting
+                  ? uiTr(context, 'جاري الحفظ...')
+                  : isEdit
+                  ? uiTr(context, 'حفظ التعديلات')
+                  : uiTr(context, 'إضافة المندوب'),
+              primaryLoading: _model.isSubmitting,
+              primaryIcon: isEdit
+                  ? Icons.save_rounded
+                  : Icons.person_add_rounded,
+              onPrimary: _model.isSubmitting ? null : _submitRepresentative,
+            )
+          : null,
+      body: phaseBody,
     );
   }
 

@@ -206,26 +206,30 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
         ),
       ),
       _ActiveTripSection(future: _activeTripFuture, row: row),
+      if (row.tripsLabel.trim().isNotEmpty && row.tripsLabel.trim() != '—')
+        AdminDriverSectionCard(
+          title: uiTr(context, 'النشاط والرحلات'),
+          children: [
+            AdminDriverKvRow(
+              label: uiTr(context, 'إجمالي الرحلات'),
+              value: row.tripsLabel,
+            ),
+          ],
+        ),
       AdminDriverSectionCard(
-        title: uiTr(context, 'النشاط والرحلات'),
-        children: [
-          AdminDriverKvRow(
-            label: uiTr(context, 'إجمالي الرحلات'),
-            value: row.tripsLabel,
-          ),
-        ],
-      ),
-      AdminDriverSectionCard(
-        title: uiTr(context, 'الأرباح'),
+        title: uiTr(context, 'الملخص المالي'),
         children: [
           AdminDriverFinancialPanel(
             driverRef: widget.user.reference,
             countryRef: widget.user.revDolh,
+            profileCompact: true,
           ),
-          AdminDriverKvRow(
-            label: uiTr(context, 'إجمالي الأرباح'),
-            value: row.earningsLabel,
-          ),
+          if (row.earningsLabel.trim().isNotEmpty &&
+              row.earningsLabel.trim() != '—')
+            AdminDriverKvRow(
+              label: uiTr(context, 'إجمالي الأرباح'),
+              value: row.earningsLabel,
+            ),
         ],
       ),
       AdminDriverSectionCard(
@@ -254,12 +258,6 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
             value:
                 '${data['reviewAttemptCount'] ?? data['review_attempt_count'] ?? '—'}',
           ),
-          if (data['reviewVersion'] != null)
-            AdminDriverKvRow(
-              label: 'Review Version',
-              value: '${data['reviewVersion']}',
-              muted: true,
-            ),
           const SizedBox(height: 8),
           AdminDriverReviewHistoryPanel(driverId: widget.user.reference.id),
         ],
@@ -693,10 +691,7 @@ class _ActiveTripSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!row.onActiveTrip) {
-      return AdminDriverSectionCard(
-        title: uiTr(context, 'الرحلة الحالية'),
-        children: [Text(uiTr(context, 'لا توجد رحلة نشطة'))],
-      );
+      return const SizedBox.shrink();
     }
 
     return FutureBuilder<AdminDriverActiveTripTruth>(
@@ -716,10 +711,7 @@ class _ActiveTripSection extends StatelessWidget {
         }
         final trip = snap.data ?? AdminDriverActiveTripTruth.empty;
         if (!trip.hasLiveTrip || trip.order == null) {
-          return AdminDriverSectionCard(
-            title: uiTr(context, 'الرحلة الحالية'),
-            children: [Text(uiTr(context, 'لا توجد رحلة نشطة'))],
-          );
+          return const SizedBox.shrink();
         }
         final o = trip.order!;
         return AdminDriverSectionCard(

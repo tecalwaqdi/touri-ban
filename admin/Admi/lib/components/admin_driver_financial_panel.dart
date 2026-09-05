@@ -16,16 +16,23 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
 
-/// Driver financial tab — trip position + settlement workflow (ledger only).
+/// Driver financial tab — trip position summary.
+///
+/// [profileCompact] hides settlement workflow / developer instructions and
+/// shows only a concise Arabic summary + link into Finance (no calc changes).
 class AdminDriverFinancialPanel extends StatefulWidget {
   const AdminDriverFinancialPanel({
     super.key,
     required this.driverRef,
     this.countryRef,
+    this.profileCompact = false,
   });
 
   final DocumentReference driverRef;
   final DocumentReference? countryRef;
+
+  /// Profile ownership: summary only — no draft/preview state machine UI.
+  final bool profileCompact;
 
   @override
   State<AdminDriverFinancialPanel> createState() =>
@@ -65,18 +72,22 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
   }
 
   MoneyAmount _tripNet(FinancialCurrencyTotals t) {
-    final minor = t.cashDriversOweCompany.minorUnits -
+    final minor =
+        t.cashDriversOweCompany.minorUnits -
         t.cashCompanyOwesDrivers.minorUnits -
         t.onlineCompanyOwesDrivers.minorUnits;
     return MoneyAmount(currency: t.currency, minorUnits: minor);
   }
 
-  Future<void> _saveDraft(BuildContext context, SettlementPreview preview) async {
+  Future<void> _saveDraft(
+    BuildContext context,
+    SettlementPreview preview,
+  ) async {
     final countryId = widget.countryRef?.path;
     if (countryId == null || countryId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(uiTr(context, 'الدولة مطلوبة'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(uiTr(context, 'الدولة مطلوبة'))));
       return;
     }
     if (preview.includedCount > 200) {
@@ -143,13 +154,10 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    uiTr(
-                      ctx,
-                      'Preview only — no financial changes will be made',
-                    ),
+                    uiTr(ctx, 'معاينة فقط — لن يتم تغيير أي أرصدة مالية'),
                     style: theme.bodySmall.copyWith(
-                      color: Colors.orange.shade800,
-                      fontWeight: FontWeight.w700,
+                      color: theme.secondaryText,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -160,20 +168,12 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                   ),
                   const Divider(),
                   Text(
-                    'Cash held: ${_money(preview.cashHeld)}\n'
-                    'Cash entitlement: ${_money(preview.cashDriverEntitlement)}\n'
-                    'Driver cash liability: ${_money(preview.driverCashLiability)}\n'
-                    'Online entitlement / company owes: ${_money(preview.companyOnlineLiability)}\n'
-                    'Net: ${_money(preview.netTripSettlement)}\n'
-                    'Direction: ${preview.direction}',
+                    '${uiTr(ctx, 'نقد محصّل')}: ${_money(preview.cashHeld)}\n'
+                    '${uiTr(ctx, 'استحقاق المندوب (نقد)')}: ${_money(preview.cashDriverEntitlement)}\n'
+                    '${uiTr(ctx, 'المندوب يدين للشركة')}: ${_money(preview.driverCashLiability)}\n'
+                    '${uiTr(ctx, 'الشركة تدين للمندوب (أونلاين)')}: ${_money(preview.companyOnlineLiability)}\n'
+                    '${uiTr(ctx, 'صافي الرحلات')}: ${_money(preview.netTripSettlement)}',
                   ),
-                  if (preview.includedLines
-                      .where((l) => l.confidence == FinancialConfidence.derived)
-                      .isNotEmpty)
-                    Text(
-                      'This settlement includes ${preview.includedLines.where((l) => l.confidence == FinancialConfidence.derived).length} DERIVED financial records.',
-                      style: theme.bodySmall,
-                    ),
                   if (preview.exclusionCounts.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     Text(uiTr(ctx, 'أسباب الاستبعاد')),
@@ -195,7 +195,7 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                   Navigator.pop(ctx);
                   _saveDraft(context, preview);
                 },
-                child: Text(uiTr(ctx, 'Save Draft')),
+                child: Text(uiTr(ctx, 'حفظ مسودة')),
               ),
           ],
         );
@@ -217,12 +217,26 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
         }
         if (!snap.hasData) {
           return const Padding(
-            padding: EdgeInsets.all(24),
-            child: Center(child: CircularProgressIndicator()),
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Center(
+              child: SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
           );
         }
         final result = snap.data!;
         final lines = result.allMatchingLines;
+        if (widget.profileCompact) {
+          return _ProfileFinanceSummary(
+            result: result,
+            lineCount: lines.length,
+            money: _money,
+            tripNet: _tripNet,
+          );
+        }
         final cash = lines
             .where((l) => l.channel == FinancialPaymentChannel.cash)
             .length;
@@ -254,7 +268,8 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                 final by = <String, Map<String, int>>{};
                 for (final d in ss.data!.docs) {
                   final s = d.data();
-                  if (s['status'] == 'draft' || s['status'] == 'voided') continue;
+                  if (s['status'] == 'draft' || s['status'] == 'voided')
+                    continue;
                   final c = (s['currency'] as String?) ?? 'SAR';
                   by[c] ??= {
                     'locked': 0,
@@ -268,7 +283,8 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                   if (st == 'partially_paid') {
                     by[c]!['partial'] = by[c]!['partial']! + 1;
                   }
-                  if (st == 'settled') by[c]!['settled'] = by[c]!['settled']! + 1;
+                  if (st == 'settled')
+                    by[c]!['settled'] = by[c]!['settled']! + 1;
                   final out = (s['outstandingMinor'] as num?)?.toInt() ?? 0;
                   if (s['direction'] == 'DRIVER_PAYS_COMPANY') {
                     by[c]!['recv'] = by[c]!['recv']! + out;
@@ -281,8 +297,10 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(uiTr(context, 'ملخص التسويات'),
-                          style: theme.titleSmall),
+                      Text(
+                        uiTr(context, 'ملخص التسويات'),
+                        style: theme.titleSmall,
+                      ),
                       for (final e in by.entries)
                         Text(
                           '${e.key}: locked ${e.value['locked']} · '
@@ -309,10 +327,7 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                     uiTr(context, 'مشتق'),
                     '${lines.where((l) => l.confidence == FinancialConfidence.derived).length}',
                   ),
-                  _kv(
-                    uiTr(context, 'ناقص'),
-                    '$incomplete',
-                  ),
+                  _kv(uiTr(context, 'ناقص'), '$incomplete'),
                 ],
               ),
             ),
@@ -323,12 +338,13 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                   value: result.byCurrency.keys.contains(_previewCurrency)
                       ? _previewCurrency
                       : (result.byCurrency.keys.isEmpty
-                          ? 'SAR'
-                          : result.byCurrency.keys.first),
+                            ? 'SAR'
+                            : result.byCurrency.keys.first),
                   items: [
-                    for (final c in (result.byCurrency.keys.isEmpty
-                        ? ['SAR']
-                        : result.byCurrency.keys))
+                    for (final c
+                        in (result.byCurrency.keys.isEmpty
+                            ? ['SAR']
+                            : result.byCurrency.keys))
                       DropdownMenuItem(value: c, child: Text(c)),
                   ],
                   onChanged: (v) {
@@ -339,16 +355,9 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                 const SizedBox(width: 12),
                 FilledButton.tonal(
                   onPressed: () => _showSettlementPreview(context),
-                  child: Text(uiTr(context, 'Preview Settlement')),
+                  child: Text(uiTr(context, 'معاينة التسوية')),
                 ),
               ],
-            ),
-            Text(
-              uiTr(
-                context,
-                '1 Preview → 2 Save Draft → 3 Review → 4 Lock → 5 Mark Settled. Ledger only — no wallet movement.',
-              ),
-              style: theme.labelSmall.copyWith(color: Colors.orange.shade800),
             ),
             const SizedBox(height: 12),
             if (result.byCurrency.isEmpty)
@@ -380,7 +389,7 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                       _money(entry.value.onlineCompanyOwesDrivers),
                     ),
                     _kv(
-                      uiTr(context, 'Trip Net Position'),
+                      uiTr(context, 'صافي الرحلات'),
                       _money(_tripNet(entry.value)),
                     ),
                     FutureBuilder<Map<String, dynamic>>(
@@ -401,10 +410,7 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                               uiTr(context, 'Driver Account Balance'),
                               style: theme.titleSmall,
                             ),
-                            Text(
-                              '${s['convention']}',
-                              style: theme.labelSmall,
-                            ),
+                            Text('${s['convention']}', style: theme.labelSmall),
                             _kv(
                               uiTr(context, 'Trip Position'),
                               '${s['tripPositionMinor']} ${entry.key}',
@@ -476,6 +482,74 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
       FinancialStateLabels.confidenceAr(c);
 
   Widget _kv(String k, String v) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Expanded(child: Text(k)),
+          Text(v, style: const TextStyle(fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+}
+
+/// Compact Arabic finance summary for Driver Profile (no settlement workflow).
+class _ProfileFinanceSummary extends StatelessWidget {
+  const _ProfileFinanceSummary({
+    required this.result,
+    required this.lineCount,
+    required this.money,
+    required this.tripNet,
+  });
+
+  final FinancialReportResult result;
+  final int lineCount;
+  final String Function(MoneyAmount?) money;
+  final MoneyAmount Function(FinancialCurrencyTotals) tripNet;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    if (result.byCurrency.isEmpty) {
+      return Text(
+        uiTr(context, 'لا توجد بيانات مالية لهذا المندوب'),
+        style: theme.labelMedium,
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final entry in result.byCurrency.entries) ...[
+          Text(entry.key, style: theme.titleSmall),
+          const SizedBox(height: 4),
+          _row(uiTr(context, 'رحلات محلّلة'), '$lineCount'),
+          _row(
+            uiTr(context, 'المندوب يدين للشركة'),
+            money(entry.value.cashDriversOweCompany),
+          ),
+          _row(
+            uiTr(context, 'الشركة تدين للمندوب (أونلاين)'),
+            money(entry.value.onlineCompanyOwesDrivers),
+          ),
+          _row(uiTr(context, 'صافي الرحلات'), money(tripNet(entry.value))),
+          const SizedBox(height: 8),
+        ],
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton.icon(
+            onPressed: () {
+              context.pushNamed(AdminFinanceHubWidget.routeName);
+            },
+            icon: const Icon(Icons.open_in_new_rounded, size: 16),
+            label: Text(uiTr(context, 'فتح المالية')),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _row(String k, String v) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
