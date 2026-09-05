@@ -177,5 +177,86 @@ assert.ok(
   "webhook secrets must bind NGENIUS_WEBHOOK_SECRET",
 );
 
+// --- F3-C1: booking financial snapshot majors from verified quote ---
+const {
+  bookingFinancialMajorsFromQuote,
+  requireBookingFinancialMajors,
+} = paymentModule.__test;
+
+// Controlled 50 / 7.50 / 0 / 42.50 via canonical halalas (same as verifiedBookingAmount).
+const quote50 = {
+  baseFareHalalas: 5000,
+  appFeeHalalas: 750,
+  vatHalalas: 0,
+  amountHalalas: 5000,
+  discountHalalas: 0,
+};
+const majors50 = bookingFinancialMajorsFromQuote(quote50);
+assert.ok(majors50);
+assert.strictEqual(majors50.total_mndob2, 50);
+assert.strictEqual(majors50.total_app, 7.5);
+assert.strictEqual(majors50.total_vat, 0);
+assert.strictEqual(majors50.total_mndob, 42.5);
+assert.strictEqual(majors50.total, 50);
+assert.strictEqual(typeof majors50.total_mndob2, "number");
+assert.strictEqual(typeof majors50.total_mndob, "number");
+assert.strictEqual(typeof majors50.total_app, "number");
+assert.strictEqual(typeof majors50.total_vat, "number");
+assert.strictEqual(typeof majors50.total, "number");
+
+// Online session shape (spread verified quote onto payment session).
+const sessionOnline = {
+  amount_halalas: 5000,
+  baseFareHalalas: 5000,
+  appFeeHalalas: 750,
+  vatHalalas: 0,
+  discountHalalas: 0,
+};
+const majorsOnline = bookingFinancialMajorsFromQuote(sessionOnline);
+assert.deepStrictEqual(majorsOnline, majors50);
+
+// Discounted customer total still uses gross-based driver net (not amount - fee).
+const quoteDiscounted = {
+  baseFareHalalas: 5000,
+  appFeeHalalas: 750,
+  vatHalalas: 0,
+  amountHalalas: 4000,
+  discountHalalas: 1000,
+};
+const majorsDisc = bookingFinancialMajorsFromQuote(quoteDiscounted);
+assert.strictEqual(majorsDisc.total, 40);
+assert.strictEqual(majorsDisc.total_mndob2, 50);
+assert.strictEqual(majorsDisc.total_mndob, 42.5);
+
+// No zero fallback for missing authoritative fields.
+assert.strictEqual(bookingFinancialMajorsFromQuote({}), null);
+assert.strictEqual(
+  bookingFinancialMajorsFromQuote({
+    baseFareHalalas: 5000,
+    appFeeHalalas: 750,
+    // vat missing
+    amountHalalas: 5000,
+  }),
+  null,
+);
+expectHttpsError(
+  () => requireBookingFinancialMajors({amountHalalas: 5000}, "unit"),
+  "failed-precondition",
+);
+
+// Source: both create paths persist total_mndob2 + total_mndob atomically in orderData.
+assert.ok(source.includes("bookingFinancialMajorsFromQuote"));
+assert.ok(source.includes("requireBookingFinancialMajors"));
+assert.ok(source.includes('total_mndob2: money.total_mndob2'));
+assert.ok(source.includes('total_mndob: money.total_mndob'));
+assert.ok(
+  (source.match(/total_mndob2: money\.total_mndob2/g) || []).length >= 2,
+  "cash + online create must both write total_mndob2",
+);
+assert.ok(
+  (source.match(/total_mndob: money\.total_mndob/g) || []).length >= 2,
+  "cash + online create must both write total_mndob",
+);
+
 process.stdout.write("N-Genius unit checks passed.\n");
 process.exit(0);

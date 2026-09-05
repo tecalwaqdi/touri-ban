@@ -241,6 +241,56 @@ async function verifiedBookingAmount(data) {
   };
 }
 
+/**
+ * Immutable trip money majors from ONE verified booking quote / payment session.
+ *
+ * Canonical sources (halalas → SAR major / 100):
+ * - total_mndob2 (gross/base) ← baseFareHalalas
+ * - total_app (platform fee) ← appFeeHalalas
+ * - total_vat ← vatHalalas
+ * - total (customer amount) ← amountHalalas
+ * - total_mndob (driver net) ← baseFare - appFee - vat
+ *   (matches financial_accounting_v2 DERIVED_FROM_GROSS_BASE / stored high path)
+ *
+ * Does not invent zeros for missing quote fields. Returns null if incomplete.
+ */
+function bookingFinancialMajorsFromQuote(quote) {
+  if (!quote || typeof quote !== "object") return null;
+  const base = Number(quote.baseFareHalalas);
+  const app = Number(quote.appFeeHalalas);
+  const vat = Number(quote.vatHalalas);
+  // Payment sessions store amount_halalas; verified quote uses amountHalalas.
+  const amount = Number(
+    quote.amountHalalas != null ? quote.amountHalalas : quote.amount_halalas,
+  );
+  if (![base, app, vat, amount].every((n) => Number.isFinite(n) && n >= 0)) {
+    return null;
+  }
+  const driverNetHalalas = base - app - vat;
+  if (!Number.isFinite(driverNetHalalas) || driverNetHalalas < 0) {
+    return null;
+  }
+  return {
+    total_mndob2: base / 100,
+    total_app: app / 100,
+    total_vat: vat / 100,
+    total_mndob: driverNetHalalas / 100,
+    total: amount / 100,
+  };
+}
+
+function requireBookingFinancialMajors(quote, contextLabel) {
+  const majors = bookingFinancialMajorsFromQuote(quote);
+  if (!majors) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "Booking financial snapshot incomplete; order was not created.",
+      {code: "BOOKING_FINANCIAL_SNAPSHOT_INCOMPLETE", context: contextLabel || null},
+    );
+  }
+  return majors;
+}
+
 async function verifiedExtraHoursAmount(data, uid) {
   const orderPath = documentPath(data.orderPath, "order");
   const extraHours = safeInteger(data.extraHours, 1, 24 * 7, "extra hours");
@@ -931,9 +981,15 @@ exports.finalizeNGeniusBooking = functions
         );
       }
 
+      // Session was seeded from verifiedBookingAmount (spread onto payment session).
+      const money = requireBookingFinancialMajors(session, "finalizeNGeniusBooking");
       const orderData = {
         USER: userRef,
-        total: session.amount_halalas / 100,
+        total: money.total,
+        total_mndob2: money.total_mndob2,
+        total_app: money.total_app,
+        total_vat: money.total_vat,
+        total_mndob: money.total_mndob,
         amount_halalas: session.amount_halalas,
         currency: session.currency || "SAR",
         data_order: now,
@@ -955,8 +1011,6 @@ exports.finalizeNGeniusBooking = functions
         phone_numper: Number(user.phone_n || user.phoneN || 0),
         imgProfileClent: sanitizeString(user.photo_url || user.photoUrl, 500),
         total_taim: session.bookingHours,
-        total_app: session.appFeeHalalas / 100,
-        total_vat: session.vatHalalas / 100,
         ksm: session.discountHalalas / 100,
         SrSAAH: session.baseFareHalalas /
           Math.max(1, session.bookingHours) / 100,
@@ -1124,9 +1178,14 @@ exports.createCashBooking = functions
             { activeOrderId: claim.activeOrderId, code: "ACTIVE_BOOKING_EXISTS" },
           );
         }
+        const money = requireBookingFinancialMajors(quote, "createCashBooking");
         const orderData = {
           USER: userRef,
-          total: quote.amountHalalas / 100,
+          total: money.total,
+          total_mndob2: money.total_mndob2,
+          total_app: money.total_app,
+          total_vat: money.total_vat,
+          total_mndob: money.total_mndob,
           amount_halalas: quote.amountHalalas,
           currency: quote.currency || "SAR",
           currency_code: quote.currency || "SAR",
@@ -1149,8 +1208,6 @@ exports.createCashBooking = functions
           phone_numper: Number(user.phone_n || user.phoneN || 0),
           imgProfileClent: sanitizeString(user.photo_url || user.photoUrl, 500),
           total_taim: quote.bookingHours,
-          total_app: quote.appFeeHalalas / 100,
-          total_vat: quote.vatHalalas / 100,
           ksm: quote.discountHalalas / 100,
           SrSAAH: quote.baseFareHalalas /
             Math.max(1, quote.bookingHours) / 100,
@@ -1708,4 +1765,6 @@ exports.__test = {
   resolveWalletPackageFromCatalog,
   webhookPayloadHash,
   webhookEventDocId,
+  bookingFinancialMajorsFromQuote,
+  requireBookingFinancialMajors,
 };
