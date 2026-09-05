@@ -13,6 +13,7 @@ import '/components/admin_region_picker.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_driver_plate.dart';
 import '/core/admin_driver_route_params.dart';
+import '/core/admin_type_car_label.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -286,6 +287,16 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       if (plateFromDoc.isNotEmpty &&
           (_model.platTextController?.text.trim().isEmpty ?? true)) {
         _model.platTextController!.text = plateFromDoc;
+      }
+
+      final localizedType = await AdminTypeCarLabel.resolve(
+        context: context,
+        typeCarRef: user.mndobTypeCar,
+        legacy: _model.cartypeTextController!.text,
+      );
+      if (!mounted) return;
+      if (localizedType.isNotEmpty) {
+        _model.cartypeTextController!.text = localizedType;
       }
 
       FFAppState().update(() {
@@ -631,14 +642,37 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     }
 
     final phase = _model.editPhase;
+    final wantsEdit = widget.editUserRef != null ||
+        ((_rawEditUser() ?? '').trim().isNotEmpty);
+    // Never paint create Save bar / empty form while an edit target is resolving.
+    final resolvingEdit = wantsEdit && (phase == 'creating' || phase == 'loading');
     final canMutate =
-        (!isEdit && phase == 'creating') || (isEdit && phase == 'loaded');
+        (!wantsEdit && phase == 'creating') || (isEdit && phase == 'loaded');
     final Widget phaseBody;
-    if (isEdit && phase == 'loading') {
-      phaseBody = const Center(
+    if (resolvingEdit || (isEdit && phase == 'loading')) {
+      phaseBody = Center(
         child: Padding(
-          padding: EdgeInsets.all(32),
-          child: CircularProgressIndicator(strokeWidth: 2.5),
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(
+                width: 36,
+                height: 36,
+                child: CircularProgressIndicator(strokeWidth: 2.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                uiTr(context, 'جاري تحميل بيانات المندوب...'),
+                textAlign: TextAlign.center,
+                style: theme.bodyMedium.override(
+                  fontFamily: theme.bodyMediumFamily,
+                  color: theme.secondaryText,
+                  useGoogleFonts: !theme.bodyMediumIsCustom,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     } else if (isEdit && phase == 'notFound') {
@@ -970,12 +1004,12 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     }
 
     return AdminDriverModuleScaffold(
-      title: isEdit
+      title: isEdit || wantsEdit
           ? uiTr(context, 'تعديل بيانات المندوب')
           : uiTr(context, 'إضافة مندوب'),
       subtitle: isEdit && (editSubtitle?.isNotEmpty ?? false)
           ? editSubtitle
-          : (isEdit
+          : (isEdit || wantsEdit
               ? uiTr(context, 'عدّل البيانات ثم احفظ')
               : uiTr(context, 'املأ الحقول المطلوبة')),
       isLoading: false,
@@ -991,7 +1025,14 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                   isEdit ? Icons.save_rounded : Icons.person_add_rounded,
               onPrimary: _model.isSubmitting ? null : _submitRepresentative,
             )
-          : null,
+          : resolvingEdit
+              ? AdminDriverStickyActions(
+                  primaryLabel: uiTr(context, 'حفظ التعديلات'),
+                  primaryLoading: false,
+                  showPrimary: false,
+                  onPrimary: null,
+                )
+              : null,
       body: phaseBody,
     );
   }

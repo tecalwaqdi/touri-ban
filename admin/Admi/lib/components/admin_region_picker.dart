@@ -3,6 +3,7 @@ import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_cache_picker.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_type_car_label.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
@@ -472,8 +473,14 @@ class AdminTypeCarPickerSheet extends StatelessWidget {
             queryBuilder: (q) => q.where('actev', isEqualTo: true),
             searchHint: appTr(context, 'adm_search_car_type'),
             emptyMessage: appTr(context, 'adm_no_car_types'),
-            filter: (type, q) => type.naim.toLowerCase().contains(q),
+            filter: (type, q) {
+              final label = AdminTypeCarLabel.fromRecord(type, context);
+              return label.toLowerCase().contains(q) ||
+                  type.naim.toLowerCase().contains(q) ||
+                  type.codeCar.toLowerCase().contains(q);
+            },
             itemBuilder: (context, type) {
+              final label = AdminTypeCarLabel.fromRecord(type, context);
               return Material(
                 color: Colors.transparent,
                 child: ListTile(
@@ -491,7 +498,7 @@ class AdminTypeCarPickerSheet extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    type.naim,
+                    label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -503,7 +510,7 @@ class AdminTypeCarPickerSheet extends StatelessWidget {
                   trailing: const Icon(Icons.chevron_left_rounded),
                   onTap: () {
                     FFAppState().RefTepeCar = type.reference;
-                    FFAppState().typeCarText = type.naim;
+                    FFAppState().typeCarText = label;
                     FFAppState().srtypecar = type.sr;
                     Navigator.pop(context);
                   },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '/admin/admindrever/admin_drivers_adapter.dart';
 import '/admin/admindrever/admin_drivers_ui_shared.dart';
+import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_driver_documents_panel.dart';
 import '/components/admin_edit_shell.dart';
@@ -25,6 +26,7 @@ class DriverRegistrationReviewBody extends StatelessWidget {
     required this.onPickCity,
     required this.onPickCarType,
     this.onApprove,
+    this.onExceptionalApprove,
     this.onReject,
     this.onRequestChanges,
   });
@@ -40,6 +42,7 @@ class DriverRegistrationReviewBody extends StatelessWidget {
   final VoidCallback onPickCity;
   final VoidCallback onPickCarType;
   final VoidCallback? onApprove;
+  final VoidCallback? onExceptionalApprove;
   final VoidCallback? onReject;
   final VoidCallback? onRequestChanges;
 
@@ -55,6 +58,12 @@ class DriverRegistrationReviewBody extends StatelessWidget {
         .where((t) => t.trim().isNotEmpty)
         .toList();
     final emailVerification = AdminDriverEmailVerification.fromUserData(data);
+    final exceptional =
+        AdminDriverReviewActions.requiresExceptionalOverride(data);
+    final superAdmin = AdminRoleService.isSuperAdmin;
+    final vehicleTypeLabel = carTypeController.text.trim().isNotEmpty
+        ? carTypeController.text.trim()
+        : (vehicle.classLine.isNotEmpty ? vehicle.classLine : vehicle.titleLine);
 
     return ListView(
       padding: AdminUi.pagePadding(context).copyWith(top: 12, bottom: 24),
@@ -178,10 +187,11 @@ class DriverRegistrationReviewBody extends StatelessWidget {
                   label: uiTr(context, 'المركبة'),
                   value: vehicle.titleLine,
                 ),
-              if (vehicle.classLine.isNotEmpty)
+              if (vehicle.classLine.isNotEmpty ||
+                  carTypeController.text.trim().isNotEmpty)
                 AdminDriverKvRow(
                   label: uiTr(context, 'التصنيف'),
-                  value: vehicle.classLine,
+                  value: vehicleTypeLabel,
                 ),
               if (vehicle.plate.isNotEmpty)
                 AdminDriverKvRow(
@@ -259,17 +269,30 @@ class DriverRegistrationReviewBody extends StatelessWidget {
                 spacing: 10,
                 runSpacing: 10,
                 children: [
-                  Semantics(
-                    identifier: 'qa-driver-approve',
-                    label: 'qa-driver-approve',
-                    button: true,
-                    child: AdminPrimaryButton(
-                      label: uiTr(context, 'اعتماد المندوب'),
-                      icon: Icons.check_circle_outline_rounded,
-                      isLoading: busy,
-                      onPressed: busy ? null : onApprove,
+                  if (exceptional && superAdmin)
+                    Semantics(
+                      identifier: 'qa-driver-override-approve',
+                      label: 'qa-driver-override-approve',
+                      button: true,
+                      child: AdminPrimaryButton(
+                        label: uiTr(context, 'اعتماد وتفعيل استثنائي'),
+                        icon: Icons.verified_user_outlined,
+                        isLoading: busy,
+                        onPressed: busy ? null : onExceptionalApprove,
+                      ),
+                    )
+                  else if (!exceptional)
+                    Semantics(
+                      identifier: 'qa-driver-approve',
+                      label: 'qa-driver-approve',
+                      button: true,
+                      child: AdminPrimaryButton(
+                        label: uiTr(context, 'اعتماد المندوب'),
+                        icon: Icons.check_circle_outline_rounded,
+                        isLoading: busy,
+                        onPressed: busy ? null : onApprove,
+                      ),
                     ),
-                  ),
                   Semantics(
                     identifier: 'qa-driver-request-changes',
                     label: 'qa-driver-request-changes',
@@ -399,6 +422,92 @@ Future<({String reason, List<String> fields})?> showDriverNeedsChangesDialog({
   notes.dispose();
   if (ok != true || selected.isEmpty || reason.isEmpty) return null;
   return (reason: reason, fields: selected.toList(growable: false));
+}
+
+Future<String?> showDriverExceptionalApproveDialog({
+  required BuildContext context,
+  required Map<String, dynamic> data,
+}) async {
+  final status = (data['registration_status'] as String?)?.trim() ?? '';
+  final openSummaries =
+      AdminDriverReviewActions.openChangeRequestSummaries(data);
+  final blockers = AdminDriverReviewActions.approvalBlockingReasons(data)
+      .map((k) => appTr(context, k))
+      .where((t) => t.trim().isNotEmpty)
+      .toList();
+  final reasonCtrl = TextEditingController();
+
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) {
+      return StatefulBuilder(
+        builder: (ctx, setLocal) {
+          final reasonOk = reasonCtrl.text.trim().length >= 3;
+          return AlertDialog(
+            title: Text(uiTr(context, 'اعتماد استثنائي للمندوب')),
+            content: SizedBox(
+              width: AdminUi.dialogMaxWidth(ctx),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${uiTr(context, 'الحالة الحالية')}: '
+                      '${status == 'needs_changes' || status == 'changes_requested' ? uiTr(context, 'يحتاج تعديلات') : (status.isEmpty ? '—' : status)}',
+                    ),
+                    if (openSummaries.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        uiTr(context, 'الملاحظات/طلبات التعديل المفتوحة:'),
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 6),
+                      for (final line in openSummaries)
+                        Text('• $line', softWrap: true),
+                    ] else if (blockers.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        uiTr(context, 'الملاحظات/طلبات التعديل المفتوحة:'),
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 6),
+                      for (final b in blockers) Text('• $b', softWrap: true),
+                    ],
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: reasonCtrl,
+                      maxLines: 3,
+                      onChanged: (_) => setLocal(() {}),
+                      decoration: InputDecoration(
+                        labelText: uiTr(context, 'سبب الاعتماد الاستثنائي'),
+                        hintText: uiTr(context, 'اكتب سببًا واضحًا للإجراء'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(uiTr(context, 'إلغاء')),
+              ),
+              FilledButton(
+                onPressed: reasonOk ? () => Navigator.pop(ctx, true) : null,
+                child: Text(uiTr(context, 'اعتماد وتفعيل استثنائي')),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+
+  final reason = reasonCtrl.text.trim();
+  reasonCtrl.dispose();
+  if (ok != true || reason.length < 3) return null;
+  return reason;
 }
 
 Future<String?> showDriverRejectDialog({required BuildContext context}) async {

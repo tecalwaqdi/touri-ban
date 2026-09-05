@@ -144,10 +144,43 @@ abstract final class AdminDriverReviewActions {
     };
   }
 
+  static Iterable<Map> openRequestedChanges(Map<String, dynamic> data) {
+    return (data['requested_changes'] as List?)
+            ?.whereType<Map>()
+            .where((e) => e['resolved'] != true) ??
+        const Iterable.empty();
+  }
+
+  static bool hasOpenRequestedChanges(Map<String, dynamic> data) =>
+      openRequestedChanges(data).isNotEmpty;
+
+  /// Concise open-change lines for override dialog (adminMessage / section).
+  static List<String> openChangeRequestSummaries(Map<String, dynamic> data) {
+    final out = <String>[];
+    for (final e in openRequestedChanges(data)) {
+      final msg = '${e['adminMessage'] ?? e['admin_message'] ?? ''}'.trim();
+      final section = '${e['section'] ?? ''}'.trim();
+      if (msg.isNotEmpty) {
+        out.add(msg);
+      } else if (section.isNotEmpty) {
+        out.add(section);
+      }
+    }
+    return out;
+  }
+
+  /// needs_changes / open change requests → exceptional Super Admin path.
+  static bool requiresExceptionalOverride(Map<String, dynamic> data) {
+    final status = (data['registration_status'] as String?)?.trim() ?? '';
+    if (status == 'needs_changes' || status == 'changes_requested') {
+      return true;
+    }
+    return hasOpenRequestedChanges(data);
+  }
+
   /// Whether Super Admin may show the override approval CTA.
   static bool canSuperAdminOverrideApprove(Map<String, dynamic> data) {
-    final status = (data['registration_status'] as String?)?.trim() ?? '';
-    return status == 'needs_changes' || status == 'pending_review';
+    return requiresExceptionalOverride(data);
   }
 
   static Map<String, dynamic> rejectPatch({

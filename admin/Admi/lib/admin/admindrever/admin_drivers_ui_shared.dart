@@ -15,6 +15,7 @@ class AdminDriverModuleScaffold extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.isLoading = false,
+    this.loadingMessage,
     required this.body,
     this.bottomBar,
   });
@@ -22,12 +23,15 @@ class AdminDriverModuleScaffold extends StatelessWidget {
   final String title;
   final String? subtitle;
   final bool isLoading;
+  /// Shown under the spinner while [isLoading] — never leave a blank white body.
+  final String? loadingMessage;
   final Widget body;
   final Widget? bottomBar;
 
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
+    final loadMsg = (loadingMessage ?? '').trim();
 
     return Scaffold(
       backgroundColor: theme.primaryBackground,
@@ -69,11 +73,31 @@ class AdminDriverModuleScaffold extends StatelessWidget {
         ),
       ),
       body: isLoading
-          ? const Center(
-              child: SizedBox(
-                width: 36,
-                height: 36,
-                child: CircularProgressIndicator(strokeWidth: 2.5),
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: CircularProgressIndicator(strokeWidth: 2.5),
+                    ),
+                    if (loadMsg.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        loadMsg,
+                        textAlign: TextAlign.center,
+                        style: theme.bodyMedium.override(
+                          fontFamily: theme.bodyMediumFamily,
+                          color: theme.secondaryText,
+                          useGoogleFonts: !theme.bodyMediumIsCustom,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             )
           : body,
@@ -178,6 +202,7 @@ class AdminDriverStickyActions extends StatelessWidget {
     this.onCancel,
     this.primaryLoading = false,
     this.primaryIcon,
+    this.showPrimary = true,
   });
 
   final String primaryLabel;
@@ -185,6 +210,7 @@ class AdminDriverStickyActions extends StatelessWidget {
   final VoidCallback? onCancel;
   final bool primaryLoading;
   final IconData? primaryIcon;
+  final bool showPrimary;
 
   @override
   Widget build(BuildContext context) {
@@ -204,15 +230,17 @@ class AdminDriverStickyActions extends StatelessWidget {
                     : (onCancel ?? () => Navigator.of(context).maybePop()),
                 child: Text(uiTr(context, 'إلغاء')),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: AdminPrimaryButton(
-                  label: primaryLabel,
-                  icon: primaryIcon ?? Icons.save_rounded,
-                  isLoading: primaryLoading,
-                  onPressed: primaryLoading ? null : onPrimary,
+              if (showPrimary) ...[
+                const SizedBox(width: 10),
+                Expanded(
+                  child: AdminPrimaryButton(
+                    label: primaryLabel,
+                    icon: primaryIcon ?? Icons.save_rounded,
+                    isLoading: primaryLoading,
+                    onPressed: primaryLoading ? null : onPrimary,
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),

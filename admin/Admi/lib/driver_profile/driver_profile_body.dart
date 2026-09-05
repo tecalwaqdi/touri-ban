@@ -277,19 +277,26 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
                 icon: const Icon(Icons.edit_outlined, size: 18),
                 label: Text(uiTr(context, 'تعديل')),
               ),
-              if (row.review == AdminDriverReviewBucket.pendingReview)
+              if (row.review == AdminDriverReviewBucket.pendingReview &&
+                  !AdminDriverReviewActions.requiresExceptionalOverride(
+                    Map<String, dynamic>.from(widget.user.snapshotData),
+                  ))
                 AdminPrimaryButton(
                   label: uiTr(context, 'مراجعة التسجيل'),
                   icon: Icons.fact_check_outlined,
                   isLoading: _actionBusy,
                   onPressed: () => _openReview(context),
                 ),
-              if (row.review == AdminDriverReviewBucket.needsChanges) ...[
-                OutlinedButton.icon(
-                  onPressed: null,
-                  icon: const Icon(Icons.hourglass_top_rounded, size: 18),
-                  label: Text(uiTr(context, 'انتظار استكمال التعديلات')),
-                ),
+              if (row.review == AdminDriverReviewBucket.needsChanges ||
+                  AdminDriverReviewActions.requiresExceptionalOverride(
+                    Map<String, dynamic>.from(widget.user.snapshotData),
+                  )) ...[
+                if (row.review == AdminDriverReviewBucket.needsChanges)
+                  OutlinedButton.icon(
+                    onPressed: null,
+                    icon: const Icon(Icons.hourglass_top_rounded, size: 18),
+                    label: Text(uiTr(context, 'انتظار استكمال التعديلات')),
+                  ),
                 if (AdminRoleService.isSuperAdmin)
                   AdminPrimaryButton(
                     label: uiTr(context, 'اعتماد وتفعيل استثنائي'),
@@ -504,7 +511,7 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: Text(uiTr(context, 'اعتماد استثنائي')),
+          title: Text(uiTr(context, 'اعتماد استثنائي للمندوب')),
           content: SizedBox(
             width: 420,
             child: SingleChildScrollView(
@@ -513,7 +520,7 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '${uiTr(context, 'حالة التسجيل الحالية')}: '
+                    '${uiTr(context, 'الحالة الحالية')}: '
                     '${AdminDriverStatusL10n.registrationRaw(context, status)}',
                   ),
                   const SizedBox(height: 10),
@@ -527,17 +534,35 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  if (blockers.isNotEmpty) ...[
-                    const SizedBox(height: 10),
-                    Text(uiTr(context, 'الملاحظات / العوائق:')),
-                    for (final b in blockers) Text('• $b', softWrap: true),
-                  ],
+                  Builder(
+                    builder: (_) {
+                      final open = AdminDriverReviewActions
+                          .openChangeRequestSummaries(data);
+                      if (open.isEmpty && blockers.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 10),
+                          Text(
+                            uiTr(context, 'الملاحظات/طلبات التعديل المفتوحة:'),
+                          ),
+                          if (open.isNotEmpty)
+                            for (final b in open) Text('• $b', softWrap: true)
+                          else
+                            for (final b in blockers)
+                              Text('• $b', softWrap: true),
+                        ],
+                      );
+                    },
+                  ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: reasonCtrl,
                     maxLines: 3,
                     decoration: InputDecoration(
-                      labelText: uiTr(context, 'سبب الاعتماد الاستثنائي *'),
+                      labelText: uiTr(context, 'سبب الاعتماد الاستثنائي'),
                       hintText: uiTr(context, 'اكتب سببًا واضحًا للإجراء'),
                     ),
                   ),
@@ -551,8 +576,11 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
               child: Text(uiTr(context, 'إلغاء')),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(uiTr(context, 'اعتماد استثنائي')),
+              onPressed: () {
+                if (reasonCtrl.text.trim().length < 3) return;
+                Navigator.pop(ctx, true);
+              },
+              child: Text(uiTr(context, 'اعتماد وتفعيل استثنائي')),
             ),
           ],
         );

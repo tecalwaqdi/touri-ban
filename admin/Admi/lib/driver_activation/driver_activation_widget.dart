@@ -1,13 +1,11 @@
-import '/admin/admindrever/admin_drivers_adapter.dart';
-import '/admin/admindrever/admin_drivers_ui_shared.dart';
-import '/backend/admin_audit_log.dart';
-import '/backend/backend.dart';
+import '/backend/admin_role_service.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_region_picker.dart';
 import '/core/admin_driver_profile_view.dart';
 import '/core/admin_driver_review_actions.dart';
 import '/core/admin_driver_route_params.dart';
+import '/core/admin_type_car_label.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/core/cloud_functions/cloud_functions_client.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -16,6 +14,11 @@ import 'package:provider/provider.dart';
 import 'driver_activation_model.dart';
 import 'driver_registration_review_body.dart';
 export 'driver_activation_model.dart';
+
+import '/backend/admin_audit_log.dart';
+import '/backend/backend.dart';
+import '/admin/admindrever/admin_drivers_adapter.dart';
+import '/admin/admindrever/admin_drivers_ui_shared.dart';
 
 enum _ReviewLoadPhase {
   loading,
@@ -55,7 +58,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  void _seedFromUser(UserRecord user) {
+  Future<void> _seedFromUser(UserRecord user) async {
     if (_seeded) return;
     _seeded = true;
     if (_model.naimTextController!.text.trim().isEmpty &&
@@ -68,12 +71,19 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
       FFAppState().workciteText = user.mndobVillText;
     }
     if (_model.textFieldtypTextController!.text.trim().isEmpty) {
-      final carLabel = user.textTypeCarMndob.trim().isNotEmpty
+      final legacy = user.textTypeCarMndob.trim().isNotEmpty
           ? user.textTypeCarMndob
           : (user.snapshotData['mdenh_aml']?.toString() ?? '');
+      final carLabel = await AdminTypeCarLabel.resolve(
+        context: context,
+        typeCarRef: user.mndobTypeCar,
+        legacy: legacy,
+      );
+      if (!mounted) return;
       if (carLabel.trim().isNotEmpty) {
         _model.textFieldtypTextController!.text = carLabel;
         FFAppState().typeCarText = carLabel;
+        FFAppState().RefTepeCar = user.mndobTypeCar;
       }
     }
   }
@@ -126,7 +136,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
       }
 
       final user = UserRecord.fromSnapshot(snap);
-      _seedFromUser(user);
+      await _seedFromUser(user);
       if (!mounted) return;
       setState(() {
         _phase = _ReviewLoadPhase.ready;
@@ -139,6 +149,67 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
         _error = e;
         _user = null;
       });
+    }
+  }
+
+  Future<void> _exceptionalApprove() async {
+    final ref = _resolvedRef ?? _resolveRef();
+    if (_busy || ref == null || !AdminRoleService.isSuperAdmin) return;
+    final snap = await ref.get();
+    final data = Map<String, dynamic>.from(
+      snap.data() as Map<String, dynamic>? ?? {},
+    );
+    final reason = await showDriverExceptionalApproveDialog(
+      context: context,
+      data: data,
+    );
+    if (reason == null || !mounted) return;
+
+    setState(() => _busy = true);
+    try {
+      final workCityRef = FFAppState().workcite;
+      final carTypeRef = FFAppState().RefTepeCar;
+      final adminProfile = <String, dynamic>{
+        if (_model.naimTextController.text.trim().isNotEmpty)
+          'displayName': _model.naimTextController.text.trim(),
+        if (workCityRef != null) 'mndob_vill': workCityRef.path,
+        if (carTypeRef != null) 'mndob_type_car': carTypeRef.path,
+        if ((FFAppState().workciteText).trim().isNotEmpty)
+          'mndob_vill_text': FFAppState().workciteText.trim(),
+      };
+
+      await CloudFunctionsClient.reviewDriver(
+        action: 'approve',
+        driverId: ref.id,
+        useRegistrationV2: true,
+        reviewVersion: (data['reviewVersion'] as num?)?.toInt(),
+        override: true,
+        overrideReason: reason,
+        alsoActivate: true,
+        adminProfile: adminProfile.isEmpty ? null : adminProfile,
+      );
+      await AdminAuditLog.record(
+        action: 'driver_override_approve',
+        targetType: 'user',
+        targetId: ref.id,
+        targetLabel: _model.naimTextController.text,
+        metadata: {'override_reason': reason},
+      );
+      AdminListRefresh.notify(AdminListScope.representatives);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(uiTr(context, 'تم الاعتماد والتفعيل الاستثنائي')),
+        ),
+      );
+      context.safePop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AdminCrudFeedback.updateFailed(context, e))),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -369,6 +440,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
         return AdminDriverModuleScaffold(
           title: uiTr(context, 'مراجعة طلب المندوب'),
           isLoading: true,
+          loadingMessage: uiTr(context, 'جاري تحميل بيانات المندوب...'),
           body: const SizedBox.shrink(),
         );
       case _ReviewLoadPhase.invalidParam:
@@ -452,6 +524,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
                   });
                 },
                 onApprove: awaiting ? _approve : null,
+                onExceptionalApprove: awaiting ? _exceptionalApprove : null,
                 onReject: awaiting ? _reject : null,
                 onRequestChanges: awaiting ? _requestChanges : null,
               ),

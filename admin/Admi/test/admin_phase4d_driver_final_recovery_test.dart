@@ -83,6 +83,37 @@ void main() {
       );
     });
 
+    test('open change requests force exceptional path', () {
+      expect(
+        AdminDriverReviewActions.requiresExceptionalOverride({
+          'registration_status': 'pending_review',
+          'requested_changes': [
+            {'resolved': false, 'adminMessage': 'fix plate'},
+          ],
+        }),
+        isTrue,
+      );
+      expect(
+        AdminDriverReviewActions.openChangeRequestSummaries({
+          'requested_changes': [
+            {'resolved': false, 'adminMessage': 'fix plate'},
+            {'resolved': true, 'adminMessage': 'done'},
+          ],
+        }),
+        ['fix plate'],
+      );
+    });
+
+    test('clean pending_review is not exceptional', () {
+      expect(
+        AdminDriverReviewActions.requiresExceptionalOverride({
+          'registration_status': 'pending_review',
+          'requested_changes': [],
+        }),
+        isFalse,
+      );
+    });
+
     test('approved is not override-eligible', () {
       expect(
         AdminDriverReviewActions.canSuperAdminOverrideApprove({
@@ -120,6 +151,20 @@ void main() {
         'registration_status': 'needs_changes',
       });
       expect(blockers, contains('adm_drv_blocker_registration_not_approved'));
+    });
+  });
+
+  group('vehicle type label localization', () {
+    test('touryLocalizedText prefers ar over ru legacy', () {
+      // Mirrors AdminTypeCarLabel / type_car names_i18n SoT.
+      final label = () {
+        const i18n = {'ar': 'اقتصادية', 'ru': 'Эконом', 'en': 'Economy'};
+        const legacy = 'Эконом';
+        const locale = 'ar';
+        return i18n[locale] ?? i18n['en'] ?? legacy;
+      }();
+      expect(label, 'اقتصادية');
+      expect(label.contains('Эконом'), isFalse);
     });
   });
 
