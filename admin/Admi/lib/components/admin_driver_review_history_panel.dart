@@ -68,17 +68,17 @@ class AdminDriverReviewHistoryPanel extends StatelessWidget {
                       ),
                       subtitle: Text(
                         [
-                              AdminDriverStatusL10n.statusTransition(
-                                context,
-                                oldStatus: d.data()['oldStatus'],
-                                newStatus: d.data()['newStatus'],
-                              ),
-                              if ((d.data()['reason'] ?? '')
-                                  .toString()
-                                  .trim()
-                                  .isNotEmpty)
-                                '${d.data()['reason']}',
-                            ]
+                          AdminDriverStatusL10n.statusTransition(
+                            context,
+                            oldStatus: d.data()['oldStatus'],
+                            newStatus: d.data()['newStatus'],
+                          ),
+                          if ((d.data()['reason'] ?? '')
+                              .toString()
+                              .trim()
+                              .isNotEmpty)
+                            '${d.data()['reason']}',
+                        ]
                             .where((e) => e.toString().trim().isNotEmpty)
                             .join(' · '),
                         softWrap: true,

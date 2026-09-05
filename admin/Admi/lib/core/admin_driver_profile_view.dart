@@ -230,8 +230,7 @@ abstract final class AdminDriverProfileView {
       'plate',
     ]);
     final color = _firstNonEmpty(data, ['vehicle_color', 'color']);
-    final incomplete =
-        classification.isEmpty &&
+    final incomplete = classification.isEmpty &&
         name.isEmpty &&
         model.isEmpty &&
         plate.isEmpty &&
@@ -351,8 +350,8 @@ abstract final class AdminDriverProfileView {
       final path = DriverRegistrationDocumentStatus.isStoragePath(photoPath)
           ? photoPath
           : (DriverRegistrationDocumentStatus.isStoragePath(mapPath)
-                ? mapPath
-                : '');
+              ? mapPath
+              : '');
       final fallbackUrl = photoUrl.startsWith('https://')
           ? photoUrl
           : (mapUrl.startsWith('https://') ? mapUrl : '');
@@ -453,8 +452,8 @@ abstract final class AdminDriverProfileView {
 
   /// Backend-controlled `registration_documents_status` when present.
   static String authoritativeDocumentsStatus(UserRecord user) {
-    final raw = '${user.snapshotData['registration_documents_status'] ?? ''}'
-        .trim();
+    final raw =
+        '${user.snapshotData['registration_documents_status'] ?? ''}'.trim();
     return raw;
   }
 

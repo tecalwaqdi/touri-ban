@@ -72,8 +72,7 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
   }
 
   MoneyAmount _tripNet(FinancialCurrencyTotals t) {
-    final minor =
-        t.cashDriversOweCompany.minorUnits -
+    final minor = t.cashDriversOweCompany.minorUnits -
         t.cashCompanyOwesDrivers.minorUnits -
         t.onlineCompanyOwesDrivers.minorUnits;
     return MoneyAmount(currency: t.currency, minorUnits: minor);
@@ -338,13 +337,12 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
                   value: result.byCurrency.keys.contains(_previewCurrency)
                       ? _previewCurrency
                       : (result.byCurrency.keys.isEmpty
-                            ? 'SAR'
-                            : result.byCurrency.keys.first),
+                          ? 'SAR'
+                          : result.byCurrency.keys.first),
                   items: [
-                    for (final c
-                        in (result.byCurrency.keys.isEmpty
-                            ? ['SAR']
-                            : result.byCurrency.keys))
+                    for (final c in (result.byCurrency.keys.isEmpty
+                        ? ['SAR']
+                        : result.byCurrency.keys))
                       DropdownMenuItem(value: c, child: Text(c)),
                   ],
                   onChanged: (v) {
