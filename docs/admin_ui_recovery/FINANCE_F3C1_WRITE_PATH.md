@@ -2,7 +2,7 @@
 
 **BASE:** `af13bf5` (`recovery/admin-finance-f3a2-data-readiness`)  
 **BRANCH:** `recovery/admin-finance-f3c1-write-path`  
-**COMMIT:** `565b1cd6fdd4314d16a4fe1502f002a2fb655cb3`  
+**COMMIT:** `ac06f2efbe28ac360bcb66d056adbfcd0e69e44d`  
 **CODE AREA:** `admin/ara_oatan_app/firebase/functions/ngenius_payments.js`  
 (Note: booking create lives in Customer Functions codebase, not `admin/Admi/firebase/functions`.)  
 **PRODUCTION DEPLOY:** **NO**
