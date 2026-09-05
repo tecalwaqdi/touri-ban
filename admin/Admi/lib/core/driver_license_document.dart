@@ -31,6 +31,12 @@ abstract final class DriverLicenseDocument {
       final url = (slot['url'] as String?)?.trim() ?? '';
       if (url.startsWith('https://')) return true;
     }
+    // Legacy FlutterFlow: bare HTTPS string on the same key.
+    if (slot is String) {
+      final s = slot.trim();
+      if (s.startsWith('https://')) return true;
+      if (isStoragePath(s)) return true;
+    }
     return false;
   }
 

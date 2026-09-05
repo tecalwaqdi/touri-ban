@@ -60,7 +60,7 @@ class DriverRegistrationReviewBody extends StatelessWidget {
     final emailVerification = AdminDriverEmailVerification.fromUserData(data);
     final exceptional =
         AdminDriverReviewActions.requiresExceptionalOverride(data);
-    final superAdmin = AdminRoleService.isSuperAdmin;
+    final superAdmin = AdminRoleService.canUseDriverExceptionalOverride;
     final vehicleTypeLabel = carTypeController.text.trim().isNotEmpty
         ? carTypeController.text.trim()
         : (vehicle.classLine.isNotEmpty ? vehicle.classLine : vehicle.titleLine);

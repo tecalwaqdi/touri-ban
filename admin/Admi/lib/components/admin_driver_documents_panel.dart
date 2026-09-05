@@ -143,26 +143,30 @@ class _DocRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
-    final presenceLabel = switch (slot.presence) {
+    // Defense-in-depth: back is never a required failure in Admin UI.
+    var presence = slot.presence;
+    if (slot.kind == AdminDriverDocKind.driverLicenseBack &&
+        presence == AdminDriverDocPresence.missing) {
+      presence = AdminDriverDocPresence.optionalMissing;
+    }
+    final presenceLabel = switch (presence) {
       AdminDriverDocPresence.present =>
         slot.kind == AdminDriverDocKind.driverLicenseLegacy
             ? uiTr(context, 'متوفرة · سجل قديم')
             : uiTr(context, 'متوفرة'),
       AdminDriverDocPresence.missing => uiTr(context, 'ناقصة'),
-      AdminDriverDocPresence.optionalMissing => uiTr(
-        context,
-        'اختياري — غير مرفقة',
-      ),
+      AdminDriverDocPresence.optionalMissing =>
+        uiTr(context, 'اختياري — غير مرفقة'),
       AdminDriverDocPresence.legacy => uiTr(
         context,
         AdminDriverDocumentAccess.legacyAccessLabel,
       ),
     };
     final present =
-        slot.presence == AdminDriverDocPresence.present ||
-        slot.presence == AdminDriverDocPresence.legacy;
+        presence == AdminDriverDocPresence.present ||
+        presence == AdminDriverDocPresence.legacy;
     final optionalAbsent =
-        slot.presence == AdminDriverDocPresence.optionalMissing;
+        presence == AdminDriverDocPresence.optionalMissing;
 
     return Container(
       padding: const EdgeInsets.all(10),

@@ -104,13 +104,28 @@ void main() {
       );
     });
 
-    test('clean pending_review is not exceptional', () {
+    test('fieldsToFix alone forces exceptional path', () {
       expect(
         AdminDriverReviewActions.requiresExceptionalOverride({
           'registration_status': 'pending_review',
-          'requested_changes': [],
+          'fieldsToFix': ['vehicle'],
         }),
-        isFalse,
+        isTrue,
+      );
+    });
+
+    test('legacy HTTPS string on doc_driver_license satisfies license', () {
+      expect(
+        DriverLicenseDocument.hasLegacySingle({
+          'doc_driver_license': 'https://example.com/license.jpg',
+        }),
+        isTrue,
+      );
+      expect(
+        DriverLicenseDocument.satisfiesCanonicalRequirement({
+          'doc_driver_license': 'https://example.com/license.jpg',
+        }),
+        isTrue,
       );
     });
 

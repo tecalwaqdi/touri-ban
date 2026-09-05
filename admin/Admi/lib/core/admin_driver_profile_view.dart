@@ -412,8 +412,8 @@ abstract final class AdminDriverProfileView {
   }
 
   /// License visual contract (back optional):
-  /// A) front exists → show front; show back only if present (or as optional)
-  /// B) front missing + legacy → one canonical license (legacy)
+  /// A) front exists → show front; back present OR optional-missing (never ناقصة)
+  /// B) front missing + legacy → ONE canonical license (legacy) only
   /// C) nothing → one required missing license
   static List<AdminDriverDocumentSlot> _licenseSlots(
     UserRecord user,
@@ -442,6 +442,14 @@ abstract final class AdminDriverProfileView {
       );
     }
 
+    // CASE B first when legacy satisfies and front is absent — never emit
+    // front-missing + back-missing beside a valid legacy card.
+    if (!hasF && hasL) {
+      return [
+        build(AdminDriverDocKind.driverLicenseLegacy, 'doc_driver_license'),
+      ];
+    }
+
     if (hasF) {
       final out = <AdminDriverDocumentSlot>[
         build(
@@ -465,13 +473,10 @@ abstract final class AdminDriverProfileView {
           ),
         );
       }
+      // Legacy companion is suppressed when front exists (avoid triple cards).
       return out;
     }
-    if (hasL) {
-      return [
-        build(AdminDriverDocKind.driverLicenseLegacy, 'doc_driver_license'),
-      ];
-    }
+
     // CASE C — single required missing state (not three cards).
     return [
       build(
@@ -569,7 +574,7 @@ abstract final class AdminDriverProfileView {
       case AdminDriverDocKind.driverLicenseFront:
         return uiTr(context, 'رخصة القيادة (الوجه الأمامي)');
       case AdminDriverDocKind.driverLicenseBack:
-        return uiTr(context, 'رخصة القيادة (الوجه الخلفي)');
+        return uiTr(context, 'الوجه الخلفي — اختياري');
       case AdminDriverDocKind.driverLicenseLegacy:
         // Single-slot presentation (legacy-only or fully missing).
         return uiTr(context, 'رخصة القيادة');

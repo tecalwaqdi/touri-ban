@@ -154,7 +154,9 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
 
   Future<void> _exceptionalApprove() async {
     final ref = _resolvedRef ?? _resolveRef();
-    if (_busy || ref == null || !AdminRoleService.isSuperAdmin) return;
+    if (_busy || ref == null || !AdminRoleService.canUseDriverExceptionalOverride) {
+      return;
+    }
     final snap = await ref.get();
     final data = Map<String, dynamic>.from(
       snap.data() as Map<String, dynamic>? ?? {},

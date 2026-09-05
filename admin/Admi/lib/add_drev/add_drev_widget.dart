@@ -645,37 +645,29 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     final wantsEdit = widget.editUserRef != null ||
         ((_rawEditUser() ?? '').trim().isNotEmpty);
     // Never paint create Save bar / empty form while an edit target is resolving.
-    final resolvingEdit = wantsEdit && (phase == 'creating' || phase == 'loading');
+    final resolvingEdit =
+        wantsEdit && (phase == 'creating' || phase == 'loading');
     final canMutate =
         (!wantsEdit && phase == 'creating') || (isEdit && phase == 'loaded');
-    final Widget phaseBody;
+
+    // Prefer scaffold-level loading so body cannot paint blank white.
     if (resolvingEdit || (isEdit && phase == 'loading')) {
-      phaseBody = Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(
-                width: 36,
-                height: 36,
-                child: CircularProgressIndicator(strokeWidth: 2.5),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                uiTr(context, 'جاري تحميل بيانات المندوب...'),
-                textAlign: TextAlign.center,
-                style: theme.bodyMedium.override(
-                  fontFamily: theme.bodyMediumFamily,
-                  color: theme.secondaryText,
-                  useGoogleFonts: !theme.bodyMediumIsCustom,
-                ),
-              ),
-            ],
-          ),
+      return AdminDriverModuleScaffold(
+        title: uiTr(context, 'تعديل بيانات المندوب'),
+        subtitle: uiTr(context, 'عدّل البيانات ثم احفظ'),
+        isLoading: true,
+        loadingMessage: uiTr(context, 'جاري تحميل بيانات المندوب...'),
+        bottomBar: AdminDriverStickyActions(
+          primaryLabel: uiTr(context, 'حفظ التعديلات'),
+          showPrimary: false,
+          onPrimary: null,
         ),
+        body: const SizedBox.shrink(),
       );
-    } else if (isEdit && phase == 'notFound') {
+    }
+
+    final Widget phaseBody;
+    if (isEdit && phase == 'notFound') {
       phaseBody = Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -1025,14 +1017,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                   isEdit ? Icons.save_rounded : Icons.person_add_rounded,
               onPrimary: _model.isSubmitting ? null : _submitRepresentative,
             )
-          : resolvingEdit
-              ? AdminDriverStickyActions(
-                  primaryLabel: uiTr(context, 'حفظ التعديلات'),
-                  primaryLoading: false,
-                  showPrimary: false,
-                  onPrimary: null,
-                )
-              : null,
+          : null,
       body: phaseBody,
     );
   }

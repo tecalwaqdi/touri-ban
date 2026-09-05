@@ -145,14 +145,25 @@ abstract final class AdminDriverReviewActions {
   }
 
   static Iterable<Map> openRequestedChanges(Map<String, dynamic> data) {
-    return (data['requested_changes'] as List?)
-            ?.whereType<Map>()
-            .where((e) => e['resolved'] != true) ??
-        const Iterable.empty();
+    final raw = data['requested_changes'] ?? data['requestedChanges'];
+    if (raw is! List) return const Iterable.empty();
+    return raw.whereType<Map>().where((e) {
+      final resolved = e['resolved'] ?? e['isResolved'] ?? e['done'];
+      if (resolved == true || resolved == 'true' || resolved == 1) {
+        return false;
+      }
+      return true;
+    });
   }
 
   static bool hasOpenRequestedChanges(Map<String, dynamic> data) =>
       openRequestedChanges(data).isNotEmpty;
+
+  static bool hasPendingFieldsToFix(Map<String, dynamic> data) {
+    final fields = data['fieldsToFix'] ?? data['fields_to_fix'];
+    if (fields is! List) return false;
+    return fields.map((e) => '$e'.trim()).any((e) => e.isNotEmpty);
+  }
 
   /// Concise open-change lines for override dialog (adminMessage / section).
   static List<String> openChangeRequestSummaries(Map<String, dynamic> data) {
@@ -166,16 +177,33 @@ abstract final class AdminDriverReviewActions {
         out.add(section);
       }
     }
+    if (out.isEmpty && hasPendingFieldsToFix(data)) {
+      final fields = (data['fieldsToFix'] ?? data['fields_to_fix']) as List;
+      for (final f in fields) {
+        final s = '$f'.trim();
+        if (s.isNotEmpty) out.add(s);
+      }
+    }
+    final reason =
+        '${data['changeRequestReason'] ?? data['rejection_reason'] ?? ''}'
+            .trim();
+    if (out.isEmpty && reason.isNotEmpty) out.add(reason);
     return out;
   }
 
-  /// needs_changes / open change requests → exceptional Super Admin path.
+  /// needs_changes / open change requests / pending fieldsToFix → exceptional.
   static bool requiresExceptionalOverride(Map<String, dynamic> data) {
     final status = (data['registration_status'] as String?)?.trim() ?? '';
     if (status == 'needs_changes' || status == 'changes_requested') {
       return true;
     }
-    return hasOpenRequestedChanges(data);
+    if (hasOpenRequestedChanges(data)) return true;
+    if (hasPendingFieldsToFix(data)) return true;
+    // Same signal as review blockers — never show generic approve beside it.
+    if (approvalBlockingReasons(data).contains('adm_drv_blocker_open_changes')) {
+      return true;
+    }
+    return false;
   }
 
   /// Whether Super Admin may show the override approval CTA.

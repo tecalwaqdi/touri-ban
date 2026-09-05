@@ -149,6 +149,14 @@ class AdminRoleService {
 
   static bool get isSuperAdmin => currentRole == AdminRole.superAdmin;
 
+  /// Super Admin for exceptional driver override — claims OR profile bootstrap.
+  /// Avoids hiding the CTA when authoritative claims omit `super_admin` while
+  /// the signed-in profile is still an isAdminRule=1 Super Admin.
+  static bool get canUseDriverExceptionalOverride {
+    if (isSuperAdmin) return true;
+    return isSuperAdminUser(_boundProfile);
+  }
+
   /// Country-agent list/dashboard scoping. Super admins always use global scope
   /// even when legacy claims also include country_admin/agent (production QA account).
   static bool get isCountryAgent {

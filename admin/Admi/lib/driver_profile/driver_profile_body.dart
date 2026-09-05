@@ -297,7 +297,7 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
                     icon: const Icon(Icons.hourglass_top_rounded, size: 18),
                     label: Text(uiTr(context, 'انتظار استكمال التعديلات')),
                   ),
-                if (AdminRoleService.isSuperAdmin)
+                if (AdminRoleService.canUseDriverExceptionalOverride)
                   AdminPrimaryButton(
                     label: uiTr(context, 'اعتماد وتفعيل استثنائي'),
                     icon: Icons.verified_user_outlined,
@@ -332,7 +332,7 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
               ] else
                 AdminPrimaryButton(
                   label:
-                      AdminRoleService.isSuperAdmin &&
+                      AdminRoleService.canUseDriverExceptionalOverride &&
                           AdminDriverReviewActions.operationalActivationBlockers(
                             Map<String, dynamic>.from(widget.user.snapshotData),
                           ).isNotEmpty
@@ -498,7 +498,9 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
   }
 
   Future<void> _overrideApproveAndActivate(BuildContext context) async {
-    if (_actionBusy || !AdminRoleService.isSuperAdmin) return;
+    if (_actionBusy || !AdminRoleService.canUseDriverExceptionalOverride) {
+      return;
+    }
     final data = Map<String, dynamic>.from(widget.user.snapshotData);
     final status =
         (data['registration_status'] as String?)?.trim() ?? 'needs_changes';
