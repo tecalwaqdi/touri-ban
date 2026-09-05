@@ -4,7 +4,7 @@ BASE:
 235d51d4a97ec5fbaff8caf9c81c19df6bf906a5
 
 COMMIT:
-(see git after commit)
+6baafcaa8a5397f428ecdb992bfc344434acec51
 
 PREVIEW:
 https://tutorial-multi-language-70gx4j--admin-finance-f2-1-im0eagw0.web.app/admin/#/adminFinanceHub
