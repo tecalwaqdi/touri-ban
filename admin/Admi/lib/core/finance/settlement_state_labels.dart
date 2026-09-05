@@ -36,17 +36,17 @@ abstract final class SettlementStateLabels {
   static String statusAr(String raw) {
     switch (raw.trim().toLowerCase()) {
       case 'draft':
-        return 'مسودة';
+        return 'غير مسددة';
       case 'locked':
-        return 'مقفلة';
+        return 'غير مسددة';
       case 'partially_paid':
-        return 'مدفوع جزئيًا';
+        return 'مسددة جزئيًا';
       case 'settled':
         return 'مسددة';
       case 'voided':
         return 'ملغاة';
       case 'pending':
-        return 'قيد التأكيد';
+        return 'غير مسددة';
       case 'confirmed':
         return 'مؤكد';
       case 'reversed':
@@ -54,7 +54,7 @@ abstract final class SettlementStateLabels {
       case 'failed':
         return 'فشل';
       default:
-        return 'قيد التسوية';
+        return 'غير مسددة';
     }
   }
 
@@ -69,7 +69,7 @@ abstract final class SettlementStateLabels {
       case 'wallet':
         return 'محفظة';
       case 'existing_company_payment':
-        return 'دفعة شركة (سجل قديم)';
+        return 'دفعة شركة سابقة';
       case 'other':
         return 'أخرى';
       default:

@@ -6,6 +6,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/index.dart';
 import 'package:flutter/material.dart';
 import 'admin_profits_model.dart';
 export 'admin_profits_model.dart';
@@ -34,6 +35,11 @@ class _AdminProfitsWidgetState extends State<AdminProfitsWidget> {
     _statsInvalidationSub =
         AdminStatsCoordinator.instance.stream(StatsDomain.profits).listen((_) {
       _panelKey.currentState?.reload();
+    });
+    // F2: canonical accountant entry is Finance Hub — soft redirect.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.goNamed(AdminFinanceHubWidget.routeName);
     });
   }
 

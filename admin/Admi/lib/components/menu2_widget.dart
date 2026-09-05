@@ -219,20 +219,8 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 icon: Icons.handshake_outlined
               ),
               (
-                route: AdminProfitsWidget.routeName,
-                icon: Icons.account_balance_wallet_rounded
-              ),
-              (
                 route: AdminSettlementsWidget.routeName,
                 icon: Icons.receipt_long_outlined
-              ),
-              (
-                route: AdminReconciliationWidget.routeName,
-                icon: Icons.rule_folder_outlined
-              ),
-              (
-                route: AdminFinancialPeriodsWidget.routeName,
-                icon: Icons.date_range_outlined
               ),
               (
                 route: AdminFinanceReportsWidget.routeName,
@@ -241,10 +229,6 @@ class _Menu2WidgetState extends State<Menu2Widget> {
               (
                 route: AdminFinanceAuditWidget.routeName,
                 icon: Icons.manage_search_rounded
-              ),
-              (
-                route: AdminDriverWalletsWidget.routeName,
-                icon: Icons.wallet_rounded
               ),
             ],
           ),

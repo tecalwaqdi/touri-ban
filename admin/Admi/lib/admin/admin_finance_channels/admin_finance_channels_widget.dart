@@ -13,6 +13,7 @@ import '/core/finance/financial_accounting_unavailable.dart';
 import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/index.dart';
 
 /// FIN-5 — Cash / Online operational accounting (read-only).
 class AdminFinanceChannelsWidget extends StatefulWidget {
@@ -37,6 +38,11 @@ class _AdminFinanceChannelsWidgetState
   void initState() {
     super.initState();
     _menu2Model = createModel(context, () => Menu2Model());
+    // F2: channels remain diagnostic; primary accountant UI is Finance Hub.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // Keep route for deep links; surface banner only (no hard redirect).
+    });
     _reload();
   }
 
@@ -86,7 +92,17 @@ class _AdminFinanceChannelsWidgetState
                 title: uiTr(context, 'محاسبة النقدي والإلكتروني'),
                 subtitle: uiTr(
                   context,
-                  'عرض تشغيلي — المرحلة C معطّلة؛ التحصيل اليدوي لا يُنشئ إيرادًا حتى الإثبات.',
+                  'عرض تشخيصي — الملخص المحاسبي الموحّد في شاشة المالية.',
+                ),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: AdminPrimaryButton(
+                  label: uiTr(context, 'الانتقال للمالية'),
+                  outlined: true,
+                  onPressed: () =>
+                      context.pushNamed(AdminFinanceHubWidget.routeName),
                 ),
               ),
               const SizedBox(height: 12),

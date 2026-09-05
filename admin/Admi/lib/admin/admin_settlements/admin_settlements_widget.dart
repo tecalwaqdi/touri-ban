@@ -55,13 +55,12 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
       child: ListView(
         padding: AdminUi.pagePadding(context),
         children: [
-          Text(uiTr(context, 'سجل التسويات المحاسبية'),
-              style: theme.headlineSmall),
+          Text(uiTr(context, 'التسويات'), style: theme.headlineSmall),
           const SizedBox(height: 4),
           Text(
             uiTr(
               context,
-              'دفتر التسويات المحاسبية فقط — لا حركة محفظة أو دفع من هذه الشاشة.',
+              'عرض التسويات المستحقة والمدفوعة والمتبقية — قراءة أولاً.',
             ),
             softWrap: true,
             style: theme.bodySmall,

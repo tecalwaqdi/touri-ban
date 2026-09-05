@@ -2,25 +2,22 @@ import 'package:flutter/material.dart';
 
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
+import '/components/accountant_finance_summary.dart';
+import '/components/accountant_money_movement_table.dart';
+import '/components/accountant_trip_details_drawer.dart';
 import '/components/admin_enterprise_kit.dart';
-import '/components/admin_finance_kpi_groups.dart';
 import '/components/admin_layout_widget.dart';
-import '/core/admin_currency.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
-import '/core/finance/admin_finance_canonical_ui.dart';
-import '/core/finance/admin_finance_date_range.dart';
-import '/core/finance/admin_money_presentation.dart';
-import '/core/finance/finance_company_service.dart';
-import '/core/finance/finance_company_snapshot.dart';
-import '/core/finance/finance_ledger_service.dart';
-import '/core/finance/financial_accounting_unavailable.dart';
-import '/core/finance/money_amount.dart';
+import '/core/finance/accountant_finance_labels.dart';
+import '/core/finance/accountant_finance_loader.dart';
+import '/core/finance/accountant_finance_view_model.dart';
+import '/core/finance/financial_amount_resolution.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 
-/// مركز مالي: نظرة موحدة من محاسبة V2 فقط (عرض — بدون كتابة).
+/// Canonical accountant Finance entry — F1 [AccountantFinanceReadModel] only.
 class AdminFinanceHubWidget extends StatefulWidget {
   const AdminFinanceHubWidget({super.key});
 
@@ -35,8 +32,14 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late Menu2Model _menu2Model;
   AdminDatePreset _preset = AdminDatePreset.thisMonth;
-  Future<({FinanceCompanySnapshot company, FinanceHubSnapshot? wallet})>?
-      _future;
+  Future<AccountantFinanceViewBundle>? _future;
+  AccountantFinanceViewBundle? _lastOk;
+
+  String? _paymentMethod;
+  String? _collectionStatus;
+  String? _settlementStatus;
+  FinancialDataQuality? _quality;
+  String _search = '';
 
   static const _presetLabels = <AdminDatePreset, String>{
     AdminDatePreset.today: 'اليوم',
@@ -64,32 +67,20 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   void _reload() {
     final label = _presetLabels[_preset] ?? _preset.name;
     setState(() {
-      _future = _loadBundle(label);
-    });
-  }
-
-  Future<({FinanceCompanySnapshot company, FinanceHubSnapshot? wallet})>
-      _loadBundle(String label) async {
-    final company = await FinanceCompanyService.load(
-      datePreset: _preset,
-      periodLabel: label,
-    );
-    FinanceHubSnapshot? wallet;
-    try {
-      wallet = await FinanceLedgerService.load(
+      _future = AccountantFinanceLoader.load(
         datePreset: _preset,
         periodLabel: label,
-      );
-    } catch (_) {}
-    return (company: company, wallet: wallet);
+      ).then((b) {
+        _lastOk = b;
+        return b;
+      });
+    });
   }
-
-  String _money(MoneyAmount? m, String symbol) =>
-      AdminOrderMoneyDisplay.formatMoneyAmount(m, symbolOverride: symbol);
 
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
+    final isAgent = AdminRoleService.isCountryAgent;
 
     return AdminLayoutWidget(
       padContent: false,
@@ -97,10 +88,14 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
       title: uiTr(context, 'المالية'),
-      child: FutureBuilder<
-          ({FinanceCompanySnapshot company, FinanceHubSnapshot? wallet})>(
+      child: FutureBuilder<AccountantFinanceViewBundle>(
         future: _future,
         builder: (context, snapshot) {
+          final bundle = snapshot.data ?? _lastOk;
+          final loading = snapshot.connectionState == ConnectionState.waiting &&
+              bundle == null;
+          final errored = snapshot.hasError && bundle == null;
+
           return SingleChildScrollView(
             padding: AdminUi.pagePadding(context),
             child: Column(
@@ -110,89 +105,14 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                   title: uiTr(context, 'المالية'),
                   subtitle: uiTr(
                     context,
-                    'مركز التحكم المحاسبي — المبيعات مقابل الإيراد المحقق.',
+                    isAgent
+                        ? 'ملخص محاسبي لدولتك — قراءة فقط.'
+                        : 'ملخص محاسبي موحّد — رحلات مكتملة، تحصيل، ومستحقات.',
                   ),
                 ),
                 const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    if (AdminRoleService.canAccessRoute(
-                      AdminProfitsWidget.routeName,
-                    ))
-                      AdminPrimaryButton(
-                        label: uiTr(context, 'التقرير المالي'),
-                        outlined: true,
-                        icon: Icons.open_in_new_rounded,
-                        onPressed: () => context.pushNamed(
-                          AdminProfitsWidget.routeName,
-                        ),
-                      ),
-                    if (AdminRoleService.canAccessRoute(
-                      AdminFinanceChannelsWidget.routeName,
-                    ))
-                      AdminPrimaryButton(
-                        label: uiTr(context, 'النقدي / الإلكتروني'),
-                        outlined: true,
-                        onPressed: () => context.pushNamed(
-                          AdminFinanceChannelsWidget.routeName,
-                        ),
-                      ),
-                    if (AdminRoleService.canAccessRoute(
-                      AdminSettlementsWidget.routeName,
-                    ))
-                      AdminPrimaryButton(
-                        label: uiTr(context, 'التسويات'),
-                        outlined: true,
-                        icon: Icons.receipt_long_outlined,
-                        onPressed: () => context.pushNamed(
-                          AdminSettlementsWidget.routeName,
-                        ),
-                      ),
-                    if (AdminRoleService.canAccessRoute(
-                      AdminReconciliationWidget.routeName,
-                    ))
-                      AdminPrimaryButton(
-                        label: uiTr(context, 'المطابقة'),
-                        outlined: true,
-                        onPressed: () => context.pushNamed(
-                          AdminReconciliationWidget.routeName,
-                        ),
-                      ),
-                    if (AdminRoleService.canAccessRoute(
-                      AdminFinanceReceivablesWidget.routeName,
-                    ))
-                      AdminPrimaryButton(
-                        label: uiTr(context, 'الذمم المالية'),
-                        outlined: true,
-                        onPressed: () => context.pushNamed(
-                          AdminFinanceReceivablesWidget.routeName,
-                        ),
-                      ),
-                    if (AdminRoleService.canAccessRoute(
-                      AdminAgentFinanceWidget.routeName,
-                    ))
-                      AdminPrimaryButton(
-                        label: uiTr(context, 'مالية الوكلاء'),
-                        outlined: true,
-                        onPressed: () => context.pushNamed(
-                          AdminAgentFinanceWidget.routeName,
-                        ),
-                      ),
-                    if (AdminRoleService.canAccessRoute(
-                      AdminFinanceAuditWidget.routeName,
-                    ))
-                      AdminPrimaryButton(
-                        label: uiTr(context, 'سجل التدقيق'),
-                        outlined: true,
-                        onPressed: () => context.pushNamed(
-                          AdminFinanceAuditWidget.routeName,
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 12),
+                if (!isAgent) _secondaryLinks(context),
+                const SizedBox(height: 8),
                 AdminFilterBar(
                   hint: uiTr(context, 'الفترة'),
                   chips: [
@@ -212,31 +132,54 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                     icon: const Icon(Icons.refresh_rounded),
                   ),
                 ),
-                if (!snapshot.hasData && !snapshot.hasError)
+                const SizedBox(height: 8),
+                _advancedFilters(context, theme),
+                const SizedBox(height: 12),
+                if (loading)
                   AdminLoadingState(
                     label: uiTr(context, 'جاري تحميل البيانات المالية'),
                   )
-                else if (snapshot.hasError)
-                  snapshot.error is FinancialAccountingUnavailableException
-                      ? AdminFinanceCanonicalUnavailablePanel(
-                          onRetry: _reload,
-                        )
-                      : AdminEmptyState(
-                          title: uiTr(context, 'تعذر تحميل المركز المالي'),
-                          message: '${snapshot.error}',
-                          icon: Icons.error_outline,
-                          action: AdminPrimaryButton(
-                            label: uiTr(context, 'إعادة المحاولة'),
-                            onPressed: _reload,
-                          ),
-                        )
-                else
-                  _buildBody(
-                    context,
-                    theme,
-                    snapshot.data!.company,
-                    snapshot.data!.wallet,
+                else if (errored)
+                  AdminErrorState(
+                    title: uiTr(context, 'تعذر تحميل المالية'),
+                    message: uiTr(context, 'يرجى إعادة المحاولة.'),
+                    onRetry: _reload,
+                  )
+                else if (bundle == null)
+                  AdminEmptyState(
+                    title: uiTr(context, 'لا توجد بيانات'),
+                    message: uiTr(context, 'لا نتائج ضمن الفلاتر الحالية.'),
+                  )
+                else ...[
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        uiTr(context, 'جاري التحديث…'),
+                        style: theme.labelSmall.override(
+                          fontFamily: theme.labelSmallFamily,
+                          color: AdminUi.brandTeal,
+                          useGoogleFonts: !theme.labelSmallIsCustom,
+                        ),
+                      ),
+                    ),
+                  AccountantFinanceAlertsBanner(alerts: bundle.alerts),
+                  if (bundle.alerts.isNotEmpty) const SizedBox(height: 10),
+                  AccountantFinanceSummaryStrip(bundle: bundle),
+                  const SizedBox(height: 12),
+                  AccountantMoneyMovementTable(
+                    rows: AccountantTripFilters.apply(
+                      bundle.trips,
+                      paymentMethod: _paymentMethod,
+                      collectionStatus: _collectionStatus,
+                      settlementStatus: _settlementStatus,
+                      quality: _quality,
+                      search: _search,
+                    ),
+                    onOpenDetails: (row) =>
+                        showAccountantTripDetailsDrawer(context, row),
                   ),
+                ],
               ],
             ),
           );
@@ -245,190 +188,150 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
     );
   }
 
-  Widget _buildBody(
-    BuildContext context,
-    FlutterFlowTheme theme,
-    FinanceCompanySnapshot data,
-    FinanceHubSnapshot? wallet,
-  ) {
-    final sym = AdminCurrency.symbolByCode[data.currency] ?? data.currency;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget _secondaryLinks(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                '${uiTr(context, 'الفترة')}: ${data.periodLabel} · ${uiTr(context, 'توقيت الرياض')}',
-                style: theme.labelLarge.override(
-                  fontFamily: theme.labelLargeFamily,
-                  color: AdminUi.brandTeal,
-                  fontWeight: FontWeight.w700,
-                  useGoogleFonts: !theme.labelLargeIsCustom,
-                ),
-              ),
-            ),
-            Tooltip(
-              message: uiTr(
-                context,
-                'الإيراد المحقق = رحلات مكتملة ومحصّلة فقط. غير المحصّل ≠ إيراد.',
-              ),
-              child: AdminStatusBadge(
-                label: data.isApproximate
-                    ? uiTr(context, 'مصدر تقريبي (مسح عميل)')
-                    : uiTr(context, 'المصدر: المحاسبة V2'),
-                tone: data.isApproximate
-                    ? AdminBadgeTone.warning
-                    : AdminBadgeTone.success,
-              ),
-            ),
-          ],
-        ),
-        Text(
-          '${uiTr(context, 'تم الإنشاء')}: ${AdminFinanceRiyadhClock.formatDateTime(DateTime.now().toUtc())}',
-          style: theme.labelSmall,
-        ),
-        const SizedBox(height: 12),
-        if (data.realizedRevenue.minorUnits == 0 &&
-            (data.completedButNotCollected > 0 ||
-                data.cancelledOrExpired > 0 ||
-                data.financiallyIncomplete > 0))
-          AdminContentCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  uiTr(context, 'لماذا تظهر الأرقام 0.00؟'),
-                  style: theme.titleSmall,
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  uiTr(
-                    context,
-                    'الإيراد المحقق يعرض فقط الرحلات المكتملة والمحصّلة. الرحلات الملغاة أو بانتظار التحصيل لا تُحسب كإيراد.',
-                  ),
-                  style: theme.bodySmall,
-                ),
-                if (data.completedButNotCollected > 0) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    '${uiTr(context, 'رحلات نقدية بانتظار إثبات التحصيل')}: '
-                    '${data.completedButNotCollected} · '
-                    '${_money(data.unCollectedTripValue, sym)}',
-                    style: theme.labelMedium,
-                  ),
-                ],
-                if (data.financiallyIncomplete > 0) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    '${uiTr(context, 'بيانات مالية تاريخية ناقصة')}: '
-                    '${data.financiallyIncomplete}',
-                    style: theme.labelMedium.copyWith(
-                      color: theme.error,
-                    ),
-                  ),
-                ],
-              ],
-            ),
+        if (AdminRoleService.canAccessRoute(AdminSettlementsWidget.routeName))
+          AdminPrimaryButton(
+            label: uiTr(context, 'التسويات'),
+            outlined: true,
+            icon: Icons.receipt_long_outlined,
+            onPressed: () =>
+                context.pushNamed(AdminSettlementsWidget.routeName),
           ),
-        if (data.realizedRevenue.minorUnits == 0 &&
-            (data.completedButNotCollected > 0 ||
-                data.cancelledOrExpired > 0 ||
-                data.financiallyIncomplete > 0))
-          const SizedBox(height: 12),
-        AdminFinanceKpiGroups(snapshot: data, symbol: sym),
-        const SizedBox(height: 12),
-        AdminContentCard(
-          title: uiTr(context, 'حالة التحصيل'),
-          child: Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              _chip(
-                uiTr(context, 'محصّل ومكتمل'),
-                '${data.completedAndCollected}',
-                AdminBadgeTone.success,
-              ),
-              _chip(
-                uiTr(context, 'بانتظار التحصيل'),
-                '${data.completedButNotCollected}',
-                AdminBadgeTone.warning,
-              ),
-              _chip(
-                uiTr(context, 'ملغى / منتهي'),
-                '${data.cancelledOrExpired}',
-                AdminBadgeTone.danger,
-              ),
-              _chip(
-                uiTr(context, 'رحلات تحتاج مراجعة'),
-                '${data.financiallyIncomplete}',
-                AdminBadgeTone.info,
-              ),
-            ],
+        if (AdminRoleService.canAccessRoute(
+          AdminFinanceReportsWidget.routeName,
+        ))
+          AdminPrimaryButton(
+            label: uiTr(context, 'التقارير'),
+            outlined: true,
+            onPressed: () =>
+                context.pushNamed(AdminFinanceReportsWidget.routeName),
           ),
-        ),
-        if (wallet != null) ...[
-          const SizedBox(height: 16),
-          AdminContentCard(
-            title: uiTr(context, 'المحفظة (دفتر منفصل)'),
-            child: Text(
-              uiTr(
-                context,
-                'رصيد المحفظة ليس صافي أرباح الرحلات. المحافظ: ${wallet.driverBalances.length}',
-              ),
-              style: theme.bodySmall,
-            ),
+        if (AdminRoleService.canAccessRoute(AdminAgentFinanceWidget.routeName))
+          AdminPrimaryButton(
+            label: uiTr(context, 'مالية الوكلاء'),
+            outlined: true,
+            onPressed: () =>
+                context.pushNamed(AdminAgentFinanceWidget.routeName),
           ),
-        ],
-        const SizedBox(height: 12),
-        AdminContentCard(
-          title: uiTr(context, 'روابط سريعة'),
-          child: Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              if (AdminRoleService.canAccessRoute(
-                AdminReportsHubWidget.routeName,
-              ))
-                AdminPrimaryButton(
-                  label: uiTr(context, 'التقارير التشغيلية'),
-                  outlined: true,
-                  onPressed: () => context.pushNamed(
-                    AdminReportsHubWidget.routeName,
-                  ),
-                ),
-              AdminPrimaryButton(
-                label: uiTr(context, 'الحجوزات'),
-                outlined: true,
-                onPressed: () => context.pushNamed(
-                  AdminALLhgZWidget.routeName,
-                ),
-              ),
-            ],
+        if (AdminRoleService.isSuperAdmin &&
+            AdminRoleService.canAccessRoute(
+              AdminFinanceAuditWidget.routeName,
+            ))
+          AdminPrimaryButton(
+            label: uiTr(context, 'تشخيص تقني'),
+            outlined: true,
+            onPressed: () =>
+                context.pushNamed(AdminFinanceAuditWidget.routeName),
           ),
-        ),
       ],
     );
   }
 
-  Widget _chip(String label, String value, AdminBadgeTone tone) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: AdminUi.cardDecoration(context, elevated: false),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+  Widget _advancedFilters(BuildContext context, FlutterFlowTheme theme) {
+    return AdminContentCard(
+      child: Wrap(
+        spacing: 10,
+        runSpacing: 10,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          AdminStatusBadge(label: label, tone: tone),
-          const SizedBox(width: 10),
-          Text(
-            value,
-            style: const TextStyle(
-              fontFamily: 'cairo',
-              fontWeight: FontWeight.w800,
-              fontSize: 16,
+          SizedBox(
+            width: 200,
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: uiTr(context, 'بحث'),
+                isDense: true,
+                border: const OutlineInputBorder(),
+              ),
+              onChanged: (v) => setState(() => _search = v),
             ),
           ),
+          _drop(
+            context,
+            label: 'طريقة الدفع',
+            value: _paymentMethod,
+            items: const ['نقدي', 'إلكتروني'],
+            onChanged: (v) => setState(() => _paymentMethod = v),
+          ),
+          _drop(
+            context,
+            label: 'حالة التحصيل',
+            value: _collectionStatus,
+            items: const ['محصّل', 'غير محصّل'],
+            onChanged: (v) => setState(() => _collectionStatus = v),
+          ),
+          _drop(
+            context,
+            label: 'حالة التسوية',
+            value: _settlementStatus,
+            items: const ['مسددة', 'مسددة جزئيًا', 'غير مسددة'],
+            onChanged: (v) => setState(() => _settlementStatus = v),
+          ),
+          _qualityDrop(context),
         ],
+      ),
+    );
+  }
+
+  Widget _drop(
+    BuildContext context, {
+    required String label,
+    required String? value,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return SizedBox(
+      width: 170,
+      child: DropdownButtonFormField<String?>(
+        initialValue: value,
+        decoration: InputDecoration(
+          labelText: uiTr(context, label),
+          isDense: true,
+          border: const OutlineInputBorder(),
+        ),
+        items: [
+          DropdownMenuItem<String?>(
+            value: null,
+            child: Text(uiTr(context, 'الكل')),
+          ),
+          for (final i in items)
+            DropdownMenuItem<String?>(
+              value: i,
+              child: Text(uiTr(context, i)),
+            ),
+        ],
+        onChanged: onChanged,
+      ),
+    );
+  }
+
+  Widget _qualityDrop(BuildContext context) {
+    return SizedBox(
+      width: 200,
+      child: DropdownButtonFormField<FinancialDataQuality?>(
+        initialValue: _quality,
+        decoration: InputDecoration(
+          labelText: uiTr(context, 'جودة البيانات المالية'),
+          isDense: true,
+          border: const OutlineInputBorder(),
+        ),
+        items: [
+          DropdownMenuItem(
+            value: null,
+            child: Text(uiTr(context, 'الكل')),
+          ),
+          for (final q in FinancialDataQuality.values)
+            DropdownMenuItem(
+              value: q,
+              child: Text(
+                uiTr(context, AccountantFinanceLabels.dataQualityAr(q)),
+              ),
+            ),
+        ],
+        onChanged: (v) => setState(() => _quality = v),
       ),
     );
   }

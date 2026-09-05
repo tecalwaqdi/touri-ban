@@ -90,7 +90,7 @@ class _AdminSettlementDetailsWidgetState
     final due = data['absoluteSettlementAmountMinor'] as int?;
     final ok = await showAdminConfirmDialog(
       context: context,
-      title: uiTr(context, 'تأكيد قفل التسوية'),
+      title: uiTr(context, 'تأكيد اعتماد التسوية'),
       whatHappens: [
         '${uiTr(context, 'الرحلات')}: ${data['eligibleTripCount']}',
         '${uiTr(context, 'ذمة نقدية')}: ${_money(data['driverCashLiabilityMinor'] as int?, cur)}',
@@ -98,11 +98,10 @@ class _AdminSettlementDetailsWidgetState
         '${uiTr(context, 'الصافي')}: ${_money(data['netTripPositionMinor'] as int?, cur)}',
         if (derived > 0)
           '${uiTr(context, 'تتضمن هذه التسوية')} $derived ${uiTr(context, 'سجلاً مالياً مشتقاً.')}',
-        uiTr(context, 'سجل محاسبي فقط — بدون حركة محفظة'),
       ].join('\n'),
       subject: '${data['settlementCode'] ?? widget.settlementId}',
-      impact: uiTr(context, 'يقفل بنود الرحلات؛ بدون حركة محفظة'),
-      confirmLabel: uiTr(context, 'قفل التسوية'),
+      impact: uiTr(context, 'تُثبَّت بنود الرحلات في التسوية'),
+      confirmLabel: uiTr(context, 'اعتماد التسوية'),
       irreversible: true,
       currency: cur,
       amount: _money(due, cur),
@@ -689,11 +688,11 @@ class _AdminSettlementDetailsWidgetState
                           await SettlementLedgerClient.refreshDraft(
                               settlementId: id);
                         },
-                        child: Text(uiTr(context, 'تحديث المعاينة')),
+                        child: Text(uiTr(context, 'تحديث الأرقام')),
                       ),
                       FilledButton(
                         onPressed: () => _lock(d),
-                        child: Text(uiTr(context, 'قفل التسوية')),
+                        child: Text(uiTr(context, 'اعتماد التسوية')),
                       ),
                       OutlinedButton(
                         onPressed: () => _voidLocked(d),
@@ -712,7 +711,7 @@ class _AdminSettlementDetailsWidgetState
                       ),
                       OutlinedButton(
                         onPressed: () => _voidLocked(d),
-                        child: Text(uiTr(context, 'إلغاء المقفلة')),
+                        child: Text(uiTr(context, 'إلغاء التسوية')),
                       ),
                     ],
                   ),
