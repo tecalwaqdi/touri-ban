@@ -4,7 +4,7 @@ BASE:
 ea3b1c3f2ae603017f830aab9769686b41db30fe
 
 COMMIT:
-(pending)
+45dab04f5a39a8ad158e3c2155e091fc183b4696
 
 ## STL-2026-000001 classification (proven)
 
@@ -56,7 +56,7 @@ NEW FAILURES:
 0
 
 PREVIEW URL:
-(pending)
+https://tutorial-multi-language-70gx4j--admin-finance-f2-1-im0eagw0.web.app/admin/#/adminSettlements
 
 PRODUCTION DEPLOYED:
 NO
