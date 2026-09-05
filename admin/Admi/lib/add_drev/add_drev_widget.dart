@@ -46,6 +46,17 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
 
   bool get _isEdit => _resolvedEditRef != null;
 
+  /// Dropdown must use an instance present in [items] (path match), else the
+  /// field asserts and the whole create/edit form body fails to paint.
+  TransportCompanyRecord? get _safeSelectedCompany {
+    final selected = _selectedCompany;
+    if (selected == null) return null;
+    for (final c in _companies) {
+      if (c.reference.path == selected.reference.path) return c;
+    }
+    return null;
+  }
+
   String? _rawEditUser() {
     try {
       return GoRouterState.of(context).uri.queryParameters['editUser'];
@@ -327,9 +338,8 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     final idx = text.lastIndexOf(separator);
     if (idx > 0) {
       _model.cartypeTextController!.text = text.substring(0, idx).trim();
-      _model.platTextController!.text = text
-          .substring(idx + separator.length)
-          .trim();
+      _model.platTextController!.text =
+          text.substring(idx + separator.length).trim();
     } else {
       _model.cartypeTextController!.text = text;
       _model.platTextController!.clear();
@@ -344,16 +354,16 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
   }
 
   Future<void> _pickRepPhoto() => handleAdminImagePick(
-    context: context,
-    storageFolder: 'representatives/uploads',
-    useProfileCompression: true,
-    setUploading: (v) =>
-        safeSetState(() => _model.isDataUploading_uploadDataLbm = v),
-    setLocal: (file) =>
-        safeSetState(() => _model.uploadedLocalFile_uploadDataLbm = file),
-    setUrl: (url) =>
-        safeSetState(() => _model.uploadedFileUrl_uploadDataLbm = url),
-  );
+        context: context,
+        storageFolder: 'representatives/uploads',
+        useProfileCompression: true,
+        setUploading: (v) =>
+            safeSetState(() => _model.isDataUploading_uploadDataLbm = v),
+        setLocal: (file) =>
+            safeSetState(() => _model.uploadedLocalFile_uploadDataLbm = file),
+        setUrl: (url) =>
+            safeSetState(() => _model.uploadedFileUrl_uploadDataLbm = url),
+      );
 
   Future<void> _submitRepresentative() async {
     if (_model.isSubmitting) return;
@@ -553,17 +563,14 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
           'submission_status': AdminRoleService.isTransportCompany
               ? 'pending_review'
               : 'approved',
-          'account_status': AdminRoleService.isTransportCompany
-              ? 'inactive'
-              : 'active',
+          'account_status':
+              AdminRoleService.isTransportCompany ? 'inactive' : 'active',
           'operational_status': 'offline',
           'auto_activated': false,
-          'document_review_status': AdminRoleService.isTransportCompany
-              ? 'pending'
-              : 'approved',
-          'vehicle_review_status': AdminRoleService.isTransportCompany
-              ? 'pending'
-              : 'approved',
+          'document_review_status':
+              AdminRoleService.isTransportCompany ? 'pending' : 'approved',
+          'vehicle_review_status':
+              AdminRoleService.isTransportCompany ? 'pending' : 'approved',
           if (workCityRef != null) 'mndob_vill': workCityRef.path,
           if (carTypeRef != null) 'mndob_type_car': carTypeRef.path,
           'mndob_vill_text': workCity,
@@ -585,9 +592,9 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       if (!mounted) return;
       final message = switch (e.code) {
         'email-already-in-use' => uiTr(
-          context,
-          'البريد الإلكتروني مستخدم مسبقاً',
-        ),
+            context,
+            'البريد الإلكتروني مستخدم مسبقاً',
+          ),
         'invalid-email' => uiTr(context, 'البريد الإلكتروني غير صالح'),
         'weak-password' => uiTr(context, 'كلمة المرور ضعيفة جداً'),
         _ => '${uiTr(context, 'تعذر إضافة المندوب')}: ${e.message ?? e.code}',
@@ -675,282 +682,289 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         ),
       );
     } else {
+      // Create + loaded edit: paint real fields. Prefer Column+scroll over
+      // ListView so form sections never collapse to zero paint height.
       phaseBody = Form(
         key: _model.formKey,
-        child: ListView(
+        child: SingleChildScrollView(
           padding: AdminUi.pagePadding(context).copyWith(top: 12, bottom: 24),
-          children: [
-            AdminDriverCompactTip(
-              text: isEdit
-                  ? uiTr(
-                      context,
-                      'عدّل البيانات المطلوبة — الاسم، الموقع، المركبة، الصورة — ثم احفظ.',
-                    )
-                  : uiTr(
-                      context,
-                      'أدخل البيانات الشخصية، الموقع، المركبة، ثم اضغط «إضافة المندوب».',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AdminDriverCompactTip(
+                text: isEdit
+                    ? uiTr(
+                        context,
+                        'عدّل البيانات المطلوبة — الاسم، الموقع، المركبة، الصورة — ثم احفظ.',
+                      )
+                    : uiTr(
+                        context,
+                        'أدخل البيانات الشخصية، الموقع، المركبة، ثم اضغط «إضافة المندوب».',
+                      ),
+              ),
+              const SizedBox(height: 14),
+              AdminEditFormCard(
+                sectionTitle: uiTr(context, 'البيانات الشخصية'),
+                children: [
+                  AdminDriverFormGrid(
+                    children: [
+                      _buildTextField(
+                        context: context,
+                        controller: _model.nameTextController!,
+                        focusNode: _model.nameFocusNode,
+                        label: uiTr(context, 'الاسم الكامل *'),
+                        hint: uiTr(context, 'مثال: محمد أحمد العتيبي'),
+                        icon: Icons.person_outline_rounded,
+                        validator: _model.nameTextControllerValidator,
+                        textInputAction: TextInputAction.next,
+                      ),
+                      _buildTextField(
+                        context: context,
+                        controller: _model.mobilTextController!,
+                        focusNode: _model.mobilFocusNode,
+                        label: uiTr(context, 'رقم الجوال *'),
+                        hint: '05xxxxxxxx',
+                        icon: Icons.phone_android_rounded,
+                        keyboardType: TextInputType.phone,
+                        validator: _model.mobilTextControllerValidator,
+                        textInputAction: TextInputAction.next,
+                      ),
+                      _buildTextField(
+                        context: context,
+                        controller: _model.emailTextController!,
+                        focusNode: _model.emailFocusNode,
+                        label: uiTr(context, 'البريد الإلكتروني *'),
+                        hint: 'example@email.com',
+                        icon: Icons.alternate_email_rounded,
+                        readOnly: isEdit,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: _model.emailTextControllerValidator,
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ],
+                  ),
+                  if (!isEdit) ...[
+                    const SizedBox(height: 14),
+                    _buildFieldHint(
+                      uiTr(
+                        context,
+                        'كلمة المرور: 6 أحرف على الأقل. شاركها مع المندوب بشكل آمن بعد الإضافة.',
+                      ),
+                      icon: Icons.lock_outline_rounded,
                     ),
-            ),
-            const SizedBox(height: 14),
-            AdminEditFormCard(
-              sectionTitle: uiTr(context, 'البيانات الشخصية'),
-              children: [
-                AdminDriverFormGrid(
-                  children: [
+                    const SizedBox(height: 10),
                     _buildTextField(
                       context: context,
-                      controller: _model.nameTextController!,
-                      focusNode: _model.nameFocusNode,
-                      label: uiTr(context, 'الاسم الكامل *'),
-                      hint: uiTr(context, 'مثال: محمد أحمد العتيبي'),
-                      icon: Icons.person_outline_rounded,
-                      validator: _model.nameTextControllerValidator,
+                      controller: _model.passTextController!,
+                      focusNode: _model.passFocusNode,
+                      label: uiTr(context, 'كلمة المرور *'),
+                      hint: '••••••••',
+                      helper: uiTr(context, '6 أحرف على الأقل — أحرف وأرقام'),
+                      icon: Icons.lock_rounded,
+                      obscureText: !_model.passVisibility,
+                      suffix: _visibilityToggle(
+                        visible: _model.passVisibility,
+                        onTap: () => safeSetState(
+                          () => _model.passVisibility = !_model.passVisibility,
+                        ),
+                      ),
                       textInputAction: TextInputAction.next,
                     ),
+                    const SizedBox(height: 14),
                     _buildTextField(
                       context: context,
-                      controller: _model.mobilTextController!,
-                      focusNode: _model.mobilFocusNode,
-                      label: uiTr(context, 'رقم الجوال *'),
-                      hint: '05xxxxxxxx',
-                      icon: Icons.phone_android_rounded,
-                      keyboardType: TextInputType.phone,
-                      validator: _model.mobilTextControllerValidator,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    _buildTextField(
-                      context: context,
-                      controller: _model.emailTextController!,
-                      focusNode: _model.emailFocusNode,
-                      label: uiTr(context, 'البريد الإلكتروني *'),
-                      hint: 'example@email.com',
-                      icon: Icons.alternate_email_rounded,
-                      readOnly: isEdit,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: _model.emailTextControllerValidator,
-                      textInputAction: TextInputAction.next,
+                      controller: _model.cpassTextController!,
+                      focusNode: _model.cpassFocusNode,
+                      label: uiTr(context, 'تأكيد كلمة المرور *'),
+                      hint: uiTr(context, 'أعد إدخال كلمة المرور'),
+                      helper: uiTr(context, 'يجب أن تطابق كلمة المرور أعلاه'),
+                      icon: Icons.verified_user_outlined,
+                      obscureText: !_model.cpassVisibility,
+                      suffix: _visibilityToggle(
+                        visible: _model.cpassVisibility,
+                        onTap: () => safeSetState(
+                          () =>
+                              _model.cpassVisibility = !_model.cpassVisibility,
+                        ),
+                      ),
+                      textInputAction: TextInputAction.done,
                     ),
                   ],
-                ),
-                if (!isEdit) ...[
-                  const SizedBox(height: 14),
+                ],
+              ),
+              const SizedBox(height: 16),
+              AdminEditFormCard(
+                sectionTitle: uiTr(context, 'الموقع والمركبة'),
+                children: [
                   _buildFieldHint(
                     uiTr(
                       context,
-                      'كلمة المرور: 6 أحرف على الأقل. شاركها مع المندوب بشكل آمن بعد الإضافة.',
+                      'اختر شركة النقل (إن وُجدت) ثم نوع السيارة ومدينة العمل.',
                     ),
-                    icon: Icons.lock_outline_rounded,
                   ),
-                  const SizedBox(height: 10),
-                  _buildTextField(
-                    context: context,
-                    controller: _model.passTextController!,
-                    focusNode: _model.passFocusNode,
-                    label: uiTr(context, 'كلمة المرور *'),
-                    hint: '••••••••',
-                    helper: uiTr(context, '6 أحرف على الأقل — أحرف وأرقام'),
-                    icon: Icons.lock_rounded,
-                    obscureText: !_model.passVisibility,
-                    suffix: _visibilityToggle(
-                      visible: _model.passVisibility,
-                      onTap: () => safeSetState(
-                        () => _model.passVisibility = !_model.passVisibility,
+                  const SizedBox(height: 12),
+                  if (_companiesLoading)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Center(
+                        child: SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                       ),
+                    )
+                  else if (AdminRoleService.isTransportCompany &&
+                      _selectedCompany != null)
+                    InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: uiTr(context, 'شركة النقل'),
+                      ),
+                      child: Text(_selectedCompany!.naim),
+                    )
+                  else
+                    DropdownButtonFormField<TransportCompanyRecord?>(
+                      key: ValueKey(
+                        'company-${_safeSelectedCompany?.reference.path ?? 'none'}-${_companies.length}',
+                      ),
+                      initialValue: _safeSelectedCompany,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: uiTr(context, 'شركة النقل (اختياري)'),
+                        hintText: uiTr(context, 'مستقل — بدون شركة'),
+                      ),
+                      items: [
+                        DropdownMenuItem<TransportCompanyRecord?>(
+                          value: null,
+                          child: Text(uiTr(context, 'مستقل — بدون شركة')),
+                        ),
+                        ..._companies.map(
+                          (c) => DropdownMenuItem(
+                            value: c,
+                            child: Text(
+                              c.licenseNumber.isNotEmpty
+                                  ? '${c.naim} (${c.licenseNumber})'
+                                  : c.naim,
+                            ),
+                          ),
+                        ),
+                      ],
+                      onChanged: (v) =>
+                          safeSetState(() => _selectedCompany = v),
                     ),
-                    textInputAction: TextInputAction.next,
+                  const SizedBox(height: 14),
+                  AdminEditPickerRow(
+                    label: uiTr(context, 'نوع السيارة *'),
+                    value: _model.cartypeTextController!.text,
+                    placeholder: uiTr(context, 'اضغط لاختيار نوع السيارة'),
+                    onTap: () async {
+                      await showAdminPickerSheet(
+                        context: context,
+                        child: const AdminTypeCarPickerSheet(),
+                      );
+                      if (!mounted) return;
+                      if (FFAppState().typeCarText.isNotEmpty) {
+                        safeSetState(() {
+                          _model.cartypeTextController!.text =
+                              FFAppState().typeCarText;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 6),
+                  _buildHelperText(
+                    context,
+                    uiTr(
+                      context,
+                      'مثال: سيدان، دفع رباعي، فان — حسب أنواع السيارات المفعّلة في النظام',
+                    ),
                   ),
                   const SizedBox(height: 14),
                   _buildTextField(
                     context: context,
-                    controller: _model.cpassTextController!,
-                    focusNode: _model.cpassFocusNode,
-                    label: uiTr(context, 'تأكيد كلمة المرور *'),
-                    hint: uiTr(context, 'أعد إدخال كلمة المرور'),
-                    helper: uiTr(context, 'يجب أن تطابق كلمة المرور أعلاه'),
-                    icon: Icons.verified_user_outlined,
-                    obscureText: !_model.cpassVisibility,
-                    suffix: _visibilityToggle(
-                      visible: _model.cpassVisibility,
-                      onTap: () => safeSetState(
-                        () => _model.cpassVisibility = !_model.cpassVisibility,
-                      ),
+                    controller: _model.platTextController!,
+                    focusNode: _model.platFocusNode,
+                    label: uiTr(context, 'رقم اللوحة'),
+                    hint: uiTr(context, 'مثال: أ ب ج 1234'),
+                    helper: uiTr(
+                      context,
+                      'اختياري — أدخل رقم لوحة المركبة إن وُجد',
                     ),
-                    textInputAction: TextInputAction.done,
+                    icon: Icons.confirmation_number_outlined,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 14),
+                  AdminEditPickerRow(
+                    label: uiTr(context, 'مدينة العمل *'),
+                    value: _model.workcityTextController!.text,
+                    placeholder: uiTr(context, 'اضغط لاختيار مدينة العمل'),
+                    icon: Icons.location_city_rounded,
+                    onTap: () async {
+                      await showAdminPickerSheet(
+                        context: context,
+                        child: const AdminWorkCityPickerSheet(),
+                      );
+                      if (!mounted) return;
+                      if (FFAppState().workciteText.isNotEmpty) {
+                        safeSetState(() {
+                          _model.workcityTextController!.text =
+                              FFAppState().workciteText;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 6),
+                  _buildHelperText(
+                    context,
+                    uiTr(
+                      context,
+                      'المدينة التي سيعمل فيها المندوب ويستقبل منها طلبات الحجز',
+                    ),
                   ),
                 ],
-              ],
-            ),
-            const SizedBox(height: 16),
-            AdminEditFormCard(
-              sectionTitle: uiTr(context, 'الموقع والمركبة'),
-              children: [
-                _buildFieldHint(
-                  uiTr(
-                    context,
-                    'اختر شركة النقل (إن وُجدت) ثم نوع السيارة ومدينة العمل.',
-                  ),
-                ),
+              ),
+              const SizedBox(height: 16),
+              AdminEditFormCard(
+                sectionTitle: uiTr(context, 'الصورة الشخصية'),
+                children: [_buildPhotoPicker(context, theme)],
+              ),
+              if (!isEdit) ...[
                 const SizedBox(height: 12),
-                if (_companiesLoading)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Center(
-                      child: SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E9),
+                    borderRadius: BorderRadius.circular(AdminUi.radiusSm),
+                    border: Border.all(color: const Color(0xFFA5D6A7)),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.info_outline_rounded,
+                        color: Color(0xFF2E7D32),
+                        size: 22,
                       ),
-                    ),
-                  )
-                else if (AdminRoleService.isTransportCompany &&
-                    _selectedCompany != null)
-                  InputDecorator(
-                    decoration: InputDecoration(
-                      labelText: uiTr(context, 'شركة النقل'),
-                    ),
-                    child: Text(_selectedCompany!.naim),
-                  )
-                else
-                  DropdownButtonFormField<TransportCompanyRecord?>(
-                    key: ValueKey(
-                      _selectedCompany?.reference.path ?? 'company-none',
-                    ),
-                    initialValue: _selectedCompany,
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      labelText: uiTr(context, 'شركة النقل (اختياري)'),
-                      hintText: uiTr(context, 'مستقل — بدون شركة'),
-                    ),
-                    items: [
-                      DropdownMenuItem<TransportCompanyRecord?>(
-                        value: null,
-                        child: Text(uiTr(context, 'مستقل — بدون شركة')),
-                      ),
-                      ..._companies.map(
-                        (c) => DropdownMenuItem(
-                          value: c,
-                          child: Text(
-                            c.licenseNumber.isNotEmpty
-                                ? '${c.naim} (${c.licenseNumber})'
-                                : c.naim,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          uiTr(
+                            context,
+                            'بعد الإضافة يُفعَّل المندوب تلقائياً ويمكنه استقبال الطلبات بعد تسجيل الدخول.',
+                          ),
+                          style: theme.bodySmall.override(
+                            fontFamily: theme.bodySmallFamily,
+                            color: const Color(0xFF1B5E20),
+                            useGoogleFonts: !theme.bodySmallIsCustom,
                           ),
                         ),
                       ),
                     ],
-                    onChanged: (v) => safeSetState(() => _selectedCompany = v),
-                  ),
-                const SizedBox(height: 14),
-                AdminEditPickerRow(
-                  label: uiTr(context, 'نوع السيارة *'),
-                  value: _model.cartypeTextController!.text,
-                  placeholder: uiTr(context, 'اضغط لاختيار نوع السيارة'),
-                  onTap: () async {
-                    await showAdminPickerSheet(
-                      context: context,
-                      child: const AdminTypeCarPickerSheet(),
-                    );
-                    if (!mounted) return;
-                    if (FFAppState().typeCarText.isNotEmpty) {
-                      safeSetState(() {
-                        _model.cartypeTextController!.text =
-                            FFAppState().typeCarText;
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 6),
-                _buildHelperText(
-                  context,
-                  uiTr(
-                    context,
-                    'مثال: سيدان، دفع رباعي، فان — حسب أنواع السيارات المفعّلة في النظام',
-                  ),
-                ),
-                const SizedBox(height: 14),
-                _buildTextField(
-                  context: context,
-                  controller: _model.platTextController!,
-                  focusNode: _model.platFocusNode,
-                  label: uiTr(context, 'رقم اللوحة'),
-                  hint: uiTr(context, 'مثال: أ ب ج 1234'),
-                  helper: uiTr(
-                    context,
-                    'اختياري — أدخل رقم لوحة المركبة إن وُجد',
-                  ),
-                  icon: Icons.confirmation_number_outlined,
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 14),
-                AdminEditPickerRow(
-                  label: uiTr(context, 'مدينة العمل *'),
-                  value: _model.workcityTextController!.text,
-                  placeholder: uiTr(context, 'اضغط لاختيار مدينة العمل'),
-                  icon: Icons.location_city_rounded,
-                  onTap: () async {
-                    await showAdminPickerSheet(
-                      context: context,
-                      child: const AdminWorkCityPickerSheet(),
-                    );
-                    if (!mounted) return;
-                    if (FFAppState().workciteText.isNotEmpty) {
-                      safeSetState(() {
-                        _model.workcityTextController!.text =
-                            FFAppState().workciteText;
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 6),
-                _buildHelperText(
-                  context,
-                  uiTr(
-                    context,
-                    'المدينة التي سيعمل فيها المندوب ويستقبل منها طلبات الحجز',
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 16),
-            AdminEditFormCard(
-              sectionTitle: uiTr(context, 'الصورة الشخصية'),
-              children: [_buildPhotoPicker(context, theme)],
-            ),
-            if (!isEdit) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8F5E9),
-                  borderRadius: BorderRadius.circular(AdminUi.radiusSm),
-                  border: Border.all(color: const Color(0xFFA5D6A7)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.info_outline_rounded,
-                      color: Color(0xFF2E7D32),
-                      size: 22,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        uiTr(
-                          context,
-                          'بعد الإضافة يُفعَّل المندوب تلقائياً ويمكنه استقبال الطلبات بعد تسجيل الدخول.',
-                        ),
-                        style: theme.bodySmall.override(
-                          fontFamily: theme.bodySmallFamily,
-                          color: const Color(0xFF1B5E20),
-                          useGoogleFonts: !theme.bodySmallIsCustom,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
-          ],
+          ),
         ),
       );
     }
@@ -962,20 +976,19 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       subtitle: isEdit && (editSubtitle?.isNotEmpty ?? false)
           ? editSubtitle
           : (isEdit
-                ? uiTr(context, 'عدّل البيانات ثم احفظ')
-                : uiTr(context, 'املأ الحقول المطلوبة')),
+              ? uiTr(context, 'عدّل البيانات ثم احفظ')
+              : uiTr(context, 'املأ الحقول المطلوبة')),
       isLoading: false,
       bottomBar: canMutate
           ? AdminDriverStickyActions(
               primaryLabel: _model.isSubmitting
                   ? uiTr(context, 'جاري الحفظ...')
                   : isEdit
-                  ? uiTr(context, 'حفظ التعديلات')
-                  : uiTr(context, 'إضافة المندوب'),
+                      ? uiTr(context, 'حفظ التعديلات')
+                      : uiTr(context, 'إضافة المندوب'),
               primaryLoading: _model.isSubmitting,
-              primaryIcon: isEdit
-                  ? Icons.save_rounded
-                  : Icons.person_add_rounded,
+              primaryIcon:
+                  isEdit ? Icons.save_rounded : Icons.person_add_rounded,
               onPrimary: _model.isSubmitting ? null : _submitRepresentative,
             )
           : null,
@@ -1058,18 +1071,16 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
           obscureText: obscureText,
           keyboardType: keyboardType,
           textInputAction: textInputAction,
-          decoration:
-              AdminUi.inputDecoration(
-                context,
-                label: label,
-                hint: hint,
-                prefixIcon: icon,
-              ).copyWith(
-                suffixIcon: suffix,
-                fillColor: readOnly
-                    ? theme.alternate.withValues(alpha: 0.15)
-                    : null,
-              ),
+          decoration: AdminUi.inputDecoration(
+            context,
+            label: label,
+            hint: hint,
+            prefixIcon: icon,
+          ).copyWith(
+            suffixIcon: suffix,
+            fillColor:
+                readOnly ? theme.alternate.withValues(alpha: 0.15) : null,
+          ),
           style: theme.bodyMedium.override(
             fontFamily: theme.bodyMediumFamily,
             useGoogleFonts: !theme.bodyMediumIsCustom,
@@ -1095,8 +1106,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
   }
 
   Widget _buildPhotoPicker(BuildContext context, FlutterFlowTheme theme) {
-    final hasPhoto =
-        _model.uploadedFileUrl_uploadDataLbm.isNotEmpty ||
+    final hasPhoto = _model.uploadedFileUrl_uploadDataLbm.isNotEmpty ||
         _model.uploadedLocalFile_uploadDataLbm.bytes?.isNotEmpty == true;
 
     return Material(

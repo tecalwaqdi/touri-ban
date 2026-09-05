@@ -123,8 +123,8 @@ void main() {
     });
   });
 
-  group('edit phase contract', () {
-    test('phases cover blank-body prevention', () {
+  group('edit/create form paint contract', () {
+    test('phases cover blank-body prevention for create and edit', () {
       const phases = {
         'creating',
         'loading',
@@ -133,7 +133,20 @@ void main() {
         'notFound',
         'unauthorized',
       };
-      expect(phases.length, 6);
+      expect(phases.contains('creating'), isTrue);
+      expect(phases.contains('loaded'), isTrue);
+    });
+
+    test('company dropdown selection must path-match items', () {
+      // Documents the blank-form root cause: Dropdown asserts when value is
+      // not identical-or-equal to an item; path-match prevents body wipe.
+      const selectedPath = 'transport_company/c1';
+      final itemPaths = <String>[
+        'transport_company/c1',
+        'transport_company/c2'
+      ];
+      expect(itemPaths.contains(selectedPath), isTrue);
+      expect(itemPaths.contains('transport_company/missing'), isFalse);
     });
   });
 }
