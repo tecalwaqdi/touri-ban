@@ -1,10 +1,10 @@
 {
-  "main.dart.js": {"sha256": "063cf16a2228400c886f85b84bc52b9ff129a5ad3bc27ef32175c4efa11cddd5", "size": 11343896},
+  "main.dart.js": {"sha256": "6a887d823e8bb2d28943a1a25aa99322bfaa23dc866e312298679da62d26aab8", "size": 11347461},
   "flutter_bootstrap.js": {"sha256": "6c43109167e4707ce36ba3072b11905862206834f2722c2a0ef4056f3d75f64d", "size": 10104},
   "flutter_service_worker.js": {"sha256": "a131df5ca46154cc4eb79044f7f5a14029c2f8bfccf8cef34e3ec3b5a9f5a88c", "size": 784},
   "index.html": {"sha256": "059355fbe44ff979d3122d2b90a90346cc1a01cd69a983dc2c98bb89d30d37cb", "size": 14581},
   "version.json": {"sha256": "0714336bbd1950d68925235139293e3ee9196dee0e54f1d7878f383f68435bf2", "size": 103},
-  "build_provenance.json": {"sha256": "1e6f1e515ce5001ea842141e25f9980bb9efd00d448e13119593429b0ae0ba4e", "size": 555},
+  "build_provenance.json": {"sha256": "e35d27232d2dc00a629e5e746a694a4ad08ec03bb66256e4d54f391621d78e33", "size": 555},
   "assets/AssetManifest.bin": {"sha256": "8aaa706482312a2fc326007525d65a963601f36f722c05ceba4df8f9d51f92fb", "size": 1940},
   "assets/AssetManifest.bin.json": {"sha256": "8137661e0f7c24c85e5504105ac9878858022ccf9a3321c779eb54b3acb80d77", "size": 2590}
 }

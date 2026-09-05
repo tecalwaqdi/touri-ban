@@ -6,6 +6,7 @@ import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_currency.dart';
+import '/core/admin_qa_fixture.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/core/finance/accountant_finance_labels.dart';
 import '/core/finance/accountant_finance_text.dart';
@@ -31,6 +32,8 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   /// null = all open-ish; settled/voided filtered via chips.
   String? _statusFilter;
+  /// Super Admin only — show QA/test settlements under diagnostics.
+  bool _showQaDiagnostics = false;
 
   @override
   void initState() {
@@ -92,6 +95,19 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                 ),
             ],
           ),
+          if (AdminRoleService.isSuperAdmin) ...[
+            const SizedBox(height: 8),
+            FilterChip(
+              label: Text(
+                uiTr(context, 'تشخيص تقني — تسويات الاختبار'),
+                style: AccountantFinanceText.label(theme).copyWith(
+                  color: AccountantFinanceText.ink(theme),
+                ),
+              ),
+              selected: _showQaDiagnostics,
+              onSelected: (v) => setState(() => _showQaDiagnostics = v),
+            ),
+          ],
           const SizedBox(height: 12),
           StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
             stream: () {
@@ -128,6 +144,29 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                       .toList();
                 }
               }
+
+              // Normal accountant list excludes QA settlements.
+              // Super Admin diagnostics may re-include them.
+              if (!_showQaDiagnostics) {
+                docs = docs
+                    .where(
+                      (d) => !AdminQaFixture.isFinanceQaSettlement(
+                        d.data(),
+                        settlementId: d.id,
+                      ),
+                    )
+                    .toList();
+              } else if (AdminRoleService.isSuperAdmin) {
+                docs = docs
+                    .where(
+                      (d) => AdminQaFixture.isFinanceQaSettlement(
+                        d.data(),
+                        settlementId: d.id,
+                      ),
+                    )
+                    .toList();
+              }
+
               if (_statusFilter == 'open') {
                 docs = docs
                     .where((d) {
@@ -176,6 +215,17 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  if (_showQaDiagnostics)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        uiTr(
+                          context,
+                          'وضع التشخيص التقني — تسويات الاختبار فقط',
+                        ),
+                        style: AccountantFinanceText.label(theme),
+                      ),
+                    ),
                   Wrap(
                     spacing: 10,
                     runSpacing: 10,
@@ -310,6 +360,8 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
               AdminSettlementDetailsWidget.routeName,
               queryParameters: {
                 'settlementId': serializeParam(d.id, ParamType.String),
+                if (_showQaDiagnostics)
+                  'diagnostic': serializeParam('1', ParamType.String),
               }.withoutNulls,
             ),
             child: Text(

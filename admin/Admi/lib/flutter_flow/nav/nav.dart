@@ -714,6 +714,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'settlementId',
               ParamType.String,
             ),
+            diagnostic: params.getParam('diagnostic', ParamType.String) == '1',
           ),
         ),
         FFRoute(

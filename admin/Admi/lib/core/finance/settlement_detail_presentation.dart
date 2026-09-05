@@ -257,6 +257,19 @@ abstract final class SettlementDetailPresentation {
     return 'توجد دفعات غير مخصصة تحتاج مراجعة';
   }
 
+  static String sourceVerificationMessageAr({
+    required Object? flag,
+    required Object? mutated,
+  }) {
+    if (flag == 'SOURCE_CHANGED_AFTER_LOCK') {
+      return 'تغير المصدر بعد القفل — اللقطة دون تغيير';
+    }
+    if (mutated == true) {
+      return 'تم تعديل المصدر';
+    }
+    return 'لم يتم تعديل المصدر';
+  }
+
   /// True if [text] still exposes forbidden developer / raw technical content.
   static bool containsForbiddenAccountantCopy(String text) {
     final t = text.toLowerCase();
@@ -266,6 +279,8 @@ abstract final class SettlementDetailPresentation {
     if (t.contains('self_approval')) return true;
     if (t.contains('payment_created')) return true;
     if (t.contains('cash_payment_confirmed')) return true;
+    if (t.contains('mutated=')) return true;
+    if (t.contains('mutated=false') || t.contains('mutated=true')) return true;
     if (RegExp(r'\bdraft\s*→\s*locked\b').hasMatch(t)) return true;
     if (RegExp(r'countries/[a-z0-9_]+').hasMatch(t)) return true;
     if (RegExp(r'\d{4}-\d{2}-\d{2}t\d{2}:\d{2}:\d{2}').hasMatch(t)) {

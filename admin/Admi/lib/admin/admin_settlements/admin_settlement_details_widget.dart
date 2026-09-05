@@ -8,6 +8,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_error_messages.dart';
 import '/core/admin_currency.dart';
+import '/core/admin_qa_fixture.dart';
 import '/core/finance/admin_finance_ui_labels.dart';
 import '/core/finance/admin_money_presentation.dart';
 import '/core/finance/accountant_finance_labels.dart';
@@ -30,9 +31,13 @@ class AdminSettlementDetailsWidget extends StatefulWidget {
   const AdminSettlementDetailsWidget({
     super.key,
     this.settlementId,
+    this.diagnostic = false,
   });
 
   final String? settlementId;
+
+  /// Super Admin technical access to QA settlements (not normal accountant UI).
+  final bool diagnostic;
 
   static const String routeName = 'AdminSettlementDetails';
   static const String routePath = '/adminSettlementDetails';
@@ -356,15 +361,16 @@ class _AdminSettlementDetailsWidgetState
         widget.settlementId!,
       );
       if (!mounted) return;
-      final flag = r['flag'];
       await showDialog<void>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text(uiTr(ctx, 'التحقق من المصدر الحالي')),
+          title: Text(uiTr(ctx, 'تشخيص تقني — التحقق من المصدر')),
           content: Text(
-            flag == 'SOURCE_CHANGED_AFTER_LOCK'
-                ? uiTr(ctx, 'تغير المصدر بعد القفل — اللقطة دون تغيير')
-                : '${uiTr(ctx, 'اللقطة مطابقة للمصدر الحالي.')} mutated=${r['mutated']}',
+            SettlementDetailPresentation.sourceVerificationMessageAr(
+              flag: r['flag'],
+              mutated: r['mutated'],
+            ),
+            style: AccountantFinanceText.body(FlutterFlowTheme.of(ctx)),
           ),
         ),
       );
@@ -620,11 +626,50 @@ class _AdminSettlementDetailsWidgetState
             );
           }
           final d = snap.data!.data()!;
+          final isQa = AdminQaFixture.isFinanceQaSettlement(
+            d,
+            settlementId: id,
+          );
+          final allowDiagnostic = widget.diagnostic &&
+              AdminRoleService.isSuperAdmin &&
+              isQa;
+
+          if (isQa && !allowDiagnostic) {
+            return ListView(
+              padding: AdminUi.pagePadding(context),
+              children: [
+                Text(
+                  uiTr(context, 'تسوية اختبارية'),
+                  style: AccountantFinanceText.pageTitle(theme),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  uiTr(
+                    context,
+                    'هذه التسوية مستبعدة من العرض المحاسبي العادي لأنها سجل اختبار مالي.',
+                  ),
+                  style: AccountantFinanceText.body(theme),
+                ),
+                if (AdminRoleService.isSuperAdmin) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    uiTr(
+                      context,
+                      'للتشخيص التقني: افتح قائمة التسويات ← تشخيص تقني — تسويات الاختبار.',
+                    ),
+                    style: AccountantFinanceText.label(theme),
+                  ),
+                ],
+              ],
+            );
+          }
+
           return _AccountantSettlementDetailBody(
             settlementId: id,
             data: d,
             busy: _busy,
-            canWrite: canWrite,
+            canWrite: canWrite && !isQa,
+            isQaDiagnostic: allowDiagnostic,
             money: _money,
             onLock: () => _lock(d),
             onVoid: () => _voidLocked(d),
@@ -649,6 +694,7 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
     required this.data,
     required this.busy,
     required this.canWrite,
+    required this.isQaDiagnostic,
     required this.money,
     required this.onLock,
     required this.onVoid,
@@ -663,6 +709,7 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
   final Map<String, dynamic> data;
   final bool busy;
   final bool canWrite;
+  final bool isQaDiagnostic;
   final String Function(int? minor, String currency) money;
   final VoidCallback onLock;
   final VoidCallback onVoid;
@@ -696,6 +743,13 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
     return ListView(
       padding: AdminUi.pagePadding(context),
       children: [
+        if (isQaDiagnostic) ...[
+          Text(
+            uiTr(context, 'تشخيص تقني — تسوية اختبار'),
+            style: AccountantFinanceText.sectionTitle(theme),
+          ),
+          const SizedBox(height: 8),
+        ],
         Text(code, style: AccountantFinanceText.pageTitle(theme)),
         const SizedBox(height: 8),
         Text(outcome, style: AccountantFinanceText.body(theme).copyWith(
@@ -940,14 +994,6 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (status != 'draft')
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: TextButton(
-                    onPressed: busy ? null : () => onVerifySource(),
-                    child: Text(uiTr(context, 'التحقق من المصدر الحالي')),
-                  ),
-                ),
               StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
                     .collection('financial_settlements')
@@ -1069,6 +1115,18 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
                       '${uiTr(context, 'مشتقة')}: ${data['derivedCount']}',
                       style: AccountantFinanceText.label(theme),
                     ),
+                    if (AdminRoleService.isSuperAdmin && status != 'draft') ...[
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: TextButton(
+                          onPressed: busy ? null : () => onVerifySource(),
+                          child: Text(
+                            uiTr(context, 'تشخيص تقني — التحقق من المصدر'),
+                          ),
+                        ),
+                      ),
+                    ],
                     if (data['paymentEvidence'] is Map)
                       Text(
                         '${uiTr(context, 'أدلة الدفع')}: ${data['paymentEvidence']}',
@@ -1180,6 +1238,9 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
       future:
           FirebaseFirestore.instance.collection('user').doc(driverId).get(),
       builder: (context, snap) {
+        if (snap.connectionState != ConnectionState.done) {
+          return _kv(theme, uiTr(context, 'السائق'), '…');
+        }
         final name = SettlementDetailPresentation.driverDisplayName(
           snap.data?.data(),
         );
@@ -1227,7 +1288,7 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
           ),
           if (ref.isNotEmpty)
             Text(
-              '${uiTr(context, 'المرجع')}: $ref',
+              '${uiTr(context, 'مرجع العملية')}: $ref',
               style: AccountantFinanceText.label(theme),
             ),
           if (canWrite && !busy)
