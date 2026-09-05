@@ -3,7 +3,7 @@
 **BASE (F2 frozen):** `07e0af66f0624a921110c563acc007cf9f157e2b`  
 **F3-A TIP:** `fa9e4d3` (`recovery/admin-finance-f3a-audit`)  
 **BRANCH:** `recovery/admin-finance-f3a2-data-readiness`  
-**COMMIT:** _(stamped at commit)_  
+**COMMIT:** `c9cbe8cdd71b3e76c94c9c80b61b5407a9f83728`  
 **PROJECT:** `tutorial-multi-language-70gx4j`  
 **SCOPE:** READ-ONLY AUDIT + REMEDIATION DESIGN — no mutation, no backfill execution, no deploy
 
