@@ -2,6 +2,7 @@
 
 **Branch:** `recovery/admin-finance-f1-foundation`  
 **Base (exact F0 checkpoint):** `2cda3d4c70f98c657aeda34e60842ac14f6d2f84`  
+**F1 commit:** `4f569226fd3deaff4acc500fff48b8e27c7fc4cd`  
 **Driver clean base:** `29b6d58167b9b49d93ea9a306dcdc330deec3ac5`  
 **F0 remote:** `origin/recovery/admin-finance-audit` @ `2cda3d4` (pushed; **not** merged to main)
 
