@@ -2,7 +2,7 @@
 
 **BASE:** `055496e61fdb9807644c18efe224d834f77b3dd2`  
 **BRANCH:** `recovery/admin-finance-f2-ui`  
-**COMMIT:** _(see git HEAD after push)_  
+**COMMIT:** `df2e58baabaddae29e11f05c0cba07f10aca2db6`  
 **PREVIEW:** https://tutorial-multi-language-70gx4j--admin-finance-f2-jbhd7z4e.web.app  
 **PRODUCTION DEPLOYED:** NO
 
