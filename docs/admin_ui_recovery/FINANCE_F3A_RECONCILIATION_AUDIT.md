@@ -2,7 +2,7 @@
 
 **BASE:** `07e0af66f0624a921110c563acc007cf9f157e2b`  
 **BRANCH:** `recovery/admin-finance-f3a-audit`  
-**COMMIT:** `eb5ce8a292636bd68d415f7a52ed42cfa517a569`  
+**COMMIT:** `8a544a61cb3623d1769a23bcee48f83805d4b727`  
 **PROJECT:** `tutorial-multi-language-70gx4j`  
 **SCOPE:** AUDIT / DESIGN ONLY — no financial writes, no migration, no production deploy  
 **F1/F2:** FROZEN (HUMAN PASS) — semantics not modified
