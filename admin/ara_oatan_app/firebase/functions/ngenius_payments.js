@@ -5,6 +5,9 @@ const axios = require("axios");
 const {
   assertAndClaimActiveOrderSlot,
 } = require("./active_order_lock.js");
+const {
+  buildBookingAgentSnapshot,
+} = require("./agent_order_snapshot.js");
 
 const PROD_IDENTITY =
   "https://api-gateway.ngenius-payments.com/identity/auth/access-token";
@@ -950,6 +953,14 @@ exports.finalizeNGeniusBooking = functions
     const now = admin.firestore.FieldValue.serverTimestamp();
     let alreadyExisted = false;
 
+    // F3-C2: booking-time agent snapshot from same verified quote/session fees.
+    const agentFields = await buildBookingAgentSnapshot({
+      db: admin.firestore(),
+      countryPath: session.countryPath,
+      platformFeeHalalas: session.appFeeHalalas,
+      currency: session.currency || "SAR",
+    });
+
     await admin.firestore().runTransaction(async (transaction) => {
       const [existingOrder, freshSession] = await Promise.all([
         transaction.get(orderRef),
@@ -990,6 +1001,7 @@ exports.finalizeNGeniusBooking = functions
         total_app: money.total_app,
         total_vat: money.total_vat,
         total_mndob: money.total_mndob,
+        ...agentFields,
         amount_halalas: session.amount_halalas,
         currency: session.currency || "SAR",
         data_order: now,
@@ -1152,6 +1164,14 @@ exports.createCashBooking = functions
       const now = admin.firestore.FieldValue.serverTimestamp();
       let alreadyExisted = false;
 
+      // F3-C2: booking-time agent snapshot from same verified quote fees.
+      const agentFields = await buildBookingAgentSnapshot({
+        db: firestore,
+        countryPath: quote.countryPath,
+        platformFeeHalalas: quote.appFeeHalalas,
+        currency: quote.currency || "SAR",
+      });
+
       await firestore.runTransaction(async (transaction) => {
         const existing = await transaction.get(orderRef);
         if (existing.exists) {
@@ -1186,6 +1206,7 @@ exports.createCashBooking = functions
           total_app: money.total_app,
           total_vat: money.total_vat,
           total_mndob: money.total_mndob,
+          ...agentFields,
           amount_halalas: quote.amountHalalas,
           currency: quote.currency || "SAR",
           currency_code: quote.currency || "SAR",
@@ -1767,4 +1788,5 @@ exports.__test = {
   webhookEventDocId,
   bookingFinancialMajorsFromQuote,
   requireBookingFinancialMajors,
+  buildBookingAgentSnapshot,
 };

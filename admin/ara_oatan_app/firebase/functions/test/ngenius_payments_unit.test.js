@@ -257,6 +257,11 @@ assert.ok(
   (source.match(/total_mndob: money\.total_mndob/g) || []).length >= 2,
   "cash + online create must both write total_mndob",
 );
+assert.ok(source.includes("buildBookingAgentSnapshot"));
+assert.ok(
+  (source.match(/\.\.\.agentFields/g) || []).length >= 2,
+  "cash + online create must both write agent snapshot fields",
+);
 
 process.stdout.write("N-Genius unit checks passed.\n");
 process.exit(0);
