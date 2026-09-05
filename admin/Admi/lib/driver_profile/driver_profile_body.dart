@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '/admin/admindrever/admin_drivers_adapter.dart';
 import '/admin/admindrever/admin_drivers_ui_shared.dart';
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_driver_documents_panel.dart';
@@ -12,7 +13,9 @@ import '/components/admin_status_badge.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_driver_profile_view.dart';
 import '/core/admin_driver_review_actions.dart';
+import '/core/admin_driver_status_l10n.dart';
 import '/core/admin_user_facing_errors.dart';
+import '/core/cloud_functions/cloud_functions_client.dart';
 import '/driver_profile/admin_driver_active_trip.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -274,14 +277,32 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
                 icon: const Icon(Icons.edit_outlined, size: 18),
                 label: Text(uiTr(context, 'تعديل')),
               ),
-              if (row.review == AdminDriverReviewBucket.pendingReview ||
-                  row.review == AdminDriverReviewBucket.needsChanges)
+              if (row.review == AdminDriverReviewBucket.pendingReview)
                 AdminPrimaryButton(
                   label: uiTr(context, 'مراجعة التسجيل'),
                   icon: Icons.fact_check_outlined,
                   isLoading: _actionBusy,
                   onPressed: () => _openReview(context),
                 ),
+              if (row.review == AdminDriverReviewBucket.needsChanges) ...[
+                OutlinedButton.icon(
+                  onPressed: null,
+                  icon: const Icon(Icons.hourglass_top_rounded, size: 18),
+                  label: Text(uiTr(context, 'انتظار استكمال التعديلات')),
+                ),
+                if (AdminRoleService.isSuperAdmin)
+                  AdminPrimaryButton(
+                    label: uiTr(context, 'اعتماد وتفعيل استثنائي'),
+                    icon: Icons.verified_user_outlined,
+                    isLoading: _actionBusy,
+                    onPressed: () => _overrideApproveAndActivate(context),
+                  ),
+                OutlinedButton.icon(
+                  onPressed: _actionBusy ? null : () => _openReview(context),
+                  icon: const Icon(Icons.fact_check_outlined, size: 18),
+                  label: Text(uiTr(context, 'مراجعة التسجيل')),
+                ),
+              ],
               OutlinedButton.icon(
                 onPressed: _actionBusy ? null : () => _openDocuments(context),
                 icon: const Icon(Icons.folder_open_outlined, size: 18),
@@ -303,7 +324,13 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
                 ),
               ] else
                 AdminPrimaryButton(
-                  label: uiTr(context, 'تفعيل الحساب'),
+                  label:
+                      AdminRoleService.isSuperAdmin &&
+                          AdminDriverReviewActions.operationalActivationBlockers(
+                            Map<String, dynamic>.from(widget.user.snapshotData),
+                          ).isNotEmpty
+                      ? uiTr(context, 'تفعيل استثنائي')
+                      : uiTr(context, 'تفعيل الحساب'),
                   icon: Icons.check_circle_outline,
                   isLoading: _actionBusy,
                   onPressed: () => _activate(context),
@@ -463,6 +490,114 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     }
   }
 
+  Future<void> _overrideApproveAndActivate(BuildContext context) async {
+    if (_actionBusy || !AdminRoleService.isSuperAdmin) return;
+    final data = Map<String, dynamic>.from(widget.user.snapshotData);
+    final status =
+        (data['registration_status'] as String?)?.trim() ?? 'needs_changes';
+    final blockers = AdminDriverReviewActions.approvalBlockingReasons(data)
+        .map((key) => appTr(context, key))
+        .where((t) => t.trim().isNotEmpty)
+        .toList();
+    final reasonCtrl = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(uiTr(context, 'اعتماد استثنائي')),
+          content: SizedBox(
+            width: 420,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${uiTr(context, 'حالة التسجيل الحالية')}: '
+                    '${AdminDriverStatusL10n.registrationRaw(context, status)}',
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    uiTr(
+                      context,
+                      'تحذير: أنت تجاوز متطلبات المراجعة كسوبر أدمن. يُسجَّل السبب في سجل التدقيق.',
+                    ),
+                    style: TextStyle(
+                      color: Theme.of(ctx).colorScheme.error,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (blockers.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text(uiTr(context, 'الملاحظات / العوائق:')),
+                    for (final b in blockers) Text('• $b', softWrap: true),
+                  ],
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: reasonCtrl,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      labelText: uiTr(context, 'سبب الاعتماد الاستثنائي *'),
+                      hintText: uiTr(context, 'اكتب سببًا واضحًا للإجراء'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(uiTr(context, 'إلغاء')),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(uiTr(context, 'اعتماد استثنائي')),
+            ),
+          ],
+        );
+      },
+    );
+    final reason = reasonCtrl.text.trim();
+    reasonCtrl.dispose();
+    if (confirmed != true || !mounted) return;
+    if (reason.length < 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(uiTr(context, 'سبب الاعتماد الاستثنائي مطلوب'))),
+      );
+      return;
+    }
+
+    setState(() => _actionBusy = true);
+    try {
+      await CloudFunctionsClient.reviewDriver(
+        action: 'approve',
+        driverId: widget.userRef.id,
+        // Override path is only implemented on reviewDriverApplicationV2.
+        useRegistrationV2: true,
+        reviewVersion: (data['reviewVersion'] as num?)?.toInt(),
+        override: true,
+        overrideReason: reason,
+        alsoActivate: true,
+      );
+      AdminListRefresh.notify(AdminListScope.representatives);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(uiTr(context, 'تم الاعتماد والتفعيل الاستثنائي')),
+        ),
+      );
+      widget.onChanged?.call();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AdminCrudFeedback.updateFailed(context, e))),
+      );
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
+    }
+  }
+
   Future<void> _activate(BuildContext context) async {
     if (_actionBusy) return;
 
@@ -473,9 +608,102 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
             .where((t) => t.trim().isNotEmpty)
             .toList();
     if (blockers.isNotEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(blockers.join('\n'))));
+      if (!AdminRoleService.isSuperAdmin) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(blockers.join('\n'))));
+        return;
+      }
+      final reasonCtrl = TextEditingController();
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(uiTr(context, 'تفعيل استثنائي')),
+          content: SizedBox(
+            width: 420,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(uiTr(context, 'عوائق التفعيل:')),
+                for (final b in blockers) Text('• $b'),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: reasonCtrl,
+                  maxLines: 2,
+                  decoration: InputDecoration(
+                    labelText: uiTr(context, 'سبب التفعيل الاستثنائي *'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(uiTr(context, 'إلغاء')),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(uiTr(context, 'تفعيل استثنائي')),
+            ),
+          ],
+        ),
+      );
+      final reason = reasonCtrl.text.trim();
+      reasonCtrl.dispose();
+      if (ok != true || !mounted) return;
+      if (reason.length < 3) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(uiTr(context, 'سبب التفعيل الاستثنائي مطلوب')),
+          ),
+        );
+        return;
+      }
+      // Operational-only override: still requires registration approved.
+      // If registration not approved, force use of registration override CTA.
+      if (blockers.any(
+        (b) => b.contains('اعتماد') || b.contains('registration'),
+      )) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              uiTr(
+                context,
+                'التسجيل غير معتمد — استخدم «اعتماد وتفعيل استثنائي» أولاً',
+              ),
+            ),
+          ),
+        );
+        return;
+      }
+      setState(() => _actionBusy = true);
+      try {
+        final adminUid = currentUserUid.isNotEmpty ? currentUserUid : 'admin';
+        await widget.userRef.update({
+          ...AdminDriverReviewActions.operationalActivatePatch(
+            adminUid: adminUid,
+          ),
+          'override': true,
+          'override_reason': reason,
+          'override_actor_uid': adminUid,
+          'override_at': FieldValue.serverTimestamp(),
+        });
+        AdminListRefresh.notify(AdminListScope.representatives);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(appTr(context, 'adm_drv_activated_body'))),
+        );
+        widget.onChanged?.call();
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AdminCrudFeedback.updateFailed(context, e))),
+        );
+      } finally {
+        if (mounted) setState(() => _actionBusy = false);
+      }
       return;
     }
 

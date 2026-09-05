@@ -144,14 +144,25 @@ class _DocRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final presenceLabel = switch (slot.presence) {
-      AdminDriverDocPresence.present => uiTr(context, 'متوفرة'),
+      AdminDriverDocPresence.present =>
+        slot.kind == AdminDriverDocKind.driverLicenseLegacy
+            ? uiTr(context, 'متوفرة · سجل قديم')
+            : uiTr(context, 'متوفرة'),
       AdminDriverDocPresence.missing => uiTr(context, 'ناقصة'),
+      AdminDriverDocPresence.optionalMissing => uiTr(
+        context,
+        'اختياري — غير مرفقة',
+      ),
       AdminDriverDocPresence.legacy => uiTr(
         context,
         AdminDriverDocumentAccess.legacyAccessLabel,
       ),
     };
-    final present = slot.presence != AdminDriverDocPresence.missing;
+    final present =
+        slot.presence == AdminDriverDocPresence.present ||
+        slot.presence == AdminDriverDocPresence.legacy;
+    final optionalAbsent =
+        slot.presence == AdminDriverDocPresence.optionalMissing;
 
     return Container(
       padding: const EdgeInsets.all(10),
@@ -162,8 +173,16 @@ class _DocRow extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            present ? Icons.check_circle_outline : Icons.warning_amber_rounded,
-            color: present ? Colors.green.shade700 : theme.secondaryText,
+            present
+                ? Icons.check_circle_outline
+                : optionalAbsent
+                ? Icons.info_outline_rounded
+                : Icons.warning_amber_rounded,
+            color: present
+                ? Colors.green.shade700
+                : optionalAbsent
+                ? theme.secondaryText
+                : theme.secondaryText,
             size: 22,
           ),
           const SizedBox(width: 10),

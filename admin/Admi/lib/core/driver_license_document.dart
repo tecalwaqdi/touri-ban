@@ -1,4 +1,7 @@
 /// Driver license V2 slots — front/back with legacy single-image fallback.
+///
+/// Business rule (Phase 4D): license **back is optional**.
+/// Canonical requirement = front **or** legacy single license.
 abstract final class DriverLicenseDocumentFields {
   DriverLicenseDocumentFields._();
 
@@ -11,6 +14,9 @@ enum DriverLicenseSide { front, back, legacy }
 
 abstract final class DriverLicenseDocument {
   DriverLicenseDocument._();
+
+  /// Authoritative product rule: back is never required.
+  static const bool backSideRequired = false;
 
   static bool isStoragePath(String? raw) {
     final p = (raw ?? '').trim();
@@ -37,17 +43,24 @@ abstract final class DriverLicenseDocument {
   static bool hasLegacySingle(Map<String, dynamic> data) =>
       _hasAssetInSlot(data, DriverLicenseDocumentFields.legacy);
 
+  /// Front or legacy satisfies the license requirement. Back never blocks.
+  static bool satisfiesCanonicalRequirement(Map<String, dynamic> data) {
+    if (hasFront(data)) return true;
+    if (hasLegacySingle(data)) return true;
+    return false;
+  }
+
   static bool isCompleteForSubmit(
     Map<String, dynamic> data, {
-    bool requireBothSides = true,
-    bool backRequired = true,
+    bool requireBothSides = false,
+    bool backRequired = backSideRequired,
   }) {
-    if (!requireBothSides) {
-      return hasLegacySingle(data) || (hasFront(data) && hasBack(data));
+    if (requireBothSides) {
+      if (!hasFront(data)) return false;
+      if (backRequired && !hasBack(data)) return false;
+      return true;
     }
-    if (!hasFront(data)) return false;
-    if (backRequired && !hasBack(data)) return false;
-    return true;
+    return satisfiesCanonicalRequirement(data);
   }
 
   static bool isApprovedLegacyLicenseOnly(Map<String, dynamic> data) {

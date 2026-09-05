@@ -61,6 +61,8 @@ abstract final class AdminDriverStatusL10n {
         return uiTr(context, 'تمت إعادة الإرسال');
       case 'DRIVER_APPLICATION_APPROVED':
         return uiTr(context, 'تمت الموافقة');
+      case 'DRIVER_APPLICATION_OVERRIDE_APPROVED':
+        return uiTr(context, 'تم الاعتماد استثنائيًا بواسطة السوبر أدمن');
       case 'DRIVER_APPLICATION_REJECTED':
         return uiTr(context, 'تم الرفض');
       case 'DRIVER_CHANGES_REQUESTED':

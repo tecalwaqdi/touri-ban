@@ -228,7 +228,11 @@ function allRequiredDocumentsApproved(driver) {
     return slotApproved(driver, 'doc_driver_license', '');
   }
   const backRequired = docStatus.isLicenseBackRequired(null);
-  if (!slotApproved(driver, 'doc_driver_license_front', '')) return false;
+  if (!slotApproved(driver, 'doc_driver_license_front', '')) {
+    // Legacy-only may still satisfy when no front.
+    if (!docStatus.satisfiesLicenseRequirement(driver)) return false;
+    return true;
+  }
   if (backRequired && !slotApproved(driver, 'doc_driver_license_back', '')) return false;
   return true;
 }

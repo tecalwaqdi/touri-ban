@@ -15,6 +15,7 @@ class AdminDriverReviewHistoryPanel extends StatelessWidget {
     'DRIVER_APPLICATION_SUBMITTED',
     'DRIVER_APPLICATION_RESUBMITTED',
     'DRIVER_APPLICATION_APPROVED',
+    'DRIVER_APPLICATION_OVERRIDE_APPROVED',
     'DRIVER_APPLICATION_REJECTED',
     'DRIVER_CHANGES_REQUESTED',
     'DRIVER_SUSPENDED',
@@ -68,17 +69,17 @@ class AdminDriverReviewHistoryPanel extends StatelessWidget {
                       ),
                       subtitle: Text(
                         [
-                          AdminDriverStatusL10n.statusTransition(
-                            context,
-                            oldStatus: d.data()['oldStatus'],
-                            newStatus: d.data()['newStatus'],
-                          ),
-                          if ((d.data()['reason'] ?? '')
-                              .toString()
-                              .trim()
-                              .isNotEmpty)
-                            '${d.data()['reason']}',
-                        ]
+                              AdminDriverStatusL10n.statusTransition(
+                                context,
+                                oldStatus: d.data()['oldStatus'],
+                                newStatus: d.data()['newStatus'],
+                              ),
+                              if ((d.data()['reason'] ?? '')
+                                  .toString()
+                                  .trim()
+                                  .isNotEmpty)
+                                '${d.data()['reason']}',
+                            ]
                             .where((e) => e.toString().trim().isNotEmpty)
                             .join(' · '),
                         softWrap: true,

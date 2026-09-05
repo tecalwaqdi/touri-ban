@@ -99,6 +99,57 @@ abstract final class AdminDriverReviewActions {
     'approvedBy': adminUid,
   };
 
+  /// Registration approve **without** flipping [actev_mndob] — keeps axes separate.
+  static Map<String, dynamic> registrationApproveOnlyPatch({
+    required String adminUid,
+  }) => {
+    'ismndob': true,
+    'ismndom': true,
+    'registration_status': 'approved',
+    'submission_status': 'approved',
+    'vehicle_review_status': 'approved',
+    'document_review_status': 'approved',
+    'rejection_reason': FieldValue.delete(),
+    'rejectionReason': FieldValue.delete(),
+    'changeRequestReason': FieldValue.delete(),
+    'fieldsToFix': <dynamic>[],
+    'requested_changes': <dynamic>[],
+    'reviewed_at': FieldValue.serverTimestamp(),
+    'reviewed_by': adminUid,
+    'approved_at': FieldValue.serverTimestamp(),
+    'approvedAt': FieldValue.serverTimestamp(),
+    'approvedBy': adminUid,
+  };
+
+  /// Super-Admin override metadata (also written by CF when override=true).
+  static Map<String, dynamic> overrideApproveMetadata({
+    required String adminUid,
+    required String reason,
+    required String previousStatus,
+    String? adminEmail,
+    bool alsoActivate = true,
+  }) {
+    final now = FieldValue.serverTimestamp();
+    return {
+      'override': true,
+      'override_reason': reason.trim(),
+      'override_actor_uid': adminUid,
+      if (adminEmail != null && adminEmail.trim().isNotEmpty)
+        'override_actor_email': adminEmail.trim(),
+      'override_at': now,
+      'previous_registration_status': previousStatus,
+      'new_registration_status': 'approved',
+      if (alsoActivate) ...operationalActivatePatch(adminUid: adminUid),
+      ...registrationApproveOnlyPatch(adminUid: adminUid),
+    };
+  }
+
+  /// Whether Super Admin may show the override approval CTA.
+  static bool canSuperAdminOverrideApprove(Map<String, dynamic> data) {
+    final status = (data['registration_status'] as String?)?.trim() ?? '';
+    return status == 'needs_changes' || status == 'pending_review';
+  }
+
   static Map<String, dynamic> rejectPatch({
     required String reason,
     required String adminUid,

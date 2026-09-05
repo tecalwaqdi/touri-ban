@@ -2,17 +2,13 @@ import '/core/driver_license_document.dart';
 
 /// Canonical Registration V2 document completeness (Admin + Driver shared logic).
 ///
-/// Required V2 slots: national_id, vehicle_registration, driver_license (front+back).
+/// Required V2 slots: national_id, vehicle_registration, driver_license
+/// (front **or** legacy; back optional).
 /// Profile photo is also required for submit (kept separate in [profilePhotoOk]).
 ///
 /// V2 SoT: `doc_*.storagePath` under `users/{uid}/...`.
 /// Legacy records may still use HTTPS URL strings only.
-enum DriverRegistrationDocStatus {
-  complete,
-  missing,
-  needsReupload,
-  rejected,
-}
+enum DriverRegistrationDocStatus { complete, missing, needsReupload, rejected }
 
 class DriverRegistrationDocumentSlotStatus {
   const DriverRegistrationDocumentSlotStatus({
@@ -52,7 +48,10 @@ abstract final class DriverRegistrationDocumentStatus {
   }
 
   static String? _urlFrom(
-      Map<String, dynamic> data, String v2Key, String legacyKey) {
+    Map<String, dynamic> data,
+    String v2Key,
+    String legacyKey,
+  ) {
     final slot = data[v2Key];
     if (slot is Map && slot['url'] is String) {
       final u = (slot['url'] as String).trim();
@@ -125,10 +124,7 @@ abstract final class DriverRegistrationDocumentStatus {
         return DriverRegistrationDocStatus.needsReupload;
       }
     }
-    if (DriverLicenseDocument.isCompleteForSubmit(data)) {
-      return DriverRegistrationDocStatus.complete;
-    }
-    if (DriverLicenseDocument.isApprovedLegacyLicenseOnly(data)) {
+    if (DriverLicenseDocument.satisfiesCanonicalRequirement(data)) {
       return DriverRegistrationDocStatus.complete;
     }
     return DriverRegistrationDocStatus.missing;
@@ -162,8 +158,9 @@ abstract final class DriverRegistrationDocumentStatus {
 
   static List<String> missingTypes(Map<String, dynamic> data) {
     return requiredTypes
-        .where((t) =>
-            statusForType(data, t) != DriverRegistrationDocStatus.complete)
+        .where(
+          (t) => statusForType(data, t) != DriverRegistrationDocStatus.complete,
+        )
         .toList();
   }
 }

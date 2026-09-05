@@ -7,8 +7,9 @@ class CloudFunctionsClient {
   // Keep the client pinned to the region used by the deployed Admin
   // functions.  Relying on the SDK default makes a callable look like
   // `NOT_FOUND` when the app is configured for another region.
-  static final _functions =
-      FirebaseFunctions.instanceFor(region: 'us-central1');
+  static final _functions = FirebaseFunctions.instanceFor(
+    region: 'us-central1',
+  );
 
   static Future<Map<String, dynamic>> createPanelUser({
     required String email,
@@ -40,11 +41,12 @@ class CloudFunctionsClient {
     String? countryPath,
     DateTime? periodStart,
   }) async {
-    final result =
-        await _functions.httpsCallable('aggregateFinancialSummary').call({
-      if (countryPath != null) 'countryPath': countryPath,
-      if (periodStart != null) 'periodStart': periodStart.toIso8601String(),
-    });
+    final result = await _functions
+        .httpsCallable('aggregateFinancialSummary')
+        .call({
+          if (countryPath != null) 'countryPath': countryPath,
+          if (periodStart != null) 'periodStart': periodStart.toIso8601String(),
+        });
     return Map<String, dynamic>.from(result.data as Map);
   }
 
@@ -61,19 +63,20 @@ class CloudFunctionsClient {
     String? currency,
     String mode = 'totals',
   }) async {
-    final result =
-        await _functions.httpsCallable('aggregateFinancialAccountingV2').call({
-      if (countryPath != null) 'countryPath': countryPath,
-      if (periodStart != null) 'periodStart': periodStart.toIso8601String(),
-      if (periodEnd != null) 'periodEnd': periodEnd.toIso8601String(),
-      if (driverId != null) 'driverId': driverId,
-      if (channel != null) 'channel': channel,
-      if (lifecycle != null) 'lifecycle': lifecycle,
-      if (payment != null) 'payment': payment,
-      if (confidence != null) 'confidence': confidence,
-      if (currency != null) 'currency': currency,
-      'mode': mode,
-    });
+    final result = await _functions
+        .httpsCallable('aggregateFinancialAccountingV2')
+        .call({
+          if (countryPath != null) 'countryPath': countryPath,
+          if (periodStart != null) 'periodStart': periodStart.toIso8601String(),
+          if (periodEnd != null) 'periodEnd': periodEnd.toIso8601String(),
+          if (driverId != null) 'driverId': driverId,
+          if (channel != null) 'channel': channel,
+          if (lifecycle != null) 'lifecycle': lifecycle,
+          if (payment != null) 'payment': payment,
+          if (confidence != null) 'confidence': confidence,
+          if (currency != null) 'currency': currency,
+          'mode': mode,
+        });
     return Map<String, dynamic>.from(result.data as Map);
   }
 
@@ -85,13 +88,14 @@ class CloudFunctionsClient {
     String note = '',
     String currency = 'SAR',
   }) async {
-    final result =
-        await _functions.httpsCallable('adminAdjustDriverWallet').call({
-      'driverId': driverId,
-      'amount': amount,
-      if (note.isNotEmpty) 'note': note,
-      'currency': currency,
-    });
+    final result = await _functions
+        .httpsCallable('adminAdjustDriverWallet')
+        .call({
+          'driverId': driverId,
+          'amount': amount,
+          if (note.isNotEmpty) 'note': note,
+          'currency': currency,
+        });
     return Map<String, dynamic>.from(result.data as Map);
   }
 
@@ -117,6 +121,9 @@ class CloudFunctionsClient {
     String? idempotencyKey,
     bool useRegistrationV2 = false,
     Map<String, dynamic>? adminProfile,
+    bool override = false,
+    String? overrideReason,
+    bool alsoActivate = true,
   }) async {
     if (useRegistrationV2) {
       final v2Action = switch (action) {
@@ -126,19 +133,25 @@ class CloudFunctionsClient {
         'approve' || 'reject' || 'request_changes' => action,
         _ => throw ArgumentError('Unsupported driver review action: $action'),
       };
-      final result =
-          await _functions.httpsCallable('reviewDriverApplicationV2').call({
-        'action': v2Action,
-        'driverId': driverId,
-        if (reason.isNotEmpty) 'reason': reason,
-        if (fieldsToFix != null && fieldsToFix.isNotEmpty)
-          'fieldsToFix': fieldsToFix,
-        if (reviewVersion != null) 'reviewVersion': reviewVersion,
-        if (adminProfile != null && adminProfile.isNotEmpty)
-          'adminProfile': adminProfile,
-        'idempotencyKey': idempotencyKey ??
-            'rev_${driverId}_${v2Action}_${DateTime.now().millisecondsSinceEpoch}',
-      });
+      final result = await _functions
+          .httpsCallable('reviewDriverApplicationV2')
+          .call({
+            'action': v2Action,
+            'driverId': driverId,
+            if (reason.isNotEmpty) 'reason': reason,
+            if (fieldsToFix != null && fieldsToFix.isNotEmpty)
+              'fieldsToFix': fieldsToFix,
+            if (reviewVersion != null) 'reviewVersion': reviewVersion,
+            if (adminProfile != null && adminProfile.isNotEmpty)
+              'adminProfile': adminProfile,
+            if (override) 'override': true,
+            if (override && (overrideReason ?? reason).trim().isNotEmpty)
+              'overrideReason': (overrideReason ?? reason).trim(),
+            if (override) 'alsoActivate': alsoActivate,
+            'idempotencyKey':
+                idempotencyKey ??
+                'rev_${driverId}_${v2Action}_${DateTime.now().millisecondsSinceEpoch}',
+          });
       return Map<String, dynamic>.from(result.data as Map);
     }
     final functionName = switch (action) {
@@ -163,25 +176,25 @@ class CloudFunctionsClient {
     required DateTime periodEnd,
     required String idempotencyKey,
   }) async {
-    final result =
-        await _functions.httpsCallable('createSettlementDraftV2').call({
-      'driverId': driverId,
-      'countryId': countryId,
-      'currency': currency,
-      'periodStart': periodStart.toUtc().toIso8601String(),
-      'periodEnd': periodEnd.toUtc().toIso8601String(),
-      'idempotencyKey': idempotencyKey,
-    });
+    final result = await _functions
+        .httpsCallable('createSettlementDraftV2')
+        .call({
+          'driverId': driverId,
+          'countryId': countryId,
+          'currency': currency,
+          'periodStart': periodStart.toUtc().toIso8601String(),
+          'periodEnd': periodEnd.toUtc().toIso8601String(),
+          'idempotencyKey': idempotencyKey,
+        });
     return Map<String, dynamic>.from(result.data as Map);
   }
 
   static Future<Map<String, dynamic>> refreshSettlementDraftV2({
     required String settlementId,
   }) async {
-    final result =
-        await _functions.httpsCallable('refreshSettlementDraftV2').call({
-      'settlementId': settlementId,
-    });
+    final result = await _functions
+        .httpsCallable('refreshSettlementDraftV2')
+        .call({'settlementId': settlementId});
     return Map<String, dynamic>.from(result.data as Map);
   }
 
@@ -205,16 +218,18 @@ class CloudFunctionsClient {
     String? notes,
     DateTime? settledAt,
   }) async {
-    final result =
-        await _functions.httpsCallable('markSettlementSettledV2').call({
-      'settlementId': settlementId,
-      'settlementMethod': settlementMethod,
-      'paymentReference': paymentReference,
-      'amountMinor': amountMinor,
-      'idempotencyKey': idempotencyKey,
-      if (notes != null) 'notes': notes,
-      if (settledAt != null) 'settledAt': settledAt.toUtc().toIso8601String(),
-    });
+    final result = await _functions
+        .httpsCallable('markSettlementSettledV2')
+        .call({
+          'settlementId': settlementId,
+          'settlementMethod': settlementMethod,
+          'paymentReference': paymentReference,
+          'amountMinor': amountMinor,
+          'idempotencyKey': idempotencyKey,
+          if (notes != null) 'notes': notes,
+          if (settledAt != null)
+            'settledAt': settledAt.toUtc().toIso8601String(),
+        });
     return Map<String, dynamic>.from(result.data as Map);
   }
 
@@ -244,20 +259,21 @@ class CloudFunctionsClient {
     String? bankName,
     String? transferReference,
   }) async {
-    final result =
-        await _functions.httpsCallable('createSettlementPaymentV2').call({
-      'settlementId': settlementId,
-      'amountMinor': amountMinor,
-      'method': method,
-      'idempotencyKey': idempotencyKey,
-      if (direction != null) 'direction': direction,
-      if (externalReference != null) 'externalReference': externalReference,
-      if (notes != null) 'notes': notes,
-      if (receivedBy != null) 'receivedBy': receivedBy,
-      if (paidAt != null) 'paidAt': paidAt.toUtc().toIso8601String(),
-      if (bankName != null) 'bankName': bankName,
-      if (transferReference != null) 'transferReference': transferReference,
-    });
+    final result = await _functions
+        .httpsCallable('createSettlementPaymentV2')
+        .call({
+          'settlementId': settlementId,
+          'amountMinor': amountMinor,
+          'method': method,
+          'idempotencyKey': idempotencyKey,
+          if (direction != null) 'direction': direction,
+          if (externalReference != null) 'externalReference': externalReference,
+          if (notes != null) 'notes': notes,
+          if (receivedBy != null) 'receivedBy': receivedBy,
+          if (paidAt != null) 'paidAt': paidAt.toUtc().toIso8601String(),
+          if (bankName != null) 'bankName': bankName,
+          if (transferReference != null) 'transferReference': transferReference,
+        });
     return Map<String, dynamic>.from(result.data as Map);
   }
 
@@ -265,11 +281,9 @@ class CloudFunctionsClient {
     required String paymentId,
     required String idempotencyKey,
   }) async {
-    final result =
-        await _functions.httpsCallable('confirmSettlementPaymentV2').call({
-      'paymentId': paymentId,
-      'idempotencyKey': idempotencyKey,
-    });
+    final result = await _functions
+        .httpsCallable('confirmSettlementPaymentV2')
+        .call({'paymentId': paymentId, 'idempotencyKey': idempotencyKey});
     return Map<String, dynamic>.from(result.data as Map);
   }
 
@@ -279,14 +293,15 @@ class CloudFunctionsClient {
     required String idempotencyKey,
     int? reversalAmountMinor,
   }) async {
-    final result =
-        await _functions.httpsCallable('reverseSettlementPaymentV2').call({
-      'paymentId': paymentId,
-      'reason': reason,
-      'idempotencyKey': idempotencyKey,
-      if (reversalAmountMinor != null)
-        'reversalAmountMinor': reversalAmountMinor,
-    });
+    final result = await _functions
+        .httpsCallable('reverseSettlementPaymentV2')
+        .call({
+          'paymentId': paymentId,
+          'reason': reason,
+          'idempotencyKey': idempotencyKey,
+          if (reversalAmountMinor != null)
+            'reversalAmountMinor': reversalAmountMinor,
+        });
     return Map<String, dynamic>.from(result.data as Map);
   }
 
@@ -296,19 +311,21 @@ class CloudFunctionsClient {
     required int amountMinor,
     required String idempotencyKey,
   }) async {
-    final result =
-        await _functions.httpsCallable('allocateExistingPaymentV2').call({
-      'settlementId': settlementId,
-      'sourceId': sourceId,
-      'amountMinor': amountMinor,
-      'idempotencyKey': idempotencyKey,
-    });
+    final result = await _functions
+        .httpsCallable('allocateExistingPaymentV2')
+        .call({
+          'settlementId': settlementId,
+          'sourceId': sourceId,
+          'amountMinor': amountMinor,
+          'idempotencyKey': idempotencyKey,
+        });
     return Map<String, dynamic>.from(result.data as Map);
   }
 
   static Future<Map<String, dynamic>> aggregateSettlementExposureV2() async {
-    final result =
-        await _functions.httpsCallable('aggregateSettlementExposureV2').call();
+    final result = await _functions
+        .httpsCallable('aggregateSettlementExposureV2')
+        .call();
     return Map<String, dynamic>.from(result.data as Map);
   }
 

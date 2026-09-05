@@ -181,6 +181,7 @@ class AdminDriversDetailsPanel extends StatelessWidget {
                   AdminDriverFinancialPanel(
                     driverRef: user.reference,
                     countryRef: user.revDolh,
+                    profileCompact: true,
                   ),
                   AdminDriverKvRow(
                     label: uiTr(context, 'إجمالي الأرباح'),

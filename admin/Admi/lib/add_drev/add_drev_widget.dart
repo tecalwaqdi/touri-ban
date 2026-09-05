@@ -61,7 +61,12 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
 
     AdminAgentCountryLock.applyToAppState();
 
+    // Resolve edit target before first paint so we never flash create-mode Save.
     if (widget.editUserRef != null) {
+      _resolvedEditRef = AdminDriverRouteParams.resolveUserRef(
+        rawQuery: null,
+        deserialized: widget.editUserRef,
+      );
       _model.editPhase = 'loading';
       _model.isLoadingEdit = true;
     }
@@ -322,8 +327,9 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     final idx = text.lastIndexOf(separator);
     if (idx > 0) {
       _model.cartypeTextController!.text = text.substring(0, idx).trim();
-      _model.platTextController!.text =
-          text.substring(idx + separator.length).trim();
+      _model.platTextController!.text = text
+          .substring(idx + separator.length)
+          .trim();
     } else {
       _model.cartypeTextController!.text = text;
       _model.platTextController!.clear();
@@ -338,16 +344,16 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
   }
 
   Future<void> _pickRepPhoto() => handleAdminImagePick(
-        context: context,
-        storageFolder: 'representatives/uploads',
-        useProfileCompression: true,
-        setUploading: (v) =>
-            safeSetState(() => _model.isDataUploading_uploadDataLbm = v),
-        setLocal: (file) =>
-            safeSetState(() => _model.uploadedLocalFile_uploadDataLbm = file),
-        setUrl: (url) =>
-            safeSetState(() => _model.uploadedFileUrl_uploadDataLbm = url),
-      );
+    context: context,
+    storageFolder: 'representatives/uploads',
+    useProfileCompression: true,
+    setUploading: (v) =>
+        safeSetState(() => _model.isDataUploading_uploadDataLbm = v),
+    setLocal: (file) =>
+        safeSetState(() => _model.uploadedLocalFile_uploadDataLbm = file),
+    setUrl: (url) =>
+        safeSetState(() => _model.uploadedFileUrl_uploadDataLbm = url),
+  );
 
   Future<void> _submitRepresentative() async {
     if (_model.isSubmitting) return;
@@ -547,14 +553,17 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
           'submission_status': AdminRoleService.isTransportCompany
               ? 'pending_review'
               : 'approved',
-          'account_status':
-              AdminRoleService.isTransportCompany ? 'inactive' : 'active',
+          'account_status': AdminRoleService.isTransportCompany
+              ? 'inactive'
+              : 'active',
           'operational_status': 'offline',
           'auto_activated': false,
-          'document_review_status':
-              AdminRoleService.isTransportCompany ? 'pending' : 'approved',
-          'vehicle_review_status':
-              AdminRoleService.isTransportCompany ? 'pending' : 'approved',
+          'document_review_status': AdminRoleService.isTransportCompany
+              ? 'pending'
+              : 'approved',
+          'vehicle_review_status': AdminRoleService.isTransportCompany
+              ? 'pending'
+              : 'approved',
           if (workCityRef != null) 'mndob_vill': workCityRef.path,
           if (carTypeRef != null) 'mndob_type_car': carTypeRef.path,
           'mndob_vill_text': workCity,
@@ -576,9 +585,9 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       if (!mounted) return;
       final message = switch (e.code) {
         'email-already-in-use' => uiTr(
-            context,
-            'البريد الإلكتروني مستخدم مسبقاً',
-          ),
+          context,
+          'البريد الإلكتروني مستخدم مسبقاً',
+        ),
         'invalid-email' => uiTr(context, 'البريد الإلكتروني غير صالح'),
         'weak-password' => uiTr(context, 'كلمة المرور ضعيفة جداً'),
         _ => '${uiTr(context, 'تعذر إضافة المندوب')}: ${e.message ?? e.code}',
@@ -953,19 +962,20 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       subtitle: isEdit && (editSubtitle?.isNotEmpty ?? false)
           ? editSubtitle
           : (isEdit
-              ? uiTr(context, 'عدّل البيانات ثم احفظ')
-              : uiTr(context, 'املأ الحقول المطلوبة')),
+                ? uiTr(context, 'عدّل البيانات ثم احفظ')
+                : uiTr(context, 'املأ الحقول المطلوبة')),
       isLoading: false,
       bottomBar: canMutate
           ? AdminDriverStickyActions(
               primaryLabel: _model.isSubmitting
                   ? uiTr(context, 'جاري الحفظ...')
                   : isEdit
-                      ? uiTr(context, 'حفظ التعديلات')
-                      : uiTr(context, 'إضافة المندوب'),
+                  ? uiTr(context, 'حفظ التعديلات')
+                  : uiTr(context, 'إضافة المندوب'),
               primaryLoading: _model.isSubmitting,
-              primaryIcon:
-                  isEdit ? Icons.save_rounded : Icons.person_add_rounded,
+              primaryIcon: isEdit
+                  ? Icons.save_rounded
+                  : Icons.person_add_rounded,
               onPrimary: _model.isSubmitting ? null : _submitRepresentative,
             )
           : null,
@@ -1048,16 +1058,18 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
           obscureText: obscureText,
           keyboardType: keyboardType,
           textInputAction: textInputAction,
-          decoration: AdminUi.inputDecoration(
-            context,
-            label: label,
-            hint: hint,
-            prefixIcon: icon,
-          ).copyWith(
-            suffixIcon: suffix,
-            fillColor:
-                readOnly ? theme.alternate.withValues(alpha: 0.15) : null,
-          ),
+          decoration:
+              AdminUi.inputDecoration(
+                context,
+                label: label,
+                hint: hint,
+                prefixIcon: icon,
+              ).copyWith(
+                suffixIcon: suffix,
+                fillColor: readOnly
+                    ? theme.alternate.withValues(alpha: 0.15)
+                    : null,
+              ),
           style: theme.bodyMedium.override(
             fontFamily: theme.bodyMediumFamily,
             useGoogleFonts: !theme.bodyMediumIsCustom,
@@ -1083,7 +1095,8 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
   }
 
   Widget _buildPhotoPicker(BuildContext context, FlutterFlowTheme theme) {
-    final hasPhoto = _model.uploadedFileUrl_uploadDataLbm.isNotEmpty ||
+    final hasPhoto =
+        _model.uploadedFileUrl_uploadDataLbm.isNotEmpty ||
         _model.uploadedLocalFile_uploadDataLbm.bytes?.isNotEmpty == true;
 
     return Material(

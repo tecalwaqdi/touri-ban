@@ -30,7 +30,7 @@ enum AdminDriverDocKind {
   tourGuidePermit,
 }
 
-enum AdminDriverDocPresence { present, missing, legacy }
+enum AdminDriverDocPresence { present, missing, legacy, optionalMissing }
 
 enum AdminDriverDocAccessMode { v2StoragePath, legacyUrl, missing }
 
@@ -230,7 +230,8 @@ abstract final class AdminDriverProfileView {
       'plate',
     ]);
     final color = _firstNonEmpty(data, ['vehicle_color', 'color']);
-    final incomplete = classification.isEmpty &&
+    final incomplete =
+        classification.isEmpty &&
         name.isEmpty &&
         model.isEmpty &&
         plate.isEmpty &&
@@ -350,8 +351,8 @@ abstract final class AdminDriverProfileView {
       final path = DriverRegistrationDocumentStatus.isStoragePath(photoPath)
           ? photoPath
           : (DriverRegistrationDocumentStatus.isStoragePath(mapPath)
-              ? mapPath
-              : '');
+                ? mapPath
+                : '');
       final fallbackUrl = photoUrl.startsWith('https://')
           ? photoUrl
           : (mapUrl.startsWith('https://') ? mapUrl : '');
@@ -410,10 +411,10 @@ abstract final class AdminDriverProfileView {
     return out;
   }
 
-  /// License visual contract:
-  /// A) front and/or back present → show front+back only (no legacy card)
-  /// B) legacy only → one license card
-  /// C) nothing → one missing license card
+  /// License visual contract (back optional):
+  /// A) front exists → show front; show back only if present (or as optional)
+  /// B) front missing + legacy → one canonical license (legacy)
+  /// C) nothing → one required missing license
   static List<AdminDriverDocumentSlot> _licenseSlots(
     UserRecord user,
     AdminDriverDocumentSlot Function(AdminDriverDocKind, String) slot,
@@ -422,18 +423,63 @@ abstract final class AdminDriverProfileView {
     final hasF = DriverLicenseDocument.hasFront(data);
     final hasB = DriverLicenseDocument.hasBack(data);
     final hasL = DriverLicenseDocument.hasLegacySingle(data);
-    if (hasF || hasB) {
-      return [
-        slot(AdminDriverDocKind.driverLicenseFront, 'doc_driver_license_front'),
-        slot(AdminDriverDocKind.driverLicenseBack, 'doc_driver_license_back'),
+
+    AdminDriverDocumentSlot build(
+      AdminDriverDocKind kind,
+      String key, {
+      AdminDriverDocPresence? forcePresence,
+    }) {
+      final base = slot(kind, key);
+      if (forcePresence == null) return base;
+      return AdminDriverDocumentSlot(
+        kind: base.kind,
+        fieldKey: base.fieldKey,
+        storagePath: base.storagePath,
+        legacyUrl: base.legacyUrl,
+        presence: forcePresence,
+        accessMode: base.accessMode,
+        expiryDate: base.expiryDate,
+      );
+    }
+
+    if (hasF) {
+      final out = <AdminDriverDocumentSlot>[
+        build(
+          AdminDriverDocKind.driverLicenseFront,
+          'doc_driver_license_front',
+        ),
       ];
+      if (hasB) {
+        out.add(
+          build(
+            AdminDriverDocKind.driverLicenseBack,
+            'doc_driver_license_back',
+          ),
+        );
+      } else {
+        out.add(
+          build(
+            AdminDriverDocKind.driverLicenseBack,
+            'doc_driver_license_back',
+            forcePresence: AdminDriverDocPresence.optionalMissing,
+          ),
+        );
+      }
+      return out;
     }
     if (hasL) {
       return [
-        slot(AdminDriverDocKind.driverLicenseLegacy, 'doc_driver_license'),
+        build(AdminDriverDocKind.driverLicenseLegacy, 'doc_driver_license'),
       ];
     }
-    return [slot(AdminDriverDocKind.driverLicenseLegacy, 'doc_driver_license')];
+    // CASE C — single required missing state (not three cards).
+    return [
+      build(
+        AdminDriverDocKind.driverLicenseLegacy,
+        'doc_driver_license',
+        forcePresence: AdminDriverDocPresence.missing,
+      ),
+    ];
   }
 
   /// Complete = shared V2 helper (national ID + vehicle reg + license + photo).
@@ -452,8 +498,8 @@ abstract final class AdminDriverProfileView {
 
   /// Backend-controlled `registration_documents_status` when present.
   static String authoritativeDocumentsStatus(UserRecord user) {
-    final raw =
-        '${user.snapshotData['registration_documents_status'] ?? ''}'.trim();
+    final raw = '${user.snapshotData['registration_documents_status'] ?? ''}'
+        .trim();
     return raw;
   }
 

@@ -545,11 +545,28 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
     fail('invalid-argument', 'Valid driverId is required.');
   }
   const reason = String((data && data.reason) || '').trim();
+  const override = !!(data && data.override === true);
+  const overrideReason = String(
+    (data && (data.overrideReason || data.override_reason)) || reason || '',
+  ).trim();
+  const alsoActivate = data && data.alsoActivate === false ? false : true;
   const expectedVersion = data && data.reviewVersion != null
     ? Number(data.reviewVersion)
     : null;
   const idempotencyKey = String((data && data.idempotencyKey) || '').trim();
   if (!idempotencyKey) fail('invalid-argument', 'idempotencyKey required');
+
+  if (override) {
+    if (claims.super_admin !== true) {
+      fail('permission-denied', 'OVERRIDE_SUPER_ADMIN_ONLY');
+    }
+    if (action !== 'approve') {
+      fail('invalid-argument', 'override only supported for approve');
+    }
+    if (overrideReason.length < 3) {
+      fail('invalid-argument', 'override reason is required');
+    }
+  }
 
   if (action !== 'approve' && reason.length < 3) {
     fail('invalid-argument', 'A review reason is required.');
@@ -602,14 +619,25 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
       fail('aborted', 'DRIVER_REVIEW_STALE');
     }
 
-    if (status !== 'pending_review') {
+    if (override) {
+      if (!['pending_review', 'needs_changes'].includes(status)) {
+        fail('failed-precondition', `DRIVER_REVIEW_STALE:${status || 'unknown'}`);
+      }
+    } else if (status !== 'pending_review') {
       fail('failed-precondition', `DRIVER_REVIEW_STALE:${status || 'unknown'}`);
     }
 
+    let skippedBlockers = [];
     if ((driver.registration_flow_version || 0) === FLOW_VERSION && action === 'approve') {
       const blockers = approvalBlockingReasonsV2(driver, authUser);
-      if (blockers.length) fail('failed-precondition', blockers.join(','));
-    } else if (action === 'approve') {
+      if (blockers.length) {
+        if (override) {
+          skippedBlockers = blockers;
+        } else {
+          fail('failed-precondition', blockers.join(','));
+        }
+      }
+    } else if (action === 'approve' && !override) {
       if (!driver.mndob_vill) fail('failed-precondition', 'village_required');
     }
 
@@ -630,12 +658,14 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
     let auditAction;
     if (action === 'approve') {
       newStatus = 'approved';
-      auditAction = 'DRIVER_APPLICATION_APPROVED';
+      auditAction = override
+        ? 'DRIVER_APPLICATION_OVERRIDE_APPROVED'
+        : 'DRIVER_APPLICATION_APPROVED';
       Object.assign(patch, {
         registration_status: 'approved',
         submission_status: 'approved',
-        actev_mndob: true,
-        account_status: 'active',
+        actev_mndob: alsoActivate,
+        account_status: alsoActivate ? 'active' : 'inactive',
         operational_status: 'offline',
         ngl: false,
         approvedAt: now,
@@ -651,6 +681,19 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
         requested_changes: [],
         auto_activated: false,
       });
+      if (override) {
+        Object.assign(patch, {
+          override: true,
+          override_reason: overrideReason,
+          override_actor_uid: context.auth.uid,
+          override_actor_email: String(
+            (context.auth.token && context.auth.token.email) || '',
+          ),
+          override_at: now,
+          previous_registration_status: status,
+          new_registration_status: 'approved',
+        });
+      }
       if (adminProfile) Object.assign(patch, adminProfile);
     } else if (action === 'reject') {
       newStatus = 'rejected';
@@ -708,10 +751,15 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
       driverId,
       oldStatus: status,
       newStatus,
-      reason,
+      reason: override ? overrideReason : reason,
       fieldsToFix,
       createdAt: now,
-      metadata: {reviewVersion: nextVersion},
+      metadata: {
+        reviewVersion: nextVersion,
+        override: override || false,
+        alsoActivate,
+        skippedBlockers,
+      },
     });
 
     result = {
@@ -720,7 +768,8 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
       action,
       registration_status: newStatus,
       reviewVersion: nextVersion,
-      actev_mndob: action === 'approve',
+      actev_mndob: action === 'approve' ? alsoActivate : false,
+      override: override || false,
     };
     tx.set(idempRef, {
       status: 'completed',
@@ -737,7 +786,7 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
       await admin.auth().setCustomUserClaims(driverId, {
         ...existing,
         driver: true,
-        driver_active: action === 'approve',
+        driver_active: action === 'approve' ? alsoActivate : false,
       });
     } catch (_) {
       /* claims best-effort */
