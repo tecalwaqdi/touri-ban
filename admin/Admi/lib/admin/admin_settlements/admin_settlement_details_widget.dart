@@ -10,6 +10,9 @@ import '/core/admin_error_messages.dart';
 import '/core/admin_currency.dart';
 import '/core/finance/admin_finance_ui_labels.dart';
 import '/core/finance/admin_money_presentation.dart';
+import '/core/finance/accountant_finance_labels.dart';
+import '/core/finance/accountant_finance_text.dart';
+import '/core/finance/settlement_detail_presentation.dart';
 import '/core/finance/finance_runtime_gate.dart';
 import '/core/finance/money_amount.dart';
 import '/core/finance/settlement_ledger_client.dart';
@@ -611,290 +614,344 @@ class _AdminSettlementDetailsWidgetState
             return const Center(child: CircularProgressIndicator());
           }
           if (!snap.data!.exists) {
-            return Text(uiTr(context, 'التسوية غير موجودة'));
+            return Text(
+              uiTr(context, 'التسوية غير موجودة'),
+              style: AccountantFinanceText.body(theme),
+            );
           }
           final d = snap.data!.data()!;
-          final cur = d['currency'] as String? ?? 'SAR';
-          return ListView(
-            padding: AdminUi.pagePadding(context),
+          return _AccountantSettlementDetailBody(
+            settlementId: id,
+            data: d,
+            busy: _busy,
+            canWrite: canWrite,
+            money: _money,
+            onLock: () => _lock(d),
+            onVoid: () => _voidLocked(d),
+            onRecordPayment: () => _recordPayment(d),
+            onRefreshDraft: () async {
+              await SettlementLedgerClient.refreshDraft(settlementId: id);
+            },
+            onConfirmPayment: (pay) => _confirmPayment(d, pay),
+            onReversePayment: (pay, cur) => _reversePayment(d, pay, cur),
+            onVerifySource: _verifySource,
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// F2.2 accountant settlement detail — business-first, contrast-safe.
+class _AccountantSettlementDetailBody extends StatelessWidget {
+  const _AccountantSettlementDetailBody({
+    required this.settlementId,
+    required this.data,
+    required this.busy,
+    required this.canWrite,
+    required this.money,
+    required this.onLock,
+    required this.onVoid,
+    required this.onRecordPayment,
+    required this.onRefreshDraft,
+    required this.onConfirmPayment,
+    required this.onReversePayment,
+    required this.onVerifySource,
+  });
+
+  final String settlementId;
+  final Map<String, dynamic> data;
+  final bool busy;
+  final bool canWrite;
+  final String Function(int? minor, String currency) money;
+  final VoidCallback onLock;
+  final VoidCallback onVoid;
+  final VoidCallback onRecordPayment;
+  final Future<void> Function() onRefreshDraft;
+  final Future<void> Function(Map<String, dynamic> pay) onConfirmPayment;
+  final Future<void> Function(Map<String, dynamic> pay, String currency)
+      onReversePayment;
+  final Future<void> Function() onVerifySource;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    final cur = data['currency'] as String? ?? 'SAR';
+    final due =
+        (data['absoluteSettlementAmountMinor'] as num?)?.toInt() ?? 0;
+    final paid = (data['paidConfirmedMinor'] as num?)?.toInt() ?? 0;
+    final out = (data['outstandingMinor'] as num?)?.toInt() ?? 0;
+    final status = '${data['status'] ?? ''}';
+    final direction = '${data['direction'] ?? ''}';
+    final driverId = '${data['driverId'] ?? ''}'.trim();
+    final code = '${data['settlementCode'] ?? settlementId}';
+    final outcome = SettlementDetailPresentation.settlementOutcomeAr(
+      direction: direction,
+      status: status,
+      dueMinor: due,
+      paidMinor: paid,
+      outstandingMinor: out,
+    );
+
+    return ListView(
+      padding: AdminUi.pagePadding(context),
+      children: [
+        Text(code, style: AccountantFinanceText.pageTitle(theme)),
+        const SizedBox(height: 8),
+        Text(outcome, style: AccountantFinanceText.body(theme).copyWith(
+          fontWeight: FontWeight.w600,
+        )),
+        const SizedBox(height: 12),
+        _sectionCard(
+          theme,
+          title: uiTr(context, 'ملخص التسوية'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                '${d['settlementCode']} · ${AdminFinanceUiLabels.settlementStatusAr('${d['status']}')}',
-                style: theme.headlineSmall,
+              _kv(theme, uiTr(context, 'رقم التسوية'), code),
+              _kv(
+                theme,
+                uiTr(context, 'الحالة'),
+                SettlementDetailPresentation.settlementStatusAr(status),
               ),
-              Text(
-                '${uiTr(context, 'المندوب')}: ${d['driverId'] ?? '—'} · '
-                '${uiTr(context, 'الدولة')}: ${d['countryId'] ?? '—'} · '
-                '${AdminCurrency.symbolByCode[cur] ?? cur} · '
-                '${AdminFinanceUiLabels.settlementDirectionAr('${d['direction']}')}',
-                softWrap: true,
-              ),
-              Text('${d['periodStart']} → ${d['periodEnd']}', softWrap: true),
-              const SizedBox(height: 12),
-              Text(uiTr(context, 'الإجماليات'), style: theme.titleMedium),
-              Text(
-                  '${uiTr(context, 'التحصيل النقدي')}: ${_money(d['cashCustomerCollectedMinor'] as int?, cur)}',
-                  softWrap: true),
-              Text(
-                  '${uiTr(context, 'استحقاق المندوب النقدي')}: ${_money(d['cashDriverEntitlementMinor'] as int?, cur)}',
-                  softWrap: true),
-              Text(
-                  '${uiTr(context, 'ذمة المندوب النقدية')}: ${_money(d['driverCashLiabilityMinor'] as int?, cur)}',
-                  softWrap: true),
-              Text(
-                  '${uiTr(context, 'التحصيل الإلكتروني')}: ${_money(d['onlineCustomerCollectedMinor'] as int?, cur)}',
-                  softWrap: true),
-              Text(
-                  '${uiTr(context, 'ذمة الشركة الإلكترونية')}: ${_money(d['companyOnlineLiabilityMinor'] as int?, cur)}',
-                  softWrap: true),
-              Text(
-                  '${uiTr(context, 'عمولة المنصة')}: ${_money(d['platformFeeMinor'] as int?, cur)}',
-                  softWrap: true),
-              Text(
-                  '${uiTr(context, 'الضريبة')}: ${_money(d['recordedVatMinor'] as int?, cur)}',
-                  softWrap: true),
-              Text(
-                  '${uiTr(context, 'الخصم')}: ${_money(d['recordedDiscountMinor'] as int?, cur)}',
-                  softWrap: true),
-              Text(
-                  '${uiTr(context, 'الصافي')}: ${_money(d['netTripPositionMinor'] as int?, cur)}',
-                  softWrap: true),
-              const SizedBox(height: 12),
-              Text(uiTr(context, 'المبلغ المستحق'), style: theme.titleMedium),
-              Text(_money(d['absoluteSettlementAmountMinor'] as int?, cur),
-                  softWrap: true),
-              Text(
-                  '${uiTr(context, 'المدفوع')}: ${_money(d['paidConfirmedMinor'] as int?, cur)}',
-                  softWrap: true),
-              Text(
-                  '${uiTr(context, 'المتبقي')}: ${_money(d['outstandingMinor'] as int?, cur)}',
-                  softWrap: true),
-              Text(
-                  '${uiTr(context, 'الاتجاه')}: ${SettlementStateLabels.directionAr('${d['direction']}')}',
-                  softWrap: true),
-              Text(
-                '${uiTr(context, 'مؤهلة')}: ${d['eligibleTripCount']} · ${uiTr(context, 'مستبعدة')}: ${d['excludedTripCount']} · ${uiTr(context, 'مشتقة')}: ${d['derivedCount']}',
-                softWrap: true,
-              ),
-              const SizedBox(height: 12),
-              if (canWrite && !_busy) ...[
-                if (d['status'] == 'draft')
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      FilledButton(
-                        onPressed: () async {
-                          await SettlementLedgerClient.refreshDraft(
-                              settlementId: id);
-                        },
-                        child: Text(uiTr(context, 'تحديث الأرقام')),
-                      ),
-                      FilledButton(
-                        onPressed: () => _lock(d),
-                        child: Text(uiTr(context, 'اعتماد التسوية')),
-                      ),
-                      OutlinedButton(
-                        onPressed: () => _voidLocked(d),
-                        child: Text(uiTr(context, 'إلغاء المسودة')),
-                      ),
-                    ],
-                  ),
-                if (d['status'] == 'locked' || d['status'] == 'partially_paid')
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      FilledButton(
-                        onPressed: () => _recordPayment(d),
-                        child: Text(uiTr(context, 'تسجيل دفعة')),
-                      ),
-                      OutlinedButton(
-                        onPressed: () => _voidLocked(d),
-                        child: Text(uiTr(context, 'إلغاء التسوية')),
-                      ),
-                    ],
-                  ),
-              ],
-              const SizedBox(height: 16),
-              Text(uiTr(context, 'الدفعات'), style: theme.titleMedium),
-              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: FirebaseFirestore.instance
-                    .collection('financial_settlement_payments')
-                    .where('settlementId', isEqualTo: id)
-                    .limit(100)
-                    .snapshots(),
-                builder: (context, paySnap) {
-                  if (paySnap.hasError) {
-                    return Text(
-                      uiTr(context, 'تعذر تحميل المدفوعات'),
-                      softWrap: true,
-                    );
-                  }
-                  if (!paySnap.hasData) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (final p in paySnap.data!.docs)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                '${SettlementStateLabels.methodAr('${p.data()['method']}')} · ${_money(p.data()['amountMinor'] as int?, cur)} · ${SettlementStateLabels.statusAr('${p.data()['status']}')}',
-                                softWrap: true,
-                              ),
-                              Text(
-                                '${p.data()['externalReference'] ?? ''} · ${p.data()['createdBy']} · ${p.data()['receiptNumber'] ?? ''}',
-                                softWrap: true,
-                                style: theme.bodySmall,
-                              ),
-                              if (canWrite && !_busy)
-                                Wrap(
-                                  spacing: 4,
-                                  children: [
-                                    if (p.data()['status'] == 'pending')
-                                      TextButton(
-                                        onPressed: () => _confirmPayment(
-                                          d,
-                                          {...p.data(), 'paymentId': p.id},
-                                        ),
-                                        child: Text(uiTr(context, 'تأكيد')),
-                                      ),
-                                    if (p.data()['status'] == 'confirmed')
-                                      TextButton(
-                                        onPressed: () => _reversePayment(
-                                          d,
-                                          {...p.data(), 'paymentId': p.id},
-                                          cur,
-                                        ),
-                                        child: Text(uiTr(context, 'عكس')),
-                                      ),
-                                    if (p.data()['receiptNumber'] != null)
-                                      TextButton(
-                                        onPressed: () => context.pushNamed(
-                                          AdminSettlementReceiptWidget
-                                              .routeName,
-                                          queryParameters: {
-                                            'paymentId': serializeParam(
-                                              p.id,
-                                              ParamType.String,
-                                            ),
-                                          }.withoutNulls,
-                                        ),
-                                        child: Text(uiTr(context, 'إيصال')),
-                                      ),
-                                  ],
-                                )
-                              else if (p.data()['receiptNumber'] != null)
-                                Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: TextButton(
-                                    onPressed: () => context.pushNamed(
-                                      AdminSettlementReceiptWidget.routeName,
-                                      queryParameters: {
-                                        'paymentId': serializeParam(
-                                          p.id,
-                                          ParamType.String,
-                                        ),
-                                      }.withoutNulls,
-                                    ),
-                                    child: Text(uiTr(context, 'إيصال')),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-              Text(uiTr(context, 'الرحلات'), style: theme.titleMedium),
-              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: FirebaseFirestore.instance
-                    .collection('financial_settlements')
-                    .doc(id)
-                    .collection('lines')
-                    .limit(200)
-                    .snapshots(),
-                builder: (context, lines) {
-                  if (lines.hasError) {
-                    return Text(
-                      uiTr(context, 'تعذر تحميل الرحلات'),
-                      softWrap: true,
-                    );
-                  }
-                  if (!lines.hasData) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (final l in lines.data!.docs)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(l.id, softWrap: true),
-                              Text(
-                                '${l.data()['paymentMethod']} · ${l.data()['confidence']} · '
-                                'paid ${l.data()['customerPaidMinor']} · net ${l.data()['driverNetMinor']}',
-                                softWrap: true,
-                                style: theme.bodySmall,
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-              Text(uiTr(context, 'مستبعد'), style: theme.titleMedium),
-              for (final e in (d['excluded'] as List? ?? []))
-                Text(
-                  '• ${e is Map ? e['orderId'] : e} ${e is Map ? e['reason'] : ''}',
-                  softWrap: true,
+              _kv(
+                theme,
+                uiTr(context, 'الدولة'),
+                SettlementDetailPresentation.countryAr(
+                  '${data['countryId'] ?? ''}',
                 ),
-              const SizedBox(height: 12),
-              Text(uiTr(context, 'دفعات غير مخصصة'), style: theme.titleMedium),
-              Text(
-                uiTr(
-                  context,
-                  'Legacy company_payments stay UNALLOCATED until an admin selects them explicitly. No heuristic matching.',
-                ),
-                softWrap: true,
-                style: theme.bodySmall,
               ),
-              if (d['paymentEvidence'] is Map) ...[
-                const SizedBox(height: 12),
-                Text(uiTr(context, 'أدلة الدفع'), style: theme.titleMedium),
-                Text('${d['paymentEvidence']}', softWrap: true),
+              _driverRow(theme, driverId),
+              _kv(
+                theme,
+                uiTr(context, 'الفترة'),
+                SettlementDetailPresentation.periodAr(
+                  data['periodStart'],
+                  data['periodEnd'],
+                ),
+              ),
+              _kv(
+                theme,
+                uiTr(context, 'اتجاه المستحق'),
+                SettlementDetailPresentation.directionAr(direction),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _sectionCard(
+          theme,
+          title: uiTr(context, 'المبالغ'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _moneyRow(theme, uiTr(context, 'المبلغ المستحق'), money(due, cur)),
+              _moneyRow(theme, uiTr(context, 'المدفوع'), money(paid, cur)),
+              _moneyRow(theme, uiTr(context, 'المتبقي'), money(out, cur)),
+            ],
+          ),
+        ),
+        if (canWrite && !busy) ...[
+          const SizedBox(height: 12),
+          if (status == 'draft')
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilledButton(
+                  onPressed: () async => onRefreshDraft(),
+                  child: Text(uiTr(context, 'تحديث الأرقام')),
+                ),
+                FilledButton(
+                  onPressed: onLock,
+                  child: Text(uiTr(context, 'اعتماد التسوية')),
+                ),
+                OutlinedButton(
+                  onPressed: onVoid,
+                  child: Text(uiTr(context, 'إلغاء المسودة')),
+                ),
               ],
-              const SizedBox(height: 12),
-              Text(uiTr(context, 'سجل التدقيق'), style: theme.titleMedium),
-              if (d['status'] != 'draft')
+            ),
+          if (status == 'locked' || status == 'partially_paid')
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilledButton(
+                  onPressed: onRecordPayment,
+                  child: Text(uiTr(context, 'تسجيل دفعة')),
+                ),
+                OutlinedButton(
+                  onPressed: onVoid,
+                  child: Text(uiTr(context, 'إلغاء التسوية')),
+                ),
+              ],
+            ),
+        ],
+        const SizedBox(height: 12),
+        _sectionCard(
+          theme,
+          title: uiTr(context, 'الدفعات'),
+          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: FirebaseFirestore.instance
+                .collection('financial_settlement_payments')
+                .where('settlementId', isEqualTo: settlementId)
+                .limit(100)
+                .snapshots(),
+            builder: (context, paySnap) {
+              if (paySnap.hasError) {
+                return Text(
+                  uiTr(context, 'تعذر تحميل المدفوعات'),
+                  style: AccountantFinanceText.body(theme),
+                );
+              }
+              if (!paySnap.hasData) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              final docs = paySnap.data!.docs;
+              if (docs.isEmpty) {
+                return Text(
+                  uiTr(context, 'لا توجد دفعات'),
+                  style: AccountantFinanceText.label(theme),
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (final p in docs)
+                    _paymentRow(
+                      context,
+                      theme,
+                      p,
+                      cur,
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        _sectionCard(
+          theme,
+          title: uiTr(context, 'الرحلات'),
+          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: FirebaseFirestore.instance
+                .collection('financial_settlements')
+                .doc(settlementId)
+                .collection('lines')
+                .limit(200)
+                .snapshots(),
+            builder: (context, lines) {
+              if (lines.hasError) {
+                return Text(
+                  uiTr(context, 'تعذر تحميل الرحلات'),
+                  style: AccountantFinanceText.body(theme),
+                );
+              }
+              if (!lines.hasData) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              final real = lines.data!.docs.where((l) {
+                return !SettlementDetailPresentation.isQaTripLine(
+                  l.id,
+                  l.data(),
+                );
+              }).toList();
+              if (real.isEmpty) {
+                return Text(
+                  uiTr(context, 'لا توجد رحلات مؤهلة'),
+                  style: AccountantFinanceText.label(theme),
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (final l in real)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AccountantFinanceLabels.tripRefLabel(l.id),
+                            style: AccountantFinanceText.body(theme).copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            '${SettlementDetailPresentation.paymentMethodAr('${l.data()['paymentMethod']}')}'
+                            ' · ${uiTr(context, 'صافي السائق')}: '
+                            '${money((l.data()['driverNetMinor'] as num?)?.toInt(), cur)}',
+                            style: AccountantFinanceText.label(theme),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+        Builder(builder: (context) {
+          final excluded = (data['excluded'] as List? ?? [])
+              .where((e) {
+                final oid = e is Map ? '${e['orderId'] ?? ''}' : '$e';
+                return !SettlementDetailPresentation.isQaTripId(oid);
+              })
+              .toList();
+          if (excluded.isEmpty) return const SizedBox.shrink();
+          return Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: _sectionCard(
+              theme,
+              title: uiTr(context, 'مستبعد'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (final e in excluded)
+                    Text(
+                      '• ${e is Map ? AccountantFinanceLabels.tripRefLabel('${e['orderId'] ?? ''}') : e}',
+                      style: AccountantFinanceText.body(theme),
+                    ),
+                ],
+              ),
+            ),
+          );
+        }),
+        const SizedBox(height: 12),
+        _sectionCard(
+          theme,
+          title: uiTr(context, 'دفعات غير مخصصة'),
+          child: Text(
+            SettlementDetailPresentation.unallocatedPaymentsAr(),
+            style: AccountantFinanceText.body(theme),
+          ),
+        ),
+        const SizedBox(height: 12),
+        _sectionCard(
+          theme,
+          title: uiTr(context, 'سجل العمليات'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (status != 'draft')
                 Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: TextButton(
-                    onPressed: _busy ? null : _verifySource,
+                    onPressed: busy ? null : () => onVerifySource(),
                     child: Text(uiTr(context, 'التحقق من المصدر الحالي')),
                   ),
                 ),
               StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: FirebaseFirestore.instance
                     .collection('financial_settlements')
-                    .doc(id)
+                    .doc(settlementId)
                     .collection('events')
                     .limit(100)
                     .snapshots(),
@@ -902,7 +959,7 @@ class _AdminSettlementDetailsWidgetState
                   if (ev.hasError) {
                     return Text(
                       uiTr(context, 'تعذر تحميل الأحداث'),
-                      softWrap: true,
+                      style: AccountantFinanceText.body(theme),
                     );
                   }
                   if (!ev.hasData) {
@@ -916,21 +973,54 @@ class _AdminSettlementDetailsWidgetState
                       final tb = b.data()['timestamp'] as String? ?? '';
                       return ta.compareTo(tb);
                     });
+                  if (docs.isEmpty) {
+                    return Text(
+                      uiTr(context, 'لا يوجد سجل'),
+                      style: AccountantFinanceText.label(theme),
+                    );
+                  }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       for (final e in docs)
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
+                          padding: const EdgeInsets.only(bottom: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('${e.data()['type']}', softWrap: true),
                               Text(
-                                '${e.data()['actorRole']} · ${e.data()['beforeStatus']} → ${e.data()['afterStatus']}',
-                                softWrap: true,
-                                style: theme.bodySmall,
+                                SettlementDetailPresentation.humanDateAr(
+                                  e.data()['timestamp'],
+                                ),
+                                style: AccountantFinanceText.label(theme),
                               ),
+                              Text(
+                                SettlementDetailPresentation.auditEventAr(
+                                  '${e.data()['type']}',
+                                ),
+                                style: AccountantFinanceText.body(theme)
+                                    .copyWith(fontWeight: FontWeight.w700),
+                              ),
+                              Text(
+                                '${uiTr(context, 'بواسطة')}: '
+                                '${SettlementDetailPresentation.actorRoleAr('${e.data()['actorRole']}')}',
+                                style: AccountantFinanceText.label(theme),
+                              ),
+                              Builder(builder: (_) {
+                                final note =
+                                    SettlementDetailPresentation
+                                        .statusTransitionAr(
+                                  '${e.data()['beforeStatus'] ?? ''}',
+                                  '${e.data()['afterStatus'] ?? ''}',
+                                );
+                                if (note.isEmpty) {
+                                  return const SizedBox.shrink();
+                                }
+                                return Text(
+                                  note,
+                                  style: AccountantFinanceText.label(theme),
+                                );
+                              }),
                             ],
                           ),
                         ),
@@ -939,9 +1029,250 @@ class _AdminSettlementDetailsWidgetState
                 },
               ),
             ],
-          );
-        },
+          ),
+        ),
+        const SizedBox(height: 12),
+        Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            initiallyExpanded: false,
+            tilePadding: EdgeInsets.zero,
+            title: Text(
+              uiTr(context, 'بيانات تقنية'),
+              style: AccountantFinanceText.sectionTitle(theme),
+            ),
+            children: [
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${uiTr(context, 'معرّف التسوية')}: $settlementId',
+                      style: AccountantFinanceText.label(theme),
+                    ),
+                    Text(
+                      '${uiTr(context, 'معرف السائق')}: ${driverId.isEmpty ? '—' : driverId}',
+                      style: AccountantFinanceText.label(theme),
+                    ),
+                    Text(
+                      '${uiTr(context, 'مسار الدولة')}: ${data['countryId'] ?? '—'}',
+                      style: AccountantFinanceText.label(theme),
+                    ),
+                    Text(
+                      '${uiTr(context, 'الفترة خام')}: ${data['periodStart']} → ${data['periodEnd']}',
+                      style: AccountantFinanceText.label(theme),
+                    ),
+                    Text(
+                      '${uiTr(context, 'مؤهلة')}: ${data['eligibleTripCount']} · '
+                      '${uiTr(context, 'مستبعدة')}: ${data['excludedTripCount']} · '
+                      '${uiTr(context, 'مشتقة')}: ${data['derivedCount']}',
+                      style: AccountantFinanceText.label(theme),
+                    ),
+                    if (data['paymentEvidence'] is Map)
+                      Text(
+                        '${uiTr(context, 'أدلة الدفع')}: ${data['paymentEvidence']}',
+                        style: AccountantFinanceText.label(theme),
+                      ),
+                    if (AdminRoleService.isSuperAdmin)
+                      StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                        stream: FirebaseFirestore.instance
+                            .collection('financial_settlements')
+                            .doc(settlementId)
+                            .collection('lines')
+                            .limit(200)
+                            .snapshots(),
+                        builder: (context, lines) {
+                          if (!lines.hasData) {
+                            return const SizedBox.shrink();
+                          }
+                          final qa = lines.data!.docs.where((l) {
+                            return SettlementDetailPresentation.isQaTripLine(
+                              l.id,
+                              l.data(),
+                            );
+                          }).toList();
+                          if (qa.isEmpty) return const SizedBox.shrink();
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              '${uiTr(context, 'تشخيص تقني — رحلات اختبار')}: '
+                              '${qa.map((e) => e.id).join(', ')}',
+                              style: AccountantFinanceText.label(theme),
+                            ),
+                          );
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _sectionCard(
+    FlutterFlowTheme theme, {
+    required String title,
+    required Widget child,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.secondaryBackground,
+        borderRadius: BorderRadius.circular(AdminUi.radiusSm),
+        border: Border.all(color: theme.alternate.withValues(alpha: 0.55)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(title, style: AccountantFinanceText.sectionTitle(theme)),
+          const SizedBox(height: 8),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _kv(FlutterFlowTheme theme, String k, String v) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(k, style: AccountantFinanceText.label(theme)),
+          ),
+          Expanded(
+            child: Text(v, style: AccountantFinanceText.body(theme)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _moneyRow(FlutterFlowTheme theme, String k, String v) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(k, style: AccountantFinanceText.label(theme)),
+          ),
+          Text(v, style: AccountantFinanceText.money(theme)),
+        ],
+      ),
+    );
+  }
+
+  Widget _driverRow(FlutterFlowTheme theme, String driverId) {
+    if (driverId.isEmpty) {
+      return _kv(
+        theme,
+        'السائق',
+        SettlementDetailPresentation.driverFallbackAr(),
+      );
+    }
+    return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      future:
+          FirebaseFirestore.instance.collection('user').doc(driverId).get(),
+      builder: (context, snap) {
+        final name = SettlementDetailPresentation.driverDisplayName(
+          snap.data?.data(),
+        );
+        final shown =
+            SettlementDetailPresentation.looksLikeRawUid(name, driverId)
+                ? SettlementDetailPresentation.driverFallbackAr()
+                : name;
+        return _kv(theme, uiTr(context, 'السائق'), shown);
+      },
+    );
+  }
+
+  Widget _paymentRow(
+    BuildContext context,
+    FlutterFlowTheme theme,
+    QueryDocumentSnapshot<Map<String, dynamic>> p,
+    String cur,
+  ) {
+    final d = p.data();
+    final ref = '${d['externalReference'] ?? d['receiptNumber'] ?? ''}'.trim();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            SettlementDetailPresentation.paymentMethodAr('${d['method']}'),
+            style: AccountantFinanceText.body(theme).copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          Text(
+            '${uiTr(context, 'المبلغ')}: ${money((d['amountMinor'] as num?)?.toInt(), cur)}',
+            style: AccountantFinanceText.money(theme),
+          ),
+          Text(
+            '${uiTr(context, 'الحالة')}: '
+            '${SettlementDetailPresentation.paymentStatusAr('${d['status']}')}',
+            style: AccountantFinanceText.label(theme),
+          ),
+          Text(
+            '${uiTr(context, 'التاريخ')}: '
+            '${SettlementDetailPresentation.humanDateAr(d['createdAt'] ?? d['confirmedAt'])}',
+            style: AccountantFinanceText.label(theme),
+          ),
+          if (ref.isNotEmpty)
+            Text(
+              '${uiTr(context, 'المرجع')}: $ref',
+              style: AccountantFinanceText.label(theme),
+            ),
+          if (canWrite && !busy)
+            Wrap(
+              spacing: 4,
+              children: [
+                if (d['status'] == 'pending')
+                  TextButton(
+                    onPressed: () => onConfirmPayment({...d, 'paymentId': p.id}),
+                    child: Text(uiTr(context, 'تأكيد')),
+                  ),
+                if (d['status'] == 'confirmed')
+                  TextButton(
+                    onPressed: () =>
+                        onReversePayment({...d, 'paymentId': p.id}, cur),
+                    child: Text(uiTr(context, 'عكس')),
+                  ),
+                if (d['receiptNumber'] != null)
+                  TextButton(
+                    onPressed: () => context.pushNamed(
+                      AdminSettlementReceiptWidget.routeName,
+                      queryParameters: {
+                        'paymentId': serializeParam(p.id, ParamType.String),
+                      }.withoutNulls,
+                    ),
+                    child: Text(uiTr(context, 'إيصال')),
+                  ),
+              ],
+            )
+          else if (d['receiptNumber'] != null)
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton(
+                onPressed: () => context.pushNamed(
+                  AdminSettlementReceiptWidget.routeName,
+                  queryParameters: {
+                    'paymentId': serializeParam(p.id, ParamType.String),
+                  }.withoutNulls,
+                ),
+                child: Text(uiTr(context, 'إيصال')),
+              ),
+            ),
+        ],
       ),
     );
   }
 }
+

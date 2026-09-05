@@ -13,7 +13,14 @@ import '/flutter_flow/flutter_flow_theme.dart';
 abstract final class AccountantFinanceText {
   AccountantFinanceText._();
 
-  static Color ink(FlutterFlowTheme theme) => theme.secondaryText;
+  /// Dark readable ink on light finance cards. Never use near-white tokens
+  /// (DarkModeTheme.primaryText / info) for accountant headings/values.
+  static Color ink(FlutterFlowTheme theme) {
+    final c = theme.secondaryText;
+    if (c.computeLuminance() <= 0.45) return c;
+    // Same as LightModeTheme.secondaryText — Safari white-on-white guard.
+    return const Color(0xFF1F1F1F);
+  }
 
   static Color muted(FlutterFlowTheme theme) =>
       theme.secondaryText.withValues(alpha: 0.72);
