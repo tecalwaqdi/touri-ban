@@ -56,25 +56,38 @@ abstract final class OrderStatusHelper {
         pay == 'captured') {
       return true;
     }
+    // Legacy payment markers only — NEVER Arabic trip-complete («مكتملة»).
+    if (order.halhOrder == Halh.Paid) return true;
+    if (order.halh.toLowerCase() == 'paid') return true;
+    return false;
+  }
+
+  /// Operational trip completion — independent from payment/collection.
+  static bool isOperationallyCompleted(OrderRecord order) {
     final code = _statusCode(order);
     if (code == TourySystemStatusCodes.completed ||
         code == TourySystemStatusCodes.legacyTripCompleted) {
-      // Completed trips count as revenue once payment is cash collected or online paid.
-      if (order.halhOrder == Halh.Paid ||
-          order.halh.toLowerCase() == 'paid' ||
-          pay == TourySystemStatusCodes.pendingCash) {
-        // pending_cash completed => still pending settlement; not paid revenue yet
-        return order.halhOrder == Halh.Paid ||
-            order.halh.toLowerCase() == 'paid' ||
-            pay == TourySystemStatusCodes.cashCollected;
+      return true;
+    }
+    // Legacy Arabic complete only when status_code missing.
+    if (code.isEmpty) {
+      final halh = order.halh.trim();
+      if (halh.contains('مكتمل') ||
+          _matchesAny(order.halhText, {'مكتمل', 'مكتملة'})) {
+        return true;
       }
     }
-    if (order.halhOrder == Halh.Paid) return true;
-    if (order.halh.toLowerCase() == 'paid') return true;
-    return _matchesAny(order.halhText, {
-      'مكتمل',
-      'مكتملة',
-    });
+    return false;
+  }
+
+  static bool isCashCollected(OrderRecord order) {
+    final pay = _paymentStatus(order);
+    if (pay == TourySystemStatusCodes.cashCollected) return true;
+    final cash = (order.snapshotData['cash_collection_status'] ?? '')
+        .toString()
+        .trim()
+        .toLowerCase();
+    return cash == 'collected';
   }
 
   static bool isPending(OrderRecord order) {
@@ -97,6 +110,7 @@ abstract final class OrderStatusHelper {
     return OrderPaymentStatus.unknown;
   }
 
+  /// Payment received (paid / cash_collected / captured) — not trip completion.
   static bool countsTowardRevenue(OrderRecord order) => isPaid(order);
 
   /// Canonical Arabic payment chip label (localize at display with [uiTr]).
