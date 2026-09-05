@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 
 import '/components/admin_ui.dart';
 import '/core/finance/accountant_finance_labels.dart';
+import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/core/finance/financial_amount_resolution.dart';
 import '/core/finance/financial_trip_semantics.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
-/// Read-only trip financial details drawer.
 Future<void> showAccountantTripDetailsDrawer(
   BuildContext context,
   AccountantTripRow row,
@@ -69,15 +69,11 @@ class AccountantTripDetailsPanel extends StatelessWidget {
         const SizedBox(height: 12),
         Text(
           uiTr(context, 'تفاصيل الرحلة المالية'),
-          style: theme.titleMedium.override(
-            fontFamily: theme.titleMediumFamily,
-            fontWeight: FontWeight.w700,
-            useGoogleFonts: !theme.titleMediumIsCustom,
-          ),
+          style: AccountantFinanceText.pageTitle(theme),
         ),
         const SizedBox(height: 12),
         _section(context, 'الرحلة', [
-          _kv(context, 'المعرّف', row.orderId, ltr: true),
+          _kv(context, 'المرجع', row.tripRefLabel, ltr: true),
           _kv(context, 'حالة الرحلة', row.tripStatusLabel),
           _kv(
             context,
@@ -86,8 +82,8 @@ class AccountantTripDetailsPanel extends StatelessWidget {
                 ? '—'
                 : dateFmt.format(row.orderedAt!.toLocal()),
           ),
-          _kv(context, 'الدولة', row.countryPath ?? '—', ltr: true),
-          _kv(context, 'السائق', row.driverLabel, ltr: true),
+          _kv(context, 'الدولة', row.countryLabel),
+          _kv(context, 'السائق', row.driverLabel),
         ]),
         _section(context, 'الدفع', [
           _kv(context, 'طريقة الدفع', row.paymentMethodLabel),
@@ -98,11 +94,32 @@ class AccountantTripDetailsPanel extends StatelessWidget {
           _kv(context, 'من يحتفظ بالمبلغ', row.moneyHolderLabel),
         ]),
         _section(context, 'التقسيم المالي', [
-          _kv(context, 'القيمة', row.grossDisplay),
+          _kv(context, 'القيمة (إجمالي الرحلة)', row.grossDisplay),
           _kv(context, 'عمولة الشركة', row.companyCommissionDisplay),
           _kv(context, 'الضريبة', row.vatDisplay),
           _kv(context, 'صافي السائق', row.driverNetDisplay),
-          _kv(context, 'مبلغ الوكيل', row.agentAmountDisplay),
+          if (row.agentAmountIsShareOfCommission) ...[
+            _kv(
+              context,
+              AccountantFinanceLabels.agentShareOfCommissionLabel(),
+              row.agentAmountDisplay,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                uiTr(
+                  context,
+                  'حصة الوكيل جزء من عمولة الشركة وليست زيادة على قيمة الرحلة.',
+                ),
+                style: AccountantFinanceText.label(theme),
+              ),
+            ),
+          ] else
+            _kv(
+              context,
+              AccountantFinanceLabels.agentShareOfCommissionLabel(),
+              row.agentAmountDisplay,
+            ),
           if (row.agentAttribution == FinancialAgentAttribution.missing)
             _kv(
               context,
@@ -134,10 +151,9 @@ class AccountantTripDetailsPanel extends StatelessWidget {
                 context,
                 'المبالغ غير معروضة كأصفار — البيانات المالية غير مكتملة.',
               ),
-              style: theme.bodySmall.override(
-                fontFamily: theme.bodySmallFamily,
-                color: theme.warning,
-                useGoogleFonts: !theme.bodySmallIsCustom,
+              style: AccountantFinanceText.body(theme).copyWith(
+                color: AdminUi.brandTeal,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -148,9 +164,12 @@ class AccountantTripDetailsPanel extends StatelessWidget {
             tilePadding: EdgeInsets.zero,
             title: Text(
               uiTr(context, 'بيانات تقنية'),
-              style: theme.labelLarge,
+              style: AccountantFinanceText.label(theme),
             ),
             children: [
+              _kv(context, 'معرّف الرحلة', row.orderId, ltr: true),
+              _kv(context, 'معرّف السائق', row.driverId ?? '—', ltr: true),
+              _kv(context, 'مسار الدولة', row.countryPath ?? '—', ltr: true),
               _kv(context, 'المصدر', row.source, ltr: true),
               _kv(context, 'العملة', row.currency, ltr: true),
             ],
@@ -170,12 +189,7 @@ class AccountantTripDetailsPanel extends StatelessWidget {
           children: [
             Text(
               uiTr(context, title),
-              style: theme.titleSmall.override(
-                fontFamily: theme.titleSmallFamily,
-                fontWeight: FontWeight.w700,
-                color: AdminUi.brandTeal,
-                useGoogleFonts: !theme.titleSmallIsCustom,
-              ),
+              style: AccountantFinanceText.sectionTitle(theme),
             ),
             const SizedBox(height: 8),
             ...kids,
@@ -198,23 +212,16 @@ class AccountantTripDetailsPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 120,
-            child: Text(
-              uiTr(context, k),
-              style: theme.labelMedium.override(
-                fontFamily: theme.labelMediumFamily,
-                color: theme.secondaryText,
-                useGoogleFonts: !theme.labelMediumIsCustom,
-              ),
-            ),
+            width: 140,
+            child: Text(uiTr(context, k), style: AccountantFinanceText.label(theme)),
           ),
           Expanded(
             child: ltr
                 ? Directionality(
                     textDirection: ui.TextDirection.ltr,
-                    child: Text(v, style: theme.bodyMedium),
+                    child: Text(v, style: AccountantFinanceText.body(theme)),
                   )
-                : Text(v, style: theme.bodyMedium),
+                : Text(v, style: AccountantFinanceText.body(theme)),
           ),
         ],
       ),

@@ -11,6 +11,7 @@ import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/accountant_finance_labels.dart';
 import '/core/finance/accountant_finance_loader.dart';
+import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/core/finance/financial_amount_resolution.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -34,6 +35,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   AdminDatePreset _preset = AdminDatePreset.thisMonth;
   Future<AccountantFinanceViewBundle>? _future;
   AccountantFinanceViewBundle? _lastOk;
+  bool _advancedOpen = false;
 
   String? _paymentMethod;
   String? _collectionStatus;
@@ -101,40 +103,111 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                AdminPageHeader(
-                  title: uiTr(context, 'المالية'),
-                  subtitle: uiTr(
+                Text(
+                  uiTr(context, 'المالية'),
+                  style: AccountantFinanceText.pageTitle(theme),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  uiTr(
                     context,
                     isAgent
                         ? 'ملخص محاسبي لدولتك — قراءة فقط.'
                         : 'ملخص محاسبي موحّد — رحلات مكتملة، تحصيل، ومستحقات.',
                   ),
+                  style: AccountantFinanceText.label(theme),
                 ),
                 const SizedBox(height: 8),
-                if (!isAgent) _secondaryLinks(context),
+                if (!isAgent) _secondaryLinks(context, theme),
                 const SizedBox(height: 8),
-                AdminFilterBar(
-                  hint: uiTr(context, 'الفترة'),
-                  chips: [
+                Text(uiTr(context, 'الفترة'), style: AccountantFinanceText.label(theme)),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
                     for (final e in _presetLabels.entries)
-                      AdminFilterChip(
-                        label: uiTr(context, e.value),
+                      ChoiceChip(
+                        label: Text(
+                          uiTr(context, e.value),
+                          style: AccountantFinanceText.label(theme).copyWith(
+                            color: AccountantFinanceText.ink(theme),
+                          ),
+                        ),
                         selected: _preset == e.key,
                         onSelected: (_) {
                           _preset = e.key;
                           _reload();
                         },
                       ),
+                    IconButton(
+                      tooltip: uiTr(context, 'تحديث'),
+                      onPressed: _reload,
+                      icon: Icon(Icons.refresh_rounded, color: AdminUi.brandTeal),
+                    ),
                   ],
-                  trailing: IconButton(
-                    tooltip: uiTr(context, 'تحديث'),
-                    onPressed: _reload,
-                    icon: const Icon(Icons.refresh_rounded),
+                ),
+                const SizedBox(height: 8),
+                Theme(
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    initiallyExpanded: _advancedOpen,
+                    onExpansionChanged: (v) =>
+                        setState(() => _advancedOpen = v),
+                    tilePadding: EdgeInsets.zero,
+                    title: Text(
+                      uiTr(context, 'الفلاتر المتقدمة'),
+                      style: AccountantFinanceText.sectionTitle(theme),
+                    ),
+                    children: [
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: [
+                          SizedBox(
+                            width: 200,
+                            child: TextField(
+                              decoration: AccountantFinanceText.fieldDecoration(
+                                context,
+                                labelText: uiTr(context, 'بحث'),
+                              ),
+                              style: AccountantFinanceText.body(theme),
+                              onChanged: (v) => setState(() => _search = v),
+                            ),
+                          ),
+                          _drop(
+                            context,
+                            label: 'طريقة الدفع',
+                            value: _paymentMethod,
+                            items: const ['نقدي', 'إلكتروني'],
+                            onChanged: (v) =>
+                                setState(() => _paymentMethod = v),
+                          ),
+                          _drop(
+                            context,
+                            label: 'حالة التحصيل',
+                            value: _collectionStatus,
+                            items: const ['محصّل', 'غير محصّل'],
+                            onChanged: (v) =>
+                                setState(() => _collectionStatus = v),
+                          ),
+                          _drop(
+                            context,
+                            label: 'حالة التسوية',
+                            value: _settlementStatus,
+                            items: const ['مسددة', 'مسددة جزئيًا', 'غير مسددة'],
+                            onChanged: (v) =>
+                                setState(() => _settlementStatus = v),
+                          ),
+                          _qualityDrop(context),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 8),
-                _advancedFilters(context, theme),
-                const SizedBox(height: 12),
                 if (loading)
                   AdminLoadingState(
                     label: uiTr(context, 'جاري تحميل البيانات المالية'),
@@ -156,10 +229,8 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text(
                         uiTr(context, 'جاري التحديث…'),
-                        style: theme.labelSmall.override(
-                          fontFamily: theme.labelSmallFamily,
+                        style: AccountantFinanceText.label(theme).copyWith(
                           color: AdminUi.brandTeal,
-                          useGoogleFonts: !theme.labelSmallIsCustom,
                         ),
                       ),
                     ),
@@ -188,7 +259,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
     );
   }
 
-  Widget _secondaryLinks(BuildContext context) {
+  Widget _secondaryLinks(BuildContext context, FlutterFlowTheme theme) {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -231,51 +302,6 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
     );
   }
 
-  Widget _advancedFilters(BuildContext context, FlutterFlowTheme theme) {
-    return AdminContentCard(
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          SizedBox(
-            width: 200,
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: uiTr(context, 'بحث'),
-                isDense: true,
-                border: const OutlineInputBorder(),
-              ),
-              onChanged: (v) => setState(() => _search = v),
-            ),
-          ),
-          _drop(
-            context,
-            label: 'طريقة الدفع',
-            value: _paymentMethod,
-            items: const ['نقدي', 'إلكتروني'],
-            onChanged: (v) => setState(() => _paymentMethod = v),
-          ),
-          _drop(
-            context,
-            label: 'حالة التحصيل',
-            value: _collectionStatus,
-            items: const ['محصّل', 'غير محصّل'],
-            onChanged: (v) => setState(() => _collectionStatus = v),
-          ),
-          _drop(
-            context,
-            label: 'حالة التسوية',
-            value: _settlementStatus,
-            items: const ['مسددة', 'مسددة جزئيًا', 'غير مسددة'],
-            onChanged: (v) => setState(() => _settlementStatus = v),
-          ),
-          _qualityDrop(context),
-        ],
-      ),
-    );
-  }
-
   Widget _drop(
     BuildContext context, {
     required String label,
@@ -283,15 +309,16 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
     required List<String> items,
     required ValueChanged<String?> onChanged,
   }) {
+    final theme = FlutterFlowTheme.of(context);
     return SizedBox(
       width: 170,
       child: DropdownButtonFormField<String?>(
         initialValue: value,
-        decoration: InputDecoration(
+        decoration: AccountantFinanceText.fieldDecoration(
+          context,
           labelText: uiTr(context, label),
-          isDense: true,
-          border: const OutlineInputBorder(),
         ),
+        style: AccountantFinanceText.body(theme),
         items: [
           DropdownMenuItem<String?>(
             value: null,
@@ -309,15 +336,16 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   }
 
   Widget _qualityDrop(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
     return SizedBox(
       width: 200,
       child: DropdownButtonFormField<FinancialDataQuality?>(
         initialValue: _quality,
-        decoration: InputDecoration(
+        decoration: AccountantFinanceText.fieldDecoration(
+          context,
           labelText: uiTr(context, 'جودة البيانات المالية'),
-          isDense: true,
-          border: const OutlineInputBorder(),
         ),
+        style: AccountantFinanceText.body(theme),
         items: [
           DropdownMenuItem(
             value: null,

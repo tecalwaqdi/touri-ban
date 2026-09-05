@@ -10,6 +10,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/accountant_finance_loader.dart';
+import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -91,12 +92,17 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                AdminPageHeader(
-                  title: uiTr(context, isAgent ? 'مالية الدولة' : 'مالية الوكلاء'),
-                  subtitle: uiTr(
+                Text(
+                  uiTr(context, isAgent ? 'مالية الدولة' : 'مالية الوكلاء'),
+                  style: AccountantFinanceText.pageTitle(theme),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  uiTr(
                     context,
                     'نفس الأرقام المحاسبية المعتمدة — النطاق حسب الصلاحية فقط.',
                   ),
+                  style: AccountantFinanceText.label(theme),
                 ),
                 const SizedBox(height: 8),
                 AdminFilterBar(

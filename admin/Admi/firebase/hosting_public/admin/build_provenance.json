@@ -1,14 +1,18 @@
 {
-  "app_version": "1.0.15+2017",
-  "git_commit": "358783a83977e608c35658601961a54e934a40e9",
-  "flutter": "3.44.8",
-  "dart": "3.12.2",
+  "app_version": "1.0.16+2018",
+  "build_number": "2018",
+  "git_commit": "235d51d4a97ec5fbaff8caf9c81c19df6bf906a5",
+  "flutter_version": "3.44.8",
+  "dart_version": "3.12.2",
+  "framework_revision": "058e0af2c2b57e369d905a03ac9748b0ebf543c6",
   "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
   "base_href": "/admin/",
+  "build_command_id": "scripts/build_admin_web.sh",
   "build_flags": [
     "--release",
     "--base-href=/admin/",
     "--no-web-resources-cdn",
     "--no-wasm-dry-run"
-  ]
+  ],
+  "generated_at": "2026-09-05T08:28:56Z"
 }

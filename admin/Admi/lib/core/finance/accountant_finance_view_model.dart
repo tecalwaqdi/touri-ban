@@ -13,9 +13,11 @@ import '/core/finance/money_amount.dart';
 class AccountantTripRow {
   const AccountantTripRow({
     required this.orderId,
+    required this.tripRefLabel,
     required this.order,
     required this.orderedAt,
     required this.countryPath,
+    required this.countryLabel,
     required this.driverId,
     required this.driverLabel,
     required this.agentId,
@@ -36,6 +38,7 @@ class AccountantTripRow {
     required this.vatDisplay,
     required this.driverNetDisplay,
     required this.agentAmountDisplay,
+    required this.agentAmountIsShareOfCommission,
     required this.missingFields,
     required this.source,
     required this.confidenceLabel,
@@ -43,9 +46,11 @@ class AccountantTripRow {
   });
 
   final String orderId;
+  final String tripRefLabel;
   final OrderRecord order;
   final DateTime? orderedAt;
   final String? countryPath;
+  final String countryLabel;
   final String? driverId;
   final String driverLabel;
   final String? agentId;
@@ -66,6 +71,7 @@ class AccountantTripRow {
   final String vatDisplay;
   final String driverNetDisplay;
   final String agentAmountDisplay;
+  final bool agentAmountIsShareOfCommission;
   final List<String> missingFields;
   final String source;
   final String confidenceLabel;
@@ -98,8 +104,9 @@ class AccountantTripRow {
             '')
         .toString();
 
-    final agentAmount = snap.agentAmountMinor != null &&
-            agentAttr == FinancialAgentAttribution.confident
+    final hasAgentAmount = snap.agentAmountMinor != null &&
+        agentAttr == FinancialAgentAttribution.confident;
+    final agentAmount = hasAgentAmount
         ? AdminOrderMoneyDisplay.formatMoneyAmount(
             MoneyAmount(
               currency: line.currency,
@@ -108,19 +115,26 @@ class AccountantTripRow {
           )
         : AccountantFinanceLabels.emDash();
 
+    final driverName = order.naimMndobText.trim();
+    final driverLabel = driverName.isNotEmpty
+        ? driverName
+        : AccountantFinanceLabels.emDash();
+
     return AccountantTripRow(
       orderId: order.reference.id,
+      tripRefLabel: AccountantFinanceLabels.tripRefLabel(order.reference.id),
       order: order,
       orderedAt: order.dataOrder,
       countryPath: snap.countryPath,
+      countryLabel: AccountantFinanceLabels.countryHumanAr(snap.countryPath),
       driverId: snap.driverId,
-      driverLabel: (snap.driverId ?? '').isEmpty
-          ? AccountantFinanceLabels.emDash()
-          : snap.driverId!,
+      driverLabel: driverLabel,
       agentId: agentId,
       agentLabel: agentAttr == FinancialAgentAttribution.missing
           ? AccountantFinanceLabels.agentAttributionAr(agentAttr)
-          : (agentId ?? AccountantFinanceLabels.emDash()),
+          : (agentId == null || agentId.isEmpty
+              ? AccountantFinanceLabels.emDash()
+              : AccountantFinanceLabels.tripRefLabel(agentId)),
       agentAttribution: agentAttr,
       paymentMethodLabel:
           AccountantFinanceLabels.paymentMethodAr(snap.paymentMethodRaw),
@@ -155,6 +169,7 @@ class AccountantTripRow {
       vatDisplay: money(resolution.vat),
       driverNetDisplay: money(resolution.driverNet),
       agentAmountDisplay: agentAmount,
+      agentAmountIsShareOfCommission: hasAgentAmount,
       missingFields: resolution.missingFields,
       source: resolution.source,
       confidenceLabel: switch (resolution.confidence) {
@@ -178,6 +193,7 @@ class AccountantFinanceViewBundle {
     required this.docsScanned,
     required this.truncated,
     required this.openSettlementsRemaining,
+    this.fixturesExcludedFromTable = 0,
   });
 
   final AccountantFinanceReadModel model;
@@ -188,6 +204,7 @@ class AccountantFinanceViewBundle {
   final int docsScanned;
   final bool truncated;
   final int openSettlementsRemaining;
+  final int fixturesExcludedFromTable;
 
   int get partialOrUnresolved =>
       model.completedTripsWithPartialFinancialData +

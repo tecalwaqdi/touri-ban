@@ -4,14 +4,16 @@ import '/backend/admin_performance.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/core/admin_currency.dart';
+import '/core/admin_qa_fixture.dart';
 import '/core/finance/accountant_finance_read_model.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/core/finance/financial_amount_resolution.dart';
+import '/core/finance/financial_trip_semantics.dart';
 
 /// Loads orders (scoped) and builds [AccountantFinanceViewBundle] via F1 only.
 ///
-/// Country Agent: Firestore query constrained to scoped country — no global
-/// load then UI filter.
+/// Country Agent: Firestore query constrained to scoped country.
+/// Super Admin "all countries": do **not** inherit [AdminCountryScope] silently.
 abstract final class AccountantFinanceLoader {
   AccountantFinanceLoader._();
 
@@ -59,12 +61,13 @@ abstract final class AccountantFinanceLoader {
       customEnd: customEnd,
     );
 
+    // Super Admin: only explicit countryRef. Never inherit reports UI country.
     DocumentReference? effectiveCountry;
     if (AdminRoleService.isCountryAgent) {
       effectiveCountry = AdminRoleService.scopedCountryRef ??
           AdminCountryScope.activeCountryRef;
     } else {
-      effectiveCountry = countryRef ?? AdminCountryScope.activeCountryRef;
+      effectiveCountry = countryRef;
     }
 
     final orders = await _scanOrders(
@@ -82,7 +85,13 @@ abstract final class AccountantFinanceLoader {
 
     final sym = AdminCurrency.symbolByCode[currency] ?? currency;
     final trips = <AccountantTripRow>[];
+    var fixturesSkippedForTable = 0;
     for (final o in orders) {
+      if (FinancialTripSemantics.isFinanceQaFixture(o) ||
+          AdminQaFixture.isFixtureOrder(o)) {
+        fixturesSkippedForTable++;
+        continue;
+      }
       if (!scope.allowsCountry(o.revDolh?.path)) continue;
       if (AdminRoleService.isCountryAgent) {
         if (AdminCountryScope.filterOrders([o]).isEmpty) continue;
@@ -123,6 +132,7 @@ abstract final class AccountantFinanceLoader {
       docsScanned: orders.length,
       truncated: orders.length >= scanCap,
       openSettlementsRemaining: openSettlements,
+      fixturesExcludedFromTable: fixturesSkippedForTable,
     );
   }
 
@@ -216,6 +226,10 @@ abstract final class AccountantTripFilters {
     String? search,
   }) {
     return rows.where((r) {
+      if (AdminQaFixture.isFixtureId(r.orderId) ||
+          FinancialTripSemantics.isFinanceQaFixture(r.order)) {
+        return false;
+      }
       if (paymentMethod != null &&
           paymentMethod.isNotEmpty &&
           r.paymentMethodLabel != paymentMethod) {
@@ -235,7 +249,8 @@ abstract final class AccountantTripFilters {
       if (search != null && search.trim().isNotEmpty) {
         final q = search.trim().toLowerCase();
         final hay =
-            '${r.orderId} ${r.driverLabel} ${r.agentLabel}'.toLowerCase();
+            '${r.orderId} ${r.driverLabel} ${r.agentLabel} ${r.countryLabel}'
+                .toLowerCase();
         if (!hay.contains(q)) return false;
       }
       return true;

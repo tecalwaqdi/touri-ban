@@ -1,9 +1,10 @@
+import '/core/country/country_resolver.dart';
 import '/core/finance/financial_accounting_engine.dart';
 import '/core/finance/financial_amount_resolution.dart';
 import '/core/finance/financial_trip_semantics.dart';
 import '/core/finance/settlement_state_labels.dart';
 
-/// Arabic accountant-facing labels (F2). Never expose raw enums in normal UI.
+/// Arabic accountant-facing labels (F2 / F2.1). Never expose raw enums in normal UI.
 abstract final class AccountantFinanceLabels {
   AccountantFinanceLabels._();
 
@@ -44,7 +45,7 @@ abstract final class AccountantFinanceLabels {
       case 'failed':
         return 'فشل الدفع';
       default:
-        return s.isEmpty ? 'غير محدد' : 'غير محدد';
+        return 'غير محدد';
     }
   }
 
@@ -89,7 +90,6 @@ abstract final class AccountantFinanceLabels {
     return '—';
   }
 
-  /// Accountant settlement status — no developer workflow jargon.
   static String settlementStatusAr(String? raw) {
     switch ((raw ?? '').trim().toLowerCase()) {
       case 'settled':
@@ -105,7 +105,6 @@ abstract final class AccountantFinanceLabels {
       case 'open':
       case 'pending':
       case 'locked':
-        return 'غير مسددة';
       case '':
         return 'غير مسددة';
       default:
@@ -119,6 +118,9 @@ abstract final class AccountantFinanceLabels {
         FinancialAgentAttribution.missing => 'الوكيل التاريخي غير محدد',
       };
 
+  static String agentShareOfCommissionLabel() =>
+      'حصة الوكيل من عمولة الشركة';
+
   static String tripOperationalStatusAr(String? statusCode) {
     final c = (statusCode ?? '').trim().toLowerCase();
     if (c == 'completed' || c == 'trip_completed') return 'مكتملة';
@@ -128,6 +130,41 @@ abstract final class AccountantFinanceLabels {
     if (c.contains('accepted') || c == 'pending_driver') return 'مقبولة';
     if (c.isEmpty) return 'غير محدد';
     return 'قيد التنفيذ';
+  }
+
+  static String countryHumanAr(String? countryPathOrId) {
+    final raw = (countryPathOrId ?? '').trim();
+    if (raw.isEmpty) return '—';
+    final id = raw.contains('/') ? raw.split('/').last : raw;
+    final lower = id.toLowerCase();
+    if (lower == CountryResolver.canonicalSaudiId ||
+        CountryResolver.legacySaudiIds.contains(lower) ||
+        lower.contains('saudi')) {
+      return 'السعودية';
+    }
+    if (lower.contains('egypt') || lower == 'eg') return 'مصر';
+    if (lower.contains('uae') || lower.contains('emirates')) {
+      return 'الإمارات';
+    }
+    if (lower.contains('kuwait')) return 'الكويت';
+    if (lower.contains('bahrain')) return 'البحرين';
+    if (lower.contains('qatar')) return 'قطر';
+    if (lower.contains('oman')) return 'عُمان';
+    if (lower.contains('jordan')) return 'الأردن';
+    if (lower.contains('iraq')) return 'العراق';
+    if (lower.contains('niger') && !lower.contains('nigeria')) {
+      return 'النيجر';
+    }
+    if (lower.contains('nigeria')) return 'نيجيريا';
+    if (lower.contains('chad')) return 'تشاد';
+    return id.replaceAll('_', ' ');
+  }
+
+  static String tripRefLabel(String orderId) {
+    final id = orderId.trim();
+    if (id.isEmpty) return '—';
+    if (id.length <= 12) return id;
+    return '${id.substring(0, 8)}…';
   }
 
   static String unavailableMoney() => 'غير متوفر';
