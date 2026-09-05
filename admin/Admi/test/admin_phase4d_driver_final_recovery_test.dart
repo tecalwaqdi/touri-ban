@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:admin_arawatan/core/admin_driver_edit_phase_ui.dart';
 import 'package:admin_arawatan/core/admin_driver_profile_view.dart';
 import 'package:admin_arawatan/core/admin_driver_review_actions.dart';
 import 'package:admin_arawatan/core/driver_license_document.dart';
 import 'package:admin_arawatan/core/driver_registration_document_status.dart';
+import 'package:admin_arawatan/core/i18n/toury_i18n_text.dart';
 
 void main() {
   group('license back optional', () {
@@ -185,16 +187,33 @@ void main() {
 
   group('edit/create form paint contract', () {
     test('phases cover blank-body prevention for create and edit', () {
-      const phases = {
-        'creating',
-        'loading',
-        'loaded',
-        'error',
-        'notFound',
-        'unauthorized',
-      };
-      expect(phases.contains('creating'), isTrue);
-      expect(phases.contains('loaded'), isTrue);
+      expect(AdminDriverEditPhaseUi.phases.contains('creating'), isTrue);
+      expect(AdminDriverEditPhaseUi.phases.contains('loading'), isTrue);
+      expect(AdminDriverEditPhaseUi.phases.contains('loaded'), isTrue);
+      expect(
+        AdminDriverEditPhaseUi.showLoadingShell('loading', wantsEdit: true),
+        isTrue,
+      );
+      expect(
+        AdminDriverEditPhaseUi.showSaveAction(
+          'loading',
+          wantsEdit: true,
+          isEdit: true,
+        ),
+        isFalse,
+      );
+      expect(
+        AdminDriverEditPhaseUi.showFormBody('loaded', wantsEdit: true),
+        isTrue,
+      );
+      expect(
+        AdminDriverEditPhaseUi.showSaveAction(
+          'loaded',
+          wantsEdit: true,
+          isEdit: true,
+        ),
+        isTrue,
+      );
     });
 
     test('company dropdown selection must path-match items', () {

@@ -11,6 +11,7 @@ import '/components/admin_edit_shell.dart';
 import '/components/admin_image_picker.dart';
 import '/components/admin_region_picker.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_driver_edit_phase_ui.dart';
 import '/core/admin_driver_plate.dart';
 import '/core/admin_driver_route_params.dart';
 import '/core/admin_type_car_label.dart';
@@ -18,6 +19,7 @@ import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'add_drev_model.dart';
 export 'add_drev_model.dart';
@@ -44,11 +46,15 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
   TransportCompanyRecord? _selectedCompany;
   bool _companiesLoading = true;
   DocumentReference? _resolvedEditRef;
+  bool _routeResolved = false;
+  bool _formEverLoaded = false;
+  UserRecord? _pendingEditUser;
+  final Map<String, int> _editTiming = {};
 
   bool get _isEdit => _resolvedEditRef != null;
 
-  /// Dropdown must use an instance present in [items] (path match), else the
-  /// field asserts and the whole create/edit form body fails to paint.
+  /// Path-safe company selection (avoids Dropdown identity asserts that blank
+  /// the form body while Save remains visible).
   TransportCompanyRecord? get _safeSelectedCompany {
     final selected = _selectedCompany;
     if (selected == null) return null;
@@ -58,6 +64,9 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     return null;
   }
 
+  String? get _safeSelectedCompanyPath =>
+      _safeSelectedCompany?.reference.path;
+
   String? _rawEditUser() {
     try {
       return GoRouterState.of(context).uri.queryParameters['editUser'];
@@ -66,10 +75,37 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     }
   }
 
+  bool get _wantsEdit =>
+      widget.editUserRef != null || ((_rawEditUser() ?? '').trim().isNotEmpty);
+
+  void _markEditTiming(String key) {
+    _editTiming[key] = DateTime.now().millisecondsSinceEpoch;
+    if (kDebugMode) {
+      debugPrint('EDIT_TIMING $key t=${_editTiming[key]}');
+    }
+  }
+
+  void _pinEditRouteIfNeeded() {
+    if (_routeResolved) return;
+    _routeResolved = true;
+    _markEditTiming('EDIT_ROUTE_OPEN');
+    final raw = _rawEditUser();
+    _resolvedEditRef = AdminDriverRouteParams.resolveUserRef(
+      rawQuery: raw,
+      deserialized: widget.editUserRef,
+    );
+    _markEditTiming('EDIT_DRIVER_REF_RESOLVED');
+    if (_resolvedEditRef != null || _wantsEdit) {
+      _model.editPhase = 'loading';
+      _model.isLoadingEdit = true;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AddDrevModel());
+    _markEditTiming('EDIT_INIT');
 
     AdminAgentCountryLock.applyToAppState();
 
@@ -81,6 +117,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       );
       _model.editPhase = 'loading';
       _model.isLoadingEdit = true;
+      _markEditTiming('EDIT_DRIVER_REF_RESOLVED');
     }
     _model.nameTextController ??= TextEditingController();
     _model.nameFocusNode ??= FocusNode();
@@ -131,11 +168,25 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         }
         return null;
       };
-      safeSetState(() {});
+      if (mounted) safeSetState(() {});
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final before = _model.editPhase;
+    _pinEditRouteIfNeeded();
+    if (before != _model.editPhase && mounted) {
+      // Ensure first frame after route pin shows loading shell.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) safeSetState(() {});
+      });
+    }
+  }
+
   Future<void> _bootstrapForm() async {
+    _pinEditRouteIfNeeded();
     final raw = _rawEditUser();
     _resolvedEditRef = AdminDriverRouteParams.resolveUserRef(
       rawQuery: raw,
@@ -151,6 +202,11 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       return;
     }
 
+    // Keep last good form on soft re-entry — do not flash blank/loading.
+    if (_isEdit && _formEverLoaded && _model.editPhase == 'loaded') {
+      return;
+    }
+
     if (_isEdit) {
       safeSetState(() {
         _model.editPhase = 'loading';
@@ -158,33 +214,23 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       });
     }
 
-    if (AdminRoleService.isTransportCompany) {
-      final companyRef = AdminRoleService.transportCompanyRef;
-      if (companyRef != null) {
-        try {
-          final company = await TransportCompanyRecord.getDocumentOnce(
-            companyRef,
-          );
-          if (mounted) {
-            setState(() {
-              _companies = [company];
-              _selectedCompany = company;
-              _companiesLoading = false;
-            });
-          }
-        } catch (_) {
-          if (mounted) setState(() => _companiesLoading = false);
-        }
-      }
-    } else {
-      await _loadCompanies();
-    }
-
-    if (!mounted) return;
+    final companiesFuture = AdminRoleService.isTransportCompany
+        ? _loadOwnedTransportCompany()
+        : _loadCompanies();
 
     if (_isEdit) {
-      await _loadRepresentativeForEdit();
+      // Parallelize independent reads: companies list + driver document.
+      _markEditTiming('EDIT_FIRESTORE_REQUEST_START');
+      await Future.wait<void>([
+        companiesFuture,
+        _fetchRepresentativeForEdit(),
+      ]);
+      if (!mounted) return;
+      _markEditTiming('EDIT_FIRESTORE_REQUEST_DONE');
+      await _finishEditPopulation();
     } else {
+      await companiesFuture;
+      if (!mounted) return;
       FFAppState().update(() {
         FFAppState().typeCarText = '';
         FFAppState().RefTepeCar = null;
@@ -195,6 +241,26 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         _model.editPhase = 'creating';
         _model.isLoadingEdit = false;
       });
+    }
+  }
+
+  Future<void> _loadOwnedTransportCompany() async {
+    final companyRef = AdminRoleService.transportCompanyRef;
+    if (companyRef == null) {
+      if (mounted) setState(() => _companiesLoading = false);
+      return;
+    }
+    try {
+      final company = await TransportCompanyRecord.getDocumentOnce(companyRef);
+      if (mounted) {
+        setState(() {
+          _companies = [company];
+          _selectedCompany = company;
+          _companiesLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _companiesLoading = false);
     }
   }
 
@@ -240,15 +306,10 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     }
   }
 
-  Future<void> _loadRepresentativeForEdit() async {
+  Future<void> _fetchRepresentativeForEdit() async {
     final ref = _resolvedEditRef;
     if (ref == null) return;
 
-    safeSetState(() {
-      _model.isLoadingEdit = true;
-      _model.editPhase = 'loading';
-      _model.editLoadError = null;
-    });
     try {
       final snap = await ref.get().timeout(const Duration(seconds: 20));
       if (!mounted) return;
@@ -256,6 +317,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         safeSetState(() {
           _model.editPhase = 'notFound';
           _model.isLoadingEdit = false;
+          _pendingEditUser = null;
         });
         return;
       }
@@ -269,11 +331,13 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
           safeSetState(() {
             _model.editPhase = 'unauthorized';
             _model.isLoadingEdit = false;
+            _pendingEditUser = null;
           });
           return;
         }
       }
 
+      _pendingEditUser = user;
       _model.nameTextController!.text = user.displayName;
       _model.emailTextController!.text = user.email;
       _model.mobilTextController!.text = user.phoneNumber;
@@ -305,42 +369,87 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         FFAppState().RefTepeCar = user.mndobTypeCar;
         FFAppState().typeCarText = _model.cartypeTextController!.text;
       });
-
-      if (user.hasTransportCompany()) {
-        TransportCompanyRecord? match;
-        for (final c in _companies) {
-          if (c.reference.path == user.transportCompany!.path) {
-            match = c;
-            break;
-          }
-        }
-        match ??= await TransportCompanyRecord.getDocumentOnce(
-          user.transportCompany!,
-        );
-        if (mounted) {
-          setState(() {
-            if (!_companies.any(
-              (c) => c.reference.path == match!.reference.path,
-            )) {
-              _companies = [match!, ..._companies];
-            }
-            _selectedCompany = match;
-          });
-        }
-      }
-      if (!mounted) return;
-      safeSetState(() {
-        _model.editPhase = 'loaded';
-        _model.isLoadingEdit = false;
-      });
+      _markEditTiming('EDIT_CONTROLLERS_POPULATED');
     } catch (e) {
       if (!mounted) return;
       safeSetState(() {
         _model.editPhase = 'error';
         _model.editLoadError = e;
         _model.isLoadingEdit = false;
+        _pendingEditUser = null;
       });
     }
+  }
+
+  Future<void> _finishEditPopulation() async {
+    if (_model.editPhase == 'error' ||
+        _model.editPhase == 'notFound' ||
+        _model.editPhase == 'unauthorized') {
+      return;
+    }
+    final user = _pendingEditUser;
+    if (user == null) {
+      if (_model.editPhase != 'notFound' && _model.editPhase != 'unauthorized') {
+        safeSetState(() {
+          _model.editPhase = 'error';
+          _model.isLoadingEdit = false;
+        });
+      }
+      return;
+    }
+
+    if (user.hasTransportCompany()) {
+      TransportCompanyRecord? match;
+      for (final c in _companies) {
+        if (c.reference.path == user.transportCompany!.path) {
+          match = c;
+          break;
+        }
+      }
+      match ??= await TransportCompanyRecord.getDocumentOnce(
+        user.transportCompany!,
+      );
+      if (mounted) {
+        setState(() {
+          if (!_companies.any(
+            (c) => c.reference.path == match!.reference.path,
+          )) {
+            _companies = [match!, ..._companies];
+          }
+          _selectedCompany = match;
+          _companiesLoading = false;
+        });
+      }
+    }
+
+    if (!mounted) return;
+    safeSetState(() {
+      _model.editPhase = 'loaded';
+      _model.isLoadingEdit = false;
+      _formEverLoaded = true;
+      _pendingEditUser = null;
+    });
+    _markEditTiming('EDIT_FORM_READY');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _markEditTiming('EDIT_FORM_PAINTED');
+      if (kDebugMode && _editTiming.containsKey('EDIT_ROUTE_OPEN')) {
+        final start = _editTiming['EDIT_ROUTE_OPEN']!;
+        final ready = _editTiming['EDIT_FORM_READY'] ?? start;
+        debugPrint('EDIT_TIMING total_ms=${ready - start} keys=$_editTiming');
+      }
+    });
+  }
+
+  /// Explicit retry — allows reload after error (bypasses keep-last-good).
+  Future<void> _retryEditLoad() async {
+    _formEverLoaded = false;
+    _pendingEditUser = null;
+    safeSetState(() {
+      _model.editPhase = 'loading';
+      _model.isLoadingEdit = true;
+      _model.editLoadError = null;
+    });
+    await _bootstrapForm();
   }
 
   void _parseCarTypeAndPlate(String raw) {
@@ -637,31 +746,28 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     final theme = FlutterFlowTheme.of(context);
     String? editSubtitle;
     if (isEdit && _resolvedEditRef != null) {
-      // Subtitle filled after load via model if available.
       editSubtitle = _model.nameTextController?.text.trim();
     }
 
     final phase = _model.editPhase;
-    final wantsEdit = widget.editUserRef != null ||
-        ((_rawEditUser() ?? '').trim().isNotEmpty);
-    // Never paint create Save bar / empty form while an edit target is resolving.
+    final wantsEdit = _wantsEdit;
     final resolvingEdit =
-        wantsEdit && (phase == 'creating' || phase == 'loading');
-    final canMutate =
-        (!wantsEdit && phase == 'creating') || (isEdit && phase == 'loaded');
+        AdminDriverEditPhaseUi.showLoadingShell(phase, wantsEdit: wantsEdit);
+    final canMutate = AdminDriverEditPhaseUi.showSaveAction(
+      phase,
+      wantsEdit: wantsEdit,
+      isEdit: isEdit,
+    );
 
     // Prefer scaffold-level loading so body cannot paint blank white.
+    // No sticky Save/Cancel during load — AppBar back is enough.
     if (resolvingEdit || (isEdit && phase == 'loading')) {
       return AdminDriverModuleScaffold(
         title: uiTr(context, 'تعديل بيانات المندوب'),
         subtitle: uiTr(context, 'عدّل البيانات ثم احفظ'),
         isLoading: true,
         loadingMessage: uiTr(context, 'جاري تحميل بيانات المندوب...'),
-        bottomBar: AdminDriverStickyActions(
-          primaryLabel: uiTr(context, 'حفظ التعديلات'),
-          showPrimary: false,
-          onPrimary: null,
-        ),
+        bottomBar: null,
         body: const SizedBox.shrink(),
       );
     }
@@ -700,8 +806,33 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
               ),
               const SizedBox(height: 12),
               FilledButton(
-                onPressed: _bootstrapForm,
+                onPressed: _retryEditLoad,
                 child: Text(uiTr(context, 'إعادة المحاولة')),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if (!AdminDriverEditPhaseUi.showFormBody(
+      phase,
+      wantsEdit: wantsEdit,
+    )) {
+      // Defensive: never fall through to an empty form shell.
+      phaseBody = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(
+                width: 36,
+                height: 36,
+                child: CircularProgressIndicator(strokeWidth: 2.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                uiTr(context, 'جاري تحميل بيانات المندوب...'),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -849,24 +980,24 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                       child: Text(_selectedCompany!.naim),
                     )
                   else
-                    DropdownButtonFormField<TransportCompanyRecord?>(
+                    DropdownButtonFormField<String?>(
                       key: ValueKey(
-                        'company-${_safeSelectedCompany?.reference.path ?? 'none'}-${_companies.length}',
+                        'company-path-${_safeSelectedCompanyPath ?? 'none'}-${_companies.length}',
                       ),
-                      initialValue: _safeSelectedCompany,
+                      initialValue: _safeSelectedCompanyPath,
                       isExpanded: true,
                       decoration: InputDecoration(
                         labelText: uiTr(context, 'شركة النقل (اختياري)'),
                         hintText: uiTr(context, 'مستقل — بدون شركة'),
                       ),
                       items: [
-                        DropdownMenuItem<TransportCompanyRecord?>(
+                        DropdownMenuItem<String?>(
                           value: null,
                           child: Text(uiTr(context, 'مستقل — بدون شركة')),
                         ),
                         ..._companies.map(
-                          (c) => DropdownMenuItem(
-                            value: c,
+                          (c) => DropdownMenuItem<String?>(
+                            value: c.reference.path,
                             child: Text(
                               c.licenseNumber.isNotEmpty
                                   ? '${c.naim} (${c.licenseNumber})'
@@ -875,8 +1006,18 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                           ),
                         ),
                       ],
-                      onChanged: (v) =>
-                          safeSetState(() => _selectedCompany = v),
+                      onChanged: (path) {
+                        TransportCompanyRecord? next;
+                        if (path != null) {
+                          for (final c in _companies) {
+                            if (c.reference.path == path) {
+                              next = c;
+                              break;
+                            }
+                          }
+                        }
+                        safeSetState(() => _selectedCompany = next);
+                      },
                     ),
                   const SizedBox(height: 14),
                   AdminEditPickerRow(
@@ -1005,6 +1146,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
               ? uiTr(context, 'عدّل البيانات ثم احفظ')
               : uiTr(context, 'املأ الحقول المطلوبة')),
       isLoading: false,
+      // Save only when form is ready — never with blank/error bodies.
       bottomBar: canMutate
           ? AdminDriverStickyActions(
               primaryLabel: _model.isSubmitting
@@ -1017,7 +1159,13 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                   isEdit ? Icons.save_rounded : Icons.person_add_rounded,
               onPrimary: _model.isSubmitting ? null : _submitRepresentative,
             )
-          : null,
+          : (AdminDriverEditPhaseUi.showErrorBody(phase)
+              ? AdminDriverStickyActions(
+                  primaryLabel: uiTr(context, 'حفظ التعديلات'),
+                  showPrimary: false,
+                  onPrimary: null,
+                )
+              : null),
       body: phaseBody,
     );
   }
