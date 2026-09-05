@@ -24,6 +24,69 @@ class CloudFunctionsClient {
     return Map<String, dynamic>.from(result.data as Map);
   }
 
+  /// F3-C3 — Super Admin agent profile + country assignment (server uniqueness).
+  static Future<Map<String, dynamic>> updateCountryAgentAssignment({
+    required String agentId,
+    String? countryPath,
+    String? displayName,
+    String? phoneNumber,
+    String? dolhAgent,
+    bool? actevUser,
+    double? agentTotal,
+    double? vatPercent,
+    double? appCommissionPercent,
+    DateTime? agentDateReg,
+    DateTime? agentDateEnd,
+    String? reason,
+  }) async {
+    final result =
+        await _functions.httpsCallable('updateCountryAgentAssignment').call({
+      'agentId': agentId,
+      if (countryPath != null) 'countryPath': countryPath,
+      if (displayName != null) 'displayName': displayName,
+      if (phoneNumber != null) 'phoneNumber': phoneNumber,
+      if (dolhAgent != null) 'dolhAgent': dolhAgent,
+      if (actevUser != null) 'actevUser': actevUser,
+      if (agentTotal != null) 'agentTotal': agentTotal,
+      if (vatPercent != null) 'vatPercent': vatPercent,
+      if (appCommissionPercent != null)
+        'appCommissionPercent': appCommissionPercent,
+      if (agentDateReg != null)
+        'agentDateReg': agentDateReg.toUtc().toIso8601String(),
+      if (agentDateEnd != null)
+        'agentDateEnd': agentDateEnd.toUtc().toIso8601String(),
+      if (reason != null) 'reason': reason,
+    });
+    return Map<String, dynamic>.from(result.data as Map);
+  }
+
+  static Future<Map<String, dynamic>> reassignActiveCountryAgent({
+    required String countryPath,
+    required String newAgentId,
+    String? reason,
+  }) async {
+    final result =
+        await _functions.httpsCallable('reassignActiveCountryAgent').call({
+      'countryPath': countryPath,
+      'newAgentId': newAgentId,
+      if (reason != null) 'reason': reason,
+    });
+    return Map<String, dynamic>.from(result.data as Map);
+  }
+
+  static Future<Map<String, dynamic>> deactivateCountryAgent({
+    required String agentId,
+    String? countryPath,
+    String? reason,
+  }) async {
+    final result = await _functions.httpsCallable('deactivateCountryAgent').call({
+      'agentId': agentId,
+      if (countryPath != null) 'countryPath': countryPath,
+      if (reason != null) 'reason': reason,
+    });
+    return Map<String, dynamic>.from(result.data as Map);
+  }
+
   static Future<Map<String, dynamic>> refreshMyClaims() async {
     final result = await _functions.httpsCallable('refreshMyClaims').call();
     return Map<String, dynamic>.from(result.data as Map);

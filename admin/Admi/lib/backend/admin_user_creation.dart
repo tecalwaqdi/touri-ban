@@ -34,6 +34,22 @@ class AdminUserCreation {
           return 'البريد الإلكتروني أو كلمة المرور غير صالحة.';
         case 'permission-denied':
           return 'ليس لديك صلاحية إنشاء هذا النوع من الحسابات.';
+        case 'failed-precondition':
+          final details = error.details;
+          final code = details is Map
+              ? '${details['code'] ?? ''}'
+              : '';
+          if (code == 'AGENT_COUNTRY_ALREADY_HAS_ACTIVE_AGENT' ||
+              '${error.message}'.contains(
+                'AGENT_COUNTRY_ALREADY_HAS_ACTIVE_AGENT',
+              )) {
+            return 'يوجد وكيل نشط بالفعل لهذه الدولة';
+          }
+          if (code == 'AGENT_COUNTRY_DATE_OVERLAP' ||
+              '${error.message}'.contains('AGENT_COUNTRY_DATE_OVERLAP')) {
+            return 'فترة صلاحية الوكيل تتداخل مع وكيل آخر لنفس الدولة';
+          }
+          return 'تعذر إنشاء الحساب: ${error.message ?? error.code}';
         case 'unauthenticated':
           return 'يجب تسجيل الدخول أولاً.';
         case 'internal':
@@ -147,6 +163,15 @@ class AdminUserCreation {
 
     final safeData = sanitizeForCallable(userData);
 
+    final creatingAgent =
+        safeData['Isagent'] == true || safeData['isagent'] == true;
+    if (creatingAgent && allowClientFallback) {
+      // F3-C3: never create agents via client Auth/Firestore fallback.
+      debugPrint(
+        'AdminUserCreation: agent create requires createPanelUser CF (no fallback).',
+      );
+    }
+
     try {
       final result = await CloudFunctionsClient.createPanelUser(
         email: trimmed,
@@ -159,6 +184,10 @@ class AdminUserCreation {
       }
       return uid;
     } catch (e) {
+      if (creatingAgent) {
+        // Never fall back to direct Firestore for agents (uniqueness bypass).
+        throw Exception(authErrorMessage(e));
+      }
       if (allowClientFallback && _isCfUnavailable(e)) {
         debugPrint(
           'createPanelUser unavailable ($e) — using secondary Auth fallback.',

@@ -597,6 +597,27 @@ service cloud.firestore {
              == prev.get('registration_documents_status', '');
     }
 
+    // F3-C3: agent country assignment fields are server-authoritative (callables / Admin SDK).
+    function agentAssignmentFieldsUnchanged() {
+      let d = request.resource.data;
+      let prev = resource == null ? {} : resource.data;
+      let wasAgent = prev.get('Isagent', false) == true || prev.get('isagent', false) == true;
+      let willBeAgent = d.get('Isagent', false) == true || d.get('isagent', false) == true;
+      return d.get('Isagent', prev.get('Isagent', false)) == prev.get('Isagent', false)
+        && d.get('isagent', prev.get('isagent', false)) == prev.get('isagent', false)
+        && d.get('Rev_dloh_agent', prev.get('Rev_dloh_agent', null))
+             == prev.get('Rev_dloh_agent', null)
+        && d.get('agent_date_reg', prev.get('agent_date_reg', null))
+             == prev.get('agent_date_reg', null)
+        && d.get('agent_date_end', prev.get('agent_date_end', null))
+             == prev.get('agent_date_end', null)
+        && (
+          (!wasAgent && !willBeAgent)
+          || d.get('actev_user', prev.get('actev_user', true))
+               == prev.get('actev_user', true)
+        );
+    }
+
     function tourGuideSelfClaimOk() {
       let d = request.resource.data;
       let prev = resource == null ? {} : resource.data;
@@ -783,13 +804,17 @@ service cloud.firestore {
         && d.get('IsAdmin', false) == false
         && d.get('isAdminRule', 0) != 1
         && d.get('IsAdminRule', 0) != 1;
+      // F3-C3: client must not create/activate agents (use createPanelUser CF).
+      let notCreatingAgent =
+        d.get('Isagent', false) == false
+        && d.get('isagent', false) == false;
       let inCountryScope =
         countriesMatchAdminScope(d.get('Rev_dolh', null))
         || countriesMatchAdminScope(d.get('Rev_dloh_agent', null))
         || countriesMatchAdminScope(prev.get('Rev_dolh', null))
         || countriesMatchAdminScope(prev.get('Rev_dloh_agent', null));
-      return isSuperAdmin()
-        || (isCountryAdmin() && notElevatingToSuper && inCountryScope)
+      return (isSuperAdmin() && notCreatingAgent)
+        || (isCountryAdmin() && notElevatingToSuper && notCreatingAgent && inCountryScope)
         || (isTransportManager()
             && notElevatingToSuper
             && d.get('ismndob', false) == true
@@ -911,14 +936,22 @@ service cloud.firestore {
       allow update: if signedIn() && canSelfRegisterPendingDriverDraftWrite(document);
       allow update: if signedIn() && canSelfRegisterAsPendingDriver(document);
       allow update: if request.auth != null && (
-        isSuperAdmin()
+        (isSuperAdmin() && agentAssignmentFieldsUnchanged())
         || panelCanClearActiveOrderLock(document)
         || panelCanManageTourGuide()
         || panelCanReviewDriver()
-        || countryAdminCanUpdateUser()
+        || (countryAdminCanUpdateUser() && agentAssignmentFieldsUnchanged())
         || (panelCanProvisionUser() && privilegedUserFieldsUnchanged())
       );
       allow delete: if isSuperAdmin();
+    }
+
+    // F3-C3 country uniqueness locks — Admin SDK / CF only.
+    match /agent_country_assignment/{countryId} {
+      allow read: if isSuperAdmin()
+        || (isCountryAdmin()
+            && resource.data.country_path == claimCountryPath());
+      allow create, update, delete: if false;
     }
 
     match /user/{userId}/fcm_tokens/{tokenId} {

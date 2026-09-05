@@ -3,13 +3,16 @@ import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_performance.dart';
 import '/backend/admin_country_location_resolver.dart';
 import '/backend/admin_gps_location_service.dart';
+import '/backend/admin_user_creation.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_super_admin_gate.dart';
 import '/components/admin_ui.dart';
+import '/core/cloud_functions/cloud_functions_client.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'edet_agent_model.dart';
 export 'edet_agent_model.dart';
@@ -400,20 +403,19 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
           double.tryParse(_model.agentCommissionTextController!.text.trim()) ??
               0;
 
-      await AdminFirestoreDelete.updateDocument(
-        ref,
-        createUserRecordData(
-          displayName: _model.nameTextController!.text.trim(),
-          phoneNumber: _model.phoneTextController!.text.trim(),
-          actevUser: _model.activeValue,
-          dolhAgent: _model.selectedCountry!.naim,
-          revDlohAgent: _model.selectedCountry!.reference,
-          agentTotal: agentPercent,
-          vatPercent: _kAgentVatPercent,
-          appCommissionPercent: appPercent,
-          agentDateReg: _model.agentStartDate,
-          agentDateEnd: _model.agentEndDate,
-        ),
+      await CloudFunctionsClient.updateCountryAgentAssignment(
+        agentId: ref.id,
+        countryPath: _model.selectedCountry!.reference.path,
+        displayName: _model.nameTextController!.text.trim(),
+        phoneNumber: _model.phoneTextController!.text.trim(),
+        actevUser: _model.activeValue,
+        dolhAgent: _model.selectedCountry!.naim,
+        agentTotal: agentPercent,
+        vatPercent: _kAgentVatPercent,
+        appCommissionPercent: appPercent,
+        agentDateReg: _model.agentStartDate,
+        agentDateEnd: _model.agentEndDate,
+        reason: 'edet_agent_save',
       );
 
       if (!mounted) return;
@@ -427,7 +429,10 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      AdminCrudFeedback.error(context, AdminCrudFeedback.saveFailed(context, e));
+      final msg = e is FirebaseFunctionsException
+          ? AdminUserCreation.authErrorMessage(e)
+          : AdminCrudFeedback.saveFailed(context, e);
+      AdminCrudFeedback.error(context, msg);
     } finally {
       if (mounted) setState(() => _model.isSubmitting = false);
     }

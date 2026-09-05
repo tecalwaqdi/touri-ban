@@ -92,6 +92,9 @@ const PRIVILEGED_FIELDS = [
   "transport_company",
 ];
 
+const agentCountryAssignment = require("./agent_country_assignment.js");
+const {countryPathFromRef} = require("./agent_active.js");
+
 function callerIsAdmin(callerClaims) {
   return callerClaims.super_admin === true || callerClaims.country_admin === true;
 }
@@ -215,7 +218,36 @@ exports.createPanelUser = functions.https.onCall(async (data, context) => {
       ...hydrateUserData(userData),
     };
 
-    await db.doc(`user/${uid}`).set(doc, {merge: true});
+    const willBeActiveAgent =
+      (doc.Isagent === true || doc.isagent === true) &&
+      doc.actev_user !== false;
+    const agentCountry = countryPathFromRef(doc.Rev_dloh_agent);
+
+    if (willBeActiveAgent) {
+      if (!agentCountry) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          "Active agent requires Rev_dloh_agent country.",
+        );
+      }
+      // F3-C3: uniqueness before commit — never leave active agent without lock.
+      await agentCountryAssignment.assertCanActivateNewAgent(
+        db,
+        agentCountry,
+        null,
+      );
+      await agentCountryAssignment.claimCountryAgent({
+        firestore: db,
+        countryPath: agentCountry,
+        agentId: uid,
+        actorUid: context.auth.uid,
+        source: "createPanelUser",
+        reason: "create_active_agent",
+        agentPatch: doc,
+      });
+    } else {
+      await db.doc(`user/${uid}`).set(doc, {merge: true});
+    }
     await syncClaimsForUid(uid);
   } catch (e) {
     console.error("createPanelUser firestore error", e);
@@ -224,6 +256,12 @@ exports.createPanelUser = functions.https.onCall(async (data, context) => {
     } catch (cleanupErr) {
       console.error("createPanelUser cleanup failed", cleanupErr);
     }
+    try {
+      await db.doc(`user/${uid}`).delete();
+    } catch (_) {
+      /* ignore */
+    }
+    if (e instanceof functions.https.HttpsError) throw e;
     throw new functions.https.HttpsError(
       "internal",
       e.message || "Failed to write user profile",
@@ -232,6 +270,14 @@ exports.createPanelUser = functions.https.onCall(async (data, context) => {
 
   return {uid};
 });
+
+// F3-C3 — one active agent per country (server-authoritative).
+exports.assignActiveCountryAgent = agentCountryAssignment.assignActiveCountryAgent;
+exports.reassignActiveCountryAgent =
+  agentCountryAssignment.reassignActiveCountryAgent;
+exports.deactivateCountryAgent = agentCountryAssignment.deactivateCountryAgent;
+exports.updateCountryAgentAssignment =
+  agentCountryAssignment.updateCountryAgentAssignment;
 
 // ── Gemini proxy (no client keys) ───────────────────────────────────────────
 
