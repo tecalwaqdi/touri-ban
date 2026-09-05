@@ -1,3 +1,4 @@
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_country_scope.dart';
@@ -9,6 +10,8 @@ import '/components/admin_firestore_list.dart';
 import '/components/admin_image_picker.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_driver_review_actions.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -16,7 +19,6 @@ import '/index.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'admin_drivers_model.dart';
-import '/core/admin_user_facing_errors.dart';
 export 'admin_drivers_model.dart';
 
 /// قائمة المناديب بانتظار التفعيل (`actev_mndob=false`).
@@ -70,7 +72,8 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
     final confirmed = await showAdminConfirmDialog(
       context: context,
       title: uiTr(context, 'تأكيد الإيقاف'),
-      whatHappens: appTrFormat(context, 'adm_stop_confirm_body', driver.displayName),
+      whatHappens:
+          appTrFormat(context, 'adm_stop_confirm_body', driver.displayName),
       subject: driver.displayName.isNotEmpty
           ? driver.displayName
           : driver.reference.id,
@@ -84,9 +87,13 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
     if (!confirmed) return;
 
     try {
+      final adminUid = currentUserUid.isNotEmpty ? currentUserUid : 'admin';
       await driver.reference.update(
-        createUserRecordData(actevMndob: false),
+        AdminDriverReviewActions.operationalDeactivatePatch(
+          adminUid: adminUid,
+        ),
       );
+      AdminListRefresh.notify(AdminListScope.representatives);
       await AdminAuditLog.recordToggle(
         targetType: 'driver',
         targetId: driver.reference.id,
@@ -100,7 +107,9 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${appTr(context, 'adm_deactivate_failed')}: ${AdminUserFacingErrors.from(context, e)}')),
+        SnackBar(
+            content: Text(
+                '${appTr(context, 'adm_deactivate_failed')}: ${AdminUserFacingErrors.from(context, e)}')),
       );
     }
   }
@@ -120,29 +129,29 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
     final theme = FlutterFlowTheme.of(context);
     final isWide = AdminUi.useTableLayout(context);
 
-        return GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          child: AdminLayoutWidget(
-            scaffoldKey: scaffoldKey,
-            menu2Model: _model.menu2Model,
-            updateCallback: () => safeSetState(() {}),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: AdminLayoutWidget(
+        scaffoldKey: scaffoldKey,
+        menu2Model: _model.menu2Model,
+        updateCallback: () => safeSetState(() {}),
         padContent: false,
         title: l10n.getText('ksgnau0w'),
         child: AdminPageBody(
           title: l10n.getText('ksgnau0w'),
           subtitle: uiTr(context, 'مناديب بانتظار التفعيل أو المراجعة'),
           scrollable: true,
-                          child: Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
+            children: [
               AdminContentCard(
                 padding: const EdgeInsets.all(16),
                 child: isWide
                     ? Row(
-                                  children: [
+                        children: [
                           Expanded(child: _buildSearch(l10n)),
                           const SizedBox(width: 12),
                           _buildAddButton(l10n),
@@ -175,41 +184,45 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (drivers.isNotEmpty)
-                                    Padding(
+                          Padding(
                             padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
                             child: Text(
-                              adminListCountLabel(context, listState, visibleCount: drivers.length, pageFetched: allDrivers.length),
+                              adminListCountLabel(context, listState,
+                                  visibleCount: drivers.length,
+                                  pageFetched: allDrivers.length),
                               style: theme.labelLarge.override(
                                 fontFamily: theme.labelLargeFamily,
                                 color: theme.secondaryText,
                                 useGoogleFonts: !theme.labelLargeIsCustom,
-                                        ),
-                                      ),
-                                    ),
+                              ),
+                            ),
+                          ),
                         if (drivers.isEmpty)
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 32),
-                                    child: Column(
-                                      children: [
+                            child: Column(
+                              children: [
                                 Icon(
                                   Icons.verified_user_outlined,
                                   size: 48,
-                                  color: AdminUi.brandTeal.withValues(alpha: 0.45),
+                                  color:
+                                      AdminUi.brandTeal.withValues(alpha: 0.45),
                                 ),
                                 const SizedBox(height: 12),
-                                              Text(
+                                Text(
                                   _searchQuery.isEmpty
-                                      ? uiTr(context, 'لا يوجد مناديب بانتظار التفعيل')
+                                      ? uiTr(context,
+                                          'لا يوجد مناديب بانتظار التفعيل')
                                       : uiTr(context, 'لا توجد نتائج للبحث'),
                                   style: theme.titleMedium,
                                   textAlign: TextAlign.center,
-                                              ),
-                                            ],
-                                          ),
+                                ),
+                              ],
+                            ),
                           )
                         else
                           ListView.separated(
-                                                  shrinkWrap: true,
+                            shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             padding: const EdgeInsets.all(12),
                             itemCount: drivers.length,
@@ -228,12 +241,12 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
                     ),
                   );
                 },
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    );
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildSearch(FFLocalizations l10n) {

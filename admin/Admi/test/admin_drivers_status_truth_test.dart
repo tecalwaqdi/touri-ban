@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:admin_arawatan/admin/admindrever/admin_drivers_adapter.dart';
 import 'package:admin_arawatan/backend/admin_media_resolver.dart';
+import 'package:admin_arawatan/core/admin_driver_plate.dart';
 import 'package:admin_arawatan/core/admin_driver_profile_view.dart';
 import 'package:admin_arawatan/core/admin_driver_review_actions.dart';
 import 'package:admin_arawatan/core/admin_driver_status_truth.dart';
@@ -47,20 +48,21 @@ void main() {
 
     test('needs_changes / changes_requested aliases', () {
       expect(
-        AdminDriverStatusTruth.fromMap({'registration_status': 'needs_changes'})
-            .registration,
+        AdminDriverStatusTruth.fromMap({
+          'registration_status': 'needs_changes',
+        }).registration,
         AdminDriverReviewBucket.needsChanges,
       );
       expect(
-        AdminDriverStatusTruth.fromMap(
-          {'registration_status': 'changes_requested'},
-        ).registration,
+        AdminDriverStatusTruth.fromMap({
+          'registration_status': 'changes_requested',
+        }).registration,
         AdminDriverReviewBucket.needsChanges,
       );
       expect(
-        AdminDriverStatusTruth.fromMap(
-          {'submission_status': 'changesRequested'},
-        ).registration,
+        AdminDriverStatusTruth.fromMap({
+          'submission_status': 'changesRequested',
+        }).registration,
         AdminDriverReviewBucket.needsChanges,
       );
     });
@@ -75,13 +77,10 @@ void main() {
     });
 
     test('auth disabled + approved → mismatch flag', () {
-      final t = AdminDriverStatusTruth.fromMap(
-        {
-          'registration_status': 'approved',
-          'actev_mndob': true,
-        },
-        authDisabled: true,
-      );
+      final t = AdminDriverStatusTruth.fromMap({
+        'registration_status': 'approved',
+        'actev_mndob': true,
+      }, authDisabled: true);
       expect(t.authFirestoreMismatch, isTrue);
     });
 
@@ -147,6 +146,58 @@ void main() {
       });
       expect(blockers, contains('adm_drv_blocker_suspended'));
     });
+
+    test('operational activate does not rewrite registration_status', () {
+      final p = AdminDriverReviewActions.operationalActivatePatch(
+        adminUid: 'admin1',
+      );
+      expect(p['actev_mndob'], isTrue);
+      expect(p['account_status'], 'active');
+      expect(p.containsKey('registration_status'), isFalse);
+    });
+
+    test('operational deactivate keeps registration axis separate', () {
+      final p = AdminDriverReviewActions.operationalDeactivatePatch(
+        adminUid: 'admin1',
+      );
+      expect(p['actev_mndob'], isFalse);
+      expect(p['account_status'], 'inactive');
+      expect(p.containsKey('registration_status'), isFalse);
+      expect(p['registration_status'], isNull);
+    });
+
+    test('operational blockers: pending registration blocked', () {
+      final blockers = AdminDriverReviewActions.operationalActivationBlockers({
+        'registration_status': 'pending_review',
+        'mndob_vill': 'x',
+        'mndob_type_car': 'y',
+      });
+      expect(blockers, contains('adm_drv_blocker_registration_not_approved'));
+    });
+
+    test('operational blockers: approved eligible', () {
+      final blockers = AdminDriverReviewActions.operationalActivationBlockers({
+        'registration_status': 'approved',
+        'mndob_vill': 'x',
+        'mndob_type_car': 'y',
+      });
+      expect(blockers, isEmpty);
+    });
+
+    test('operational blockers: suspended blocked', () {
+      final blockers = AdminDriverReviewActions.operationalActivationBlockers({
+        'registration_status': 'suspended',
+        'mndob_vill': 'x',
+        'mndob_type_car': 'y',
+      });
+      expect(blockers, contains('adm_drv_blocker_suspended'));
+    });
+  });
+
+  group('AdminDriverPlate', () {
+    test('normalize strips spaces and dashes', () {
+      expect(AdminDriverPlate.normalize(' ab-12 3 '), 'AB123');
+    });
   });
 
   group('AdminMediaResolver classification', () {
@@ -175,10 +226,7 @@ void main() {
     test('parses firebasestorage.app bucket URLs', () {
       const url =
           'https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/users%2Fu1%2Fuploads%2Fa.jpg?alt=media&token=t';
-      expect(
-        AdminMediaResolver.storagePathFrom(url),
-        'users/u1/uploads/a.jpg',
-      );
+      expect(AdminMediaResolver.storagePathFrom(url), 'users/u1/uploads/a.jpg');
     });
   });
 

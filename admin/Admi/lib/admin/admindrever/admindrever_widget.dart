@@ -4,11 +4,13 @@ import '/admin/admindrever/admin_drivers_filter_bar.dart';
 import '/admin/admindrever/admin_drivers_query.dart';
 import '/admin/admindrever/admin_drivers_summary_strip.dart';
 import '/admin/admindrever/admin_drivers_table.dart';
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_dashboard_invalidate.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_ops_search.dart';
+import '/backend/admin_resource_guard.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_stats_coordinator.dart';
 import '/backend/admin_unknown_drivers_loader.dart';
@@ -21,6 +23,7 @@ import '/components/admin_firestore_list.dart';
 import '/components/admin_enterprise_kit.dart' hide showAdminConfirmDialog;
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_driver_review_actions.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -146,16 +149,36 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
     super.dispose();
   }
 
+  bool _toggleBusy = false;
+
   Future<void> _toggleActivation(
     UserRecord user, {
     required bool activate,
   }) async {
+    if (_toggleBusy) return;
+
+    if (activate) {
+      final blockers =
+          AdminDriverReviewActions.operationalActivationBlockers(
+                Map<String, dynamic>.from(user.snapshotData),
+              )
+              .map((key) => appTr(context, key))
+              .where((t) => t.trim().isNotEmpty)
+              .toList();
+      if (blockers.isNotEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(blockers.join('\n'))));
+        return;
+      }
+    }
+
     final title = activate
         ? uiTr(context, 'تأكيد التفعيل')
-        : uiTr(context, 'تأكيد الإيقاف');
+        : appTr(context, 'adm_drv_deactivate_title');
     final content = activate
         ? uiTr(context, 'هل أنت متأكد من تفعيل المندوب؟')
-        : uiTr(context, 'هل أنت متأكد من إيقاف المندوب؟');
+        : appTr(context, 'adm_drv_deactivate_body');
 
     final confirmed = await showAdminConfirmDialog(
       context: context,
@@ -176,10 +199,33 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
 
     if (!confirmed) return;
 
+    setState(() => _toggleBusy = true);
     try {
-      await user.reference.update(createUserRecordData(actevMndob: activate));
+      if (!AdminRoleService.isSuperAdmin) {
+        final allowed = await AdminResourceGuard.canEditDriver(user);
+        if (!allowed) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(uiTr(context, 'لا تملك صلاحية تعديل هذا السائق')),
+            ),
+          );
+          return;
+        }
+      }
+
+      final adminUid = currentUserUid.isNotEmpty ? currentUserUid : 'admin';
+      final patch = activate
+          ? AdminDriverReviewActions.operationalActivatePatch(
+              adminUid: adminUid,
+            )
+          : AdminDriverReviewActions.operationalDeactivatePatch(
+              adminUid: adminUid,
+            );
+      await user.reference.update(patch);
       AdminStatsCoordinator.instance.invalidateAfterUserChange();
       flushAdminDashboardStatsNow();
+      AdminListRefresh.notify(AdminListScope.representatives);
       await AdminAuditLog.recordToggle(
         targetType: 'driver',
         targetId: user.reference.id,
@@ -192,7 +238,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
           content: Text(
             activate
                 ? uiTr(context, 'تم تفعيل المندوب بنجاح')
-                : uiTr(context, 'تم إيقاف المندوب بنجاح'),
+                : appTr(context, 'adm_drv_deactivate_success'),
           ),
         ),
       );
@@ -201,6 +247,8 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AdminCrudFeedback.updateFailed(context, e))),
       );
+    } finally {
+      if (mounted) setState(() => _toggleBusy = false);
     }
   }
 

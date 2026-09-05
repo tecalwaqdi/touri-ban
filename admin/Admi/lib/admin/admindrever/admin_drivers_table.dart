@@ -8,10 +8,8 @@ import '/core/admin_driver_profile_view.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
-typedef AdminDriverToggle = Future<void> Function(
-  UserRecord user, {
-  required bool activate,
-});
+typedef AdminDriverToggle =
+    Future<void> Function(UserRecord user, {required bool activate});
 
 typedef AdminDriverOpenDetails = void Function(UserRecord user);
 
@@ -86,7 +84,9 @@ class _WideTable extends StatelessWidget {
     final theme = FlutterFlowTheme.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        final minWidth = constraints.maxWidth < 980 ? 980.0 : constraints.maxWidth;
+        final minWidth = constraints.maxWidth < 980
+            ? 980.0
+            : constraints.maxWidth;
         return Scrollbar(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -123,19 +123,19 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget cell(String t, {int flex = 2}) => Expanded(
-          flex: flex,
-          child: Text(
-            t,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.labelLarge.override(
-              fontFamily: theme.labelLargeFamily,
-              fontWeight: FontWeight.w800,
-              color: AdminUi.brandTeal,
-              useGoogleFonts: !theme.labelLargeIsCustom,
-            ),
-          ),
-        );
+      flex: flex,
+      child: Text(
+        t,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.labelLarge.override(
+          fontFamily: theme.labelLargeFamily,
+          fontWeight: FontWeight.w800,
+          color: AdminUi.brandTeal,
+          useGoogleFonts: !theme.labelLargeIsCustom,
+        ),
+      ),
+    );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
@@ -195,11 +195,11 @@ class _DataRow extends StatelessWidget {
             Expanded(flex: 2, child: _text(theme, row.phone, mono: true)),
             Expanded(flex: 2, child: _text(theme, row.city)),
             Expanded(flex: 3, child: _VehicleCell(row: row)),
-            Expanded(flex: 2, child: AdminDriverRegistrationStatusCell(row: row)),
             Expanded(
               flex: 2,
-              child: AdminDriverOperationalStatus(row: row),
+              child: AdminDriverRegistrationStatusCell(row: row),
             ),
+            Expanded(flex: 2, child: AdminDriverOperationalStatus(row: row)),
             Expanded(flex: 2, child: _text(theme, row.tripsLabel)),
             Expanded(
               flex: 2,
@@ -366,7 +366,8 @@ class _Actions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showReview = row.review == AdminDriverReviewBucket.pendingReview ||
+    final showReview =
+        row.review == AdminDriverReviewBucket.pendingReview ||
         row.review == AdminDriverReviewBucket.needsChanges;
 
     return Row(
@@ -392,31 +393,25 @@ class _Actions extends StatelessWidget {
                 onDocuments(row.user);
               case 'review':
                 onReview(row.user);
-              case 'suspend':
+              case 'deactivate':
                 await onToggle(row.user, activate: false);
               case 'activate':
                 await onToggle(row.user, activate: true);
             }
           },
           itemBuilder: (context) => [
-            PopupMenuItem(
-              value: 'edit',
-              child: Text(uiTr(context, 'تعديل')),
-            ),
-            PopupMenuItem(
-              value: 'docs',
-              child: Text(uiTr(context, 'الوثائق')),
-            ),
+            PopupMenuItem(value: 'edit', child: Text(uiTr(context, 'تعديل'))),
+            PopupMenuItem(value: 'docs', child: Text(uiTr(context, 'الوثائق'))),
             if (showReview)
               PopupMenuItem(
                 value: 'review',
                 child: Text(uiTr(context, 'مراجعة التسجيل')),
               ),
             PopupMenuItem(
-              value: row.accountActive ? 'suspend' : 'activate',
+              value: row.accountActive ? 'deactivate' : 'activate',
               child: Text(
                 row.accountActive
-                    ? uiTr(context, 'إيقاف الحساب')
+                    ? appTr(context, 'adm_drv_deactivate_action')
                     : uiTr(context, 'تفعيل الحساب'),
               ),
             ),

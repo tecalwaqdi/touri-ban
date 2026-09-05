@@ -24,10 +24,14 @@ class DriverProfileBody extends StatefulWidget {
     super.key,
     required this.user,
     required this.userRef,
+    this.onChanged,
   });
 
   final UserRecord user;
   final DocumentReference userRef;
+
+  /// Reload parent profile after a successful write.
+  final VoidCallback? onChanged;
 
   @override
   State<DriverProfileBody> createState() => _DriverProfileBodyState();
@@ -46,7 +50,8 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
   @override
   void didUpdateWidget(covariant DriverProfileBody oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.user.reference != widget.user.reference) {
+    if (oldWidget.user.reference != widget.user.reference ||
+        oldWidget.user.actevMndob != widget.user.actevMndob) {
       _activeTripFuture = AdminDriverActiveTripTruth.resolve(widget.user);
     }
   }
@@ -284,7 +289,12 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
                 icon: const Icon(Icons.folder_open_outlined, size: 18),
                 label: Text(uiTr(context, 'عرض الوثائق')),
               ),
-              if (row.accountActive)
+              if (row.accountActive) ...[
+                OutlinedButton.icon(
+                  onPressed: _actionBusy ? null : () => _deactivate(context),
+                  icon: const Icon(Icons.pause_circle_outline, size: 18),
+                  label: Text(appTr(context, 'adm_drv_deactivate_action')),
+                ),
                 OutlinedButton.icon(
                   onPressed: _actionBusy ? null : () => _suspend(context),
                   icon: const Icon(Icons.person_off_outlined, size: 18),
@@ -292,8 +302,8 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
                     foregroundColor: Theme.of(context).colorScheme.error,
                   ),
                   label: Text(uiTr(context, 'إيقاف الحساب')),
-                )
-              else
+                ),
+              ] else
                 AdminPrimaryButton(
                   label: uiTr(context, 'تفعيل الحساب'),
                   icon: Icons.check_circle_outline,
@@ -360,6 +370,52 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     );
   }
 
+  Future<void> _deactivate(BuildContext context) async {
+    if (_actionBusy) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(appTr(context, 'adm_drv_deactivate_title')),
+        content: Text(appTr(context, 'adm_drv_deactivate_body')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(appTr(context, 'adm_cancel')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(appTr(context, 'adm_confirm')),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    setState(() => _actionBusy = true);
+    try {
+      final adminUid = currentUserUid.isNotEmpty ? currentUserUid : 'admin';
+      await widget.userRef.update(
+        AdminDriverReviewActions.operationalDeactivatePatch(adminUid: adminUid),
+      );
+      AdminListRefresh.notify(AdminListScope.representatives);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(appTr(context, 'adm_drv_deactivate_success'))),
+      );
+      widget.onChanged?.call();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${appTr(context, 'adm_deactivate_failed')}: ${AdminUserFacingErrors.from(context, e)}',
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
+    }
+  }
+
   Future<void> _suspend(BuildContext context) async {
     if (_actionBusy) return;
     final ok = await showDialog<bool>(
@@ -389,10 +445,12 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
           adminUid: adminUid,
         ),
       );
+      AdminListRefresh.notify(AdminListScope.representatives);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(appTr(context, 'adm_drv_suspend_success'))),
       );
+      widget.onChanged?.call();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -409,6 +467,20 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
 
   Future<void> _activate(BuildContext context) async {
     if (_actionBusy) return;
+
+    final data = Map<String, dynamic>.from(widget.user.snapshotData);
+    final blockers =
+        AdminDriverReviewActions.operationalActivationBlockers(data)
+            .map((key) => appTr(context, key))
+            .where((t) => t.trim().isNotEmpty)
+            .toList();
+    if (blockers.isNotEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(blockers.join('\n'))));
+      return;
+    }
+
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -429,13 +501,16 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     if (ok != true || !mounted) return;
     setState(() => _actionBusy = true);
     try {
+      final adminUid = currentUserUid.isNotEmpty ? currentUserUid : 'admin';
       await widget.userRef.update(
-        createUserRecordData(actevMndob: true, ismndob: true, ismndom: true),
+        AdminDriverReviewActions.operationalActivatePatch(adminUid: adminUid),
       );
+      AdminListRefresh.notify(AdminListScope.representatives);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(appTr(context, 'adm_drv_activated_body'))),
       );
+      widget.onChanged?.call();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
