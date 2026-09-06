@@ -1,6 +1,6 @@
 {
-  "git_commit": "dd8bd33e51d5a64e6af52f1f89661df905876b00",
-  "git_commit_short": "dd8bd33",
+  "git_commit": "9f9d6df900d822e4fbab5abeaa0af6dd79be8943",
+  "git_commit_short": "9f9d6df",
   "builtAt": "2026-09-06T11:24:47Z",
   "phase": "PERF-P2A",
   "channel": "admin-perf-p2a",

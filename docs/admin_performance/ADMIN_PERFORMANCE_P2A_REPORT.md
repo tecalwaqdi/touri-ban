@@ -67,7 +67,7 @@ BASE: `recovery/admin-performance-p1-shell-listeners` @ `fa1ebe4` / tip `dd8bd33
 
 BRANCH: `recovery/admin-performance-p2a-finance-queries`
 
-COMMIT: _(filled after commit)_
+COMMIT: `9f9d6df900d822e4fbab5abeaa0af6dd79be8943`
 
 PREVIEW: https://tutorial-multi-language-70gx4j--admin-perf-p2a-lbc3hkqo.web.app
 
