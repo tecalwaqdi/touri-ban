@@ -71,7 +71,7 @@ BASE: P3F `fb5ab5b` / tip `a569b9d`
 
 BRANCH: recovery/admin-performance-p4a-finance-critical-path
 
-COMMIT: _(filled after commit)_
+COMMIT: `49ad5a56d8d8d609666ca5a5b6b44a737af0dd2c`
 
 PREVIEW: https://tutorial-multi-language-70gx4j--admin-perf-p4a-g8gel2s5.web.app/admin/
 
