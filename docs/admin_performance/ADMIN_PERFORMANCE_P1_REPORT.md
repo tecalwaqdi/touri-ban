@@ -68,7 +68,7 @@ BASE: `recovery/admin-finance-f3b2-accountant-workspace` @ `6f256c2` (+ P0 audit
 
 BRANCH: `recovery/admin-performance-p1-shell-listeners`
 
-COMMIT: _(see git log tip)_
+COMMIT: `fa1ebe4`
 
 PREVIEW: https://tutorial-multi-language-70gx4j--admin-perf-p1-h2e0u7h6.web.app/admin/
 
