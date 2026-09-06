@@ -187,6 +187,24 @@ describe('agent_active semantics', () => {
     });
     assert.equal(active.windowsOverlap(a, b), true);
   });
+
+  it('adjacent calendar days do not overlap; same instant does', () => {
+    const a = active.agentEffectiveWindow({
+      agent_date_end: '2026-09-10T00:00:00.000Z',
+    });
+    const b = active.agentEffectiveWindow({
+      agent_date_reg: '2026-09-11T00:00:00.000Z',
+    });
+    assert.equal(active.windowsOverlap(a, b), false);
+
+    const sameA = active.agentEffectiveWindow({
+      agent_date_end: '2026-09-10T23:59:00.000Z',
+    });
+    const sameB = active.agentEffectiveWindow({
+      agent_date_reg: '2026-09-10T23:59:00.000Z',
+    });
+    assert.equal(active.windowsOverlap(sameA, sameB), true);
+  });
 });
 
 describe('agent_country_assignment', () => {
@@ -388,6 +406,102 @@ describe('agent_country_assignment', () => {
     assert.equal(db.users.get('old').actev_user, false);
     assert.equal(db.users.get('neu').actev_user, true);
     assert.equal(db.locks.get('x').active_agent_id, 'neu');
+  });
+
+  it('active country move clears old lock and claims new in one txn', async () => {
+    const db = new FakeDb();
+    db.users.set('a1', {
+      Isagent: true,
+      actev_user: true,
+      Rev_dloh_agent: {path: 'countries/from'},
+    });
+    db.locks.set('from', {
+      country_path: 'countries/from',
+      active_agent_id: 'a1',
+    });
+    await assignment.moveActiveAgentCountry({
+      firestore: db,
+      agentId: 'a1',
+      fromCountryPath: 'countries/from',
+      toCountryPath: 'countries/to',
+      actorUid: 's',
+    });
+    assert.equal(db.locks.get('from').active_agent_id, null);
+    assert.equal(db.locks.get('to').active_agent_id, 'a1');
+    assert.equal(db.users.get('a1').Rev_dloh_agent.path, 'countries/to');
+    assert.equal(db.users.get('a1').actev_user, true);
+  });
+
+  it('active country move rejects occupied destination', async () => {
+    const db = new FakeDb();
+    db.users.set('a1', {
+      Isagent: true,
+      actev_user: true,
+      Rev_dloh_agent: {path: 'countries/from'},
+    });
+    db.users.set('a2', {
+      Isagent: true,
+      actev_user: true,
+      Rev_dloh_agent: {path: 'countries/to'},
+    });
+    db.locks.set('from', {
+      country_path: 'countries/from',
+      active_agent_id: 'a1',
+    });
+    db.locks.set('to', {
+      country_path: 'countries/to',
+      active_agent_id: 'a2',
+    });
+    let blocked = false;
+    try {
+      await assignment.moveActiveAgentCountry({
+        firestore: db,
+        agentId: 'a1',
+        fromCountryPath: 'countries/from',
+        toCountryPath: 'countries/to',
+        actorUid: 's',
+      });
+    } catch (e) {
+      blocked = e.message === assignment.ERR_CONFLICT;
+    }
+    assert.equal(blocked, true);
+    assert.equal(db.locks.get('from').active_agent_id, 'a1');
+    assert.equal(db.locks.get('to').active_agent_id, 'a2');
+  });
+
+  it('claim may create missing user doc when agentPatch provided', async () => {
+    const db = new FakeDb();
+    const r = await assignment.claimCountryAgent({
+      firestore: db,
+      countryPath: 'countries/new',
+      agentId: 'brand_new',
+      actorUid: 's',
+      agentPatch: {
+        Isagent: true,
+        actev_user: true,
+        email: 'a@example.com',
+        Rev_dloh_agent: {path: 'countries/new'},
+      },
+    });
+    assert.equal(r.activeAgentId, 'brand_new');
+    assert.equal(db.locks.get('new').active_agent_id, 'brand_new');
+    assert.equal(db.users.get('brand_new').Isagent, true);
+  });
+
+  it('claim without patch rejects missing user doc', async () => {
+    const db = new FakeDb();
+    let rejected = false;
+    try {
+      await assignment.claimCountryAgent({
+        firestore: db,
+        countryPath: 'countries/new',
+        agentId: 'ghost',
+        actorUid: 's',
+      });
+    } catch (e) {
+      rejected = e.message === 'Agent not found.';
+    }
+    assert.equal(rejected, true);
   });
 
   it('no cross-country false conflict', async () => {

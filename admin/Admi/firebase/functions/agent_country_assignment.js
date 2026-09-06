@@ -193,7 +193,9 @@ async function claimCountryAgent({
       tx.get(lockRef),
       tx.get(agentRef),
     ]);
-    if (!agentSnap.exists) {
+    const hasPatch = !!(agentPatch && Object.keys(agentPatch).length);
+    // createPanelUser: Auth uid exists but user/{uid} is created in this txn.
+    if (!agentSnap.exists && !hasPatch) {
       throw new functions.https.HttpsError('not-found', 'Agent not found.');
     }
     const lock = lockSnap.exists ? lockSnap.data() || {} : {};
@@ -220,9 +222,9 @@ async function claimCountryAgent({
       }
     }
 
-    if (previous === agentId) {
+    if (previous === agentId && agentSnap.exists) {
       // Idempotent claim — still apply optional patch.
-      if (agentPatch && Object.keys(agentPatch).length) {
+      if (hasPatch) {
         tx.set(agentRef, agentPatch, {merge: true});
       }
       tx.set(
@@ -239,7 +241,7 @@ async function claimCountryAgent({
       return;
     }
 
-    if (agentPatch && Object.keys(agentPatch).length) {
+    if (hasPatch) {
       tx.set(agentRef, agentPatch, {merge: true});
     }
     tx.set(
@@ -352,17 +354,6 @@ async function reassignCountryAgent({
   const newRef = firestore.collection('user').doc(newAgentId);
   const now = new Date();
 
-  const countryAgents = await listCountryAgentDocs(firestore, path);
-  const overlapId = findDateOverlap(
-    countryAgents.filter((d) => {
-      // Old active will be deactivated; exclude current lock holder after load in txn.
-      return true;
-    }),
-    newAgentId,
-    newAgentPatch || {Isagent: true, actev_user: true},
-  );
-  // Overlap against agents that remain active excluding whoever we deactivate — checked in txn.
-
   let previous = null;
   await firestore.runTransaction(async (tx) => {
     const [lockSnap, newSnap] = await Promise.all([
@@ -379,8 +370,6 @@ async function reassignCountryAgent({
       return;
     }
 
-    // Ensure no other currently-active agent besides previous.
-    // Re-read previous agent and deactivate.
     if (previous) {
       const oldRef = firestore.collection('user').doc(previous);
       const oldSnap = await tx.get(oldRef);
@@ -409,10 +398,8 @@ async function reassignCountryAgent({
     );
   });
 
-  // Post-txn overlap soft check for remaining peers (excluding new + deactivated)
   const peers = await findOtherActiveAgents(firestore, path, newAgentId, now);
   if (peers.length > 0) {
-    // Should be unreachable if only one lock holder; defensive for legacy corruption.
     console.error('reassignCountryAgent residual active peers', path, peers.map((p) => p.id));
   }
 
@@ -432,6 +419,126 @@ async function reassignCountryAgent({
     previousActiveAgentId: previous,
     newActiveAgentId: newAgentId,
   };
+}
+
+/**
+ * Same agent moves country while remaining active — single transaction.
+ * Clears old lock and claims new lock without an intermediate empty window.
+ */
+async function moveActiveAgentCountry({
+  firestore,
+  agentId,
+  fromCountryPath,
+  toCountryPath,
+  actorUid,
+  source,
+  reason,
+  agentPatch,
+}) {
+  const fromPath = countryPathFromRef(fromCountryPath);
+  const toPath = countryPathFromRef(toCountryPath);
+  if (!fromPath || !toPath || fromPath === toPath) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'fromCountryPath and toCountryPath required and distinct',
+    );
+  }
+  const fromLock = assignmentRef(firestore, fromPath);
+  const toLock = assignmentRef(firestore, toPath);
+  const agentRef = firestore.collection('user').doc(agentId);
+  const now = new Date();
+
+  const others = await findOtherActiveAgents(firestore, toPath, agentId, now);
+  if (others.length > 0) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      ERR_CONFLICT,
+      {
+        code: ERR_CONFLICT,
+        countryPath: toPath,
+        currentActiveAgentId: others[0].id,
+        conflictingAgentIds: others.map((d) => d.id),
+      },
+    );
+  }
+
+  await firestore.runTransaction(async (tx) => {
+    const [fromSnap, toSnap, agentSnap] = await Promise.all([
+      tx.get(fromLock),
+      tx.get(toLock),
+      tx.get(agentRef),
+    ]);
+    if (!agentSnap.exists) {
+      throw new functions.https.HttpsError('not-found', 'Agent not found.');
+    }
+
+    const toHolder = toSnap.exists ? (toSnap.data() || {}).active_agent_id || null : null;
+    if (toHolder && toHolder !== agentId) {
+      const holderRef = firestore.collection('user').doc(toHolder);
+      const holderSnap = await tx.get(holderRef);
+      const holderActive =
+        holderSnap.exists &&
+        isAgentActiveAt(holderSnap.data() || {}, now) &&
+        countryPathFromRef(holderSnap.data().Rev_dloh_agent) === toPath;
+      if (holderActive) {
+        throw new functions.https.HttpsError(
+          'failed-precondition',
+          ERR_CONFLICT,
+          {code: ERR_CONFLICT, countryPath: toPath, currentActiveAgentId: toHolder},
+        );
+      }
+    }
+
+    const fromHolder = fromSnap.exists
+      ? (fromSnap.data() || {}).active_agent_id || null
+      : null;
+    // Clear old lock if we hold it (or it is already empty/stale for us).
+    if (!fromHolder || fromHolder === agentId) {
+      tx.set(
+        fromLock,
+        {
+          country_path: fromPath,
+          active_agent_id: null,
+          updated_at: admin.firestore.FieldValue.serverTimestamp(),
+          updated_by: actorUid || null,
+          source: source || 'f3c3_move_release',
+        },
+        {merge: true},
+      );
+    }
+
+    const patch = {
+      Isagent: true,
+      actev_user: true,
+      Rev_dloh_agent: firestore.doc(toPath),
+      ...(agentPatch || {}),
+    };
+    tx.set(agentRef, patch, {merge: true});
+    tx.set(
+      toLock,
+      {
+        country_path: toPath,
+        active_agent_id: agentId,
+        updated_at: admin.firestore.FieldValue.serverTimestamp(),
+        updated_by: actorUid || null,
+        source: source || 'f3c3_move_claim',
+      },
+      {merge: true},
+    );
+  });
+
+  await writeAudit(firestore, {
+    actorUid,
+    action: 'agent_country_move',
+    countryPath: toPath,
+    agentId,
+    previousAgentId: agentId,
+    newAgentId: agentId,
+    reason: reason || `moved_from:${fromPath}`,
+    source,
+  });
+
+  return {fromCountryPath: fromPath, toCountryPath: toPath, agentId};
 }
 
 /**
@@ -616,25 +723,27 @@ exports.updateCountryAgentAssignment = functions
 
     if (nextActive) {
       if (wasActive && prevCountry && prevCountry !== nextCountry) {
-        // Country move while active = explicit reassignment of this agent.
-        await releaseCountryAgent({
+        await moveActiveAgentCountry({
           firestore,
-          countryPath: prevCountry,
+          agentId,
+          fromCountryPath: prevCountry,
+          toCountryPath: nextCountry,
+          actorUid: context.auth.uid,
+          source: 'updateCountryAgentAssignment',
+          reason: str(data.reason) || 'profile_country_move',
+          agentPatch: patch,
+        });
+      } else {
+        await claimCountryAgent({
+          firestore,
+          countryPath: nextCountry,
           agentId,
           actorUid: context.auth.uid,
-          source: 'updateCountryAgentAssignment_move_release',
-          deactivateAgent: false,
+          source: 'updateCountryAgentAssignment',
+          reason: str(data.reason) || 'profile_update',
+          agentPatch: patch,
         });
       }
-      await claimCountryAgent({
-        firestore,
-        countryPath: nextCountry,
-        agentId,
-        actorUid: context.auth.uid,
-        source: 'updateCountryAgentAssignment',
-        reason: str(data.reason) || 'profile_update',
-        agentPatch: patch,
-      });
     } else {
       await agentRef.set(patch, {merge: true});
       if (wasActive && prevCountry) {
@@ -673,6 +782,7 @@ exports.__test = {
   claimCountryAgent,
   releaseCountryAgent,
   reassignCountryAgent,
+  moveActiveAgentCountry,
   assertCanActivateNewAgent,
   findOtherActiveAgents,
   findDateOverlap,
@@ -682,6 +792,7 @@ exports.__test = {
 module.exports.claimCountryAgent = claimCountryAgent;
 module.exports.releaseCountryAgent = releaseCountryAgent;
 module.exports.reassignCountryAgent = reassignCountryAgent;
+module.exports.moveActiveAgentCountry = moveActiveAgentCountry;
 module.exports.assertCanActivateNewAgent = assertCanActivateNewAgent;
 module.exports.ASSIGNMENT_COLLECTION = ASSIGNMENT_COLLECTION;
 module.exports.ERR_CONFLICT = ERR_CONFLICT;
