@@ -50,7 +50,7 @@ BASE: P3 `bfd0b39` / tip `8a9e778`
 
 BRANCH: `recovery/admin-performance-p3f-persistent-shell`
 
-COMMIT: _(filled after commit)_
+COMMIT: `fb5ab5b82584f0f5512879fca676fa1368271876`
 
 PREVIEW: https://tutorial-multi-language-70gx4j--admin-perf-p3f-pi2374j4.web.app/admin/
 
