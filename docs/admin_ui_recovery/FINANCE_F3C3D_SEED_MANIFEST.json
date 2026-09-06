@@ -1,0 +1,94 @@
+{
+  "created": [
+    {
+      "lockDocId": "india",
+      "country_path": "countries/india",
+      "active_agent_id": "TmENMz1dO8X7kTYBvJunSL3iX452",
+      "effective_window": {
+        "reg": "2026-09-02T00:00:00Z",
+        "end": "2030-09-02T00:00:00Z"
+      }
+    },
+    {
+      "lockDocId": "indonesia",
+      "country_path": "countries/indonesia",
+      "active_agent_id": "7hn2MKoUEOOD6gnKf3Yr2W0pdG13",
+      "effective_window": {
+        "reg": "2026-09-02T06:01:13.709Z",
+        "end": "2027-09-02T06:01:13.709Z"
+      }
+    },
+    {
+      "lockDocId": "kyrgyzstan",
+      "country_path": "countries/kyrgyzstan",
+      "active_agent_id": "Kq0OjniqdcXpHQA3tZOxS0GJHbK2",
+      "effective_window": {
+        "reg": "2026-09-02T06:01:20.533Z",
+        "end": "2027-09-02T06:01:20.533Z"
+      }
+    },
+    {
+      "lockDocId": "malaysia",
+      "country_path": "countries/malaysia",
+      "active_agent_id": "TVv1btmeqheb5UDzkzW21ni7FvS2",
+      "effective_window": {
+        "reg": "2026-09-02T06:01:24.007Z",
+        "end": "2027-09-02T06:01:24.007Z"
+      }
+    },
+    {
+      "lockDocId": "morocco",
+      "country_path": "countries/morocco",
+      "active_agent_id": "jFsM5R5iQ4Z3PEte0cAbmhxKr7z2",
+      "effective_window": {
+        "reg": "2026-09-02T06:01:09.926Z",
+        "end": "2027-09-02T06:01:09.926Z"
+      }
+    },
+    {
+      "lockDocId": "portugal",
+      "country_path": "countries/portugal",
+      "active_agent_id": "NwothIRFmKQgbPu4xc1v8LPWUVH2",
+      "effective_window": {
+        "reg": "2026-09-02T06:01:06.248Z",
+        "end": "2027-09-02T06:01:06.248Z"
+      }
+    },
+    {
+      "lockDocId": "saudi_arabia",
+      "country_path": "countries/saudi_arabia",
+      "active_agent_id": "JkYePqE6LkVVkHKbKmdqEmVqDqr1",
+      "effective_window": {
+        "reg": "2026-07-31T21:00:00Z",
+        "end": "2030-07-31T21:00:00Z"
+      }
+    },
+    {
+      "lockDocId": "spain",
+      "country_path": "countries/spain",
+      "active_agent_id": "U878AYIvsJV3xlWKhLeXOfUFqqH2",
+      "effective_window": {
+        "reg": "2026-09-02T06:01:02.026Z",
+        "end": "2027-09-02T06:01:02.026Z"
+      }
+    },
+    {
+      "lockDocId": "tunisia",
+      "country_path": "countries/tunisia",
+      "active_agent_id": "TRMD9yJZoeNLTAcuZckkAJ2pB833",
+      "effective_window": {
+        "reg": "2026-09-02T06:01:17.123Z",
+        "end": "2027-09-02T06:01:17.123Z"
+      }
+    }
+  ],
+  "skipped_valid_existing": [],
+  "aborted": [],
+  "conflicts": [],
+  "zero_agent_untouched": [
+    "countries/chad",
+    "countries/cp5_country_1787562918003",
+    "countries/niger",
+    "countries/nigeria"
+  ]
+}
