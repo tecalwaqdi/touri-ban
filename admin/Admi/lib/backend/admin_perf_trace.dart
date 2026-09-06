@@ -25,6 +25,10 @@ abstract final class AdminPerfTrace {
   static int financeRepoInFlightJoins = 0;
   static int financeRepoInvalidations = 0;
   static int financeClassificationMsTotal = 0;
+  static int shellMounts = 0;
+  static int shellDisposes = 0;
+  static int authSessionOwnerStarts = 0;
+  static int authSessionOwnerStops = 0;
 
   static final List<String> events = <String>[];
 
@@ -44,6 +48,10 @@ abstract final class AdminPerfTrace {
     financeRepoInFlightJoins = 0;
     financeRepoInvalidations = 0;
     financeClassificationMsTotal = 0;
+    shellMounts = 0;
+    shellDisposes = 0;
+    authSessionOwnerStarts = 0;
+    authSessionOwnerStops = 0;
     events.clear();
   }
 
@@ -153,5 +161,31 @@ abstract final class AdminPerfTrace {
     if (!enabled) return;
     financeClassificationMsTotal += ms;
     _note('finance_classification_ms+$ms total=$financeClassificationMsTotal');
+  }
+
+  static void shellMount() {
+    if (!enabled) return;
+    shellMounts++;
+    _note('shell_mount#$shellMounts');
+  }
+
+  static void shellDispose() {
+    if (!enabled) return;
+    shellDisposes++;
+    _note('shell_dispose#$shellDisposes');
+  }
+
+  static int get shellBalance => shellMounts - shellDisposes;
+
+  static void authSessionOwnerStart() {
+    if (!enabled) return;
+    authSessionOwnerStarts++;
+    _note('auth_session_owner_start#$authSessionOwnerStarts');
+  }
+
+  static void authSessionOwnerStop() {
+    if (!enabled) return;
+    authSessionOwnerStops++;
+    _note('auth_session_owner_stop#$authSessionOwnerStops');
   }
 }

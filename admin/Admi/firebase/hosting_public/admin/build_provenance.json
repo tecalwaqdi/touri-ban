@@ -1,14 +1,13 @@
 {
-  "git_commit": "72277ea7e0de3433ae0ac8212468cdb4f14bb7ee",
-  "git_commit_short": "72277ea",
-  "builtAt": "2026-09-06T23:13:02Z",
-  "phase": "PERF-P3",
-  "channel": "admin-perf-p3",
+  "git_commit": "8a9e7781de5725f648548edb01c54d3c77e18aaa",
+  "git_commit_short": "8a9e778",
+  "builtAt": "2026-09-06T23:25:00Z",
+  "phase": "PERF-P3F",
+  "channel": "admin-perf-p3f",
   "production_hosting_deploy": false,
   "includes": {
-    "admin_finance_repository": true,
-    "request_coalescing": true,
-    "session_cache_ttl_s": 45,
-    "unified_completed_scan": true
+    "persistent_shell": true,
+    "auth_session_owner": true,
+    "shell_route": true
   }
 }

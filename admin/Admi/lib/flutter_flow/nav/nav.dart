@@ -14,6 +14,7 @@ import '/backend/admin_role_service.dart';
 
 import '/core/admin_splash_screen.dart';
 import '/core/admin_qa_fixtures.dart';
+import '/components/admin_persistent_shell.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 import '/index.dart';
@@ -204,23 +205,8 @@ class AppStateNotifier extends ChangeNotifier {
   void notifyProfileReady() => notifyListeners();
 }
 
-GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
-      initialLocation: '/',
-      debugLogDiagnostics: kDebugMode,
-      refreshListenable: appStateNotifier,
-      navigatorKey: appNavigatorKey,
-      redirect: (context, state) => globalAuthRedirect(appStateNotifier, state),
-      errorBuilder: (context, state) => appStateNotifier.loggedIn
-          ? AuthUserStreamWidget(
-              builder: (context) {
-                if (!AdminRoleService.hasPanelAccess) {
-                  return HomePageWidget();
-                }
-                return _panelHomeForCurrentUser();
-              },
-            )
-          : HomePageWidget(),
-      routes: [
+GoRouter createRouter(AppStateNotifier appStateNotifier) {
+  final ffRoutes = <FFRoute>[
         FFRoute(
           name: '_initialize',
           path: '/',
@@ -786,9 +772,46 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               collectionNamePath: ['user'],
             ),
           ),
-        )
-      ].map((r) => r.toRoute(appStateNotifier)).toList(),
-    );
+        ),
+  ];
+
+  final publicRoutes =
+      ffRoutes.where((r) => !r.requireAuth).toList(growable: false);
+  final panelRoutes =
+      ffRoutes.where((r) => r.requireAuth).toList(growable: false);
+
+  return GoRouter(
+    initialLocation: '/',
+    debugLogDiagnostics: kDebugMode,
+    refreshListenable: appStateNotifier,
+    navigatorKey: appNavigatorKey,
+    redirect: (context, state) => globalAuthRedirect(appStateNotifier, state),
+    errorBuilder: (context, state) => appStateNotifier.loggedIn
+        ? AuthUserStreamWidget(
+            builder: (context) {
+              if (!AdminRoleService.hasPanelAccess) {
+                return HomePageWidget();
+              }
+              return _panelHomeForCurrentUser();
+            },
+          )
+        : HomePageWidget(),
+    routes: [
+      ...publicRoutes.map((r) => r.toRoute(appStateNotifier)),
+      ShellRoute(
+        builder: (context, state, child) {
+          if (!appStateNotifier.loggedIn) {
+            return child;
+          }
+          return AdminPersistentShell(child: child);
+        },
+        routes: panelRoutes
+            .map((r) => r.toRoute(appStateNotifier))
+            .toList(growable: false),
+      ),
+    ],
+  );
+}
 
 extension NavParamExtensions on Map<String, String?> {
   Map<String, String> get withoutNulls => Map.fromEntries(

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/admin_auth_session_owner.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_agent_session_ready.dart';
 import '/backend/admin_panel_data_bootstrap.dart';
@@ -114,6 +115,9 @@ class AdminPanelSession {
     }
 
     await AdminPanelDataBootstrap.ensureReady(force: force);
+
+    // PERF-P3F: keep profile listen alive across route sidebar remounts.
+    AdminAuthSessionOwner.ensureStarted();
 
     // Country metadata for labels / Saudi aliases — lightweight one-shot cache.
     // Required for finance country labels; not an operational listener.

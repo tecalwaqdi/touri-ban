@@ -11,6 +11,7 @@ import '/backend/admin_landmark_search.dart';
 import '/backend/admin_saudi_country.dart';
 import '/backend/admin_stats_coordinator.dart';
 import '/backend/dashboard_stats_loader.dart';
+import '/backend/admin_auth_session_owner.dart';
 import '/core/country/country_resolver.dart';
 import '/core/finance/admin_finance_repository.dart';
 
@@ -24,6 +25,7 @@ class AdminSessionCleanup {
     AdminSaudiCountry.clearCache();
     CountryResolver.clearCache();
     AdminFinanceRepository.instance.clearSession();
+    AdminAuthSessionOwner.stop();
     AdminCountryLandmarkFilter.invalidateCache();
     AdminLandmarkCount.invalidateCache();
     clearAdminReportsSummaryCache();
