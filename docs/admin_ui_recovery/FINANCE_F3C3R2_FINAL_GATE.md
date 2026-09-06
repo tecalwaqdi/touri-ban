@@ -3,7 +3,7 @@
 **BRANCH:** `recovery/admin-finance-f3c3-one-agent-per-country`  
 **C3 IMPLEMENTATION:** `27fe5042a23d9f3d0789472898b9e8382e6c1169`  
 **C3R FIX COMMIT:** `e1d8c59` (atomic move + createPanelUser claim-create)  
-**C3R2 CLOSURE COMMIT:** `105f83c59aa0a7ec05872cc58ff1db77b81e1e39`  
+**C3R2 CLOSURE COMMIT:** `e9191a40c5b297d637cd3f2238faa8d565571803`  
 
 **PRODUCTION DEPLOY:** NO  
 **SEED:** NO  
