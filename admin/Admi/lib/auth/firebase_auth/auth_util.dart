@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import '/backend/admin_panel_session.dart';
+import '/backend/admin_perf_trace.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/core/auth/auth_claims.dart';
@@ -87,9 +88,15 @@ final authenticatedUserStream = FirebaseAuth.instance
 }).asBroadcastStream();
 
 /// Loads the Firestore profile for the signed-in user (direct read, not stream).
+///
+/// PERF-P1: [forceRefresh] false reuses [currentUserDocument] for the same uid.
+/// Claims sync is opt-in via [syncClaims] so login/bootstrap can do exactly one
+/// claims refresh per session start (not one per profile read).
 Future<UserRecord?> ensureCurrentUserDocument({
   Duration timeout = const Duration(seconds: 20),
   bool forceRefresh = false,
+  bool syncClaims = false,
+  String source = 'ensureCurrentUserDocument',
 }) async {
   var ref = currentUserReference;
   final firebaseUser = FirebaseAuth.instance.currentUser;
@@ -106,6 +113,7 @@ Future<UserRecord?> ensureCurrentUserDocument({
   }
 
   try {
+    AdminPerfTrace.profileRead(forceRefresh: forceRefresh, source: source);
     final snap = await ref
         .get(const GetOptions(source: Source.serverAndCache))
         .timeout(timeout);
@@ -113,7 +121,6 @@ Future<UserRecord?> ensureCurrentUserDocument({
     var doc = UserRecord.fromSnapshot(snap);
     currentUserDocument = doc;
     AdminRoleService.bindProfile(doc);
-    await _syncClaimsFromServer();
 
     // After login, refresh from server when cache may lack admin role fields.
     if (forceRefresh && !AdminRoleService.hasPanelAccess) {
@@ -129,9 +136,17 @@ Future<UserRecord?> ensureCurrentUserDocument({
       } catch (_) {}
     }
 
+    if (syncClaims) {
+      await refreshAuthClaims(source: '$source.syncClaims');
+    }
+
     return currentUserDocument;
   } catch (_) {
     try {
+      AdminPerfTrace.profileRead(
+        forceRefresh: forceRefresh,
+        source: '$source.fallback',
+      );
       final doc = await UserRecord.getDocumentOnce(ref).timeout(
         const Duration(seconds: 8),
       );
@@ -144,7 +159,8 @@ Future<UserRecord?> ensureCurrentUserDocument({
   }
 }
 
-Future<void> refreshAuthClaims() async {
+Future<void> refreshAuthClaims({String source = 'refreshAuthClaims'}) async {
+  AdminPerfTrace.claimRefresh(source: source);
   try {
     await CloudFunctionsClient.refreshMyClaims();
     await FirebaseAuth.instance.currentUser?.getIdToken(true);
@@ -156,8 +172,6 @@ Future<void> refreshAuthClaims() async {
     AdminRoleService.markClaimsAuthoritative();
   }
 }
-
-Future<void> _syncClaimsFromServer() => refreshAuthClaims();
 
 class AuthUserStreamWidget extends StatelessWidget {
   const AuthUserStreamWidget({Key? key, required this.builder})

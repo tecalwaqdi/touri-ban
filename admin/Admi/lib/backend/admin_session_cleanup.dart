@@ -3,6 +3,7 @@ import '/backend/admin_landmark_count.dart';
 import '/backend/admin_panel_session.dart';
 import '/backend/admin_panel_data_bootstrap.dart';
 import '/backend/admin_country_landmark_filter.dart';
+import '/backend/admin_perf_trace.dart';
 import '/backend/admin_reports_country_scope.dart';
 import '/backend/admin_reports_loader.dart';
 import '/backend/admin_country_scope.dart';
@@ -10,6 +11,7 @@ import '/backend/admin_landmark_search.dart';
 import '/backend/admin_saudi_country.dart';
 import '/backend/admin_stats_coordinator.dart';
 import '/backend/dashboard_stats_loader.dart';
+import '/core/country/country_resolver.dart';
 
 /// Clears role-scoped client state on logout so the next user never inherits it.
 class AdminSessionCleanup {
@@ -19,6 +21,7 @@ class AdminSessionCleanup {
     AdminLandmarkIndex.clear();
     AdminCountryScope.clearVillageCache();
     AdminSaudiCountry.clearCache();
+    CountryResolver.clearCache();
     AdminCountryLandmarkFilter.invalidateCache();
     AdminLandmarkCount.invalidateCache();
     clearAdminReportsSummaryCache();
@@ -27,6 +30,7 @@ class AdminSessionCleanup {
     AdminStatsCoordinator.instance.stopLiveSync();
     AdminPanelSession.reset();
     AdminPanelDataBootstrap.reset();
+    AdminPerfTrace.resetCounters();
     FFAppState().update(() {
       FFAppState().RevDolh = null;
       FFAppState().RevdolhTEXT = '';

@@ -65,7 +65,18 @@ class AdminPanelDataBootstrap {
 
   static Future<void> _bootstrap(String uid, {required bool force}) async {
     final generation = _generation;
-    await ensureCurrentUserDocument(forceRefresh: force);
+    // PERF-P1: reuse login/session profile — do not force a second Firestore
+    // profile read when the signed-in uid already has a bound panel profile.
+    final needsProfile = currentUserDocument == null ||
+        currentUserDocument!.reference.id != uid ||
+        !AdminRoleService.hasPanelAccess;
+    if (needsProfile) {
+      await ensureCurrentUserDocument(
+        forceRefresh: force && needsProfile,
+        syncClaims: false,
+        source: 'AdminPanelDataBootstrap',
+      );
+    }
 
     switch (AdminRoleService.currentRole) {
       case AdminRole.countryAgent:

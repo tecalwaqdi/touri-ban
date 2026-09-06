@@ -221,14 +221,28 @@ class AdminRoleService {
       !_claims.isCountryAdmin &&
       !_claims.isAgent;
 
+  /// PERF-P1: operational dashboard live-order sync (not finance-only personas).
+  static bool get wantsOperationalLiveSync =>
+      hasPanelAccess && !isAccountant && !isFinanceStaff;
+
+  /// PERF-P1: Finance Hub sidebar attention badges (pending payments / drafts).
+  static bool get wantsFinanceHubAttentionBadges =>
+      wantsOperationalLiveSync && (isSuperAdmin || isCountryAgent);
+
   /// F3-B2: settlement writes SuperAdmin only. Accountant is read-only.
   static bool get canWriteSettlements => isSuperAdmin;
+
+  /// Country path claim (no Firestore DocumentReference) — safe for tests/keys.
+  static String? get scopedCountryIdClaim {
+    final path = (_claims.countryId ?? '').trim();
+    return path.isEmpty ? null : path;
+  }
 
   static DocumentReference? get scopedCountryRef {
     if (isSuperAdmin) return null;
     if (!isCountryAgent && !isCountryAccountant) return null;
-    final path = _claims.countryId;
-    if (path != null && path.isNotEmpty) {
+    final path = scopedCountryIdClaim;
+    if (path != null) {
       return FirebaseFirestore.instance.doc(path);
     }
     if (_phase != AdminRbacPhase.authoritative) {

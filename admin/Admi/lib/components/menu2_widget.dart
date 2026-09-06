@@ -1,4 +1,5 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/admin_perf_trace.dart';
 import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_theme_toggle.dart';
@@ -25,6 +26,11 @@ class Menu2Widget extends StatefulWidget {
 class _Menu2WidgetState extends State<Menu2Widget> {
   late Menu2Model _model;
 
+  /// PERF-P1: stable badge streams — recreate only when role needs badges.
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _pendingPaymentsStream;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _draftSettlementsStream;
+  bool _badgeStreamsAttached = false;
+
   @override
   void setState(VoidCallback callback) {
     super.setState(callback);
@@ -39,9 +45,38 @@ class _Menu2WidgetState extends State<Menu2Widget> {
 
   @override
   void dispose() {
+    _pendingPaymentsStream = null;
+    _draftSettlementsStream = null;
+    _badgeStreamsAttached = false;
     _model.maybeDispose();
 
     super.dispose();
+  }
+
+  void _ensureFinanceBadgeStreams() {
+    if (!_showFinanceHubAttentionBadges) {
+      _pendingPaymentsStream = null;
+      _draftSettlementsStream = null;
+      _badgeStreamsAttached = false;
+      return;
+    }
+    if (_badgeStreamsAttached &&
+        _pendingPaymentsStream != null &&
+        _draftSettlementsStream != null) {
+      return;
+    }
+    AdminPerfTrace.menuBadgeListenerBuild();
+    _pendingPaymentsStream = FirebaseFirestore.instance
+        .collection('financial_settlement_payments')
+        .where('status', isEqualTo: 'pending')
+        .limit(50)
+        .snapshots();
+    _draftSettlementsStream = FirebaseFirestore.instance
+        .collection('financial_settlements')
+        .where('status', isEqualTo: 'draft')
+        .limit(50)
+        .snapshots();
+    _badgeStreamsAttached = true;
   }
 
   void _navigate(BuildContext context, String routeName) {
@@ -105,6 +140,43 @@ class _Menu2WidgetState extends State<Menu2Widget> {
       return AdminRoleService.isSuperAdmin;
     }
     return AdminRoleService.canAccessRoute(route);
+  }
+
+  /// PERF-P1: settlement attention badges are Super Admin / Country Agent only.
+  /// Accountant finance menu must not keep dual Firestore badge listeners alive.
+  bool get _showFinanceHubAttentionBadges =>
+      AdminRoleService.wantsFinanceHubAttentionBadges;
+
+  Widget _financeHubTile(({String route, IconData icon}) item) {
+    if (!_showFinanceHubAttentionBadges) {
+      return AdminMenuTile(
+        icon: item.icon,
+        label: _menuLabel(context, item.route),
+        isActive: _isActive(context, item.route),
+        onTap: () => _navigate(context, item.route),
+      );
+    }
+
+    _ensureFinanceBadgeStreams();
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: _pendingPaymentsStream,
+      builder: (context, paySnap) {
+        final pending = paySnap.data?.size ?? 0;
+        return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: _draftSettlementsStream,
+          builder: (context, draftSnap) {
+            final drafts = draftSnap.data?.size ?? 0;
+            return AdminMenuTile(
+              icon: item.icon,
+              label: _menuLabel(context, item.route),
+              isActive: _isActive(context, item.route),
+              attentionCount: pending + drafts,
+              onTap: () => _navigate(context, item.route),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -466,37 +538,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                       ),
                       for (final item in section.items)
                         item.route == AdminFinanceHubWidget.routeName
-                            ? StreamBuilder<
-                                QuerySnapshot<Map<String, dynamic>>>(
-                                stream: FirebaseFirestore.instance
-                                    .collection('financial_settlement_payments')
-                                    .where('status', isEqualTo: 'pending')
-                                    .limit(50)
-                                    .snapshots(),
-                                builder: (context, paySnap) {
-                                  final pending = paySnap.data?.size ?? 0;
-                                  return StreamBuilder<
-                                      QuerySnapshot<Map<String, dynamic>>>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection('financial_settlements')
-                                        .where('status', isEqualTo: 'draft')
-                                        .limit(50)
-                                        .snapshots(),
-                                    builder: (context, draftSnap) {
-                                      final drafts = draftSnap.data?.size ?? 0;
-                                      return AdminMenuTile(
-                                        icon: item.icon,
-                                        label: _menuLabel(context, item.route),
-                                        isActive:
-                                            _isActive(context, item.route),
-                                        attentionCount: pending + drafts,
-                                        onTap: () =>
-                                            _navigate(context, item.route),
-                                      );
-                                    },
-                                  );
-                                },
-                              )
+                            ? _financeHubTile(item)
                             : AdminMenuTile(
                                 icon: item.icon,
                                 label: _menuLabel(context, item.route),

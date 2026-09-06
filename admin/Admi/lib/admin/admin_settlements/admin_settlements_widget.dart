@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '/backend/admin_role_service.dart';
+import '/backend/admin_settlements_query.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
@@ -35,6 +36,10 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
   /// Super Admin only — show QA/test settlements under diagnostics.
   bool _showQaDiagnostics = false;
 
+  /// PERF-P1: chip/setState rebuilds must not recreate Firestore snapshots.
+  final AdminSettlementsStreamOwner _settlementsStream =
+      AdminSettlementsStreamOwner();
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +48,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
 
   @override
   void dispose() {
+    _settlementsStream.dispose();
     _model.dispose();
     super.dispose();
   }
@@ -110,18 +116,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
           ],
           const SizedBox(height: 12),
           StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: () {
-              Query<Map<String, dynamic>> q = FirebaseFirestore.instance
-                  .collection('financial_settlements');
-              if (AdminRoleService.isCountryAgent &&
-                  !AdminRoleService.isSuperAdmin) {
-                final path = AdminRoleService.scopedCountryRef?.path;
-                if (path != null) {
-                  q = q.where('countryId', isEqualTo: path);
-                }
-              }
-              return q.limit(200).snapshots();
-            }(),
+            stream: _settlementsStream.streamForCurrentUser(),
             builder: (context, snap) {
               if (snap.hasError) {
                 return Text(

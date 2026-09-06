@@ -4,6 +4,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_agent_session_ready.dart';
 import '/backend/admin_panel_data_bootstrap.dart';
+import '/backend/admin_perf_trace.dart';
 import '/backend/admin_prefetch.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_stats_coordinator.dart';
@@ -66,8 +67,11 @@ class AdminPanelSession {
   }
 
   /// Warm stats + list cache without blocking navigation.
+  ///
+  /// PERF-P1: Accountant / finance staff skip operational dashboard warming.
   static Future<void> warmDashboard({bool force = false}) async {
     if (!loggedIn || !AdminRoleService.hasPanelAccess) return;
+    if (!AdminRoleService.wantsOperationalLiveSync) return;
     if (!isScopeReady) {
       await ensureScopeReady(force: force);
     }
@@ -90,6 +94,9 @@ class AdminPanelSession {
     }
   }
 
+  static bool get _isFinanceOnlyPersona =>
+      !AdminRoleService.wantsOperationalLiveSync;
+
   /// Scope first, then stats in background (non-blocking for callers).
   static Future<void> ensurePrepared({bool force = false}) async {
     await ensureScopeReady(force: force);
@@ -97,6 +104,7 @@ class AdminPanelSession {
   }
 
   static Future<void> _bootstrapScope(String uid, {required bool force}) async {
+    AdminPerfTrace.scopeBootstrap(force: force);
     if (force) {
       clearDashboardStatsCache();
       AdminPrefetch.resetForLogin();
@@ -106,6 +114,9 @@ class AdminPanelSession {
     }
 
     await AdminPanelDataBootstrap.ensureReady(force: force);
+
+    // Country metadata for labels / Saudi aliases — lightweight one-shot cache.
+    // Required for finance country labels; not an operational listener.
     await CountryResolver.ensureLoaded();
     AdminAgentCountryLock.applyToAppState();
 
@@ -117,7 +128,13 @@ class AdminPanelSession {
 
     _scopeReadyForUid = uid;
     AdminAgentSessionReady.notify();
-    AdminStatsCoordinator.instance.startLiveSync();
+
+    // PERF-P1: operational live-order sync is for dashboard/ops — not Accountant.
+    if (AdminRoleService.wantsOperationalLiveSync) {
+      AdminStatsCoordinator.instance.startLiveSync();
+    } else {
+      AdminStatsCoordinator.instance.stopLiveSync();
+    }
   }
 
   static Future<void> _warmStats(String uid, {required bool force}) async {

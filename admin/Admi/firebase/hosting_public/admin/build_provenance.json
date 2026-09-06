@@ -1,18 +1,13 @@
 {
-  "app_version": "1.0.16+2018",
-  "build_number": "2018",
-  "git_commit": "ea3b1c3f2ae603017f830aab9769686b41db30fe",
-  "flutter_version": "3.44.8",
-  "dart_version": "3.12.2",
-  "framework_revision": "058e0af2c2b57e369d905a03ac9748b0ebf543c6",
-  "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
-  "base_href": "/admin/",
-  "build_command_id": "scripts/build_admin_web.sh",
-  "build_flags": [
-    "--release",
-    "--base-href=/admin/",
-    "--no-web-resources-cdn",
-    "--no-wasm-dry-run"
-  ],
-  "generated_at": "2026-09-05T09:11:30Z"
+  "git_commit": "6f256c259c1fb34866fb5397546619a63e8e8497",
+  "git_commit_short": "6f256c2",
+  "builtAt": "2026-09-06T10:41:40Z",
+  "phase": "PERF-P1",
+  "channel": "admin-perf-p1",
+  "production_hosting_deploy": false,
+  "includes": {
+    "profile_dedupe": true,
+    "accountant_listener_trim": true,
+    "settlements_stream_stable": true
+  }
 }
