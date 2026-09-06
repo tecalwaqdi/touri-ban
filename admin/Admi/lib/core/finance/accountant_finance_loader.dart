@@ -22,7 +22,7 @@ abstract final class AccountantFinanceLoader {
   static AccountantFinanceScope scopeForCurrentUser({
     DocumentReference? countryOverride,
   }) {
-    if (AdminRoleService.isCountryAgent) {
+    if (AdminRoleService.usesCountryFinanceScope) {
       final ref = AdminRoleService.scopedCountryRef ??
           AdminCountryScope.activeCountryRef;
       final path = ref?.path;
@@ -63,7 +63,7 @@ abstract final class AccountantFinanceLoader {
 
     // Super Admin: only explicit countryRef. Never inherit reports UI country.
     DocumentReference? effectiveCountry;
-    if (AdminRoleService.isCountryAgent) {
+    if (AdminRoleService.usesCountryFinanceScope) {
       effectiveCountry = AdminRoleService.scopedCountryRef ??
           AdminCountryScope.activeCountryRef;
     } else {
@@ -93,7 +93,7 @@ abstract final class AccountantFinanceLoader {
         continue;
       }
       if (!scope.allowsCountry(o.revDolh?.path)) continue;
-      if (AdminRoleService.isCountryAgent) {
+      if (AdminRoleService.usesCountryFinanceScope) {
         if (AdminCountryScope.filterOrders([o]).isEmpty) continue;
       }
       final row = AccountantTripRow.fromOrder(o, symbol: sym);
@@ -174,7 +174,7 @@ abstract final class AccountantFinanceLoader {
           }
         }
         if (country != null && order.revDolh?.path != country.path) continue;
-        if (AdminRoleService.isCountryAgent) {
+        if (AdminRoleService.usesCountryFinanceScope) {
           if (AdminCountryScope.filterOrders([order]).isEmpty) continue;
         }
         results.add(order);
@@ -189,7 +189,7 @@ abstract final class AccountantFinanceLoader {
     try {
       Query<Map<String, dynamic>> q =
           FirebaseFirestore.instance.collection('financial_settlements');
-      if (AdminRoleService.isCountryAgent && country != null) {
+      if (AdminRoleService.usesCountryFinanceScope && country != null) {
         q = q.where('countryId', isEqualTo: country.path);
       }
       final snap = await q.limit(500).get();
@@ -211,6 +211,43 @@ abstract final class AccountantFinanceLoader {
       return open;
     } catch (_) {
       return 0;
+    }
+  }
+
+  /// Broad completed-trip scan for B1 reconciliation workspace (scoped).
+  static Future<List<OrderRecord>> loadOrdersForCurrentScope({
+    AdminDatePreset datePreset = AdminDatePreset.thisYear,
+  }) async {
+    DocumentReference? country;
+    if (usesCountryFinanceScopeSafe()) {
+      country = AdminRoleService.scopedCountryRef ??
+          AdminCountryScope.activeCountryRef;
+    }
+    final range = AdminDateRangeResolver.resolve(preset: datePreset);
+    return _scanOrders(range: range, country: country);
+  }
+
+  static bool usesCountryFinanceScopeSafe() =>
+      AdminRoleService.usesCountryFinanceScope;
+
+  /// Settlement docs as maps for B1 association (read-only).
+  static Future<List<Map<String, dynamic>>> loadSettlementsMaps() async {
+    try {
+      Query<Map<String, dynamic>> q =
+          FirebaseFirestore.instance.collection('financial_settlements');
+      if (AdminRoleService.usesCountryFinanceScope) {
+        final country = AdminRoleService.scopedCountryRef ??
+            AdminCountryScope.activeCountryRef;
+        if (country != null) {
+          q = q.where('countryId', isEqualTo: country.path);
+        }
+      }
+      final snap = await q.limit(500).get();
+      return snap.docs
+          .map((d) => <String, dynamic>{'id': d.id, ...d.data()})
+          .toList();
+    } catch (_) {
+      return const [];
     }
   }
 }

@@ -726,7 +726,7 @@ async function runLegacyAdminWalletAdjust({db, auth, data, FieldValue}) {
     assert.deepStrictEqual(policy.checkerRoles, ['super_admin', 'finance']);
     assert.strictEqual(policy.allowSelfApproval, false);
 
-    assert.strictEqual(ledger.canWriteSettlements(financeAuth().token), true);
+    assert.strictEqual(ledger.canWriteSettlements(financeAuth().token), false);
     assert.strictEqual(ledger.canWriteSettlements(superAuth().token), true);
     assert.strictEqual(ledger.canWriteSettlements(countryAdminAuth().token), false);
     // Finance + country_admin hybrid must not write (agent-like)

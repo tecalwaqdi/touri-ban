@@ -96,29 +96,19 @@ String? adminRouteRedirect(String? routeName) {
 
 
 String _homePathFor(AdminRole role) {
-
   switch (role) {
-
     case AdminRole.partner:
-
       return PartnerBookingsWidget.routePath;
-
     case AdminRole.transportCompany:
-
       return CompanyDriversWidget.routePath;
-
+    case AdminRole.accountant:
+      return AdminFinanceHubWidget.routePath;
     case AdminRole.countryAgent:
-
     case AdminRole.superAdmin:
-
       return Home22DashboardWidget.routePath;
-
     case AdminRole.none:
-
       return HomePageWidget.routePath;
-
   }
-
 }
 
 

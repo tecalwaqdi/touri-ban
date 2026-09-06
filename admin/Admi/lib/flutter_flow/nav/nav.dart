@@ -33,6 +33,9 @@ Widget _panelHomeForCurrentUser() {
   if (AdminRoleService.isTransportCompany) {
     return const CompanyDriversWidget();
   }
+  if (AdminRoleService.isAccountant || AdminRoleService.isFinanceStaff) {
+    return const AdminFinanceHubWidget();
+  }
   return Home22DashboardWidget();
 }
 
@@ -638,6 +641,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           path: AdminReconciliationWidget.routePath,
           requireAuth: true,
           builder: (context, params) => const AdminReconciliationWidget(),
+        ),
+        FFRoute(
+          name: AdminFinanceReconciliationWidget.routeName,
+          path: AdminFinanceReconciliationWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) =>
+              const AdminFinanceReconciliationWidget(),
         ),
         FFRoute(
           name: AdminFinancialPeriodsWidget.routeName,

@@ -11,6 +11,12 @@ class AdminResourceGuard {
     switch (AdminRoleService.currentRole) {
       case AdminRole.superAdmin:
         return true;
+      case AdminRole.accountant:
+        if (AdminRoleService.isGlobalAccountant) return true;
+        final country = AdminRoleService.scopedCountryRef;
+        if (country == null) return false;
+        if (order.revDolh?.path == country.path) return true;
+        return AdminSaudiCountry.sameCountryScope(order.revDolh, country);
       case AdminRole.countryAgent:
         final country = AdminCountryScope.activeCountryRef;
         if (country == null) return false;

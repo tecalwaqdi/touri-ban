@@ -215,12 +215,20 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 icon: Icons.account_balance_rounded
               ),
               (
-                route: AdminAgentFinanceWidget.routeName,
-                icon: Icons.handshake_outlined
+                route: AdminFinanceReconciliationWidget.routeName,
+                icon: Icons.fact_check_outlined
+              ),
+              (
+                route: AdminFinanceChannelsWidget.routeName,
+                icon: Icons.swap_horiz_rounded
               ),
               (
                 route: AdminSettlementsWidget.routeName,
                 icon: Icons.receipt_long_outlined
+              ),
+              (
+                route: AdminAgentFinanceWidget.routeName,
+                icon: Icons.handshake_outlined
               ),
               (
                 route: AdminFinanceReportsWidget.routeName,

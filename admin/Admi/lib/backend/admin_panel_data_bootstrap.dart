@@ -98,6 +98,12 @@ class AdminPanelDataBootstrap {
         break;
       case AdminRole.superAdmin:
         break;
+      case AdminRole.accountant:
+        // Finance persona — no operational geo lock; country scope via claims.
+        if (AdminRoleService.isCountryAccountant) {
+          await AdminSaudiCountry.ensureQueryRefsLoaded();
+        }
+        break;
       case AdminRole.none:
         return;
     }
