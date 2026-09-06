@@ -83,7 +83,7 @@ BASE: P2A-H `72277ea` / P2A impl `9f9d6df`
 
 BRANCH: `recovery/admin-performance-p3-finance-repository`
 
-COMMIT: _(filled after commit)_
+COMMIT: 
 
 PREVIEW: https://tutorial-multi-language-70gx4j--admin-perf-p3-584a0e1t.web.app/admin/
 
