@@ -53,6 +53,9 @@ function parseMaybeDate(value) {
 function isAgentActiveAt(data, at = new Date()) {
   if (!data || (data.Isagent !== true && data.isagent !== true)) return false;
   if (data.actev_user === false) return false;
+  // Corrupt dates must not be treated as an open active window.
+  if (hasUnparseableDateField(data.agent_date_reg)) return false;
+  if (hasUnparseableDateField(data.agent_date_end)) return false;
   const now = at instanceof Date ? at.getTime() : Date.parse(at);
   if (Number.isNaN(now)) return false;
 
@@ -80,6 +83,41 @@ function windowsOverlap(a, b) {
   return a.startMs <= b.endMs && b.startMs <= a.endMs;
 }
 
+/**
+ * True when a date field is present but cannot be parsed to an instant.
+ * Used to refuse guessing on lock reclaim.
+ */
+function hasUnparseableDateField(value) {
+  if (value == null || value === '') return false;
+  return parseMaybeDate(value) == null;
+}
+
+/**
+ * Classify lock holder vs country for reclaim decisions.
+ * VALID — genuinely active for country (must not steal)
+ * STALE — safely reclaimable
+ * AMBIGUOUS — reject; never guess
+ */
+function classifyLockHolder(holderSnap, countryPath, at = new Date()) {
+  const path = countryPathFromRef(countryPath);
+  if (!holderSnap || !holderSnap.exists) return 'STALE';
+  const data = holderSnap.data() || {};
+  if (hasUnparseableDateField(data.agent_date_reg)) return 'AMBIGUOUS';
+  if (hasUnparseableDateField(data.agent_date_end)) return 'AMBIGUOUS';
+
+  const isAgent = data.Isagent === true || data.isagent === true;
+  if (!isAgent) return 'STALE';
+
+  const holderCountry = countryPathFromRef(data.Rev_dloh_agent);
+  if (!holderCountry || holderCountry !== path) return 'STALE';
+
+  if (data.actev_user === false) return 'STALE';
+
+  if (!isAgentActiveAt(data, at)) return 'STALE';
+
+  return 'VALID';
+}
+
 module.exports = {
   str,
   countryPathFromRef,
@@ -88,4 +126,6 @@ module.exports = {
   isAgentActiveAt,
   agentEffectiveWindow,
   windowsOverlap,
+  hasUnparseableDateField,
+  classifyLockHolder,
 };

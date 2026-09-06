@@ -251,15 +251,37 @@ exports.createPanelUser = functions.https.onCall(async (data, context) => {
     await syncClaimsForUid(uid);
   } catch (e) {
     console.error("createPanelUser firestore error", e);
-    try {
-      await admin.auth().deleteUser(uid);
-    } catch (cleanupErr) {
-      console.error("createPanelUser cleanup failed", cleanupErr);
-    }
-    try {
-      await db.doc(`user/${uid}`).delete();
-    } catch (_) {
-      /* ignore */
+    const {
+      compensateFailedPanelUserCreate,
+    } = require("./panel_user_create_compensation.js");
+    const compensation = await compensateFailedPanelUserCreate({
+      auth: admin.auth(),
+      firestore: db,
+      uid,
+      actorUid: context.auth.uid,
+      reason: (e && e.message) || "createPanelUser_assignment_failed",
+      auditWriter: async (row) => {
+        await db.collection("admin_audit_log").add({
+          ...row,
+          created_at: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      },
+    });
+    if (!compensation.ok) {
+      console.error("createPanelUser compensation incomplete", compensation);
+      throw new functions.https.HttpsError(
+        "internal",
+        "CREATE_PANEL_USER_COMPENSATION_INCOMPLETE",
+        {
+          code: "CREATE_PANEL_USER_COMPENSATION_INCOMPLETE",
+          uid,
+          authOrphan: compensation.authOrphan,
+          userDocOrphan: compensation.userDocOrphan,
+          authDeleteError: compensation.authDeleteError,
+          userDocDeleteError: compensation.userDocDeleteError,
+          originalError: (e && e.message) || String(e),
+        },
+      );
     }
     if (e instanceof functions.https.HttpsError) throw e;
     throw new functions.https.HttpsError(

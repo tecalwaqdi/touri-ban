@@ -19,6 +19,7 @@ const {
   isAgentActiveAt,
   agentEffectiveWindow,
   windowsOverlap,
+  classifyLockHolder,
 } = require('./agent_active.js');
 
 const ASSIGNMENT_COLLECTION = 'agent_country_assignment';
@@ -26,6 +27,7 @@ const AUDIT_COLLECTION = 'admin_audit_log';
 const ERR_CONFLICT = 'AGENT_COUNTRY_ALREADY_HAS_ACTIVE_AGENT';
 const ERR_DATE_OVERLAP = 'AGENT_COUNTRY_DATE_OVERLAP';
 const ERR_UNAUTHORIZED = 'AGENT_ASSIGNMENT_UNAUTHORIZED';
+const ERR_LOCK_AMBIGUOUS = 'AGENT_COUNTRY_LOCK_AMBIGUOUS';
 
 function db() {
   return admin.firestore();
@@ -113,9 +115,11 @@ async function findOtherActiveAgents(firestore, countryPath, excludeAgentId, at)
 }
 
 /**
- * Overlap among assigned agents (Isagent + actev_user !== false) for country.
+ * Overlap among currently-active assigned agents for country.
+ * Fully expired / future-window / inactive peers do not permanently block
+ * a new current assignment (stale-lock reclaim remains possible).
  */
-function findDateOverlap(docs, candidateId, candidateData) {
+function findDateOverlap(docs, candidateId, candidateData, at = new Date()) {
   if (!candidateData || candidateData.actev_user === false) return null;
   if (candidateData.Isagent !== true && candidateData.isagent !== true) {
     return null;
@@ -126,6 +130,8 @@ function findDateOverlap(docs, candidateId, candidateData) {
     const data = d.data() || {};
     if (data.actev_user === false) continue;
     if (data.Isagent !== true && data.isagent !== true) continue;
+    // Only currently-effective peers can create an overlap conflict.
+    if (!isAgentActiveAt(data, at)) continue;
     if (windowsOverlap(candWin, agentEffectiveWindow(data))) {
       return d.id;
     }
@@ -178,6 +184,7 @@ async function claimCountryAgent({
     countryAgents,
     agentId,
     agentPatch || {Isagent: true, actev_user: true},
+    now,
   );
   if (overlapId) {
     throw new functions.https.HttpsError(
@@ -202,14 +209,14 @@ async function claimCountryAgent({
     previous = lock.active_agent_id || null;
 
     if (previous && previous !== agentId) {
-      // Double-check holder still active; if stale lock, allow reclaim.
+      // Transactional reclaim rule:
+      // VALID lock holder → conflict (never steal)
+      // STALE holder → reclaim inside this txn
+      // AMBIGUOUS → reject (never guess)
       const holderRef = firestore.collection('user').doc(previous);
       const holderSnap = await tx.get(holderRef);
-      const holderActive =
-        holderSnap.exists &&
-        isAgentActiveAt(holderSnap.data() || {}, now) &&
-        countryPathFromRef(holderSnap.data().Rev_dloh_agent) === path;
-      if (holderActive) {
+      const classification = classifyLockHolder(holderSnap, path, now);
+      if (classification === 'VALID') {
         throw new functions.https.HttpsError(
           'failed-precondition',
           ERR_CONFLICT,
@@ -220,6 +227,18 @@ async function claimCountryAgent({
           },
         );
       }
+      if (classification === 'AMBIGUOUS') {
+        throw new functions.https.HttpsError(
+          'failed-precondition',
+          ERR_LOCK_AMBIGUOUS,
+          {
+            code: ERR_LOCK_AMBIGUOUS,
+            countryPath: path,
+            currentActiveAgentId: previous,
+          },
+        );
+      }
+      // STALE → fall through and reclaim
     }
 
     if (previous === agentId && agentSnap.exists) {
@@ -476,15 +495,23 @@ async function moveActiveAgentCountry({
     if (toHolder && toHolder !== agentId) {
       const holderRef = firestore.collection('user').doc(toHolder);
       const holderSnap = await tx.get(holderRef);
-      const holderActive =
-        holderSnap.exists &&
-        isAgentActiveAt(holderSnap.data() || {}, now) &&
-        countryPathFromRef(holderSnap.data().Rev_dloh_agent) === toPath;
-      if (holderActive) {
+      const classification = classifyLockHolder(holderSnap, toPath, now);
+      if (classification === 'VALID') {
         throw new functions.https.HttpsError(
           'failed-precondition',
           ERR_CONFLICT,
           {code: ERR_CONFLICT, countryPath: toPath, currentActiveAgentId: toHolder},
+        );
+      }
+      if (classification === 'AMBIGUOUS') {
+        throw new functions.https.HttpsError(
+          'failed-precondition',
+          ERR_LOCK_AMBIGUOUS,
+          {
+            code: ERR_LOCK_AMBIGUOUS,
+            countryPath: toPath,
+            currentActiveAgentId: toHolder,
+          },
         );
       }
     }
@@ -570,16 +597,24 @@ async function assertCanActivateNewAgent(firestore, countryPath, excludeAgentId)
     const holder = (lockSnap.data() || {}).active_agent_id;
     if (holder && holder !== excludeAgentId) {
       const holderSnap = await firestore.collection('user').doc(holder).get();
-      if (
-        holderSnap.exists &&
-        isAgentActiveAt(holderSnap.data() || {}) &&
-        countryPathFromRef(holderSnap.data().Rev_dloh_agent) === path
-      ) {
+      const classification = classifyLockHolder(holderSnap, path, new Date());
+      if (classification === 'VALID') {
         throw new functions.https.HttpsError(
           'failed-precondition',
           ERR_CONFLICT,
           {
             code: ERR_CONFLICT,
+            countryPath: path,
+            currentActiveAgentId: holder,
+          },
+        );
+      }
+      if (classification === 'AMBIGUOUS') {
+        throw new functions.https.HttpsError(
+          'failed-precondition',
+          ERR_LOCK_AMBIGUOUS,
+          {
+            code: ERR_LOCK_AMBIGUOUS,
             countryPath: path,
             currentActiveAgentId: holder,
           },
@@ -779,6 +814,7 @@ exports.__test = {
   ASSIGNMENT_COLLECTION,
   ERR_CONFLICT,
   ERR_DATE_OVERLAP,
+  ERR_LOCK_AMBIGUOUS,
   claimCountryAgent,
   releaseCountryAgent,
   reassignCountryAgent,
@@ -797,3 +833,4 @@ module.exports.assertCanActivateNewAgent = assertCanActivateNewAgent;
 module.exports.ASSIGNMENT_COLLECTION = ASSIGNMENT_COLLECTION;
 module.exports.ERR_CONFLICT = ERR_CONFLICT;
 module.exports.ERR_DATE_OVERLAP = ERR_DATE_OVERLAP;
+module.exports.ERR_LOCK_AMBIGUOUS = ERR_LOCK_AMBIGUOUS;

@@ -116,40 +116,59 @@ class FakeDb {
     throw new Error('unknown collection ' + name);
   }
   runTransaction(fn) {
-    // Serialize transactions to model contention.
-    const run = this._txQueue.then(() => fn({
-      get: (ref) => {
-        if (ref.path.startsWith('user/')) {
-          const id = ref.id;
-          const d = this.users.get(id);
-          return Promise.resolve(
-            new FakeDocSnap(!!d, d ? {...d} : null, ref),
-          );
-        }
-        if (ref.path.startsWith(assignment.ASSIGNMENT_COLLECTION)) {
-          const id = ref.id;
-          const d = this.locks.get(id);
-          return Promise.resolve(
-            new FakeDocSnap(!!d, d ? {...d} : null, ref),
-          );
-        }
-        return Promise.resolve(new FakeDocSnap(false, null, ref));
-      },
-      set: (ref, data, opts) => {
-        if (ref.path.startsWith('user/')) {
-          const prev = this.users.get(ref.id) || {};
-          const next = opts && opts.merge ? {...prev, ...data} : {...data};
-          this.users.set(ref.id, next);
-        } else if (ref.path.startsWith(assignment.ASSIGNMENT_COLLECTION)) {
-          const prev = this.locks.get(ref.id) || {};
-          const next = opts && opts.merge ? {...prev, ...data} : {...data};
-          for (const k of Object.keys(next)) {
-            if (next[k] && next[k]._methodName) next[k] = new Date().toISOString();
+    // Serialize transactions to model contention + atomic rollback.
+    const run = this._txQueue.then(async () => {
+      const usersSnap = new Map(
+        [...this.users.entries()].map(([k, v]) => [k, {...v}]),
+      );
+      const locksSnap = new Map(
+        [...this.locks.entries()].map(([k, v]) => [k, {...v}]),
+      );
+      const stagingUsers = new Map(usersSnap);
+      const stagingLocks = new Map(locksSnap);
+      const tx = {
+        get: (ref) => {
+          if (ref.path.startsWith('user/')) {
+            const d = stagingUsers.get(ref.id);
+            return Promise.resolve(
+              new FakeDocSnap(!!d, d ? {...d} : null, ref),
+            );
           }
-          this.locks.set(ref.id, next);
-        }
-      },
-    }));
+          if (ref.path.startsWith(assignment.ASSIGNMENT_COLLECTION)) {
+            const d = stagingLocks.get(ref.id);
+            return Promise.resolve(
+              new FakeDocSnap(!!d, d ? {...d} : null, ref),
+            );
+          }
+          return Promise.resolve(new FakeDocSnap(false, null, ref));
+        },
+        set: (ref, data, opts) => {
+          if (ref.path.startsWith('user/')) {
+            const prev = stagingUsers.get(ref.id) || {};
+            const next = opts && opts.merge ? {...prev, ...data} : {...data};
+            stagingUsers.set(ref.id, next);
+          } else if (ref.path.startsWith(assignment.ASSIGNMENT_COLLECTION)) {
+            const prev = stagingLocks.get(ref.id) || {};
+            const next = opts && opts.merge ? {...prev, ...data} : {...data};
+            for (const k of Object.keys(next)) {
+              if (next[k] && next[k]._methodName) {
+                next[k] = new Date().toISOString();
+              }
+            }
+            stagingLocks.set(ref.id, next);
+          }
+        },
+      };
+      try {
+        const result = await fn(tx);
+        this.users = stagingUsers;
+        this.locks = stagingLocks;
+        return result;
+      } catch (e) {
+        // rollback — leave this.users / this.locks unchanged
+        throw e;
+      }
+    });
     this._txQueue = run.catch(() => {});
     return run;
   }
@@ -528,6 +547,219 @@ describe('agent_country_assignment', () => {
       agentPatch: {actev_user: true, Isagent: true},
     });
     assert.equal(r.activeAgentId, 'ng');
+  });
+
+  it('stale lock: inactive holder is reclaimable', async () => {
+    const db = new FakeDb();
+    db.users.set('old', {
+      Isagent: true,
+      actev_user: false,
+      Rev_dloh_agent: {path: 'countries/x'},
+    });
+    db.users.set('neu', {
+      Isagent: true,
+      actev_user: false,
+      Rev_dloh_agent: {path: 'countries/x'},
+    });
+    db.locks.set('x', {country_path: 'countries/x', active_agent_id: 'old'});
+    const r = await assignment.claimCountryAgent({
+      firestore: db,
+      countryPath: 'countries/x',
+      agentId: 'neu',
+      actorUid: 's',
+      agentPatch: {actev_user: true, Isagent: true},
+    });
+    assert.equal(r.activeAgentId, 'neu');
+    assert.equal(db.locks.get('x').active_agent_id, 'neu');
+  });
+
+  it('stale lock: moved-country holder is reclaimable', async () => {
+    const db = new FakeDb();
+    db.users.set('old', {
+      Isagent: true,
+      actev_user: true,
+      Rev_dloh_agent: {path: 'countries/other'},
+    });
+    db.users.set('neu', {
+      Isagent: true,
+      actev_user: false,
+      Rev_dloh_agent: {path: 'countries/x'},
+    });
+    db.locks.set('x', {country_path: 'countries/x', active_agent_id: 'old'});
+    const r = await assignment.claimCountryAgent({
+      firestore: db,
+      countryPath: 'countries/x',
+      agentId: 'neu',
+      actorUid: 's',
+      agentPatch: {actev_user: true, Isagent: true},
+    });
+    assert.equal(r.activeAgentId, 'neu');
+  });
+
+  it('stale lock: missing/deleted holder is reclaimable', async () => {
+    const db = new FakeDb();
+    db.users.set('neu', {
+      Isagent: true,
+      actev_user: false,
+      Rev_dloh_agent: {path: 'countries/x'},
+    });
+    db.locks.set('x', {
+      country_path: 'countries/x',
+      active_agent_id: 'deleted_uid',
+    });
+    const r = await assignment.claimCountryAgent({
+      firestore: db,
+      countryPath: 'countries/x',
+      agentId: 'neu',
+      actorUid: 's',
+      agentPatch: {actev_user: true, Isagent: true},
+    });
+    assert.equal(r.activeAgentId, 'neu');
+  });
+
+  it('stale lock: expired end date is reclaimable', async () => {
+    const db = new FakeDb();
+    db.users.set('old', {
+      Isagent: true,
+      actev_user: true,
+      Rev_dloh_agent: {path: 'countries/x'},
+      agent_date_end: '2001-01-01T00:00:00.000Z',
+    });
+    db.users.set('neu', {
+      Isagent: true,
+      actev_user: false,
+      Rev_dloh_agent: {path: 'countries/x'},
+    });
+    db.locks.set('x', {country_path: 'countries/x', active_agent_id: 'old'});
+    const r = await assignment.claimCountryAgent({
+      firestore: db,
+      countryPath: 'countries/x',
+      agentId: 'neu',
+      actorUid: 's',
+      agentPatch: {actev_user: true, Isagent: true},
+    });
+    assert.equal(r.activeAgentId, 'neu');
+  });
+
+  it('stale lock: future start window is reclaimable', async () => {
+    const db = new FakeDb();
+    db.users.set('old', {
+      Isagent: true,
+      actev_user: true,
+      Rev_dloh_agent: {path: 'countries/x'},
+      agent_date_reg: '2099-01-01T00:00:00.000Z',
+    });
+    db.users.set('neu', {
+      Isagent: true,
+      actev_user: false,
+      Rev_dloh_agent: {path: 'countries/x'},
+    });
+    db.locks.set('x', {country_path: 'countries/x', active_agent_id: 'old'});
+    const r = await assignment.claimCountryAgent({
+      firestore: db,
+      countryPath: 'countries/x',
+      agentId: 'neu',
+      actorUid: 's',
+      agentPatch: {actev_user: true, Isagent: true},
+    });
+    assert.equal(r.activeAgentId, 'neu');
+  });
+
+  it('valid lock is never stolen', async () => {
+    const db = new FakeDb();
+    db.users.set('old', {
+      Isagent: true,
+      actev_user: true,
+      Rev_dloh_agent: {path: 'countries/x'},
+    });
+    db.users.set('neu', {
+      Isagent: true,
+      actev_user: false,
+      Rev_dloh_agent: {path: 'countries/x'},
+    });
+    db.locks.set('x', {country_path: 'countries/x', active_agent_id: 'old'});
+    let code = null;
+    try {
+      await assignment.claimCountryAgent({
+        firestore: db,
+        countryPath: 'countries/x',
+        agentId: 'neu',
+        actorUid: 's',
+        agentPatch: {actev_user: true, Isagent: true},
+      });
+    } catch (e) {
+      code = e.message;
+    }
+    assert.equal(code, assignment.ERR_CONFLICT);
+    assert.equal(db.locks.get('x').active_agent_id, 'old');
+  });
+
+  it('ambiguous lock (unparseable date) rejects without reclaim', async () => {
+    const db = new FakeDb();
+    db.users.set('old', {
+      Isagent: true,
+      actev_user: true,
+      Rev_dloh_agent: {path: 'countries/x'},
+      agent_date_end: 'not-a-real-date',
+    });
+    db.users.set('neu', {
+      Isagent: true,
+      actev_user: false,
+      Rev_dloh_agent: {path: 'countries/x'},
+    });
+    db.locks.set('x', {country_path: 'countries/x', active_agent_id: 'old'});
+    let code = null;
+    try {
+      await assignment.claimCountryAgent({
+        firestore: db,
+        countryPath: 'countries/x',
+        agentId: 'neu',
+        actorUid: 's',
+        agentPatch: {actev_user: true, Isagent: true},
+      });
+    } catch (e) {
+      code = e.message;
+    }
+    assert.equal(code, assignment.ERR_LOCK_AMBIGUOUS);
+    assert.equal(db.locks.get('x').active_agent_id, 'old');
+  });
+
+  it('move rolls back when destination lock is valid', async () => {
+    const db = new FakeDb();
+    db.users.set('a1', {
+      Isagent: true,
+      actev_user: true,
+      Rev_dloh_agent: {path: 'countries/from'},
+    });
+    db.users.set('a2', {
+      Isagent: true,
+      actev_user: true,
+      Rev_dloh_agent: {path: 'countries/to'},
+    });
+    db.locks.set('from', {
+      country_path: 'countries/from',
+      active_agent_id: 'a1',
+    });
+    db.locks.set('to', {
+      country_path: 'countries/to',
+      active_agent_id: 'a2',
+    });
+    let failed = false;
+    try {
+      await assignment.moveActiveAgentCountry({
+        firestore: db,
+        agentId: 'a1',
+        fromCountryPath: 'countries/from',
+        toCountryPath: 'countries/to',
+        actorUid: 's',
+      });
+    } catch (e) {
+      failed = e.message === assignment.ERR_CONFLICT;
+    }
+    assert.equal(failed, true);
+    assert.equal(db.locks.get('from').active_agent_id, 'a1');
+    assert.equal(db.locks.get('to').active_agent_id, 'a2');
+    assert.equal(db.users.get('a1').Rev_dloh_agent.path, 'countries/from');
   });
 });
 

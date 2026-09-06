@@ -469,8 +469,14 @@ service cloud.firestore {
 
     // Assigned driver may advance trip state but never reassign or edit money.
     // Includes arrive / start / complete / cancel_by_driver (C-04 trip path).
+    // Terminal statuses cannot regress to live (prevents stale client overwrites).
     function driverCanAdvanceTrip() {
       return orderAssignedToDriver(resource.data)
+        && !(resource.data.status_code in [
+          'completed', 'trip_completed', 'cancelled', 'canceled',
+          'cancelled_by_driver', 'cancelled_by_customer', 'cancelled_by_admin',
+          'expired'
+        ])
         && request.resource.data.mndob_user == resource.data.mndob_user
         && financialOrderFieldsUnchanged()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
@@ -482,7 +488,7 @@ service cloud.firestore {
           'completedAt', 'payment_status', 'cash_collection_status',
           'naim_mndob_text', 'phone_nu_mndob', 'cancelledAt',
           'cancelledBy', 'cancelReason', 'driverHeading', 'speed',
-          'etaApproximate', 'etaUpdatedAt'
+          'etaApproximate', 'etaUpdatedAt', 'statusUpdatedAt'
         ])
         && (
           (resource.data.status_code in ['driver_assigned', 'driver_arriving']
@@ -596,6 +602,7 @@ service cloud.firestore {
         && d.get('registration_documents_status', prev.get('registration_documents_status', ''))
              == prev.get('registration_documents_status', '');
     }
+
 
     // F3-C3: agent country assignment fields are server-authoritative (callables / Admin SDK).
     function agentAssignmentFieldsUnchanged() {
@@ -804,15 +811,15 @@ service cloud.firestore {
         && d.get('IsAdmin', false) == false
         && d.get('isAdminRule', 0) != 1
         && d.get('IsAdminRule', 0) != 1;
-      // F3-C3: client must not create/activate agents (use createPanelUser CF).
-      let notCreatingAgent =
-        d.get('Isagent', false) == false
-        && d.get('isagent', false) == false;
       let inCountryScope =
         countriesMatchAdminScope(d.get('Rev_dolh', null))
         || countriesMatchAdminScope(d.get('Rev_dloh_agent', null))
         || countriesMatchAdminScope(prev.get('Rev_dolh', null))
         || countriesMatchAdminScope(prev.get('Rev_dloh_agent', null));
+      // F3-C3: client must not create/activate agents (use createPanelUser CF).
+      let notCreatingAgent =
+        d.get('Isagent', false) == false
+        && d.get('isagent', false) == false;
       return (isSuperAdmin() && notCreatingAgent)
         || (isCountryAdmin() && notElevatingToSuper && notCreatingAgent && inCountryScope)
         || (isTransportManager()
@@ -927,7 +934,7 @@ service cloud.firestore {
       // Own-profile update FIRST — critical: the panel OR-chain below exceeds the
       // 1000-expression limit and was denying ALL customer profile writes
       // (photo_url, phone, display_name, login sync).
-      allow update: if signedIn() && userSelfFieldsOnly(document);
+      allow update: if signedIn() && userSelfFieldsOnly(document) && agentAssignmentFieldsUnchanged();
       allow update: if signedIn() && canDriverSetOnlineOffline(document);
       allow update: if signedIn() && canClaimOrReleaseOwnActiveOrder(document);
       // Driver Registration V2 pending claim FIRST — must not sit behind the panel
