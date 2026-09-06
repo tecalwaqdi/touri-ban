@@ -57,7 +57,7 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
     super.dispose();
   }
 
-  void _reload() {
+  void _reload({bool forceRefresh = false}) {
     final label = _presetLabels[_preset] ?? _preset.name;
     setState(() {
       _earlyRows = null;
@@ -65,6 +65,7 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
       _future = AccountantFinanceLoader.load(
         datePreset: _preset,
         periodLabel: label,
+        forceRefresh: forceRefresh,
         onFirstPage: (rows, _) {
           if (!mounted) return;
           setState(() => _earlyRows = rows);

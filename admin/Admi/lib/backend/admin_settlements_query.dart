@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '/backend/admin_perf_trace.dart';
 import '/backend/admin_role_service.dart';
+import '/core/finance/admin_finance_repository.dart';
 import '/core/finance/finance_order_query.dart';
 
 /// Stable Firestore query identity for the Settlements list (PERF-P1 + P2A).
@@ -85,6 +86,7 @@ class AdminSettlementsStreamOwner {
 
   String? _key;
   Stream<QuerySnapshot<Map<String, dynamic>>>? _stream;
+  String? _lastDocFingerprint;
 
   String? get queryKey => _key;
 
@@ -97,7 +99,15 @@ class AdminSettlementsStreamOwner {
       AdminPerfTrace.settlementStreamDispose(_key);
     }
     _key = nextKey;
-    _stream = _streamFactory(nextKey);
+    _lastDocFingerprint = null;
+    _stream = _streamFactory(nextKey).map((snap) {
+      final fp = snap.docs.map((d) => '${d.id}:${d.data()['status']}').join('|');
+      if (_lastDocFingerprint != null && _lastDocFingerprint != fp) {
+        AdminFinanceRepository.instance.invalidateSettlements();
+      }
+      _lastDocFingerprint = fp;
+      return snap;
+    });
     return _stream!;
   }
 

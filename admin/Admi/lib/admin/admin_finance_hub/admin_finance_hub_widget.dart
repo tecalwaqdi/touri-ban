@@ -69,7 +69,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
     super.dispose();
   }
 
-  void _reload() {
+  void _reload({bool forceRefresh = false}) {
     final label = _presetLabels[_preset] ?? _preset.name;
     setState(() {
       _earlyRows = null;
@@ -77,6 +77,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
       _future = AccountantFinanceLoader.load(
         datePreset: _preset,
         periodLabel: label,
+        forceRefresh: forceRefresh,
         onFirstPage: (rows, _) {
           if (!mounted) return;
           setState(() => _earlyRows = rows);
@@ -166,7 +167,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                       ),
                     IconButton(
                       tooltip: uiTr(context, 'تحديث'),
-                      onPressed: _reload,
+                      onPressed: () => _reload(forceRefresh: true),
                       icon: Icon(Icons.refresh_rounded, color: AdminUi.brandTeal),
                     ),
                   ],

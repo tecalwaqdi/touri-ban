@@ -1,14 +1,14 @@
 {
-  "git_commit": "9f9d6df900d822e4fbab5abeaa0af6dd79be8943",
-  "git_commit_short": "9f9d6df",
-  "builtAt": "2026-09-06T11:24:47Z",
-  "phase": "PERF-P2A",
-  "channel": "admin-perf-p2a",
+  "git_commit": "72277ea7e0de3433ae0ac8212468cdb4f14bb7ee",
+  "git_commit_short": "72277ea",
+  "builtAt": "2026-09-06T23:13:02Z",
+  "phase": "PERF-P3",
+  "channel": "admin-perf-p3",
   "production_hosting_deploy": false,
   "includes": {
-    "completed_candidate_queries": true,
-    "first_useful_rows": true,
-    "settlements_page_40": true,
-    "summary_not_page_only": true
+    "admin_finance_repository": true,
+    "request_coalescing": true,
+    "session_cache_ttl_s": 45,
+    "unified_completed_scan": true
   }
 }

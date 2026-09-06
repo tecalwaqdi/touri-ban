@@ -140,16 +140,22 @@ abstract final class FinanceOrderQuery {
   }
 
   /// Chunked scan of modern + legacy candidates for **summary** (not UI page).
+  ///
+  /// PERF-P3: [onFirstModernChunk] fires after the first modern page so callers
+  /// do not need a separate [fetchModernPage] (eliminates duplicate modern query).
   static Future<FinanceOrderScanResult> scanCompletedCandidates({
     required AdminDateRange? range,
     DocumentReference? country,
     DocumentReference? driverRef,
+    void Function(List<OrderRecord> firstOrders, int docsRead)?
+        onFirstModernChunk,
   }) async {
     final byPath = <String, OrderRecord>{};
     var docsRead = 0;
     var truncated = false;
+    var firstModernSignaled = false;
 
-    Future<void> ingestPage(Query base) async {
+    Future<void> ingestPage(Query base, {required bool isModern}) async {
       DocumentSnapshot? last;
       while (byPath.length < scanCap) {
         var q = base;
@@ -164,6 +170,7 @@ abstract final class FinanceOrderQuery {
         docsRead += snap.docs.length;
         AdminPerfTrace.financeDocsRead(snap.docs.length, source: 'scan_chunk');
         if (snap.docs.isEmpty) break;
+        final pageAccepted = <OrderRecord>[];
         for (final doc in snap.docs) {
           final order = OrderRecord.fromSnapshot(doc);
           if (!_passesScope(
@@ -176,10 +183,16 @@ abstract final class FinanceOrderQuery {
           }
           if (!_isCanonicalCompletedNonQa(order)) continue;
           byPath[order.reference.path] = order;
+          pageAccepted.add(order);
           if (byPath.length >= scanCap) {
             truncated = true;
             break;
           }
+        }
+        if (isModern && !firstModernSignaled && onFirstModernChunk != null) {
+          firstModernSignaled = true;
+          final first = pageAccepted.take(tablePageSize).toList();
+          onFirstModernChunk(first, snap.docs.length);
         }
         last = snap.docs.last;
         if (snap.docs.length < scanChunkSize) break;
@@ -192,6 +205,7 @@ abstract final class FinanceOrderQuery {
         country: country,
         driverRef: driverRef,
       ),
+      isModern: true,
     );
 
     // Legacy path: only when not driver-filtered (driver+halh indexes may be absent).
@@ -207,6 +221,7 @@ abstract final class FinanceOrderQuery {
             range: range,
             country: country,
           ),
+          isModern: false,
         );
       }
     }

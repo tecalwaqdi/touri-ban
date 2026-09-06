@@ -20,6 +20,11 @@ abstract final class AdminPerfTrace {
   static int settlementStreamDisposes = 0;
   static int financeDocsReadTotal = 0;
   static int financeQueryErrors = 0;
+  static int financeRepoCacheHits = 0;
+  static int financeRepoCacheMisses = 0;
+  static int financeRepoInFlightJoins = 0;
+  static int financeRepoInvalidations = 0;
+  static int financeClassificationMsTotal = 0;
 
   static final List<String> events = <String>[];
 
@@ -34,6 +39,11 @@ abstract final class AdminPerfTrace {
     settlementStreamDisposes = 0;
     financeDocsReadTotal = 0;
     financeQueryErrors = 0;
+    financeRepoCacheHits = 0;
+    financeRepoCacheMisses = 0;
+    financeRepoInFlightJoins = 0;
+    financeRepoInvalidations = 0;
+    financeClassificationMsTotal = 0;
     events.clear();
   }
 
@@ -108,5 +118,40 @@ abstract final class AdminPerfTrace {
     if (!enabled) return;
     financeQueryErrors++;
     _note('finance_query_error#$financeQueryErrors code=$code src=$source');
+  }
+
+  static void financeRepoCacheHit({required String kind}) {
+    if (!enabled) return;
+    financeRepoCacheHits++;
+    _note('finance_repo_hit#$financeRepoCacheHits kind=$kind');
+  }
+
+  static void financeRepoCacheMiss({required String kind}) {
+    if (!enabled) return;
+    financeRepoCacheMisses++;
+    _note('finance_repo_miss#$financeRepoCacheMisses kind=$kind');
+  }
+
+  static void financeRepoInFlightJoin({required String kind}) {
+    if (!enabled) return;
+    financeRepoInFlightJoins++;
+    _note('finance_repo_inflight_join#$financeRepoInFlightJoins kind=$kind');
+  }
+
+  static void financeRepoInvalidate({required String reason}) {
+    if (!enabled) return;
+    financeRepoInvalidations++;
+    _note('finance_repo_invalidate#$financeRepoInvalidations reason=$reason');
+  }
+
+  static void financeRepoQueryEnd({required String kind, required int docs}) {
+    if (!enabled) return;
+    _note('finance_repo_query_end kind=$kind docs=$docs');
+  }
+
+  static void financeClassificationMs(int ms) {
+    if (!enabled) return;
+    financeClassificationMsTotal += ms;
+    _note('finance_classification_ms+$ms total=$financeClassificationMsTotal');
   }
 }

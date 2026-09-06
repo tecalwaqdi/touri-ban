@@ -62,13 +62,14 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
     super.dispose();
   }
 
-  void _reload() {
+  void _reload({bool forceRefresh = false}) {
     final label = _presetLabels[_preset] ?? _preset.name;
     setState(() {
       _error = null;
       _future = AccountantFinanceLoader.load(
         datePreset: _preset,
         periodLabel: label,
+        forceRefresh: forceRefresh,
       ).then((b) {
         _lastOk = b;
         return b;

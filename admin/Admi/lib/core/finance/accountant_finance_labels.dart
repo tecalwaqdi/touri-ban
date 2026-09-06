@@ -1,4 +1,5 @@
 import '/core/country/country_resolver.dart';
+import '/core/finance/admin_finance_repository.dart';
 import '/core/finance/financial_accounting_engine.dart';
 import '/core/finance/financial_amount_resolution.dart';
 import '/core/finance/financial_trip_semantics.dart';
@@ -135,6 +136,13 @@ abstract final class AccountantFinanceLabels {
   static String countryHumanAr(String? countryPathOrId) {
     final raw = (countryPathOrId ?? '').trim();
     if (raw.isEmpty) return '—';
+    return AdminFinanceRepository.instance.cachedLabel(
+      'country:$raw',
+      () => _countryHumanArUncached(raw),
+    );
+  }
+
+  static String _countryHumanArUncached(String raw) {
     final id = raw.contains('/') ? raw.split('/').last : raw;
     final lower = id.toLowerCase();
     if (lower == CountryResolver.canonicalSaudiId ||

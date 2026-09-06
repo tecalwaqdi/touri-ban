@@ -46,35 +46,24 @@ class _AdminFinanceReconciliationWidgetState
     super.dispose();
   }
 
-  Future<FinanceReconciliationResult> _load() async {
+  Future<FinanceReconciliationResult> _load({bool forceRefresh = false}) async {
     setState(() {
       _summaryLoading = true;
       _earlyPartial = null;
     });
-    final scope = AccountantFinanceLoader.scopeForCurrentUser();
-    final settlementsFuture = AccountantFinanceLoader.loadSettlementsMaps();
-    final orders = await AccountantFinanceLoader.loadOrdersForCurrentScope(
-      onFirstPage: (first, _) {
+    return AccountantFinanceLoader.loadReconciliation(
+      forceRefresh: forceRefresh,
+      onFirstPage: (partial) {
         if (!mounted) return;
-        // First useful rows: B1 on first modern page only — not period totals.
-        final partial = FinanceReconciliationReadModel.buildReconciliation(
-          orders: first,
-          scope: scope,
-          currency: 'SAR',
-          settlements: const [],
-        );
         setState(() => _earlyPartial = partial);
       },
-    );
-    final settlements = await settlementsFuture;
-    final result = FinanceReconciliationReadModel.buildReconciliation(
-      orders: orders,
-      scope: scope,
-      currency: 'SAR',
-      settlements: settlements,
-    );
-    if (mounted) setState(() => _summaryLoading = false);
-    return result;
+    ).whenComplete(() {
+      if (mounted) {
+        setState(() => _summaryLoading = false);
+      } else {
+        _summaryLoading = false;
+      }
+    });
   }
 
   String _moneyOrDash(MoneyAmount? m) {
@@ -143,7 +132,7 @@ class _AdminFinanceReconciliationWidgetState
                 }
                 return RefreshIndicator(
                   onRefresh: () async {
-                    setState(() => _future = _load());
+                    setState(() => _future = _load(forceRefresh: true));
                     await _future;
                   },
                   child: Column(

@@ -1,0 +1,20 @@
+{
+  "cold": {
+    "label": "hub1",
+    "firstUsefulMs": 7382,
+    "summaryMs": 11617,
+    "firestoreStarts": 13
+  },
+  "cached": {
+    "label": "hub2_same_session",
+    "firstUsefulMs": 4165,
+    "summaryMs": 7853,
+    "firestoreStarts": 9
+  },
+  "back": {
+    "label": "hub3_after_recon",
+    "firstUsefulMs": 3964,
+    "summaryMs": 8503,
+    "firestoreStarts": 9
+  }
+}
