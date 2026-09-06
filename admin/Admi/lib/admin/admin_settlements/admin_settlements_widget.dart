@@ -229,10 +229,11 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
               var paid = 0;
               var remaining = 0;
               var currency = 'SAR';
-              final summaryRows = _periodMaps ??
-                  docs
-                      .map((d) => <String, dynamic>{'id': d.id, ...d.data()})
-                      .toList();
+              final periodReady = _periodMaps != null;
+              // PERF-P4A: never paint period KPIs from the live first page.
+              final summaryRows = periodReady
+                  ? _periodMaps!
+                  : const <Map<String, dynamic>>[];
               for (final s in summaryRows) {
                 if (!_showQaDiagnostics &&
                     AdminQaFixture.isFinanceQaSettlement(
@@ -261,6 +262,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
               String maj(int minor) => AdminFinanceUiLabels.formatMinorByCurrency(
                     {currency: minor},
                   );
+              String kpi(String ready) => periodReady ? ready : '—';
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -280,19 +282,19 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                     spacing: 10,
                     runSpacing: 10,
                     children: [
-                      _sumChip(context, 'تسويات مفتوحة', '$openCount'),
-                      _sumChip(context, 'مستحق للشركة', maj(dueCompany)),
-                      _sumChip(context, 'مستحق للسائقين', maj(dueDriver)),
-                      _sumChip(context, 'مدفوع', maj(paid)),
-                      _sumChip(context, 'متبقٍ', maj(remaining)),
+                      _sumChip(context, 'تسويات مفتوحة', kpi('$openCount')),
+                      _sumChip(context, 'مستحق للشركة', kpi(maj(dueCompany))),
+                      _sumChip(context, 'مستحق للسائقين', kpi(maj(dueDriver))),
+                      _sumChip(context, 'مدفوع', kpi(maj(paid))),
+                      _sumChip(context, 'متبقٍ', kpi(maj(remaining))),
                     ],
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      _periodMaps == null
-                          ? 'جاري ملخص الفترة… الأرقام قد تكون مؤقتة من الصفحة الأولى'
-                          : 'ملخص الفترة (محدود) — الجدول صفحته الأولى مباشرة',
+                      periodReady
+                          ? 'ملخص الفترة (محدود) — الجدول صفحته الأولى مباشرة'
+                          : 'جاري ملخص الفترة… تظهر قائمة التسويات الآن.',
                       style: AccountantFinanceText.label(theme),
                     ),
                   ),

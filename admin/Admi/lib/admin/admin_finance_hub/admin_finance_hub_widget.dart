@@ -35,9 +35,12 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   AdminDatePreset _preset = AdminDatePreset.thisMonth;
   Future<AccountantFinanceViewBundle>? _future;
   AccountantFinanceViewBundle? _lastOk;
-  /// PERF-P2A: first modern page before full-period summary completes.
+  /// PERF-P4A: first modern page independent of period summary.
   List<AccountantTripRow>? _earlyRows;
+  bool _rowsLoading = false;
   bool _summaryLoading = false;
+  Object? _rowsError;
+  Object? _summaryError;
   bool _advancedOpen = false;
 
   String? _paymentMethod;
@@ -72,25 +75,61 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   void _reload({bool forceRefresh = false}) {
     final label = _presetLabels[_preset] ?? _preset.name;
     setState(() {
-      _earlyRows = null;
+      // Cache-first: keep prior rows until replacement arrives (no blank flash).
+      if (forceRefresh) {
+        _earlyRows = null;
+        _lastOk = null;
+      }
+      _rowsLoading = true;
       _summaryLoading = true;
-      _future = AccountantFinanceLoader.load(
-        datePreset: _preset,
-        periodLabel: label,
-        forceRefresh: forceRefresh,
-        onFirstPage: (rows, _) {
-          if (!mounted) return;
-          setState(() => _earlyRows = rows);
-        },
-      ).then((b) {
-        _lastOk = b;
-        return b;
-      }).whenComplete(() {
-        if (mounted) {
-          setState(() => _summaryLoading = false);
-        } else {
-          _summaryLoading = false;
-        }
+      _rowsError = null;
+      _summaryError = null;
+      _future = null;
+    });
+
+    // CRITICAL PATH then BACKGROUND — do not start settlement maps / full scan
+    // until modern first page has resolved (reduces contention before first rows).
+    AccountantFinanceLoader.loadFirstPage(
+      datePreset: _preset,
+      forceRefresh: forceRefresh,
+    ).then((rows) {
+      if (!mounted) return;
+      setState(() {
+        _earlyRows = rows;
+        _rowsLoading = false;
+        _future = AccountantFinanceLoader.load(
+          datePreset: _preset,
+          periodLabel: label,
+          forceRefresh: forceRefresh,
+        ).then((b) {
+          _lastOk = b;
+          if (mounted) {
+            setState(() => _earlyRows = b.trips);
+          } else {
+            _earlyRows = b.trips;
+          }
+          return b;
+        }).catchError((Object e) {
+          if (mounted) {
+            setState(() => _summaryError = e);
+          } else {
+            _summaryError = e;
+          }
+          throw e;
+        }).whenComplete(() {
+          if (mounted) {
+            setState(() => _summaryLoading = false);
+          } else {
+            _summaryLoading = false;
+          }
+        });
+      });
+    }).catchError((Object e) {
+      if (!mounted) return;
+      setState(() {
+        _rowsError = e;
+        _rowsLoading = false;
+        _summaryLoading = false;
       });
     });
   }
@@ -109,11 +148,13 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
       child: FutureBuilder<AccountantFinanceViewBundle>(
         future: _future,
         builder: (context, snapshot) {
-          final bundle = snapshot.data ?? _lastOk;
-          final loading = snapshot.connectionState == ConnectionState.waiting &&
-              bundle == null &&
-              (_earlyRows == null || _earlyRows!.isEmpty);
-          final errored = snapshot.hasError && bundle == null;
+          final bundle = snapshot.data ??
+              (_summaryError == null ? _lastOk : null);
+          final rowsReady = _earlyRows != null || bundle != null;
+          final hasRows = (bundle?.trips.isNotEmpty ?? false) ||
+              (_earlyRows?.isNotEmpty ?? false);
+          final loading = _rowsLoading && !rowsReady && _rowsError == null;
+          final errored = _rowsError != null && !rowsReady;
           final tableRows = AccountantTripFilters.apply(
             bundle?.trips ?? _earlyRows ?? const [],
             paymentMethod: _paymentMethod,
@@ -162,6 +203,8 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                         selected: _preset == e.key,
                         onSelected: (_) {
                           _preset = e.key;
+                          _earlyRows = null;
+                          _lastOk = null;
                           _reload();
                         },
                       ),
@@ -243,30 +286,42 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                     message: uiTr(context, 'يرجى إعادة المحاولة.'),
                     onRetry: _reload,
                   )
-                else if (bundle == null &&
-                    (_earlyRows == null || _earlyRows!.isEmpty))
+                else if (!hasRows && rowsReady)
                   AdminEmptyState(
                     title: uiTr(context, 'لا توجد بيانات'),
                     message: uiTr(context, 'لا نتائج ضمن الفلاتر الحالية.'),
                   )
+                else if (!rowsReady)
+                  AdminLoadingState(
+                    label: uiTr(context, 'جاري تحميل البيانات المالية'),
+                  )
                 else ...[
-                  if (_summaryLoading ||
-                      snapshot.connectionState == ConnectionState.waiting)
+                  if (_summaryLoading)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text(
                         uiTr(
                           context,
-                          bundle == null
-                              ? 'جاري حساب الملخص للفترة… تظهر الصفوف الأولى الآن.'
-                              : 'جاري التحديث…',
+                          'جاري حساب الملخص للفترة… تظهر الصفوف الأولى الآن.',
                         ),
                         style: AccountantFinanceText.label(theme).copyWith(
                           color: AdminUi.brandTeal,
                         ),
                       ),
                     ),
-                  if (bundle != null) ...[
+                  if (_summaryError != null && bundle == null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: AdminErrorState(
+                        title: uiTr(context, 'تعذر تحميل الملخص'),
+                        message: uiTr(
+                          context,
+                          'الجدول متاح — أعد المحاولة للملخص.',
+                        ),
+                        onRetry: _reload,
+                      ),
+                    )
+                  else if (bundle != null) ...[
                     AccountantFinanceAlertsBanner(alerts: bundle.alerts),
                     if (bundle.alerts.isNotEmpty) const SizedBox(height: 10),
                     AccountantFinanceSummaryStrip(bundle: bundle),

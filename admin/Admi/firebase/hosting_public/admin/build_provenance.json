@@ -1,13 +1,15 @@
 {
-  "git_commit": "8a9e7781de5725f648548edb01c54d3c77e18aaa",
-  "git_commit_short": "8a9e778",
-  "builtAt": "2026-09-06T23:25:00Z",
-  "phase": "PERF-P3F",
-  "channel": "admin-perf-p3f",
+  "git_commit": "a569b9dfa80edb667318307cb86cdba6a4ed3695",
+  "git_commit_short": "a569b9d",
+  "builtAt": "2026-09-06T23:52:11Z",
+  "phase": "PERF-P4A",
+  "channel": "admin-perf-p4a",
   "production_hosting_deploy": false,
   "includes": {
-    "persistent_shell": true,
-    "auth_session_owner": true,
-    "shell_route": true
+    "first_page_fast_path": true,
+    "summary_after_first_page": true,
+    "parallel_scan_settlements": true,
+    "recon_settlement_membership_before_rows": true,
+    "no_fake_summary_from_page": true
   }
 }

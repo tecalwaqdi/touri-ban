@@ -1,0 +1,13 @@
+{
+  "hub1": {
+    "firstFsMs": 3060,
+    "starts": 13,
+    "lastStartMs": 5245
+  },
+  "backHub": {
+    "firstFsMs": 3186,
+    "starts": 13,
+    "lastStartMs": 4541
+  },
+  "base": "https://tutorial-multi-language-70gx4j--admin-perf-p4a-g8gel2s5.web.app/admin"
+}

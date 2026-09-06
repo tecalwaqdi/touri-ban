@@ -15,6 +15,7 @@ import '/core/admin_qa_fixture.dart';
 /// PERF-P2A: completed-candidate server queries + first-page callback.
 /// PERF-P3: delegates Firestore source loading to [AdminFinanceRepository]
 /// (coalescing + short session cache). Summary never uses visible page only.
+/// PERF-P4A: explicit first-page fast path independent of period summary.
 abstract final class AccountantFinanceLoader {
   AccountantFinanceLoader._();
 
@@ -27,6 +28,27 @@ abstract final class AccountantFinanceLoader {
       AccountantFinanceLoaderScope.scopeForCurrentUser(
         countryOverride: countryOverride,
       );
+
+  /// PERF-P4A critical path — modern first page only (no summary / maps).
+  static Future<List<AccountantTripRow>> loadFirstPage({
+    AdminDatePreset datePreset = AdminDatePreset.thisMonth,
+    DateTime? customStart,
+    DateTime? customEnd,
+    DocumentReference? countryRef,
+    DocumentReference? driverRef,
+    String currency = 'SAR',
+    bool forceRefresh = false,
+  }) {
+    return AdminFinanceRepository.instance.loadHubFirstPage(
+      datePreset: datePreset,
+      customStart: customStart,
+      customEnd: customEnd,
+      countryRef: countryRef,
+      driverRef: driverRef,
+      currency: currency,
+      forceRefresh: forceRefresh,
+    );
+  }
 
   static Future<AccountantFinanceViewBundle> load({
     AdminDatePreset datePreset = AdminDatePreset.thisMonth,
@@ -74,6 +96,17 @@ abstract final class AccountantFinanceLoader {
     bool forceRefresh = false,
   }) {
     return AdminFinanceRepository.instance.loadSettlementsMaps(
+      forceRefresh: forceRefresh,
+    );
+  }
+
+  /// PERF-P4A: first-page reconciliation with settlement membership evidence.
+  static Future<FinanceReconciliationResult> loadReconciliationFirstPage({
+    AdminDatePreset datePreset = AdminDatePreset.thisYear,
+    bool forceRefresh = false,
+  }) {
+    return AdminFinanceRepository.instance.loadReconciliationFirstPage(
+      datePreset: datePreset,
       forceRefresh: forceRefresh,
     );
   }

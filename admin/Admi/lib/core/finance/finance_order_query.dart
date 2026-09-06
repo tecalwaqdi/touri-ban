@@ -143,20 +143,41 @@ abstract final class FinanceOrderQuery {
   ///
   /// PERF-P3: [onFirstModernChunk] fires after the first modern page so callers
   /// do not need a separate [fetchModernPage] (eliminates duplicate modern query).
+  ///
+  /// PERF-P4A: [seedModernOrders] + [modernStartAfter] let the repository reuse
+  /// a coalesced [fetchModernPage] without re-querying the first page.
   static Future<FinanceOrderScanResult> scanCompletedCandidates({
     required AdminDateRange? range,
     DocumentReference? country,
     DocumentReference? driverRef,
     void Function(List<OrderRecord> firstOrders, int docsRead)?
         onFirstModernChunk,
+    List<OrderRecord>? seedModernOrders,
+    DocumentSnapshot? modernStartAfter,
+    int seedDocsRead = 0,
   }) async {
     final byPath = <String, OrderRecord>{};
-    var docsRead = 0;
+    var docsRead = seedDocsRead;
     var truncated = false;
     var firstModernSignaled = false;
 
-    Future<void> ingestPage(Query base, {required bool isModern}) async {
-      DocumentSnapshot? last;
+    if (seedModernOrders != null && seedModernOrders.isNotEmpty) {
+      for (final order in seedModernOrders) {
+        byPath[order.reference.path] = order;
+      }
+      firstModernSignaled = true;
+      onFirstModernChunk?.call(
+        seedModernOrders.take(tablePageSize).toList(),
+        seedDocsRead > 0 ? seedDocsRead : seedModernOrders.length,
+      );
+    }
+
+    Future<void> ingestPage(
+      Query base, {
+      required bool isModern,
+      DocumentSnapshot? startAfter,
+    }) async {
+      DocumentSnapshot? last = startAfter;
       while (byPath.length < scanCap) {
         var q = base;
         if (last != null) q = q.startAfterDocument(last);
@@ -206,6 +227,7 @@ abstract final class FinanceOrderQuery {
         driverRef: driverRef,
       ),
       isModern: true,
+      startAfter: modernStartAfter,
     );
 
     // Legacy path: only when not driver-filtered (driver+halh indexes may be absent).

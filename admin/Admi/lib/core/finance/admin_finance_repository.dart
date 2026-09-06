@@ -178,7 +178,100 @@ class AdminFinanceRepository {
   }
 
   // ---------------------------------------------------------------------------
-  // Completed order source (modern+legacy) — single scan, first chunk early
+  // PERF-P4A — modern first page (critical path; not full-period summary)
+  // ---------------------------------------------------------------------------
+
+  DocumentReference? _resolveCountry(DocumentReference? countryRef) {
+    if (AdminRoleService.usesCountryFinanceScope) {
+      return AdminRoleService.scopedCountryRef ??
+          AdminCountryScope.activeCountryRef;
+    }
+    return countryRef;
+  }
+
+  AdminDateRange? _resolveRange({
+    required AdminDatePreset datePreset,
+    DateTime? customStart,
+    DateTime? customEnd,
+  }) {
+    return AdminDateRangeResolver.resolve(
+      preset: datePreset,
+      customStart: customStart,
+      customEnd: customEnd,
+    );
+  }
+
+  /// Coalesced modern completed page — sole critical-path order query for Hub.
+  Future<FinanceOrderPage> loadModernFirstPage({
+    required AdminDatePreset datePreset,
+    DateTime? customStart,
+    DateTime? customEnd,
+    DocumentReference? countryRef,
+    DocumentReference? driverRef,
+    bool forceRefresh = false,
+  }) async {
+    final range = _resolveRange(
+      datePreset: datePreset,
+      customStart: customStart,
+      customEnd: customEnd,
+    );
+    final country = _resolveCountry(countryRef);
+    final key = sourceKey(
+      kind: 'modern_page',
+      range: range,
+      country: country,
+      driverRef: driverRef,
+    );
+    if (forceRefresh) {
+      _sourceCache.remove(key);
+      _inFlight.remove(key);
+    }
+    return _coalesce<FinanceOrderPage>(
+      key: key,
+      ttl: sourceTtl,
+      loader: () async {
+        try {
+          AdminPerfTrace.financeRepoQueryEnd(kind: 'modern_page_start', docs: 0);
+          return await FinanceOrderQuery.fetchModernPage(
+            range: range,
+            country: country,
+            driverRef: driverRef,
+            limit: FinanceOrderQuery.tablePageSize,
+          );
+        } on FirebaseException catch (e) {
+          throw StateError('finance_query_unavailable:${e.code}');
+        }
+      },
+    );
+  }
+
+  /// Hub/Agent first useful rows — does not await summary or settlements maps.
+  Future<List<AccountantTripRow>> loadHubFirstPage({
+    AdminDatePreset datePreset = AdminDatePreset.thisMonth,
+    DateTime? customStart,
+    DateTime? customEnd,
+    DocumentReference? countryRef,
+    DocumentReference? driverRef,
+    String currency = 'SAR',
+    bool forceRefresh = false,
+  }) async {
+    final scope = AccountantFinanceLoaderScope.scopeForCurrentUser(
+      countryOverride: countryRef,
+    );
+    final sym = AdminCurrency.symbolByCode[currency] ?? currency;
+    final page = await loadModernFirstPage(
+      datePreset: datePreset,
+      customStart: customStart,
+      customEnd: customEnd,
+      countryRef: countryRef,
+      driverRef: driverRef,
+      forceRefresh: forceRefresh,
+    );
+    return _tripsFromOrders(page.orders, scope: scope, symbol: sym);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Completed order source (modern+legacy) — summary scan; seeds from first page
   // ---------------------------------------------------------------------------
 
   Future<FinanceOrderScanResult> loadCompletedScan({
@@ -190,18 +283,12 @@ class AdminFinanceRepository {
     void Function(List<OrderRecord> firstOrders, int docsRead)? onFirstPage,
     bool forceRefresh = false,
   }) async {
-    final range = AdminDateRangeResolver.resolve(
-      preset: datePreset,
+    final range = _resolveRange(
+      datePreset: datePreset,
       customStart: customStart,
       customEnd: customEnd,
     );
-    DocumentReference? country;
-    if (AdminRoleService.usesCountryFinanceScope) {
-      country = AdminRoleService.scopedCountryRef ??
-          AdminCountryScope.activeCountryRef;
-    } else {
-      country = countryRef;
-    }
+    final country = _resolveCountry(countryRef);
     final key = sourceKey(
       kind: 'completed_scan',
       range: range,
@@ -238,16 +325,28 @@ class AdminFinanceRepository {
       ttl: sourceTtl,
       loader: () async {
         try {
+          // PERF-P4A: reuse coalesced modern first page (no duplicate query).
+          final firstPage = await loadModernFirstPage(
+            datePreset: datePreset,
+            customStart: customStart,
+            customEnd: customEnd,
+            countryRef: countryRef,
+            driverRef: driverRef,
+            forceRefresh: forceRefresh,
+          );
+          if (onFirstPage != null) {
+            chunkSignaled = true;
+            onFirstPage(firstPage.orders, firstPage.docsRead);
+          }
           return await FinanceOrderQuery.scanCompletedCandidates(
             range: range,
             country: country,
             driverRef: driverRef,
-            onFirstModernChunk: onFirstPage == null
-                ? null
-                : (orders, docs) {
-                    chunkSignaled = true;
-                    onFirstPage(orders, docs);
-                  },
+            seedModernOrders: firstPage.orders,
+            modernStartAfter: firstPage.lastDocument,
+            seedDocsRead: firstPage.docsRead,
+            // Already signaled via loadModernFirstPage above.
+            onFirstModernChunk: null,
           );
         } on FirebaseException catch (e) {
           throw StateError('finance_query_unavailable:${e.code}');
@@ -263,14 +362,11 @@ class AdminFinanceRepository {
   }) {
     // Settlements maps are not date-scoped in loader today — key by session only.
     final range = AdminDateRangeResolver.resolve(preset: AdminDatePreset.thisYear);
-    final country = AdminRoleService.usesCountryFinanceScope
-        ? (AdminRoleService.scopedCountryRef ??
-            AdminCountryScope.activeCountryRef)
-        : null;
+    final country = _resolveCountry(null);
     final key = sourceKey(
       kind: 'settlements_maps',
       range: range,
-      country: country,
+      country: AdminRoleService.usesCountryFinanceScope ? country : null,
     );
     if (forceRefresh) {
       _sourceCache.remove(key);
@@ -279,7 +375,9 @@ class AdminFinanceRepository {
     return _coalesce<List<Map<String, dynamic>>>(
       key: key,
       ttl: sourceTtl,
-      loader: () => _fetchSettlementsMaps(country),
+      loader: () => _fetchSettlementsMaps(
+        AdminRoleService.usesCountryFinanceScope ? country : null,
+      ),
     );
   }
 
@@ -353,7 +451,9 @@ class AdminFinanceRepository {
     );
     final sym = AdminCurrency.symbolByCode[currency] ?? currency;
 
-    final scan = await loadCompletedScan(
+    // PERF-P4A: settlements maps independent of completed scan — run together.
+    final settlementsFuture = loadSettlementsMaps(forceRefresh: forceRefresh);
+    final scanFuture = loadCompletedScan(
       datePreset: datePreset,
       customStart: customStart,
       customEnd: customEnd,
@@ -366,6 +466,9 @@ class AdminFinanceRepository {
         onFirstPage(rows, docs);
       },
     );
+    final settled = await Future.wait<Object>([scanFuture, settlementsFuture]);
+    final scan = settled[0] as FinanceOrderScanResult;
+    final maps = settled[1] as List<Map<String, dynamic>>;
 
     final orders = scan.orders;
     final model = AccountantFinanceReadModel.aggregate(
@@ -382,7 +485,6 @@ class AdminFinanceRepository {
       }
     }
 
-    final maps = await loadSettlementsMaps(forceRefresh: forceRefresh);
     final openSettlements = countOpenSettlementsFromMaps(maps);
 
     final alerts = <String>[];
@@ -413,6 +515,28 @@ class AdminFinanceRepository {
     );
   }
 
+  /// PERF-P4A: first-page B1 with settlement membership (no full-year scan).
+  Future<FinanceReconciliationResult> loadReconciliationFirstPage({
+    AdminDatePreset datePreset = AdminDatePreset.thisYear,
+    bool forceRefresh = false,
+  }) async {
+    final scope = AccountantFinanceLoaderScope.scopeForCurrentUser();
+    final pageFuture = loadModernFirstPage(
+      datePreset: datePreset,
+      forceRefresh: forceRefresh,
+    );
+    final settlementsFuture = loadSettlementsMaps(forceRefresh: forceRefresh);
+    final page = await pageFuture;
+    final settlements = await settlementsFuture;
+    return _b1BuildMemoized(
+      orders: page.orders,
+      settlements: settlements,
+      scope: scope,
+      currency: 'SAR',
+      allowMemo: false,
+    );
+  }
+
   Future<FinanceReconciliationResult> loadReconciliation({
     AdminDatePreset datePreset = AdminDatePreset.thisYear,
     void Function(FinanceReconciliationResult partial)? onFirstPage,
@@ -421,22 +545,38 @@ class AdminFinanceRepository {
     final scope = AccountantFinanceLoaderScope.scopeForCurrentUser();
     final settlementsFuture =
         loadSettlementsMaps(forceRefresh: forceRefresh);
-    final orders = await loadCompletedScan(
+
+    // PERF-P4A: first rows need settlement evidence — never classify with [].
+    if (onFirstPage != null) {
+      // ignore: unawaited_futures
+      Future.wait<Object>([
+        loadModernFirstPage(
+          datePreset: datePreset,
+          forceRefresh: forceRefresh,
+        ),
+        settlementsFuture,
+      ]).then((parts) {
+        final page = parts[0] as FinanceOrderPage;
+        final settlements = parts[1] as List<Map<String, dynamic>>;
+        onFirstPage(
+          _b1BuildMemoized(
+            orders: page.orders,
+            settlements: settlements,
+            scope: scope,
+            currency: 'SAR',
+            allowMemo: false,
+          ),
+        );
+      });
+    }
+
+    final scanFuture = loadCompletedScan(
       datePreset: datePreset,
       forceRefresh: forceRefresh,
-      onFirstPage: (first, _) {
-        if (onFirstPage == null) return;
-        final partial = _b1BuildMemoized(
-          orders: first,
-          settlements: const [],
-          scope: scope,
-          currency: 'SAR',
-          allowMemo: false,
-        );
-        onFirstPage(partial);
-      },
     );
-    final settlements = await settlementsFuture;
+    final settled = await Future.wait<Object>([scanFuture, settlementsFuture]);
+    final orders = settled[0] as FinanceOrderScanResult;
+    final settlements = settled[1] as List<Map<String, dynamic>>;
     return _b1BuildMemoized(
       orders: orders.orders,
       settlements: settlements,

@@ -134,7 +134,8 @@ class AccountantTripRow {
           ? AccountantFinanceLabels.agentAttributionAr(agentAttr)
           : (agentId == null || agentId.isEmpty
               ? AccountantFinanceLabels.emDash()
-              : AccountantFinanceLabels.tripRefLabel(agentId)),
+              // Presentation only — never surface raw UID while name pending.
+              : AccountantFinanceLabels.emDash()),
       agentAttribution: agentAttr,
       paymentMethodLabel:
           AccountantFinanceLabels.paymentMethodAr(snap.paymentMethodRaw),

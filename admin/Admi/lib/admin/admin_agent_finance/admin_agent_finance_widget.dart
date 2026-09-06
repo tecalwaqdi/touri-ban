@@ -60,25 +60,38 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
   void _reload({bool forceRefresh = false}) {
     final label = _presetLabels[_preset] ?? _preset.name;
     setState(() {
-      _earlyRows = null;
+      if (forceRefresh) {
+        _earlyRows = null;
+        _lastOk = null;
+      }
       _summaryLoading = true;
-      _future = AccountantFinanceLoader.load(
-        datePreset: _preset,
-        periodLabel: label,
-        forceRefresh: forceRefresh,
-        onFirstPage: (rows, _) {
-          if (!mounted) return;
-          setState(() => _earlyRows = rows);
-        },
-      ).then((b) {
-        _lastOk = b;
-        return b;
-      }).whenComplete(() {
-        if (mounted) {
-          setState(() => _summaryLoading = false);
-        } else {
-          _summaryLoading = false;
-        }
+      _future = null;
+    });
+
+    AccountantFinanceLoader.loadFirstPage(
+      datePreset: _preset,
+      forceRefresh: forceRefresh,
+    ).then((rows) {
+      if (!mounted) return;
+      setState(() {
+        _earlyRows = rows;
+        _future = AccountantFinanceLoader.load(
+          datePreset: _preset,
+          periodLabel: label,
+          forceRefresh: forceRefresh,
+        ).then((b) {
+          _lastOk = b;
+          if (mounted) {
+            setState(() => _earlyRows = b.trips);
+          }
+          return b;
+        }).whenComplete(() {
+          if (mounted) {
+            setState(() => _summaryLoading = false);
+          } else {
+            _summaryLoading = false;
+          }
+        });
       });
     });
   }

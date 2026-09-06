@@ -30,8 +30,12 @@ class _AdminFinanceReconciliationWidgetState
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late Menu2Model _menu2Model;
   Future<FinanceReconciliationResult>? _future;
+  /// First-page B1 with settlement membership — not period summary.
   FinanceReconciliationResult? _earlyPartial;
+  bool _rowsLoading = false;
   bool _summaryLoading = false;
+  Object? _rowsError;
+  Object? _summaryError;
 
   @override
   void initState() {
@@ -48,16 +52,45 @@ class _AdminFinanceReconciliationWidgetState
 
   Future<FinanceReconciliationResult> _load({bool forceRefresh = false}) async {
     setState(() {
+      _rowsLoading = true;
       _summaryLoading = true;
-      _earlyPartial = null;
+      if (forceRefresh) _earlyPartial = null;
+      _rowsError = null;
+      _summaryError = null;
     });
+
+    // CRITICAL PATH — modern page + settlement maps, then B1 once.
+    AccountantFinanceLoader.loadReconciliationFirstPage(
+      forceRefresh: forceRefresh,
+    ).then((partial) {
+      if (!mounted) return;
+      setState(() {
+        _earlyPartial = partial;
+        _rowsLoading = false;
+      });
+    }).catchError((Object e) {
+      if (!mounted) return;
+      setState(() {
+        _rowsError = e;
+        _rowsLoading = false;
+      });
+    });
+
     return AccountantFinanceLoader.loadReconciliation(
       forceRefresh: forceRefresh,
-      onFirstPage: (partial) {
-        if (!mounted) return;
-        setState(() => _earlyPartial = partial);
-      },
-    ).whenComplete(() {
+    ).then((full) {
+      if (mounted) {
+        setState(() => _earlyPartial = full);
+      }
+      return full;
+    }).catchError((Object e) {
+      if (mounted) {
+        setState(() => _summaryError = e);
+      } else {
+        _summaryError = e;
+      }
+      throw e;
+    }).whenComplete(() {
       if (mounted) {
         setState(() => _summaryLoading = false);
       } else {
@@ -97,9 +130,12 @@ class _AdminFinanceReconciliationWidgetState
           : FutureBuilder<FinanceReconciliationResult>(
               future: _future,
               builder: (context, snap) {
-                final result = snap.data ?? _earlyPartial;
-                if (result == null &&
-                    snap.connectionState != ConnectionState.done) {
+                final full = snap.data;
+                final rowsSource = full ?? _earlyPartial;
+                final summaryReady = full != null;
+                if (rowsSource == null &&
+                    (_rowsLoading ||
+                        snap.connectionState != ConnectionState.done)) {
                   return Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -114,7 +150,8 @@ class _AdminFinanceReconciliationWidgetState
                     ),
                   );
                 }
-                if (snap.hasError && result == null) {
+                if ((_rowsError != null || snap.hasError) &&
+                    rowsSource == null) {
                   return Center(
                     child: Text(
                       'تعذر تحميل بيانات المصالحة المالية',
@@ -122,7 +159,7 @@ class _AdminFinanceReconciliationWidgetState
                     ),
                   );
                 }
-                if (result == null) {
+                if (rowsSource == null) {
                   return Center(
                     child: Text(
                       'لا توجد بيانات',
@@ -137,7 +174,7 @@ class _AdminFinanceReconciliationWidgetState
                   },
                   child: Column(
                     children: [
-                      if (_summaryLoading && snap.data == null)
+                      if (_summaryLoading && !summaryReady)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                           child: Text(
@@ -145,9 +182,20 @@ class _AdminFinanceReconciliationWidgetState
                             style: AccountantFinanceText.label(theme),
                           ),
                         ),
+                      if (_summaryError != null && !summaryReady)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+                          child: Text(
+                            'تعذر تحميل ملخص الفترة — السجل الأولي متاح.',
+                            style: AccountantFinanceText.label(theme).copyWith(
+                              color: theme.error,
+                            ),
+                          ),
+                        ),
                       Expanded(
                         child: _WorkspaceBody(
-                          result: result,
+                          result: rowsSource,
+                          summaryReady: summaryReady,
                           moneyOrDash: _moneyOrDash,
                         ),
                       ),
@@ -163,10 +211,13 @@ class _AdminFinanceReconciliationWidgetState
 class _WorkspaceBody extends StatelessWidget {
   const _WorkspaceBody({
     required this.result,
+    required this.summaryReady,
     required this.moneyOrDash,
   });
 
   final FinanceReconciliationResult result;
+  /// When false, metric cards show loading/— (never first-page-only totals).
+  final bool summaryReady;
   final String Function(MoneyAmount?) moneyOrDash;
 
   @override
@@ -176,6 +227,7 @@ class _WorkspaceBody extends StatelessWidget {
     final completedOnly = result.records
         .where((r) => r.operationalStatus == RecOperationalStatus.completed)
         .toList();
+    String metric(String v) => summaryReady ? v : '—';
 
     return ListView(
       padding: AdminUi.pagePadding(context),
@@ -190,23 +242,39 @@ class _WorkspaceBody extends StatelessWidget {
           style: AccountantFinanceText.label(theme),
         ),
         const SizedBox(height: 12),
+        if (!summaryReady)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              'جاري حساب ملخص الفترة…',
+              style: AccountantFinanceText.label(theme).copyWith(
+                color: AdminUi.brandTeal,
+              ),
+            ),
+          ),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: [
-            _MetricChip('الرحلات المكتملة', '${s.completedTrips}'),
-            _MetricChip('بيانات مالية مكتملة', '${s.financialComplete}'),
-            _MetricChip('بيانات مالية ناقصة', '${s.financialPartial}'),
-            _MetricChip('تمت المصالحة', '${s.reconciled}'),
-            _MetricChip('تحتاج مراجعة', '${s.needsReview}'),
+            _MetricChip('الرحلات المكتملة', metric('${s.completedTrips}')),
+            _MetricChip(
+              'بيانات مالية مكتملة',
+              metric('${s.financialComplete}'),
+            ),
+            _MetricChip(
+              'بيانات مالية ناقصة',
+              metric('${s.financialPartial}'),
+            ),
+            _MetricChip('تمت المصالحة', metric('${s.reconciled}')),
+            _MetricChip('تحتاج مراجعة', metric('${s.needsReview}')),
             _MetricChip(
               'محجوبة بسبب نقص البيانات',
-              '${s.blockedByMissingData}',
+              metric('${s.blockedByMissingData}'),
             ),
-            _MetricChip('نقد محصل', '${s.cashCollected}'),
-            _MetricChip('نقد غير محصل', '${s.cashUncollected}'),
-            _MetricChip('مسددة', '${s.settled}'),
-            _MetricChip('غير مسددة', '${s.unsettled}'),
+            _MetricChip('نقد محصل', metric('${s.cashCollected}')),
+            _MetricChip('نقد غير محصل', metric('${s.cashUncollected}')),
+            _MetricChip('مسددة', metric('${s.settled}')),
+            _MetricChip('غير مسددة', metric('${s.unsettled}')),
           ],
         ),
         const SizedBox(height: 12),
@@ -216,19 +284,20 @@ class _WorkspaceBody extends StatelessWidget {
           children: [
             _MoneyCard(
               label: 'إجمالي مكتمل (موثوق)',
-              value: moneyOrDash(s.completedGross),
+              value: summaryReady ? moneyOrDash(s.completedGross) : '—',
             ),
             _MoneyCard(
               label: 'مستحق للشركة',
-              value: moneyOrDash(s.companyReceivableTotal),
+              value:
+                  summaryReady ? moneyOrDash(s.companyReceivableTotal) : '—',
             ),
             _MoneyCard(
               label: 'مستحق على الشركة',
-              value: moneyOrDash(s.companyPayableTotal),
+              value: summaryReady ? moneyOrDash(s.companyPayableTotal) : '—',
             ),
           ],
         ),
-        if (s.moneyOmittedIncompleteCount > 0) ...[
+        if (summaryReady && s.moneyOmittedIncompleteCount > 0) ...[
           const SizedBox(height: 8),
           Text(
             'تم استبعاد ${s.moneyOmittedIncompleteCount} رحلة من مجاميع الأموال لعدم اكتمال البيانات.',
@@ -335,7 +404,9 @@ class _WorkspaceBody extends StatelessWidget {
           ),
         const SizedBox(height: 16),
         Text(
-          'مستبعد من العرض العادي: ${result.summary.qaFixturesExcluded} سجل اختبار/ذهبي',
+          summaryReady
+              ? 'مستبعد من العرض العادي: ${result.summary.qaFixturesExcluded} سجل اختبار/ذهبي'
+              : 'مستبعد من العرض العادي: —',
           style: AccountantFinanceText.label(theme),
         ),
       ],
