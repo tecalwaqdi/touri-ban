@@ -1,13 +1,14 @@
 {
-  "git_commit": "6f256c259c1fb34866fb5397546619a63e8e8497",
-  "git_commit_short": "6f256c2",
-  "builtAt": "2026-09-06T10:41:40Z",
-  "phase": "PERF-P1",
-  "channel": "admin-perf-p1",
+  "git_commit": "dd8bd33e51d5a64e6af52f1f89661df905876b00",
+  "git_commit_short": "dd8bd33",
+  "builtAt": "2026-09-06T11:24:47Z",
+  "phase": "PERF-P2A",
+  "channel": "admin-perf-p2a",
   "production_hosting_deploy": false,
   "includes": {
-    "profile_dedupe": true,
-    "accountant_listener_trim": true,
-    "settlements_stream_stable": true
+    "completed_candidate_queries": true,
+    "first_useful_rows": true,
+    "settlements_page_40": true,
+    "summary_not_page_only": true
   }
 }

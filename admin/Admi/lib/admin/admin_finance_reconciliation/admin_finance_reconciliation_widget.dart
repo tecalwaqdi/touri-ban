@@ -30,6 +30,8 @@ class _AdminFinanceReconciliationWidgetState
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late Menu2Model _menu2Model;
   Future<FinanceReconciliationResult>? _future;
+  FinanceReconciliationResult? _earlyPartial;
+  bool _summaryLoading = false;
 
   @override
   void initState() {
@@ -45,15 +47,34 @@ class _AdminFinanceReconciliationWidgetState
   }
 
   Future<FinanceReconciliationResult> _load() async {
-    final orders = await AccountantFinanceLoader.loadOrdersForCurrentScope();
-    final settlements = await AccountantFinanceLoader.loadSettlementsMaps();
+    setState(() {
+      _summaryLoading = true;
+      _earlyPartial = null;
+    });
     final scope = AccountantFinanceLoader.scopeForCurrentUser();
-    return FinanceReconciliationReadModel.buildReconciliation(
+    final settlementsFuture = AccountantFinanceLoader.loadSettlementsMaps();
+    final orders = await AccountantFinanceLoader.loadOrdersForCurrentScope(
+      onFirstPage: (first, _) {
+        if (!mounted) return;
+        // First useful rows: B1 on first modern page only — not period totals.
+        final partial = FinanceReconciliationReadModel.buildReconciliation(
+          orders: first,
+          scope: scope,
+          currency: 'SAR',
+          settlements: const [],
+        );
+        setState(() => _earlyPartial = partial);
+      },
+    );
+    final settlements = await settlementsFuture;
+    final result = FinanceReconciliationReadModel.buildReconciliation(
       orders: orders,
       scope: scope,
       currency: 'SAR',
       settlements: settlements,
     );
+    if (mounted) setState(() => _summaryLoading = false);
+    return result;
   }
 
   String _moneyOrDash(MoneyAmount? m) {
@@ -87,7 +108,9 @@ class _AdminFinanceReconciliationWidgetState
           : FutureBuilder<FinanceReconciliationResult>(
               future: _future,
               builder: (context, snap) {
-                if (snap.connectionState != ConnectionState.done) {
+                final result = snap.data ?? _earlyPartial;
+                if (result == null &&
+                    snap.connectionState != ConnectionState.done) {
                   return Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -102,7 +125,7 @@ class _AdminFinanceReconciliationWidgetState
                     ),
                   );
                 }
-                if (snap.hasError) {
+                if (snap.hasError && result == null) {
                   return Center(
                     child: Text(
                       'تعذر تحميل بيانات المصالحة المالية',
@@ -110,15 +133,36 @@ class _AdminFinanceReconciliationWidgetState
                     ),
                   );
                 }
-                final result = snap.data!;
+                if (result == null) {
+                  return Center(
+                    child: Text(
+                      'لا توجد بيانات',
+                      style: AccountantFinanceText.body(theme),
+                    ),
+                  );
+                }
                 return RefreshIndicator(
                   onRefresh: () async {
                     setState(() => _future = _load());
                     await _future;
                   },
-                  child: _WorkspaceBody(
-                    result: result,
-                    moneyOrDash: _moneyOrDash,
+                  child: Column(
+                    children: [
+                      if (_summaryLoading && snap.data == null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+                          child: Text(
+                            'صفوف أولية جاهزة — جاري إكمال ملخص الفترة…',
+                            style: AccountantFinanceText.label(theme),
+                          ),
+                        ),
+                      Expanded(
+                        child: _WorkspaceBody(
+                          result: result,
+                          moneyOrDash: _moneyOrDash,
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },

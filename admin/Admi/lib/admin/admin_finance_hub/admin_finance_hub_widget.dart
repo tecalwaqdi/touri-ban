@@ -35,6 +35,9 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   AdminDatePreset _preset = AdminDatePreset.thisMonth;
   Future<AccountantFinanceViewBundle>? _future;
   AccountantFinanceViewBundle? _lastOk;
+  /// PERF-P2A: first modern page before full-period summary completes.
+  List<AccountantTripRow>? _earlyRows;
+  bool _summaryLoading = false;
   bool _advancedOpen = false;
 
   String? _paymentMethod;
@@ -69,12 +72,24 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   void _reload() {
     final label = _presetLabels[_preset] ?? _preset.name;
     setState(() {
+      _earlyRows = null;
+      _summaryLoading = true;
       _future = AccountantFinanceLoader.load(
         datePreset: _preset,
         periodLabel: label,
+        onFirstPage: (rows, _) {
+          if (!mounted) return;
+          setState(() => _earlyRows = rows);
+        },
       ).then((b) {
         _lastOk = b;
         return b;
+      }).whenComplete(() {
+        if (mounted) {
+          setState(() => _summaryLoading = false);
+        } else {
+          _summaryLoading = false;
+        }
       });
     });
   }
@@ -95,8 +110,17 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
         builder: (context, snapshot) {
           final bundle = snapshot.data ?? _lastOk;
           final loading = snapshot.connectionState == ConnectionState.waiting &&
-              bundle == null;
+              bundle == null &&
+              (_earlyRows == null || _earlyRows!.isEmpty);
           final errored = snapshot.hasError && bundle == null;
+          final tableRows = AccountantTripFilters.apply(
+            bundle?.trips ?? _earlyRows ?? const [],
+            paymentMethod: _paymentMethod,
+            collectionStatus: _collectionStatus,
+            settlementStatus: _settlementStatus,
+            quality: _quality,
+            search: _search,
+          );
 
           return SingleChildScrollView(
             padding: AdminUi.pagePadding(context),
@@ -218,35 +242,43 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                     message: uiTr(context, 'يرجى إعادة المحاولة.'),
                     onRetry: _reload,
                   )
-                else if (bundle == null)
+                else if (bundle == null &&
+                    (_earlyRows == null || _earlyRows!.isEmpty))
                   AdminEmptyState(
                     title: uiTr(context, 'لا توجد بيانات'),
                     message: uiTr(context, 'لا نتائج ضمن الفلاتر الحالية.'),
                   )
                 else ...[
-                  if (snapshot.connectionState == ConnectionState.waiting)
+                  if (_summaryLoading ||
+                      snapshot.connectionState == ConnectionState.waiting)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text(
-                        uiTr(context, 'جاري التحديث…'),
+                        uiTr(
+                          context,
+                          bundle == null
+                              ? 'جاري حساب الملخص للفترة… تظهر الصفوف الأولى الآن.'
+                              : 'جاري التحديث…',
+                        ),
                         style: AccountantFinanceText.label(theme).copyWith(
                           color: AdminUi.brandTeal,
                         ),
                       ),
                     ),
-                  AccountantFinanceAlertsBanner(alerts: bundle.alerts),
-                  if (bundle.alerts.isNotEmpty) const SizedBox(height: 10),
-                  AccountantFinanceSummaryStrip(bundle: bundle),
-                  const SizedBox(height: 12),
-                  AccountantMoneyMovementTable(
-                    rows: AccountantTripFilters.apply(
-                      bundle.trips,
-                      paymentMethod: _paymentMethod,
-                      collectionStatus: _collectionStatus,
-                      settlementStatus: _settlementStatus,
-                      quality: _quality,
-                      search: _search,
+                  if (bundle != null) ...[
+                    AccountantFinanceAlertsBanner(alerts: bundle.alerts),
+                    if (bundle.alerts.isNotEmpty) const SizedBox(height: 10),
+                    AccountantFinanceSummaryStrip(bundle: bundle),
+                    const SizedBox(height: 12),
+                  ] else
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: AdminLoadingState(
+                        label: uiTr(context, 'جاري حساب الملخص المحاسبي'),
+                      ),
                     ),
+                  AccountantMoneyMovementTable(
+                    rows: tableRows,
                     onOpenDetails: (row) =>
                         showAccountantTripDetailsDrawer(context, row),
                   ),

@@ -10,6 +10,7 @@ import '/core/admin_currency.dart';
 import '/core/admin_qa_fixture.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/core/finance/accountant_finance_labels.dart';
+import '/core/finance/accountant_finance_loader.dart';
 import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/admin_finance_ui_labels.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -40,10 +41,20 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
   final AdminSettlementsStreamOwner _settlementsStream =
       AdminSettlementsStreamOwner();
 
+  /// PERF-P2A: older one-shot pages (not live listeners).
+  final List<QueryDocumentSnapshot<Map<String, dynamic>>> _olderDocs = [];
+  DocumentSnapshot<Map<String, dynamic>>? _liveLastDoc;
+  bool _loadingMore = false;
+  bool _hasMoreOlder = true;
+
+  /// Period summary (bounded maps) — not first-page-only totals.
+  List<Map<String, dynamic>>? _periodMaps;
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AdminSettlementsModel());
+    _reloadPeriodSummary();
   }
 
   @override
@@ -51,6 +62,31 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
     _settlementsStream.dispose();
     _model.dispose();
     super.dispose();
+  }
+
+  void _reloadPeriodSummary() {
+    AccountantFinanceLoader.loadSettlementsMaps().then((m) {
+      if (mounted) setState(() => _periodMaps = m);
+    });
+  }
+
+  Future<void> _loadMoreOlder() async {
+    if (_loadingMore || !_hasMoreOlder || _liveLastDoc == null) return;
+    setState(() => _loadingMore = true);
+    try {
+      final snap = await AdminSettlementsQuery.fetchPageAfter(_liveLastDoc!);
+      if (snap.docs.isEmpty) {
+        _hasMoreOlder = false;
+      } else {
+        _olderDocs.addAll(snap.docs);
+        _liveLastDoc = snap.docs.last;
+        if (snap.docs.length < AdminSettlementsQuery.pageLimit) {
+          _hasMoreOlder = false;
+        }
+      }
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   @override
@@ -129,7 +165,16 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
               if (!snap.hasData) {
                 return const Center(child: CircularProgressIndicator());
               }
-              var docs = snap.data!.docs.toList();
+              final liveDocs = snap.data!.docs;
+              if (liveDocs.isNotEmpty) {
+                _liveLastDoc = liveDocs.last;
+              }
+              final byId =
+                  <String, QueryDocumentSnapshot<Map<String, dynamic>>>{
+                for (final d in liveDocs) d.id: d,
+                for (final d in _olderDocs) d.id: d,
+              };
+              var docs = byId.values.toList();
               if (AdminRoleService.isCountryAgent &&
                   !AdminRoleService.canWriteSettlements) {
                 final path = AdminRoleService.scopedCountryRef?.path;
@@ -184,8 +229,18 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
               var paid = 0;
               var remaining = 0;
               var currency = 'SAR';
-              for (final d in docs) {
-                final s = d.data();
+              final summaryRows = _periodMaps ??
+                  docs
+                      .map((d) => <String, dynamic>{'id': d.id, ...d.data()})
+                      .toList();
+              for (final s in summaryRows) {
+                if (!_showQaDiagnostics &&
+                    AdminQaFixture.isFinanceQaSettlement(
+                      s,
+                      settlementId: (s['id'] ?? '').toString(),
+                    )) {
+                  continue;
+                }
                 currency = (s['currency'] as String?) ?? currency;
                 final st = (s['status'] ?? '').toString();
                 final out = (s['outstandingMinor'] as num?)?.toInt() ?? 0;
@@ -232,6 +287,15 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                       _sumChip(context, 'متبقٍ', maj(remaining)),
                     ],
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      _periodMaps == null
+                          ? 'جاري ملخص الفترة… الأرقام قد تكون مؤقتة من الصفحة الأولى'
+                          : 'ملخص الفترة (محدود) — الجدول صفحته الأولى مباشرة',
+                      style: AccountantFinanceText.label(theme),
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   if (docs.isEmpty)
                     AdminEmptyState(
@@ -269,6 +333,17 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                         ),
                       ),
                     ),
+                  if (_hasMoreOlder && docs.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Center(
+                      child: OutlinedButton(
+                        onPressed: _loadingMore ? null : _loadMoreOlder,
+                        child: Text(
+                          _loadingMore ? 'جاري التحميل…' : 'تحميل المزيد',
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               );
             },

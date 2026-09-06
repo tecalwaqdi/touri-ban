@@ -68,7 +68,8 @@ void main() {
       final b = AdminSettlementsQuery.keyForCurrentUser();
       expect(a, b);
       expect(a, contains('financial_settlements'));
-      expect(a, contains('limit=200'));
+      expect(a, contains('limit=40'));
+      expect(a, contains('orderBy=createdAtDesc'));
       expect(a, isNot(contains('status=')));
     });
 

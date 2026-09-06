@@ -2,28 +2,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '/backend/admin_perf_trace.dart';
 import '/backend/admin_role_service.dart';
+import '/core/finance/finance_order_query.dart';
 
-/// Stable Firestore query identity for the Settlements list (PERF-P1).
+/// Stable Firestore query identity for the Settlements list (PERF-P1 + P2A).
 ///
 /// Status / QA chips filter **client-side** and must not change this key.
+/// P2A: first page is live (limit [pageLimit]); older pages are one-shot.
 abstract final class AdminSettlementsQuery {
   AdminSettlementsQuery._();
 
-  static const int pageLimit = 200;
+  static const int pageLimit = FinanceOrderQuery.tablePageSize; // 40
 
-  /// Deterministic key for the server query (scope + limit only).
+  /// Deterministic key for the server query (scope + limit + order).
   static String keyForCurrentUser() {
     final scopedPath = _scopedCountryPath();
     if (scopedPath != null) {
-      return 'financial_settlements|countryId=$scopedPath|limit=$pageLimit';
+      return 'financial_settlements|countryId=$scopedPath|'
+          'orderBy=createdAtDesc|limit=$pageLimit';
     }
-    return 'financial_settlements|all|limit=$pageLimit';
+    return 'financial_settlements|all|orderBy=createdAtDesc|limit=$pageLimit';
   }
 
-  /// Same predicate as the historical Settlements widget query.
-  ///
   /// Country Agent (non–Super Admin): filter `countryId`.
-  /// Global Accountant / Super Admin: unscoped soft-cap list.
+  /// Global Accountant / Super Admin: unscoped first page.
   static Query<Map<String, dynamic>> buildForCurrentUser() {
     Query<Map<String, dynamic>> q =
         FirebaseFirestore.instance.collection('financial_settlements');
@@ -31,7 +32,7 @@ abstract final class AdminSettlementsQuery {
     if (scopedPath != null) {
       q = q.where('countryId', isEqualTo: scopedPath);
     }
-    return q.limit(pageLimit);
+    return q.orderBy('createdAt', descending: true).limit(pageLimit);
   }
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> snapshotsForCurrentUser() {
@@ -40,7 +41,23 @@ abstract final class AdminSettlementsQuery {
     return buildForCurrentUser().snapshots();
   }
 
-  /// Matches pre-P1 Settlements widget: country agent scope only.
+  /// One-shot older page (not a live listener).
+  static Future<QuerySnapshot<Map<String, dynamic>>> fetchPageAfter(
+    DocumentSnapshot<Map<String, dynamic>> after,
+  ) {
+    Query<Map<String, dynamic>> q =
+        FirebaseFirestore.instance.collection('financial_settlements');
+    final scopedPath = _scopedCountryPath();
+    if (scopedPath != null) {
+      q = q.where('countryId', isEqualTo: scopedPath);
+    }
+    return q
+        .orderBy('createdAt', descending: true)
+        .startAfterDocument(after)
+        .limit(pageLimit)
+        .get();
+  }
+
   static String? _scopedCountryPath() {
     if (AdminRoleService.isCountryAgent && !AdminRoleService.isSuperAdmin) {
       return AdminRoleService.scopedCountryIdClaim;

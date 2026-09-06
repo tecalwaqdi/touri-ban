@@ -1,23 +1,25 @@
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_ops_filters.dart';
-import '/backend/admin_performance.dart';
+import '/backend/admin_perf_trace.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/core/admin_currency.dart';
 import '/core/admin_qa_fixture.dart';
 import '/core/finance/accountant_finance_read_model.dart';
 import '/core/finance/accountant_finance_view_model.dart';
+import '/core/finance/finance_order_query.dart';
 import '/core/finance/financial_amount_resolution.dart';
 import '/core/finance/financial_trip_semantics.dart';
 
 /// Loads orders (scoped) and builds [AccountantFinanceViewBundle] via F1 only.
 ///
-/// Country Agent: Firestore query constrained to scoped country.
-/// Super Admin "all countries": do **not** inherit [AdminCountryScope] silently.
+/// PERF-P2A: completed-candidate server queries + first-page callback.
+/// Summary always uses full eligible population (never visible page only).
 abstract final class AccountantFinanceLoader {
   AccountantFinanceLoader._();
 
-  static const int scanCap = 100000;
+  /// Retained for report/tests — hard scan ceiling (completed-only).
+  static const int scanCap = FinanceOrderQuery.scanCap;
 
   static AccountantFinanceScope scopeForCurrentUser({
     DocumentReference? countryOverride,
@@ -54,6 +56,7 @@ abstract final class AccountantFinanceLoader {
     DocumentReference? driverRef,
     String currency = 'SAR',
     String periodLabel = '',
+    void Function(List<AccountantTripRow> firstRows, int docsRead)? onFirstPage,
   }) async {
     final range = AdminDateRangeResolver.resolve(
       preset: datePreset,
@@ -61,7 +64,6 @@ abstract final class AccountantFinanceLoader {
       customEnd: customEnd,
     );
 
-    // Super Admin: only explicit countryRef. Never inherit reports UI country.
     DocumentReference? effectiveCountry;
     if (AdminRoleService.usesCountryFinanceScope) {
       effectiveCountry = AdminRoleService.scopedCountryRef ??
@@ -70,41 +72,52 @@ abstract final class AccountantFinanceLoader {
       effectiveCountry = countryRef;
     }
 
-    final orders = await _scanOrders(
+    final scope = scopeForCurrentUser(countryOverride: effectiveCountry);
+    final sym = AdminCurrency.symbolByCode[currency] ?? currency;
+
+    // FIRST USEFUL ROWS — modern completed page only (does not define totals).
+    try {
+      final firstPage = await FinanceOrderQuery.fetchModernPage(
+        range: range,
+        country: effectiveCountry,
+        driverRef: driverRef,
+        limit: FinanceOrderQuery.tablePageSize,
+      );
+      final firstRows = _tripsFromOrders(
+        firstPage.orders,
+        scope: scope,
+        symbol: sym,
+      );
+      onFirstPage?.call(firstRows, firstPage.docsRead);
+    } on FirebaseException catch (e) {
+      // Controlled surface — no silent 100k fallback.
+      throw StateError(
+        'finance_query_unavailable:${e.code}',
+      );
+    }
+
+    // FULL PERIOD SUMMARY — chunked completed candidates (modern + legacy).
+    final scan = await FinanceOrderQuery.scanCompletedCandidates(
       range: range,
       country: effectiveCountry,
       driverRef: driverRef,
     );
+    final orders = scan.orders;
 
-    final scope = scopeForCurrentUser(countryOverride: effectiveCountry);
     final model = AccountantFinanceReadModel.aggregate(
       orders: orders,
       scope: scope,
       currency: currency,
     );
 
-    final sym = AdminCurrency.symbolByCode[currency] ?? currency;
-    final trips = <AccountantTripRow>[];
+    final trips = _tripsFromOrders(orders, scope: scope, symbol: sym);
     var fixturesSkippedForTable = 0;
     for (final o in orders) {
       if (FinancialTripSemantics.isFinanceQaFixture(o) ||
           AdminQaFixture.isFixtureOrder(o)) {
         fixturesSkippedForTable++;
-        continue;
       }
-      if (!scope.allowsCountry(o.revDolh?.path)) continue;
-      if (AdminRoleService.usesCountryFinanceScope) {
-        if (AdminCountryScope.filterOrders([o]).isEmpty) continue;
-      }
-      final row = AccountantTripRow.fromOrder(o, symbol: sym);
-      if (!row.operationallyCompleted) continue;
-      trips.add(row);
     }
-    trips.sort((a, b) {
-      final ad = a.orderedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-      final bd = b.orderedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-      return bd.compareTo(ad);
-    });
 
     final openSettlements = await _countOpenSettlements(effectiveCountry);
 
@@ -129,60 +142,38 @@ abstract final class AccountantFinanceLoader {
       alerts: alerts,
       currency: currency,
       periodLabel: periodLabel.isEmpty ? datePreset.name : periodLabel,
-      docsScanned: orders.length,
-      truncated: orders.length >= scanCap,
+      docsScanned: scan.docsRead,
+      truncated: scan.truncated || orders.length >= scanCap,
       openSettlementsRemaining: openSettlements,
       fixturesExcludedFromTable: fixturesSkippedForTable,
     );
   }
 
-  static Future<List<OrderRecord>> _scanOrders({
-    required AdminDateRange? range,
-    required DocumentReference? country,
-    DocumentReference? driverRef,
-  }) async {
-    final results = <OrderRecord>[];
-    DocumentSnapshot? last;
-
-    while (results.length < scanCap) {
-      Query q = OrderRecord.collection.orderBy('data_order', descending: true);
-      if (driverRef != null) {
-        q = OrderRecord.collection
-            .where('mndob_user', isEqualTo: driverRef)
-            .orderBy('data_order', descending: true);
-      } else if (country != null) {
-        q = OrderRecord.collection
-            .where('Rev_dolh', isEqualTo: country)
-            .orderBy('data_order', descending: true);
+  static List<AccountantTripRow> _tripsFromOrders(
+    List<OrderRecord> orders, {
+    required AccountantFinanceScope scope,
+    required String symbol,
+  }) {
+    final trips = <AccountantTripRow>[];
+    for (final o in orders) {
+      if (FinancialTripSemantics.isFinanceQaFixture(o) ||
+          AdminQaFixture.isFixtureOrder(o)) {
+        continue;
       }
-      if (range != null && driverRef == null) {
-        q = q
-            .where('data_order', isGreaterThanOrEqualTo: range.startTimestamp)
-            .where('data_order', isLessThan: range.endTimestamp);
+      if (!scope.allowsCountry(o.revDolh?.path)) continue;
+      if (AdminRoleService.usesCountryFinanceScope) {
+        if (AdminCountryScope.filterOrders([o]).isEmpty) continue;
       }
-      if (last != null) q = q.startAfterDocument(last);
-      final snap = await q.limit(kAdminPageSizeLarge).get();
-      if (snap.docs.isEmpty) break;
-      for (final doc in snap.docs) {
-        final order = OrderRecord.fromSnapshot(doc);
-        if (range != null && driverRef != null) {
-          final d = order.dataOrder;
-          if (d == null) continue;
-          if (d.isBefore(range.startInclusive) ||
-              !d.isBefore(range.endExclusive)) {
-            continue;
-          }
-        }
-        if (country != null && order.revDolh?.path != country.path) continue;
-        if (AdminRoleService.usesCountryFinanceScope) {
-          if (AdminCountryScope.filterOrders([order]).isEmpty) continue;
-        }
-        results.add(order);
-      }
-      last = snap.docs.last;
-      if (snap.docs.length < kAdminPageSizeLarge) break;
+      final row = AccountantTripRow.fromOrder(o, symbol: symbol);
+      if (!row.operationallyCompleted) continue;
+      trips.add(row);
     }
-    return results;
+    trips.sort((a, b) {
+      final ad = a.orderedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bd = b.orderedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bd.compareTo(ad);
+    });
+    return trips;
   }
 
   static Future<int> _countOpenSettlements(DocumentReference? country) async {
@@ -192,21 +183,39 @@ abstract final class AccountantFinanceLoader {
       if (AdminRoleService.usesCountryFinanceScope && country != null) {
         q = q.where('countryId', isEqualTo: country.path);
       }
-      final snap = await q.limit(500).get();
+      q = q.orderBy('createdAt', descending: true);
+      DocumentSnapshot<Map<String, dynamic>>? last;
       var open = 0;
-      for (final doc in snap.docs) {
-        final d = doc.data();
-        final st = (d['status'] ?? '').toString().toLowerCase();
-        final outstanding = (d['outstandingMinor'] as num?)?.toInt() ?? 0;
-        if (st == 'settled' || st == 'voided') continue;
-        if (outstanding > 0 ||
-            st == 'draft' ||
-            st == 'locked' ||
-            st == 'partially_paid' ||
-            st == 'open' ||
-            st == 'pending') {
-          open++;
+      var seen = 0;
+      const cap = 500;
+      while (seen < cap) {
+        Query<Map<String, dynamic>> page = q.limit(50);
+        if (last != null) {
+          page = page.startAfterDocument(last);
         }
+        final snap = await page.get();
+        AdminPerfTrace.financeDocsRead(
+          snap.docs.length,
+          source: 'settlements_open',
+        );
+        if (snap.docs.isEmpty) break;
+        for (final doc in snap.docs) {
+          seen++;
+          final map = doc.data();
+          final st = (map['status'] ?? '').toString().toLowerCase();
+          final outstanding = (map['outstandingMinor'] as num?)?.toInt() ?? 0;
+          if (st == 'settled' || st == 'voided') continue;
+          if (outstanding > 0 ||
+              st == 'draft' ||
+              st == 'locked' ||
+              st == 'partially_paid' ||
+              st == 'open' ||
+              st == 'pending') {
+            open++;
+          }
+        }
+        last = snap.docs.last;
+        if (snap.docs.length < 50) break;
       }
       return open;
     } catch (_) {
@@ -217,6 +226,7 @@ abstract final class AccountantFinanceLoader {
   /// Broad completed-trip scan for B1 reconciliation workspace (scoped).
   static Future<List<OrderRecord>> loadOrdersForCurrentScope({
     AdminDatePreset datePreset = AdminDatePreset.thisYear,
+    void Function(List<OrderRecord> firstPage, int docsRead)? onFirstPage,
   }) async {
     DocumentReference? country;
     if (usesCountryFinanceScopeSafe()) {
@@ -224,13 +234,29 @@ abstract final class AccountantFinanceLoader {
           AdminCountryScope.activeCountryRef;
     }
     final range = AdminDateRangeResolver.resolve(preset: datePreset);
-    return _scanOrders(range: range, country: country);
+
+    try {
+      final first = await FinanceOrderQuery.fetchModernPage(
+        range: range,
+        country: country,
+        limit: FinanceOrderQuery.tablePageSize,
+      );
+      onFirstPage?.call(first.orders, first.docsRead);
+    } on FirebaseException catch (e) {
+      throw StateError('finance_query_unavailable:${e.code}');
+    }
+
+    final scan = await FinanceOrderQuery.scanCompletedCandidates(
+      range: range,
+      country: country,
+    );
+    return scan.orders;
   }
 
   static bool usesCountryFinanceScopeSafe() =>
       AdminRoleService.usesCountryFinanceScope;
 
-  /// Settlement docs as maps for B1 association (read-only).
+  /// Settlement docs as maps for B1 association (read-only, paginated chunks).
   static Future<List<Map<String, dynamic>>> loadSettlementsMaps() async {
     try {
       Query<Map<String, dynamic>> q =
@@ -242,10 +268,23 @@ abstract final class AccountantFinanceLoader {
           q = q.where('countryId', isEqualTo: country.path);
         }
       }
-      final snap = await q.limit(500).get();
-      return snap.docs
-          .map((d) => <String, dynamic>{'id': d.id, ...d.data()})
-          .toList();
+      q = q.orderBy('createdAt', descending: true);
+      final out = <Map<String, dynamic>>[];
+      DocumentSnapshot? last;
+      const cap = 200;
+      while (out.length < cap) {
+        var page = q.limit(FinanceOrderQuery.tablePageSize);
+        if (last != null) page = page.startAfterDocument(last);
+        final snap = await page.get();
+        AdminPerfTrace.financeDocsRead(snap.docs.length, source: 'settlements_maps');
+        if (snap.docs.isEmpty) break;
+        for (final d in snap.docs) {
+          out.add(<String, dynamic>{'id': d.id, ...d.data()});
+        }
+        last = snap.docs.last;
+        if (snap.docs.length < FinanceOrderQuery.tablePageSize) break;
+      }
+      return out;
     } catch (_) {
       return const [];
     }

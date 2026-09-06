@@ -18,6 +18,8 @@ abstract final class AdminPerfTrace {
   static int menuBadgeListenerBuilds = 0;
   static int settlementStreamCreates = 0;
   static int settlementStreamDisposes = 0;
+  static int financeDocsReadTotal = 0;
+  static int financeQueryErrors = 0;
 
   static final List<String> events = <String>[];
 
@@ -30,6 +32,8 @@ abstract final class AdminPerfTrace {
     menuBadgeListenerBuilds = 0;
     settlementStreamCreates = 0;
     settlementStreamDisposes = 0;
+    financeDocsReadTotal = 0;
+    financeQueryErrors = 0;
     events.clear();
   }
 
@@ -93,4 +97,16 @@ abstract final class AdminPerfTrace {
   /// Active settlement stream creates minus disposes (test helper).
   static int get settlementStreamBalance =>
       settlementStreamCreates - settlementStreamDisposes;
+
+  static void financeDocsRead(int n, {required String source}) {
+    if (!enabled || n <= 0) return;
+    financeDocsReadTotal += n;
+    _note('finance_docs_read+$n total=$financeDocsReadTotal src=$source');
+  }
+
+  static void financeQueryError(String code, {required String source}) {
+    if (!enabled) return;
+    financeQueryErrors++;
+    _note('finance_query_error#$financeQueryErrors code=$code src=$source');
+  }
 }

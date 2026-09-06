@@ -33,6 +33,8 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
   AdminDatePreset _preset = AdminDatePreset.thisMonth;
   Future<AccountantFinanceViewBundle>? _future;
   AccountantFinanceViewBundle? _lastOk;
+  List<AccountantTripRow>? _earlyRows;
+  bool _summaryLoading = false;
 
   static const _presetLabels = <AdminDatePreset, String>{
     AdminDatePreset.today: 'اليوم',
@@ -58,12 +60,24 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
   void _reload() {
     final label = _presetLabels[_preset] ?? _preset.name;
     setState(() {
+      _earlyRows = null;
+      _summaryLoading = true;
       _future = AccountantFinanceLoader.load(
         datePreset: _preset,
         periodLabel: label,
+        onFirstPage: (rows, _) {
+          if (!mounted) return;
+          setState(() => _earlyRows = rows);
+        },
       ).then((b) {
         _lastOk = b;
         return b;
+      }).whenComplete(() {
+        if (mounted) {
+          setState(() => _summaryLoading = false);
+        } else {
+          _summaryLoading = false;
+        }
       });
     });
   }
@@ -84,7 +98,8 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
         builder: (context, snapshot) {
           final bundle = snapshot.data ?? _lastOk;
           final loading = snapshot.connectionState == ConnectionState.waiting &&
-              bundle == null;
+              bundle == null &&
+              (_earlyRows == null || _earlyRows!.isEmpty);
           final errored = snapshot.hasError && bundle == null;
 
           return SingleChildScrollView(
@@ -135,17 +150,24 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
                     message: uiTr(context, 'يرجى إعادة المحاولة.'),
                     onRetry: _reload,
                   )
-                else if (bundle == null)
+                else if (bundle == null &&
+                    (_earlyRows == null || _earlyRows!.isEmpty))
                   AdminEmptyState(
                     title: uiTr(context, 'لا توجد بيانات'),
                     message: uiTr(context, 'لا نتائج ضمن الفلاتر الحالية.'),
                   )
                 else ...[
-                  if (snapshot.connectionState == ConnectionState.waiting)
+                  if (_summaryLoading ||
+                      snapshot.connectionState == ConnectionState.waiting)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text(
-                        uiTr(context, 'جاري التحديث…'),
+                        uiTr(
+                          context,
+                          bundle == null
+                              ? 'جاري حساب الملخص للفترة… تظهر الصفوف الأولى الآن.'
+                              : 'جاري التحديث…',
+                        ),
                         style: theme.labelSmall.override(
                           fontFamily: theme.labelSmallFamily,
                           color: AdminUi.brandTeal,
@@ -153,12 +175,14 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
                         ),
                       ),
                     ),
-                  AccountantFinanceAlertsBanner(alerts: bundle.alerts),
-                  if (bundle.alerts.isNotEmpty) const SizedBox(height: 10),
-                  AccountantFinanceSummaryStrip(bundle: bundle),
-                  const SizedBox(height: 12),
+                  if (bundle != null) ...[
+                    AccountantFinanceAlertsBanner(alerts: bundle.alerts),
+                    if (bundle.alerts.isNotEmpty) const SizedBox(height: 10),
+                    AccountantFinanceSummaryStrip(bundle: bundle),
+                    const SizedBox(height: 12),
+                  ],
                   AccountantMoneyMovementTable(
-                    rows: bundle.trips,
+                    rows: bundle?.trips ?? _earlyRows ?? const [],
                     onOpenDetails: (row) =>
                         showAccountantTripDetailsDrawer(context, row),
                   ),
