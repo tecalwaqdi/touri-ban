@@ -1,15 +1,27 @@
 {
-  "git_commit": "52f853a0ce9f85a9a66ef5f07ac9a87b149369cb",
-  "git_commit_short": "52f853a",
-  "builtAt": "2026-09-07T06:57:10Z",
-  "phase": "ADMIN_UI_V21_POLISH",
-  "channel": "admin-ui-v21-accountant",
-  "production_hosting_deploy": false,
-  "base_ui_v2": "a33f734",
-  "includes": {
-    "active_sidebar_route_fix": true,
-    "settlements_claim_soft_refresh": true,
-    "density_polish": true,
-    "reports_tech_labels_removed": true
-  }
+  "app_version": "1.0.17+2021",
+  "build_number": "2021",
+  "git_commit": "414eaab5bc5ac17364b1e9aba313157e2fa36e6e",
+  "flutter_version": "3.44.8",
+  "dart_version": "3.12.2",
+  "framework_revision": "058e0af2c2b57e369d905a03ac9748b0ebf543c6",
+  "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+  "base_href": "/admin/",
+  "build_command_id": "scripts/build_admin_web.sh",
+  "build_flags": [
+    "--release",
+    "--base-href=/admin/",
+    "--no-web-resources-cdn",
+    "--no-wasm-dry-run"
+  ],
+  "generated_at": "2026-09-07T07:10:51Z",
+  "phase": "ADMIN_UI_V21_PRODUCTION",
+  "approved_ui_commit": "52f853a0ce9f85a9a66ef5f07ac9a87b149369cb",
+  "main_merge_commit": "a2830516c30449ca9abc86de0e0a4cca249b3e8e",
+  "production_hosting_deploy": true,
+  "channel": "live",
+  "surfaces": [
+    "firebase_hosting_admin",
+    "render_touri_ban_1"
+  ]
 }
