@@ -12,10 +12,27 @@ const {deriveClaimsFromUserData} = require("./panel_claims.js");
 async function syncClaimsForUid(uid) {
   const snap = await db.doc(`user/${uid}`).get();
   if (!snap.exists) {
-    await admin.auth().setCustomUserClaims(uid, {});
-    return {};
+    // Do not wipe existing claims when profile doc is missing — avoids
+    // blanking a valid finance/admin token on transient read misses.
+    functions.logger.warn('syncClaimsForUid: missing user profile', {uid});
+    return (await admin.auth().getUser(uid)).customClaims || {};
   }
-  const claims = deriveClaimsFromUserData(snap.data());
+  const data = snap.data() || {};
+  const claims = deriveClaimsFromUserData(data);
+  const rule = data.isAdminRule ?? data.IsAdminRule ?? 0;
+  const ruleNum = typeof rule === 'string' ? parseInt(rule, 10) : Number(rule) || 0;
+  // Guard: panel personas must never sync to empty claims (stale deploy / parse bug).
+  if (Object.keys(claims).length === 0 && ruleNum >= 1 && ruleNum <= 5) {
+    functions.logger.error('syncClaimsForUid: refuse empty claims for panel rule', {
+      uid,
+      ruleNum,
+    });
+    throw new functions.https.HttpsError(
+      'internal',
+      'CLAIM_DERIVATION_EMPTY',
+      {uid, ruleNum},
+    );
+  }
   await admin.auth().setCustomUserClaims(uid, claims);
   return claims;
 }

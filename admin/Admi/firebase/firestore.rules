@@ -1214,7 +1214,7 @@ service cloud.firestore {
 
     match /admin_financial_cache/{document} {
       allow read: if isSuperAdmin()
-        || claimBool('finance')
+        || isFinance()
         || (isCountryAdmin()
           && countriesMatchAdminScope(resource.data.Rev_dolh));
       allow write: if false;
@@ -1362,9 +1362,12 @@ service cloud.firestore {
     }
 
     // ── Settlement ledger V2 (Admin SDK writes only) ──
+    // Use isFinance() (claim OR profile isAdminRule=5) — same as order reads.
+    // claimBool('finance') alone breaks Global Accountant when token claims lag
+    // or a stale refreshMyClaims wiped the finance claim.
     function canReadSettlement() {
       return isSuperAdmin()
-        || claimBool('finance')
+        || isFinance()
         || (
           isCountryAdmin()
           && claimCountryPath() != null
@@ -1381,31 +1384,31 @@ service cloud.firestore {
 
       match /lines/{lineId} {
         allow read: if signedIn() && (
-          isSuperAdmin() || claimBool('finance') || isCountryAdmin()
+          isSuperAdmin() || isFinance() || isCountryAdmin()
         );
         allow create, update, delete: if false;
       }
 
       match /events/{eventId} {
         allow read: if signedIn() && (
-          isSuperAdmin() || claimBool('finance') || isCountryAdmin()
+          isSuperAdmin() || isFinance() || isCountryAdmin()
         );
         allow create, update, delete: if false;
       }
     }
 
     match /financial_settlement_claims/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow read: if signedIn() && (isSuperAdmin() || isFinance());
       allow create, update, delete: if false;
     }
 
     match /financial_payment_allocations/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow read: if signedIn() && (isSuperAdmin() || isFinance());
       allow create, update, delete: if false;
     }
 
     match /financial_payment_allocation_claims/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow read: if signedIn() && (isSuperAdmin() || isFinance());
       allow create, update, delete: if false;
     }
 
@@ -1420,7 +1423,7 @@ service cloud.firestore {
     match /financial_settlement_payments/{id} {
       allow read: if signedIn() && (
         isSuperAdmin()
-        || claimBool('finance')
+        || isFinance()
         || (
           isCountryAdmin()
           && claimCountryPath() != null
@@ -1434,27 +1437,27 @@ service cloud.firestore {
     }
 
     match /financial_periods/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow read: if signedIn() && (isSuperAdmin() || isFinance() || isCountryAdmin());
       allow create, update, delete: if false;
     }
 
     match /financial_adjustments/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow read: if signedIn() && (isSuperAdmin() || isFinance() || isCountryAdmin());
       allow create, update, delete: if false;
     }
 
     match /financial_config/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow read: if signedIn() && (isSuperAdmin() || isFinance());
       allow create, update, delete: if false;
     }
 
     match /financial_audit_events/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow read: if signedIn() && (isSuperAdmin() || isFinance() || isCountryAdmin());
       allow create, update, delete: if false;
     }
 
     match /financial_aggregation_metrics/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow read: if signedIn() && (isSuperAdmin() || isFinance());
       allow create, update, delete: if false;
     }
 

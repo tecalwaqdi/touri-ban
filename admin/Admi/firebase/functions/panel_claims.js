@@ -12,10 +12,37 @@
  *   5 = Accountant (finance claim ONLY — read-only persona)
  */
 
+function normalizeAdminRule(value) {
+  if (value == null) return 0;
+  if (typeof value === 'string') {
+    const n = parseInt(value, 10);
+    return Number.isFinite(n) ? n : 0;
+  }
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : 0;
+  }
+  // Admin SDK / protobuf Long-like
+  if (typeof value === 'object') {
+    if (typeof value.toNumber === 'function') {
+      try {
+        return value.toNumber();
+      } catch (_) {
+        /* fall through */
+      }
+    }
+    if ('value' in value) {
+      return normalizeAdminRule(value.value);
+    }
+  }
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
 function deriveClaimsFromUserData(data) {
   const claims = {};
-  const rule = data.isAdminRule ?? data.IsAdminRule ?? 0;
-  const ruleNum = typeof rule === 'string' ? parseInt(rule, 10) : Number(rule) || 0;
+  const ruleNum = normalizeAdminRule(
+    data.isAdminRule ?? data.IsAdminRule ?? 0,
+  );
 
   if (data.isAdmin === true || data.IsAdmin === true || ruleNum === 1) {
     claims.super_admin = true;

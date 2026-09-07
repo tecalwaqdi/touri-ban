@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_ops_filters.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
@@ -39,11 +40,11 @@ class _AdminFinanceChannelsWidgetState
     super.initState();
     _menu2Model = createModel(context, () => Menu2Model());
     // F2: channels remain diagnostic; primary accountant UI is Finance Hub.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      // Keep route for deep links; surface banner only (no hard redirect).
+    // Soft claim sync so aggregateFinancialAccountingV2 sees token.finance
+    // (stale refreshMyClaims previously wiped Accountant claims).
+    refreshAuthClaims(source: 'finance_channels.init').whenComplete(() {
+      if (mounted) _reload();
     });
-    _reload();
   }
 
   @override
