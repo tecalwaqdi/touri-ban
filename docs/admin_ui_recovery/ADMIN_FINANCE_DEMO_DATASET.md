@@ -86,7 +86,12 @@ Settlements: unsettled 7.50, partial 3.00/4.50, settled 7.50 — `DRIVER_PAYS_CO
 
 ---
 
-## UI (human QA after Admin client deploy of this branch)
+## UI (human QA)
+
+**Preview (Demo Mode UI):**  
+https://tutorial-multi-language-70gx4j--admin-finance-demo-mod-recaumou.web.app/admin/
+
+Login as `accountant.demo@touri-taxi.com` → enable **عرض البيانات التجريبية**.
 
 | Screen | Status |
 |--------|--------|
@@ -99,7 +104,7 @@ Settlements: unsettled 7.50, partial 3.00/4.50, settled 7.50 — `DRIVER_PAYS_CO
 | REPORTS | READY_FOR_HUMAN_QA |
 | AUDIT | READY_FOR_HUMAN_QA (search by demo settlement codes) |
 
-Seed is live in Firestore; Demo Mode UI ships on `feature/admin-finance-demo-mode` (preview before main).
+Seed is live in Firestore. Do **not** merge to main / Render until human QA PASS.
 
 ---
 
