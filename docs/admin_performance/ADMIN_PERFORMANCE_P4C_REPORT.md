@@ -217,7 +217,7 @@ FINAL
 ```
 BASE: P4B ddbb72b / 73ae78f
 BRANCH: recovery/admin-performance-p4c-firestore-transport
-COMMIT: (see git tip after push)
+COMMIT: d2d2216
 PREVIEW: https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin/
 
 CURRENT QUERY MODE: Hub/Recon ONE_SHOT get; Settlements LIVE
