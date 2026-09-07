@@ -38,4 +38,4 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
-# last_manual_trigger: 2026-09-04T08:35Z (parity pin 1.0.15+2017 nudge)
+# last_manual_trigger: 2026-09-07T07:12Z (UI V2.1 prod 1.0.17+2021)
