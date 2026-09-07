@@ -11,65 +11,46 @@
 |------|-------|
 | Human QA | **PASS** |
 | Approved UI commit | `52f853a0ce9f85a9a66ef5f07ac9a87b149369cb` |
-| Branch | `recovery/admin-ui-v21-polish` |
-| Preview | https://tutorial-multi-language-70gx4j--admin-ui-v21-accountan-n012b5bb.web.app/admin/ |
 | Production version | `1.0.17+2021` |
-
-## Scope of promote
-
-Includes the recovery lineage already Human-QA’d on preview:
-
-- AUTH-NAV-P0
-- Accountant finance read access
-- Finance F1/F2/B1/B2 surfaces (read)
-- Admin performance P1–P4C
-- Admin UI V2 + V2.1 polish
-
-**Explicitly excluded / unchanged this release:**
-
-- UI redesign beyond approved V2.1
-- P2B operational tables (not merged)
-- Driver Edit deferred work
-- Customer / Driver app UI
-- New Firestore Rules / Functions deploys (already live for Accountant/C3; not re-fired unless required for hosting)
+| Release stamp commit | `414eaab5bc5ac17364b1e9aba313157e2fa36e6e` |
+| GitHub `main` tip | see live `origin/main` |
 
 ## Canonical production surfaces
 
-| Surface | URL | Role |
-|---------|-----|------|
-| Render | https://touri-ban-1.onrender.com | Primary Admin SPA (`base-href=/`) |
-| Firebase Hosting | https://tutorial-multi-language-70gx4j.web.app/admin/ | Admin SPA (`base-href=/admin/`) |
-| GitHub `main` | `origin/main` | Canonical production source |
+| Surface | URL | Status |
+|---------|-----|--------|
+| GitHub `main` | https://github.com/tecalwaqdi/touri-ban | **MERGED** (PR #2 + nudge #3 + artifacts #4) |
+| Firebase Hosting | https://tutorial-multi-language-70gx4j.web.app/admin/ | **LIVE 1.0.17+2021** |
+| Render | https://touri-ban-1.onrender.com | **PENDING Manual Deploy** (auto-deploy did not fire; CLI needs `render login`) |
 
-## Release steps (executed)
+## Render Manual Deploy (required to finish)
 
-1. Stamp production version `1.0.17+2021` on recovery tip (no visual redesign)
-2. Merge recovery → `main` (GitHub)
-3. Build + deploy Firebase Hosting `/admin/`
-4. Trigger Render rebuild from `main` (pinned Flutter 3.44.8 via `scripts/render_build.sh`)
-5. Verify live `version.json` + `build_provenance.json`
+Dashboard → Static Site **touri-ban-admin** / `touri-ban-1`:
+
+1. Confirm branch = `main`
+2. Build Command = `bash scripts/render_build.sh`
+3. Root Directory = `admin/Admi`
+4. Publish Directory = `build/web`
+5. **Clear build cache & deploy** (Manual Deploy)
+6. Verify `https://touri-ban-1.onrender.com/version.json` → `1.0.17` / `2021`
 
 ## Safety
 
 | Gate | Status |
 |------|--------|
+| UI redesign during release | NONE |
 | Finance formulas | UNCHANGED |
 | F1/F2/B1 semantics | UNCHANGED |
 | Auth / RBAC | PRESERVED |
-| Accountant write | DENY (Super Admin only) |
+| Accountant write | DENY |
 | P2B | NOT MERGED |
 | Driver Edit | UNCHANGED |
+| Rules/Functions redeploy this step | NO (hosting + git only) |
+
+## PRs
+
+- https://github.com/tecalwaqdi/touri-ban/pull/2 — UI V2.1 → main
+- https://github.com/tecalwaqdi/touri-ban/pull/3 — Render nudge
+- https://github.com/tecalwaqdi/touri-ban/pull/4 — Firebase hosting artifact stamp
 
 STOP.
-
-
-## Live verification
-
-| Surface | Result |
-|---------|--------|
-| GitHub `main` | `66d88e7` (includes UI V2.1 + Render nudge) |
-| Firebase Hosting `/admin/version.json` | **1.0.17+2021** LIVE |
-| Approved UI commit on main | `52f853a` ancestor YES |
-| Render | pending rebuild / Manual Deploy if auto-deploy inactive |
-
-PR: https://github.com/tecalwaqdi/touri-ban/pull/2  
