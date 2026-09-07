@@ -2,7 +2,7 @@
 
 BRANCH: `recovery/admin-ui-v2-design-system`
 
-COMMIT: _(stamped after commit)_
+COMMIT: `a33f7346bb032c161e652adb99caf61f637ee81a`
 
 PREVIEW:  
 https://tutorial-multi-language-70gx4j--admin-ui-v2-accountant-sxg7r3pa.web.app/admin/
