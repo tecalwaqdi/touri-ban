@@ -107,45 +107,32 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
           return ListView(
             padding: AdminUi.pagePadding(context),
             children: [
-              Text(
-                uiTr(context, 'التقارير المحاسبية'),
-                style: AccountantFinanceText.pageTitle(theme),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                uiTr(
+              AdminPageHeader(
+                title: uiTr(context, 'التقارير المحاسبية'),
+                subtitle: uiTr(
                   context,
                   'ملخص على الشاشة مطابق لشاشة المالية لنفس الفترة والنطاق.',
                 ),
-                style: AccountantFinanceText.label(theme),
               ),
-              const SizedBox(height: 10),
-              Text(uiTr(context, 'الفترة'), style: AccountantFinanceText.label(theme)),
-              const SizedBox(height: 6),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
+              AdminPeriodSegmented<AdminDatePreset>(
+                values: _presetLabels.keys.toList(growable: false),
+                labels: {
                   for (final e in _presetLabels.entries)
-                    ChoiceChip(
-                      label: Text(
-                        uiTr(context, e.value),
-                        style: AccountantFinanceText.label(theme).copyWith(
-                          color: AccountantFinanceText.ink(theme),
-                        ),
-                      ),
-                      selected: _preset == e.key,
-                      onSelected: (_) {
-                        _preset = e.key;
-                        _reload();
-                      },
-                    ),
-                  IconButton(
-                    tooltip: uiTr(context, 'تحديث'),
-                    onPressed: _reload,
-                    icon: Icon(Icons.refresh_rounded, color: AdminUi.brandTeal),
-                  ),
-                ],
+                    e.key: uiTr(context, e.value),
+                },
+                selected: _preset,
+                onChanged: (preset) {
+                  _preset = preset;
+                  _reload();
+                },
+              ),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: IconButton(
+                  tooltip: uiTr(context, 'تحديث'),
+                  onPressed: _reload,
+                  icon: Icon(Icons.refresh_rounded, color: AdminUi.brandTeal),
+                ),
               ),
               const SizedBox(height: 8),
               Text(

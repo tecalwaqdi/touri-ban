@@ -10,7 +10,6 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/accountant_finance_loader.dart';
-import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -121,33 +120,28 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  uiTr(context, isAgent ? 'مالية الدولة' : 'مالية الوكلاء'),
-                  style: AccountantFinanceText.pageTitle(theme),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  uiTr(
+                AdminPageHeader(
+                  title: uiTr(context, isAgent ? 'مالية الدولة' : 'مالية الوكلاء'),
+                  subtitle: uiTr(
                     context,
                     'نفس الأرقام المحاسبية المعتمدة — النطاق حسب الصلاحية فقط.',
                   ),
-                  style: AccountantFinanceText.label(theme),
                 ),
-                const SizedBox(height: 8),
-                AdminFilterBar(
-                  hint: uiTr(context, 'الفترة'),
-                  chips: [
+                AdminPeriodSegmented<AdminDatePreset>(
+                  values: _presetLabels.keys.toList(growable: false),
+                  labels: {
                     for (final e in _presetLabels.entries)
-                      AdminFilterChip(
-                        label: uiTr(context, e.value),
-                        selected: _preset == e.key,
-                        onSelected: (_) {
-                          _preset = e.key;
-                          _reload();
-                        },
-                      ),
-                  ],
-                  trailing: IconButton(
+                      e.key: uiTr(context, e.value),
+                  },
+                  selected: _preset,
+                  onChanged: (preset) {
+                    _preset = preset;
+                    _reload();
+                  },
+                ),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: IconButton(
                     tooltip: uiTr(context, 'تحديث'),
                     onPressed: _reload,
                     icon: const Icon(Icons.refresh_rounded),
@@ -161,12 +155,16 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
                 else if (errored)
                   AdminErrorState(
                     title: uiTr(context, 'تعذر تحميل المالية'),
-                    message: uiTr(context, 'يرجى إعادة المحاولة.'),
+                    message: uiTr(
+                      context,
+                      'حدث خطأ أثناء جلب البيانات. يرجى إعادة المحاولة.',
+                    ),
                     onRetry: _reload,
                   )
                 else if (bundle == null &&
                     (_earlyRows == null || _earlyRows!.isEmpty))
                   AdminEmptyState(
+                    compact: true,
                     title: uiTr(context, 'لا توجد بيانات'),
                     message: uiTr(context, 'لا نتائج ضمن الفلاتر الحالية.'),
                   )

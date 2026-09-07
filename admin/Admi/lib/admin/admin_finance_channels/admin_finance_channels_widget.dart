@@ -89,10 +89,10 @@ class _AdminFinanceChannelsWidgetState
             padding: AdminUi.pagePadding(context),
             children: [
               AdminPageHeader(
-                title: uiTr(context, 'محاسبة النقدي والإلكتروني'),
+                title: uiTr(context, 'حركة الأموال'),
                 subtitle: uiTr(
                   context,
-                  'عرض تشخيصي — الملخص المحاسبي الموحّد في شاشة المالية.',
+                  'عرض تشخيصي للنقدي والإلكتروني — الملخص الموحّد في شاشة المالية.',
                 ),
               ),
               const SizedBox(height: 8),

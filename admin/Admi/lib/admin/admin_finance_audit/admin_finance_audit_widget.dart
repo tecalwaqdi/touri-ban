@@ -101,12 +101,10 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
       child: ListView(
         padding: AdminUi.pagePadding(context),
         children: [
-          Text(uiTr(context, 'من فعل ماذا ومتى'), style: theme.headlineSmall),
-          Text(
-            uiTr(context, 'فلاتر مدمجة — بدون حقول عملاقة.'),
-            style: theme.bodySmall?.copyWith(color: theme.secondaryText),
+          AdminPageHeader(
+            title: uiTr(context, 'سجل التدقيق المالي'),
+            subtitle: uiTr(context, 'من فعل ماذا ومتى — فلاتر مدمجة.'),
           ),
-          const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,

@@ -183,53 +183,40 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  uiTr(context, 'المالية'),
-                  style: AccountantFinanceText.pageTitle(theme),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  uiTr(
+                AdminPageHeader(
+                  title: uiTr(context, 'المالية'),
+                  subtitle: uiTr(
                     context,
                     isAgent
                         ? 'ملخص محاسبي لدولتك — قراءة فقط.'
                         : 'ملخص محاسبي موحّد — رحلات مكتملة، تحصيل، ومستحقات.',
                   ),
-                  style: AccountantFinanceText.label(theme),
+                  trailing: !isAgent ? _secondaryLinks(context, theme) : null,
                 ),
-                const SizedBox(height: 8),
-                if (!isAgent) _secondaryLinks(context, theme),
-                const SizedBox(height: 8),
-                Text(uiTr(context, 'الفترة'), style: AccountantFinanceText.label(theme)),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
+                AdminPeriodSegmented<AdminDatePreset>(
+                  values: _presetLabels.keys.toList(growable: false),
+                  labels: {
                     for (final e in _presetLabels.entries)
-                      ChoiceChip(
-                        label: Text(
-                          uiTr(context, e.value),
-                          style: AccountantFinanceText.label(theme).copyWith(
-                            color: AccountantFinanceText.ink(theme),
-                          ),
-                        ),
-                        selected: _preset == e.key,
-                        onSelected: (_) {
-                          _preset = e.key;
-                          _earlyRows = null;
-                          _lastOk = null;
-                          _reload();
-                        },
-                      ),
-                    IconButton(
-                      tooltip: uiTr(context, 'تحديث'),
-                      onPressed: () => _reload(forceRefresh: true),
-                      icon: Icon(Icons.refresh_rounded, color: AdminUi.brandTeal),
-                    ),
-                  ],
+                      e.key: uiTr(context, e.value),
+                  },
+                  selected: _preset,
+                  onChanged: (preset) {
+                    _preset = preset;
+                    _earlyRows = null;
+                    _lastOk = null;
+                    _reload();
+                  },
                 ),
                 const SizedBox(height: 8),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: IconButton(
+                    tooltip: uiTr(context, 'تحديث'),
+                    onPressed: () => _reload(forceRefresh: true),
+                    icon: Icon(Icons.refresh_rounded, color: AdminUi.brandTeal),
+                  ),
+                ),
+                const SizedBox(height: 4),
                 Theme(
                   data: Theme.of(context)
                       .copyWith(dividerColor: Colors.transparent),
@@ -238,6 +225,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                     onExpansionChanged: (v) =>
                         setState(() => _advancedOpen = v),
                     tilePadding: EdgeInsets.zero,
+                    childrenPadding: const EdgeInsets.only(bottom: 8),
                     title: Text(
                       uiTr(context, 'الفلاتر المتقدمة'),
                       style: AccountantFinanceText.sectionTitle(theme),
@@ -248,11 +236,14 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                         runSpacing: 10,
                         children: [
                           SizedBox(
-                            width: 200,
+                            width: 220,
                             child: TextField(
                               decoration: AccountantFinanceText.fieldDecoration(
                                 context,
-                                labelText: uiTr(context, 'بحث'),
+                                labelText: uiTr(
+                                  context,
+                                  'بحث برقم الرحلة أو اسم السائق...',
+                                ),
                               ),
                               style: AccountantFinanceText.body(theme),
                               onChanged: (v) => setState(() => _search = v),
@@ -285,7 +276,6 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                           _qualityDrop(context),
                         ],
                       ),
-                      const SizedBox(height: 8),
                     ],
                   ),
                 ),
@@ -297,11 +287,15 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                 else if (errored)
                   AdminErrorState(
                     title: uiTr(context, 'تعذر تحميل المالية'),
-                    message: uiTr(context, 'يرجى إعادة المحاولة.'),
+                    message: uiTr(
+                      context,
+                      'حدث خطأ أثناء جلب البيانات. يرجى إعادة المحاولة.',
+                    ),
                     onRetry: _reload,
                   )
                 else if (!hasRows && rowsReady)
                   AdminEmptyState(
+                    compact: true,
                     title: uiTr(context, 'لا توجد بيانات'),
                     message: uiTr(context, 'لا نتائج ضمن الفلاتر الحالية.'),
                   )

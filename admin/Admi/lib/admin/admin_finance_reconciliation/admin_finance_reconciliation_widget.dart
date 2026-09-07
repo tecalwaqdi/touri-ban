@@ -246,16 +246,11 @@ class _WorkspaceBody extends StatelessWidget {
     return ListView(
       padding: AdminUi.pagePadding(context),
       children: [
-        Text(
-          'المصالحة المالية',
-          style: AccountantFinanceText.pageTitle(theme),
+        AdminPageHeader(
+          title: 'المصالحة المالية',
+          subtitle:
+              'مراجعة الرحلات المكتملة والحالة المالية والتحصيل والتسويات',
         ),
-        const SizedBox(height: 4),
-        Text(
-          'مراجعة الرحلات المكتملة والحالة المالية والتحصيل والتسويات',
-          style: AccountantFinanceText.label(theme),
-        ),
-        const SizedBox(height: 12),
         if (!summaryReady)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),

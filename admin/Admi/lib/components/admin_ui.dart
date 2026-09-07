@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -7,20 +5,21 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 import '/backend/admin_reports_country_scope.dart';
+import '/core/admin_design/admin_design.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 
-/// Shared visual language for the admin panel (teal / sage identity).
+/// Shared visual language for the admin panel (UI V2 teal / finance identity).
 class AdminUi {
   AdminUi._();
 
-  static const Color brandTeal = Color(0xFF1F7372);
-  static const Color brandMint = Color(0xFF39D2C0);
+  static const Color brandTeal = AdminColors.primary;
+  static const Color brandMint = AdminColors.primary500;
   static const Color brandSage = Color(0xFF9AB5B0);
   static const Color brandSageDark = Color(0xFF7A9A95);
 
-  static const double radiusSm = 12.0;
-  static const double radiusMd = 16.0;
-  static const double radiusLg = 20.0;
+  static const double radiusSm = AdminRadius.sm;
+  static const double radiusMd = AdminRadius.card;
+  static const double radiusLg = AdminRadius.lg;
 
   /// Use table/grid layouts only when there is enough horizontal space.
   static const double tableLayoutMinWidth = 900.0;
@@ -62,8 +61,8 @@ class AdminUi {
     );
   }
 
-  static const double sectionGap = 14.0;
-  static const double fieldGap = 12.0;
+  static const double sectionGap = AdminSpacing.sectionGap;
+  static const double fieldGap = AdminSpacing.sm;
 
   /// Standard debounce for server/search fields (ms).
   static const int searchDebounceMs = 320;
@@ -144,46 +143,31 @@ class AdminUi {
     Color? accent,
     bool elevated = true,
   }) {
-    final theme = FlutterFlowTheme.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = AdminColors.isDark(context);
     return BoxDecoration(
-      color: theme.secondaryBackground,
+      color: AdminColors.surfaceOf(context),
       borderRadius: BorderRadius.circular(radiusMd),
       border: Border.all(
-        color: accent?.withValues(alpha: isDark ? 0.35 : 0.25) ??
-            theme.alternate.withValues(alpha: isDark ? 1 : 0.8),
+        color: accent?.withValues(alpha: isDark ? 0.4 : 0.22) ??
+            AdminColors.borderOf(context),
         width: 1,
       ),
-      boxShadow: elevated
-          ? [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.06),
-                blurRadius: isDark ? 12 : 18,
-                offset: const Offset(0, 8),
-              ),
-            ]
-          : null,
+      boxShadow: elevated ? AdminShadows.card(context) : null,
     );
   }
 
+  /// Solid premium sidebar (no loud gradient).
   static BoxDecoration sidebarGradient() {
     return const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          brandTeal,
-          Color(0xFF185E5D),
-        ],
-      ),
+      color: AdminColors.primary900,
     );
   }
 
   static BoxDecoration sidebarHeaderDecoration() {
     return BoxDecoration(
-      color: brandSage.withValues(alpha: 0.35),
+      color: AdminColors.primary800.withValues(alpha: 0.55),
       border: Border(
-        bottom: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+        bottom: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
       ),
     );
   }
@@ -383,6 +367,7 @@ class AdminPageHeader extends StatelessWidget {
             fontFamily:
                 compact ? theme.titleLargeFamily : theme.headlineSmallFamily,
             color: theme.primaryText,
+            fontSize: compact ? null : 28,
             fontWeight: FontWeight.w700,
             useGoogleFonts: compact
                 ? !theme.titleLargeIsCustom
@@ -398,6 +383,7 @@ class AdminPageHeader extends StatelessWidget {
             style: theme.bodyMedium.override(
               fontFamily: theme.bodyMediumFamily,
               color: theme.secondaryText,
+              fontSize: 13.5,
               useGoogleFonts: !theme.bodyMediumIsCustom,
             ),
           ),
@@ -452,10 +438,10 @@ class AdminMenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
       child: Material(
         color: isActive
-            ? Colors.white.withValues(alpha: 0.18)
+            ? Colors.white.withValues(alpha: 0.14)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(AdminUi.radiusSm),
         child: InkWell(
@@ -463,51 +449,59 @@ class AdminMenuTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(AdminUi.radiusSm),
           splashColor: Colors.white24,
           highlightColor: Colors.white10,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            child: Row(
-              children: [
-                Icon(icon, color: Colors.white, size: 22),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'cairo',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+          hoverColor: Colors.white.withValues(alpha: 0.08),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 46),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  Icon(
+                    icon,
+                    color: isActive
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.82),
+                    size: 20,
                   ),
-                ),
-                if ((attentionCount ?? 0) > 0)
-                  Container(
-                    margin: const EdgeInsetsDirectional.only(end: 8),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFB4B8),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                  const SizedBox(width: 10),
+                  Expanded(
                     child: Text(
-                      '${attentionCount! > 99 ? '99+' : attentionCount}',
-                      style: const TextStyle(
-                        color: Color(0xFF5A1018),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: isActive
+                            ? Colors.white
+                            : Colors.white.withValues(alpha: 0.9),
+                        fontFamily: 'cairo',
+                        fontSize: 13.5,
+                        fontWeight:
+                            isActive ? FontWeight.w700 : FontWeight.w500,
                       ),
                     ),
                   ),
-                Icon(
-                  Directionality.of(context) == ui.TextDirection.rtl
-                      ? Icons.chevron_left_rounded
-                      : Icons.chevron_right_rounded,
-                  color: Colors.white.withValues(alpha: 0.5),
-                  size: 20,
-                ),
-              ],
+                  if ((attentionCount ?? 0) > 0)
+                    Container(
+                      margin: const EdgeInsetsDirectional.only(end: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFB4B8),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        '${attentionCount! > 99 ? '99+' : attentionCount}',
+                        style: const TextStyle(
+                          color: Color(0xFF5A1018),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -918,7 +912,7 @@ class AdminContentCard extends StatelessWidget {
         width: double.infinity,
         decoration: AdminUi.cardDecoration(context),
         child: Padding(
-          padding: padding ?? const EdgeInsets.all(14),
+          padding: padding ?? const EdgeInsets.all(AdminSpacing.cardPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,

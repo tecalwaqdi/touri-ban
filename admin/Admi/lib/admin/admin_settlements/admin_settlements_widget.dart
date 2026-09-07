@@ -110,13 +110,10 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
       child: ListView(
         padding: AdminUi.pagePadding(context),
         children: [
-          Text(uiTr(context, 'التسويات'), style: AccountantFinanceText.pageTitle(theme)),
-          const SizedBox(height: 4),
-          Text(
-            uiTr(context, 'المستحق والمدفوع والمتبقي لكل تسوية.'),
-            style: AccountantFinanceText.label(theme),
+          AdminPageHeader(
+            title: uiTr(context, 'التسويات'),
+            subtitle: uiTr(context, 'المستحق والمدفوع والمتبقي لكل تسوية.'),
           ),
-          const SizedBox(height: 10),
           Wrap(
             spacing: 8,
             runSpacing: 8,

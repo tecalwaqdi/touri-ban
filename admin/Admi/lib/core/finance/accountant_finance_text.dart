@@ -8,22 +8,20 @@ library;
 import 'package:flutter/material.dart';
 
 import '/components/admin_ui.dart';
+import '/core/admin_design/admin_design.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 
 abstract final class AccountantFinanceText {
   AccountantFinanceText._();
 
-  /// Dark readable ink on light finance cards. Never use near-white tokens
-  /// (DarkModeTheme.primaryText / info) for accountant headings/values.
+  /// Dark readable ink on finance cards (UI V2 textPrimary).
   static Color ink(FlutterFlowTheme theme) {
-    final c = theme.secondaryText;
-    if (c.computeLuminance() <= 0.45) return c;
-    // Same as LightModeTheme.secondaryText — Safari white-on-white guard.
-    return const Color(0xFF1F1F1F);
+    final c = theme.primaryText;
+    if (c.computeLuminance() <= 0.55) return c;
+    return AdminColors.textPrimary;
   }
 
-  static Color muted(FlutterFlowTheme theme) =>
-      theme.secondaryText.withValues(alpha: 0.72);
+  static Color muted(FlutterFlowTheme theme) => theme.secondaryText;
 
   static Color accent(FlutterFlowTheme theme) => AdminUi.brandTeal;
 
@@ -31,6 +29,7 @@ abstract final class AccountantFinanceText {
       theme.headlineSmall.override(
         fontFamily: theme.headlineSmallFamily,
         color: ink(theme),
+        fontSize: 28,
         fontWeight: FontWeight.w700,
         useGoogleFonts: !theme.headlineSmallIsCustom,
       );

@@ -361,67 +361,50 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 width: double.infinity,
                 decoration: AdminUi.sidebarHeaderDecoration(),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                  padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(
-                              Icons.admin_panel_settings_rounded,
-                              color: Colors.white,
-                              size: 26,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              l10n.getText('hrrt489c' /* Admin */),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.headlineSmall.override(
-                                fontFamily: theme.headlineSmallFamily,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.0,
-                                useGoogleFonts: !theme.headlineSmallIsCustom,
-                              ),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        l10n.getText('hrrt489c' /* Admin */),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.titleMedium.override(
+                          fontFamily: theme.titleMediumFamily,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                          letterSpacing: 0.0,
+                          useGoogleFonts: !theme.titleMediumIsCustom,
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            width: 46,
-                            height: 46,
+                            width: 40,
+                            height: 40,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.4),
-                                width: 2,
+                                color: Colors.white.withValues(alpha: 0.35),
+                                width: 1.5,
                               ),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(8),
                               child: AuthUserStreamWidget(
                                 builder: (context) => ProfilePhotoImage(
                                   photoUrl: currentUserPhoto,
-                                  size: 46,
-                                  borderRadius: BorderRadius.circular(10),
+                                  size: 40,
+                                  borderRadius: BorderRadius.circular(8),
                                   loadingColor: Colors.white,
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,20 +418,21 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                       fontFamily: theme.bodyMediumFamily,
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600,
+                                      fontSize: 13.5,
                                       letterSpacing: 0.0,
                                       useGoogleFonts: !theme.bodyMediumIsCustom,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 2),
+                                const SizedBox(height: 3),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 3,
+                                    horizontal: 7,
+                                    vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(6),
+                                    color: Colors.white.withValues(alpha: 0.14),
+                                    borderRadius: BorderRadius.circular(999),
                                   ),
                                   child: Text(
                                     rolePending
@@ -462,26 +446,28 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                     style: theme.labelSmall.override(
                                       fontFamily: theme.labelSmallFamily,
                                       color:
-                                          Colors.white.withValues(alpha: 0.9),
+                                          Colors.white.withValues(alpha: 0.92),
                                       fontWeight: FontWeight.w600,
+                                      fontSize: 11,
                                       letterSpacing: 0.0,
                                       useGoogleFonts: !theme.labelSmallIsCustom,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 3),
                                 Text(
                                   currentUserEmail,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: theme.labelSmall.override(
                                     fontFamily: theme.labelSmallFamily,
-                                    color: Colors.white.withValues(alpha: 0.75),
+                                    color: Colors.white.withValues(alpha: 0.7),
+                                    fontSize: 11,
                                     letterSpacing: 0.0,
                                     useGoogleFonts: !theme.labelSmallIsCustom,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 6),
                                 TextButton.icon(
                                   onPressed: () async {
                                     closeDrawerIfOpen(context);
@@ -495,10 +481,10 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                       context.mounted,
                                     );
                                   },
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Icons.logout_rounded,
-                                    size: 16,
-                                    color: Color(0xFFFFB4B8),
+                                    size: 15,
+                                    color: Colors.white.withValues(alpha: 0.72),
                                   ),
                                   label: Text(
                                     l10n.getText('wj2hxjyt' /* Log out */),
@@ -506,7 +492,9 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                     overflow: TextOverflow.ellipsis,
                                     style: theme.labelMedium.override(
                                       fontFamily: theme.labelMediumFamily,
-                                      color: const Color(0xFFFFB4B8),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.78),
+                                      fontSize: 12,
                                       letterSpacing: 0.0,
                                       useGoogleFonts:
                                           !theme.labelMediumIsCustom,
