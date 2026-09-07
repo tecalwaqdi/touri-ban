@@ -4,7 +4,7 @@ BASE: `recovery/admin-auth-navigation-p0` tip `44af0fb` (AUTH-NAV-P0 FIXED)
 
 BRANCH: `recovery/accountant-finance-read-access-p0`
 
-COMMIT: _(stamped after commit)_
+COMMIT: `92027275fb70c8ddb5de28960ffb85d52fb0bea0`
 
 PREVIEW (UI): https://tutorial-multi-language-70gx4j--admin-accountant-read-wz8tkbv9.web.app/admin/
 
