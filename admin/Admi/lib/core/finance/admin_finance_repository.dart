@@ -4,6 +4,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_perf_trace.dart';
+import '/backend/admin_finance_route_trace.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/core/admin_currency.dart';
@@ -23,7 +24,10 @@ class AdminFinanceRepository {
   static final AdminFinanceRepository instance = AdminFinanceRepository._();
 
   /// Short-lived finance source TTL (session / route reuse).
-  static const Duration sourceTtl = Duration(seconds: 45);
+  /// PERF-P4B: 45s expired during normal Accountant Hub→Recon→Settlements tours,
+  /// forcing modern_page re-fetch (~1s+). 180s keeps first-page cache across
+  /// typical warm navigation without sticky stale finance.
+  static const Duration sourceTtl = Duration(seconds: 180);
 
   /// Presentation label TTL (country/driver/agent display only).
   static const Duration labelTtl = Duration(minutes: 10);
@@ -140,16 +144,22 @@ class AdminFinanceRepository {
       _sourceCache.remove(key);
       _sourceCache[key] = cached;
       AdminPerfTrace.financeRepoCacheHit(kind: key.split('|').length > 2 ? key.split('|')[2] : 'src');
+      AdminFinanceRouteTrace.mark(
+        'CACHE_HIT',
+        extra: {'keyKind': key.contains('|modern_page|') ? 'modern_page' : 'src'},
+      );
       return cached.value as T;
     }
 
     final pending = _inFlight[key];
     if (pending != null) {
       AdminPerfTrace.financeRepoInFlightJoin(kind: 'src');
+      AdminFinanceRouteTrace.mark('IN_FLIGHT_JOIN');
       return await pending as T;
     }
 
     AdminPerfTrace.financeRepoCacheMiss(kind: 'src');
+    AdminFinanceRouteTrace.mark('CACHE_MISS');
     final fut = () async {
       try {
         final value = await loader();
@@ -267,7 +277,14 @@ class AdminFinanceRepository {
       driverRef: driverRef,
       forceRefresh: forceRefresh,
     );
-    return _tripsFromOrders(page.orders, scope: scope, symbol: sym);
+    AdminFinanceRouteTrace.mark('REPOSITORY_COMPLETE', extra: {
+      'orders': page.orders.length,
+      'fromCache': page.fromCache,
+    });
+    AdminFinanceRouteTrace.mark('MODEL_BUILD_START');
+    final rows = _tripsFromOrders(page.orders, scope: scope, symbol: sym);
+    AdminFinanceRouteTrace.mark('MODEL_BUILD_END', extra: {'rows': rows.length});
+    return rows;
   }
 
   // ---------------------------------------------------------------------------
@@ -385,6 +402,7 @@ class AdminFinanceRepository {
     DocumentReference? country,
   ) async {
     try {
+      AdminFinanceRouteTrace.mark('FIRESTORE_GET_START', extra: {'kind': 'settlements_maps'});
       Query<Map<String, dynamic>> q =
           FirebaseFirestore.instance.collection('financial_settlements');
       if (AdminRoleService.usesCountryFinanceScope && country != null) {
@@ -394,10 +412,22 @@ class AdminFinanceRepository {
       final out = <Map<String, dynamic>>[];
       DocumentSnapshot? last;
       const cap = 200;
+      var first = true;
       while (out.length < cap) {
         var page = q.limit(FinanceOrderQuery.tablePageSize);
         if (last != null) page = page.startAfterDocument(last);
         final snap = await page.get();
+        if (first) {
+          first = false;
+          AdminFinanceRouteTrace.mark(
+            'FIRESTORE_FIRST_SNAPSHOT',
+            extra: {
+              'kind': 'settlements_maps',
+              'docs': snap.docs.length,
+              'fromCache': snap.metadata.isFromCache,
+            },
+          );
+        }
         AdminPerfTrace.financeDocsRead(snap.docs.length, source: 'settlements_maps');
         AdminPerfTrace.financeRepoQueryEnd(kind: 'settlements_maps', docs: snap.docs.length);
         if (snap.docs.isEmpty) break;
@@ -526,15 +556,31 @@ class AdminFinanceRepository {
       forceRefresh: forceRefresh,
     );
     final settlementsFuture = loadSettlementsMaps(forceRefresh: forceRefresh);
+    AdminFinanceRouteTrace.mark('SETTLEMENT_EVIDENCE_START');
     final page = await pageFuture;
+    AdminFinanceRouteTrace.mark(
+      'ORDER_PAGE_READY',
+      extra: {'orders': page.orders.length, 'fromCache': page.fromCache},
+    );
     final settlements = await settlementsFuture;
-    return _b1BuildMemoized(
+    AdminFinanceRouteTrace.mark(
+      'SETTLEMENT_EVIDENCE_END',
+      extra: {'maps': settlements.length},
+    );
+    AdminFinanceRouteTrace.mark('MODEL_BUILD_START', extra: {'kind': 'b1_first'});
+    final result = _b1BuildMemoized(
       orders: page.orders,
       settlements: settlements,
       scope: scope,
       currency: 'SAR',
       allowMemo: false,
     );
+    AdminFinanceRouteTrace.mark(
+      'MODEL_BUILD_END',
+      extra: {'kind': 'b1_first', 'records': result.records.length},
+    );
+    AdminFinanceRouteTrace.mark('REPOSITORY_COMPLETE', extra: {'kind': 'recon_first'});
+    return result;
   }
 
   Future<FinanceReconciliationResult> loadReconciliation({

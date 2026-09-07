@@ -1,7 +1,10 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_perf_trace.dart';
+import '/backend/admin_finance_route_trace.dart';
 import '/backend/admin_performance.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
@@ -107,8 +110,20 @@ abstract final class FinanceOrderQuery {
     DocumentReference? driverRef,
     DocumentSnapshot? startAfter,
     int limit = tablePageSize,
+    bool measureAuthToken = false,
   }) async {
     try {
+      AdminFinanceRouteTrace.mark('QUERY_REQUESTED', extra: {'kind': 'modern_page'});
+      if (measureAuthToken) {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          AdminFinanceRouteTrace.mark('AUTH_TOKEN_REQUEST_START');
+          await user.getIdToken(/* forceRefresh */ false);
+          AdminFinanceRouteTrace.mark('AUTH_TOKEN_REQUEST_END');
+        }
+      }
+      AdminFinanceRouteTrace.mark('QUERY_START', extra: {'kind': 'modern_page'});
+      AdminFinanceRouteTrace.mark('FIRESTORE_GET_START', extra: {'kind': 'modern_page'});
       var q = buildModernCompletedQuery(
         range: range,
         country: country,
@@ -116,6 +131,15 @@ abstract final class FinanceOrderQuery {
       );
       if (startAfter != null) q = q.startAfterDocument(startAfter);
       final snap = await q.limit(limit).get();
+      AdminFinanceRouteTrace.mark(
+        'FIRESTORE_FIRST_SNAPSHOT',
+        extra: {
+          'kind': 'modern_page',
+          'docs': snap.docs.length,
+          'fromCache': snap.metadata.isFromCache,
+          'hasPendingWrites': snap.metadata.hasPendingWrites,
+        },
+      );
       AdminPerfTrace.financeDocsRead(snap.docs.length, source: 'modern_page');
       final orders = <OrderRecord>[];
       for (final doc in snap.docs) {
@@ -126,12 +150,17 @@ abstract final class FinanceOrderQuery {
         if (!_isCanonicalCompletedNonQa(order)) continue;
         orders.add(order);
       }
+      AdminFinanceRouteTrace.mark(
+        'DOCUMENT_DECODE_COMPLETE',
+        extra: {'accepted': orders.length, 'docs': snap.docs.length},
+      );
       return FinanceOrderPage(
         orders: orders,
         lastDocument: snap.docs.isEmpty ? null : snap.docs.last,
         hasMore: snap.docs.length >= limit,
         docsRead: snap.docs.length,
         source: FinanceOrderPageSource.modern,
+        fromCache: snap.metadata.isFromCache,
       );
     } on FirebaseException catch (e) {
       AdminPerfTrace.financeQueryError(e.code, source: 'modern_page');
@@ -310,6 +339,7 @@ class FinanceOrderPage {
     required this.hasMore,
     required this.docsRead,
     required this.source,
+    this.fromCache = false,
   });
 
   final List<OrderRecord> orders;
@@ -317,6 +347,8 @@ class FinanceOrderPage {
   final bool hasMore;
   final int docsRead;
   final FinanceOrderPageSource source;
+  /// PERF-P4B: SnapshotMetadata.isFromCache when available.
+  final bool fromCache;
 }
 
 class FinanceOrderScanResult {

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '/backend/admin_finance_route_trace.dart';
 import '/backend/admin_perf_trace.dart';
 import '/backend/admin_role_service.dart';
 import '/core/finance/admin_finance_repository.dart';
@@ -39,7 +40,30 @@ abstract final class AdminSettlementsQuery {
   static Stream<QuerySnapshot<Map<String, dynamic>>> snapshotsForCurrentUser() {
     final key = keyForCurrentUser();
     AdminPerfTrace.settlementStreamCreate(key);
-    return buildForCurrentUser().snapshots();
+    AdminFinanceRouteTrace.mark('QUERY_REQUESTED', extra: {'kind': 'settlements_live'});
+    AdminFinanceRouteTrace.mark('QUERY_START', extra: {'kind': 'settlements_live'});
+    AdminFinanceRouteTrace.mark('FIRESTORE_LISTEN_START', extra: {'key': key});
+    var first = true;
+    return buildForCurrentUser().snapshots().map((snap) {
+      if (first) {
+        first = false;
+        AdminFinanceRouteTrace.mark(
+          'FIRESTORE_FIRST_SNAPSHOT',
+          extra: {
+            'kind': 'settlements_live',
+            'docs': snap.docs.length,
+            'fromCache': snap.metadata.isFromCache,
+          },
+        );
+        AdminFinanceRouteTrace.mark(
+          'DOCUMENT_DECODE_COMPLETE',
+          extra: {'docs': snap.docs.length},
+        );
+        AdminFinanceRouteTrace.mark('REPOSITORY_COMPLETE', extra: {'kind': 'settlements'});
+        AdminFinanceRouteTrace.mark('MODEL_BUILD_END', extra: {'kind': 'settlements'});
+      }
+      return snap;
+    });
   }
 
   /// One-shot older page (not a live listener).
@@ -75,10 +99,7 @@ class AdminSettlementsStreamOwner {
         streamFactory,
   })  : _keyFactory = keyFactory ?? AdminSettlementsQuery.keyForCurrentUser,
         _streamFactory = streamFactory ??
-            ((key) {
-              AdminPerfTrace.settlementStreamCreate(key);
-              return AdminSettlementsQuery.buildForCurrentUser().snapshots();
-            });
+            ((_) => AdminSettlementsQuery.snapshotsForCurrentUser());
 
   final String Function() _keyFactory;
   final Stream<QuerySnapshot<Map<String, dynamic>>> Function(String key)

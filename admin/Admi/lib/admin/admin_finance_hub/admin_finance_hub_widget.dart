@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/backend/admin_finance_route_trace.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
 import '/components/accountant_finance_summary.dart';
@@ -42,6 +43,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   Object? _rowsError;
   Object? _summaryError;
   bool _advancedOpen = false;
+  bool _firstBuildMarked = false;
 
   String? _paymentMethod;
   String? _collectionStatus;
@@ -62,6 +64,8 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   @override
   void initState() {
     super.initState();
+    AdminFinanceRouteTrace.begin('finance_hub');
+    AdminFinanceRouteTrace.mark('FIRST_BUILD_START');
     _menu2Model = createModel(context, () => Menu2Model());
     _reload();
   }
@@ -74,6 +78,9 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
 
   void _reload({bool forceRefresh = false}) {
     final label = _presetLabels[_preset] ?? _preset.name;
+    if (AdminFinanceRouteTrace.activeTraceId == null || forceRefresh) {
+      AdminFinanceRouteTrace.begin('finance_hub');
+    }
     setState(() {
       // Cache-first: keep prior rows until replacement arrives (no blank flash).
       if (forceRefresh) {
@@ -97,6 +104,8 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
       setState(() {
         _earlyRows = rows;
         _rowsLoading = false;
+        AdminFinanceRouteTrace.markStateEmitAndSchedulePaint();
+        AdminFinanceRouteTrace.mark('SUMMARY_START');
         _future = AccountantFinanceLoader.load(
           datePreset: _preset,
           periodLabel: label,
@@ -108,6 +117,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
           } else {
             _earlyRows = b.trips;
           }
+          AdminFinanceRouteTrace.mark('SUMMARY_COMPLETE');
           return b;
         }).catchError((Object e) {
           if (mounted) {
@@ -136,6 +146,10 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_firstBuildMarked) {
+      _firstBuildMarked = true;
+      AdminFinanceRouteTrace.mark('FIRST_BUILD_END');
+    }
     final theme = FlutterFlowTheme.of(context);
     final isAgent = AdminRoleService.isCountryAgent;
 

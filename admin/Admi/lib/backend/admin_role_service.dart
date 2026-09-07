@@ -299,6 +299,9 @@ class AdminRoleService {
     'AdminFinanceReports',
     'AdminFinanceAudit',
     'Settings',
+    // PERF-P4B diagnostic routes (not in menu).
+    'AdminPerfP4bStatic',
+    'AdminPerfP4bControlQuery',
   };
 
   /// Global finance administration — country agents/agents must not open these.

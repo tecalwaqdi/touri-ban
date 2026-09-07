@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/backend/admin_finance_route_trace.dart';
 import '/backend/admin_role_service.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
@@ -36,10 +37,13 @@ class _AdminFinanceReconciliationWidgetState
   bool _summaryLoading = false;
   Object? _rowsError;
   Object? _summaryError;
+  bool _firstBuildMarked = false;
 
   @override
   void initState() {
     super.initState();
+    AdminFinanceRouteTrace.begin('reconciliation');
+    AdminFinanceRouteTrace.mark('FIRST_BUILD_START');
     _menu2Model = createModel(context, () => Menu2Model());
     _future = _load();
   }
@@ -51,6 +55,9 @@ class _AdminFinanceReconciliationWidgetState
   }
 
   Future<FinanceReconciliationResult> _load({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      AdminFinanceRouteTrace.begin('reconciliation');
+    }
     setState(() {
       _rowsLoading = true;
       _summaryLoading = true;
@@ -67,6 +74,7 @@ class _AdminFinanceReconciliationWidgetState
       setState(() {
         _earlyPartial = partial;
         _rowsLoading = false;
+        AdminFinanceRouteTrace.markStateEmitAndSchedulePaint();
       });
     }).catchError((Object e) {
       if (!mounted) return;
@@ -76,9 +84,11 @@ class _AdminFinanceReconciliationWidgetState
       });
     });
 
+    AdminFinanceRouteTrace.mark('SUMMARY_START');
     return AccountantFinanceLoader.loadReconciliation(
       forceRefresh: forceRefresh,
     ).then((full) {
+      AdminFinanceRouteTrace.mark('SUMMARY_COMPLETE');
       if (mounted) {
         setState(() => _earlyPartial = full);
       }
@@ -106,6 +116,10 @@ class _AdminFinanceReconciliationWidgetState
 
   @override
   Widget build(BuildContext context) {
+    if (!_firstBuildMarked) {
+      _firstBuildMarked = true;
+      AdminFinanceRouteTrace.mark('FIRST_BUILD_END');
+    }
     final theme = FlutterFlowTheme.of(context);
     final canAccess = AdminRoleService.canAccessRoute(
       AdminFinanceReconciliationWidget.routeName,

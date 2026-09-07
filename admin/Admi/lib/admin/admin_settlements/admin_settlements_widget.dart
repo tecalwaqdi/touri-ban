@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '/backend/admin_finance_route_trace.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_settlements_query.dart';
 import '/components/admin_enterprise_kit.dart';
@@ -49,10 +50,14 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
 
   /// Period summary (bounded maps) — not first-page-only totals.
   List<Map<String, dynamic>>? _periodMaps;
+  bool _firstBuildMarked = false;
+  bool _firstSnapshotPaintMarked = false;
 
   @override
   void initState() {
     super.initState();
+    AdminFinanceRouteTrace.begin('settlements');
+    AdminFinanceRouteTrace.mark('FIRST_BUILD_START');
     _model = createModel(context, () => AdminSettlementsModel());
     _reloadPeriodSummary();
   }
@@ -91,6 +96,10 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_firstBuildMarked) {
+      _firstBuildMarked = true;
+      AdminFinanceRouteTrace.mark('FIRST_BUILD_END');
+    }
     final theme = FlutterFlowTheme.of(context);
     return AdminLayoutWidget(
       padContent: false,
@@ -164,6 +173,10 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
               }
               if (!snap.hasData) {
                 return const Center(child: CircularProgressIndicator());
+              }
+              if (!_firstSnapshotPaintMarked) {
+                _firstSnapshotPaintMarked = true;
+                AdminFinanceRouteTrace.markStateEmitAndSchedulePaint();
               }
               final liveDocs = snap.data!.docs;
               if (liveDocs.isNotEmpty) {

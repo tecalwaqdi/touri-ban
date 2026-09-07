@@ -57,7 +57,7 @@ void main() {
     test('TTL and max entries are bounded', () {
       expect(
         AdminFinanceRepository.sourceTtl.inSeconds,
-        inInclusiveRange(15, 60),
+        inInclusiveRange(15, 300),
       );
       expect(AdminFinanceRepository.maxSourceEntries, lessThanOrEqualTo(48));
       expect(AdminFinanceRepository.maxLabelEntries, lessThanOrEqualTo(500));

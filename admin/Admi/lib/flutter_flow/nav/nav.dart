@@ -19,6 +19,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 
 import '/index.dart';
 import '/admin/admin_driver_review_fixture/admin_qa_fixture_unavailable_widget.dart';
+import '/admin/admin_perf_p4b/admin_perf_p4b_control_widgets.dart';
 
 export 'package:go_router/go_router.dart';
 export 'serialization_util.dart';
@@ -603,6 +604,18 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
           path: AdminFinanceHubWidget.routePath,
           requireAuth: true,
           builder: (context, params) => const AdminFinanceHubWidget(),
+        ),
+        FFRoute(
+          name: AdminPerfP4bStaticWidget.routeName,
+          path: AdminPerfP4bStaticWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminPerfP4bStaticWidget(),
+        ),
+        FFRoute(
+          name: AdminPerfP4bControlQueryWidget.routeName,
+          path: AdminPerfP4bControlQueryWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminPerfP4bControlQueryWidget(),
         ),
         FFRoute(
           name: AdminFinanceChannelsWidget.routeName,

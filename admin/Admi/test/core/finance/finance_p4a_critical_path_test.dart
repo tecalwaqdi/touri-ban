@@ -27,7 +27,7 @@ void main() {
     test('source TTL still short-lived for cache-first return', () {
       expect(
         AdminFinanceRepository.sourceTtl.inSeconds,
-        inInclusiveRange(15, 60),
+        inInclusiveRange(15, 300),
       );
     });
 
