@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '/admin/admindrever/admin_drivers_adapter.dart';
 import '/admin/admindrever/admin_drivers_ui_shared.dart';
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_driver_documents_panel.dart';
@@ -12,7 +13,9 @@ import '/components/admin_status_badge.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_driver_profile_view.dart';
 import '/core/admin_driver_review_actions.dart';
+import '/core/admin_driver_status_l10n.dart';
 import '/core/admin_user_facing_errors.dart';
+import '/core/cloud_functions/cloud_functions_client.dart';
 import '/driver_profile/admin_driver_active_trip.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -24,10 +27,14 @@ class DriverProfileBody extends StatefulWidget {
     super.key,
     required this.user,
     required this.userRef,
+    this.onChanged,
   });
 
   final UserRecord user;
   final DocumentReference userRef;
+
+  /// Reload parent profile after a successful write.
+  final VoidCallback? onChanged;
 
   @override
   State<DriverProfileBody> createState() => _DriverProfileBodyState();
@@ -35,6 +42,7 @@ class DriverProfileBody extends StatefulWidget {
 
 class _DriverProfileBodyState extends State<DriverProfileBody> {
   late Future<AdminDriverActiveTripTruth> _activeTripFuture;
+  bool _actionBusy = false;
 
   @override
   void initState() {
@@ -45,7 +53,8 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
   @override
   void didUpdateWidget(covariant DriverProfileBody oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.user.reference != widget.user.reference) {
+    if (oldWidget.user.reference != widget.user.reference ||
+        oldWidget.user.actevMndob != widget.user.actevMndob) {
       _activeTripFuture = AdminDriverActiveTripTruth.resolve(widget.user);
     }
   }
@@ -115,79 +124,72 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     Map<String, dynamic> data,
   ) {
     return [
-        AdminDriverSectionCard(
-          title: uiTr(context, 'البيانات الشخصية'),
-          children: [
-            AdminDriverKvRow(label: uiTr(context, 'الاسم'), value: row.displayName),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'البيانات الشخصية'),
+        children: [
+          // Name / email / phone owned by _ProfileHeader — avoid duplicates.
+          AdminDriverKvRow(
+            label: uiTr(context, 'الدولة'),
+            value: _countryDisplay(data),
+          ),
+          if (_regionDisplay(data).isNotEmpty)
             AdminDriverKvRow(
-              label: uiTr(context, 'البريد'),
-              value: widget.user.email.trim().isNotEmpty
-                  ? widget.user.email
-                  : '—',
+              label: uiTr(context, 'المنطقة'),
+              value: _regionDisplay(data),
             ),
-            AdminDriverKvRow(label: uiTr(context, 'الهاتف'), value: row.phone),
+          AdminDriverKvRow(
+            label: uiTr(context, 'مدينة التسجيل'),
+            value: row.city,
+          ),
+          if (row.operatingCity != row.city)
             AdminDriverKvRow(
-              label: uiTr(context, 'الدولة'),
-              value: _countryDisplay(data),
+              label: uiTr(context, 'مدينة التشغيل'),
+              value: row.operatingCity,
             ),
-            if (_regionDisplay(data).isNotEmpty)
+        ],
+      ),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'حالة الحساب'),
+        children: [
+          // Registration/account chips live in header; this section owns
+          // connection/availability detail.
+          AdminDriverOperationalStatus(row: row),
+        ],
+      ),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'المركبة'),
+        children: [
+          if (vehicle.isLegacyIncomplete)
+            Text(vehicle.missingLabel(context))
+          else ...[
+            if (vehicle.classificationLabel.isNotEmpty)
               AdminDriverKvRow(
-                label: uiTr(context, 'المنطقة'),
-                value: _regionDisplay(data),
+                label: uiTr(context, 'التصنيف'),
+                value: vehicle.classificationLabel,
               ),
-            AdminDriverKvRow(
-              label: uiTr(context, 'مدينة التسجيل'),
-              value: row.city,
-            ),
-            if (row.operatingCity != row.city)
+            if (vehicle.name.isNotEmpty)
               AdminDriverKvRow(
-                label: uiTr(context, 'مدينة التشغيل'),
-                value: row.operatingCity,
+                label: uiTr(context, 'الماركة'),
+                value: vehicle.name,
+              ),
+            if (vehicle.modelYear.isNotEmpty)
+              AdminDriverKvRow(
+                label: uiTr(context, 'السنة'),
+                value: vehicle.modelYear,
+              ),
+            if (vehicle.color.isNotEmpty)
+              AdminDriverKvRow(
+                label: uiTr(context, 'اللون'),
+                value: vehicle.color,
+              ),
+            if (vehicle.plate.isNotEmpty)
+              AdminDriverKvRow(
+                label: uiTr(context, 'اللوحة'),
+                value: vehicle.plate,
               ),
           ],
-        ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'حالة الحساب'),
-          children: [
-            AdminDriverStatusStack(row: row),
-            const SizedBox(height: 8),
-            AdminDriverOperationalStatus(row: row),
-          ],
-        ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'المركبة'),
-          children: [
-            if (vehicle.isLegacyIncomplete)
-              Text(vehicle.missingLabel(context))
-            else ...[
-              if (vehicle.classificationLabel.isNotEmpty)
-                AdminDriverKvRow(
-                  label: uiTr(context, 'التصنيف'),
-                  value: vehicle.classificationLabel,
-                ),
-              if (vehicle.name.isNotEmpty)
-                AdminDriverKvRow(
-                  label: uiTr(context, 'الماركة'),
-                  value: vehicle.name,
-                ),
-              if (vehicle.modelYear.isNotEmpty)
-                AdminDriverKvRow(
-                  label: uiTr(context, 'السنة'),
-                  value: vehicle.modelYear,
-                ),
-              if (vehicle.color.isNotEmpty)
-                AdminDriverKvRow(
-                  label: uiTr(context, 'اللون'),
-                  value: vehicle.color,
-                ),
-              if (vehicle.plate.isNotEmpty)
-                AdminDriverKvRow(
-                  label: uiTr(context, 'اللوحة'),
-                  value: vehicle.plate,
-                ),
-            ],
-          ],
-        ),
+        ],
+      ),
     ];
   }
 
@@ -198,11 +200,16 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     Map<String, dynamic> data,
   ) {
     return [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: AdminDriverDocumentsPanel(user: widget.user),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: AdminDriverDocumentsPanel(
+          user: widget.user,
+          // Header owns registration/account status chips.
+          showLifecycleStrip: false,
         ),
-        _ActiveTripSection(future: _activeTripFuture, row: row),
+      ),
+      _ActiveTripSection(future: _activeTripFuture, row: row),
+      if (row.tripsLabel.trim().isNotEmpty && row.tripsLabel.trim() != '—')
         AdminDriverSectionCard(
           title: uiTr(context, 'النشاط والرحلات'),
           children: [
@@ -212,100 +219,133 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
             ),
           ],
         ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'الأرباح'),
-          children: [
-            AdminDriverFinancialPanel(
-              driverRef: widget.user.reference,
-              countryRef: widget.user.revDolh,
-            ),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'الملخص المالي'),
+        children: [
+          AdminDriverFinancialPanel(
+            driverRef: widget.user.reference,
+            countryRef: widget.user.revDolh,
+            profileCompact: true,
+          ),
+          if (row.earningsLabel.trim().isNotEmpty &&
+              row.earningsLabel.trim() != '—')
             AdminDriverKvRow(
               label: uiTr(context, 'إجمالي الأرباح'),
               value: row.earningsLabel,
             ),
-          ],
-        ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'سجل التسجيل والمراجعات'),
-          children: [
-            AdminDriverKvRow(
-              label: uiTr(context, 'تاريخ الإرسال'),
-              value: _formatTs(data['submittedAt'] ?? data['submitted_at']),
+        ],
+      ),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'سجل التسجيل والمراجعات'),
+        children: [
+          AdminDriverKvRow(
+            label: uiTr(context, 'تاريخ الإرسال'),
+            value: _formatTs(data['submittedAt'] ?? data['submitted_at']),
+          ),
+          AdminDriverKvRow(
+            label: uiTr(context, 'تاريخ الاعتماد'),
+            value: _formatTs(data['approvedAt'] ?? data['approved_at']),
+          ),
+          AdminDriverKvRow(
+            label: uiTr(context, 'تاريخ الرفض'),
+            value: _formatTs(data['rejectedAt'] ?? data['rejected_at']),
+          ),
+          AdminDriverKvRow(
+            label: uiTr(context, 'طلب تعديلات'),
+            value: _formatTs(
+              data['changesRequestedAt'] ?? data['changes_requested_at'],
             ),
-            AdminDriverKvRow(
-              label: uiTr(context, 'تاريخ الاعتماد'),
-              value: _formatTs(data['approvedAt'] ?? data['approved_at']),
-            ),
-            AdminDriverKvRow(
-              label: uiTr(context, 'تاريخ الرفض'),
-              value: _formatTs(data['rejectedAt'] ?? data['rejected_at']),
-            ),
-            AdminDriverKvRow(
-              label: uiTr(context, 'طلب تعديلات'),
-              value: _formatTs(
-                data['changesRequestedAt'] ?? data['changes_requested_at'],
+          ),
+          AdminDriverKvRow(
+            label: uiTr(context, 'رقم المحاولة'),
+            value:
+                '${data['reviewAttemptCount'] ?? data['review_attempt_count'] ?? '—'}',
+          ),
+          const SizedBox(height: 8),
+          AdminDriverReviewHistoryPanel(driverId: widget.user.reference.id),
+        ],
+      ),
+      AdminDriverSectionCard(
+        title: uiTr(context, 'الإجراءات الإدارية'),
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton.icon(
+                onPressed: _actionBusy ? null : () => _openEdit(context),
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                label: Text(uiTr(context, 'تعديل')),
               ),
-            ),
-            AdminDriverKvRow(
-              label: uiTr(context, 'رقم المحاولة'),
-              value:
-                  '${data['reviewAttemptCount'] ?? data['review_attempt_count'] ?? '—'}',
-            ),
-            if (data['reviewVersion'] != null)
-              AdminDriverKvRow(
-                label: 'Review Version',
-                value: '${data['reviewVersion']}',
-                muted: true,
-              ),
-            const SizedBox(height: 8),
-            AdminDriverReviewHistoryPanel(
-              driverId: widget.user.reference.id,
-            ),
-          ],
-        ),
-        AdminDriverSectionCard(
-          title: uiTr(context, 'الإجراءات الإدارية'),
-          children: [
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                OutlinedButton.icon(
-                  onPressed: () => _openEdit(context),
-                  icon: const Icon(Icons.edit_outlined, size: 18),
-                  label: Text(uiTr(context, 'تعديل')),
+              if (row.review == AdminDriverReviewBucket.pendingReview &&
+                  !AdminDriverReviewActions.requiresExceptionalOverride(
+                    Map<String, dynamic>.from(widget.user.snapshotData),
+                  ))
+                AdminPrimaryButton(
+                  label: uiTr(context, 'مراجعة التسجيل'),
+                  icon: Icons.fact_check_outlined,
+                  isLoading: _actionBusy,
+                  onPressed: () => _openReview(context),
                 ),
-                if (row.review == AdminDriverReviewBucket.pendingReview ||
-                    row.review == AdminDriverReviewBucket.needsChanges)
-                  AdminPrimaryButton(
-                    label: uiTr(context, 'مراجعة التسجيل'),
-                    icon: Icons.fact_check_outlined,
-                    onPressed: () => _openReview(context),
-                  ),
-                OutlinedButton.icon(
-                  onPressed: () => _openDocuments(context),
-                  icon: const Icon(Icons.folder_open_outlined, size: 18),
-                  label: Text(uiTr(context, 'عرض الوثائق')),
-                ),
-                if (row.accountActive)
+              if (row.review == AdminDriverReviewBucket.needsChanges ||
+                  AdminDriverReviewActions.requiresExceptionalOverride(
+                    Map<String, dynamic>.from(widget.user.snapshotData),
+                  )) ...[
+                if (row.review == AdminDriverReviewBucket.needsChanges)
                   OutlinedButton.icon(
-                    onPressed: () => _suspend(context),
-                    icon: const Icon(Icons.person_off_outlined, size: 18),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.error,
-                    ),
-                    label: Text(uiTr(context, 'إيقاف الحساب')),
-                  )
-                else
-                  AdminPrimaryButton(
-                    label: uiTr(context, 'تفعيل الحساب'),
-                    icon: Icons.check_circle_outline,
-                    onPressed: () => _activate(context),
+                    onPressed: null,
+                    icon: const Icon(Icons.hourglass_top_rounded, size: 18),
+                    label: Text(uiTr(context, 'انتظار استكمال التعديلات')),
                   ),
+                if (AdminRoleService.canUseDriverExceptionalOverride)
+                  AdminPrimaryButton(
+                    label: uiTr(context, 'اعتماد وتفعيل استثنائي'),
+                    icon: Icons.verified_user_outlined,
+                    isLoading: _actionBusy,
+                    onPressed: () => _overrideApproveAndActivate(context),
+                  ),
+                OutlinedButton.icon(
+                  onPressed: _actionBusy ? null : () => _openReview(context),
+                  icon: const Icon(Icons.fact_check_outlined, size: 18),
+                  label: Text(uiTr(context, 'مراجعة التسجيل')),
+                ),
               ],
-            ),
-          ],
-        ),
+              OutlinedButton.icon(
+                onPressed: _actionBusy ? null : () => _openDocuments(context),
+                icon: const Icon(Icons.folder_open_outlined, size: 18),
+                label: Text(uiTr(context, 'عرض الوثائق')),
+              ),
+              if (row.accountActive) ...[
+                OutlinedButton.icon(
+                  onPressed: _actionBusy ? null : () => _deactivate(context),
+                  icon: const Icon(Icons.pause_circle_outline, size: 18),
+                  label: Text(appTr(context, 'adm_drv_deactivate_action')),
+                ),
+                OutlinedButton.icon(
+                  onPressed: _actionBusy ? null : () => _suspend(context),
+                  icon: const Icon(Icons.person_off_outlined, size: 18),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.error,
+                  ),
+                  label: Text(uiTr(context, 'إيقاف الحساب')),
+                ),
+              ] else
+                AdminPrimaryButton(
+                  label:
+                      AdminRoleService.canUseDriverExceptionalOverride &&
+                          AdminDriverReviewActions.operationalActivationBlockers(
+                            Map<String, dynamic>.from(widget.user.snapshotData),
+                          ).isNotEmpty
+                      ? uiTr(context, 'تفعيل استثنائي')
+                      : uiTr(context, 'تفعيل الحساب'),
+                  icon: Icons.check_circle_outline,
+                  isLoading: _actionBusy,
+                  onPressed: () => _activate(context),
+                ),
+            ],
+          ),
+        ],
+      ),
     ];
   }
 
@@ -332,10 +372,7 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     context.pushNamed(
       AddDrevWidget.routeName,
       queryParameters: {
-        'editUser': serializeParam(
-          widget.userRef,
-          ParamType.DocumentReference,
-        ),
+        'editUser': serializeParam(widget.userRef, ParamType.DocumentReference),
       }.withoutNulls,
     );
   }
@@ -344,10 +381,7 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     context.pushNamed(
       DriverActivationWidget.routeName,
       queryParameters: {
-        'dre': serializeParam(
-          widget.userRef,
-          ParamType.DocumentReference,
-        ),
+        'dre': serializeParam(widget.userRef, ParamType.DocumentReference),
       }.withoutNulls,
     );
   }
@@ -368,7 +402,54 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
     );
   }
 
+  Future<void> _deactivate(BuildContext context) async {
+    if (_actionBusy) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(appTr(context, 'adm_drv_deactivate_title')),
+        content: Text(appTr(context, 'adm_drv_deactivate_body')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(appTr(context, 'adm_cancel')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(appTr(context, 'adm_confirm')),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    setState(() => _actionBusy = true);
+    try {
+      final adminUid = currentUserUid.isNotEmpty ? currentUserUid : 'admin';
+      await widget.userRef.update(
+        AdminDriverReviewActions.operationalDeactivatePatch(adminUid: adminUid),
+      );
+      AdminListRefresh.notify(AdminListScope.representatives);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(appTr(context, 'adm_drv_deactivate_success'))),
+      );
+      widget.onChanged?.call();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${appTr(context, 'adm_deactivate_failed')}: ${AdminUserFacingErrors.from(context, e)}',
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
+    }
+  }
+
   Future<void> _suspend(BuildContext context) async {
+    if (_actionBusy) return;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -387,19 +468,21 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
       ),
     );
     if (ok != true || !mounted) return;
+    setState(() => _actionBusy = true);
     try {
-      final adminUid =
-          currentUserUid.isNotEmpty ? currentUserUid : 'admin';
+      final adminUid = currentUserUid.isNotEmpty ? currentUserUid : 'admin';
       await widget.userRef.update(
         AdminDriverReviewActions.suspendPatch(
           reason: 'suspended_by_admin',
           adminUid: adminUid,
         ),
       );
+      AdminListRefresh.notify(AdminListScope.representatives);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(appTr(context, 'adm_drv_suspend_success'))),
       );
+      widget.onChanged?.call();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -409,10 +492,251 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
           ),
         ),
       );
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
+    }
+  }
+
+  Future<void> _overrideApproveAndActivate(BuildContext context) async {
+    if (_actionBusy || !AdminRoleService.canUseDriverExceptionalOverride) {
+      return;
+    }
+    final data = Map<String, dynamic>.from(widget.user.snapshotData);
+    final status =
+        (data['registration_status'] as String?)?.trim() ?? 'needs_changes';
+    final blockers = AdminDriverReviewActions.approvalBlockingReasons(data)
+        .map((key) => appTr(context, key))
+        .where((t) => t.trim().isNotEmpty)
+        .toList();
+    final reasonCtrl = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(uiTr(context, 'اعتماد استثنائي للمندوب')),
+          content: SizedBox(
+            width: 420,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${uiTr(context, 'الحالة الحالية')}: '
+                    '${AdminDriverStatusL10n.registrationRaw(context, status)}',
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    uiTr(
+                      context,
+                      'تحذير: أنت تجاوز متطلبات المراجعة كسوبر أدمن. يُسجَّل السبب في سجل التدقيق.',
+                    ),
+                    style: TextStyle(
+                      color: Theme.of(ctx).colorScheme.error,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Builder(
+                    builder: (_) {
+                      final open = AdminDriverReviewActions
+                          .openChangeRequestSummaries(data);
+                      if (open.isEmpty && blockers.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 10),
+                          Text(
+                            uiTr(context, 'الملاحظات/طلبات التعديل المفتوحة:'),
+                          ),
+                          if (open.isNotEmpty)
+                            for (final b in open) Text('• $b', softWrap: true)
+                          else
+                            for (final b in blockers)
+                              Text('• $b', softWrap: true),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: reasonCtrl,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      labelText: uiTr(context, 'سبب الاعتماد الاستثنائي'),
+                      hintText: uiTr(context, 'اكتب سببًا واضحًا للإجراء'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(uiTr(context, 'إلغاء')),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (reasonCtrl.text.trim().length < 3) return;
+                Navigator.pop(ctx, true);
+              },
+              child: Text(uiTr(context, 'اعتماد وتفعيل استثنائي')),
+            ),
+          ],
+        );
+      },
+    );
+    final reason = reasonCtrl.text.trim();
+    reasonCtrl.dispose();
+    if (confirmed != true || !mounted) return;
+    if (reason.length < 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(uiTr(context, 'سبب الاعتماد الاستثنائي مطلوب'))),
+      );
+      return;
+    }
+
+    setState(() => _actionBusy = true);
+    try {
+      await CloudFunctionsClient.reviewDriver(
+        action: 'approve',
+        driverId: widget.userRef.id,
+        // Override path is only implemented on reviewDriverApplicationV2.
+        useRegistrationV2: true,
+        reviewVersion: (data['reviewVersion'] as num?)?.toInt(),
+        override: true,
+        overrideReason: reason,
+        alsoActivate: true,
+      );
+      AdminListRefresh.notify(AdminListScope.representatives);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(uiTr(context, 'تم الاعتماد والتفعيل الاستثنائي')),
+        ),
+      );
+      widget.onChanged?.call();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AdminCrudFeedback.updateFailed(context, e))),
+      );
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
     }
   }
 
   Future<void> _activate(BuildContext context) async {
+    if (_actionBusy) return;
+
+    final data = Map<String, dynamic>.from(widget.user.snapshotData);
+    final blockers =
+        AdminDriverReviewActions.operationalActivationBlockers(data)
+            .map((key) => appTr(context, key))
+            .where((t) => t.trim().isNotEmpty)
+            .toList();
+    if (blockers.isNotEmpty) {
+      if (!AdminRoleService.isSuperAdmin) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(blockers.join('\n'))));
+        return;
+      }
+      final reasonCtrl = TextEditingController();
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(uiTr(context, 'تفعيل استثنائي')),
+          content: SizedBox(
+            width: 420,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(uiTr(context, 'عوائق التفعيل:')),
+                for (final b in blockers) Text('• $b'),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: reasonCtrl,
+                  maxLines: 2,
+                  decoration: InputDecoration(
+                    labelText: uiTr(context, 'سبب التفعيل الاستثنائي *'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(uiTr(context, 'إلغاء')),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(uiTr(context, 'تفعيل استثنائي')),
+            ),
+          ],
+        ),
+      );
+      final reason = reasonCtrl.text.trim();
+      reasonCtrl.dispose();
+      if (ok != true || !mounted) return;
+      if (reason.length < 3) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(uiTr(context, 'سبب التفعيل الاستثنائي مطلوب')),
+          ),
+        );
+        return;
+      }
+      // Operational-only override: still requires registration approved.
+      // If registration not approved, force use of registration override CTA.
+      if (blockers.any(
+        (b) => b.contains('اعتماد') || b.contains('registration'),
+      )) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              uiTr(
+                context,
+                'التسجيل غير معتمد — استخدم «اعتماد وتفعيل استثنائي» أولاً',
+              ),
+            ),
+          ),
+        );
+        return;
+      }
+      setState(() => _actionBusy = true);
+      try {
+        final adminUid = currentUserUid.isNotEmpty ? currentUserUid : 'admin';
+        await widget.userRef.update({
+          ...AdminDriverReviewActions.operationalActivatePatch(
+            adminUid: adminUid,
+          ),
+          'override': true,
+          'override_reason': reason,
+          'override_actor_uid': adminUid,
+          'override_at': FieldValue.serverTimestamp(),
+        });
+        AdminListRefresh.notify(AdminListScope.representatives);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(appTr(context, 'adm_drv_activated_body'))),
+        );
+        widget.onChanged?.call();
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AdminCrudFeedback.updateFailed(context, e))),
+        );
+      } finally {
+        if (mounted) setState(() => _actionBusy = false);
+      }
+      return;
+    }
+
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -431,23 +755,25 @@ class _DriverProfileBodyState extends State<DriverProfileBody> {
       ),
     );
     if (ok != true || !mounted) return;
+    setState(() => _actionBusy = true);
     try {
+      final adminUid = currentUserUid.isNotEmpty ? currentUserUid : 'admin';
       await widget.userRef.update(
-        createUserRecordData(
-          actevMndob: true,
-          ismndob: true,
-          ismndom: true,
-        ),
+        AdminDriverReviewActions.operationalActivatePatch(adminUid: adminUid),
       );
+      AdminListRefresh.notify(AdminListScope.representatives);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(appTr(context, 'adm_drv_activated_body'))),
       );
+      widget.onChanged?.call();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AdminCrudFeedback.updateFailed(context, e))),
       );
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
     }
   }
 }
@@ -508,7 +834,10 @@ class _ProfileHeader extends StatelessWidget {
                   spacing: 6,
                   runSpacing: 4,
                   children: [
-                    ...AdminDriverStatusStack(row: row).buildBadges(context),
+                    ...AdminDriverStatusStack(
+                      row: row,
+                      includeOperationalAxes: false,
+                    ).buildBadges(context),
                     if (row.onActiveTrip)
                       AdminStatusBadgeUnified(
                         kind: AdminStatusKind.medium,
@@ -536,15 +865,20 @@ extension _AdminDriverStatusStackBadges on AdminDriverStatusStack {
         kind: AdminDriverStatusLabels.accountKind(row.accountActive),
         label: AdminDriverStatusLabels.account(context, row.accountActive),
       ),
-      if (row.connection != AdminDriverConnectionStatus.unknown)
+      if (includeOperationalAxes &&
+          row.connection != AdminDriverConnectionStatus.unknown)
         AdminStatusBadgeUnified(
           kind: AdminDriverStatusLabels.connectionKind(row.connection),
           label: AdminDriverStatusLabels.connection(context, row.connection),
         ),
-      if (row.availability != AdminDriverAvailabilityStatus.unknown)
+      if (includeOperationalAxes &&
+          row.availability != AdminDriverAvailabilityStatus.unknown)
         AdminStatusBadgeUnified(
           kind: AdminDriverStatusLabels.availabilityKind(row.availability),
-          label: AdminDriverStatusLabels.availability(context, row.availability),
+          label: AdminDriverStatusLabels.availability(
+            context,
+            row.availability,
+          ),
         ),
     ];
   }
@@ -607,10 +941,7 @@ class _QuickSummary extends StatelessWidget {
 }
 
 class _ActiveTripSection extends StatelessWidget {
-  const _ActiveTripSection({
-    required this.future,
-    required this.row,
-  });
+  const _ActiveTripSection({required this.future, required this.row});
 
   final Future<AdminDriverActiveTripTruth> future;
   final AdminDriverRow row;
@@ -618,12 +949,7 @@ class _ActiveTripSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!row.onActiveTrip) {
-      return AdminDriverSectionCard(
-        title: uiTr(context, 'الرحلة الحالية'),
-        children: [
-          Text(uiTr(context, 'لا توجد رحلة نشطة')),
-        ],
-      );
+      return const SizedBox.shrink();
     }
 
     return FutureBuilder<AdminDriverActiveTripTruth>(
@@ -643,12 +969,7 @@ class _ActiveTripSection extends StatelessWidget {
         }
         final trip = snap.data ?? AdminDriverActiveTripTruth.empty;
         if (!trip.hasLiveTrip || trip.order == null) {
-          return AdminDriverSectionCard(
-            title: uiTr(context, 'الرحلة الحالية'),
-            children: [
-              Text(uiTr(context, 'لا توجد رحلة نشطة')),
-            ],
-          );
+          return const SizedBox.shrink();
         }
         final o = trip.order!;
         return AdminDriverSectionCard(

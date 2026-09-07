@@ -7,45 +7,7 @@ const db = admin.firestore();
 
 // ── Custom claims sync ──────────────────────────────────────────────────────
 
-function deriveClaimsFromUserData(data) {
-  const claims = {};
-  const rule = data.isAdminRule ?? data.IsAdminRule ?? 0;
-  const ruleNum = typeof rule === "string" ? parseInt(rule, 10) : rule;
-
-  if (data.isAdmin === true || data.IsAdmin === true || ruleNum === 1) {
-    claims.super_admin = true;
-    claims.finance = true;
-    claims.support = true;
-  }
-  if (ruleNum === 2) {
-    claims.country_admin = true;
-    // Do NOT grant finance — that unlocked unscoped order lists in rules.
-    claims.support = true;
-  }
-  if (data.isagent === true || data.Isagent === true) {
-    claims.agent = true;
-    claims.support = true;
-  }
-  if (ruleNum === 3 || data.is_partner === true || data.isPartner === true) {
-    claims.partner = true;
-  }
-  if (ruleNum === 4) {
-    claims.transport_manager = true;
-  }
-
-  const countryRef = data.Rev_dloh_agent ?? data.Rev_dolh;
-  if (countryRef && countryRef.path) {
-    claims.country_id = countryRef.path;
-  }
-  if (data.partner_mkan && data.partner_mkan.path) {
-    claims.partner_mkan_id = data.partner_mkan.path;
-  }
-  if (data.transport_company && data.transport_company.path) {
-    claims.transport_company_id = data.transport_company.path;
-  }
-
-  return claims;
-}
+const {deriveClaimsFromUserData} = require("./panel_claims.js");
 
 async function syncClaimsForUid(uid) {
   const snap = await db.doc(`user/${uid}`).get();
@@ -91,6 +53,9 @@ const PRIVILEGED_FIELDS = [
   "partner_mkan",
   "transport_company",
 ];
+
+const agentCountryAssignment = require("./agent_country_assignment.js");
+const {countryPathFromRef} = require("./agent_active.js");
 
 function callerIsAdmin(callerClaims) {
   return callerClaims.super_admin === true || callerClaims.country_admin === true;
@@ -215,15 +180,72 @@ exports.createPanelUser = functions.https.onCall(async (data, context) => {
       ...hydrateUserData(userData),
     };
 
-    await db.doc(`user/${uid}`).set(doc, {merge: true});
+    const willBeActiveAgent =
+      (doc.Isagent === true || doc.isagent === true) &&
+      doc.actev_user !== false;
+    const agentCountry = countryPathFromRef(doc.Rev_dloh_agent);
+
+    if (willBeActiveAgent) {
+      if (!agentCountry) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          "Active agent requires Rev_dloh_agent country.",
+        );
+      }
+      // F3-C3: uniqueness before commit — never leave active agent without lock.
+      await agentCountryAssignment.assertCanActivateNewAgent(
+        db,
+        agentCountry,
+        null,
+      );
+      await agentCountryAssignment.claimCountryAgent({
+        firestore: db,
+        countryPath: agentCountry,
+        agentId: uid,
+        actorUid: context.auth.uid,
+        source: "createPanelUser",
+        reason: "create_active_agent",
+        agentPatch: doc,
+      });
+    } else {
+      await db.doc(`user/${uid}`).set(doc, {merge: true});
+    }
     await syncClaimsForUid(uid);
   } catch (e) {
     console.error("createPanelUser firestore error", e);
-    try {
-      await admin.auth().deleteUser(uid);
-    } catch (cleanupErr) {
-      console.error("createPanelUser cleanup failed", cleanupErr);
+    const {
+      compensateFailedPanelUserCreate,
+    } = require("./panel_user_create_compensation.js");
+    const compensation = await compensateFailedPanelUserCreate({
+      auth: admin.auth(),
+      firestore: db,
+      uid,
+      actorUid: context.auth.uid,
+      reason: (e && e.message) || "createPanelUser_assignment_failed",
+      auditWriter: async (row) => {
+        await db.collection("admin_audit_log").add({
+          ...row,
+          created_at: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      },
+    });
+    if (!compensation.ok) {
+      console.error("createPanelUser compensation incomplete", compensation);
+      throw new functions.https.HttpsError(
+        "internal",
+        "CREATE_PANEL_USER_COMPENSATION_INCOMPLETE",
+        {
+          code: "CREATE_PANEL_USER_COMPENSATION_INCOMPLETE",
+          uid,
+          authOrphan: compensation.authOrphan,
+          userDocOrphan: compensation.userDocOrphan,
+          authDeleteError: compensation.authDeleteError,
+          userDocDeleteError: compensation.userDocDeleteError,
+          originalError: (e && e.message) || String(e),
+        },
+      );
     }
+    if (e instanceof functions.https.HttpsError) throw e;
     throw new functions.https.HttpsError(
       "internal",
       e.message || "Failed to write user profile",
@@ -232,6 +254,14 @@ exports.createPanelUser = functions.https.onCall(async (data, context) => {
 
   return {uid};
 });
+
+// F3-C3 — one active agent per country (server-authoritative).
+exports.assignActiveCountryAgent = agentCountryAssignment.assignActiveCountryAgent;
+exports.reassignActiveCountryAgent =
+  agentCountryAssignment.reassignActiveCountryAgent;
+exports.deactivateCountryAgent = agentCountryAssignment.deactivateCountryAgent;
+exports.updateCountryAgentAssignment =
+  agentCountryAssignment.updateCountryAgentAssignment;
 
 // ── Gemini proxy (no client keys) ───────────────────────────────────────────
 

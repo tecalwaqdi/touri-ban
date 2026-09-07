@@ -1,0 +1,245 @@
+{
+  "base": "https://tutorial-multi-language-70gx4j--admin-perf-p4a-g8gel2s5.web.app/admin",
+  "authMode": "custom_token_injection",
+  "email": "accountant.demo@touri-taxi.com",
+  "cold": {
+    "route": "/adminFinanceHub",
+    "loaderMs": 17,
+    "firstUsefulMs": 14362,
+    "summaryMs": 18905,
+    "firestoreStarts": 19,
+    "periodClick": null,
+    "afterPeriodFirstMs": null,
+    "aria": "Enable accessibility",
+    "measurement": "firestore_network_first_response_and_quiet"
+  },
+  "warm": [
+    {
+      "n": 1,
+      "finance": {
+        "route": "/adminFinanceHub",
+        "loaderMs": 18,
+        "firstUsefulMs": 4123,
+        "summaryMs": 8727,
+        "firestoreStarts": 9,
+        "periodClick": null,
+        "afterPeriodFirstMs": null,
+        "aria": "Enable accessibility",
+        "measurement": "firestore_network_first_response_and_quiet"
+      },
+      "financeYear": {
+        "route": "/adminFinanceHub",
+        "loaderMs": 17,
+        "firstUsefulMs": 4563,
+        "summaryMs": 9312,
+        "firestoreStarts": 9,
+        "periodClick": null,
+        "afterPeriodFirstMs": null,
+        "aria": "Enable accessibility",
+        "measurement": "firestore_network_first_response_and_quiet"
+      },
+      "reconciliation": {
+        "route": "/adminFinanceReconciliation",
+        "loaderMs": 226,
+        "firstUsefulMs": 5037,
+        "summaryMs": 10865,
+        "firestoreStarts": 10,
+        "periodClick": null,
+        "afterPeriodFirstMs": null,
+        "aria": "Enable accessibility",
+        "measurement": "firestore_network_first_response_and_quiet"
+      },
+      "settlements": {
+        "route": "/adminSettlements",
+        "loaderMs": 136,
+        "firstUsefulMs": 4094,
+        "summaryMs": 7912,
+        "firestoreStarts": 5,
+        "periodClick": null,
+        "afterPeriodFirstMs": null,
+        "aria": "Enable accessibility",
+        "measurement": "firestore_network_first_response_and_quiet"
+      }
+    },
+    {
+      "n": 2,
+      "finance": {
+        "route": "/adminFinanceHub",
+        "loaderMs": 16,
+        "firstUsefulMs": 3699,
+        "summaryMs": 7718,
+        "firestoreStarts": 9,
+        "periodClick": null,
+        "afterPeriodFirstMs": null,
+        "aria": "Enable accessibility",
+        "measurement": "firestore_network_first_response_and_quiet"
+      },
+      "reconciliation": {
+        "route": "/adminFinanceReconciliation",
+        "loaderMs": 37,
+        "firstUsefulMs": 4835,
+        "summaryMs": 8849,
+        "firestoreStarts": 10,
+        "periodClick": null,
+        "afterPeriodFirstMs": null,
+        "aria": "Enable accessibility",
+        "measurement": "firestore_network_first_response_and_quiet"
+      },
+      "settlements": {
+        "route": "/adminSettlements",
+        "loaderMs": 36,
+        "firstUsefulMs": 4336,
+        "summaryMs": 7972,
+        "firestoreStarts": 5,
+        "periodClick": null,
+        "afterPeriodFirstMs": null,
+        "aria": "Enable accessibility",
+        "measurement": "firestore_network_first_response_and_quiet"
+      }
+    },
+    {
+      "n": 3,
+      "finance": {
+        "route": "/adminFinanceHub",
+        "loaderMs": 35,
+        "firstUsefulMs": 4052,
+        "summaryMs": 8452,
+        "firestoreStarts": 9,
+        "periodClick": null,
+        "afterPeriodFirstMs": null,
+        "aria": "Enable accessibility",
+        "measurement": "firestore_network_first_response_and_quiet"
+      },
+      "reconciliation": {
+        "route": "/adminFinanceReconciliation",
+        "loaderMs": 36,
+        "firstUsefulMs": 6138,
+        "summaryMs": 10446,
+        "firestoreStarts": 10,
+        "periodClick": null,
+        "afterPeriodFirstMs": null,
+        "aria": "Enable accessibility",
+        "measurement": "firestore_network_first_response_and_quiet"
+      },
+      "settlements": {
+        "route": "/adminSettlements",
+        "loaderMs": 43,
+        "firstUsefulMs": 5061,
+        "summaryMs": 8653,
+        "firestoreStarts": 5,
+        "periodClick": null,
+        "afterPeriodFirstMs": null,
+        "aria": "Enable accessibility",
+        "measurement": "firestore_network_first_response_and_quiet"
+      }
+    }
+  ],
+  "sequence": [
+    {
+      "route": "/adminFinanceHub",
+      "loaderMs": 40,
+      "firstUsefulMs": 4850,
+      "summaryMs": 9238,
+      "firestoreStarts": 9,
+      "periodClick": null,
+      "afterPeriodFirstMs": null,
+      "aria": "Enable accessibility",
+      "measurement": "firestore_network_first_response_and_quiet"
+    },
+    {
+      "route": "/adminFinanceReconciliation",
+      "loaderMs": 36,
+      "firstUsefulMs": 4519,
+      "summaryMs": 8945,
+      "firestoreStarts": 10,
+      "periodClick": null,
+      "afterPeriodFirstMs": null,
+      "aria": "Enable accessibility",
+      "measurement": "firestore_network_first_response_and_quiet"
+    },
+    {
+      "route": "/adminFinanceChannels",
+      "loaderMs": 166,
+      "firstUsefulMs": 5502,
+      "summaryMs": 9617,
+      "firestoreStarts": 14,
+      "periodClick": null,
+      "afterPeriodFirstMs": null,
+      "aria": "Enable accessibility",
+      "measurement": "firestore_network_first_response_and_quiet"
+    },
+    {
+      "route": "/adminSettlements",
+      "loaderMs": 34,
+      "firstUsefulMs": null,
+      "summaryMs": 31731,
+      "firestoreStarts": 6,
+      "periodClick": null,
+      "afterPeriodFirstMs": null,
+      "aria": "Enable accessibility",
+      "measurement": "firestore_network_first_response_and_quiet"
+    },
+    {
+      "route": "/adminFinanceAgents",
+      "loaderMs": 595,
+      "firstUsefulMs": null,
+      "summaryMs": 60839,
+      "firestoreStarts": 10,
+      "periodClick": null,
+      "afterPeriodFirstMs": null,
+      "aria": "Enable accessibility",
+      "measurement": "firestore_network_first_response_and_quiet"
+    },
+    {
+      "route": "/adminFinanceReports",
+      "loaderMs": 573,
+      "firstUsefulMs": null,
+      "summaryMs": 61070,
+      "firestoreStarts": 0,
+      "periodClick": null,
+      "afterPeriodFirstMs": null,
+      "aria": "",
+      "measurement": "firestore_network_first_response_and_quiet"
+    }
+  ],
+  "settlements": {
+    "filterLabel": null,
+    "filterMs": 604,
+    "nextLabel": null,
+    "nextPageMs": null
+  },
+  "medians": {
+    "financeFirstUsefulMs": 4052,
+    "financeSummaryMs": 8452,
+    "reconciliationFirstUsefulMs": 5037,
+    "reconciliationSummaryMs": 10446,
+    "settlementsFirstUsefulMs": 4336,
+    "settlementsFilterMs": 604,
+    "settlementsNextPageMs": null,
+    "coldFinanceFirstUsefulMs": 14362
+  },
+  "sequenceFirestoreStarts": 49,
+  "indexErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 400 ()",
+    "Failed to load resource: net::ERR_CONNECTION_CLOSED"
+  ],
+  "netTotals": {
+    "starts": 149,
+    "dones": 148
+  },
+  "screenshots": [
+    "01_finance_hub_loaded_cold.png",
+    "01_finance_hub_loading.png",
+    "01b_finance_hub_after_cold.png",
+    "02_finance_hub_loaded.png",
+    "02c_finance_hub_this_year.png",
+    "03_reconciliation_loaded.png",
+    "04_reconciliation_partial_trip.png",
+    "05_settlements_loaded.png",
+    "06_settlements_filter.png",
+    "07_agent_finance.png",
+    "08_reports.png"
+  ],
+  "note": "firstUsefulMs = ms from route navigation to first Firestore HTTP response; summaryMs = quiet window after Firestore activity (proxy for summary settle). Flutter canvas prevents reliable DOM text timing."
+}

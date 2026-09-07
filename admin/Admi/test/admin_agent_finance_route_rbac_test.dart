@@ -80,9 +80,11 @@ void main() {
       expect(AdminRoleService.canAccessRoute('AdminFinancialPeriods'), isTrue);
       expect(AdminRoleService.canAccessRoute('AdminAgentFinance'), isTrue);
       expect(AdminRoleService.canAccessRoute('AdminReconciliation'), isTrue);
+      expect(AdminRoleService.canAccessRoute('AdminFinanceReconciliation'), isTrue);
       expect(AdminRoleService.canAccessRoute('AdminDiagnostics'), isFalse);
       expect(AdminRoleService.canAccessRoute('Home22Dashboard'), isFalse);
-      expect(AdminRoleService.canWriteSettlements, isTrue);
+      expect(AdminRoleService.canWriteSettlements, isFalse);
+      expect(AdminRoleService.currentRole, AdminRole.accountant);
     });
 
     test('super admin retains all finance routes', () {

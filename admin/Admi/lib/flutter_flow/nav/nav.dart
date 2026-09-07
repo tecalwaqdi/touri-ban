@@ -14,11 +14,13 @@ import '/backend/admin_role_service.dart';
 
 import '/core/admin_splash_screen.dart';
 import '/core/admin_qa_fixtures.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
+import '/components/admin_persistent_shell.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 import '/index.dart';
 import '/admin/admin_driver_review_fixture/admin_qa_fixture_unavailable_widget.dart';
+import '/admin/admin_perf_p4b/admin_perf_p4b_control_widgets.dart';
+import '/admin/admin_perf_p4c/admin_perf_p4c_fetch_bench_widget.dart';
 
 export 'package:go_router/go_router.dart';
 export 'serialization_util.dart';
@@ -33,6 +35,9 @@ Widget _panelHomeForCurrentUser() {
   }
   if (AdminRoleService.isTransportCompany) {
     return const CompanyDriversWidget();
+  }
+  if (AdminRoleService.isAccountant || AdminRoleService.isFinanceStaff) {
+    return const AdminFinanceHubWidget();
   }
   return Home22DashboardWidget();
 }
@@ -129,19 +134,13 @@ String? globalAuthRedirect(AppStateNotifier notifier, GoRouterState state) {
   return homePathForCurrentUser();
 }
 
+/// Auth/session gate loading — same branded chrome as app boot splash.
+/// Avoids white-spinner ↔ teal-splash shell flicker during claims/profile wait.
 class _AuthLoadingScreen extends StatelessWidget {
   const _AuthLoadingScreen();
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(
-          color: FlutterFlowTheme.of(context).primary,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const AdminSplashScreen();
 }
 
 class AppStateNotifier extends ChangeNotifier {
@@ -155,6 +154,9 @@ class AppStateNotifier extends ChangeNotifier {
   bool showSplashImage = true;
   String? _redirectLocation;
 
+  /// AUTH-NAV-P0: first Firebase auth emission received (loading ≠ logged out).
+  bool authResolved = false;
+
   /// Determines whether the app will refresh and build again when a sign
   /// in or sign out happens. This is useful when the app is launched or
   /// on an unexpected logout. However, this must be turned off when we
@@ -162,8 +164,15 @@ class AppStateNotifier extends ChangeNotifier {
   /// Otherwise, this will trigger a refresh and interrupt the action(s).
   bool notifyOnAuthChange = true;
 
-  bool get loading => user == null || showSplashImage;
+  bool get loading => !authResolved || user == null || showSplashImage;
   bool get loggedIn => user?.loggedIn ?? false;
+
+  /// AUTH_LOADING — Firebase has not yet emitted a definitive auth state.
+  bool get isAuthLoading => !authResolved;
+
+  /// Definitive unauthenticated (never treat loading as this).
+  bool get isUnauthenticated => authResolved && !loggedIn;
+
   bool get initiallyLoggedIn => initialUser?.loggedIn ?? false;
   bool get shouldRedirect => loggedIn && _redirectLocation != null;
 
@@ -178,11 +187,13 @@ class AppStateNotifier extends ChangeNotifier {
 
   /// Updates auth user without triggering a router rebuild (during sign-in flow).
   void updateSilently(BaseAuthUser newUser) {
+    authResolved = true;
     initialUser ??= newUser;
     user = newUser;
   }
 
   void update(BaseAuthUser newUser, {bool forceNotify = false}) {
+    authResolved = true;
     final shouldUpdate =
         user?.uid == null || newUser.uid == null || user?.uid != newUser.uid;
     initialUser ??= newUser;
@@ -208,24 +219,8 @@ class AppStateNotifier extends ChangeNotifier {
   void notifyProfileReady() => notifyListeners();
 }
 
-GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
-      initialLocation: '/',
-      debugLogDiagnostics: kDebugMode,
-      refreshListenable: appStateNotifier,
-      navigatorKey: appNavigatorKey,
-      redirect: (context, state) =>
-          globalAuthRedirect(appStateNotifier, state),
-      errorBuilder: (context, state) => appStateNotifier.loggedIn
-          ? AuthUserStreamWidget(
-              builder: (context) {
-                if (!AdminRoleService.hasPanelAccess) {
-                  return HomePageWidget();
-                }
-                return _panelHomeForCurrentUser();
-              },
-            )
-          : HomePageWidget(),
-      routes: [
+GoRouter createRouter(AppStateNotifier appStateNotifier) {
+  final ffRoutes = <FFRoute>[
         FFRoute(
           name: '_initialize',
           path: '/',
@@ -241,7 +236,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               : HomePageWidget(),
         ),
         //add_page
-         FFRoute(
+        FFRoute(
           name: AddPlacePage.routeName,
           path: AddPlacePage.routePath,
           requireAuth: true,
@@ -624,6 +619,24 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => const AdminFinanceHubWidget(),
         ),
         FFRoute(
+          name: AdminPerfP4bStaticWidget.routeName,
+          path: AdminPerfP4bStaticWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminPerfP4bStaticWidget(),
+        ),
+        FFRoute(
+          name: AdminPerfP4bControlQueryWidget.routeName,
+          path: AdminPerfP4bControlQueryWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminPerfP4bControlQueryWidget(),
+        ),
+        FFRoute(
+          name: AdminPerfP4cFetchBenchWidget.routeName,
+          path: AdminPerfP4cFetchBenchWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminPerfP4cFetchBenchWidget(),
+        ),
+        FFRoute(
           name: AdminFinanceChannelsWidget.routeName,
           path: AdminFinanceChannelsWidget.routePath,
           requireAuth: true,
@@ -646,6 +659,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           path: AdminReconciliationWidget.routePath,
           requireAuth: true,
           builder: (context, params) => const AdminReconciliationWidget(),
+        ),
+        FFRoute(
+          name: AdminFinanceReconciliationWidget.routeName,
+          path: AdminFinanceReconciliationWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) =>
+              const AdminFinanceReconciliationWidget(),
         ),
         FFRoute(
           name: AdminFinancialPeriodsWidget.routeName,
@@ -722,6 +742,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'settlementId',
               ParamType.String,
             ),
+            diagnostic: params.getParam('diagnostic', ParamType.String) == '1',
           ),
         ),
         FFRoute(
@@ -783,9 +804,51 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               collectionNamePath: ['user'],
             ),
           ),
-        )
-      ].map((r) => r.toRoute(appStateNotifier)).toList(),
-    );
+        ),
+  ];
+
+  final publicRoutes =
+      ffRoutes.where((r) => !r.requireAuth).toList(growable: false);
+  final panelRoutes =
+      ffRoutes.where((r) => r.requireAuth).toList(growable: false);
+
+  return GoRouter(
+    initialLocation: '/',
+    debugLogDiagnostics: kDebugMode,
+    refreshListenable: appStateNotifier,
+    navigatorKey: appNavigatorKey,
+    redirect: (context, state) => globalAuthRedirect(appStateNotifier, state),
+    errorBuilder: (context, state) => appStateNotifier.loggedIn
+        ? AuthUserStreamWidget(
+            builder: (context) {
+              if (!AdminRoleService.hasPanelAccess) {
+                return HomePageWidget();
+              }
+              return _panelHomeForCurrentUser();
+            },
+          )
+        : HomePageWidget(),
+    routes: [
+      ...publicRoutes.map((r) => r.toRoute(appStateNotifier)),
+      ShellRoute(
+        builder: (context, state, child) {
+          // AUTH-NAV-P0: keep persistent shell during AUTH_LOADING when the
+          // session was already authenticated — avoid chrome teardown flicker.
+          final keepShell = appStateNotifier.loggedIn ||
+              (appStateNotifier.isAuthLoading &&
+                  (appStateNotifier.initialUser?.loggedIn ?? false));
+          if (!keepShell) {
+            return child;
+          }
+          return AdminPersistentShell(child: child);
+        },
+        routes: panelRoutes
+            .map((r) => r.toRoute(appStateNotifier))
+            .toList(growable: false),
+      ),
+    ],
+  );
+}
 
 extension NavParamExtensions on Map<String, String?> {
   Map<String, String> get withoutNulls => Map.fromEntries(
@@ -955,7 +1018,11 @@ class FFRoute {
             return redirectLocation;
           }
 
-          if (requireAuth && !appStateNotifier.loggedIn) {
+          // AUTH-NAV-P0: never treat AUTH_LOADING as UNAUTHENTICATED.
+          if (requireAuth && appStateNotifier.isAuthLoading) {
+            return null;
+          }
+          if (requireAuth && appStateNotifier.isUnauthenticated) {
             appStateNotifier.setRedirectLocationIfUnset(state.uri.toString());
             return '/homePage';
           }
@@ -976,9 +1043,8 @@ class FFRoute {
                   builder: (context, _) => builder(context, ffParams),
                 )
               : builder(context, ffParams);
-          final child = appStateNotifier.loading
-              ? const AdminSplashScreen()
-              : page;
+          final child =
+              appStateNotifier.loading ? const AdminSplashScreen() : page;
 
           final transitionInfo = state.transitionInfo;
           return transitionInfo.hasTransition
@@ -1064,9 +1130,8 @@ extension GoRouterLocationExtension on GoRouter {
     final config = routerDelegate.currentConfiguration;
     if (config.isEmpty) return null;
     final RouteMatch lastMatch = config.last;
-    final RouteMatchList matchList = lastMatch is ImperativeRouteMatch
-        ? lastMatch.matches
-        : config;
+    final RouteMatchList matchList =
+        lastMatch is ImperativeRouteMatch ? lastMatch.matches : config;
     for (final match in matchList.matches.reversed) {
       final route = match.route;
       if (route is GoRoute) {

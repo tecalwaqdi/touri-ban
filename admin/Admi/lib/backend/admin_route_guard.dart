@@ -1,14 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_rbac_phase.dart';
 import '/backend/admin_role_service.dart';
 import '/index.dart';
 
-
-
 /// Returns a redirect path when the signed-in user may not access [routeName].
-
 String? adminRouteRedirect(String? routeName) {
-
   if (routeName == null || routeName.isEmpty) {
     return null;
   }
@@ -22,12 +20,8 @@ String? adminRouteRedirect(String? routeName) {
     return null;
   }
 
-
-
   const publicRoutes = {
-
     'HomePage',
-
   };
 
   if (publicRoutes.contains(routeName)) {
@@ -42,39 +36,31 @@ String? adminRouteRedirect(String? routeName) {
     return null;
   }
 
-
-
   // Block public super-admin registration (route name is lowercase in nav).
-
   if (routeName == 'adminRegesr') {
-
     return HomePageWidget.routePath;
-
   }
-
-
 
   if (!loggedIn) {
-
     return null;
-
   }
-
-
 
   // Profile may still be loading from Firestore — do not bounce to login.
   if (currentUserDocument == null) {
-
     return null;
-
   }
-
-
 
   if (!AdminRoleService.hasPanelAccess) {
     // Auth/profile still resolving — keep deep link; do not bounce to login/home.
     if (AdminRoleService.isRoleResolving ||
         AdminRoleService.rbacPhase != AdminRbacPhase.authoritative) {
+      return null;
+    }
+    // AUTH-NAV-P0: Firebase session still alive + profile says panel role →
+    // authorization/claims race, NOT logout. Stay (or soft-home to finance).
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser != null &&
+        AdminRoleService.profileRole != AdminRole.none) {
       return null;
     }
     return HomePageWidget.routePath;
@@ -86,44 +72,28 @@ String? adminRouteRedirect(String? routeName) {
     if (AdminRoleService.rbacPhase != AdminRbacPhase.authoritative) {
       return null;
     }
+    // AUTH-NAV-P0: unauthorized route → role home, NEVER Login / signOut.
     return _homePathFor(AdminRoleService.currentRole);
   }
 
   return null;
-
 }
-
-
 
 String _homePathFor(AdminRole role) {
-
   switch (role) {
-
     case AdminRole.partner:
-
       return PartnerBookingsWidget.routePath;
-
     case AdminRole.transportCompany:
-
       return CompanyDriversWidget.routePath;
-
+    case AdminRole.accountant:
+      return AdminFinanceHubWidget.routePath;
     case AdminRole.countryAgent:
-
     case AdminRole.superAdmin:
-
       return Home22DashboardWidget.routePath;
-
     case AdminRole.none:
-
       return HomePageWidget.routePath;
-
   }
-
 }
 
-
-
 String homePathForCurrentUser() =>
-
     _homePathFor(AdminRoleService.currentRole);
-

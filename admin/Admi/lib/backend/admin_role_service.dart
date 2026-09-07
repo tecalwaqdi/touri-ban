@@ -9,6 +9,8 @@ import '/flutter_flow/internationalization.dart';
 /// Panel roles derived from Firebase Auth custom claims (bounded profile bootstrap).
 enum AdminRole {
   superAdmin,
+  /// Dedicated F3-B2 finance inspection persona (`finance` claim / isAdminRule=5).
+  accountant,
   countryAgent,
   partner,
   transportCompany,
@@ -48,6 +50,8 @@ class AdminRoleService {
   static const int ruleCountryAgent = 2;
   static const int rulePartner = 3;
   static const int ruleTransportCompany = 4;
+  /// F3-B2 Accountant — maps to Auth claim `finance` (read-only).
+  static const int ruleAccountant = 5;
 
   /// Legacy shim for callers comparing an already-loaded profile.
   static AdminRole roleFrom(UserRecord? user) => _roleFromUserDoc(user);
@@ -63,6 +67,9 @@ class AdminRoleService {
     if (hasIsAdminRule) {
       if (isAdminRule == ruleSuperAdmin) {
         return AdminRole.superAdmin;
+      }
+      if (isAdminRule == ruleAccountant) {
+        return AdminRole.accountant;
       }
       if (isAdminRule == ruleCountryAgent) {
         return AdminRole.countryAgent;
@@ -104,12 +111,17 @@ class AdminRoleService {
 
   static AdminRole get currentRole {
     if (_claims.isSuperAdmin) return AdminRole.superAdmin;
+    // Pure finance claim (isAdminRule=5) = Accountant — never Country Agent.
+    if (_claims.isFinance &&
+        !_claims.isCountryAdmin &&
+        !_claims.isAgent) {
+      return AdminRole.accountant;
+    }
     if (_claims.isCountryAdmin || _claims.isAgent || _claims.isSupport) {
       return AdminRole.countryAgent;
     }
     if (_claims.isPartner) return AdminRole.partner;
     if (_claims.isTransportManager) return AdminRole.transportCompany;
-    if (_claims.isFinance) return AdminRole.countryAgent;
 
     if (_phase != AdminRbacPhase.authoritative) {
       return _roleFromUserDoc(_boundProfile);
@@ -149,11 +161,38 @@ class AdminRoleService {
 
   static bool get isSuperAdmin => currentRole == AdminRole.superAdmin;
 
+  /// Super Admin for exceptional driver override — claims OR profile bootstrap.
+  /// Avoids hiding the CTA when authoritative claims omit `super_admin` while
+  /// the signed-in profile is still an isAdminRule=1 Super Admin.
+  static bool get canUseDriverExceptionalOverride {
+    if (isSuperAdmin) return true;
+    return isSuperAdminUser(_boundProfile);
+  }
+
   /// Country-agent list/dashboard scoping. Super admins always use global scope
   /// even when legacy claims also include country_admin/agent (production QA account).
   static bool get isCountryAgent {
     if (isSuperAdmin) return false;
     return currentRole == AdminRole.countryAgent;
+  }
+
+  /// Dedicated Accountant persona (global or country-scoped via country_id).
+  static bool get isAccountant => currentRole == AdminRole.accountant;
+
+  /// Global Accountant — finance claim without country_id scope.
+  static bool get isGlobalAccountant =>
+      isAccountant &&
+      ((_claims.countryId ?? '').trim().isEmpty);
+
+  /// Country-scoped Accountant — finance + country_id (not Country Agent).
+  static bool get isCountryAccountant =>
+      isAccountant && ((_claims.countryId ?? '').trim().isNotEmpty);
+
+  /// Finance loaders: Country Agent OR country-scoped Accountant.
+  static bool get usesCountryFinanceScope {
+    if (isSuperAdmin) return false;
+    if (isCountryAgent) return true;
+    return isCountryAccountant;
   }
 
   /// Firestore user doc check (editing/viewing another account).
@@ -175,22 +214,35 @@ class AdminRoleService {
   /// Agent claim without SuperAdmin (defense-in-depth for own-account finance).
   static bool get isAgentAccount => _claims.isAgent && !isSuperAdmin;
 
-  /// Pure Finance staff (global finance UI) — not country/agent scoped.
+  /// Pure Finance / Accountant staff (global or country-scoped finance UI).
   static bool get isFinanceStaff =>
       _claims.isFinance &&
       !_claims.isSuperAdmin &&
       !_claims.isCountryAdmin &&
       !_claims.isAgent;
 
-  /// SuperAdmin / Finance-only writers. Country agents are read-only in Phase 6A.
-  static bool get canWriteSettlements =>
-      isSuperAdmin ||
-      (_claims.isFinance && !_claims.isCountryAdmin && !_claims.isAgent);
+  /// PERF-P1: operational dashboard live-order sync (not finance-only personas).
+  static bool get wantsOperationalLiveSync =>
+      hasPanelAccess && !isAccountant && !isFinanceStaff;
+
+  /// PERF-P1: Finance Hub sidebar attention badges (pending payments / drafts).
+  static bool get wantsFinanceHubAttentionBadges =>
+      wantsOperationalLiveSync && (isSuperAdmin || isCountryAgent);
+
+  /// F3-B2: settlement writes SuperAdmin only. Accountant is read-only.
+  static bool get canWriteSettlements => isSuperAdmin;
+
+  /// Country path claim (no Firestore DocumentReference) — safe for tests/keys.
+  static String? get scopedCountryIdClaim {
+    final path = (_claims.countryId ?? '').trim();
+    return path.isEmpty ? null : path;
+  }
 
   static DocumentReference? get scopedCountryRef {
     if (isSuperAdmin) return null;
-    final path = _claims.countryId;
-    if (path != null && path.isNotEmpty) {
+    if (!isCountryAgent && !isCountryAccountant) return null;
+    final path = scopedCountryIdClaim;
+    if (path != null) {
       return FirebaseFirestore.instance.doc(path);
     }
     if (_phase != AdminRbacPhase.authoritative) {
@@ -233,20 +285,25 @@ class AdminRoleService {
     'adminRegesr',
   };
 
-  static const _financeRoutes = {
-    'AdminProfits',
+  static const _accountantRoutes = {
     'AdminFinanceHub',
     'AdminFinanceChannels',
     'AdminFinanceReceivables',
     'AdminAgentFinance',
-    // AdminDriverWallets is LEGACY_WALLET_TOOL — SuperAdmin only (not settlement V2).
     'AdminSettlements',
     'AdminSettlementDetails',
     'AdminSettlementReceipt',
     'AdminReconciliation',
+    'AdminFinanceReconciliation',
     'AdminFinancialPeriods',
     'AdminFinanceReports',
     'AdminFinanceAudit',
+    // Settings intentionally omitted — Accountant must not open system config.
+    // PERF-P4B diagnostic routes (not in menu).
+    'AdminPerfP4bStatic',
+    'AdminPerfP4bControlQuery',
+    // PERF-P4C fetch-mode bench (not in menu).
+    'AdminPerfP4cFetchBench',
   };
 
   /// Global finance administration — country agents/agents must not open these.
@@ -259,6 +316,7 @@ class AdminRoleService {
     'AdminSettlementDetails',
     'AdminSettlementReceipt',
     'AdminReconciliation',
+    'AdminFinanceReconciliation',
     'AdminFinancialPeriods',
     'AdminFinanceReports',
     'AdminFinanceAudit',
@@ -267,19 +325,49 @@ class AdminRoleService {
   };
 
   static bool canAccessRoute(String routeName) {
-    // Pure Finance staff: global finance surfaces only (not Agent-scoped).
-    if (isFinanceStaff) {
-      return _financeRoutes.contains(routeName) || routeName == 'Settings';
+    // Accountant: approved finance surfaces + settings only.
+    if (isAccountant || isFinanceStaff) {
+      return _accountantRoutes.contains(routeName);
     }
 
     switch (currentRole) {
       case AdminRole.superAdmin:
         return routeName != 'adminRegesr';
+      case AdminRole.accountant:
+        return _accountantRoutes.contains(routeName);
       case AdminRole.countryAgent:
         if (_superAdminOnlyRoutes.contains(routeName)) {
           return false;
         }
         // Hard deny global finance admin + cross-country admin surfaces.
+        if (_globalFinanceAdminRoutes.contains(routeName) ||
+            routeName == 'AdminDol' ||
+            routeName == 'AdminAgent' ||
+            routeName == 'AdminSuperAdmins' ||
+            routeName == 'AdminAuditLog' ||
+            routeName == 'AdminReportsHub' ||
+            routeName == 'AdminAgentReport') {
+          return false;
+        }
+        return _agentRoutes.contains(routeName);
+      case AdminRole.partner:
+        return _partnerRoutes.contains(routeName);
+      case AdminRole.transportCompany:
+        return _transportCompanyRoutes.contains(routeName);
+      case AdminRole.none:
+        return false;
+    }
+  }
+
+  /// Test/helper: route matrix for a role without mutating session claims.
+  static bool canAccessRouteForRole(AdminRole role, String routeName) {
+    switch (role) {
+      case AdminRole.superAdmin:
+        return routeName != 'adminRegesr';
+      case AdminRole.accountant:
+        return _accountantRoutes.contains(routeName);
+      case AdminRole.countryAgent:
+        if (_superAdminOnlyRoutes.contains(routeName)) return false;
         if (_globalFinanceAdminRoutes.contains(routeName) ||
             routeName == 'AdminDol' ||
             routeName == 'AdminAgent' ||
@@ -353,6 +441,8 @@ class AdminRoleService {
         return 'PartnerBookings';
       case AdminRole.transportCompany:
         return 'CompanyDrivers';
+      case AdminRole.accountant:
+        return 'AdminFinanceHub';
       case AdminRole.countryAgent:
       case AdminRole.superAdmin:
         return 'Home22Dashboard';
@@ -365,6 +455,8 @@ class AdminRoleService {
     switch (role) {
       case AdminRole.superAdmin:
         return FFLocalizations.of(context).getText('role_super_admin');
+      case AdminRole.accountant:
+        return FFLocalizations.of(context).getText('role_accountant');
       case AdminRole.countryAgent:
         return FFLocalizations.of(context).getText('role_country_agent');
       case AdminRole.partner:

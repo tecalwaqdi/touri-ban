@@ -1071,6 +1071,38 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "halh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_order",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "order",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "Rev_dolh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "halh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "data_order",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

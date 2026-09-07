@@ -13,6 +13,7 @@ import '/core/finance/financial_accounting_unavailable.dart';
 import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/index.dart';
 
 /// FIN-5 — Cash / Online operational accounting (read-only).
 class AdminFinanceChannelsWidget extends StatefulWidget {
@@ -26,7 +27,8 @@ class AdminFinanceChannelsWidget extends StatefulWidget {
       _AdminFinanceChannelsWidgetState();
 }
 
-class _AdminFinanceChannelsWidgetState extends State<AdminFinanceChannelsWidget> {
+class _AdminFinanceChannelsWidgetState
+    extends State<AdminFinanceChannelsWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late Menu2Model _menu2Model;
   AdminDatePreset _preset = AdminDatePreset.all;
@@ -36,6 +38,11 @@ class _AdminFinanceChannelsWidgetState extends State<AdminFinanceChannelsWidget>
   void initState() {
     super.initState();
     _menu2Model = createModel(context, () => Menu2Model());
+    // F2: channels remain diagnostic; primary accountant UI is Finance Hub.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // Keep route for deep links; surface banner only (no hard redirect).
+    });
     _reload();
   }
 
@@ -61,6 +68,7 @@ class _AdminFinanceChannelsWidgetState extends State<AdminFinanceChannelsWidget>
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     return AdminLayoutWidget(
+      padContent: false,
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
@@ -76,55 +84,76 @@ class _AdminFinanceChannelsWidgetState extends State<AdminFinanceChannelsWidget>
             return const Center(child: CircularProgressIndicator());
           }
           final d = snap.data!;
-          final sym =
-              AdminCurrency.symbolByCode[d.currency] ?? d.currency;
+          final sym = AdminCurrency.symbolByCode[d.currency] ?? d.currency;
           return ListView(
             padding: AdminUi.pagePadding(context),
             children: [
               AdminPageHeader(
-                title: uiTr(context, 'محاسبة النقدي والإلكتروني'),
+                title: uiTr(context, 'حركة الأموال'),
                 subtitle: uiTr(
                   context,
-                  'عرض تشغيلي — المرحلة C معطّلة؛ التحصيل اليدوي لا يُنشئ إيرادًا حتى الإثبات.',
+                  'عرض تشخيصي للنقدي والإلكتروني — الملخص الموحّد في شاشة المالية.',
+                ),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: AdminPrimaryButton(
+                  label: uiTr(context, 'الانتقال للمالية'),
+                  outlined: true,
+                  onPressed: () =>
+                      context.pushNamed(AdminFinanceHubWidget.routeName),
                 ),
               ),
               const SizedBox(height: 12),
               AdminContentCard(
                 title: uiTr(context, 'النقدي'),
                 child: _rows(theme, [
-                  (uiTr(context, 'مكتملة — بانتظار التحصيل'),
-                      '${d.cashCompletedPending} · ${_m(d.cashCompletedPendingValue, sym)}'),
-                  (uiTr(context, 'مكتملة — محصّلة'),
-                      '${d.cashCollectedTrips} · ${_m(d.cashCollectedValue, sym)}'),
-                  (uiTr(context, 'نقد مع المندوب'),
-                      _m(d.cashHeldByDrivers, sym)),
-                  (uiTr(context, 'مستحق للشركة من المندوب'),
-                      _m(d.companyDueFromDrivers, sym)),
+                  (
+                    uiTr(context, 'مكتملة — بانتظار التحصيل'),
+                    '${d.cashCompletedPending} · ${_m(d.cashCompletedPendingValue, sym)}'
+                  ),
+                  (
+                    uiTr(context, 'مكتملة — محصّلة'),
+                    '${d.cashCollectedTrips} · ${_m(d.cashCollectedValue, sym)}'
+                  ),
+                  (
+                    uiTr(context, 'نقد مع المندوب'),
+                    _m(d.cashHeldByDrivers, sym)
+                  ),
+                  (
+                    uiTr(context, 'مستحق للشركة من المندوب'),
+                    _m(d.companyDueFromDrivers, sym)
+                  ),
                   (uiTr(context, 'المسدّد'), '${d.settledCompanyDueMinor}'),
-                  (uiTr(context, 'المتبقي'),
-                      _m(d.outstandingCompanyDue, sym)),
+                  (uiTr(context, 'المتبقي'), _m(d.outstandingCompanyDue, sym)),
                 ]),
               ),
               const SizedBox(height: 12),
               AdminContentCard(
                 title: uiTr(context, 'الإلكتروني'),
                 child: _rows(theme, [
-                  (uiTr(context, 'مكتملة — مدفوعة'),
-                      '${d.onlineCompletedPaid}'),
-                  (uiTr(context, 'مكتملة — غير مدفوعة'),
-                      '${d.onlineCompletedUnpaid}'),
-                  (uiTr(context, 'ملغاة — مدفوعة'),
-                      '${d.onlineCancelledPaid}'),
-                  (uiTr(context, 'استرداد قيد المعالجة'),
-                      '${d.refundPendingCount}'),
+                  (
+                    uiTr(context, 'مكتملة — مدفوعة'),
+                    '${d.onlineCompletedPaid}'
+                  ),
+                  (
+                    uiTr(context, 'مكتملة — غير مدفوعة'),
+                    '${d.onlineCompletedUnpaid}'
+                  ),
+                  (uiTr(context, 'ملغاة — مدفوعة'), '${d.onlineCancelledPaid}'),
+                  (
+                    uiTr(context, 'استرداد قيد المعالجة'),
+                    '${d.refundPendingCount}'
+                  ),
                   (uiTr(context, 'مسترد'), '${d.refundedCount}'),
                   (uiTr(context, 'محجوز'), '${d.capturedCount}'),
-                  (uiTr(context, 'مستحق للمندوب'),
-                      _m(d.driverPayable, sym)),
-                  (uiTr(context, 'مدفوع للمندوب'),
-                      _m(d.paidToDriver, sym)),
-                  (uiTr(context, 'المتبقي للمندوب'),
-                      _m(d.outstandingToDriver, sym)),
+                  (uiTr(context, 'مستحق للمندوب'), _m(d.driverPayable, sym)),
+                  (uiTr(context, 'مدفوع للمندوب'), _m(d.paidToDriver, sym)),
+                  (
+                    uiTr(context, 'المتبقي للمندوب'),
+                    _m(d.outstandingToDriver, sym)
+                  ),
                 ]),
               ),
               const SizedBox(height: 12),

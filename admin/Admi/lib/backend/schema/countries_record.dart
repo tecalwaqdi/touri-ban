@@ -95,6 +95,20 @@ class CountriesRecord extends FirestoreRecord {
   Map<String, String>? _namesI18n;
   Map<String, String> get namesI18n => _namesI18n ?? const {};
 
+  /// Existing Firestore map `driver_requirements` (country driver doc policy).
+  /// Read-only accessor — does not invent defaults.
+  Map<String, dynamic> get driverRequirements {
+    final raw = snapshotData['driver_requirements'];
+    if (raw is Map) {
+      return Map<String, dynamic>.from(raw);
+    }
+    return const {};
+  }
+
+  bool hasDriverRequirements() =>
+      snapshotData['driver_requirements'] is Map &&
+      driverRequirements.isNotEmpty;
+
   void _initializeFields() {
     _naim = snapshotData['naim'] as String?;
     _osf = snapshotData['osf'] as String?;

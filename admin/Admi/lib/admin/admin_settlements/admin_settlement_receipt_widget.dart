@@ -49,6 +49,7 @@ class _AdminSettlementReceiptWidgetState
     final id = widget.paymentId;
     final theme = FlutterFlowTheme.of(context);
     return AdminLayoutWidget(
+      padContent: false,
       scaffoldKey: scaffoldKey,
       menu2Model: _model.menu2Model,
       updateCallback: () => safeSetState(() {}),
@@ -89,7 +90,8 @@ class _AdminSettlementReceiptWidgetState
                         '${uiTr(context, 'الرقم')}: ${p['receiptNumber'] ?? '—'}',
                         softWrap: true,
                       ),
-                      Text('Settlement: ${p['settlementCode']}', softWrap: true),
+                      Text('Settlement: ${p['settlementCode']}',
+                          softWrap: true),
                       Text('Driver: ${p['driverId']}', softWrap: true),
                       Text('Direction: ${p['direction']}', softWrap: true),
                       Text(

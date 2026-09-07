@@ -16,13 +16,18 @@ Future<AdminLoginResult> completePanelSignIn(
   currentUser = authUser;
   AppStateNotifier.instance.updateSilently(authUser);
 
-  final profile = await ensureCurrentUserDocument(forceRefresh: true);
+  // PERF-P1: one profile read + one claims refresh, then scope without re-fetch.
+  final profile = await ensureCurrentUserDocument(
+    forceRefresh: true,
+    syncClaims: false,
+    source: 'completePanelSignIn',
+  );
   if (profile == null) {
     AppStateNotifier.instance.updateNotifyOnAuthChange(true);
     return AdminLoginResult.profileLoadFailed;
   }
 
-  await refreshAuthClaims();
+  await refreshAuthClaims(source: 'completePanelSignIn');
   if (!AdminRoleService.hasPanelAccess) {
     AppStateNotifier.instance.updateNotifyOnAuthChange(true);
     return AdminLoginResult.unauthorized;

@@ -1,0 +1,32 @@
+{
+  "hub1": {
+    "label": "hub1",
+    "firstUsefulMs": 6049,
+    "summaryMs": 9350,
+    "firestoreStarts": 14
+  },
+  "hub2": {
+    "label": "hub2_cache",
+    "firstUsefulMs": 3397,
+    "summaryMs": 7929,
+    "firestoreStarts": 9
+  },
+  "recon": {
+    "label": "recon",
+    "firstUsefulMs": 3669,
+    "summaryMs": 7152,
+    "firestoreStarts": 8
+  },
+  "sett": {
+    "label": "settlements",
+    "firstUsefulMs": 4238,
+    "summaryMs": 6744,
+    "firestoreStarts": 5
+  },
+  "back": {
+    "label": "back_hub",
+    "firstUsefulMs": 4337,
+    "summaryMs": 9681,
+    "firestoreStarts": 9
+  }
+}

@@ -5,16 +5,12 @@ import 'package:admin_arawatan/core/driver_registration_document_status.dart';
 
 void main() {
   group('DriverLicenseDocument', () {
-    test('submit requires front and back by default', () {
+    test('submit requires front OR legacy; back optional', () {
       final data = <String, dynamic>{
-        'doc_driver_license_front': {
-          'storagePath': 'users/u/front.jpg',
-        },
+        'doc_driver_license_front': {'storagePath': 'users/u/front.jpg'},
       };
-      expect(DriverLicenseDocument.isCompleteForSubmit(data), isFalse);
-      data['doc_driver_license_back'] = {
-        'storagePath': 'users/u/back.jpg',
-      };
+      expect(DriverLicenseDocument.isCompleteForSubmit(data), isTrue);
+      data['doc_driver_license_back'] = {'storagePath': 'users/u/back.jpg'};
       expect(DriverLicenseDocument.isCompleteForSubmit(data), isTrue);
     });
 
@@ -22,9 +18,7 @@ void main() {
       final data = <String, dynamic>{
         'registration_status': 'approved',
         'actev_mndob': true,
-        'doc_driver_license': {
-          'url': 'https://example.com/legacy.jpg',
-        },
+        'doc_driver_license': {'url': 'https://example.com/legacy.jpg'},
       };
       expect(DriverLicenseDocument.isApprovedLegacyLicenseOnly(data), isTrue);
       expect(
@@ -33,15 +27,13 @@ void main() {
       );
     });
 
-    test('legacy-only without approval is missing', () {
+    test('legacy-only without front is complete (compat)', () {
       final data = <String, dynamic>{
-        'doc_driver_license': {
-          'storagePath': 'users/u/lic.jpg',
-        },
+        'doc_driver_license': {'storagePath': 'users/u/lic.jpg'},
       };
       expect(
         DriverRegistrationDocumentStatus.statusForType(data, 'driver_license'),
-        DriverRegistrationDocStatus.missing,
+        DriverRegistrationDocStatus.complete,
       );
     });
   });

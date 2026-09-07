@@ -1,6 +1,7 @@
 /**
  * Registration V2 document completeness — shared with Admin/Driver Dart helper.
- * Required slots: national_id, vehicle_registration, driver_license (front+back).
+ * Required slots: national_id, vehicle_registration, driver_license
+ * (front OR legacy; back optional).
  * Profile photo is checked separately for submit/approve blockers.
  */
 'use strict';
@@ -71,19 +72,26 @@ function isApprovedLegacyLicenseOnly(data) {
   return approved && legacy && !front && !back;
 }
 
+/** Phase 4D: license back is optional globally (country cannot re-require). */
+function isLicenseBackRequired(_countryRequirements) {
+  return false;
+}
+
+function satisfiesLicenseRequirement(data) {
+  const front = sidePresent(data, 'doc_driver_license_front', '');
+  if (front) return true;
+  const legacy = sidePresent(data, 'doc_driver_license', '');
+  return !!legacy;
+}
+
 function driverLicenseSubmitOk(data, countryRequirements) {
   const backRequired = isLicenseBackRequired(countryRequirements);
   const front = sidePresent(data, 'doc_driver_license_front', '');
   const back = sidePresent(data, 'doc_driver_license_back', '');
+  const legacy = sidePresent(data, 'doc_driver_license', '');
   if (front && (!backRequired || back)) return true;
+  if (!front && legacy) return true;
   return false;
-}
-
-function isLicenseBackRequired(countryRequirements) {
-  if (!countryRequirements || typeof countryRequirements !== 'object') return true;
-  const cfg = countryRequirements.driverLicenseBack || countryRequirements.driver_license_back;
-  if (cfg && typeof cfg === 'object' && cfg.required === false) return false;
-  return true;
 }
 
 function statusForType(data, type) {
@@ -95,12 +103,8 @@ function statusForType(data, type) {
       if (raw === 'rejected') return 'rejected';
       if (raw === 'needs_reupload') return 'needs_reupload';
     }
-    const front = sidePresent(data, 'doc_driver_license_front', '');
-    const back = sidePresent(data, 'doc_driver_license_back', '');
-    if (front && back) return 'complete';
+    if (satisfiesLicenseRequirement(data)) return 'complete';
     if (isApprovedLegacyLicenseOnly(data)) return 'complete';
-    const legacy = sidePresent(data, 'doc_driver_license', '');
-    if (legacy && !front && !back) return 'missing';
     return 'missing';
   }
   const [v2, legacy] = keys;
@@ -162,4 +166,5 @@ module.exports = {
   isLicenseBackRequired,
   sidePresent,
   isApprovedLegacyLicenseOnly,
+  satisfiesLicenseRequirement,
 };

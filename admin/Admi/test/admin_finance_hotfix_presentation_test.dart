@@ -92,7 +92,7 @@ void main() {
         AdminFinanceUiLabels.settlementDirectionAr('COMPANY_PAYS_DRIVER'),
         'مستحق للمندوب على الشركة',
       );
-      expect(SettlementStateLabels.statusAr('draft'), 'مسودة');
+      expect(SettlementStateLabels.statusAr('draft'), 'غير مسددة');
       expect(SettlementStateLabels.statusAr('voided'), 'ملغاة');
     });
   });

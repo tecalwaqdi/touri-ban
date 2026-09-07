@@ -28,6 +28,6 @@ void main() {
       contains('7.50'),
     );
     expect(AdminFinanceUiLabels.severityAr('high'), 'مرتفعة');
-    expect(AdminFinanceUiLabels.settlementStatusAr('draft'), 'مسودة');
+    expect(AdminFinanceUiLabels.settlementStatusAr('draft'), 'غير مسددة');
   });
 }

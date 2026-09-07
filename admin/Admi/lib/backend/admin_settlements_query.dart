@@ -1,0 +1,142 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '/backend/admin_finance_route_trace.dart';
+import '/backend/admin_perf_trace.dart';
+import '/backend/admin_role_service.dart';
+import '/core/finance/admin_finance_repository.dart';
+import '/core/finance/finance_order_query.dart';
+
+/// Stable Firestore query identity for the Settlements list (PERF-P1 + P2A).
+///
+/// Status / QA chips filter **client-side** and must not change this key.
+/// P2A: first page is live (limit [pageLimit]); older pages are one-shot.
+abstract final class AdminSettlementsQuery {
+  AdminSettlementsQuery._();
+
+  static const int pageLimit = FinanceOrderQuery.tablePageSize; // 40
+
+  /// Deterministic key for the server query (scope + limit + order).
+  static String keyForCurrentUser() {
+    final scopedPath = _scopedCountryPath();
+    if (scopedPath != null) {
+      return 'financial_settlements|countryId=$scopedPath|'
+          'orderBy=createdAtDesc|limit=$pageLimit';
+    }
+    return 'financial_settlements|all|orderBy=createdAtDesc|limit=$pageLimit';
+  }
+
+  /// Country Agent (non–Super Admin): filter `countryId`.
+  /// Global Accountant / Super Admin: unscoped first page.
+  static Query<Map<String, dynamic>> buildForCurrentUser() {
+    Query<Map<String, dynamic>> q =
+        FirebaseFirestore.instance.collection('financial_settlements');
+    final scopedPath = _scopedCountryPath();
+    if (scopedPath != null) {
+      q = q.where('countryId', isEqualTo: scopedPath);
+    }
+    return q.orderBy('createdAt', descending: true).limit(pageLimit);
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> snapshotsForCurrentUser() {
+    final key = keyForCurrentUser();
+    AdminPerfTrace.settlementStreamCreate(key);
+    AdminFinanceRouteTrace.mark('QUERY_REQUESTED', extra: {'kind': 'settlements_live'});
+    AdminFinanceRouteTrace.mark('QUERY_START', extra: {'kind': 'settlements_live'});
+    AdminFinanceRouteTrace.mark('FIRESTORE_LISTEN_START', extra: {'key': key});
+    var first = true;
+    return buildForCurrentUser().snapshots().map((snap) {
+      if (first) {
+        first = false;
+        AdminFinanceRouteTrace.mark(
+          'FIRESTORE_FIRST_SNAPSHOT',
+          extra: {
+            'kind': 'settlements_live',
+            'docs': snap.docs.length,
+            'fromCache': snap.metadata.isFromCache,
+          },
+        );
+        AdminFinanceRouteTrace.mark(
+          'DOCUMENT_DECODE_COMPLETE',
+          extra: {'docs': snap.docs.length},
+        );
+        AdminFinanceRouteTrace.mark('REPOSITORY_COMPLETE', extra: {'kind': 'settlements'});
+        AdminFinanceRouteTrace.mark('MODEL_BUILD_END', extra: {'kind': 'settlements'});
+      }
+      return snap;
+    });
+  }
+
+  /// One-shot older page (not a live listener).
+  static Future<QuerySnapshot<Map<String, dynamic>>> fetchPageAfter(
+    DocumentSnapshot<Map<String, dynamic>> after,
+  ) {
+    Query<Map<String, dynamic>> q =
+        FirebaseFirestore.instance.collection('financial_settlements');
+    final scopedPath = _scopedCountryPath();
+    if (scopedPath != null) {
+      q = q.where('countryId', isEqualTo: scopedPath);
+    }
+    return q
+        .orderBy('createdAt', descending: true)
+        .startAfterDocument(after)
+        .limit(pageLimit)
+        .get();
+  }
+
+  static String? _scopedCountryPath() {
+    if (AdminRoleService.isCountryAgent && !AdminRoleService.isSuperAdmin) {
+      return AdminRoleService.scopedCountryIdClaim;
+    }
+    return null;
+  }
+}
+
+/// Owns one Settlements snapshots subscription until [queryKey] changes.
+class AdminSettlementsStreamOwner {
+  AdminSettlementsStreamOwner({
+    String Function()? keyFactory,
+    Stream<QuerySnapshot<Map<String, dynamic>>> Function(String key)?
+        streamFactory,
+  })  : _keyFactory = keyFactory ?? AdminSettlementsQuery.keyForCurrentUser,
+        _streamFactory = streamFactory ??
+            ((_) => AdminSettlementsQuery.snapshotsForCurrentUser());
+
+  final String Function() _keyFactory;
+  final Stream<QuerySnapshot<Map<String, dynamic>>> Function(String key)
+      _streamFactory;
+
+  String? _key;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _stream;
+  String? _lastDocFingerprint;
+
+  String? get queryKey => _key;
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> streamForCurrentUser() {
+    final nextKey = _keyFactory();
+    if (_stream != null && _key == nextKey) {
+      return _stream!;
+    }
+    if (_key != null) {
+      AdminPerfTrace.settlementStreamDispose(_key);
+    }
+    _key = nextKey;
+    _lastDocFingerprint = null;
+    _stream = _streamFactory(nextKey).map((snap) {
+      final fp = snap.docs.map((d) => '${d.id}:${d.data()['status']}').join('|');
+      if (_lastDocFingerprint != null && _lastDocFingerprint != fp) {
+        AdminFinanceRepository.instance.invalidateSettlements();
+      }
+      _lastDocFingerprint = fp;
+      return snap;
+    });
+    return _stream!;
+  }
+
+  void dispose() {
+    if (_key != null) {
+      AdminPerfTrace.settlementStreamDispose(_key);
+    }
+    _key = null;
+    _stream = null;
+  }
+}

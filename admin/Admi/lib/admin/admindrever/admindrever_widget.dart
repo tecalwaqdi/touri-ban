@@ -4,11 +4,13 @@ import '/admin/admindrever/admin_drivers_filter_bar.dart';
 import '/admin/admindrever/admin_drivers_query.dart';
 import '/admin/admindrever/admin_drivers_summary_strip.dart';
 import '/admin/admindrever/admin_drivers_table.dart';
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_dashboard_invalidate.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_ops_search.dart';
+import '/backend/admin_resource_guard.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_stats_coordinator.dart';
 import '/backend/admin_unknown_drivers_loader.dart';
@@ -21,6 +23,7 @@ import '/components/admin_firestore_list.dart';
 import '/components/admin_enterprise_kit.dart' hide showAdminConfirmDialog;
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_driver_review_actions.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -70,7 +73,8 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      safeSetState(() {});
+      // Load summary stats only — do not empty setState (that rebuilt the
+      // list tree and historically retriggered full reloads via lambda identity).
       _loadStats();
     });
   }
@@ -145,22 +149,44 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
     super.dispose();
   }
 
+  bool _toggleBusy = false;
+
   Future<void> _toggleActivation(
     UserRecord user, {
     required bool activate,
   }) async {
-    final title =
-        activate ? uiTr(context, 'تأكيد التفعيل') : uiTr(context, 'تأكيد الإيقاف');
+    if (_toggleBusy) return;
+
+    if (activate) {
+      final blockers =
+          AdminDriverReviewActions.operationalActivationBlockers(
+                Map<String, dynamic>.from(user.snapshotData),
+              )
+              .map((key) => appTr(context, key))
+              .where((t) => t.trim().isNotEmpty)
+              .toList();
+      if (blockers.isNotEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(blockers.join('\n'))));
+        return;
+      }
+    }
+
+    final title = activate
+        ? uiTr(context, 'تأكيد التفعيل')
+        : appTr(context, 'adm_drv_deactivate_title');
     final content = activate
         ? uiTr(context, 'هل أنت متأكد من تفعيل المندوب؟')
-        : uiTr(context, 'هل أنت متأكد من إيقاف المندوب؟');
+        : appTr(context, 'adm_drv_deactivate_body');
 
     final confirmed = await showAdminConfirmDialog(
       context: context,
       title: title,
       whatHappens: content,
-      subject:
-          user.displayName.isNotEmpty ? user.displayName : user.reference.id,
+      subject: user.displayName.isNotEmpty
+          ? user.displayName
+          : user.reference.id,
       impact: activate
           ? uiTr(context, 'Driver can receive bookings again')
           : uiTr(context, 'Driver will no longer receive bookings'),
@@ -173,12 +199,33 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
 
     if (!confirmed) return;
 
+    setState(() => _toggleBusy = true);
     try {
-      await user.reference.update(
-        createUserRecordData(actevMndob: activate),
-      );
+      if (!AdminRoleService.isSuperAdmin) {
+        final allowed = await AdminResourceGuard.canEditDriver(user);
+        if (!allowed) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(uiTr(context, 'لا تملك صلاحية تعديل هذا السائق')),
+            ),
+          );
+          return;
+        }
+      }
+
+      final adminUid = currentUserUid.isNotEmpty ? currentUserUid : 'admin';
+      final patch = activate
+          ? AdminDriverReviewActions.operationalActivatePatch(
+              adminUid: adminUid,
+            )
+          : AdminDriverReviewActions.operationalDeactivatePatch(
+              adminUid: adminUid,
+            );
+      await user.reference.update(patch);
       AdminStatsCoordinator.instance.invalidateAfterUserChange();
       flushAdminDashboardStatsNow();
+      AdminListRefresh.notify(AdminListScope.representatives);
       await AdminAuditLog.recordToggle(
         targetType: 'driver',
         targetId: user.reference.id,
@@ -191,7 +238,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
           content: Text(
             activate
                 ? uiTr(context, 'تم تفعيل المندوب بنجاح')
-                : uiTr(context, 'تم إيقاف المندوب بنجاح'),
+                : appTr(context, 'adm_drv_deactivate_success'),
           ),
         ),
       );
@@ -200,6 +247,8 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AdminCrudFeedback.updateFailed(context, e))),
       );
+    } finally {
+      if (mounted) setState(() => _toggleBusy = false);
     }
   }
 
@@ -211,10 +260,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
     context.pushNamed(
       AddDrevWidget.routeName,
       queryParameters: {
-        'editUser': serializeParam(
-          user.reference,
-          ParamType.DocumentReference,
-        ),
+        'editUser': serializeParam(user.reference, ParamType.DocumentReference),
       }.withoutNulls,
     );
   }
@@ -223,10 +269,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
     context.pushNamed(
       DriverActivationWidget.routeName,
       queryParameters: {
-        'dre': serializeParam(
-          user.reference,
-          ParamType.DocumentReference,
-        ),
+        'dre': serializeParam(user.reference, ParamType.DocumentReference),
       }.withoutNulls,
     );
   }
@@ -378,9 +421,9 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                         AdminOpsQueryBuilder.applyDriverFilters(q, _filters),
                     countQueryBuilder: (q) =>
                         AdminOpsQueryBuilder.applyDriverFiltersCore(
-                      q,
-                      _filters,
-                    ),
+                          q,
+                          _filters,
+                        ),
                     loading: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -400,9 +443,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             children: [
-                              Text(
-                                uiTr(context, 'تعذر تحميل المناديب'),
-                              ),
+                              Text(uiTr(context, 'تعذر تحميل المناديب')),
                               const SizedBox(height: 8),
                               TextButton(
                                 onPressed: listState.refresh,
@@ -425,18 +466,25 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                           .toList(growable: false);
 
                       final online = rows
-                          .where((r) =>
-                              r.connection == AdminDriverConnectionStatus.online)
+                          .where(
+                            (r) =>
+                                r.connection ==
+                                AdminDriverConnectionStatus.online,
+                          )
                           .length;
                       final available = rows
-                          .where((r) =>
-                              r.availability ==
-                              AdminDriverAvailabilityStatus.available)
+                          .where(
+                            (r) =>
+                                r.availability ==
+                                AdminDriverAvailabilityStatus.available,
+                          )
                           .length;
                       final busy = rows
-                          .where((r) =>
-                              r.availability ==
-                              AdminDriverAvailabilityStatus.busy)
+                          .where(
+                            (r) =>
+                                r.availability ==
+                                AdminDriverAvailabilityStatus.busy,
+                          )
                           .length;
 
                       final serverTotal =
@@ -466,8 +514,12 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(4, 0, 4, 10),
+                                  padding: const EdgeInsets.fromLTRB(
+                                    4,
+                                    0,
+                                    4,
+                                    10,
+                                  ),
                                   child: Semantics(
                                     identifier: 'qa-driver-table-total',
                                     container: true,
@@ -508,10 +560,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                                               context,
                                               'أضف مندوبًا جديدًا أو راجع فلتر الدولة',
                                             )
-                                          : uiTr(
-                                              context,
-                                              'جرّب كلمة بحث أخرى',
-                                            ),
+                                          : uiTr(context, 'جرّب كلمة بحث أخرى'),
                                       icon: Icons.directions_car_outlined,
                                     ),
                                   )
@@ -550,8 +599,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
       extra: _extra,
       unknownLegacyReview: _filters.driverReview,
     );
-    final rows =
-        filtered.map(AdminDriverRow.fromUser).toList(growable: false);
+    final rows = filtered.map(AdminDriverRow.fromUser).toList(growable: false);
     return AdminContentCard(
       padding: const EdgeInsets.all(12),
       child: rows.isEmpty
@@ -581,9 +629,9 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
             height: 52,
             margin: EdgeInsets.only(bottom: i == 5 ? 0 : 8),
             decoration: BoxDecoration(
-              color: FlutterFlowTheme.of(context)
-                  .alternate
-                  .withValues(alpha: 0.35),
+              color: FlutterFlowTheme.of(
+                context,
+              ).alternate.withValues(alpha: 0.35),
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -739,8 +787,7 @@ class _UnknownDriversPanelState extends State<_UnknownDriversPanel> {
       searchQuery: widget.searchQuery,
       extra: widget.extra,
     );
-    final rows =
-        filtered.map(AdminDriverRow.fromUser).toList(growable: false);
+    final rows = filtered.map(AdminDriverRow.fromUser).toList(growable: false);
 
     return AdminContentCard(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),

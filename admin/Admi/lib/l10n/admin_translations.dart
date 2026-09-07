@@ -56,7 +56,8 @@ const kAdminTranslations = <String, Map<String, String>>{
   'adm_theme_subtitle': {
     'en': 'Switch between light and dark mode for the control panel.',
     'pt': 'Alterne entre os modos claro e escuro do painel de controle.',
-    'fr': 'Basculez entre le mode clair et le mode sombre pour le panneau de contrôle.',
+    'fr':
+        'Basculez entre le mode clair et le mode sombre pour le panneau de contrôle.',
     'ar': 'بدّل بين الوضع العادي والليلي للوحة التحكم.',
     'zh_Hans': '在控制面板的浅色与深色模式之间切换。',
     'tr': 'Kontrol paneli için açık ve koyu mod arasında geçiş yapın.',
@@ -1728,6 +1729,85 @@ const kAdminTranslations = <String, Map<String, String>>{
     'az': 'Açıq düzəliş sorğuları var',
     'ka': 'არის გადაუჭრელი ცვლილების მოთხოვნები',
   },
+  'adm_drv_blocker_registration_not_approved': {
+    'en':
+        'Cannot activate until registration is approved. Use registration review.',
+    'pt':
+        'Cannot activate until registration is approved. Use registration review.',
+    'fr':
+        'Cannot activate until registration is approved. Use registration review.',
+    'ar': 'لا يمكن تفعيل المندوب قبل اعتماد التسجيل. استخدم مراجعة التسجيل.',
+    'zh_Hans': '注册批准前无法激活。请使用注册审核。',
+    'tr': 'Kayıt onaylanmadan etkinleştirilemez. Kayıt incelemesini kullanın.',
+    'ur':
+        'رجسٹریشن منظور ہونے تک فعال نہیں کیا جا سکتا۔ رجسٹریشن جائزہ استعمال کریں۔',
+    'ru':
+        'Нельзя активировать до одобрения регистрации. Используйте проверку регистрации.',
+    'ky':
+        'Каттоо бекитилмейинче активдештирүүгө болбойт. Каттоо текшерүүсүн колдонуңуз.',
+    'az':
+        'Qeydiyyat təsdiqlənənə qədər aktivləşdirilə bilməz. Qeydiyyat yoxlamasından istifadə edin.',
+    'ka':
+        'რეგისტრაციის დამტკიცებამდე აქტივაცია შეუძლებელია. გამოიყენეთ რეგისტრაციის განხილვა.',
+  },
+  'adm_drv_deactivate_title': {
+    'en': 'Deactivate driver account?',
+    'pt': 'Deactivate driver account?',
+    'fr': 'Deactivate driver account?',
+    'ar': 'تعطيل تشغيل حساب المندوب؟',
+    'zh_Hans': '停用司机账户？',
+    'tr': 'Sürücü hesabı devre dışı bırakılsın mı?',
+    'ur': 'ڈرائیور اکاؤنٹ غیر فعال کریں؟',
+    'ru': 'Отключить аккаунт водителя?',
+    'ky': 'Айдоочу аккаунтун өчүрөсүзбү?',
+    'az': 'Sürücü hesabı deaktiv edilsin?',
+    'ka': 'გავთიშოთ მძღოლის ანგარიში?',
+  },
+  'adm_drv_deactivate_body': {
+    'en':
+        'Driver will not receive bookings. Registration stays approved unless you suspend.',
+    'pt':
+        'Driver will not receive bookings. Registration stays approved unless you suspend.',
+    'fr':
+        'Driver will not receive bookings. Registration stays approved unless you suspend.',
+    'ar':
+        'لن يستقبل المندوب طلبات. يبقى التسجيل معتمداً ما لم يتم إيقاف الحساب.',
+    'zh_Hans': '司机将无法接单。除非停权，注册状态保持已批准。',
+    'tr': 'Sürücü iş alamaz. Askıya almazsanız kayıt onaylı kalır.',
+    'ur': 'ڈرائیور کو بکنگ نہیں ملیں گی۔ معطل کیے بغیر رجسٹریشن منظور رہتی ہے۔',
+    'ru':
+        'Водитель не будет получать заказы. Регистрация остаётся одобренной, если не приостановить.',
+    'ky': 'Айдоочу заказ албайт. Токтотпосоңуз каттоо бекитилген бойдон калат.',
+    'az': 'Sürücü sifariş almayacaq. Dayandırmasanız qeydiyyat təsdiqli qalır.',
+    'ka':
+        'მძღოლი შეკვეთებს ვერ მიიღებს. რეგისტრაცია დამტკიცებული რჩება, თუ არ შეაჩერებთ.',
+  },
+  'adm_drv_deactivate_success': {
+    'en': 'Driver deactivated',
+    'pt': 'Driver deactivated',
+    'fr': 'Driver deactivated',
+    'ar': 'تم تعطيل تشغيل المندوب',
+    'zh_Hans': '司机已停用',
+    'tr': 'Sürücü devre dışı bırakıldı',
+    'ur': 'ڈرائیور غیر فعال ہو گیا',
+    'ru': 'Водитель отключён',
+    'ky': 'Айдоочу өчүрүлдү',
+    'az': 'Sürücü deaktiv edildi',
+    'ka': 'მძღოლი გათიშულია',
+  },
+  'adm_drv_deactivate_action': {
+    'en': 'Deactivate',
+    'pt': 'Deactivate',
+    'fr': 'Deactivate',
+    'ar': 'تعطيل التشغيل',
+    'zh_Hans': '停用',
+    'tr': 'Devre dışı bırak',
+    'ur': 'غیر فعال کریں',
+    'ru': 'Отключить',
+    'ky': 'Өчүрүү',
+    'az': 'Deaktiv et',
+    'ka': 'გათიშვა',
+  },
 
   // Driver profile activate / suspend dialogs
   'adm_drv_suspend_title': {
@@ -1842,25 +1922,17 @@ const kAdminTranslations = <String, Map<String, String>>{
         'ანგარიშის მონაცემების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.',
   },
   'adm_login_unauthorized': {
-    'en':
-        'This account does not have permission to access the control panel.',
+    'en': 'This account does not have permission to access the control panel.',
     'pt': 'This account does not have permission to access the control panel.',
     'fr': 'This account does not have permission to access the control panel.',
-    'ar':
-        'هذا الحساب لا يملك صلاحية الدخول إلى لوحة التحكم',
+    'ar': 'هذا الحساب لا يملك صلاحية الدخول إلى لوحة التحكم',
     'zh_Hans': '此账户无权访问控制面板。',
-    'tr':
-        'Bu hesabın kontrol paneline erişim yetkisi yok.',
-    'ur':
-        'اس اکاؤنٹ کو کنٹرول پینل تک رسائی کی اجازت نہیں۔',
-    'ru':
-        'У этой учётной записи нет доступа к панели управления.',
-    'ky':
-        'Бул аккаунттун башкаруу панелине кирүүгө укугу жок.',
-    'az':
-        'Bu hesabın idarəetmə panelinə girişi yoxdur.',
-    'ka':
-        'ამ ანგარიშს მართვის პანელზე წვდომა არ აქვს.',
+    'tr': 'Bu hesabın kontrol paneline erişim yetkisi yok.',
+    'ur': 'اس اکاؤنٹ کو کنٹرول پینل تک رسائی کی اجازت نہیں۔',
+    'ru': 'У этой учётной записи нет доступа к панели управления.',
+    'ky': 'Бул аккаунттун башкаруу панелине кирүүгө укугу жок.',
+    'az': 'Bu hesabın idarəetmə panelinə girişi yoxdur.',
+    'ka': 'ამ ანგარიშს მართვის პანელზე წვდომა არ აქვს.',
   },
   'adm_login_nav_failed': {
     'en': 'Could not open the control panel. Please try again.',
@@ -2047,17 +2119,27 @@ const kAdminTranslations = <String, Map<String, String>>{
     'ka': 'რაღაც შეცდომა მოხდა. სცადეთ ხელახლა.',
   },
   'adm_err_query_index': {
-    'en': 'This list needs a database index. Retry shortly or contact support with the time of the error.',
-    'pt': 'This list needs a database index. Retry shortly or contact support with the time of the error.',
-    'fr': 'This list needs a database index. Retry shortly or contact support with the time of the error.',
-    'ar': 'هذه القائمة تحتاج فهرس قاعدة بيانات. أعد المحاولة بعد قليل أو تواصل مع الدعم مع وقت الخطأ.',
+    'en':
+        'This list needs a database index. Retry shortly or contact support with the time of the error.',
+    'pt':
+        'This list needs a database index. Retry shortly or contact support with the time of the error.',
+    'fr':
+        'This list needs a database index. Retry shortly or contact support with the time of the error.',
+    'ar':
+        'هذه القائمة تحتاج فهرس قاعدة بيانات. أعد المحاولة بعد قليل أو تواصل مع الدعم مع وقت الخطأ.',
     'zh_Hans': '此列表需要数据库索引。请稍后重试，或联系支持并说明出错时间。',
-    'tr': 'Bu liste için bir veritabanı indeksi gerekli. Kısa süre sonra yeniden deneyin veya hata zamanıyla destekle iletişime geçin.',
-    'ur': 'اس فہرست کے لیے ڈیٹابیس انڈیکس درکار ہے۔ کچھ دیر بعد دوبارہ کوشش کریں یا سپورٹ سے رابطہ کریں۔',
-    'ru': 'Для этого списка нужен индекс базы данных. Повторите позже или обратитесь в поддержку, указав время ошибки.',
-    'ky': 'Бул тизме үчүн маалымат базасынын индекси керек. Бир аздан кийин кайталап көрүңүз же ката убактысы менен колдоого кайрылыңыз.',
-    'az': 'Bu siyahı üçün verilənlər bazası indeksi lazımdır. Bir az sonra yenidən cəhd edin və ya dəstəyə müraciət edin.',
-    'ka': 'ამ სიას სჭირდება მონაცემთა ბაზის ინდექსი. სცადეთ მოგვიანებით ან დაუკავშირდით მხარდაჭერას.',
+    'tr':
+        'Bu liste için bir veritabanı indeksi gerekli. Kısa süre sonra yeniden deneyin veya hata zamanıyla destekle iletişime geçin.',
+    'ur':
+        'اس فہرست کے لیے ڈیٹابیس انڈیکس درکار ہے۔ کچھ دیر بعد دوبارہ کوشش کریں یا سپورٹ سے رابطہ کریں۔',
+    'ru':
+        'Для этого списка нужен индекс базы данных. Повторите позже или обратитесь в поддержку, указав время ошибки.',
+    'ky':
+        'Бул тизме үчүн маалымат базасынын индекси керек. Бир аздан кийин кайталап көрүңүз же ката убактысы менен колдоого кайрылыңыз.',
+    'az':
+        'Bu siyahı üçün verilənlər bazası indeksi lazımdır. Bir az sonra yenidən cəhd edin və ya dəstəyə müraciət edin.',
+    'ka':
+        'ამ სიას სჭირდება მონაცემთა ბაზის ინდექსი. სცადეთ მოგვიანებით ან დაუკავშირდით მხარდაჭერას.',
   },
   'adm_err_already_exists': {
     'en': 'This record already exists.',
@@ -2127,12 +2209,13 @@ const kAdminTranslations = <String, Map<String, String>>{
   'adm_err_storage_quota': {
     'en':
         'Firebase Storage quota for this project is exceeded. Free this space in Firebase Console → Storage, or enable the Blaze plan. This is a project limit, not an app bug.',
-    'pt': 'Firebase Storage quota for this project is exceeded. Free this space in Firebase Console → Storage, or enable the Blaze plan. This is a project limit, not an app bug.',
-    'fr': 'Firebase Storage quota for this project is exceeded. Free this space in Firebase Console → Storage, or enable the Blaze plan. This is a project limit, not an app bug.',
+    'pt':
+        'Firebase Storage quota for this project is exceeded. Free this space in Firebase Console → Storage, or enable the Blaze plan. This is a project limit, not an app bug.',
+    'fr':
+        'Firebase Storage quota for this project is exceeded. Free this space in Firebase Console → Storage, or enable the Blaze plan. This is a project limit, not an app bug.',
     'ar':
         'تم تجاوز حصة Firebase Storage لهذا المشروع. حرّر مساحة من Console → Storage أو فعّل خطة Blaze. هذا حد على المشروع وليس خطأ في التطبيق.',
-    'zh_Hans':
-        '此项目的 Firebase Storage 配额已用尽。请在控制台清理或启用 Blaze 方案。这是项目限制，不是应用错误。',
+    'zh_Hans': '此项目的 Firebase Storage 配额已用尽。请在控制台清理或启用 Blaze 方案。这是项目限制，不是应用错误。',
     'tr':
         'Bu projenin Firebase Storage kotası aşıldı. Konsolda alan açın veya Blaze planını etkinleştirin. Bu bir uygulama hatası değil.',
     'ur':
@@ -2149,15 +2232,16 @@ const kAdminTranslations = <String, Map<String, String>>{
   'adm_err_storage_billing': {
     'en':
         'Firebase Storage billing is not active. Enable Blaze (pay as you go) for this Firebase project, then try again.',
-    'pt': 'Firebase Storage billing is not active. Enable Blaze (pay as you go) for this Firebase project, then try again.',
-    'fr': 'Firebase Storage billing is not active. Enable Blaze (pay as you go) for this Firebase project, then try again.',
+    'pt':
+        'Firebase Storage billing is not active. Enable Blaze (pay as you go) for this Firebase project, then try again.',
+    'fr':
+        'Firebase Storage billing is not active. Enable Blaze (pay as you go) for this Firebase project, then try again.',
     'ar':
         'فوترة Firebase Storage غير مفعّلة. فعّل خطة Blaze لهذا المشروع ثم أعد المحاولة.',
     'zh_Hans': '未启用 Firebase Storage 计费。请为此项目启用 Blaze，然后重试。',
     'tr':
         'Firebase Storage faturalandırması aktif değil. Blaze planını etkinleştirip tekrar deneyin.',
-    'ur':
-        'Firebase Storage بلنگ فعال نہیں۔ Blaze آن کر کے دوبارہ کوشش کریں۔',
+    'ur': 'Firebase Storage بلنگ فعال نہیں۔ Blaze آن کر کے دوبارہ کوشش کریں۔',
     'ru':
         'Биллинг Firebase Storage не активен. Включите план Blaze и повторите попытку.',
     'ky':
@@ -2170,12 +2254,13 @@ const kAdminTranslations = <String, Map<String, String>>{
   'adm_storage_fallback_saved': {
     'en':
         'Photo saved to your account (offline fallback). Cloud Storage quota/billing is blocking uploads — fix it in Firebase Console to use Storage URLs.',
-    'pt': 'Photo saved to your account (offline fallback). Cloud Storage quota/billing is blocking uploads — fix it in Firebase Console to use Storage URLs.',
-    'fr': 'Photo saved to your account (offline fallback). Cloud Storage quota/billing is blocking uploads — fix it in Firebase Console to use Storage URLs.',
+    'pt':
+        'Photo saved to your account (offline fallback). Cloud Storage quota/billing is blocking uploads — fix it in Firebase Console to use Storage URLs.',
+    'fr':
+        'Photo saved to your account (offline fallback). Cloud Storage quota/billing is blocking uploads — fix it in Firebase Console to use Storage URLs.',
     'ar':
         'تم حفظ الصورة في حسابك (وضع احتياطي). حصة/فوترة Firebase Storage تمنع الرفع السحابي — عالجها من Console لاستخدام روابط Storage.',
-    'zh_Hans':
-        '照片已保存到账户（备用方式）。云存储配额/计费阻止上传 — 请在控制台修复以使用 Storage 链接。',
+    'zh_Hans': '照片已保存到账户（备用方式）。云存储配额/计费阻止上传 — 请在控制台修复以使用 Storage 链接。',
     'tr':
         'Fotoğraf hesabınıza kaydedildi (yedek mod). Bulut kotası/fatura yüklemeyi engelliyor — Storage URL için Console’dan düzeltin.',
     'ur':
@@ -2428,8 +2513,10 @@ const kAdminTranslations = <String, Map<String, String>>{
   'adm_auth_recent_login': {
     'en':
         'Too long since most recent sign in. Sign in again before updating your email.',
-    'pt': 'Too long since most recent sign in. Sign in again before updating your email.',
-    'fr': 'Too long since most recent sign in. Sign in again before updating your email.',
+    'pt':
+        'Too long since most recent sign in. Sign in again before updating your email.',
+    'fr':
+        'Too long since most recent sign in. Sign in again before updating your email.',
     'ar':
         'مر وقت طويل منذ آخر تسجيل دخول. سجّل الدخول مجدداً قبل تحديث البريد.',
     'zh_Hans': '距离上次登录过久。请重新登录后再更新邮箱。',

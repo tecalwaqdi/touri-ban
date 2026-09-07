@@ -30,13 +30,14 @@ function fail(code, message, details) {
   throw new SettlementError(code, message, details);
 }
 
+/**
+ * F3-B2: settlement *writes* are SuperAdmin-only.
+ * Pure `finance` claim = Accountant read-only persona (no settlement execution).
+ * Future `finance_settlement_operator` may restore delegated write authority.
+ */
 function canWriteSettlements(token) {
   if (!token) return false;
-  if (token.super_admin === true) return true;
-  if (token.finance === true && token.country_admin !== true && token.agent !== true) {
-    return true;
-  }
-  return false;
+  return token.super_admin === true;
 }
 
 function canReadSettlements(token) {
@@ -56,7 +57,7 @@ function requireWriter(auth) {
   requireAuth(auth);
   const token = auth.token || {};
   if (!canWriteSettlements(token)) {
-    fail('permission-denied', 'Settlement writes require SuperAdmin or Finance.');
+    fail('permission-denied', 'Settlement writes require SuperAdmin.');
   }
 }
 

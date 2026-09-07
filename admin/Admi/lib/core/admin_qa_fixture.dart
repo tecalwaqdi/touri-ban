@@ -17,6 +17,9 @@ abstract final class AdminQaFixture {
     r'^(fin7_ctrl_|fin9_ctrl_|fin_rt_cash_|fin_rt_cash_ui_|fin_rt_)',
   );
 
+  /// FIN-8 controlled settlement payment refs (repository-proven).
+  static final RegExp _fin8PaymentRef = RegExp(r'^FIN8-', caseSensitive: false);
+
   static bool isFixtureId(String orderId) => _legacyIdPrefix.hasMatch(orderId);
 
   static bool isFixtureMap(Map<String, dynamic> data, {String? orderId}) {
@@ -33,6 +36,62 @@ abstract final class AdminQaFixture {
         Map<String, dynamic>.from(order.snapshotData),
         orderId: order.reference.id,
       );
+
+  /// FIN-8 / controlled settlement payment external references.
+  static bool isFinanceQaPaymentRef(String? ref) {
+    final r = (ref ?? '').trim();
+    if (r.isEmpty) return false;
+    return _fin8PaymentRef.hasMatch(r);
+  }
+
+  /// Settlement docs created by controlled finance scripts (e.g. FIN-8).
+  ///
+  /// Proven markers (do not delete live docs — filter presentation only):
+  /// - explicit QA metadata
+  /// - [eligibleOrderIds] / line ids matching trip fixture prefixes
+  /// - idempotencyKey `fin8_*` / embedded fixture order ids
+  /// - payment refs `FIN8-*` when provided
+  static bool isFinanceQaSettlement(
+    Map<String, dynamic> data, {
+    String? settlementId,
+    Iterable<String>? paymentExternalRefs,
+  }) {
+    if (isFixtureMap(data, orderId: settlementId)) return true;
+
+    final idemp = '${data['idempotencyKey'] ?? ''}'.trim().toLowerCase();
+    if (idemp.startsWith('fin8_') ||
+        idemp.startsWith('fin7_') ||
+        idemp.startsWith('fin9_') ||
+        idemp.contains('fin7_ctrl_') ||
+        idemp.contains('fin9_ctrl_') ||
+        idemp.contains('fin_rt_')) {
+      return true;
+    }
+
+    for (final key in ['eligibleOrderIds', 'orderIds', 'lineOrderIds']) {
+      final raw = data[key];
+      if (raw is! List) continue;
+      for (final id in raw) {
+        if (isFixtureId('$id')) return true;
+      }
+    }
+
+    final excluded = data['excluded'];
+    if (excluded is List) {
+      for (final e in excluded) {
+        final oid = e is Map ? '${e['orderId'] ?? ''}' : '$e';
+        if (isFixtureId(oid)) return true;
+      }
+    }
+
+    if (paymentExternalRefs != null) {
+      for (final ref in paymentExternalRefs) {
+        if (isFinanceQaPaymentRef(ref)) return true;
+      }
+    }
+
+    return false;
+  }
 
   /// Badge for intentional Super Admin inspection of QA rows.
   static String badgeAr(OrderRecord order) {

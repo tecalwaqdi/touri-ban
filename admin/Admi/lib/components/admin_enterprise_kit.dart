@@ -4,6 +4,7 @@ import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 
 import '/components/admin_ui.dart';
+import '/core/admin_design/admin_design.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -16,17 +17,17 @@ class AdminMenuSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 6),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: Text(
         label.toUpperCase(),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.55),
+          color: Colors.white.withValues(alpha: 0.45),
           fontFamily: 'cairo',
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.8,
+          fontSize: 10.5,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.6,
         ),
       ),
     );
@@ -164,22 +165,22 @@ class AdminEmptyState extends StatelessWidget {
     final theme = FlutterFlowTheme.of(context);
     return Padding(
       padding: EdgeInsets.symmetric(
-        vertical: compact ? 28 : 48,
-        horizontal: compact ? 16 : 24,
+        vertical: compact ? 20 : 32,
+        horizontal: compact ? 12 : 20,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: compact ? 52 : 64,
-            height: compact ? 52 : 64,
+            width: compact ? 44 : 52,
+            height: compact ? 44 : 52,
             decoration: BoxDecoration(
               color: AdminUi.brandTeal.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icon, color: AdminUi.brandTeal, size: compact ? 26 : 32),
+            child: Icon(icon, color: AdminUi.brandTeal, size: compact ? 22 : 26),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             title,
             softWrap: true,
@@ -188,6 +189,7 @@ class AdminEmptyState extends StatelessWidget {
               fontFamily: theme.titleMediumFamily,
               color: theme.primaryText,
               fontWeight: FontWeight.w700,
+              fontSize: 16,
               useGoogleFonts: !theme.titleMediumIsCustom,
             ),
           ),
@@ -200,12 +202,13 @@ class AdminEmptyState extends StatelessWidget {
               style: theme.bodyMedium.override(
                 fontFamily: theme.bodyMediumFamily,
                 color: theme.secondaryText,
+                fontSize: 13,
                 useGoogleFonts: !theme.bodyMediumIsCustom,
               ),
             ),
           ],
           if (action != null) ...[
-            const SizedBox(height: 18),
+            const SizedBox(height: 14),
             action!,
           ],
         ],
@@ -597,13 +600,14 @@ class AdminDataTable extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: AdminUi.brandTeal.withValues(
-                    alpha: Theme.of(context).brightness == Brightness.dark
-                        ? 0.18
-                        : 0.06,
-                  ),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? theme.alternate.withValues(alpha: 0.55)
+                      : const Color(0xFFF9FAFB),
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(AdminUi.radiusMd),
+                  ),
+                  border: Border(
+                    bottom: BorderSide(color: theme.alternate),
                   ),
                 ),
                 child: Row(
@@ -619,8 +623,9 @@ class AdminDataTable extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: theme.labelMedium.override(
                               fontFamily: theme.labelMediumFamily,
-                              color: AdminUi.brandTeal,
-                              fontWeight: FontWeight.w700,
+                              color: theme.secondaryText,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
                               useGoogleFonts: !theme.labelMediumIsCustom,
                             ),
                           ),
@@ -631,15 +636,16 @@ class AdminDataTable extends StatelessWidget {
               ),
               for (var i = 0; i < rows.length; i++)
                 Container(
+                  constraints: const BoxConstraints(minHeight: 52),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
                     color: i.isOdd
                         ? theme.primaryBackground.withValues(alpha: 0.55)
                         : theme.secondaryBackground,
                     border: Border(
                       bottom: BorderSide(
-                        color: theme.alternate.withValues(alpha: 0.4),
+                        color: theme.alternate.withValues(alpha: 0.55),
                       ),
                     ),
                   ),
@@ -689,40 +695,40 @@ class AdminStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = switch (tone) {
       AdminBadgeTone.success => (
-          bg: const Color(0xFFE8F7F0),
-          fg: const Color(0xFF0F7A4A),
+          bg: const Color(0xFFEAF7F1),
+          fg: const Color(0xFF16845B),
         ),
       AdminBadgeTone.warning => (
-          bg: const Color(0xFFFFF6E5),
-          fg: const Color(0xFFB06A00),
+          bg: const Color(0xFFFFF7E8),
+          fg: const Color(0xFFB7791F),
         ),
       AdminBadgeTone.danger => (
-          bg: const Color(0xFFFFEBEE),
-          fg: const Color(0xFFC62828),
+          bg: const Color(0xFFFDEEEF),
+          fg: const Color(0xFFC94A55),
         ),
       AdminBadgeTone.info => (
-          bg: AdminUi.brandTeal.withValues(alpha: 0.12),
-          fg: AdminUi.brandTeal,
+          bg: const Color(0xFFEDF5FD),
+          fg: const Color(0xFF3478C8),
         ),
       AdminBadgeTone.neutral => (
           bg: const Color(0xFFF0F2F4),
-          fg: const Color(0xFF5A6570),
+          fg: const Color(0xFF667085),
         ),
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: colors.bg,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
         style: TextStyle(
           color: colors.fg,
           fontFamily: 'cairo',
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
+          fontSize: 11.5,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -758,29 +764,30 @@ class AdminKpiStrip extends StatelessWidget {
               SizedBox(
                 width: width.clamp(140.0, constraints.maxWidth),
                 child: Container(
-                  constraints: const BoxConstraints(minHeight: 96),
-                  padding: const EdgeInsets.all(16),
-                  decoration: AdminUi.cardDecoration(
-                    context,
-                    accent: item.color ?? AdminUi.brandTeal,
+                  constraints: const BoxConstraints(minHeight: 90, maxHeight: 110),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AdminColors.surfaceOf(context),
+                    borderRadius: BorderRadius.circular(AdminUi.radiusSm),
+                    border: Border.all(color: AdminColors.borderOf(context)),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 36,
+                        height: 36,
                         decoration: BoxDecoration(
                           color: (item.color ?? AdminUi.brandTeal)
                               .withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
                           item.icon,
                           color: item.color ?? AdminUi.brandTeal,
-                          size: 22,
+                          size: 20,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -793,6 +800,8 @@ class AdminKpiStrip extends StatelessWidget {
                               style: theme.labelMedium.override(
                                 fontFamily: theme.labelMediumFamily,
                                 color: theme.secondaryText,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
                                 useGoogleFonts: !theme.labelMediumIsCustom,
                               ),
                             ),
@@ -804,6 +813,7 @@ class AdminKpiStrip extends StatelessWidget {
                               style: theme.titleLarge.override(
                                 fontFamily: theme.titleLargeFamily,
                                 color: theme.primaryText,
+                                fontSize: 22,
                                 fontWeight: FontWeight.w700,
                                 useGoogleFonts: !theme.titleLargeIsCustom,
                               ),
@@ -818,6 +828,95 @@ class AdminKpiStrip extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// Compact period segmented control + optional refresh (UI V2.1).
+class AdminPeriodSegmented<T> extends StatelessWidget {
+  const AdminPeriodSegmented({
+    super.key,
+    required this.values,
+    required this.labels,
+    required this.selected,
+    required this.onChanged,
+    this.onRefresh,
+    this.refreshTooltip,
+  });
+
+  final List<T> values;
+  final Map<T, String> labels;
+  final T selected;
+  final ValueChanged<T> onChanged;
+  final VoidCallback? onRefresh;
+  final String? refreshTooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: double.infinity,
+      constraints: const BoxConstraints(minHeight: 52),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: isDark
+            ? theme.alternate.withValues(alpha: 0.45)
+            : const Color(0xFFF0F2F4),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: theme.alternate),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Wrap(
+              spacing: 4,
+              runSpacing: 4,
+              children: [
+                for (final v in values)
+                  Material(
+                    color: selected == v
+                        ? AdminUi.brandTeal
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    child: InkWell(
+                      onTap: () => onChanged(v),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 7,
+                        ),
+                        child: Text(
+                          labels[v] ?? '$v',
+                          style: theme.labelMedium.override(
+                            fontFamily: theme.labelMediumFamily,
+                            color: selected == v
+                                ? Colors.white
+                                : theme.primaryText,
+                            fontWeight: selected == v
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                            fontSize: 12.5,
+                            useGoogleFonts: !theme.labelMediumIsCustom,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (onRefresh != null)
+            IconButton(
+              tooltip: refreshTooltip ?? uiTr(context, 'تحديث'),
+              onPressed: onRefresh,
+              iconSize: 20,
+              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+              icon: Icon(Icons.refresh_rounded, color: AdminUi.brandTeal),
+            ),
+        ],
+      ),
     );
   }
 }

@@ -135,11 +135,9 @@ const kAdminRoleMatrix = <String, Map<AdminPermRole, Set<AdminPermAction>>>{
       AdminPermAction.reverse,
       AdminPermAction.export,
     },
+    // F3-B2: Accountant (finance) is view-only; settlement execution is SuperAdmin.
     AdminPermRole.finance: {
       AdminPermAction.view,
-      AdminPermAction.create,
-      AdminPermAction.approve,
-      AdminPermAction.reverse,
       AdminPermAction.export,
     },
     AdminPermRole.countryAdmin: {AdminPermAction.view},
@@ -155,9 +153,6 @@ const kAdminRoleMatrix = <String, Map<AdminPermRole, Set<AdminPermAction>>>{
     },
     AdminPermRole.finance: {
       AdminPermAction.view,
-      AdminPermAction.create,
-      AdminPermAction.approve,
-      AdminPermAction.reverse,
       AdminPermAction.export,
     },
     AdminPermRole.countryAdmin: {AdminPermAction.view},
@@ -173,9 +168,6 @@ const kAdminRoleMatrix = <String, Map<AdminPermRole, Set<AdminPermAction>>>{
     },
     AdminPermRole.finance: {
       AdminPermAction.view,
-      AdminPermAction.create,
-      AdminPermAction.approve,
-      AdminPermAction.reverse,
       AdminPermAction.export,
     },
     AdminPermRole.countryAdmin: {AdminPermAction.view},
@@ -190,7 +182,6 @@ const kAdminRoleMatrix = <String, Map<AdminPermRole, Set<AdminPermAction>>>{
     },
     AdminPermRole.finance: {
       AdminPermAction.view,
-      AdminPermAction.create,
       AdminPermAction.export,
     },
     AdminPermRole.countryAdmin: {AdminPermAction.view},

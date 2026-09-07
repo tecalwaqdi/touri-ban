@@ -12,20 +12,10 @@ import 'driver_profile_body.dart';
 import 'driver_profile_model.dart';
 export 'driver_profile_model.dart';
 
-enum _ProfileLoadPhase {
-  loading,
-  invalidParam,
-  notFound,
-  error,
-  denied,
-  ready,
-}
+enum _ProfileLoadPhase { loading, invalidParam, notFound, error, denied, ready }
 
 class DriverProfileWidget extends StatefulWidget {
-  const DriverProfileWidget({
-    super.key,
-    required this.iduser,
-  });
+  const DriverProfileWidget({super.key, required this.iduser});
 
   final DocumentReference? iduser;
 
@@ -191,20 +181,14 @@ class _DriverProfileWidgetState extends State<DriverProfileWidget> {
         return AdminDriverModuleScaffold(
           title: uiTr(context, 'ملف المندوب'),
           subtitle: row.displayName,
-          body: DriverProfileBody(
-            user: user,
-            userRef: ref,
-          ),
+          body: DriverProfileBody(user: user, userRef: ref, onChanged: _load),
         );
     }
   }
 }
 
 class _ErrorRetryBody extends StatelessWidget {
-  const _ErrorRetryBody({
-    required this.message,
-    required this.onRetry,
-  });
+  const _ErrorRetryBody({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;

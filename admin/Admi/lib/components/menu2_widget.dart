@@ -1,8 +1,10 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/admin_perf_trace.dart';
 import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_theme_toggle.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_shell_rules.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/l10n/nav_translations.dart';
@@ -24,6 +26,11 @@ class Menu2Widget extends StatefulWidget {
 class _Menu2WidgetState extends State<Menu2Widget> {
   late Menu2Model _model;
 
+  /// PERF-P1: stable badge streams — recreate only when role needs badges.
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _pendingPaymentsStream;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _draftSettlementsStream;
+  bool _badgeStreamsAttached = false;
+
   @override
   void setState(VoidCallback callback) {
     super.setState(callback);
@@ -38,9 +45,38 @@ class _Menu2WidgetState extends State<Menu2Widget> {
 
   @override
   void dispose() {
+    _pendingPaymentsStream = null;
+    _draftSettlementsStream = null;
+    _badgeStreamsAttached = false;
     _model.maybeDispose();
 
     super.dispose();
+  }
+
+  void _ensureFinanceBadgeStreams() {
+    if (!_showFinanceHubAttentionBadges) {
+      _pendingPaymentsStream = null;
+      _draftSettlementsStream = null;
+      _badgeStreamsAttached = false;
+      return;
+    }
+    if (_badgeStreamsAttached &&
+        _pendingPaymentsStream != null &&
+        _draftSettlementsStream != null) {
+      return;
+    }
+    AdminPerfTrace.menuBadgeListenerBuild();
+    _pendingPaymentsStream = FirebaseFirestore.instance
+        .collection('financial_settlement_payments')
+        .where('status', isEqualTo: 'pending')
+        .limit(50)
+        .snapshots();
+    _draftSettlementsStream = FirebaseFirestore.instance
+        .collection('financial_settlements')
+        .where('status', isEqualTo: 'draft')
+        .limit(50)
+        .snapshots();
+    _badgeStreamsAttached = true;
   }
 
   void _navigate(BuildContext context, String routeName) {
@@ -59,9 +95,34 @@ class _Menu2WidgetState extends State<Menu2Widget> {
   }
 
   bool _isActive(BuildContext context, String routeName) {
-    // Do not use GoRouterState.of — go_router 12.1.3 release null-check bug.
-    return adminCurrentRouteName(context) == routeName;
+    // Path identity is authoritative so shell chrome never leaves a stale
+    // Finance item highlighted after goNamed().
+    final loc = adminCurrentLocation(context).split('?').first;
+    final path = _routePathByName[routeName];
+    if (path != null && (loc == path || loc.endsWith(path))) {
+      return true;
+    }
+    final currentName = adminCurrentRouteName(context);
+    if (currentName == null || currentName != routeName) return false;
+    // Stale name guard: if location clearly maps to another Finance route,
+    // do not keep this tile active.
+    for (final e in _routePathByName.entries) {
+      if (e.key == routeName) continue;
+      if (loc == e.value || loc.endsWith(e.value)) return false;
+    }
+    return true;
   }
+
+  static const _routePathByName = <String, String>{
+    'AdminFinanceHub': '/adminFinanceHub',
+    'AdminFinanceReconciliation': '/adminFinanceReconciliation',
+    'AdminFinanceChannels': '/adminFinanceChannels',
+    'AdminSettlements': '/adminSettlements',
+    'AdminAgentFinance': '/adminFinanceAgents',
+    'AdminFinanceReports': '/adminFinanceReports',
+    'AdminFinanceAudit': '/adminFinanceAudit',
+    'AdminReconciliation': '/adminReconciliation',
+  };
 
   String _menuLabel(BuildContext context, String routeName) =>
       navLabel(context, routeName);
@@ -106,6 +167,43 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     return AdminRoleService.canAccessRoute(route);
   }
 
+  /// PERF-P1: settlement attention badges are Super Admin / Country Agent only.
+  /// Accountant finance menu must not keep dual Firestore badge listeners alive.
+  bool get _showFinanceHubAttentionBadges =>
+      AdminRoleService.wantsFinanceHubAttentionBadges;
+
+  Widget _financeHubTile(({String route, IconData icon}) item) {
+    if (!_showFinanceHubAttentionBadges) {
+      return AdminMenuTile(
+        icon: item.icon,
+        label: _menuLabel(context, item.route),
+        isActive: _isActive(context, item.route),
+        onTap: () => _navigate(context, item.route),
+      );
+    }
+
+    _ensureFinanceBadgeStreams();
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: _pendingPaymentsStream,
+      builder: (context, paySnap) {
+        final pending = paySnap.data?.size ?? 0;
+        return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: _draftSettlementsStream,
+          builder: (context, draftSnap) {
+            final drafts = draftSnap.data?.size ?? 0;
+            return AdminMenuTile(
+              icon: item.icon,
+              label: _menuLabel(context, item.route),
+              isActive: _isActive(context, item.route),
+              attentionCount: pending + drafts,
+              onTap: () => _navigate(context, item.route),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = FFLocalizations.of(context);
@@ -115,9 +213,11 @@ class _Menu2WidgetState extends State<Menu2Widget> {
       builder: (context) {
         final role = AdminRoleService.currentRole;
         final countryLabel = AdminRoleService.scopedCountryName;
-        final rolePending = loggedIn &&
-            AdminRoleService.isRoleResolving &&
-            currentUserDocument == null;
+        final rolePending = AdminShellRules.shouldHideNavItems(
+          loggedIn: loggedIn,
+          isRoleResolving: AdminRoleService.isRoleResolving,
+          hasUserDocument: currentUserDocument != null,
+        );
 
         final sections =
             <({String key, List<({String route, IconData icon})> items})>[
@@ -212,24 +312,20 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 icon: Icons.account_balance_rounded
               ),
               (
-                route: AdminAgentFinanceWidget.routeName,
-                icon: Icons.handshake_outlined
+                route: AdminFinanceReconciliationWidget.routeName,
+                icon: Icons.fact_check_outlined
               ),
               (
-                route: AdminProfitsWidget.routeName,
-                icon: Icons.account_balance_wallet_rounded
+                route: AdminFinanceChannelsWidget.routeName,
+                icon: Icons.swap_horiz_rounded
               ),
               (
                 route: AdminSettlementsWidget.routeName,
                 icon: Icons.receipt_long_outlined
               ),
               (
-                route: AdminReconciliationWidget.routeName,
-                icon: Icons.rule_folder_outlined
-              ),
-              (
-                route: AdminFinancialPeriodsWidget.routeName,
-                icon: Icons.date_range_outlined
+                route: AdminAgentFinanceWidget.routeName,
+                icon: Icons.handshake_outlined
               ),
               (
                 route: AdminFinanceReportsWidget.routeName,
@@ -238,10 +334,6 @@ class _Menu2WidgetState extends State<Menu2Widget> {
               (
                 route: AdminFinanceAuditWidget.routeName,
                 icon: Icons.manage_search_rounded
-              ),
-              (
-                route: AdminDriverWalletsWidget.routeName,
-                icon: Icons.wallet_rounded
               ),
             ],
           ),
@@ -294,67 +386,50 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 width: double.infinity,
                 decoration: AdminUi.sidebarHeaderDecoration(),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(
-                              Icons.admin_panel_settings_rounded,
-                              color: Colors.white,
-                              size: 26,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              l10n.getText('hrrt489c' /* Admin */),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.headlineSmall.override(
-                                fontFamily: theme.headlineSmallFamily,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.0,
-                                useGoogleFonts: !theme.headlineSmallIsCustom,
-                              ),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        l10n.getText('hrrt489c' /* Admin */),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.titleMedium.override(
+                          fontFamily: theme.titleMediumFamily,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          letterSpacing: 0.0,
+                          useGoogleFonts: !theme.titleMediumIsCustom,
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            width: 46,
-                            height: 46,
+                            width: 36,
+                            height: 36,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(9),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.4),
-                                width: 2,
+                                color: Colors.white.withValues(alpha: 0.35),
+                                width: 1.5,
                               ),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(7),
                               child: AuthUserStreamWidget(
                                 builder: (context) => ProfilePhotoImage(
                                   photoUrl: currentUserPhoto,
-                                  size: 46,
-                                  borderRadius: BorderRadius.circular(10),
+                                  size: 36,
+                                  borderRadius: BorderRadius.circular(7),
                                   loadingColor: Colors.white,
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -368,6 +443,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                       fontFamily: theme.bodyMediumFamily,
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600,
+                                      fontSize: 14,
                                       letterSpacing: 0.0,
                                       useGoogleFonts: !theme.bodyMediumIsCustom,
                                     ),
@@ -376,11 +452,11 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                 const SizedBox(height: 2),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 3,
+                                    horizontal: 6,
+                                    vertical: 1,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.15),
+                                    color: Colors.white.withValues(alpha: 0.14),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
@@ -395,26 +471,28 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                     style: theme.labelSmall.override(
                                       fontFamily: theme.labelSmallFamily,
                                       color:
-                                          Colors.white.withValues(alpha: 0.9),
+                                          Colors.white.withValues(alpha: 0.92),
                                       fontWeight: FontWeight.w600,
+                                      fontSize: 10.5,
                                       letterSpacing: 0.0,
                                       useGoogleFonts: !theme.labelSmallIsCustom,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 2),
                                 Text(
                                   currentUserEmail,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: theme.labelSmall.override(
                                     fontFamily: theme.labelSmallFamily,
-                                    color: Colors.white.withValues(alpha: 0.75),
+                                    color: Colors.white.withValues(alpha: 0.7),
+                                    fontSize: 11.5,
                                     letterSpacing: 0.0,
                                     useGoogleFonts: !theme.labelSmallIsCustom,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 4),
                                 TextButton.icon(
                                   onPressed: () async {
                                     closeDrawerIfOpen(context);
@@ -428,10 +506,10 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                       context.mounted,
                                     );
                                   },
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Icons.logout_rounded,
-                                    size: 16,
-                                    color: Color(0xFFFFB4B8),
+                                    size: 14,
+                                    color: Colors.white.withValues(alpha: 0.72),
                                   ),
                                   label: Text(
                                     l10n.getText('wj2hxjyt' /* Log out */),
@@ -439,7 +517,9 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                     overflow: TextOverflow.ellipsis,
                                     style: theme.labelMedium.override(
                                       fontFamily: theme.labelMediumFamily,
-                                      color: const Color(0xFFFFB4B8),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.78),
+                                      fontSize: 11.5,
                                       letterSpacing: 0.0,
                                       useGoogleFonts:
                                           !theme.labelMediumIsCustom,
@@ -471,37 +551,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                       ),
                       for (final item in section.items)
                         item.route == AdminFinanceHubWidget.routeName
-                            ? StreamBuilder<
-                                QuerySnapshot<Map<String, dynamic>>>(
-                                stream: FirebaseFirestore.instance
-                                    .collection('financial_settlement_payments')
-                                    .where('status', isEqualTo: 'pending')
-                                    .limit(50)
-                                    .snapshots(),
-                                builder: (context, paySnap) {
-                                  final pending = paySnap.data?.size ?? 0;
-                                  return StreamBuilder<
-                                      QuerySnapshot<Map<String, dynamic>>>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection('financial_settlements')
-                                        .where('status', isEqualTo: 'draft')
-                                        .limit(50)
-                                        .snapshots(),
-                                    builder: (context, draftSnap) {
-                                      final drafts = draftSnap.data?.size ?? 0;
-                                      return AdminMenuTile(
-                                        icon: item.icon,
-                                        label: _menuLabel(context, item.route),
-                                        isActive:
-                                            _isActive(context, item.route),
-                                        attentionCount: pending + drafts,
-                                        onTap: () =>
-                                            _navigate(context, item.route),
-                                      );
-                                    },
-                                  );
-                                },
-                              )
+                            ? _financeHubTile(item)
                             : AdminMenuTile(
                                 icon: item.icon,
                                 label: _menuLabel(context, item.route),

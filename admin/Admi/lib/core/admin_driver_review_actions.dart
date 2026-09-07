@@ -29,25 +29,29 @@ abstract final class AdminDriverReviewActions {
       if (!DriverRegistrationDocumentStatus.profilePhotoOk(data)) {
         blockers.add('adm_drv_blocker_photo');
       }
-      if (DriverRegistrationDocumentStatus.statusForType(
-              data, 'national_id') !=
+      if (DriverRegistrationDocumentStatus.statusForType(data, 'national_id') !=
           DriverRegistrationDocStatus.complete) {
         blockers.add('adm_drv_blocker_national_id');
       }
       if (DriverRegistrationDocumentStatus.statusForType(
-              data, 'vehicle_registration') !=
+            data,
+            'vehicle_registration',
+          ) !=
           DriverRegistrationDocStatus.complete) {
         blockers.add('adm_drv_blocker_vehicle_reg');
       }
       if (DriverRegistrationDocumentStatus.statusForType(
-              data, 'driver_license') !=
+            data,
+            'driver_license',
+          ) !=
           DriverRegistrationDocStatus.complete) {
         blockers.add('adm_drv_blocker_driver_license');
       }
     }
-    final open = (data['requested_changes'] as List?)
-            ?.whereType<Map>()
-            .where((e) => e['resolved'] != true) ??
+    final open =
+        (data['requested_changes'] as List?)?.whereType<Map>().where(
+          (e) => e['resolved'] != true,
+        ) ??
         const [];
     if (open.isNotEmpty) {
       blockers.add('adm_drv_blocker_open_changes');
@@ -72,46 +76,157 @@ abstract final class AdminDriverReviewActions {
   }
 
   static Map<String, dynamic> approvePatch({required String adminUid}) => {
-        'actev_mndob': true,
-        'ismndob': true,
-        'ismndom': true,
-        'ngl': false,
-        'registration_status': 'approved',
-        'submission_status': 'approved',
-        'account_status': 'active',
-        'operational_status': 'offline',
-        'vehicle_review_status': 'approved',
-        'document_review_status': 'approved',
-        'rejection_reason': FieldValue.delete(),
-        'rejectionReason': FieldValue.delete(),
-        'changeRequestReason': FieldValue.delete(),
-        'fieldsToFix': <dynamic>[],
-        'requested_changes': <dynamic>[],
-        'reviewed_at': FieldValue.serverTimestamp(),
-        'reviewed_by': adminUid,
-        // Dual-write camelCase + snake_case (CF V2 + legacy readers).
-        'approved_at': FieldValue.serverTimestamp(),
-        'approvedAt': FieldValue.serverTimestamp(),
-        'approvedBy': adminUid,
-      };
+    'actev_mndob': true,
+    'ismndob': true,
+    'ismndom': true,
+    'ngl': false,
+    'registration_status': 'approved',
+    'submission_status': 'approved',
+    'account_status': 'active',
+    'operational_status': 'offline',
+    'vehicle_review_status': 'approved',
+    'document_review_status': 'approved',
+    'rejection_reason': FieldValue.delete(),
+    'rejectionReason': FieldValue.delete(),
+    'changeRequestReason': FieldValue.delete(),
+    'fieldsToFix': <dynamic>[],
+    'requested_changes': <dynamic>[],
+    'reviewed_at': FieldValue.serverTimestamp(),
+    'reviewed_by': adminUid,
+    // Dual-write camelCase + snake_case (CF V2 + legacy readers).
+    'approved_at': FieldValue.serverTimestamp(),
+    'approvedAt': FieldValue.serverTimestamp(),
+    'approvedBy': adminUid,
+  };
+
+  /// Registration approve **without** flipping [actev_mndob] — keeps axes separate.
+  static Map<String, dynamic> registrationApproveOnlyPatch({
+    required String adminUid,
+  }) => {
+    'ismndob': true,
+    'ismndom': true,
+    'registration_status': 'approved',
+    'submission_status': 'approved',
+    'vehicle_review_status': 'approved',
+    'document_review_status': 'approved',
+    'rejection_reason': FieldValue.delete(),
+    'rejectionReason': FieldValue.delete(),
+    'changeRequestReason': FieldValue.delete(),
+    'fieldsToFix': <dynamic>[],
+    'requested_changes': <dynamic>[],
+    'reviewed_at': FieldValue.serverTimestamp(),
+    'reviewed_by': adminUid,
+    'approved_at': FieldValue.serverTimestamp(),
+    'approvedAt': FieldValue.serverTimestamp(),
+    'approvedBy': adminUid,
+  };
+
+  /// Super-Admin override metadata (also written by CF when override=true).
+  static Map<String, dynamic> overrideApproveMetadata({
+    required String adminUid,
+    required String reason,
+    required String previousStatus,
+    String? adminEmail,
+    bool alsoActivate = true,
+  }) {
+    final now = FieldValue.serverTimestamp();
+    return {
+      'override': true,
+      'override_reason': reason.trim(),
+      'override_actor_uid': adminUid,
+      if (adminEmail != null && adminEmail.trim().isNotEmpty)
+        'override_actor_email': adminEmail.trim(),
+      'override_at': now,
+      'previous_registration_status': previousStatus,
+      'new_registration_status': 'approved',
+      if (alsoActivate) ...operationalActivatePatch(adminUid: adminUid),
+      ...registrationApproveOnlyPatch(adminUid: adminUid),
+    };
+  }
+
+  static Iterable<Map> openRequestedChanges(Map<String, dynamic> data) {
+    final raw = data['requested_changes'] ?? data['requestedChanges'];
+    if (raw is! List) return const Iterable.empty();
+    return raw.whereType<Map>().where((e) {
+      final resolved = e['resolved'] ?? e['isResolved'] ?? e['done'];
+      if (resolved == true || resolved == 'true' || resolved == 1) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  static bool hasOpenRequestedChanges(Map<String, dynamic> data) =>
+      openRequestedChanges(data).isNotEmpty;
+
+  static bool hasPendingFieldsToFix(Map<String, dynamic> data) {
+    final fields = data['fieldsToFix'] ?? data['fields_to_fix'];
+    if (fields is! List) return false;
+    return fields.map((e) => '$e'.trim()).any((e) => e.isNotEmpty);
+  }
+
+  /// Concise open-change lines for override dialog (adminMessage / section).
+  static List<String> openChangeRequestSummaries(Map<String, dynamic> data) {
+    final out = <String>[];
+    for (final e in openRequestedChanges(data)) {
+      final msg = '${e['adminMessage'] ?? e['admin_message'] ?? ''}'.trim();
+      final section = '${e['section'] ?? ''}'.trim();
+      if (msg.isNotEmpty) {
+        out.add(msg);
+      } else if (section.isNotEmpty) {
+        out.add(section);
+      }
+    }
+    if (out.isEmpty && hasPendingFieldsToFix(data)) {
+      final fields = (data['fieldsToFix'] ?? data['fields_to_fix']) as List;
+      for (final f in fields) {
+        final s = '$f'.trim();
+        if (s.isNotEmpty) out.add(s);
+      }
+    }
+    final reason =
+        '${data['changeRequestReason'] ?? data['rejection_reason'] ?? ''}'
+            .trim();
+    if (out.isEmpty && reason.isNotEmpty) out.add(reason);
+    return out;
+  }
+
+  /// needs_changes / open change requests / pending fieldsToFix → exceptional.
+  static bool requiresExceptionalOverride(Map<String, dynamic> data) {
+    final status = (data['registration_status'] as String?)?.trim() ?? '';
+    if (status == 'needs_changes' || status == 'changes_requested') {
+      return true;
+    }
+    if (hasOpenRequestedChanges(data)) return true;
+    if (hasPendingFieldsToFix(data)) return true;
+    // Same signal as review blockers — never show generic approve beside it.
+    if (approvalBlockingReasons(data).contains('adm_drv_blocker_open_changes')) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Whether Super Admin may show the override approval CTA.
+  static bool canSuperAdminOverrideApprove(Map<String, dynamic> data) {
+    return requiresExceptionalOverride(data);
+  }
 
   static Map<String, dynamic> rejectPatch({
     required String reason,
     required String adminUid,
-  }) =>
-      {
-        'actev_mndob': false,
-        'ngl': false,
-        'registration_status': 'rejected',
-        'submission_status': 'rejected',
-        'account_status': 'inactive',
-        'rejection_reason': reason,
-        'rejectionReason': reason,
-        'rejectedAt': FieldValue.serverTimestamp(),
-        'rejectedBy': adminUid,
-        'reviewed_at': FieldValue.serverTimestamp(),
-        'reviewed_by': adminUid,
-      };
+  }) => {
+    'actev_mndob': false,
+    'ngl': false,
+    'registration_status': 'rejected',
+    'submission_status': 'rejected',
+    'account_status': 'inactive',
+    'rejection_reason': reason,
+    'rejectionReason': reason,
+    'rejectedAt': FieldValue.serverTimestamp(),
+    'rejectedBy': adminUid,
+    'reviewed_at': FieldValue.serverTimestamp(),
+    'reviewed_by': adminUid,
+  };
 
   static Map<String, dynamic> requestChangesPatch({
     required String reason,
@@ -122,8 +237,8 @@ abstract final class AdminDriverReviewActions {
     final fields = (fieldsToFix == null || fieldsToFix.isEmpty)
         ? <String>[section]
         : fieldsToFix
-            .where((f) => fieldsToFixAllowlist.contains(f))
-            .toList(growable: false);
+              .where((f) => fieldsToFixAllowlist.contains(f))
+              .toList(growable: false);
     final effective = fields.isEmpty ? <String>['other'] : fields;
     return {
       'actev_mndob': false,
@@ -145,7 +260,7 @@ abstract final class AdminDriverReviewActions {
           'createdBy': adminUid,
           'resolved': false,
           'createdAt': FieldValue.serverTimestamp(),
-        }
+        },
       ],
       'reviewed_at': FieldValue.serverTimestamp(),
       'reviewed_by': adminUid,
@@ -155,17 +270,93 @@ abstract final class AdminDriverReviewActions {
   static Map<String, dynamic> suspendPatch({
     required String reason,
     required String adminUid,
-  }) =>
-      {
-        'ngl': false,
-        'actev_mndob': false,
-        'registration_status': 'suspended',
-        'account_status': 'suspended',
-        'operational_status': 'offline',
-        'rejection_reason': reason,
-        'suspended_at': FieldValue.serverTimestamp(),
-        'suspended_by': adminUid,
-        'reviewed_at': FieldValue.serverTimestamp(),
-        'reviewed_by': adminUid,
-      };
+  }) => {
+    'ngl': false,
+    'actev_mndob': false,
+    'registration_status': 'suspended',
+    'account_status': 'suspended',
+    'operational_status': 'offline',
+    'rejection_reason': reason,
+    'suspended_at': FieldValue.serverTimestamp(),
+    'suspended_by': adminUid,
+    'reviewed_at': FieldValue.serverTimestamp(),
+    'reviewed_by': adminUid,
+  };
+
+  /// Operational account flag only — does **not** change registration_status.
+  ///
+  /// Use after registration is already `approved`. Distinct from [approvePatch]
+  /// (registration review) and [suspendPatch] (registration suspension).
+  static Map<String, dynamic> operationalActivatePatch({
+    required String adminUid,
+  }) => {
+    'actev_mndob': true,
+    'ismndob': true,
+    'ismndom': true,
+    'ngl': false,
+    'account_status': 'active',
+    'operational_status': 'offline',
+    'actev_mndob_at': FieldValue.serverTimestamp(),
+    'reviewed_at': FieldValue.serverTimestamp(),
+    'reviewed_by': adminUid,
+  };
+
+  /// Flip operational activation off without suspending registration.
+  static Map<String, dynamic> operationalDeactivatePatch({
+    required String adminUid,
+  }) => {
+    'actev_mndob': false,
+    'ngl': false,
+    'account_status': 'inactive',
+    'operational_status': 'offline',
+    'reviewed_at': FieldValue.serverTimestamp(),
+    'reviewed_by': adminUid,
+  };
+
+  /// Guards for **operational** activate (not registration approve).
+  ///
+  /// Returns l10n keys (`adm_drv_blocker_*`). Suspended accounts must go through
+  /// registration review / unsuspend — not this path.
+  static List<String> operationalActivationBlockers(Map<String, dynamic> data) {
+    final blockers = <String>[];
+    final status = (data['registration_status'] as String?)?.trim() ?? '';
+    final submission = (data['submission_status'] as String?)?.trim() ?? '';
+    final account = (data['account_status'] as String?)?.trim() ?? '';
+    final effective = status.isNotEmpty ? status : submission;
+
+    if (effective == 'suspended' ||
+        effective == 'blocked' ||
+        account == 'suspended') {
+      blockers.add('adm_drv_blocker_suspended');
+    }
+
+    final approved =
+        effective == 'approved' ||
+        submission == 'approved' ||
+        // Legacy docs often lack registration_status but were admin-created.
+        (effective.isEmpty &&
+            (data['ismndob'] == true || data['ismndom'] == true));
+
+    if (!approved) {
+      blockers.add('adm_drv_blocker_registration_not_approved');
+    }
+
+    if (data['mndob_vill'] == null) {
+      blockers.add('adm_drv_blocker_work_area');
+    }
+    if (data['mndob_type_car'] == null && data['car_rev_mndob'] == null) {
+      blockers.add('adm_drv_blocker_vehicle_type');
+    }
+
+    final open =
+        (data['requested_changes'] as List?)?.whereType<Map>().where(
+          (e) => e['resolved'] != true,
+        ) ??
+        const [];
+    if (open.isNotEmpty) {
+      blockers.add('adm_drv_blocker_open_changes');
+    }
+
+    return blockers;
+  }
 }

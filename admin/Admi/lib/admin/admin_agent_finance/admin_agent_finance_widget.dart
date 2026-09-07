@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 
-import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
-import '/backend/backend.dart';
-import '/backend/financial_accounting_loader.dart';
+import '/components/accountant_finance_summary.dart';
+import '/components/accountant_money_movement_table.dart';
+import '/components/accountant_trip_details_drawer.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_currency.dart';
+import '/core/finance/accountant_finance_loader.dart';
+import '/core/finance/accountant_finance_text.dart';
+import '/core/finance/accountant_finance_view_model.dart';
 import '/core/finance/admin_money_presentation.dart';
-import '/core/finance/finance_agent_account.dart';
-import '/core/finance/finance_agent_attribution.dart';
-import '/core/finance/financial_accounting_engine.dart';
-import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
-/// FIN-4 — Agent finance (scope-based; no fabricated historical commission).
+/// Country Agent + Super Admin accountant finance (same F1 read model; scope differs).
 class AdminAgentFinanceWidget extends StatefulWidget {
   const AdminAgentFinanceWidget({super.key});
 
@@ -33,9 +32,19 @@ class AdminAgentFinanceWidget extends StatefulWidget {
 class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late Menu2Model _menu2Model;
-  Future<List<AgentFinanceAccount>>? _future;
+  AdminDatePreset _preset = AdminDatePreset.thisMonth;
+  Future<AccountantFinanceViewBundle>? _future;
+  AccountantFinanceViewBundle? _lastOk;
+  List<AccountantTripRow>? _earlyRows;
+  bool _summaryLoading = false;
 
-  static const _maxConcurrentLoads = 3;
+  static const _presetLabels = <AdminDatePreset, String>{
+    AdminDatePreset.today: 'اليوم',
+    AdminDatePreset.last7Days: 'آخر 7 أيام',
+    AdminDatePreset.thisMonth: 'هذا الشهر',
+    AdminDatePreset.last30Days: 'آخر 30 يومًا',
+    AdminDatePreset.thisYear: 'هذه السنة',
+  };
 
   @override
   void initState() {
@@ -50,323 +59,250 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
     super.dispose();
   }
 
-  void _reload() {
+  void _reload({bool forceRefresh = false}) {
+    final label = _presetLabels[_preset] ?? _preset.name;
     setState(() {
-      _future = _loadAgents();
+      if (forceRefresh) {
+        _earlyRows = null;
+        _lastOk = null;
+      }
+      _summaryLoading = true;
+      _future = null;
+    });
+
+    AccountantFinanceLoader.loadFirstPage(
+      datePreset: _preset,
+      forceRefresh: forceRefresh,
+    ).then((rows) {
+      if (!mounted) return;
+      setState(() {
+        _earlyRows = rows;
+        _future = AccountantFinanceLoader.load(
+          datePreset: _preset,
+          periodLabel: label,
+          forceRefresh: forceRefresh,
+        ).then((b) {
+          _lastOk = b;
+          if (mounted) {
+            setState(() => _earlyRows = b.trips);
+          }
+          return b;
+        }).whenComplete(() {
+          if (mounted) {
+            setState(() => _summaryLoading = false);
+          } else {
+            _summaryLoading = false;
+          }
+        });
+      });
     });
   }
-
-  Future<List<AgentFinanceAccount>> _loadAgents() async {
-    final agents = await queryUserRecordOnce(
-      queryBuilder: (q) => q.where('Isagent', isEqualTo: true),
-      limit: 50,
-    );
-    final scoped = AdminRoleService.isCountryAgent
-        ? agents.where((a) {
-            final scope = AdminRoleService.scopedCountryRef?.path;
-            if (scope == null || a.revDlohAgent?.path != scope) {
-              return false;
-            }
-            // Agent accounts only see their own finance — not peer agents.
-            if (AdminRoleService.isAgentAccount) {
-              final me = currentUserUid;
-              return me.isNotEmpty && a.reference.id == me;
-            }
-            return true;
-          }).toList()
-        : agents;
-
-    final byCountry = <String, int>{};
-    for (final a in scoped) {
-      final p = a.revDlohAgent?.path;
-      if (p != null) byCountry[p] = (byCountry[p] ?? 0) + 1;
-    }
-
-    final withCountry =
-        scoped.where((a) => a.revDlohAgent != null).toList(growable: false);
-    final accounts = <AgentFinanceAccount>[];
-    for (var i = 0; i < withCountry.length; i += _maxConcurrentLoads) {
-      final chunk = withCountry.skip(i).take(_maxConcurrentLoads);
-      final chunkResults = await Future.wait(
-        chunk.map(
-          (agent) => _loadOneAgentAccount(
-            agent: agent,
-            exclusiveCountry: byCountry[agent.revDlohAgent!.path] == 1,
-          ),
-        ),
-      );
-      for (final a in chunkResults) {
-        if (a != null) accounts.add(a);
-      }
-    }
-    return accounts;
-  }
-
-  /// Per-agent isolation: one CF/query failure must not blank the whole page.
-  Future<AgentFinanceAccount?> _loadOneAgentAccount({
-    required UserRecord agent,
-    required bool exclusiveCountry,
-  }) async {
-    final countryRef = agent.revDlohAgent;
-    if (countryRef == null) return null;
-    try {
-      final result = await FinancialAccountingLoader.load(
-        FinancialReportFilter(
-          datePreset: AdminDatePreset.all,
-          countryRef: countryRef,
-        ),
-      );
-      final lines = result.allMatchingLines;
-      if (lines.isEmpty) {
-        final t = result.byCurrency['SAR'] ??
-            (result.byCurrency.values.isEmpty
-                ? FinancialCurrencyTotals(currency: 'SAR')
-                : result.byCurrency.values.first);
-        return AgentFinanceAccount(
-          agentId: agent.reference.id,
-          agentName: agent.displayName,
-          countryPath: countryRef.path,
-          scope: exclusiveCountry
-              ? AgentAttributionScope.countryExclusive
-              : AgentAttributionScope.countryScopeOnly,
-          attributionConfidence:
-              exclusiveCountry && agent.agentTotal > 0
-                  ? AgentAttributionConfidence.provable
-                  : AgentAttributionConfidence.scopeOnly,
-          commissionRatePercent: agent.agentTotal,
-          attributedTrips:
-              t.completedAndCollected + t.completedButNotCollected,
-          completedTrips: t.lifecycleCompleted,
-          cancelledTrips: t.lifecycleCancelled + t.lifecycleExpired,
-          attributedSales: MoneyAmount(
-            currency: t.currency,
-            minorUnits: t.completedAndCollectedMinor.minorUnits +
-                t.completedButNotCollectedMinor.minorUnits,
-          ),
-          cashSales: MoneyAmount(
-            currency: t.currency,
-            minorUnits: t.cashCustomerCollected.minorUnits +
-                t.cashCompletedPendingMinor.minorUnits,
-          ),
-          onlineSales: MoneyAmount(
-            currency: t.currency,
-            minorUnits: t.onlineCustomerPaid.minorUnits +
-                t.onlineCompletedPendingMinor.minorUnits,
-          ),
-          provableCommission: exclusiveCountry && agent.agentTotal > 0
-              ? MoneyAmount(
-                  currency: t.currency,
-                  minorUnits: (t.completedAndCollectedMinor.minorUnits *
-                          agent.agentTotal /
-                          100)
-                      .round(),
-                )
-              : MoneyAmount.zero(t.currency),
-          dueMinor: 0,
-          paidMinor: 0,
-          outstandingMinor: 0,
-          statementRows: const [],
-          unprovableHistorical: !exclusiveCountry,
-        );
-      }
-
-      return AgentFinanceAccount.fromAgentAndLines(
-        agent: agent,
-        countryLines: lines,
-        currency: 'SAR',
-        exclusiveCountryAgent: exclusiveCountry,
-      );
-    } catch (_) {
-      // Surface a zero-activity / unavailable card rather than hanging forever.
-      // Totals stay 0 — never invent confirmed commission after a load failure.
-      return AgentFinanceAccount(
-        agentId: agent.reference.id,
-        agentName: agent.displayName.isNotEmpty
-            ? agent.displayName
-            : agent.email,
-        countryPath: countryRef.path,
-        scope: exclusiveCountry
-            ? AgentAttributionScope.countryExclusive
-            : AgentAttributionScope.countryScopeOnly,
-        attributionConfidence: AgentAttributionConfidence.scopeOnly,
-        commissionRatePercent: agent.agentTotal,
-        attributedTrips: 0,
-        completedTrips: 0,
-        cancelledTrips: 0,
-        attributedSales: MoneyAmount.zero('SAR'),
-        cashSales: MoneyAmount.zero('SAR'),
-        onlineSales: MoneyAmount.zero('SAR'),
-        provableCommission: MoneyAmount.zero('SAR'),
-        dueMinor: 0,
-        paidMinor: 0,
-        outstandingMinor: 0,
-        statementRows: const [],
-        unprovableHistorical: true,
-      );
-    }
-  }
-
-  String _m(MoneyAmount? m) => AdminOrderMoneyDisplay.formatMoneyAmount(
-        m,
-        symbolOverride: AdminCurrency.symbolByCode[m?.code ?? 'SAR'] ?? 'ر.س',
-      );
 
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
-    final contract = AgentAttributionContract.canonical;
+    final isAgent = AdminRoleService.isCountryAgent;
+
     return AdminLayoutWidget(
+      padContent: false,
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
-      title: uiTr(context, 'مالية الوكلاء'),
-      child: FutureBuilder<List<AgentFinanceAccount>>(
+      title: uiTr(context, isAgent ? 'المالية' : 'مالية الوكلاء'),
+      child: FutureBuilder<AccountantFinanceViewBundle>(
         future: _future,
-        builder: (context, snap) {
-          if (snap.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snap.hasError) {
-            return Padding(
-              padding: AdminUi.pagePadding(context),
-              child: AdminEmptyState(
-                title: uiTr(context, 'تعذر تحميل البيانات'),
-                message: uiTr(
-                  context,
-                  'فشل تحميل مالية الوكلاء. أعد المحاولة.',
-                ),
-                icon: Icons.error_outline,
-                action: FilledButton(
-                  onPressed: _reload,
-                  child: Text(uiTr(context, 'إعادة المحاولة')),
-                ),
-              ),
-            );
-          }
-          if (!snap.hasData) {
-            return Padding(
-              padding: AdminUi.pagePadding(context),
-              child: AdminEmptyState(
-                title: uiTr(context, 'تعذر تحميل البيانات'),
-                message: uiTr(context, 'لا توجد بيانات للعرض'),
-                icon: Icons.cloud_off_outlined,
-                action: FilledButton(
-                  onPressed: _reload,
-                  child: Text(uiTr(context, 'إعادة المحاولة')),
-                ),
-              ),
-            );
-          }
-          final accounts = snap.data!;
-          return ListView(
+        builder: (context, snapshot) {
+          final bundle = snapshot.data ?? _lastOk;
+          final loading = snapshot.connectionState == ConnectionState.waiting &&
+              bundle == null &&
+              (_earlyRows == null || _earlyRows!.isEmpty);
+          final errored = snapshot.hasError && bundle == null;
+
+          return SingleChildScrollView(
             padding: AdminUi.pagePadding(context),
-            children: [
-              AdminPageHeader(
-                title: uiTr(context, 'حسابات الوكلاء'),
-                subtitle: uiTr(
-                  context,
-                  'العمولة التاريخية تُثبت فقط عند وكيل حصري للدولة. وإلا: غير منسوب.',
-                ),
-              ),
-              AdminContentCard(
-                child: Text(
-                  '${uiTr(context, 'نموذج الإسناد')}: ${contract.orderCountryField} → '
-                  '${contract.agentCountryField} · '
-                  '${uiTr(context, 'النسبة')}: ${contract.rateSourceField}',
-                  style: theme.bodySmall,
-                ),
-              ),
-              const SizedBox(height: 12),
-              if (accounts.isEmpty)
-                AdminEmptyState(
-                  title: uiTr(context, 'لا يوجد وكلاء في النطاق'),
-                  message: uiTr(context, 'تحقق من صلاحيات الدولة'),
-                  icon: Icons.person_off_outlined,
-                  action: FilledButton(
-                    onPressed: _reload,
-                    child: Text(uiTr(context, 'إعادة المحاولة')),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AdminPageHeader(
+                  title: uiTr(context, isAgent ? 'مالية الدولة' : 'مالية الوكلاء'),
+                  subtitle: uiTr(
+                    context,
+                    'نفس الأرقام المحاسبية المعتمدة — النطاق حسب الصلاحية فقط.',
                   ),
                 ),
-              for (final a in accounts) ...[
-                AdminContentCard(
-                  title: a.agentName.isNotEmpty
-                      ? a.agentName
-                      : a.agentId,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (a.unprovableHistorical)
-                        Text(
-                          uiTr(
-                            context,
-                            'غير منسوب / لا يمكن إثبات العمولة تاريخيًا',
-                          ),
-                          style: theme.labelMedium.copyWith(
-                            color: Colors.orange.shade800,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      _kv(
-                        theme,
-                        uiTr(context, 'الدولة'),
-                        a.countryPath ?? '—',
-                      ),
-                      _kv(
-                        theme,
-                        uiTr(context, 'الرحلات المنسوبة'),
-                        '${a.attributedTrips}',
-                      ),
-                      _kv(
-                        theme,
-                        uiTr(context, 'المكتملة'),
-                        '${a.completedTrips}',
-                      ),
-                      _kv(
-                        theme,
-                        uiTr(context, 'عمولة الوكيل (محققة فقط)'),
-                        _m(a.provableCommission),
-                      ),
-                      _kv(
-                        theme,
-                        uiTr(context, 'المتبقي'),
-                        _m(
-                          MoneyAmount(
-                            currency: a.provableCommission.code,
-                            minorUnits: a.outstandingMinor,
-                          ),
-                        ),
-                      ),
-                      if (a.attributedTrips == 0 &&
-                          a.completedTrips == 0 &&
-                          a.provableCommission.minorUnits == 0)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 6),
-                          child: Text(
-                            uiTr(context, 'لا نشاط مالي مثبت لهذا الوكيل'),
-                            style: theme.bodySmall.copyWith(
-                              color: theme.secondaryText,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+                AdminPeriodSegmented<AdminDatePreset>(
+                  values: _presetLabels.keys.toList(growable: false),
+                  labels: {
+                    for (final e in _presetLabels.entries)
+                      e.key: uiTr(context, e.value),
+                  },
+                  selected: _preset,
+                  onChanged: (preset) {
+                    _preset = preset;
+                    _reload();
+                  },
+                  onRefresh: () => _reload(forceRefresh: true),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
+                if (loading)
+                  AdminLoadingState(
+                    label: uiTr(context, 'جاري تحميل البيانات المالية'),
+                  )
+                else if (errored)
+                  AdminErrorState(
+                    title: uiTr(context, 'تعذر تحميل المالية'),
+                    message: uiTr(
+                      context,
+                      'حدث خطأ أثناء جلب البيانات. يرجى إعادة المحاولة.',
+                    ),
+                    onRetry: _reload,
+                  )
+                else if (bundle == null &&
+                    (_earlyRows == null || _earlyRows!.isEmpty))
+                  AdminEmptyState(
+                    compact: true,
+                    title: uiTr(context, 'لا توجد بيانات'),
+                    message: uiTr(context, 'لا نتائج ضمن الفلاتر الحالية.'),
+                  )
+                else ...[
+                  if (_summaryLoading ||
+                      snapshot.connectionState == ConnectionState.waiting)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        uiTr(
+                          context,
+                          bundle == null
+                              ? 'جاري حساب الملخص للفترة… تظهر الصفوف الأولى الآن.'
+                              : 'جاري التحديث…',
+                        ),
+                        style: theme.labelSmall.override(
+                          fontFamily: theme.labelSmallFamily,
+                          color: AdminUi.brandTeal,
+                          useGoogleFonts: !theme.labelSmallIsCustom,
+                        ),
+                      ),
+                    ),
+                  if (bundle != null) ...[
+                    _AgentFinanceScopeStrip(bundle: bundle),
+                    const SizedBox(height: 12),
+                    AccountantFinanceAlertsBanner(alerts: bundle.alerts),
+                    if (bundle.alerts.isNotEmpty) const SizedBox(height: 10),
+                    AccountantFinanceSummaryStrip(bundle: bundle),
+                    const SizedBox(height: 12),
+                  ],
+                  AccountantMoneyMovementTable(
+                    rows: bundle?.trips ?? _earlyRows ?? const [],
+                    onOpenDetails: (row) =>
+                        showAccountantTripDetailsDrawer(context, row),
+                  ),
+                ],
               ],
-            ],
+            ),
           );
         },
       ),
     );
   }
+}
 
-  Widget _kv(FlutterFlowTheme theme, String k, String v) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(
+/// Agent-specific scope strip — existing F1 fields only (no invented metrics).
+class _AgentFinanceScopeStrip extends StatelessWidget {
+  const _AgentFinanceScopeStrip({required this.bundle});
+
+  final AccountantFinanceViewBundle bundle;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    final trips = bundle.trips;
+    final countries = <String>{
+      for (final t in trips)
+        if (t.countryLabel.trim().isNotEmpty) t.countryLabel.trim(),
+    };
+    final agents = <String>{
+      for (final t in trips)
+        if (t.agentLabel.trim().isNotEmpty && t.agentLabel.trim() != '—')
+          t.agentLabel.trim(),
+    };
+
+    String countryValue;
+    if (AdminRoleService.isCountryAgent &&
+        AdminRoleService.scopedCountryName.isNotEmpty) {
+      countryValue = AdminRoleService.scopedCountryName;
+    } else if (countries.length == 1) {
+      countryValue = countries.first;
+    } else if (countries.isEmpty) {
+      countryValue = '—';
+    } else {
+      countryValue = uiTr(context, 'عدة دول');
+    }
+
+    final agentValue = agents.length == 1
+        ? agents.first
+        : (agents.isEmpty ? '—' : uiTr(context, '${agents.length} وكلاء'));
+
+    final platformCommission = () {
+      final m = bundle.model;
+      final sym =
+          AdminCurrency.symbolByCode[bundle.currency] ?? bundle.currency;
+      if (m.completedTripsWithCompleteFinancialData == 0 &&
+          m.companyCommission.minorUnits == 0) {
+        return m.completedTripCount == 0 ? '—' : '—';
+      }
+      return AdminOrderMoneyDisplay.formatMoneyAmount(
+        m.companyCommission,
+        symbolOverride: sym,
+      );
+    }();
+
+    final settlementValue = bundle.openSettlementsRemaining > 0
+        ? uiTr(
+            context,
+            'غير مسددة: ${bundle.openSettlementsRemaining}',
+          )
+        : uiTr(context, 'لا متبقٍ مفتوح');
+
+    final items = <(String, String)>[
+      ('الدولة', countryValue),
+      ('الوكيل', agentValue),
+      ('عدد الرحلات', '${bundle.model.completedTripCount}'),
+      // Canonical aggregate for agent share is not on the read model.
+      ('حصة الوكيل', '—'),
+      ('عمولة المنصة', platformCommission),
+      ('حالة التسوية', settlementValue),
+    ];
+
+    return AdminContentCard(
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 10,
         children: [
-          Expanded(child: Text(k, style: theme.bodyMedium)),
-          Text(v, style: theme.titleSmall),
+          for (final item in items)
+            SizedBox(
+              width: 160,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    uiTr(context, item.$1),
+                    style: AccountantFinanceText.label(theme).copyWith(
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    item.$2,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AccountantFinanceText.body(theme).copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );

@@ -1,5 +1,6 @@
 
 import '/backend/backend.dart';
+import '/backend/admin_perf_trace.dart';
 import '/core/auth/auth_claims.dart';
 
 /// Canonical country identity — one logical country maps to one canonical ref.
@@ -128,6 +129,7 @@ class CountryResolver {
   }
 
   static Future<void> _load() async {
+    AdminPerfTrace.countryResolverLoad();
     final records = await queryCountriesRecordOnce(limit: 100);
     final saudiAliases = <DocumentReference>[];
     final others = <CountriesRecord>[];

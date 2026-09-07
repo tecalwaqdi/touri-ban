@@ -3,6 +3,7 @@ import 'dart:async';
 
 import '/backend/admin_cache_policy.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_perf_trace.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 
@@ -94,8 +95,19 @@ class AdminStatsCoordinator {
   }
 
   /// Listen to recent order changes (scoped) and debounce stat refresh.
+  ///
+  /// PERF-P1: callers must not start this for Accountant / finance-only personas
+  /// ([AdminPanelSession] gates). Defense-in-depth skip here too.
   void startLiveSync() {
     stopLiveSync();
+
+    if (AdminRoleService.isAccountant || AdminRoleService.isFinanceStaff) {
+      return;
+    }
+
+    if (!AdminRoleService.wantsOperationalLiveSync) {
+      return;
+    }
 
     Query query = OrderRecord.collection
         .orderBy('data_order', descending: true)
@@ -114,6 +126,9 @@ class AdminStatsCoordinator {
       return;
     }
 
+    AdminPerfTrace.liveOrderListenerStart(
+      role: AdminRoleService.currentRole.name,
+    );
     _orderWatch = query.snapshots().listen((_) {
       _orderWatchDebounce?.cancel();
       _orderWatchDebounce = Timer(

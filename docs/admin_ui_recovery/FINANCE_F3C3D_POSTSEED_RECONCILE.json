@@ -1,0 +1,24 @@
+{
+  "countries": 13,
+  "active_agent_countries": 9,
+  "locks": 9,
+  "mismatches": 0,
+  "mismatch_details": [],
+  "stale": 0,
+  "stale_details": [],
+  "ambiguous": 0,
+  "two_plus_conflicts": 0,
+  "two_plus_details": [],
+  "zero_with_active_lock": 0,
+  "lock_ids": [
+    "india",
+    "indonesia",
+    "kyrgyzstan",
+    "malaysia",
+    "morocco",
+    "portugal",
+    "saudi_arabia",
+    "spain",
+    "tunisia"
+  ]
+}

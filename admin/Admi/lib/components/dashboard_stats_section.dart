@@ -16,6 +16,7 @@ import '/components/admin_ui.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/home22_dashboard/dashboard_presentation.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
 
@@ -48,8 +49,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
 
   static void invalidateAll() {
     if (_liveSections.isEmpty) return;
-    for (final section
-        in List<DashboardStatsSectionState>.from(_liveSections)) {
+    for (final section in List<DashboardStatsSectionState>.from(
+      _liveSections,
+    )) {
       if (!section.mounted) continue;
       section._watchedScope = null;
       section._loadedScope = null;
@@ -67,8 +69,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
     if (_liveSections.isEmpty) return;
     final cached = peekDashboardStats();
     if (cached == null) return;
-    for (final section
-        in List<DashboardStatsSectionState>.from(_liveSections)) {
+    for (final section in List<DashboardStatsSectionState>.from(
+      _liveSections,
+    )) {
       if (!section.mounted) continue;
       section.setState(() {
         section._stats = cached;
@@ -81,8 +84,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
 
   /// Force server recount without blanking the UI.
   static void reloadAllFromServer() {
-    for (final section
-        in List<DashboardStatsSectionState>.from(_liveSections)) {
+    for (final section in List<DashboardStatsSectionState>.from(
+      _liveSections,
+    )) {
       if (!section.mounted) continue;
       section._scheduleLoad(force: true);
     }
@@ -99,15 +103,16 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
       _watchedScope = _loadedScope;
     }
     _userDocSub = authenticatedUserStream.listen(_onUserProfileChanged);
-    _agentReadySub =
-        AdminAgentSessionReady.onReady.listen(_onAgentSessionReady);
+    _agentReadySub = AdminAgentSessionReady.onReady.listen(
+      _onAgentSessionReady,
+    );
     _statsInvalidationSub = AdminStatsCoordinator.instance
         .stream(StatsDomain.dashboard)
         .listen((_) {
-      if (!mounted) return;
-      _loadGeneration++;
-      _scheduleLoad(force: true);
-    });
+          if (!mounted) return;
+          _loadGeneration++;
+          _scheduleLoad(force: true);
+        });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _bootstrapThenLoad();
@@ -129,7 +134,8 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
     }
     final cached = peekDashboardStats();
     if (cached != null && !cached.isExpired) {
-      final countsChanged = _stats == null ||
+      final countsChanged =
+          _stats == null ||
           _loadedScope != scope ||
           _stats!.attractions != cached.attractions ||
           _stats!.partners != cached.partners ||
@@ -301,8 +307,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
     }
 
     final scopeChanged = _loadedScope != null && _loadedScope != scope;
-    final generation =
-        (force || scopeChanged) ? ++_loadGeneration : _loadGeneration;
+    final generation = (force || scopeChanged)
+        ? ++_loadGeneration
+        : _loadGeneration;
     _inFlightScope = scope;
     _spinnerGuardStartedAt ??= DateTime.now();
 
@@ -325,56 +332,59 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
       }
     }
 
-    final refreshFromServer = force ||
+    final refreshFromServer =
+        force ||
         scopeChanged ||
         (cachedPeek != null && !cachedPeek.loadComplete);
 
     final manualRefresh = force && _stats != null && _loadedScope == scope;
 
     loadDashboardStats(
-      forceRefresh: refreshFromServer,
-      quickLandmarks: AdminRoleService.isCountryAgent && !manualRefresh,
-      priorityOnly: false,
-    ).then((stats) {
-      if (!mounted || generation != _loadGeneration) return;
-      final appliedScope = dashboardStatsScopeKey();
-      if (AdminRoleService.isCountryAgent &&
-          appliedScope.contains(':no-country')) {
-        return;
-      }
-      if (appliedScope != scope && _loadedScope != null) {
-        if (appliedScope != _loadedScope) {
-          _inFlightScope = null;
-          _scheduleLoad(force: true);
-          return;
-        }
-      }
-      setState(() {
-        _stats = stats;
-        _loadedScope = appliedScope;
-        _watchedScope = appliedScope;
-        _inFlightScope = null;
-        _loading = !stats.loadComplete;
-        _error = stats.loadError != null && !stats.countsReliable
-            ? stats.loadError
-            : null;
-        if (stats.loadComplete) {
-          _animationGeneration++;
-          _spinnerGuardStartedAt = null;
-        }
-      });
-    }).catchError((Object e) {
-      if (!mounted || generation != _loadGeneration) return;
-      final friendly = AdminUserFacingErrors.from(context, e);
-      setState(() {
-        _error = friendly;
-        _inFlightScope = null;
-        _loading = false;
-        // Ensure we leave the infinite spinner branch even if no prior stats.
-        _stats ??= DashboardStats.empty(loadError: friendly);
-        _spinnerGuardStartedAt = null;
-      });
-    });
+          forceRefresh: refreshFromServer,
+          quickLandmarks: AdminRoleService.isCountryAgent && !manualRefresh,
+          priorityOnly: false,
+        )
+        .then((stats) {
+          if (!mounted || generation != _loadGeneration) return;
+          final appliedScope = dashboardStatsScopeKey();
+          if (AdminRoleService.isCountryAgent &&
+              appliedScope.contains(':no-country')) {
+            return;
+          }
+          if (appliedScope != scope && _loadedScope != null) {
+            if (appliedScope != _loadedScope) {
+              _inFlightScope = null;
+              _scheduleLoad(force: true);
+              return;
+            }
+          }
+          setState(() {
+            _stats = stats;
+            _loadedScope = appliedScope;
+            _watchedScope = appliedScope;
+            _inFlightScope = null;
+            _loading = !stats.loadComplete;
+            _error = stats.loadError != null && !stats.countsReliable
+                ? stats.loadError
+                : null;
+            if (stats.loadComplete) {
+              _animationGeneration++;
+              _spinnerGuardStartedAt = null;
+            }
+          });
+        })
+        .catchError((Object e) {
+          if (!mounted || generation != _loadGeneration) return;
+          final friendly = AdminUserFacingErrors.from(context, e);
+          setState(() {
+            _error = friendly;
+            _inFlightScope = null;
+            _loading = false;
+            // Ensure we leave the infinite spinner branch even if no prior stats.
+            _stats ??= DashboardStats.empty(loadError: friendly);
+            _spinnerGuardStartedAt = null;
+          });
+        });
 
     // Absolute wall-clock ceiling — survives loadGeneration bumps from
     // stats invalidation / bootstrap churn so the spinner cannot hang forever.
@@ -392,8 +402,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
         _loading = false;
         _error ??= 'dashboard_stats_ui_timeout';
         if (_stats == null || !_stats!.loadComplete) {
-          _stats =
-              DashboardStats.empty(loadError: 'dashboard_stats_ui_timeout');
+          _stats = DashboardStats.empty(
+            loadError: 'dashboard_stats_ui_timeout',
+          );
         }
         _inFlightScope = null;
         _spinnerGuardStartedAt = null;
@@ -517,25 +528,25 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             count: stats.representatives,
             reliable: rel(DashboardMetricKeys.representatives),
             colors: const [Color(0xFF4DB6AC), Color(0xFF2E9E94)],
-            route: AdmindreverWidget.routeName,
+            route: DashboardPresentation.canonicalDriversRoute,
           ),
           _DashboardStatItem(
             title: appTr(context, 'dash_sub_drivers_active'),
-            subtitle: appTr(context, 'dash_sub_drivers_active'),
+            subtitle: appTr(context, 'dash_sub_reps'),
             icon: Icons.verified_user_rounded,
             count: stats.driversActive,
             reliable: rel(DashboardMetricKeys.driversActive),
             colors: const [Color(0xFF66BB6A), Color(0xFF43A047)],
-            route: AdmindreverWidget.routeName,
+            route: DashboardPresentation.canonicalDriversRoute,
           ),
           _DashboardStatItem(
             title: appTr(context, 'dash_sub_drivers_inactive'),
-            subtitle: appTr(context, 'dash_sub_drivers_inactive'),
+            subtitle: appTr(context, 'dash_sub_reps'),
             icon: Icons.person_off_rounded,
             count: stats.driversInactive,
             reliable: rel(DashboardMetricKeys.driversInactive),
             colors: const [Color(0xFF90A4AE), Color(0xFF607D8B)],
-            route: AdminDriversWidget.routeName,
+            route: DashboardPresentation.canonicalDriversRoute,
           ),
           _DashboardStatItem(
             title: appTr(context, 'dash_sub_drivers_unknown'),
@@ -544,7 +555,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             count: stats.driversUnknown,
             reliable: rel(DashboardMetricKeys.driversUnknown),
             colors: const [Color(0xFFFFB74D), Color(0xFFF57C00)],
-            route: AdmindreverWidget.routeName,
+            route: DashboardPresentation.canonicalDriversRoute,
           ),
           _DashboardStatItem(
             title: appTr(context, 'nav_tour_guides'),
@@ -575,7 +586,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
           ),
           _DashboardStatItem(
             title: appTr(context, 'dash_sub_support_open'),
-            subtitle: appTr(context, 'dash_sub_support_open'),
+            subtitle: l10n.getText('8d66hs1w'),
             icon: Icons.mark_email_unread_rounded,
             count: stats.supportOpenTickets,
             reliable: rel(DashboardMetricKeys.supportOpenTickets),
@@ -590,7 +601,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
         items: [
           _DashboardStatItem(
             title: appTr(context, 'dash_sub_bookings_total'),
-            subtitle: appTr(context, 'dash_sub_bookings_total'),
+            subtitle: appTr(context, 'dash_section_bookings'),
             icon: Icons.receipt_long_rounded,
             count: stats.bookingsTotal,
             reliable: rel(DashboardMetricKeys.bookingsTotal),
@@ -608,7 +619,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
           ),
           _DashboardStatItem(
             title: appTr(context, 'dash_sub_bookings_completed'),
-            subtitle: appTr(context, 'dash_sub_bookings_completed'),
+            subtitle: appTr(context, 'dash_section_bookings'),
             icon: Icons.check_circle_rounded,
             count: stats.bookingsCompleted,
             reliable: rel(DashboardMetricKeys.bookingsCompleted),
@@ -617,7 +628,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
           ),
           _DashboardStatItem(
             title: appTr(context, 'dash_sub_bookings_cancelled'),
-            subtitle: appTr(context, 'dash_sub_bookings_cancelled'),
+            subtitle: appTr(context, 'dash_section_bookings'),
             icon: Icons.cancel_rounded,
             count: stats.bookingsCancelled,
             reliable: rel(DashboardMetricKeys.bookingsCancelled),
@@ -626,7 +637,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
           ),
           _DashboardStatItem(
             title: appTr(context, 'dash_sub_bookings_expired'),
-            subtitle: appTr(context, 'dash_sub_bookings_expired'),
+            subtitle: appTr(context, 'dash_section_bookings'),
             icon: Icons.timer_off_rounded,
             count: stats.bookingsExpired,
             reliable: rel(DashboardMetricKeys.bookingsExpired),
@@ -674,19 +685,11 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
               ),
             ),
           ),
-        Align(
-          alignment: AlignmentDirectional.centerEnd,
-          child: TextButton.icon(
-            onPressed: _loading ? null : () => _scheduleLoad(force: true),
-            icon: const Icon(Icons.refresh_rounded, size: 18),
-            label: Text(uiTr(context, 'تحديث الآن')),
-          ),
-        ),
         _DashboardSummaryStrip(
           stats: stats,
           loading: _loading || !stats.loadComplete,
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 14),
         for (var g = 0; g < contentSections.length; g++) ...[
           _DashboardGroupSection(
             group: contentSections[g],
@@ -694,9 +697,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             groupIndex: g,
             onNavigate: (item) => _navigateTo(context, item),
           ),
-          if (g < contentSections.length - 1) const SizedBox(height: 20),
+          if (g < contentSections.length - 1) const SizedBox(height: 14),
         ],
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _DashboardSyncNote(
           loadedAt: stats.loadedAt,
           reliable: stats.countsReliable,
@@ -739,10 +742,7 @@ class _DashboardStatItem {
 }
 
 class _DashboardSummaryStrip extends StatelessWidget {
-  const _DashboardSummaryStrip({
-    required this.stats,
-    this.loading = false,
-  });
+  const _DashboardSummaryStrip({required this.stats, this.loading = false});
 
   final DashboardStats stats;
   final bool loading;
@@ -756,7 +756,8 @@ class _DashboardSummaryStrip extends StatelessWidget {
         value: stats.attractions,
         reliable: stats.metricReliable(DashboardMetricKeys.attractions),
         color: AdminUi.brandTeal,
-        loading: loading &&
+        loading:
+            loading &&
             stats.attractions == 0 &&
             stats.metricReliable(DashboardMetricKeys.attractions),
       ),
@@ -766,7 +767,8 @@ class _DashboardSummaryStrip extends StatelessWidget {
         value: stats.appUsers,
         reliable: stats.metricReliable(DashboardMetricKeys.appUsers),
         color: const Color(0xFF2A9D8A),
-        loading: loading &&
+        loading:
+            loading &&
             stats.appUsers == 0 &&
             stats.metricReliable(DashboardMetricKeys.appUsers),
       ),
@@ -776,7 +778,8 @@ class _DashboardSummaryStrip extends StatelessWidget {
         value: stats.activeBookings,
         reliable: stats.metricReliable(DashboardMetricKeys.activeBookings),
         color: const Color(0xFF5C6BC0),
-        loading: loading &&
+        loading:
+            loading &&
             stats.activeBookings == 0 &&
             stats.metricReliable(DashboardMetricKeys.activeBookings),
       ),
@@ -855,10 +858,7 @@ class _SummaryPill extends StatelessWidget {
             SizedBox(
               width: 22,
               height: 22,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.2,
-                color: color,
-              ),
+              child: CircularProgressIndicator(strokeWidth: 2.2, color: color),
             )
           else
             FittedBox(
@@ -968,83 +968,65 @@ class _DashboardStatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final item = this.item;
+    final accent = item.colors.first;
 
     return Material(
-      color: Colors.transparent,
+      color: theme.secondaryBackground,
+      borderRadius: BorderRadius.circular(AdminUi.radiusSm),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AdminUi.radiusMd),
-        child: Ink(
+        borderRadius: BorderRadius.circular(AdminUi.radiusSm),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 72),
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AdminUi.radiusMd),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: item.colors,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: item.colors.first.withValues(alpha: 0.2),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
+            borderRadius: BorderRadius.circular(AdminUi.radiusSm),
+            border: Border.all(color: accent.withValues(alpha: 0.22)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(item.icon, color: accent, size: 18),
+                  const Spacer(),
+                  Text(
+                    item.reliable
+                        ? item.count.toString()
+                        : uiTr(context, 'غير مؤكد'),
+                    style: theme.titleMedium.override(
+                      fontFamily: theme.titleMediumFamily,
+                      color: theme.primaryText,
+                      fontWeight: FontWeight.w800,
+                      fontSize: item.reliable ? 20 : 14,
+                      useGoogleFonts: !theme.titleMediumIsCustom,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                item.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.labelLarge.override(
+                  fontFamily: theme.labelLargeFamily,
+                  fontWeight: FontWeight.w700,
+                  useGoogleFonts: !theme.labelLargeIsCustom,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                item.subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.labelSmall.override(
+                  fontFamily: theme.labelSmallFamily,
+                  color: theme.secondaryText,
+                  useGoogleFonts: !theme.labelSmallIsCustom,
+                ),
               ),
             ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.18),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(item.icon, color: Colors.white, size: 20),
-                    ),
-                    const Spacer(),
-                    Text(
-                      item.reliable
-                          ? item.count.toString()
-                          : uiTr(context, 'غير مؤكد'),
-                      style: theme.headlineSmall.override(
-                        fontFamily: theme.headlineSmallFamily,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: item.reliable ? null : 16,
-                        useGoogleFonts: !theme.headlineSmallIsCustom,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  item.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.titleSmall.override(
-                    fontFamily: theme.titleSmallFamily,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    useGoogleFonts: !theme.titleSmallIsCustom,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  item.subtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.labelSmall.override(
-                    fontFamily: theme.labelSmallFamily,
-                    color: Colors.white.withValues(alpha: 0.85),
-                    useGoogleFonts: !theme.labelSmallIsCustom,
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       ),
@@ -1053,10 +1035,7 @@ class _DashboardStatCard extends StatelessWidget {
 }
 
 class _DashboardSyncNote extends StatelessWidget {
-  const _DashboardSyncNote({
-    required this.loadedAt,
-    this.reliable = true,
-  });
+  const _DashboardSyncNote({required this.loadedAt, this.reliable = true});
 
   final DateTime loadedAt;
   final bool reliable;
@@ -1071,8 +1050,9 @@ class _DashboardSyncNote extends StatelessWidget {
       locale: FFLocalizations.of(context).languageCode,
     );
     final ttlMin = kAdminStatsTtl.inMinutes;
-    final staleHint =
-        ageMin >= ttlMin ? ' · ${uiTr(context, 'قديمة — حدّث')}' : '';
+    final staleHint = ageMin >= ttlMin
+        ? ' · ${uiTr(context, 'قديمة — حدّث')}'
+        : '';
     final reliableHint = reliable ? '' : ' · ${uiTr(context, 'غير مؤكد')}';
 
     return Row(

@@ -1,0 +1,90 @@
+{
+  "base": "https://tutorial-multi-language-70gx4j--admin-auth-nav-fix-mentm7hl.web.app/admin",
+  "probedAt": "2026-09-07T03:33:18.179Z",
+  "results": [
+    {
+      "label": "HUB",
+      "path": "/admin/adminFinanceHub",
+      "authPresent": false,
+      "uidPresent": false,
+      "loginish": false,
+      "hasDataHint": false,
+      "sample": ""
+    },
+    {
+      "label": "RECON",
+      "path": "/admin/adminFinanceReconciliation",
+      "authPresent": false,
+      "uidPresent": false,
+      "loginish": false,
+      "hasDataHint": false,
+      "sample": ""
+    },
+    {
+      "label": "CHANNELS",
+      "path": "/admin/adminFinanceChannels",
+      "authPresent": false,
+      "uidPresent": false,
+      "loginish": false,
+      "hasDataHint": false,
+      "sample": ""
+    },
+    {
+      "label": "SETTLEMENTS",
+      "path": "/admin/adminSettlements",
+      "authPresent": false,
+      "uidPresent": false,
+      "loginish": false,
+      "hasDataHint": false,
+      "sample": ""
+    },
+    {
+      "label": "AGENT_FINANCE",
+      "path": "/admin/adminAgentFinance",
+      "authPresent": false,
+      "uidPresent": false,
+      "loginish": false,
+      "hasDataHint": false,
+      "sample": ""
+    },
+    {
+      "label": "REPORTS",
+      "path": "/admin/adminFinanceReports",
+      "authPresent": false,
+      "uidPresent": false,
+      "loginish": false,
+      "hasDataHint": false,
+      "sample": ""
+    },
+    {
+      "label": "HUB_RETURN",
+      "path": "/admin/adminFinanceHub",
+      "authPresent": false,
+      "uidPresent": false,
+      "loginish": false,
+      "hasDataHint": false,
+      "sample": ""
+    },
+    {
+      "label": "RAPID_END",
+      "path": "/admin/adminFinanceHub",
+      "authPresent": false,
+      "uidPresent": false,
+      "loginish": false,
+      "hasDataHint": false,
+      "sample": "جاري تحميل لوحة التحكم…"
+    },
+    {
+      "label": "HARD_REFRESH_SETTLEMENTS",
+      "path": "/admin/adminSettlements",
+      "authPresent": false,
+      "uidPresent": false,
+      "loginish": false,
+      "hasDataHint": false,
+      "sample": ""
+    }
+  ],
+  "loginRedirectCount": 0,
+  "authLostCount": 9,
+  "financePaintMs": 2446
+}

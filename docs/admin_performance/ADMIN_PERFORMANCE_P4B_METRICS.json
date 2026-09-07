@@ -1,0 +1,221 @@
+{
+  "base": "https://tutorial-multi-language-70gx4j--admin-perf-p4b-rli5r6o1.web.app/admin",
+  "restControl": {
+    "ms": 739,
+    "status": 200,
+    "bytes": 12329
+  },
+  "netFails": 0,
+  "finance": {
+    "label": "finance_hub",
+    "n": 5,
+    "median": {
+      "route_to_query": 1,
+      "query_to_snap": 1651,
+      "snap_to_model": 1,
+      "model_to_state": 0,
+      "state_to_paint": 16,
+      "total": 1670,
+      "auth": null
+    },
+    "p90": {
+      "total": 1895,
+      "query_to_snap": 1877,
+      "route_to_query": 1
+    },
+    "cacheHits": 5,
+    "sampleMarks": {
+      "ROUTE_ENTER": 0,
+      "FIRST_BUILD_START": 0,
+      "CACHE_MISS": 1240,
+      "QUERY_REQUESTED": 1,
+      "QUERY_START": 1,
+      "FIRESTORE_GET_START": 1240,
+      "FIRST_BUILD_END": 2,
+      "FIRESTORE_FIRST_SNAPSHOT": 1238,
+      "DOCUMENT_DECODE_COMPLETE": 1238,
+      "REPOSITORY_COMPLETE": 1238,
+      "MODEL_BUILD_START": 1239,
+      "MODEL_BUILD_END": 1239,
+      "STATE_EMIT": 1239,
+      "FRAME_SCHEDULED": 1239,
+      "SUMMARY_START": 1239,
+      "CACHE_HIT": 1240,
+      "FIRST_USEFUL_FRAME_PAINTED": 1256
+    }
+  },
+  "recon": {
+    "label": "reconciliation",
+    "n": 5,
+    "median": {
+      "route_to_query": 1,
+      "query_to_snap": 1121,
+      "snap_to_model": 2,
+      "model_to_state": 1,
+      "state_to_paint": 44,
+      "total": 1164,
+      "auth": null
+    },
+    "p90": {
+      "total": 1952,
+      "query_to_snap": 1908,
+      "route_to_query": 1
+    },
+    "cacheHits": 0,
+    "sampleMarks": {
+      "ROUTE_ENTER": 0,
+      "FIRST_BUILD_START": 0,
+      "CACHE_MISS": 3,
+      "QUERY_REQUESTED": 1,
+      "QUERY_START": 1,
+      "FIRESTORE_GET_START": 2,
+      "SETTLEMENT_EVIDENCE_START": 2,
+      "SUMMARY_START": 3,
+      "IN_FLIGHT_JOIN": 3,
+      "FIRST_BUILD_END": 4,
+      "FIRESTORE_FIRST_SNAPSHOT": 1048,
+      "DOCUMENT_DECODE_COMPLETE": 1046,
+      "ORDER_PAGE_READY": 1047,
+      "SETTLEMENT_EVIDENCE_END": 1049,
+      "MODEL_BUILD_START": 1049,
+      "MODEL_BUILD_END": 1051,
+      "REPOSITORY_COMPLETE": 1052,
+      "STATE_EMIT": 1052,
+      "FRAME_SCHEDULED": 1052,
+      "FIRST_USEFUL_FRAME_PAINTED": 1096
+    }
+  },
+  "settlements": {
+    "label": "settlements",
+    "n": 5,
+    "median": {
+      "route_to_query": 2,
+      "query_to_snap": 303,
+      "snap_to_model": 0,
+      "model_to_state": 5,
+      "state_to_paint": 11,
+      "total": 324,
+      "auth": null
+    },
+    "p90": {
+      "total": 424,
+      "query_to_snap": 408,
+      "route_to_query": 2
+    },
+    "cacheHits": 0,
+    "sampleMarks": {
+      "ROUTE_ENTER": 0,
+      "FIRST_BUILD_START": 0,
+      "CACHE_MISS": 0,
+      "FIRESTORE_GET_START": 1,
+      "FIRST_BUILD_END": 1,
+      "QUERY_REQUESTED": 2,
+      "QUERY_START": 2,
+      "FIRESTORE_LISTEN_START": 2,
+      "FIRESTORE_FIRST_SNAPSHOT": 305,
+      "DOCUMENT_DECODE_COMPLETE": 305,
+      "REPOSITORY_COMPLETE": 305,
+      "MODEL_BUILD_END": 305,
+      "STATE_EMIT": 313,
+      "FRAME_SCHEDULED": 313,
+      "FIRST_USEFUL_FRAME_PAINTED": 324
+    }
+  },
+  "staticRoute": {
+    "label": "static",
+    "n": 1,
+    "median": {
+      "route_to_query": null,
+      "query_to_snap": 0,
+      "snap_to_model": 0,
+      "model_to_state": 3,
+      "state_to_paint": 83,
+      "total": 86,
+      "auth": null
+    },
+    "p90": {
+      "total": 86,
+      "query_to_snap": 0,
+      "route_to_query": null
+    },
+    "cacheHits": 0,
+    "sampleMarks": {
+      "ROUTE_ENTER": 0,
+      "FIRST_BUILD_START": 0,
+      "FIRST_BUILD_END": 0,
+      "STATE_EMIT": 3,
+      "FRAME_SCHEDULED": 3,
+      "FIRST_USEFUL_FRAME_PAINTED": 86
+    }
+  },
+  "controlQuery": {
+    "label": "control_query",
+    "n": 2,
+    "median": {
+      "route_to_query": 114,
+      "query_to_snap": 1755,
+      "snap_to_model": 2,
+      "model_to_state": 1,
+      "state_to_paint": 11,
+      "total": 1882,
+      "auth": 114
+    },
+    "p90": {
+      "total": 2414,
+      "query_to_snap": 2240,
+      "route_to_query": 161
+    },
+    "cacheHits": 0,
+    "sampleMarks": {
+      "ROUTE_ENTER": 0,
+      "FIRST_BUILD_START": 0,
+      "AUTH_TOKEN_REQUEST_START": 0,
+      "FIRST_BUILD_END": 1,
+      "AUTH_TOKEN_REQUEST_END": 67,
+      "QUERY_REQUESTED": 67,
+      "QUERY_START": 67,
+      "FIRESTORE_GET_START": 67,
+      "FIRESTORE_FIRST_SNAPSHOT": 1337,
+      "DOCUMENT_DECODE_COMPLETE": 1338,
+      "MODEL_BUILD_START": 1338,
+      "MODEL_BUILD_END": 1339,
+      "STATE_EMIT": 1339,
+      "FRAME_SCHEDULED": 1340,
+      "FIRST_USEFUL_FRAME_PAINTED": 1350
+    }
+  },
+  "cachedHub": {
+    "marks": {
+      "ROUTE_ENTER": 0,
+      "FIRST_BUILD_START": 0,
+      "CACHE_MISS": 1013,
+      "QUERY_REQUESTED": 1,
+      "QUERY_START": 1,
+      "FIRESTORE_GET_START": 1013,
+      "FIRST_BUILD_END": 2,
+      "FIRESTORE_FIRST_SNAPSHOT": 1011,
+      "DOCUMENT_DECODE_COMPLETE": 1011,
+      "REPOSITORY_COMPLETE": 1012,
+      "MODEL_BUILD_START": 1012,
+      "MODEL_BUILD_END": 1012,
+      "STATE_EMIT": 1012,
+      "FRAME_SCHEDULED": 1012,
+      "SUMMARY_START": 1012,
+      "CACHE_HIT": 1013,
+      "FIRST_USEFUL_FRAME_PAINTED": 1028
+    },
+    "deltas": {
+      "route_to_query": 1,
+      "query_to_snap": 1010,
+      "snap_to_model": 1,
+      "model_to_state": 0,
+      "state_to_paint": 16,
+      "total": 1028,
+      "auth": null,
+      "cacheHit": true,
+      "fromCacheExtra": null
+    },
+    "cacheHit": true
+  },
+  "firebaseInit": 1
+}

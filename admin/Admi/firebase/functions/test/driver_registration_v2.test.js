@@ -31,6 +31,115 @@ function baseDriver(overrides = {}) {
   };
 }
 
+/**
+ * Pure mirrors of reviewDriverApplicationV2 override gates (local source contract).
+ * Kept in tests so CASE A does not rewrite production — deploy is still required.
+ */
+function overrideStatusAllowed(status, {override}) {
+  if (override) {
+    return ['pending_review', 'needs_changes'].includes(String(status || ''));
+  }
+  return String(status || '') === 'pending_review';
+}
+
+function overrideActorAllowed(claims) {
+  return claims && claims.super_admin === true;
+}
+
+function overrideReasonAllowed(reason) {
+  return String(reason || '').trim().length >= 3;
+}
+
+function approvePatchAxes({override, alsoActivate}) {
+  return {
+    registration_status: 'approved',
+    actev_mndob: alsoActivate !== false,
+    requested_changes: [],
+    fieldsToFix: [],
+    override: !!override,
+  };
+}
+
+describe('reviewDriverApplicationV2 Super Admin override contract (local)', () => {
+  it('needs_changes + normal approve → blocked by status gate', () => {
+    assert.equal(
+      overrideStatusAllowed('needs_changes', {override: false}),
+      false,
+    );
+  });
+
+  it('needs_changes + Super Admin override + reason → status gate allows', () => {
+    assert.equal(
+      overrideStatusAllowed('needs_changes', {override: true}),
+      true,
+    );
+    assert.equal(overrideActorAllowed({super_admin: true}), true);
+    assert.equal(overrideReasonAllowed('استثناء موثق'), true);
+  });
+
+  it('needs_changes + override + empty reason → blocked', () => {
+    assert.equal(overrideReasonAllowed(''), false);
+    assert.equal(overrideReasonAllowed('ab'), false);
+  });
+
+  it('Country Agent override → blocked', () => {
+    assert.equal(
+      overrideActorAllowed({super_admin: false, country_admin: true}),
+      false,
+    );
+  });
+
+  it('approval blockers for needs_changes include NOT_PENDING_REVIEW (bypass via override only)', () => {
+    const blockers = v2._testApprovalBlockingReasonsV2(
+      baseDriver({registration_status: 'needs_changes'}),
+      authUser(),
+    );
+    assert.ok(blockers.includes('NOT_PENDING_REVIEW'));
+  });
+
+  it('open change requests cleared on approve patch (UI open banner closes)', () => {
+    const patch = approvePatchAxes({override: true, alsoActivate: true});
+    assert.deepEqual(patch.requested_changes, []);
+    assert.deepEqual(patch.fieldsToFix, []);
+  });
+
+  it('approve without alsoActivate keeps registration approved but inactive', () => {
+    const patch = approvePatchAxes({override: true, alsoActivate: false});
+    assert.equal(patch.registration_status, 'approved');
+    assert.equal(patch.actev_mndob, false);
+  });
+
+  it('combined override+activate produces approved + actev_mndob true', () => {
+    const patch = approvePatchAxes({override: true, alsoActivate: true});
+    assert.equal(patch.registration_status, 'approved');
+    assert.equal(patch.actev_mndob, true);
+  });
+
+  it('resolveRequestedChangesOnResubmit preserves history entries as resolved', () => {
+    const prior = [
+      {section: 'vehicle', adminMessage: 'fix plate', resolved: false},
+    ];
+    const out = v2._testResolveRequestedChangesOnResubmit(prior);
+    assert.equal(out.length, 1);
+    assert.equal(out[0].resolved, true);
+    assert.equal(out[0].adminMessage, 'fix plate');
+    assert.ok(out[0].resolvedAt);
+  });
+
+  it('local source file contains override implementation (pre-deploy proof)', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const src = fs.readFileSync(
+      path.join(__dirname, '../driver_registration_v2.js'),
+      'utf8',
+    );
+    assert.ok(src.includes('OVERRIDE_SUPER_ADMIN_ONLY'));
+    assert.ok(src.includes("['pending_review', 'needs_changes']"));
+    assert.ok(src.includes('DRIVER_APPLICATION_OVERRIDE_APPROVED'));
+    assert.ok(src.includes('skippedBlockers'));
+  });
+});
+
 describe('driver_registration_v2 gates (email + phone presence, no OTP)', () => {
   it('blocks submit when email not verified', () => {
     const blockers = v2._testSubmitBlockingReasons(

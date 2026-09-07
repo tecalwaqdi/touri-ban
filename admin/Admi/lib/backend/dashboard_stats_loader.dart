@@ -249,6 +249,9 @@ String dashboardStatsScopeKey() {
   switch (role) {
     case AdminRole.superAdmin:
       return 'super:$uid';
+    case AdminRole.accountant:
+      final country = AdminRoleService.scopedCountryRef?.path ?? 'all';
+      return 'accountant:$uid:$country';
     case AdminRole.countryAgent:
       final country = _resolvedCountryRef()?.path ?? 'no-country';
       return 'agent:$uid:$country';
@@ -464,6 +467,9 @@ Future<DashboardStats> _fetchDashboardStats({
   switch (AdminRoleService.currentRole) {
     case AdminRole.superAdmin:
       return _fetchSuperAdminStats();
+    case AdminRole.accountant:
+      // Accountant does not use operational dashboard KPIs.
+      return DashboardStats.empty();
     case AdminRole.countryAgent:
       return _fetchCountryAgentStats(
         quickLandmarks: quickLandmarks,

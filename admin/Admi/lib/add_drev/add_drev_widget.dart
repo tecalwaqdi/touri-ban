@@ -6,14 +6,20 @@ import '/backend/admin_resource_guard.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_user_creation.dart';
 import '/backend/backend.dart';
+import '/components/admin_crud_feedback.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_image_picker.dart';
 import '/components/admin_region_picker.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_driver_edit_phase_ui.dart';
+import '/core/admin_driver_plate.dart';
+import '/core/admin_driver_route_params.dart';
+import '/core/admin_type_car_label.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'add_drev_model.dart';
 export 'add_drev_model.dart';
@@ -22,19 +28,13 @@ export 'add_drev_model.dart';
 /// Work City - Plate Number - Password -
 ///
 class AddDrevWidget extends StatefulWidget {
-  const AddDrevWidget({
-    super.key,
-    this.editUserRef,
-    this.companyRef,
-  });
+  const AddDrevWidget({super.key, this.editUserRef, this.companyRef});
 
   final DocumentReference? editUserRef;
   final DocumentReference? companyRef;
 
   static String routeName = 'addDrev';
   static String routePath = '/addDrev';
-
-  bool get isEditMode => editUserRef != null;
 
   @override
   State<AddDrevWidget> createState() => _AddDrevWidgetState();
@@ -45,14 +45,80 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
   List<TransportCompanyRecord> _companies = [];
   TransportCompanyRecord? _selectedCompany;
   bool _companiesLoading = true;
+  DocumentReference? _resolvedEditRef;
+  bool _routeResolved = false;
+  bool _formEverLoaded = false;
+  UserRecord? _pendingEditUser;
+  final Map<String, int> _editTiming = {};
+
+  bool get _isEdit => _resolvedEditRef != null;
+
+  /// Path-safe company selection (avoids Dropdown identity asserts that blank
+  /// the form body while Save remains visible).
+  TransportCompanyRecord? get _safeSelectedCompany {
+    final selected = _selectedCompany;
+    if (selected == null) return null;
+    for (final c in _companies) {
+      if (c.reference.path == selected.reference.path) return c;
+    }
+    return null;
+  }
+
+  String? get _safeSelectedCompanyPath =>
+      _safeSelectedCompany?.reference.path;
+
+  String? _rawEditUser() {
+    try {
+      return GoRouterState.of(context).uri.queryParameters['editUser'];
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool get _wantsEdit =>
+      widget.editUserRef != null || ((_rawEditUser() ?? '').trim().isNotEmpty);
+
+  void _markEditTiming(String key) {
+    _editTiming[key] = DateTime.now().millisecondsSinceEpoch;
+    if (kDebugMode) {
+      debugPrint('EDIT_TIMING $key t=${_editTiming[key]}');
+    }
+  }
+
+  void _pinEditRouteIfNeeded() {
+    if (_routeResolved) return;
+    _routeResolved = true;
+    _markEditTiming('EDIT_ROUTE_OPEN');
+    final raw = _rawEditUser();
+    _resolvedEditRef = AdminDriverRouteParams.resolveUserRef(
+      rawQuery: raw,
+      deserialized: widget.editUserRef,
+    );
+    _markEditTiming('EDIT_DRIVER_REF_RESOLVED');
+    if (_resolvedEditRef != null || _wantsEdit) {
+      _model.editPhase = 'loading';
+      _model.isLoadingEdit = true;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AddDrevModel());
+    _markEditTiming('EDIT_INIT');
 
     AdminAgentCountryLock.applyToAppState();
 
+    // Resolve edit target before first paint so we never flash create-mode Save.
+    if (widget.editUserRef != null) {
+      _resolvedEditRef = AdminDriverRouteParams.resolveUserRef(
+        rawQuery: null,
+        deserialized: widget.editUserRef,
+      );
+      _model.editPhase = 'loading';
+      _model.isLoadingEdit = true;
+      _markEditTiming('EDIT_DRIVER_REF_RESOLVED');
+    }
     _model.nameTextController ??= TextEditingController();
     _model.nameFocusNode ??= FocusNode();
 
@@ -80,62 +146,121 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _bootstrapForm();
       _model.nameTextControllerValidator = (context, val) {
-        if (val == null || val.trim().isEmpty) return uiTr(context, 'يرجى إدخال الاسم الكامل');
+        if (val == null || val.trim().isEmpty)
+          return uiTr(context, 'يرجى إدخال الاسم الكامل');
         if (val.trim().length < 3) return uiTr(context, 'الاسم قصير جداً');
         return null;
       };
       _model.emailTextControllerValidator = (context, val) {
-        if (widget.isEditMode) return null;
-        if (val == null || val.trim().isEmpty) return uiTr(context, 'يرجى إدخال البريد الإلكتروني');
+        if (_isEdit) return null;
+        if (val == null || val.trim().isEmpty)
+          return uiTr(context, 'يرجى إدخال البريد الإلكتروني');
         if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(val.trim())) {
           return uiTr(context, 'صيغة البريد غير صحيحة');
         }
         return null;
       };
       _model.mobilTextControllerValidator = (context, val) {
-        if (val == null || val.trim().isEmpty) return uiTr(context, 'يرجى إدخال رقم الجوال');
+        if (val == null || val.trim().isEmpty)
+          return uiTr(context, 'يرجى إدخال رقم الجوال');
         if (val.replaceAll(RegExp(r'\D'), '').length < 9) {
           return uiTr(context, 'رقم الجوال غير مكتمل');
         }
         return null;
       };
-      safeSetState(() {});
+      if (mounted) safeSetState(() {});
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final before = _model.editPhase;
+    _pinEditRouteIfNeeded();
+    if (before != _model.editPhase && mounted) {
+      // Ensure first frame after route pin shows loading shell.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) safeSetState(() {});
+      });
+    }
+  }
+
   Future<void> _bootstrapForm() async {
-    if (AdminRoleService.isTransportCompany) {
-      final companyRef = AdminRoleService.transportCompanyRef;
-      if (companyRef != null) {
-        try {
-          final company =
-              await TransportCompanyRecord.getDocumentOnce(companyRef);
-          if (mounted) {
-            setState(() {
-              _companies = [company];
-              _selectedCompany = company;
-              _companiesLoading = false;
-            });
-          }
-        } catch (_) {
-          if (mounted) setState(() => _companiesLoading = false);
-        }
-      }
-    } else {
-      await _loadCompanies();
+    _pinEditRouteIfNeeded();
+    final raw = _rawEditUser();
+    _resolvedEditRef = AdminDriverRouteParams.resolveUserRef(
+      rawQuery: raw,
+      deserialized: widget.editUserRef,
+    );
+    final wantsEdit =
+        (raw != null && raw.trim().isNotEmpty) || widget.editUserRef != null;
+    if (wantsEdit && _resolvedEditRef == null) {
+      safeSetState(() {
+        _model.editPhase = 'notFound';
+        _model.isLoadingEdit = false;
+      });
+      return;
     }
 
-    if (!mounted) return;
+    // Keep last good form on soft re-entry — do not flash blank/loading.
+    if (_isEdit && _formEverLoaded && _model.editPhase == 'loaded') {
+      return;
+    }
 
-    if (widget.isEditMode) {
-      await _loadRepresentativeForEdit();
+    if (_isEdit) {
+      safeSetState(() {
+        _model.editPhase = 'loading';
+        _model.isLoadingEdit = true;
+      });
+    }
+
+    final companiesFuture = AdminRoleService.isTransportCompany
+        ? _loadOwnedTransportCompany()
+        : _loadCompanies();
+
+    if (_isEdit) {
+      // Parallelize independent reads: companies list + driver document.
+      _markEditTiming('EDIT_FIRESTORE_REQUEST_START');
+      await Future.wait<void>([
+        companiesFuture,
+        _fetchRepresentativeForEdit(),
+      ]);
+      if (!mounted) return;
+      _markEditTiming('EDIT_FIRESTORE_REQUEST_DONE');
+      await _finishEditPopulation();
     } else {
+      await companiesFuture;
+      if (!mounted) return;
       FFAppState().update(() {
         FFAppState().typeCarText = '';
         FFAppState().RefTepeCar = null;
         FFAppState().workciteText = '';
         FFAppState().workcite = null;
       });
+      safeSetState(() {
+        _model.editPhase = 'creating';
+        _model.isLoadingEdit = false;
+      });
+    }
+  }
+
+  Future<void> _loadOwnedTransportCompany() async {
+    final companyRef = AdminRoleService.transportCompanyRef;
+    if (companyRef == null) {
+      if (mounted) setState(() => _companiesLoading = false);
+      return;
+    }
+    try {
+      final company = await TransportCompanyRecord.getDocumentOnce(companyRef);
+      if (mounted) {
+        setState(() {
+          _companies = [company];
+          _selectedCompany = company;
+          _companiesLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _companiesLoading = false);
     }
   }
 
@@ -155,8 +280,9 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
             break;
           }
         }
-        preselected ??=
-            await TransportCompanyRecord.getDocumentOnce(widget.companyRef!);
+        preselected ??= await TransportCompanyRecord.getDocumentOnce(
+          widget.companyRef!,
+        );
       }
 
       if (!mounted) return;
@@ -180,14 +306,21 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     }
   }
 
-  Future<void> _loadRepresentativeForEdit() async {
-    final ref = widget.editUserRef;
+  Future<void> _fetchRepresentativeForEdit() async {
+    final ref = _resolvedEditRef;
     if (ref == null) return;
 
-    safeSetState(() => _model.isLoadingEdit = true);
     try {
-      final snap = await ref.get();
-      if (!snap.exists || !mounted) return;
+      final snap = await ref.get().timeout(const Duration(seconds: 20));
+      if (!mounted) return;
+      if (!snap.exists) {
+        safeSetState(() {
+          _model.editPhase = 'notFound';
+          _model.isLoadingEdit = false;
+          _pendingEditUser = null;
+        });
+        return;
+      }
 
       final user = UserRecord.fromSnapshot(snap);
 
@@ -195,14 +328,16 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         final allowed = await AdminResourceGuard.canEditDriver(user);
         if (!allowed) {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(uiTr(context, 'لا تملك صلاحية تعديل هذا السائق'))),
-          );
-          context.safePop();
+          safeSetState(() {
+            _model.editPhase = 'unauthorized';
+            _model.isLoadingEdit = false;
+            _pendingEditUser = null;
+          });
           return;
         }
       }
 
+      _pendingEditUser = user;
       _model.nameTextController!.text = user.displayName;
       _model.emailTextController!.text = user.email;
       _model.mobilTextController!.text = user.phoneNumber;
@@ -210,6 +345,23 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
       _model.uploadedFileUrl_uploadDataLbm = user.photoUrl;
 
       _parseCarTypeAndPlate(user.textTypeCarMndob);
+      final plateFromDoc = AdminDriverPlate.display(
+        '${user.snapshotData['number_lohh_car'] ?? user.snapshotData['plate'] ?? ''}',
+      );
+      if (plateFromDoc.isNotEmpty &&
+          (_model.platTextController?.text.trim().isEmpty ?? true)) {
+        _model.platTextController!.text = plateFromDoc;
+      }
+
+      final localizedType = await AdminTypeCarLabel.resolve(
+        context: context,
+        typeCarRef: user.mndobTypeCar,
+        legacy: _model.cartypeTextController!.text,
+      );
+      if (!mounted) return;
+      if (localizedType.isNotEmpty) {
+        _model.cartypeTextController!.text = localizedType;
+      }
 
       FFAppState().update(() {
         FFAppState().workcite = user.mndobVill;
@@ -217,42 +369,87 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         FFAppState().RefTepeCar = user.mndobTypeCar;
         FFAppState().typeCarText = _model.cartypeTextController!.text;
       });
-
-      if (user.hasTransportCompany()) {
-        TransportCompanyRecord? match;
-        for (final c in _companies) {
-          if (c.reference.path == user.transportCompany!.path) {
-            match = c;
-            break;
-          }
-        }
-        match ??= await TransportCompanyRecord.getDocumentOnce(
-          user.transportCompany!,
-        );
-        if (mounted) {
-          setState(() {
-            if (!_companies.any((c) => c.reference.path == match!.reference.path)) {
-              _companies = [match!, ..._companies];
-            }
-            _selectedCompany = match;
-          });
-        }
-      }
+      _markEditTiming('EDIT_CONTROLLERS_POPULATED');
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${appTr(context, 'adm_load_courier_failed')}: '
-            '${AdminUserFacingErrors.from(context, e)}',
-          ),
-        ),
+      safeSetState(() {
+        _model.editPhase = 'error';
+        _model.editLoadError = e;
+        _model.isLoadingEdit = false;
+        _pendingEditUser = null;
+      });
+    }
+  }
+
+  Future<void> _finishEditPopulation() async {
+    if (_model.editPhase == 'error' ||
+        _model.editPhase == 'notFound' ||
+        _model.editPhase == 'unauthorized') {
+      return;
+    }
+    final user = _pendingEditUser;
+    if (user == null) {
+      if (_model.editPhase != 'notFound' && _model.editPhase != 'unauthorized') {
+        safeSetState(() {
+          _model.editPhase = 'error';
+          _model.isLoadingEdit = false;
+        });
+      }
+      return;
+    }
+
+    if (user.hasTransportCompany()) {
+      TransportCompanyRecord? match;
+      for (final c in _companies) {
+        if (c.reference.path == user.transportCompany!.path) {
+          match = c;
+          break;
+        }
+      }
+      match ??= await TransportCompanyRecord.getDocumentOnce(
+        user.transportCompany!,
       );
-    } finally {
       if (mounted) {
-        safeSetState(() => _model.isLoadingEdit = false);
+        setState(() {
+          if (!_companies.any(
+            (c) => c.reference.path == match!.reference.path,
+          )) {
+            _companies = [match!, ..._companies];
+          }
+          _selectedCompany = match;
+          _companiesLoading = false;
+        });
       }
     }
+
+    if (!mounted) return;
+    safeSetState(() {
+      _model.editPhase = 'loaded';
+      _model.isLoadingEdit = false;
+      _formEverLoaded = true;
+      _pendingEditUser = null;
+    });
+    _markEditTiming('EDIT_FORM_READY');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _markEditTiming('EDIT_FORM_PAINTED');
+      if (kDebugMode && _editTiming.containsKey('EDIT_ROUTE_OPEN')) {
+        final start = _editTiming['EDIT_ROUTE_OPEN']!;
+        final ready = _editTiming['EDIT_FORM_READY'] ?? start;
+        debugPrint('EDIT_TIMING total_ms=${ready - start} keys=$_editTiming');
+      }
+    });
+  }
+
+  /// Explicit retry — allows reload after error (bypasses keep-last-good).
+  Future<void> _retryEditLoad() async {
+    _formEverLoaded = false;
+    _pendingEditUser = null;
+    safeSetState(() {
+      _model.editPhase = 'loading';
+      _model.isLoadingEdit = true;
+      _model.editLoadError = null;
+    });
+    await _bootstrapForm();
   }
 
   void _parseCarTypeAndPlate(String raw) {
@@ -261,7 +458,8 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     final idx = text.lastIndexOf(separator);
     if (idx > 0) {
       _model.cartypeTextController!.text = text.substring(0, idx).trim();
-      _model.platTextController!.text = text.substring(idx + separator.length).trim();
+      _model.platTextController!.text =
+          text.substring(idx + separator.length).trim();
     } else {
       _model.cartypeTextController!.text = text;
       _model.platTextController!.clear();
@@ -300,7 +498,9 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
 
     if (name.isEmpty || email.isEmpty || phone.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(uiTr(context, 'يرجى تعبئة الاسم والبريد ورقم الجوال'))),
+        SnackBar(
+          content: Text(uiTr(context, 'يرجى تعبئة الاسم والبريد ورقم الجوال')),
+        ),
       );
       return;
     }
@@ -327,7 +527,9 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     if (AdminRoleService.isTransportCompany && _selectedCompany == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(uiTr(context, 'حسابك غير مربوط بشركة نقل — تواصل مع الإدارة')),
+          content: Text(
+            uiTr(context, 'حسابك غير مربوط بشركة نقل — تواصل مع الإدارة'),
+          ),
         ),
       );
       return;
@@ -339,20 +541,67 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
           _selectedCompany!.reference.path != owned.path) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(uiTr(context, 'لا تملك صلاحية تعديل سائقي شركة أخرى')),
+            content: Text(
+              uiTr(context, 'لا تملك صلاحية تعديل سائقي شركة أخرى'),
+            ),
           ),
         );
         return;
       }
     }
 
-    if (!widget.isEditMode) {
+    // Busy immediately before any await — blocks double-submit.
+    safeSetState(() => _model.isSubmitting = true);
+
+    if (_isEdit && _resolvedEditRef != null) {
+      try {
+        final snap = await _resolvedEditRef!.get();
+        if (!snap.exists) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(uiTr(context, 'تعذر تحديث المندوب'))),
+          );
+          safeSetState(() => _model.isSubmitting = false);
+          return;
+        }
+        final existing = UserRecord.fromSnapshot(snap);
+        if (!AdminRoleService.isSuperAdmin) {
+          final allowed = await AdminResourceGuard.canEditDriver(existing);
+          if (!allowed) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(uiTr(context, 'لا تملك صلاحية تعديل هذا السائق')),
+              ),
+            );
+            safeSetState(() => _model.isSubmitting = false);
+            return;
+          }
+        }
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${uiTr(context, 'تعذر تحديث المندوب')}: ${AdminUserFacingErrors.from(context, e)}',
+            ),
+          ),
+        );
+        safeSetState(() => _model.isSubmitting = false);
+        return;
+      }
+    }
+
+    if (!_isEdit) {
       if (_model.passTextController!.text.length < 6) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(uiTr(context, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل')),
+            content: Text(
+              uiTr(context, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'),
+            ),
           ),
         );
+        safeSetState(() => _model.isSubmitting = false);
         return;
       }
 
@@ -360,6 +609,7 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(uiTr(context, 'كلمتا المرور غير متطابقتين'))),
         );
+        safeSetState(() => _model.isSubmitting = false);
         return;
       }
     }
@@ -369,12 +619,12 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         ? _model.uploadedFileUrl_uploadDataLbm.trim()
         : null;
 
-    safeSetState(() => _model.isSubmitting = true);
-
     try {
       final countryRef = await AdminCountrySync.countryFromVillage(workCityRef);
 
-      if (widget.isEditMode) {
+      if (_isEdit) {
+        final plateDisplay = AdminDriverPlate.display(plate);
+        final plateNorm = AdminDriverPlate.normalize(plate);
         final update = createUserRecordData(
           displayName: name,
           phoneNumber: phone,
@@ -387,19 +637,28 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
           transportCompanyText: _selectedCompany?.naim,
           revDolh: countryRef,
         );
+        final plateFields = <String, dynamic>{};
+        if (plateDisplay.isNotEmpty) {
+          plateFields['number_lohh_car'] = plateDisplay;
+          plateFields['normalized_plate'] = plateNorm;
+        }
         if (_selectedCompany == null) {
-          await widget.editUserRef!.update({
+          await _resolvedEditRef!.update({
             ...update,
+            ...plateFields,
             'transport_company': FieldValue.delete(),
             'transport_company_text': FieldValue.delete(),
           });
         } else {
-          await widget.editUserRef!.update(update);
+          await _resolvedEditRef!.update({...update, ...plateFields});
         }
 
+        AdminListRefresh.notify(AdminListScope.representatives);
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(uiTr(context, 'تم تحديث بيانات المندوب بنجاح'))),
+          SnackBar(
+            content: Text(uiTr(context, 'تم تحديث بيانات المندوب بنجاح')),
+          ),
         );
         context.safePop();
         return;
@@ -428,12 +687,10 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
               AdminRoleService.isTransportCompany ? 'inactive' : 'active',
           'operational_status': 'offline',
           'auto_activated': false,
-          'document_review_status': AdminRoleService.isTransportCompany
-              ? 'pending'
-              : 'approved',
-          'vehicle_review_status': AdminRoleService.isTransportCompany
-              ? 'pending'
-              : 'approved',
+          'document_review_status':
+              AdminRoleService.isTransportCompany ? 'pending' : 'approved',
+          'vehicle_review_status':
+              AdminRoleService.isTransportCompany ? 'pending' : 'approved',
           if (workCityRef != null) 'mndob_vill': workCityRef.path,
           if (carTypeRef != null) 'mndob_type_car': carTypeRef.path,
           'mndob_vill_text': workCity,
@@ -454,20 +711,23 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       final message = switch (e.code) {
-        'email-already-in-use' => uiTr(context, 'البريد الإلكتروني مستخدم مسبقاً'),
+        'email-already-in-use' => uiTr(
+            context,
+            'البريد الإلكتروني مستخدم مسبقاً',
+          ),
         'invalid-email' => uiTr(context, 'البريد الإلكتروني غير صالح'),
         'weak-password' => uiTr(context, 'كلمة المرور ضعيفة جداً'),
         _ => '${uiTr(context, 'تعذر إضافة المندوب')}: ${e.message ?? e.code}',
       };
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            widget.isEditMode
+            _isEdit
                 ? '${uiTr(context, 'تعذر تحديث المندوب')}: ${AdminUserFacingErrors.from(context, e)}'
                 : '${uiTr(context, 'تعذر إضافة المندوب')}: ${AdminUserFacingErrors.from(context, e)}',
           ),
@@ -482,298 +742,431 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final isEdit = widget.isEditMode;
+    final isEdit = _isEdit;
     final theme = FlutterFlowTheme.of(context);
     String? editSubtitle;
-    if (isEdit && widget.editUserRef != null) {
-      // Subtitle filled after load via model if available.
+    if (isEdit && _resolvedEditRef != null) {
       editSubtitle = _model.nameTextController?.text.trim();
     }
 
-    return AdminDriverModuleScaffold(
-      title: isEdit
-          ? uiTr(context, 'تعديل بيانات المندوب')
-          : uiTr(context, 'إضافة مندوب'),
-      subtitle: isEdit && (editSubtitle?.isNotEmpty ?? false)
-          ? editSubtitle
-          : (isEdit
-              ? uiTr(context, 'عدّل البيانات ثم احفظ')
-              : uiTr(context, 'املأ الحقول المطلوبة')),
-      isLoading: _model.isLoadingEdit,
-      bottomBar: AdminDriverStickyActions(
-        primaryLabel: _model.isSubmitting
-            ? uiTr(context, 'جاري الحفظ...')
-            : isEdit
-                ? uiTr(context, 'حفظ التعديلات')
-                : uiTr(context, 'إضافة المندوب'),
-        primaryLoading: _model.isSubmitting,
-        primaryIcon: isEdit ? Icons.save_rounded : Icons.person_add_rounded,
-        onPrimary:
-            _model.isSubmitting ? null : _submitRepresentative,
-      ),
-      body: Form(
+    final phase = _model.editPhase;
+    final wantsEdit = _wantsEdit;
+    final resolvingEdit =
+        AdminDriverEditPhaseUi.showLoadingShell(phase, wantsEdit: wantsEdit);
+    final canMutate = AdminDriverEditPhaseUi.showSaveAction(
+      phase,
+      wantsEdit: wantsEdit,
+      isEdit: isEdit,
+    );
+
+    // Prefer scaffold-level loading so body cannot paint blank white.
+    // No sticky Save/Cancel during load — AppBar back is enough.
+    if (resolvingEdit || (isEdit && phase == 'loading')) {
+      return AdminDriverModuleScaffold(
+        title: uiTr(context, 'تعديل بيانات المندوب'),
+        subtitle: uiTr(context, 'عدّل البيانات ثم احفظ'),
+        isLoading: true,
+        loadingMessage: uiTr(context, 'جاري تحميل بيانات المندوب...'),
+        bottomBar: null,
+        body: const SizedBox.shrink(),
+      );
+    }
+
+    final Widget phaseBody;
+    if (isEdit && phase == 'notFound') {
+      phaseBody = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            uiTr(context, 'المندوب غير موجود'),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    } else if (isEdit && phase == 'unauthorized') {
+      phaseBody = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            uiTr(context, 'لا تملك صلاحية تعديل هذا السائق'),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    } else if (isEdit && phase == 'error') {
+      phaseBody = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                uiTr(context, 'تعذر تحميل بيانات المندوب'),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: _retryEditLoad,
+                child: Text(uiTr(context, 'إعادة المحاولة')),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if (!AdminDriverEditPhaseUi.showFormBody(
+      phase,
+      wantsEdit: wantsEdit,
+    )) {
+      // Defensive: never fall through to an empty form shell.
+      phaseBody = Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(
+                width: 36,
+                height: 36,
+                child: CircularProgressIndicator(strokeWidth: 2.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                uiTr(context, 'جاري تحميل بيانات المندوب...'),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      // Create + loaded edit: paint real fields. Prefer Column+scroll over
+      // ListView so form sections never collapse to zero paint height.
+      phaseBody = Form(
         key: _model.formKey,
-        child: ListView(
+        child: SingleChildScrollView(
           padding: AdminUi.pagePadding(context).copyWith(top: 12, bottom: 24),
-          children: [
-            AdminDriverCompactTip(
-              text: isEdit
-                  ? uiTr(
-                      context,
-                      'عدّل البيانات المطلوبة — الاسم، الموقع، المركبة، الصورة — ثم احفظ.',
-                    )
-                  : uiTr(
-                      context,
-                      'أدخل البيانات الشخصية، الموقع، المركبة، ثم اضغط «إضافة المندوب».',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AdminDriverCompactTip(
+                text: isEdit
+                    ? uiTr(
+                        context,
+                        'عدّل البيانات المطلوبة — الاسم، الموقع، المركبة، الصورة — ثم احفظ.',
+                      )
+                    : uiTr(
+                        context,
+                        'أدخل البيانات الشخصية، الموقع، المركبة، ثم اضغط «إضافة المندوب».',
+                      ),
+              ),
+              const SizedBox(height: 14),
+              AdminEditFormCard(
+                sectionTitle: uiTr(context, 'البيانات الشخصية'),
+                children: [
+                  AdminDriverFormGrid(
+                    children: [
+                      _buildTextField(
+                        context: context,
+                        controller: _model.nameTextController!,
+                        focusNode: _model.nameFocusNode,
+                        label: uiTr(context, 'الاسم الكامل *'),
+                        hint: uiTr(context, 'مثال: محمد أحمد العتيبي'),
+                        icon: Icons.person_outline_rounded,
+                        validator: _model.nameTextControllerValidator,
+                        textInputAction: TextInputAction.next,
+                      ),
+                      _buildTextField(
+                        context: context,
+                        controller: _model.mobilTextController!,
+                        focusNode: _model.mobilFocusNode,
+                        label: uiTr(context, 'رقم الجوال *'),
+                        hint: '05xxxxxxxx',
+                        icon: Icons.phone_android_rounded,
+                        keyboardType: TextInputType.phone,
+                        validator: _model.mobilTextControllerValidator,
+                        textInputAction: TextInputAction.next,
+                      ),
+                      _buildTextField(
+                        context: context,
+                        controller: _model.emailTextController!,
+                        focusNode: _model.emailFocusNode,
+                        label: uiTr(context, 'البريد الإلكتروني *'),
+                        hint: 'example@email.com',
+                        icon: Icons.alternate_email_rounded,
+                        readOnly: isEdit,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: _model.emailTextControllerValidator,
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ],
+                  ),
+                  if (!isEdit) ...[
+                    const SizedBox(height: 14),
+                    _buildFieldHint(
+                      uiTr(
+                        context,
+                        'كلمة المرور: 6 أحرف على الأقل. شاركها مع المندوب بشكل آمن بعد الإضافة.',
+                      ),
+                      icon: Icons.lock_outline_rounded,
                     ),
-            ),
-            const SizedBox(height: 14),
-            AdminEditFormCard(
-              sectionTitle: uiTr(context, 'البيانات الشخصية'),
-              children: [
-                AdminDriverFormGrid(
-                  children: [
+                    const SizedBox(height: 10),
                     _buildTextField(
                       context: context,
-                      controller: _model.nameTextController!,
-                      focusNode: _model.nameFocusNode,
-                      label: uiTr(context, 'الاسم الكامل *'),
-                      hint: uiTr(context, 'مثال: محمد أحمد العتيبي'),
-                      icon: Icons.person_outline_rounded,
-                      validator: _model.nameTextControllerValidator,
+                      controller: _model.passTextController!,
+                      focusNode: _model.passFocusNode,
+                      label: uiTr(context, 'كلمة المرور *'),
+                      hint: '••••••••',
+                      helper: uiTr(context, '6 أحرف على الأقل — أحرف وأرقام'),
+                      icon: Icons.lock_rounded,
+                      obscureText: !_model.passVisibility,
+                      suffix: _visibilityToggle(
+                        visible: _model.passVisibility,
+                        onTap: () => safeSetState(
+                          () => _model.passVisibility = !_model.passVisibility,
+                        ),
+                      ),
                       textInputAction: TextInputAction.next,
                     ),
+                    const SizedBox(height: 14),
                     _buildTextField(
                       context: context,
-                      controller: _model.mobilTextController!,
-                      focusNode: _model.mobilFocusNode,
-                      label: uiTr(context, 'رقم الجوال *'),
-                      hint: '05xxxxxxxx',
-                      icon: Icons.phone_android_rounded,
-                      keyboardType: TextInputType.phone,
-                      validator: _model.mobilTextControllerValidator,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    _buildTextField(
-                      context: context,
-                      controller: _model.emailTextController!,
-                      focusNode: _model.emailFocusNode,
-                      label: uiTr(context, 'البريد الإلكتروني *'),
-                      hint: 'example@email.com',
-                      icon: Icons.alternate_email_rounded,
-                      readOnly: isEdit,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: _model.emailTextControllerValidator,
-                      textInputAction: TextInputAction.next,
+                      controller: _model.cpassTextController!,
+                      focusNode: _model.cpassFocusNode,
+                      label: uiTr(context, 'تأكيد كلمة المرور *'),
+                      hint: uiTr(context, 'أعد إدخال كلمة المرور'),
+                      helper: uiTr(context, 'يجب أن تطابق كلمة المرور أعلاه'),
+                      icon: Icons.verified_user_outlined,
+                      obscureText: !_model.cpassVisibility,
+                      suffix: _visibilityToggle(
+                        visible: _model.cpassVisibility,
+                        onTap: () => safeSetState(
+                          () =>
+                              _model.cpassVisibility = !_model.cpassVisibility,
+                        ),
+                      ),
+                      textInputAction: TextInputAction.done,
                     ),
                   ],
-                ),
-                if (!isEdit) ...[
-                  const SizedBox(height: 14),
+                ],
+              ),
+              const SizedBox(height: 16),
+              AdminEditFormCard(
+                sectionTitle: uiTr(context, 'الموقع والمركبة'),
+                children: [
                   _buildFieldHint(
-                    uiTr(context, 'كلمة المرور: 6 أحرف على الأقل. شاركها مع المندوب بشكل آمن بعد الإضافة.'),
-                    icon: Icons.lock_outline_rounded,
+                    uiTr(
+                      context,
+                      'اختر شركة النقل (إن وُجدت) ثم نوع السيارة ومدينة العمل.',
+                    ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
+                  if (_companiesLoading)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Center(
+                        child: SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    )
+                  else if (AdminRoleService.isTransportCompany &&
+                      _selectedCompany != null)
+                    InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: uiTr(context, 'شركة النقل'),
+                      ),
+                      child: Text(_selectedCompany!.naim),
+                    )
+                  else
+                    DropdownButtonFormField<String?>(
+                      key: ValueKey(
+                        'company-path-${_safeSelectedCompanyPath ?? 'none'}-${_companies.length}',
+                      ),
+                      initialValue: _safeSelectedCompanyPath,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: uiTr(context, 'شركة النقل (اختياري)'),
+                        hintText: uiTr(context, 'مستقل — بدون شركة'),
+                      ),
+                      items: [
+                        DropdownMenuItem<String?>(
+                          value: null,
+                          child: Text(uiTr(context, 'مستقل — بدون شركة')),
+                        ),
+                        ..._companies.map(
+                          (c) => DropdownMenuItem<String?>(
+                            value: c.reference.path,
+                            child: Text(
+                              c.licenseNumber.isNotEmpty
+                                  ? '${c.naim} (${c.licenseNumber})'
+                                  : c.naim,
+                            ),
+                          ),
+                        ),
+                      ],
+                      onChanged: (path) {
+                        TransportCompanyRecord? next;
+                        if (path != null) {
+                          for (final c in _companies) {
+                            if (c.reference.path == path) {
+                              next = c;
+                              break;
+                            }
+                          }
+                        }
+                        safeSetState(() => _selectedCompany = next);
+                      },
+                    ),
+                  const SizedBox(height: 14),
+                  AdminEditPickerRow(
+                    label: uiTr(context, 'نوع السيارة *'),
+                    value: _model.cartypeTextController!.text,
+                    placeholder: uiTr(context, 'اضغط لاختيار نوع السيارة'),
+                    onTap: () async {
+                      await showAdminPickerSheet(
+                        context: context,
+                        child: const AdminTypeCarPickerSheet(),
+                      );
+                      if (!mounted) return;
+                      if (FFAppState().typeCarText.isNotEmpty) {
+                        safeSetState(() {
+                          _model.cartypeTextController!.text =
+                              FFAppState().typeCarText;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 6),
+                  _buildHelperText(
+                    context,
+                    uiTr(
+                      context,
+                      'مثال: سيدان، دفع رباعي، فان — حسب أنواع السيارات المفعّلة في النظام',
+                    ),
+                  ),
+                  const SizedBox(height: 14),
                   _buildTextField(
                     context: context,
-                    controller: _model.passTextController!,
-                    focusNode: _model.passFocusNode,
-                    label: uiTr(context, 'كلمة المرور *'),
-                    hint: '••••••••',
-                    helper: uiTr(context, '6 أحرف على الأقل — أحرف وأرقام'),
-                    icon: Icons.lock_rounded,
-                    obscureText: !_model.passVisibility,
-                    suffix: _visibilityToggle(
-                      visible: _model.passVisibility,
-                      onTap: () => safeSetState(
-                        () => _model.passVisibility = !_model.passVisibility,
-                      ),
+                    controller: _model.platTextController!,
+                    focusNode: _model.platFocusNode,
+                    label: uiTr(context, 'رقم اللوحة'),
+                    hint: uiTr(context, 'مثال: أ ب ج 1234'),
+                    helper: uiTr(
+                      context,
+                      'اختياري — أدخل رقم لوحة المركبة إن وُجد',
                     ),
+                    icon: Icons.confirmation_number_outlined,
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 14),
-                  _buildTextField(
-                    context: context,
-                    controller: _model.cpassTextController!,
-                    focusNode: _model.cpassFocusNode,
-                    label: uiTr(context, 'تأكيد كلمة المرور *'),
-                    hint: uiTr(context, 'أعد إدخال كلمة المرور'),
-                    helper: uiTr(context, 'يجب أن تطابق كلمة المرور أعلاه'),
-                    icon: Icons.verified_user_outlined,
-                    obscureText: !_model.cpassVisibility,
-                    suffix: _visibilityToggle(
-                      visible: _model.cpassVisibility,
-                      onTap: () => safeSetState(
-                        () =>
-                            _model.cpassVisibility = !_model.cpassVisibility,
-                      ),
+                  AdminEditPickerRow(
+                    label: uiTr(context, 'مدينة العمل *'),
+                    value: _model.workcityTextController!.text,
+                    placeholder: uiTr(context, 'اضغط لاختيار مدينة العمل'),
+                    icon: Icons.location_city_rounded,
+                    onTap: () async {
+                      await showAdminPickerSheet(
+                        context: context,
+                        child: const AdminWorkCityPickerSheet(),
+                      );
+                      if (!mounted) return;
+                      if (FFAppState().workciteText.isNotEmpty) {
+                        safeSetState(() {
+                          _model.workcityTextController!.text =
+                              FFAppState().workciteText;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 6),
+                  _buildHelperText(
+                    context,
+                    uiTr(
+                      context,
+                      'المدينة التي سيعمل فيها المندوب ويستقبل منها طلبات الحجز',
                     ),
-                    textInputAction: TextInputAction.done,
                   ),
                 ],
-              ],
-            ),
-            const SizedBox(height: 16),
-            AdminEditFormCard(
-              sectionTitle: uiTr(context, 'الموقع والمركبة'),
-              children: [
-                _buildFieldHint(
-                  uiTr(context, 'اختر شركة النقل (إن وُجدت) ثم نوع السيارة ومدينة العمل.'),
-                ),
+              ),
+              const SizedBox(height: 16),
+              AdminEditFormCard(
+                sectionTitle: uiTr(context, 'الصورة الشخصية'),
+                children: [_buildPhotoPicker(context, theme)],
+              ),
+              if (!isEdit) ...[
                 const SizedBox(height: 12),
-                if (_companiesLoading)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Center(
-                      child: SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E9),
+                    borderRadius: BorderRadius.circular(AdminUi.radiusSm),
+                    border: Border.all(color: const Color(0xFFA5D6A7)),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.info_outline_rounded,
+                        color: Color(0xFF2E7D32),
+                        size: 22,
                       ),
-                    ),
-                  )
-                else if (AdminRoleService.isTransportCompany && _selectedCompany != null)
-                  InputDecorator(
-                    decoration: InputDecoration(
-                      labelText: uiTr(context, 'شركة النقل'),
-                    ),
-                    child: Text(_selectedCompany!.naim),
-                  )
-                else
-                  DropdownButtonFormField<TransportCompanyRecord?>(
-                    key: ValueKey(
-                      _selectedCompany?.reference.path ?? 'company-none',
-                    ),
-                    initialValue: _selectedCompany,
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      labelText: uiTr(context, 'شركة النقل (اختياري)'),
-                      hintText: uiTr(context, 'مستقل — بدون شركة'),
-                    ),
-                    items: [
-                      DropdownMenuItem<TransportCompanyRecord?>(
-                        value: null,
-                        child: Text(uiTr(context, 'مستقل — بدون شركة')),
-                      ),
-                      ..._companies.map(
-                        (c) => DropdownMenuItem(
-                          value: c,
-                          child: Text(
-                            c.licenseNumber.isNotEmpty
-                                ? '${c.naim} (${c.licenseNumber})'
-                                : c.naim,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          uiTr(
+                            context,
+                            'بعد الإضافة يُفعَّل المندوب تلقائياً ويمكنه استقبال الطلبات بعد تسجيل الدخول.',
+                          ),
+                          style: theme.bodySmall.override(
+                            fontFamily: theme.bodySmallFamily,
+                            color: const Color(0xFF1B5E20),
+                            useGoogleFonts: !theme.bodySmallIsCustom,
                           ),
                         ),
                       ),
                     ],
-                    onChanged: (v) =>
-                        safeSetState(() => _selectedCompany = v),
                   ),
-                const SizedBox(height: 14),
-                AdminEditPickerRow(
-                  label: uiTr(context, 'نوع السيارة *'),
-                  value: _model.cartypeTextController!.text,
-                  placeholder: uiTr(context, 'اضغط لاختيار نوع السيارة'),
-                  onTap: () async {
-                    await showAdminPickerSheet(
-                      context: context,
-                      child: const AdminTypeCarPickerSheet(),
-                    );
-                    if (!mounted) return;
-                    if (FFAppState().typeCarText.isNotEmpty) {
-                      safeSetState(() {
-                        _model.cartypeTextController!.text =
-                            FFAppState().typeCarText;
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 6),
-                _buildHelperText(
-                  context,
-                  uiTr(context, 'مثال: سيدان، دفع رباعي، فان — حسب أنواع السيارات المفعّلة في النظام'),
-                ),
-                const SizedBox(height: 14),
-                _buildTextField(
-                  context: context,
-                  controller: _model.platTextController!,
-                  focusNode: _model.platFocusNode,
-                  label: uiTr(context, 'رقم اللوحة'),
-                  hint: uiTr(context, 'مثال: أ ب ج 1234'),
-                  helper: uiTr(context, 'اختياري — أدخل رقم لوحة المركبة إن وُجد'),
-                  icon: Icons.confirmation_number_outlined,
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 14),
-                AdminEditPickerRow(
-                  label: uiTr(context, 'مدينة العمل *'),
-                  value: _model.workcityTextController!.text,
-                  placeholder: uiTr(context, 'اضغط لاختيار مدينة العمل'),
-                  icon: Icons.location_city_rounded,
-                  onTap: () async {
-                    await showAdminPickerSheet(
-                      context: context,
-                      child: const AdminWorkCityPickerSheet(),
-                    );
-                    if (!mounted) return;
-                    if (FFAppState().workciteText.isNotEmpty) {
-                      safeSetState(() {
-                        _model.workcityTextController!.text =
-                            FFAppState().workciteText;
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 6),
-                _buildHelperText(
-                  context,
-                  uiTr(context, 'المدينة التي سيعمل فيها المندوب ويستقبل منها طلبات الحجز'),
                 ),
               ],
-            ),
-            const SizedBox(height: 16),
-            AdminEditFormCard(
-              sectionTitle: uiTr(context, 'الصورة الشخصية'),
-              children: [
-                _buildPhotoPicker(context, theme),
-              ],
-            ),
-            if (!isEdit) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8F5E9),
-                  borderRadius: BorderRadius.circular(AdminUi.radiusSm),
-                  border: Border.all(color: const Color(0xFFA5D6A7)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.info_outline_rounded,
-                      color: Color(0xFF2E7D32),
-                      size: 22,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        uiTr(context, 'بعد الإضافة يُفعَّل المندوب تلقائياً ويمكنه استقبال الطلبات بعد تسجيل الدخول.'),
-                        style: theme.bodySmall.override(
-                          fontFamily: theme.bodySmallFamily,
-                          color: const Color(0xFF1B5E20),
-                          useGoogleFonts: !theme.bodySmallIsCustom,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
-          ],
+          ),
         ),
-      ),
+      );
+    }
+
+    return AdminDriverModuleScaffold(
+      title: isEdit || wantsEdit
+          ? uiTr(context, 'تعديل بيانات المندوب')
+          : uiTr(context, 'إضافة مندوب'),
+      subtitle: isEdit && (editSubtitle?.isNotEmpty ?? false)
+          ? editSubtitle
+          : (isEdit || wantsEdit
+              ? uiTr(context, 'عدّل البيانات ثم احفظ')
+              : uiTr(context, 'املأ الحقول المطلوبة')),
+      isLoading: false,
+      // Save only when form is ready — never with blank/error bodies.
+      bottomBar: canMutate
+          ? AdminDriverStickyActions(
+              primaryLabel: _model.isSubmitting
+                  ? uiTr(context, 'جاري الحفظ...')
+                  : isEdit
+                      ? uiTr(context, 'حفظ التعديلات')
+                      : uiTr(context, 'إضافة المندوب'),
+              primaryLoading: _model.isSubmitting,
+              primaryIcon:
+                  isEdit ? Icons.save_rounded : Icons.person_add_rounded,
+              onPrimary: _model.isSubmitting ? null : _submitRepresentative,
+            )
+          : (AdminDriverEditPhaseUi.showErrorBody(phase)
+              ? AdminDriverStickyActions(
+                  primaryLabel: uiTr(context, 'حفظ التعديلات'),
+                  showPrimary: false,
+                  onPrimary: null,
+                )
+              : null),
+      body: phaseBody,
     );
   }
 
@@ -859,7 +1252,8 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
             prefixIcon: icon,
           ).copyWith(
             suffixIcon: suffix,
-            fillColor: readOnly ? theme.alternate.withValues(alpha: 0.15) : null,
+            fillColor:
+                readOnly ? theme.alternate.withValues(alpha: 0.15) : null,
           ),
           style: theme.bodyMedium.override(
             fontFamily: theme.bodyMediumFamily,
@@ -961,7 +1355,9 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      hasPhoto ? uiTr(context, 'تغيير الصورة') : uiTr(context, 'رفع صورة شخصية'),
+                      hasPhoto
+                          ? uiTr(context, 'تغيير الصورة')
+                          : uiTr(context, 'رفع صورة شخصية'),
                       style: theme.titleSmall.override(
                         fontFamily: theme.titleSmallFamily,
                         fontWeight: FontWeight.w700,
