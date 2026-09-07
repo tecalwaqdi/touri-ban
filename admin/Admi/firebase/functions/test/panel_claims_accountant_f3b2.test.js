@@ -20,6 +20,19 @@ describe('F3-B2 panel claims + settlement write gate', () => {
     assert.equal(claims.agent, undefined);
   });
 
+  it('normalizes string / Long-like isAdminRule for accountant', () => {
+    assert.equal(
+      deriveClaimsFromUserData({isAdminRule: '5'}).finance,
+      true,
+    );
+    assert.equal(
+      deriveClaimsFromUserData({
+        isAdminRule: {toNumber: () => 5},
+      }).finance,
+      true,
+    );
+  });
+
   it('country-scoped accountant keeps country_id', () => {
     const claims = deriveClaimsFromUserData({
       isAdminRule: 5,

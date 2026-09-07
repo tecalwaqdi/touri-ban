@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_finance_route_trace.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
@@ -67,7 +68,10 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
     AdminFinanceRouteTrace.begin('finance_hub');
     AdminFinanceRouteTrace.mark('FIRST_BUILD_START');
     _menu2Model = createModel(context, () => Menu2Model());
-    _reload();
+    // Soft claim sync for settlement-map membership + CF-adjacent surfaces.
+    refreshAuthClaims(source: 'finance_hub.init').whenComplete(() {
+      if (mounted) _reload();
+    });
   }
 
   @override
