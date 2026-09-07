@@ -12,7 +12,8 @@
 | CURRENT BRANCH | `release/admin-production-v2` |
 | REMOTE MAIN / PRODUCTION BRANCH | `origin/main` |
 | RENDER WATCHED BRANCH | **`main`** (confirmed by prior production pushes + Render build provenance history; Blueprint root `admin/Admi`) |
-| CURRENT MAIN HEAD | `a17dc63c9822859d07c587ea097c01656d7407b3` |
+| CURRENT MAIN HEAD | `0365f8df8d60e0d5ea1e8b5b81c84b821102acbf` |
+| RELEASE TAG | `admin-v2.0.0` |
 | CURRENT PRODUCTION ADMIN VERSION (source) | `1.0.17+2021` |
 | PREVIOUS RENDER LIVE | `1.0.15+2017` @ `1e2ccb1f65a3c8c69fffe5467ce40931a675ff68` |
 | FIREBASE HOSTING LIVE | `1.0.17+2021` @ `414eaab` (already promoted) |
