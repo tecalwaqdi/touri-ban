@@ -133,7 +133,7 @@ BASE: P4A `49ad5a5` / tip `d45248f`
 
 BRANCH: recovery/admin-performance-p4b-runtime-isolation
 
-COMMIT: _(filled after commit)_
+COMMIT: `ddbb72b27e7ee196bdf3c5e7336ba55e67372de7`
 
 PREVIEW: https://tutorial-multi-language-70gx4j--admin-perf-p4b-rli5r6o1.web.app/admin/
 
