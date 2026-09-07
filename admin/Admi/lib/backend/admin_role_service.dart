@@ -298,7 +298,7 @@ class AdminRoleService {
     'AdminFinancialPeriods',
     'AdminFinanceReports',
     'AdminFinanceAudit',
-    'Settings',
+    // Settings intentionally omitted — Accountant must not open system config.
     // PERF-P4B diagnostic routes (not in menu).
     'AdminPerfP4bStatic',
     'AdminPerfP4bControlQuery',

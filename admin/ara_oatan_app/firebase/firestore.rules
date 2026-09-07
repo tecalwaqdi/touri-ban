@@ -54,7 +54,12 @@ service cloud.firestore {
 
     function isFinance() {
       // Do NOT include country_admin — that leaked unscoped order lists.
-      return claimBool('finance') || isSuperAdmin();
+      // Profile isAdminRule=5 mirrors other panel roles (claim may lag until
+      // refreshMyClaims). Clients cannot self-set isAdminRule.
+      return claimBool('finance')
+        || currentUserData().isAdminRule == 5
+        || currentUserData().IsAdminRule == 5
+        || isSuperAdmin();
     }
 
     function isPartner() {

@@ -1133,3 +1133,69 @@ describe("Cash create fallback + Card→Cash (installed app payloads)", () => {
     await assertFails(getDocs(q));
   });
 });
+
+describe("ACCOUNTANT_READ_ACCESS_P0 finance reads", () => {
+  const acctUid = "acct-global-1";
+  const { getDocs, collection, getDoc, setDoc, updateDoc, doc } =
+    require("firebase/firestore");
+
+  it("Global Accountant claim finance: order list ALLOW", async () => {
+    await seed({
+      [`user/${acctUid}`]: { isAdminRule: 5, actev_user: true },
+      "order/o1": {
+        status_code: "completed",
+        PaymentMethod: "Cash",
+        total: 10,
+      },
+    });
+    const db = testEnv
+      .authenticatedContext(acctUid, { finance: true })
+      .firestore();
+    await assertSucceeds(getDocs(collection(db, "order")));
+  });
+
+  it("Global Accountant profile rule=5 without claim: order list ALLOW", async () => {
+    await seed({
+      [`user/${acctUid}`]: { isAdminRule: 5, actev_user: true },
+      "order/o1": {
+        status_code: "completed",
+        PaymentMethod: "Cash",
+        total: 10,
+      },
+    });
+    const db = testEnv.authenticatedContext(acctUid, {}).firestore();
+    await assertSucceeds(getDocs(collection(db, "order")));
+  });
+
+  it("Global Accountant: settlement read ALLOW write DENY", async () => {
+    await seed({
+      [`user/${acctUid}`]: { isAdminRule: 5, actev_user: true },
+      "financial_settlements/s1": {
+        settlementId: "s1",
+        status: "open",
+        countryId: "countries/sa",
+      },
+    });
+    const db = testEnv
+      .authenticatedContext(acctUid, { finance: true })
+      .firestore();
+    await assertSucceeds(getDoc(doc(db, "financial_settlements", "s1")));
+    await assertSucceeds(getDocs(collection(db, "financial_settlements")));
+    await assertFails(
+      setDoc(doc(db, "financial_settlements", "s2"), { status: "open" }),
+    );
+    await assertFails(
+      updateDoc(doc(db, "financial_settlements", "s1"), { status: "settled" }),
+    );
+  });
+
+  it("Unauthenticated finance reads DENY", async () => {
+    await seed({
+      "financial_settlements/s1": { settlementId: "s1", status: "open" },
+      "order/o1": { status_code: "completed", total: 1 },
+    });
+    const db = testEnv.unauthenticatedContext().firestore();
+    await assertFails(getDocs(collection(db, "order")));
+    await assertFails(getDocs(collection(db, "financial_settlements")));
+  });
+});

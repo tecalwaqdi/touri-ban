@@ -18,6 +18,17 @@ abstract final class AdminUserFacingErrors {
       return _firebase(context, error);
     }
     final s = error.toString().toLowerCase();
+    // ACCOUNTANT_READ_ACCESS_P0: never surface Bad state / finance_query_unavailable
+    // / permission-denied raw strings to operators.
+    if (s.contains('finance_query_unavailable') ||
+        s.contains('permission-denied') ||
+        s.contains('permission_denied') ||
+        (s.contains('bad state:') && s.contains('finance'))) {
+      return uiTr(
+        context,
+        'تعذر تحميل البيانات المالية. يرجى إعادة المحاولة.',
+      );
+    }
     if (s.contains('quota') || s.contains('402')) {
       return appTr(context, 'adm_err_storage_quota');
     }
@@ -48,6 +59,8 @@ abstract final class AdminUserFacingErrors {
     if (raw.isNotEmpty &&
         !raw.contains('FirebaseException') &&
         !raw.contains('Firebase Storage:') &&
+        !raw.contains('Bad state:') &&
+        !raw.toLowerCase().contains('permission-denied') &&
         !_looksLikeStackOrType(raw)) {
       // Keep short Arabic/English operational messages.
       if (raw.length < 280) return raw;
