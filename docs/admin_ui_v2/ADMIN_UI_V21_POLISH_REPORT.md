@@ -2,7 +2,7 @@
 
 BRANCH: `recovery/admin-ui-v21-polish`
 
-COMMIT: _pending_stamp_
+COMMIT: `52f853a0ce9f85a9a66ef5f07ac9a87b149369cb`
 
 BASE UI V2: `a33f734` / report stamp `092cee4`
 
