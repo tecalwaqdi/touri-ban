@@ -42,13 +42,16 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           locale: const Locale('en'),
+          // Avoid listing `ar` without full Material/Cupertino ar delegates —
+          // FF defaults can resolve to `ar` and fail the widget harness.
+          localeResolutionCallback: (locale, supported) => const Locale('en'),
           localizationsDelegates: const [
             FFLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en'), Locale('ar')],
+          supportedLocales: const [Locale('en')],
           home: Builder(
             builder: (context) {
               msg = AdminUserFacingErrors.from(
@@ -64,7 +67,9 @@ void main() {
       expect(msg.toLowerCase(), isNot(contains('bad state')));
       expect(msg.toLowerCase(), isNot(contains('finance_query_unavailable')));
       expect(
-        msg.contains('تعذر') || msg.toLowerCase().contains('unable') || msg.contains('إعادة'),
+        msg.contains('تعذر') ||
+            msg.toLowerCase().contains('unable') ||
+            msg.contains('إعادة'),
         isTrue,
       );
     });
