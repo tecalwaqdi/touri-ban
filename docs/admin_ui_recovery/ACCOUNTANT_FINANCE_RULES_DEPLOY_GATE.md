@@ -1,7 +1,7 @@
 # TOURi TAXI — ACCOUNTANT FINANCE RULES DEPLOY GATE REPORT
 
 SOURCE: `recovery/accountant-finance-read-access-p0` @ `fea6445` (gate docs commit stamped after push)
-GATE_DOCS_COMMIT: _(pending)_
+GATE_DOCS_COMMIT: `8e2467404952c3a4a7588d82ec7cff9007d15c61`
 WORKING TREE AT GATE START: clean  
 
 RULES DEPLOYED: **YES** (Firestore Rules only)  
