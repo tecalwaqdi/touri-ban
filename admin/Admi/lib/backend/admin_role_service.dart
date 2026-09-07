@@ -302,6 +302,8 @@ class AdminRoleService {
     // PERF-P4B diagnostic routes (not in menu).
     'AdminPerfP4bStatic',
     'AdminPerfP4bControlQuery',
+    // PERF-P4C fetch-mode bench (not in menu).
+    'AdminPerfP4cFetchBench',
   };
 
   /// Global finance administration — country agents/agents must not open these.

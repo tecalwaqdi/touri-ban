@@ -5,6 +5,7 @@ import '/backend/admin_country_scope.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_perf_trace.dart';
 import '/backend/admin_finance_route_trace.dart';
+import '/backend/admin_firestore_web_config.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/core/admin_currency.dart';
@@ -416,7 +417,9 @@ class AdminFinanceRepository {
       while (out.length < cap) {
         var page = q.limit(FinanceOrderQuery.tablePageSize);
         if (last != null) page = page.startAfterDocument(last);
-        final snap = await page.get();
+        // PERF-P4C: one-shot server get (Recon membership — not live Settlements UI).
+        final snap =
+            await page.get(AdminFirestoreWebConfig.financeOneShotGetOptions);
         if (first) {
           first = false;
           AdminFinanceRouteTrace.mark(

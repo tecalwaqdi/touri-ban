@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/scheduler.dart';
 
 import '/backend/admin_perf_bridge.dart';
+import '/backend/admin_firestore_web_config.dart';
 
 /// PERF-P4B — one monotonic clock per finance route load.
 ///
@@ -89,6 +90,7 @@ abstract final class AdminFinanceRouteTrace {
       'events': List<Map<String, Object?>>.from(_events),
       'firebaseInitCount': firebaseInitCount,
       'firestoreSettingsApplyCount': firestoreSettingsApplyCount,
+      'firestoreWebConfig': AdminFirestoreWebConfig.describe(),
       'deltas': <String, int?>{
         'route_to_query_start': delta('ROUTE_ENTER', 'QUERY_START'),
         'route_to_query_requested': delta('ROUTE_ENTER', 'QUERY_REQUESTED'),

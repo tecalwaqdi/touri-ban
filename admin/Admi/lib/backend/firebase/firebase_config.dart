@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 import '/backend/admin_finance_route_trace.dart';
+import '/backend/admin_firestore_web_config.dart';
 
 Future initFirebase() async {
   if (kIsWeb) {
@@ -15,21 +15,13 @@ Future initFirebase() async {
             messagingSenderId: "638010533068",
             appId: "1:638010533068:web:cd138c3c2424cbef844e69"));
     AdminFinanceRouteTrace.noteFirebaseInit();
-    // Offline cache for web — instant repeat loads (ideal for KSA users).
-    try {
-      FirebaseFirestore.instance.settings = const Settings(
-        persistenceEnabled: true,
-      );
-      AdminFinanceRouteTrace.noteFirestoreSettings();
-    } catch (_) {}
+    // PERF-P4C: apply web transport/cache policy before any Firestore use.
+    AdminFirestoreWebConfig.applyOnce(isWeb: true);
+    AdminFinanceRouteTrace.noteFirestoreSettings();
   } else {
     await Firebase.initializeApp();
     AdminFinanceRouteTrace.noteFirebaseInit();
-    // Unlimited local cache: show cached data immediately, sync in background.
-    FirebaseFirestore.instance.settings = const Settings(
-      persistenceEnabled: true,
-      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
-    );
+    AdminFirestoreWebConfig.applyOnce(isWeb: false);
     AdminFinanceRouteTrace.noteFirestoreSettings();
   }
 }

@@ -1,0 +1,225 @@
+{
+  "base": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin",
+  "restControl": {
+    "ms": 854,
+    "status": 200,
+    "bytes": 12329
+  },
+  "netFails": 3,
+  "settlements": {
+    "label": "settlements",
+    "n": 5,
+    "median": {
+      "route_to_query": 2,
+      "query_to_snap": 319,
+      "state_to_paint": 12,
+      "total": 328
+    },
+    "p90": {
+      "total": 2016,
+      "query_to_snap": 1993
+    },
+    "cacheHitMarks": 0,
+    "firstPageLikelyCache": 0,
+    "getStarts": 5,
+    "listenStarts": 5,
+    "netClasses": {
+      "listen_webchannel": 8
+    },
+    "sampleConfig": {
+      "platform": "web",
+      "webPersistenceEnabled": true,
+      "webAutoDetectLongPolling": false,
+      "webForceLongPolling": false,
+      "settingsApplyCount": 1,
+      "financeOneShotSource": "server"
+    },
+    "sampleFirstUrl": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-language-70gx4j%2Fdatabases%2F(default)&RID=45717&CVER=22&X-HTTP-Session-Id=gsess"
+  },
+  "finance": {
+    "label": "finance_hub",
+    "n": 5,
+    "median": {
+      "route_to_query": 1,
+      "query_to_snap": 1065,
+      "state_to_paint": 16,
+      "total": 1083
+    },
+    "p90": {
+      "total": 1963,
+      "query_to_snap": 1941
+    },
+    "cacheHitMarks": 5,
+    "firstPageLikelyCache": 0,
+    "getStarts": 5,
+    "listenStarts": 0,
+    "netClasses": {
+      "listen_webchannel": 20
+    },
+    "sampleConfig": {
+      "platform": "web",
+      "webPersistenceEnabled": true,
+      "webAutoDetectLongPolling": false,
+      "webForceLongPolling": false,
+      "settingsApplyCount": 1,
+      "financeOneShotSource": "server"
+    },
+    "sampleFirstUrl": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-language-70gx4j%2Fdatabases%2F(default)&gsessionid=81P9SROaQ0lw3pd_kBUtjNuSf9EHHj"
+  },
+  "recon": {
+    "label": "reconciliation",
+    "n": 5,
+    "median": {
+      "route_to_query": 1,
+      "query_to_snap": 980,
+      "state_to_paint": 43,
+      "total": 1025
+    },
+    "p90": {
+      "total": 1837,
+      "query_to_snap": 1789
+    },
+    "cacheHitMarks": 0,
+    "firstPageLikelyCache": 0,
+    "getStarts": 5,
+    "listenStarts": 0,
+    "netClasses": {
+      "listen_webchannel": 21
+    },
+    "sampleConfig": {
+      "platform": "web",
+      "webPersistenceEnabled": true,
+      "webAutoDetectLongPolling": false,
+      "webForceLongPolling": false,
+      "settingsApplyCount": 1,
+      "financeOneShotSource": "server"
+    },
+    "sampleFirstUrl": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-language-70gx4j%2Fdatabases%2F(default)&RID=81323&CVER=22&X-HTTP-Session-Id=gsess"
+  },
+  "fetchModes": {
+    "server": {
+      "label": "mode_server",
+      "n": 5,
+      "median": {
+        "route_to_query": 0,
+        "query_to_snap": 1197,
+        "state_to_paint": 11,
+        "total": 1210
+      },
+      "p90": {
+        "total": 1911,
+        "query_to_snap": 1898
+      },
+      "cacheHitMarks": 0,
+      "firstPageLikelyCache": 0,
+      "getStarts": 5,
+      "listenStarts": 0,
+      "netClasses": {
+        "listen_webchannel": 25
+      },
+      "sampleConfig": {
+        "platform": "web",
+        "webPersistenceEnabled": true,
+        "webAutoDetectLongPolling": false,
+        "webForceLongPolling": false,
+        "settingsApplyCount": 1,
+        "financeOneShotSource": "server"
+      },
+      "sampleFirstUrl": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-language-70gx4j%2Fdatabases%2F(default)&RID=96126&CVER=22&X-HTTP-Session-Id=gsess"
+    },
+    "default": {
+      "label": "mode_default",
+      "n": 5,
+      "median": {
+        "route_to_query": 0,
+        "query_to_snap": 1288,
+        "state_to_paint": 11,
+        "total": 1299
+      },
+      "p90": {
+        "total": 1730,
+        "query_to_snap": 1717
+      },
+      "cacheHitMarks": 0,
+      "firstPageLikelyCache": 0,
+      "getStarts": 5,
+      "listenStarts": 0,
+      "netClasses": {
+        "listen_webchannel": 22
+      },
+      "sampleConfig": {
+        "platform": "web",
+        "webPersistenceEnabled": true,
+        "webAutoDetectLongPolling": false,
+        "webForceLongPolling": false,
+        "settingsApplyCount": 1,
+        "financeOneShotSource": "server"
+      },
+      "sampleFirstUrl": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-language-70gx4j%2Fdatabases%2F(default)&RID=98217&CVER=22&X-HTTP-Session-Id=gsess"
+    },
+    "snap": {
+      "label": "mode_snap",
+      "n": 5,
+      "median": {
+        "route_to_query": 0,
+        "query_to_snap": 103,
+        "state_to_paint": 17,
+        "total": 121
+      },
+      "p90": {
+        "total": 124,
+        "query_to_snap": 107
+      },
+      "cacheHitMarks": 0,
+      "firstPageLikelyCache": 0,
+      "getStarts": 5,
+      "listenStarts": 0,
+      "netClasses": {
+        "listen_webchannel": 5
+      },
+      "sampleConfig": {
+        "platform": "web",
+        "webPersistenceEnabled": true,
+        "webAutoDetectLongPolling": false,
+        "webForceLongPolling": false,
+        "settingsApplyCount": 1,
+        "financeOneShotSource": "server"
+      },
+      "sampleFirstUrl": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-language-70gx4j%2Fdatabases%2F(default)&RID=90966&CVER=22&X-HTTP-Session-Id=gsess"
+    }
+  },
+  "cachedHub": {
+    "marks": {
+      "ROUTE_ENTER": 0,
+      "FIRST_BUILD_START": 0,
+      "CACHE_MISS": 884,
+      "QUERY_REQUESTED": 1,
+      "QUERY_START": 1,
+      "FIRESTORE_GET_START": 883,
+      "FIRST_BUILD_END": 2,
+      "FIRESTORE_FIRST_SNAPSHOT": 881,
+      "DOCUMENT_DECODE_COMPLETE": 882,
+      "REPOSITORY_COMPLETE": 882,
+      "MODEL_BUILD_START": 882,
+      "MODEL_BUILD_END": 882,
+      "STATE_EMIT": 883,
+      "FRAME_SCHEDULED": 883,
+      "SUMMARY_START": 883,
+      "CACHE_HIT": 884,
+      "FIRST_USEFUL_FRAME_PAINTED": 900
+    },
+    "deltas": {
+      "route_to_query": 1,
+      "query_to_snap": 880,
+      "state_to_paint": 17,
+      "total": 900,
+      "cacheHitMark": true,
+      "firstPageLikelyCache": false,
+      "hasGetStart": true,
+      "hasListenStart": false
+    },
+    "netStarts": 2
+  },
+  "firebaseInit": 1,
+  "settingsApply": 1
+}

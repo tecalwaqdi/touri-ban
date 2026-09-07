@@ -5,6 +5,7 @@ import '/backend/admin_country_scope.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_perf_trace.dart';
 import '/backend/admin_finance_route_trace.dart';
+import '/backend/admin_firestore_web_config.dart';
 import '/backend/admin_performance.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
@@ -111,9 +112,14 @@ abstract final class FinanceOrderQuery {
     DocumentSnapshot? startAfter,
     int limit = tablePageSize,
     bool measureAuthToken = false,
+    FinanceOrderFetchMode fetchMode = FinanceOrderFetchMode.get,
+    GetOptions? getOptions,
   }) async {
     try {
-      AdminFinanceRouteTrace.mark('QUERY_REQUESTED', extra: {'kind': 'modern_page'});
+      AdminFinanceRouteTrace.mark('QUERY_REQUESTED', extra: {
+        'kind': 'modern_page',
+        'fetchMode': fetchMode.name,
+      });
       if (measureAuthToken) {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
@@ -122,19 +128,35 @@ abstract final class FinanceOrderQuery {
           AdminFinanceRouteTrace.mark('AUTH_TOKEN_REQUEST_END');
         }
       }
-      AdminFinanceRouteTrace.mark('QUERY_START', extra: {'kind': 'modern_page'});
-      AdminFinanceRouteTrace.mark('FIRESTORE_GET_START', extra: {'kind': 'modern_page'});
+      AdminFinanceRouteTrace.mark('QUERY_START', extra: {
+        'kind': 'modern_page',
+        'fetchMode': fetchMode.name,
+      });
+      AdminFinanceRouteTrace.mark('FIRESTORE_GET_START', extra: {
+        'kind': 'modern_page',
+        'fetchMode': fetchMode.name,
+      });
       var q = buildModernCompletedQuery(
         range: range,
         country: country,
         driverRef: driverRef,
       );
       if (startAfter != null) q = q.startAfterDocument(startAfter);
-      final snap = await q.limit(limit).get();
+      final limited = q.limit(limit);
+      final QuerySnapshot snap;
+      if (fetchMode == FinanceOrderFetchMode.snapshotsFirst) {
+        snap = await limited.snapshots().first;
+      } else {
+        // PERF-P4C: server one-shot for finance first page (no live need).
+        snap = await limited.get(
+          getOptions ?? AdminFirestoreWebConfig.financeOneShotGetOptions,
+        );
+      }
       AdminFinanceRouteTrace.mark(
         'FIRESTORE_FIRST_SNAPSHOT',
         extra: {
           'kind': 'modern_page',
+          'fetchMode': fetchMode.name,
           'docs': snap.docs.length,
           'fromCache': snap.metadata.isFromCache,
           'hasPendingWrites': snap.metadata.hasPendingWrites,
@@ -212,7 +234,9 @@ abstract final class FinanceOrderQuery {
         if (last != null) q = q.startAfterDocument(last);
         QuerySnapshot snap;
         try {
-          snap = await q.limit(scanChunkSize).get();
+          snap = await q
+              .limit(scanChunkSize)
+              .get(AdminFirestoreWebConfig.financeOneShotGetOptions);
         } on FirebaseException catch (e) {
           AdminPerfTrace.financeQueryError(e.code, source: 'scan_chunk');
           rethrow;
@@ -331,6 +355,14 @@ abstract final class FinanceOrderQuery {
 }
 
 enum FinanceOrderPageSource { modern, legacy, mixed }
+
+enum FinanceOrderFetchMode {
+  /// Production Hub/Recon path — one-shot get (default / server options).
+  get,
+
+  /// Diagnostic only — snapshots().first (listener establishment cost).
+  snapshotsFirst,
+}
 
 class FinanceOrderPage {
   const FinanceOrderPage({
