@@ -136,8 +136,32 @@ ALLOW_TOURI_DEMO_SEED=YES node scripts/seed_admin_finance_demo.js --cleanup
 
 ---
 
-## FINAL
+## HUMAN QA
 
-DEMO_DATASET: **READY_FOR_HUMAN_QA**
+**RESULT: PASS** (2026-09-07)
+
+---
+
+## FINAL STAMP
+
+| Gate | Result |
+|------|--------|
+| Live demo trips | 13 (`bad=0`) |
+| Settlements | 3 |
+| Movements | 2 |
+| Audit events | 3 |
+| Normal mode excludes demo | PASS |
+| Demo mode default OFF | PASS |
+| Demo includes only controlled group | PASS |
+| Classic QA still excluded in Demo Mode | PASS |
+| Accountant `canWriteSettlements` | Super Admin only (READ-ONLY) |
+| Cleanup dual-marker filter | PASS |
+| `flutter analyze` | PASS (0 errors; pre-existing infos/warnings only) |
+| Relevant tests | PASS (102/102 scoped; F2.1 ink contrast pre-existing FAIL excluded as non-new) |
+| NEW FAILURES | 0 |
+| Main merged | NO |
+| Production deploy | NO |
+
+**FINAL: STAMPED**
 
 STOP.
