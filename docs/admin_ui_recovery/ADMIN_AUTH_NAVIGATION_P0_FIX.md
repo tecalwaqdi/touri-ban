@@ -4,7 +4,7 @@ BASE: `80f5ddc` (PERF-P4C tip — Finance first-data architecture frozen; **P2B 
 
 BRANCH: `recovery/admin-auth-navigation-p0`
 
-COMMIT: `80f5ddc2ee3c45234ff458ffa7a63f50fb6343e3`
+COMMIT: `b508587`
 
 PREVIEW: https://tutorial-multi-language-70gx4j--admin-auth-nav-fix-mentm7hl.web.app/admin/
 
