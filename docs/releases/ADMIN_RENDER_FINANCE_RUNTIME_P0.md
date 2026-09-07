@@ -113,14 +113,23 @@ URL: https://tutorial-multi-language-70gx4j--admin-render-finance-p-m02ds6o2.web
 
 ## PRODUCTION
 
+Human smoke (Accountant) on Render — **2026-09-07**:
+
 | Item | Status |
 |------|--------|
-| RENDER web rebuild | NOT DEPLOYED (backend fix already live; merge + clear-cache deploy pending for client soft-sync) |
-| FINANCE HUB | PASS expected after hard reload (backend); client soft-sync after Render deploy |
-| SETTLEMENTS | PASS expected now (Rules profile fallback + fixed refresh) |
-| RECON | PASS |
+| RENDER | DEPLOYED — `1.0.17+2021` (provenance git `73cd2ac…`) |
+| FINANCE HUB | PASS |
+| MONEY MOVEMENT / CHANNELS | PASS |
+| SETTLEMENTS | PASS |
+| RECONCILIATION | PASS |
 | AGENT FINANCE | PASS |
 | REPORTS | PASS |
+| AUDIT | PASS |
+| PERMISSION_DENIED | 0 |
+| RAW FIREBASE ERRORS | 0 |
+| LOGIN REDIRECTS | 0 |
+| SIGNOUTS | 0 |
+| ACCOUNTANT WRITES | 0 |
 
 ---
 
@@ -145,8 +154,8 @@ URL: https://tutorial-multi-language-70gx4j--admin-render-finance-p-m02ds6o2.web
 
 ## FINAL
 
-ADMIN_V2_PRODUCTION: **PASS** (backend) / **BLOCKED** on Render web rebuild until merge + clear-cache deploy of client soft-sync
+ADMIN_V2_PRODUCTION: **PASS**
 
-ACCOUNTANT_READY_FOR_REAL_USER: **YES** after Render clear-cache deploy of hotfix web + hard reload; **YES for Settlements/Money Movement now** via live Rules/Functions even on existing 1.0.17+2021 web (hard reload / re-login recommended so soft refresh uses fixed CF)
+ACCOUNTANT_READY_FOR_REAL_USER: **YES**
 
 STOP.
