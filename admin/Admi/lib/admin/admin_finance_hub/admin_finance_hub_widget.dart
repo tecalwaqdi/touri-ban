@@ -206,17 +206,10 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                     _lastOk = null;
                     _reload();
                   },
+                  onRefresh: () => _reload(forceRefresh: true),
+                  refreshTooltip: uiTr(context, 'تحديث'),
                 ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: IconButton(
-                    tooltip: uiTr(context, 'تحديث'),
-                    onPressed: () => _reload(forceRefresh: true),
-                    icon: Icon(Icons.refresh_rounded, color: AdminUi.brandTeal),
-                  ),
-                ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 12),
                 Theme(
                   data: Theme.of(context)
                       .copyWith(dividerColor: Colors.transparent),

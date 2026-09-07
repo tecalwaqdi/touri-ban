@@ -12,12 +12,12 @@ abstract final class AdminSpacing {
   static const double xxxl = 40;
   static const double huge = 48;
 
-  static const double pageGutter = 16;
+  static const double pageGutter = 24;
   static const double sectionGap = 16;
-  static const double cardPadding = 20;
-  static const double inputHeight = 44;
-  static const double buttonHeight = 42;
-  static const double tableRowHeight = 52;
-  static const double navItemHeight = 46;
-  static const double sidebarWidthDesktop = 272;
+  static const double cardPadding = 16;
+  static const double inputHeight = 40;
+  static const double buttonHeight = 40;
+  static const double tableRowHeight = 48;
+  static const double navItemHeight = 42;
+  static const double sidebarWidthDesktop = 256;
 }

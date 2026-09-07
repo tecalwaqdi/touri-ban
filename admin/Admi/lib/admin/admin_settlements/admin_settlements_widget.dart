@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_finance_route_trace.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_settlements_query.dart';
@@ -9,7 +7,6 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_currency.dart';
 import '/core/admin_qa_fixture.dart';
-import '/core/admin_user_facing_errors.dart';
 import '/core/finance/accountant_finance_labels.dart';
 import '/core/finance/accountant_finance_loader.dart';
 import '/core/finance/accountant_finance_text.dart';
@@ -19,6 +16,9 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'admin_settlements_model.dart';
 export 'admin_settlements_model.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class AdminSettlementsWidget extends StatefulWidget {
   const AdminSettlementsWidget({super.key});
@@ -60,6 +60,26 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
     AdminFinanceRouteTrace.mark('FIRST_BUILD_START');
     _model = createModel(context, () => AdminSettlementsModel());
     _reloadPeriodSummary();
+    // Soft claim sync so Global Accountant `finance` claim is present on the
+    // ID token before / when the live settlements listener (re)attaches.
+    refreshAuthClaims(source: 'settlements.init').whenComplete(() {
+      if (!mounted) return;
+      _settlementsStream.dispose();
+      setState(() {});
+    });
+  }
+
+  void _retrySettlementsStream() {
+    _settlementsStream.dispose();
+    setState(() {
+      _olderDocs.clear();
+      _liveLastDoc = null;
+      _hasMoreOlder = true;
+      _firstSnapshotPaintMarked = false;
+    });
+    refreshAuthClaims(source: 'settlements.retry').whenComplete(() {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -161,15 +181,21 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
             stream: _settlementsStream.streamForCurrentUser(),
             builder: (context, snap) {
               if (snap.hasError) {
-                return Text(
-                  AdminUserFacingErrors.from(context, snap.error!),
-                  style: AccountantFinanceText.body(theme).copyWith(
-                    color: theme.error,
+                return AdminErrorState(
+                  compact: true,
+                  title: uiTr(context, 'تعذر تحميل بيانات التسويات'),
+                  message: uiTr(
+                    context,
+                    'حدث خطأ أثناء جلب البيانات. يرجى إعادة المحاولة.',
                   ),
+                  onRetry: _retrySettlementsStream,
                 );
               }
               if (!snap.hasData) {
-                return const Center(child: CircularProgressIndicator());
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Center(child: CircularProgressIndicator()),
+                );
               }
               if (!_firstSnapshotPaintMarked) {
                 _firstSnapshotPaintMarked = true;
@@ -311,10 +337,11 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                   const SizedBox(height: 12),
                   if (docs.isEmpty)
                     AdminEmptyState(
+                      compact: true,
                       title: uiTr(context, 'لا توجد تسويات'),
                       message: uiTr(
                         context,
-                        'ستظهر التسويات هنا بعد أن تصبح العمليات مؤهلة.',
+                        'لا توجد تسويات ضمن الفلاتر الحالية.',
                       ),
                       icon: Icons.receipt_long_outlined,
                     )

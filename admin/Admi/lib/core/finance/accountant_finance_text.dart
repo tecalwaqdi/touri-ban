@@ -38,26 +38,28 @@ abstract final class AccountantFinanceText {
       theme.titleSmall.override(
         fontFamily: theme.titleSmallFamily,
         color: ink(theme),
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w600,
         useGoogleFonts: !theme.titleSmallIsCustom,
       );
 
   static TextStyle body(FlutterFlowTheme theme) => theme.bodyMedium.override(
         fontFamily: theme.bodyMediumFamily,
         color: ink(theme),
+        fontWeight: FontWeight.w400,
         useGoogleFonts: !theme.bodyMediumIsCustom,
       );
 
   static TextStyle label(FlutterFlowTheme theme) => theme.labelMedium.override(
         fontFamily: theme.labelMediumFamily,
         color: muted(theme),
+        fontWeight: FontWeight.w500,
         useGoogleFonts: !theme.labelMediumIsCustom,
       );
 
   static TextStyle money(FlutterFlowTheme theme) => theme.titleMedium.override(
         fontFamily: theme.titleMediumFamily,
         color: ink(theme),
-        fontWeight: FontWeight.w800,
+        fontWeight: FontWeight.w700,
         useGoogleFonts: !theme.titleMediumIsCustom,
       );
 
@@ -65,7 +67,7 @@ abstract final class AccountantFinanceText {
       theme.labelLarge.override(
         fontFamily: theme.labelLargeFamily,
         color: ink(theme),
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w600,
         useGoogleFonts: !theme.labelLargeIsCustom,
       );
 

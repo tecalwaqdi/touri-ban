@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+import '/backend/admin_role_service.dart';
 import '/components/admin_ui.dart';
 import '/core/finance/accountant_finance_labels.dart';
 import '/core/finance/accountant_finance_text.dart';
@@ -158,23 +159,25 @@ class AccountantTripDetailsPanel extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 12),
-        Theme(
-          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-          child: ExpansionTile(
-            tilePadding: EdgeInsets.zero,
-            title: Text(
-              uiTr(context, 'بيانات تقنية'),
-              style: AccountantFinanceText.label(theme),
+        // Diagnostics IDs — hide developer wording from Accountant UI.
+        if (!AdminRoleService.isAccountant && !AdminRoleService.isFinanceStaff)
+          Theme(
+            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+            child: ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              title: Text(
+                uiTr(context, 'بيانات تقنية'),
+                style: AccountantFinanceText.label(theme),
+              ),
+              children: [
+                _kv(context, 'معرّف الرحلة', row.orderId, ltr: true),
+                _kv(context, 'معرّف السائق', row.driverId ?? '—', ltr: true),
+                _kv(context, 'مسار الدولة', row.countryPath ?? '—', ltr: true),
+                _kv(context, 'المصدر', row.source, ltr: true),
+                _kv(context, 'العملة', row.currency, ltr: true),
+              ],
             ),
-            children: [
-              _kv(context, 'معرّف الرحلة', row.orderId, ltr: true),
-              _kv(context, 'معرّف السائق', row.driverId ?? '—', ltr: true),
-              _kv(context, 'مسار الدولة', row.countryPath ?? '—', ltr: true),
-              _kv(context, 'المصدر', row.source, ltr: true),
-              _kv(context, 'العملة', row.currency, ltr: true),
-            ],
           ),
-        ),
       ],
     );
   }

@@ -9,8 +9,11 @@ import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
+import '/core/admin_currency.dart';
 import '/core/finance/accountant_finance_loader.dart';
+import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
+import '/core/finance/admin_money_presentation.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -138,14 +141,7 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
                     _preset = preset;
                     _reload();
                   },
-                ),
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: IconButton(
-                    tooltip: uiTr(context, 'تحديث'),
-                    onPressed: _reload,
-                    icon: const Icon(Icons.refresh_rounded),
-                  ),
+                  onRefresh: () => _reload(forceRefresh: true),
                 ),
                 const SizedBox(height: 12),
                 if (loading)
@@ -188,6 +184,8 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
                       ),
                     ),
                   if (bundle != null) ...[
+                    _AgentFinanceScopeStrip(bundle: bundle),
+                    const SizedBox(height: 12),
                     AccountantFinanceAlertsBanner(alerts: bundle.alerts),
                     if (bundle.alerts.isNotEmpty) const SizedBox(height: 10),
                     AccountantFinanceSummaryStrip(bundle: bundle),
@@ -203,6 +201,109 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Agent-specific scope strip — existing F1 fields only (no invented metrics).
+class _AgentFinanceScopeStrip extends StatelessWidget {
+  const _AgentFinanceScopeStrip({required this.bundle});
+
+  final AccountantFinanceViewBundle bundle;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    final trips = bundle.trips;
+    final countries = <String>{
+      for (final t in trips)
+        if (t.countryLabel.trim().isNotEmpty) t.countryLabel.trim(),
+    };
+    final agents = <String>{
+      for (final t in trips)
+        if (t.agentLabel.trim().isNotEmpty && t.agentLabel.trim() != '—')
+          t.agentLabel.trim(),
+    };
+
+    String countryValue;
+    if (AdminRoleService.isCountryAgent &&
+        AdminRoleService.scopedCountryName.isNotEmpty) {
+      countryValue = AdminRoleService.scopedCountryName;
+    } else if (countries.length == 1) {
+      countryValue = countries.first;
+    } else if (countries.isEmpty) {
+      countryValue = '—';
+    } else {
+      countryValue = uiTr(context, 'عدة دول');
+    }
+
+    final agentValue = agents.length == 1
+        ? agents.first
+        : (agents.isEmpty ? '—' : uiTr(context, '${agents.length} وكلاء'));
+
+    final platformCommission = () {
+      final m = bundle.model;
+      final sym =
+          AdminCurrency.symbolByCode[bundle.currency] ?? bundle.currency;
+      if (m.completedTripsWithCompleteFinancialData == 0 &&
+          m.companyCommission.minorUnits == 0) {
+        return m.completedTripCount == 0 ? '—' : '—';
+      }
+      return AdminOrderMoneyDisplay.formatMoneyAmount(
+        m.companyCommission,
+        symbolOverride: sym,
+      );
+    }();
+
+    final settlementValue = bundle.openSettlementsRemaining > 0
+        ? uiTr(
+            context,
+            'غير مسددة: ${bundle.openSettlementsRemaining}',
+          )
+        : uiTr(context, 'لا متبقٍ مفتوح');
+
+    final items = <(String, String)>[
+      ('الدولة', countryValue),
+      ('الوكيل', agentValue),
+      ('عدد الرحلات', '${bundle.model.completedTripCount}'),
+      // Canonical aggregate for agent share is not on the read model.
+      ('حصة الوكيل', '—'),
+      ('عمولة المنصة', platformCommission),
+      ('حالة التسوية', settlementValue),
+    ];
+
+    return AdminContentCard(
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 10,
+        children: [
+          for (final item in items)
+            SizedBox(
+              width: 160,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    uiTr(context, item.$1),
+                    style: AccountantFinanceText.label(theme).copyWith(
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    item.$2,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AccountantFinanceText.body(theme).copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

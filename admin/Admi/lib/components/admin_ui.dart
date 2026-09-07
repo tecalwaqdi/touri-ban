@@ -49,20 +49,16 @@ class AdminUi {
     return narrow;
   }
 
-  /// Compact global page gutter (shell density contract).
+  /// Compact global page gutter (UI V2.1 density).
   static EdgeInsets pagePadding(BuildContext context) {
     final w = MediaQuery.sizeOf(context).width;
-    final top = MediaQuery.paddingOf(context).top > 0 ? 6.0 : 10.0;
-    return EdgeInsets.fromLTRB(
-      w < 600 ? 12 : 16,
-      top,
-      w < 600 ? 12 : 16,
-      16,
-    );
+    final h = w < 600 ? 16.0 : 24.0;
+    final v = 20.0;
+    return EdgeInsets.fromLTRB(h, v, h, 20);
   }
 
-  static const double sectionGap = AdminSpacing.sectionGap;
-  static const double fieldGap = AdminSpacing.sm;
+  static const double sectionGap = 16.0;
+  static const double fieldGap = 10.0;
 
   /// Standard debounce for server/search fields (ms).
   static const int searchDebounceMs = 320;
@@ -217,7 +213,7 @@ class AdminUi {
       brightness: Brightness.light,
       useMaterial3: false,
       primaryColor: primary,
-      scaffoldBackgroundColor: const Color(0xFFF4F7F8),
+      scaffoldBackgroundColor: AdminColors.appBackground,
       fontFamily: 'cairo',
       appBarTheme: const AppBarTheme(
         backgroundColor: primary,
@@ -266,14 +262,13 @@ class AdminUi {
   static ThemeData buildDarkTheme() {
     const primary = brandMint;
     const secondary = brandTeal;
-    const scaffold = Color(0xFF0F1414);
     const surface = Color(0xFF1A2222);
     const border = Color(0xFF2A3535);
     return ThemeData(
       brightness: Brightness.dark,
       useMaterial3: false,
       primaryColor: primary,
-      scaffoldBackgroundColor: scaffold,
+      scaffoldBackgroundColor: AdminColors.darkBackground,
       fontFamily: 'cairo',
       dividerColor: border,
       appBarTheme: const AppBarTheme(
@@ -392,7 +387,7 @@ class AdminPageHeader extends StatelessWidget {
     );
 
     return Padding(
-      padding: EdgeInsets.only(bottom: compact ? 12 : 16),
+      padding: EdgeInsets.only(bottom: compact ? 10 : 14),
       child: stacked
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -438,70 +433,88 @@ class AdminMenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
       child: Material(
         color: isActive
-            ? Colors.white.withValues(alpha: 0.14)
+            ? Colors.white.withValues(alpha: 0.11)
             : Colors.transparent,
-        borderRadius: BorderRadius.circular(AdminUi.radiusSm),
+        borderRadius: BorderRadius.circular(9),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(AdminUi.radiusSm),
+          borderRadius: BorderRadius.circular(9),
           splashColor: Colors.white24,
           highlightColor: Colors.white10,
-          hoverColor: Colors.white.withValues(alpha: 0.08),
+          hoverColor: Colors.white.withValues(alpha: 0.07),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 46),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Row(
-                children: [
-                  Icon(
-                    icon,
-                    color: isActive
-                        ? Colors.white
-                        : Colors.white.withValues(alpha: 0.82),
-                    size: 20,
+            constraints: const BoxConstraints(minHeight: 42),
+            child: Stack(
+              children: [
+                if (isActive)
+                  PositionedDirectional(
+                    start: 0,
+                    top: 8,
+                    bottom: 8,
+                    child: Container(
+                      width: 3,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                  child: Row(
+                    children: [
+                      Icon(
+                        icon,
                         color: isActive
                             ? Colors.white
-                            : Colors.white.withValues(alpha: 0.9),
-                        fontFamily: 'cairo',
-                        fontSize: 13.5,
-                        fontWeight:
-                            isActive ? FontWeight.w700 : FontWeight.w500,
+                            : Colors.white.withValues(alpha: 0.72),
+                        size: 18,
                       ),
-                    ),
-                  ),
-                  if ((attentionCount ?? 0) > 0)
-                    Container(
-                      margin: const EdgeInsetsDirectional.only(end: 6),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFB4B8),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '${attentionCount! > 99 ? '99+' : attentionCount}',
-                        style: const TextStyle(
-                          color: Color(0xFF5A1018),
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: isActive
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.82),
+                            fontFamily: 'cairo',
+                            fontSize: 13,
+                            fontWeight:
+                                isActive ? FontWeight.w600 : FontWeight.w500,
+                          ),
                         ),
                       ),
-                    ),
-                ],
-              ),
+                      if ((attentionCount ?? 0) > 0)
+                        Container(
+                          margin: const EdgeInsetsDirectional.only(end: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 1,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFB4B8),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${attentionCount! > 99 ? '99+' : attentionCount}',
+                            style: const TextStyle(
+                              color: Color(0xFF5A1018),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),

@@ -62,10 +62,11 @@ void main() {
         'AdminAgentFinance',
         'AdminFinanceReports',
         'AdminFinanceAudit',
-        'Settings',
       ]) {
         expect(AdminRoleService.canAccessRoute(route), isTrue, reason: route);
       }
+      // Settings intentionally denied for Accountant (Auth-nav / Read Access P0).
+      expect(AdminRoleService.canAccessRoute('Settings'), isFalse);
     });
 
     test('accountant rejects operational / admin routes', () {

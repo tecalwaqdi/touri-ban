@@ -20,6 +20,8 @@ class AdminPersistentShell extends StatefulWidget {
 class _AdminPersistentShellState extends State<AdminPersistentShell> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late Menu2Model _menu2Model;
+  VoidCallback? _routeListener;
+  GoRouter? _router;
 
   @override
   void initState() {
@@ -30,7 +32,27 @@ class _AdminPersistentShellState extends State<AdminPersistentShell> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // UI V2.1: force sidebar rebuild on every GoRouter configuration change
+    // so active nav highlight tracks the leaf route (not a stale item).
+    final router = GoRouter.maybeOf(context);
+    if (router == null) return;
+    _routeListener ??= () {
+      if (mounted) setState(() {});
+    };
+    if (!identical(_router, router)) {
+      _router?.routerDelegate.removeListener(_routeListener!);
+      _router = router;
+      _router!.routerDelegate.addListener(_routeListener!);
+    }
+  }
+
+  @override
   void dispose() {
+    if (_routeListener != null) {
+      _router?.routerDelegate.removeListener(_routeListener!);
+    }
     AdminPerfTrace.shellDispose();
     _menu2Model.dispose();
     super.dispose();

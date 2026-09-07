@@ -15,8 +15,9 @@ void main() {
       expect(AdminColors.textPrimary, const Color(0xFF17202A));
       expect(AdminUi.brandTeal, AdminColors.primary);
       expect(AdminUi.radiusMd, AdminRadius.card);
-      expect(AdminSpacing.tableRowHeight, 52);
-      expect(AdminSpacing.inputHeight, 44);
+      expect(AdminSpacing.tableRowHeight, 48);
+      expect(AdminSpacing.inputHeight, 40);
+      expect(AdminSpacing.sidebarWidthDesktop, 256);
     });
 
     test('typography uses Cairo', () {

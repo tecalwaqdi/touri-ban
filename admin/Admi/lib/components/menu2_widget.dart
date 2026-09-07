@@ -95,9 +95,34 @@ class _Menu2WidgetState extends State<Menu2Widget> {
   }
 
   bool _isActive(BuildContext context, String routeName) {
-    // Do not use GoRouterState.of — go_router 12.1.3 release null-check bug.
-    return adminCurrentRouteName(context) == routeName;
+    // Path identity is authoritative so shell chrome never leaves a stale
+    // Finance item highlighted after goNamed().
+    final loc = adminCurrentLocation(context).split('?').first;
+    final path = _routePathByName[routeName];
+    if (path != null && (loc == path || loc.endsWith(path))) {
+      return true;
+    }
+    final currentName = adminCurrentRouteName(context);
+    if (currentName == null || currentName != routeName) return false;
+    // Stale name guard: if location clearly maps to another Finance route,
+    // do not keep this tile active.
+    for (final e in _routePathByName.entries) {
+      if (e.key == routeName) continue;
+      if (loc == e.value || loc.endsWith(e.value)) return false;
+    }
+    return true;
   }
+
+  static const _routePathByName = <String, String>{
+    'AdminFinanceHub': '/adminFinanceHub',
+    'AdminFinanceReconciliation': '/adminFinanceReconciliation',
+    'AdminFinanceChannels': '/adminFinanceChannels',
+    'AdminSettlements': '/adminSettlements',
+    'AdminAgentFinance': '/adminFinanceAgents',
+    'AdminFinanceReports': '/adminFinanceReports',
+    'AdminFinanceAudit': '/adminFinanceAudit',
+    'AdminReconciliation': '/adminReconciliation',
+  };
 
   String _menuLabel(BuildContext context, String routeName) =>
       navLabel(context, routeName);
@@ -361,7 +386,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 width: double.infinity,
                 decoration: AdminUi.sidebarHeaderDecoration(),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -373,38 +398,38 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                           fontFamily: theme.titleMediumFamily,
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
-                          fontSize: 15,
+                          fontSize: 14,
                           letterSpacing: 0.0,
                           useGoogleFonts: !theme.titleMediumIsCustom,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            width: 40,
-                            height: 40,
+                            width: 36,
+                            height: 36,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(9),
                               border: Border.all(
                                 color: Colors.white.withValues(alpha: 0.35),
                                 width: 1.5,
                               ),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(7),
                               child: AuthUserStreamWidget(
                                 builder: (context) => ProfilePhotoImage(
                                   photoUrl: currentUserPhoto,
-                                  size: 40,
-                                  borderRadius: BorderRadius.circular(8),
+                                  size: 36,
+                                  borderRadius: BorderRadius.circular(7),
                                   loadingColor: Colors.white,
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -418,21 +443,21 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                       fontFamily: theme.bodyMediumFamily,
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 13.5,
+                                      fontSize: 14,
                                       letterSpacing: 0.0,
                                       useGoogleFonts: !theme.bodyMediumIsCustom,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 3),
+                                const SizedBox(height: 2),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 7,
-                                    vertical: 2,
+                                    horizontal: 6,
+                                    vertical: 1,
                                   ),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withValues(alpha: 0.14),
-                                    borderRadius: BorderRadius.circular(999),
+                                    borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
                                     rolePending
@@ -448,13 +473,13 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                       color:
                                           Colors.white.withValues(alpha: 0.92),
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 11,
+                                      fontSize: 10.5,
                                       letterSpacing: 0.0,
                                       useGoogleFonts: !theme.labelSmallIsCustom,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 3),
+                                const SizedBox(height: 2),
                                 Text(
                                   currentUserEmail,
                                   maxLines: 1,
@@ -462,12 +487,12 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                   style: theme.labelSmall.override(
                                     fontFamily: theme.labelSmallFamily,
                                     color: Colors.white.withValues(alpha: 0.7),
-                                    fontSize: 11,
+                                    fontSize: 11.5,
                                     letterSpacing: 0.0,
                                     useGoogleFonts: !theme.labelSmallIsCustom,
                                   ),
                                 ),
-                                const SizedBox(height: 6),
+                                const SizedBox(height: 4),
                                 TextButton.icon(
                                   onPressed: () async {
                                     closeDrawerIfOpen(context);
@@ -483,7 +508,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                   },
                                   icon: Icon(
                                     Icons.logout_rounded,
-                                    size: 15,
+                                    size: 14,
                                     color: Colors.white.withValues(alpha: 0.72),
                                   ),
                                   label: Text(
@@ -494,7 +519,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                       fontFamily: theme.labelMediumFamily,
                                       color:
                                           Colors.white.withValues(alpha: 0.78),
-                                      fontSize: 12,
+                                      fontSize: 11.5,
                                       letterSpacing: 0.0,
                                       useGoogleFonts:
                                           !theme.labelMediumIsCustom,

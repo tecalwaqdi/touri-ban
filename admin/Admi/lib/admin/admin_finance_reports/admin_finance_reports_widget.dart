@@ -125,63 +125,32 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
                   _preset = preset;
                   _reload();
                 },
+                onRefresh: () => _reload(forceRefresh: true),
               ),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: IconButton(
-                  tooltip: uiTr(context, 'تحديث'),
-                  onPressed: _reload,
-                  icon: Icon(Icons.refresh_rounded, color: AdminUi.brandTeal),
-                ),
+              const SizedBox(height: 12),
+              Text(
+                '${uiTr(context, 'نطاق التقرير')}: $countryLabel',
+                style: AccountantFinanceText.label(theme),
               ),
               const SizedBox(height: 8),
-              Text(
-                '${uiTr(context, 'الدولة')}: $countryLabel',
-                style: AccountantFinanceText.body(theme),
-              ),
-              Theme(
-                data: Theme.of(context)
-                    .copyWith(dividerColor: Colors.transparent),
-                child: ExpansionTile(
-                  tilePadding: EdgeInsets.zero,
-                  title: Text(
-                    uiTr(context, 'بيانات تقنية'),
-                    style: AccountantFinanceText.label(theme),
-                  ),
-                  children: [
-                    Text(
-                      uiTr(
-                        context,
-                        'مصدر الملخص: AccountantFinanceReadModel (F1)',
-                      ),
-                      style: AccountantFinanceText.label(theme),
-                    ),
-                    Text(
-                      uiTr(
-                        context,
-                        'تصدير CSV/PDF القديم ما زال قيد التوحيد ولا يُعرض هنا.',
-                      ),
-                      style: AccountantFinanceText.label(theme),
-                    ),
-                  ],
-                ),
-              ),
               if (_error != null)
-                Text(
-                  _error!,
-                  style: AccountantFinanceText.body(theme)
-                      .copyWith(color: theme.error),
+                AdminErrorState(
+                  compact: true,
+                  title: uiTr(context, 'تعذر تحميل التقرير'),
+                  message: _error,
+                  onRetry: _reload,
                 ),
               if (loading)
                 AdminLoadingState(
                   label: uiTr(context, 'جاري تحميل التقرير'),
                 )
-              else if (bundle == null)
+              else if (bundle == null && _error == null)
                 AdminEmptyState(
+                  compact: true,
                   title: uiTr(context, 'لا توجد بيانات'),
                   icon: Icons.inbox_outlined,
                 )
-              else ...[
+              else if (bundle != null) ...[
                 Builder(
                   builder: (context) {
                     final range = AdminFinanceDateRangeResolver.resolve(
@@ -193,7 +162,7 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
                     );
                   },
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 AccountantFinanceSummaryStrip(bundle: bundle),
                 const SizedBox(height: 12),
                 AccountantMoneyMovementTable(
