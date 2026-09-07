@@ -34,7 +34,7 @@ class _AdminAgentWidgetState extends State<AdminAgentWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   String _searchQuery = '';
-  bool _landmarkCountsPreloaded = false;
+  String? _landmarkPreloadSig;
 
   @override
   void initState() {
@@ -106,8 +106,16 @@ class _AdminAgentWidgetState extends State<AdminAgentWidget> {
         .whereType<DocumentReference>()
         .toSet();
     if (refs.isEmpty) return;
-    AdminLandmarkCountCache.preloadCountries(refs).then((_) {
-      if (mounted) safeSetState(() {});
+    final sig = refs.map((r) => r.path).toList()..sort();
+    final key = sig.join('|');
+    if (_landmarkPreloadSig == key) return;
+    _landmarkPreloadSig = key;
+    // PERF-P2B: defer secondary landmark counts after first rows paint.
+    Future<void>.delayed(const Duration(milliseconds: 600), () {
+      if (!mounted) return;
+      AdminLandmarkCountCache.preloadCountries(refs).then((_) {
+        if (mounted) safeSetState(() {});
+      });
     });
   }
 
@@ -198,8 +206,7 @@ class _AdminAgentWidgetState extends State<AdminAgentWidget> {
                 queryBuilder: (q) => AdminCountryScope.applyAgentUserQuery(q),
                 builder: (context, allAgents, listState) {
                   final agents = _filterAgents(allAgents);
-                  if (!_landmarkCountsPreloaded && agents.isNotEmpty) {
-                    _landmarkCountsPreloaded = true;
+                  if (agents.isNotEmpty) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       _preloadAgentLandmarkCounts(agents);
                     });
@@ -656,42 +663,19 @@ class _LandmarksCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
+    // PERF-P2B: never create a Future per row. Counts come from the deferred
+    // [AdminLandmarkCountCache.preloadCountries] after first list paint.
     final cached = AdminLandmarkCountCache.peekCached(agent.revDlohAgent);
+    final label = cached?.toString() ?? '—';
 
-    if (cached != null) {
-      return Text(
-        cached.toString(),
-        style: theme.bodyMedium.override(
-          fontFamily: theme.bodyMediumFamily,
-          fontWeight: FontWeight.w700,
-          useGoogleFonts: !theme.bodyMediumIsCustom,
-        ),
-      );
-    }
-
-    return FutureBuilder<int>(
-      future: AdminLandmarkCountCache.countForCountry(agent.revDlohAgent),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return SizedBox(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: theme.primary,
-            ),
-          );
-        }
-
-        return Text(
-          snapshot.data.toString(),
-          style: theme.bodyMedium.override(
-            fontFamily: theme.bodyMediumFamily,
-            fontWeight: FontWeight.w700,
-            useGoogleFonts: !theme.bodyMediumIsCustom,
-          ),
-        );
-      },
+    return Text(
+      label,
+      style: theme.bodyMedium.override(
+        fontFamily: theme.bodyMediumFamily,
+        fontWeight: FontWeight.w700,
+        color: cached == null ? theme.secondaryText : null,
+        useGoogleFonts: !theme.bodyMediumIsCustom,
+      ),
     );
   }
 }

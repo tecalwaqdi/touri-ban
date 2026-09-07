@@ -286,11 +286,19 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     }
   }
 
+  /// PERF-P2B: aggregate count must not contend with first-page docs.
+  void _scheduleTotalCountAfterFirstPage(int generation) {
+    unawaited(Future<void>(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 350));
+      if (!mounted || generation != _syncGeneration) return;
+      await _refreshTotalCount();
+    }));
+  }
+
   Future<void> _loadInitial() async {
     final query = _baseQuery().limit(widget.pageSize);
     final generation = ++_syncGeneration;
     var showedCache = false;
-    unawaited(_refreshTotalCount());
 
     final cached = await _getCacheBounded(query);
     if (cached != null &&
@@ -309,6 +317,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
         _hasError = false;
         _errorMessage = null;
       });
+      _scheduleTotalCountAfterFirstPage(generation);
       unawaited(_refreshFromServerInBackground(query, generation));
       return;
     }
@@ -406,6 +415,8 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
         durationMs: DateTime.now().difference(t0).inMilliseconds,
         source: 'server',
       );
+
+      _scheduleTotalCountAfterFirstPage(generation);
 
       if (widget.liveUpdates) {
         _listenFirstPage(query);

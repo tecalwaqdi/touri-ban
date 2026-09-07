@@ -1,0 +1,65 @@
+{
+  "preview": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin/",
+  "macos": "26.6",
+  "safariVersion": "26.6",
+  "chromium": {
+    "finance_paint": 985,
+    "finance_sdk": 963,
+    "finance_summary": 2440,
+    "recon_paint": 871,
+    "recon_summary": 3280,
+    "settlements": 301,
+    "net_fails": 0
+  },
+  "webkit_firstdata": {
+    "finance_paint": 1219,
+    "finance_p90": 2209,
+    "recon_paint": 942,
+    "settlements": 99,
+    "net_fails": 0
+  },
+  "webkit_summary": {
+    "engine": "webkit",
+    "hub": {
+      "paint": 1666,
+      "summary": 62271,
+      "runs": [
+        {
+          "paint": 1832,
+          "summary": 3202
+        },
+        {
+          "paint": 1475,
+          "summary": 62271
+        },
+        {
+          "paint": 1666,
+          "summary": 62686
+        }
+      ]
+    },
+    "recon": {
+      "paint": 1566,
+      "summary": 69184,
+      "runs": [
+        {
+          "paint": 1566,
+          "summary": 69184
+        },
+        {
+          "paint": 30586,
+          "summary": 91772
+        },
+        {
+          "paint": 902,
+          "summary": 61692
+        }
+      ]
+    }
+  },
+  "safari_app": {
+    "engine": "Safari.app",
+    "error": "Could not create a session: You must enable 'Allow remote automation' in the Developer section of Safari Settings to control Safari via WebDriver.",
+    "note": "safaridriver failed \u2014 enable Develop > Allow Remote Automation"
+  }
+}

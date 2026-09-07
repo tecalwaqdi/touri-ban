@@ -47,10 +47,11 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   AdminOpsFilterState _filters = const AdminOpsFilterState();
   AdminDriversExtraFilters _extra = AdminDriversExtraFilters.empty;
-  int _pageSize = 20;
+  int _pageSize = 40;
   DriverAdminStats _stats = DriverAdminStats.empty;
   bool _statsLoading = true;
   bool _statsError = false;
+  bool _statsKickoffPending = false;
   String _tableQaLabel = 'visible:0 total:0 empty:false loading:true';
   List<UserRecord>? _serverSearchHits;
   bool _serverSearching = false;
@@ -71,10 +72,14 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
     if (AdminRoleService.isCountryAgent) {
       AdminAgentCountryLock.applyToAppState();
     }
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Load summary stats only — do not empty setState (that rebuilt the
-      // list tree and historically retriggered full reloads via lambda identity).
+  /// Secondary KPI strip — must not contend with first-page docs.
+  void _scheduleStatsAfterFirstRows() {
+    if (_statsKickoffPending) return;
+    _statsKickoffPending = true;
+    Future<void>.delayed(const Duration(milliseconds: 450), () {
+      if (!mounted) return;
       _loadStats();
     });
   }
@@ -108,8 +113,13 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
     setState(() {
       _filters = next;
       _serverSearchHits = null;
+      _statsKickoffPending = false;
     });
-    _loadStats();
+    // Defer KPI reload so the filtered list query wins the wire.
+    Future<void>.delayed(const Duration(milliseconds: 450), () {
+      if (!mounted) return;
+      _loadStats();
+    });
     await _maybeServerSearch(next);
   }
 
@@ -452,6 +462,10 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                             ],
                           ),
                         );
+                      }
+
+                      if (!listState.isLoading) {
+                        _scheduleStatsAfterFirstRows();
                       }
 
                       final sorted = sortDriversNewestFirst(allReps);

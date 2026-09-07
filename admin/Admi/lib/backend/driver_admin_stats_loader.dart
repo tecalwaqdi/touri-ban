@@ -133,6 +133,22 @@ abstract final class DriverAdminStatsLoader {
     return q;
   }
 
+  static Future<List<int>> _countAll(
+    List<Future<int> Function()> builders,
+  ) async {
+    // PERF-P2B: wave concurrent aggregates so first-page docs keep bandwidth.
+    const wave = 4;
+    final out = <int>[];
+    for (var i = 0; i < builders.length; i += wave) {
+      final slice = builders.sublist(
+        i,
+        i + wave > builders.length ? builders.length : i + wave,
+      );
+      out.addAll(await Future.wait(slice.map((b) => b())));
+    }
+    return out;
+  }
+
   static Future<DriverAdminStats> load({
     DocumentReference? countryRef,
     AdminOpsFilterState? filters,
@@ -151,50 +167,52 @@ abstract final class DriverAdminStatsLoader {
         scoped.driverReview != AdminDriverReviewFilter.unknownLegacy &&
         scoped.driverReview != AdminDriverReviewFilter.inactive;
 
-    final results = await Future.wait([
-      _count(base),
-      _count((q) => base(q).where('actev_mndob', isEqualTo: true)),
-      _count((q) => base(q).where('actev_mndob', isEqualTo: false)),
+    final builders = <Future<int> Function()>[
+      () => _count(base),
+      () => _count((q) => base(q).where('actev_mndob', isEqualTo: true)),
+      () => _count((q) => base(q).where('actev_mndob', isEqualTo: false)),
       if (!reviewPinned) ...[
-        _count((q) =>
+        () => _count((q) =>
             base(q).where('registration_status', isEqualTo: 'pending_review')),
-        _count((q) =>
+        () => _count((q) =>
             base(q).where('registration_status', isEqualTo: 'submitted')),
-        _count((q) =>
+        () => _count((q) =>
             base(q).where('registration_status', isEqualTo: 'rejected')),
-        _count((q) => base(q)
+        () => _count((q) => base(q)
             .where('registration_status', isEqualTo: 'changes_requested')),
-        _count((q) =>
+        () => _count((q) =>
             base(q).where('registration_status', isEqualTo: 'needs_changes')),
-        _count((q) =>
+        () => _count((q) =>
             base(q).where('registration_status', isEqualTo: 'approved')),
-        _count(
-            (q) => base(q).where('registration_status', isEqualTo: 'draft')),
-        _count((q) =>
+        () =>
+            _count((q) => base(q).where('registration_status', isEqualTo: 'draft')),
+        () => _count((q) =>
             base(q).where('registration_status', isEqualTo: 'suspended')),
-        _count((q) =>
+        () => _count((q) =>
             base(q).where('registration_status', isEqualTo: 'blocked')),
       ] else
-        ...List.filled(10, Future.value(0)),
-      _count((q) =>
+        ...List.filled(10, () async => 0),
+      () => _count((q) =>
           base(q).where('registration_flow_version', isEqualTo: 2)),
-      _count((q) => base(q)
+      () => _count((q) => base(q)
           .where('registration_documents_status', isEqualTo: 'complete')),
-      _count((q) =>
+      () => _count((q) =>
           base(q).where('registration_documents_status', isEqualTo: 'missing')),
-      _count((q) => base(q).where(
+      () => _count((q) => base(q).where(
             'registration_documents_status',
             isEqualTo: 'needs_reupload',
           )),
-      _count((q) => base(q).where(
+      () => _count((q) => base(q).where(
             'registration_documents_status',
             isEqualTo: 'unknown_legacy',
           )),
-      _count((q) =>
+      () => _count((q) =>
           base(q).where('doc_expiry_bucket', isEqualTo: 'expiring_soon')),
-      _count((q) =>
-          base(q).where('doc_expiry_bucket', isEqualTo: 'expired')),
-    ]);
+      () =>
+          _count((q) => base(q).where('doc_expiry_bucket', isEqualTo: 'expired')),
+    ];
+
+    final results = await _countAll(builders);
 
     final total = results[0];
     final activated = results[1];

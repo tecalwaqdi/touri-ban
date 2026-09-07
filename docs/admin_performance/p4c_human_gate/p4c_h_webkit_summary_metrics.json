@@ -1,0 +1,39 @@
+{
+  "engine": "webkit",
+  "hub": {
+    "paint": 1666,
+    "summary": 62271,
+    "runs": [
+      {
+        "paint": 1832,
+        "summary": 3202
+      },
+      {
+        "paint": 1475,
+        "summary": 62271
+      },
+      {
+        "paint": 1666,
+        "summary": 62686
+      }
+    ]
+  },
+  "recon": {
+    "paint": 1566,
+    "summary": 69184,
+    "runs": [
+      {
+        "paint": 1566,
+        "summary": 69184
+      },
+      {
+        "paint": 30586,
+        "summary": 91772
+      },
+      {
+        "paint": 902,
+        "summary": 61692
+      }
+    ]
+  }
+}

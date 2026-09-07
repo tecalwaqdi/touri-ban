@@ -1,0 +1,287 @@
+[
+  {
+    "i": 1,
+    "wallMs": 9984,
+    "marks": {
+      "ROUTE_ENTER": 0,
+      "FIRST_BUILD_START": 1,
+      "CACHE_MISS": 891,
+      "QUERY_REQUESTED": 2,
+      "QUERY_START": 3,
+      "FIRESTORE_GET_START": 890,
+      "FIRST_BUILD_END": 5,
+      "FIRESTORE_FIRST_SNAPSHOT": 887,
+      "DOCUMENT_DECODE_COMPLETE": 888,
+      "REPOSITORY_COMPLETE": 888,
+      "MODEL_BUILD_START": 889,
+      "MODEL_BUILD_END": 889,
+      "STATE_EMIT": 889,
+      "FRAME_SCHEDULED": 889,
+      "SUMMARY_START": 889,
+      "CACHE_HIT": 891,
+      "FIRST_USEFUL_FRAME_PAINTED": 924
+    },
+    "firstEvents": [
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "ROUTE_ENTER",
+        "ms": 0
+      },
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "FIRST_BUILD_START",
+        "ms": 1
+      },
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "CACHE_MISS",
+        "ms": 2
+      },
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "QUERY_REQUESTED",
+        "ms": 2,
+        "kind": "modern_page",
+        "fetchMode": "get"
+      },
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "QUERY_START",
+        "ms": 3,
+        "kind": "modern_page",
+        "fetchMode": "get"
+      },
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "FIRESTORE_GET_START",
+        "ms": 3,
+        "kind": "modern_page",
+        "fetchMode": "get"
+      },
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "FIRST_BUILD_END",
+        "ms": 5
+      },
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "FIRESTORE_FIRST_SNAPSHOT",
+        "ms": 887,
+        "kind": "modern_page",
+        "fetchMode": "get",
+        "docs": 4,
+        "fromCache": false,
+        "hasPendingWrites": false
+      },
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "DOCUMENT_DECODE_COMPLETE",
+        "ms": 888,
+        "accepted": 0,
+        "docs": 4
+      },
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "REPOSITORY_COMPLETE",
+        "ms": 888,
+        "orders": 0,
+        "fromCache": false
+      },
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "MODEL_BUILD_START",
+        "ms": 889
+      },
+      {
+        "traceId": "p4b_1_1788745139819",
+        "route": "finance_hub",
+        "event": "MODEL_BUILD_END",
+        "ms": 889,
+        "rows": 0
+      }
+    ],
+    "netFirst": [
+      {
+        "t": 1788745137867,
+        "u": "https://www.gstatic.com/firebasejs/11.7.0/firebase-firestore.js"
+      },
+      {
+        "t": 1788745138112,
+        "status": 200,
+        "u": "https://www.gstatic.com/firebasejs/11.7.0/firebase-firestore.js"
+      },
+      {
+        "t": 1788745140025,
+        "u": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-l"
+      },
+      {
+        "t": 1788745140114,
+        "u": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-l"
+      },
+      {
+        "t": 1788745140423,
+        "status": 200,
+        "u": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-l"
+      },
+      {
+        "t": 1788745140423,
+        "status": 200,
+        "u": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-l"
+      }
+    ],
+    "netCount": 12
+  },
+  {
+    "i": 2,
+    "wallMs": 8401,
+    "marks": {
+      "ROUTE_ENTER": 0,
+      "FIRST_BUILD_START": 0,
+      "CACHE_MISS": 2434,
+      "QUERY_REQUESTED": 1,
+      "QUERY_START": 1,
+      "FIRESTORE_GET_START": 2434,
+      "FIRST_BUILD_END": 2,
+      "FIRESTORE_FIRST_SNAPSHOT": 2431,
+      "DOCUMENT_DECODE_COMPLETE": 2432,
+      "REPOSITORY_COMPLETE": 2432,
+      "MODEL_BUILD_START": 2432,
+      "MODEL_BUILD_END": 2433,
+      "STATE_EMIT": 2433,
+      "FRAME_SCHEDULED": 2433,
+      "SUMMARY_START": 2433,
+      "CACHE_HIT": 2435,
+      "FIRST_USEFUL_FRAME_PAINTED": 2446
+    },
+    "firstEvents": [
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "ROUTE_ENTER",
+        "ms": 0
+      },
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "FIRST_BUILD_START",
+        "ms": 0
+      },
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "CACHE_MISS",
+        "ms": 0
+      },
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "QUERY_REQUESTED",
+        "ms": 1,
+        "kind": "modern_page",
+        "fetchMode": "get"
+      },
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "QUERY_START",
+        "ms": 1,
+        "kind": "modern_page",
+        "fetchMode": "get"
+      },
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "FIRESTORE_GET_START",
+        "ms": 1,
+        "kind": "modern_page",
+        "fetchMode": "get"
+      },
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "FIRST_BUILD_END",
+        "ms": 2
+      },
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "FIRESTORE_FIRST_SNAPSHOT",
+        "ms": 2431,
+        "kind": "modern_page",
+        "fetchMode": "get",
+        "docs": 4,
+        "fromCache": false,
+        "hasPendingWrites": false
+      },
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "DOCUMENT_DECODE_COMPLETE",
+        "ms": 2432,
+        "accepted": 0,
+        "docs": 4
+      },
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "REPOSITORY_COMPLETE",
+        "ms": 2432,
+        "orders": 0,
+        "fromCache": false
+      },
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "MODEL_BUILD_START",
+        "ms": 2432
+      },
+      {
+        "traceId": "p4b_1_1788745146721",
+        "route": "finance_hub",
+        "event": "MODEL_BUILD_END",
+        "ms": 2433,
+        "rows": 0
+      }
+    ],
+    "netFirst": [
+      {
+        "t": 1788745146014,
+        "u": "https://www.gstatic.com/firebasejs/11.7.0/firebase-firestore.js"
+      },
+      {
+        "t": 1788745146014,
+        "status": 200,
+        "u": "https://www.gstatic.com/firebasejs/11.7.0/firebase-firestore.js"
+      },
+      {
+        "t": 1788745146671,
+        "u": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-l"
+      },
+      {
+        "t": 1788745146944,
+        "status": 200,
+        "u": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-l"
+      },
+      {
+        "t": 1788745146955,
+        "u": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?gsessionid=e29Mz_Jc2eodvShHpjBhHtaUux4nZ1a"
+      },
+      {
+        "t": 1788745146965,
+        "u": "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Ftutorial-multi-l"
+      }
+    ],
+    "netCount": 27
+  }
+]

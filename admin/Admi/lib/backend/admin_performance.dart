@@ -2,8 +2,9 @@
 import '/backend/backend.dart';
 
 /// Admin list tuning — smaller first page = faster perceived load (KSA mobile).
-const int kAdminPageSize = 20;
-const int kAdminPageSizeLarge = 30;
+/// PERF-P2B: default 40 (was 20) — within 25–50 target; load-more still bounded.
+const int kAdminPageSize = 40;
+const int kAdminPageSizeLarge = 50;
 const int kAdminMaxPages = 80;
 
 /// Cascade delete/update scans — independent of list UI caps.

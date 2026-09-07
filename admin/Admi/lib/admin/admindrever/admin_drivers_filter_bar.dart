@@ -399,7 +399,7 @@ class _AdminDriversFilterBarState extends State<AdminDriversFilterBar> {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         ),
-        items: const [20, 50, 100]
+        items: const [40, 50, 100]
             .map((n) => DropdownMenuItem(value: n, child: Text('$n')))
             .toList(),
         onChanged: (v) {

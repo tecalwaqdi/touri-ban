@@ -1,0 +1,150 @@
+{
+  "base": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin",
+  "env": {
+    "macos": "26.6",
+    "safariVer": "26.6",
+    "node": "v26.6.0"
+  },
+  "engineNote": "Playwright WebKit (Safari engine on macOS) — not Safari.app UI process",
+  "results": {
+    "webkit": {
+      "browser": "webkit",
+      "runs": 5,
+      "settlements": {
+        "label": "settlements",
+        "n": 5,
+        "median": {
+          "route_to_paint": 99,
+          "query_to_snap": 71,
+          "route_to_summary": null,
+          "summary_only": null
+        },
+        "p90": {
+          "route_to_paint": 1832,
+          "query_to_snap": 1811,
+          "route_to_summary": null
+        },
+        "firstBeforeSummary": 0,
+        "visual": {
+          "blank": 0,
+          "rawError": 0,
+          "fakeZero": 0,
+          "samples": [
+            "",
+            ""
+          ]
+        }
+      },
+      "finance": {
+        "label": "finance_hub",
+        "n": 5,
+        "median": {
+          "route_to_paint": 1219,
+          "query_to_snap": 1207,
+          "route_to_summary": null,
+          "summary_only": null
+        },
+        "p90": {
+          "route_to_paint": 2209,
+          "query_to_snap": 2193,
+          "route_to_summary": null
+        },
+        "firstBeforeSummary": 0,
+        "visual": {
+          "blank": 0,
+          "rawError": 0,
+          "fakeZero": 0,
+          "samples": [
+            "",
+            ""
+          ]
+        }
+      },
+      "recon": {
+        "label": "reconciliation",
+        "n": 5,
+        "median": {
+          "route_to_paint": 942,
+          "query_to_snap": 909,
+          "route_to_summary": null,
+          "summary_only": null
+        },
+        "p90": {
+          "route_to_paint": 2177,
+          "query_to_snap": 2141,
+          "route_to_summary": null
+        },
+        "firstBeforeSummary": 0,
+        "visual": {
+          "blank": 0,
+          "rawError": 0,
+          "fakeZero": 0,
+          "samples": [
+            "",
+            ""
+          ]
+        }
+      },
+      "net": {
+        "fails": 0,
+        "tokenish": 91,
+        "retries": 0,
+        "channels": 144
+      },
+      "consoleErrorCount": 0,
+      "consoleErrorSample": [],
+      "smoke": {
+        "moneyMovement": {
+          "hasFlutter": false,
+          "textLen": 23,
+          "blankLikely": true,
+          "rawErrorLikely": false,
+          "fakeZeroLikely": false,
+          "sample": "جاري تحميل لوحة التحكم…",
+          "url": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin/adminFinanceChannels",
+          "stayedOnRoute": true
+        },
+        "agentFinance": {
+          "hasFlutter": false,
+          "textLen": 23,
+          "blankLikely": true,
+          "rawErrorLikely": false,
+          "fakeZeroLikely": false,
+          "sample": "جاري تحميل لوحة التحكم…",
+          "url": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin/adminAgentFinance",
+          "stayedOnRoute": true
+        },
+        "reports": {
+          "hasFlutter": false,
+          "textLen": 23,
+          "blankLikely": true,
+          "rawErrorLikely": false,
+          "fakeZeroLikely": false,
+          "sample": "جاري تحميل لوحة التحكم…",
+          "url": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin/adminFinanceReports",
+          "stayedOnRoute": true
+        },
+        "nonFinanceDrivers": {
+          "url": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin/adminDrivers",
+          "rejected": false,
+          "visual": {
+            "hasFlutter": false,
+            "textLen": 23,
+            "blankLikely": true,
+            "rawErrorLikely": false,
+            "fakeZeroLikely": false,
+            "sample": "جاري تحميل لوحة التحكم…"
+          }
+        }
+      },
+      "sampleConfig": {
+        "platform": "web",
+        "webPersistenceEnabled": true,
+        "webAutoDetectLongPolling": false,
+        "webForceLongPolling": false,
+        "settingsApplyCount": 1,
+        "financeOneShotSource": "server"
+      }
+    }
+  }
+}

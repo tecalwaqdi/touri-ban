@@ -1,0 +1,201 @@
+{
+  "base": "https://tutorial-multi-language-70gx4j--admin-perf-p2b-dubguo9q.web.app/admin",
+  "probedAt": "2026-09-07T03:20:46.773Z",
+  "method": "first_firestore_response_after_route (P2A-compatible)",
+  "superUid": "ApTyCSt4C9QbJALdvVGeoFmzlXP2",
+  "results": {
+    "drivers": {
+      "n": 3,
+      "medianFirstUseful": 5799,
+      "medianSummary": 7262,
+      "medianRouteStarts": 3,
+      "samples": [
+        {
+          "routePath": "/drever",
+          "loaderMs": 58,
+          "firstUsefulMs": 5388,
+          "summaryMs": 7107,
+          "routeStarts": 3,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        },
+        {
+          "routePath": "/drever",
+          "loaderMs": 33,
+          "firstUsefulMs": 5799,
+          "summaryMs": 7262,
+          "routeStarts": 3,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        },
+        {
+          "routePath": "/drever",
+          "loaderMs": 28,
+          "firstUsefulMs": 6272,
+          "summaryMs": 15187,
+          "routeStarts": 30,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        }
+      ]
+    },
+    "agents": {
+      "n": 3,
+      "medianFirstUseful": 4814,
+      "medianSummary": 6602,
+      "medianRouteStarts": 3,
+      "samples": [
+        {
+          "routePath": "/adminAgent",
+          "loaderMs": 215,
+          "firstUsefulMs": 4814,
+          "summaryMs": 6602,
+          "routeStarts": 3,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        },
+        {
+          "routePath": "/adminAgent",
+          "loaderMs": 26,
+          "firstUsefulMs": 8100,
+          "summaryMs": 17185,
+          "routeStarts": 21,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        },
+        {
+          "routePath": "/adminAgent",
+          "loaderMs": 135,
+          "firstUsefulMs": 4588,
+          "summaryMs": 6495,
+          "routeStarts": 3,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        }
+      ]
+    },
+    "users": {
+      "n": 3,
+      "medianFirstUseful": 4377,
+      "medianSummary": 6183,
+      "medianRouteStarts": 4,
+      "samples": [
+        {
+          "routePath": "/adminUserManagementSystem",
+          "loaderMs": 204,
+          "firstUsefulMs": 4377,
+          "summaryMs": 6183,
+          "routeStarts": 5,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        },
+        {
+          "routePath": "/adminUserManagementSystem",
+          "loaderMs": 40,
+          "firstUsefulMs": 5131,
+          "summaryMs": 6774,
+          "routeStarts": 4,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        },
+        {
+          "routePath": "/adminUserManagementSystem",
+          "loaderMs": 49,
+          "firstUsefulMs": 4095,
+          "summaryMs": 5835,
+          "routeStarts": 4,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        }
+      ]
+    },
+    "landmarks": {
+      "n": 3,
+      "medianFirstUseful": 5073,
+      "medianSummary": 6916,
+      "medianRouteStarts": 2,
+      "samples": [
+        {
+          "routePath": "/adminM3alm",
+          "loaderMs": 148,
+          "firstUsefulMs": 5776,
+          "summaryMs": 7440,
+          "routeStarts": 2,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        },
+        {
+          "routePath": "/adminM3alm",
+          "loaderMs": 28,
+          "firstUsefulMs": 4380,
+          "summaryMs": 6035,
+          "routeStarts": 2,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        },
+        {
+          "routePath": "/adminM3alm",
+          "loaderMs": 35,
+          "firstUsefulMs": 5073,
+          "summaryMs": 6916,
+          "routeStarts": 3,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        }
+      ]
+    },
+    "bookings": {
+      "n": 3,
+      "medianFirstUseful": 4350,
+      "medianSummary": 6551,
+      "medianRouteStarts": 5,
+      "samples": [
+        {
+          "routePath": "/adminALLhgZ",
+          "loaderMs": 151,
+          "firstUsefulMs": 4317,
+          "summaryMs": 6551,
+          "routeStarts": 8,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        },
+        {
+          "routePath": "/adminALLhgZ",
+          "loaderMs": 22,
+          "firstUsefulMs": 4350,
+          "summaryMs": 6788,
+          "routeStarts": 5,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        },
+        {
+          "routePath": "/adminALLhgZ",
+          "loaderMs": 21,
+          "firstUsefulMs": 4681,
+          "summaryMs": 6411,
+          "routeStarts": 5,
+          "indexErrors": [],
+          "aria": "Enable accessibility"
+        }
+      ]
+    }
+  },
+  "finance": {
+    "medianPaint": 2003,
+    "medianRouteToPaint": 2003,
+    "runs": [
+      {
+        "paint": 2003,
+        "routeToPaint": 2003
+      },
+      {
+        "paint": 995,
+        "routeToPaint": 995
+      },
+      {
+        "paint": 2200,
+        "routeToPaint": 2200
+      }
+    ]
+  }
+}

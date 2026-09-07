@@ -749,7 +749,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
                           style: theme.bodySmall,
                         ),
                         const SizedBox(width: 10),
-                        for (final size in const [20, 50, 100]) ...[
+                        for (final size in const [40, 50, 100]) ...[
                           Padding(
                             padding: const EdgeInsetsDirectional.only(end: 6),
                             child: ChoiceChip(

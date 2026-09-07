@@ -163,23 +163,22 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  FutureBuilder<DashboardStats>(
-                    future: _statsFuture,
-                    builder: (context, statsSnap) {
-                      final totalDrivers =
-                          statsSnap.data?.representatives ?? 0;
-
-                      return AdminFirestoreList<UserRecord>(
-                        query: UserRecord.collection,
-                        recordBuilder: UserRecord.fromSnapshot,
-                        pageSize: kAdminPageSize,
-                        queryBuilder: (q) => q
-                            .where('ismndob', isEqualTo: true)
-                            .where('transport_company', isEqualTo: companyRef)
-                            .orderBy(FieldPath.documentId),
-                        builder: (context, drivers, listState) {
+                  // PERF-P2B: list must not wait on dashboard stats Future.
+                  AdminFirestoreList<UserRecord>(
+                    query: UserRecord.collection,
+                    recordBuilder: UserRecord.fromSnapshot,
+                    pageSize: kAdminPageSize,
+                    queryBuilder: (q) => q
+                        .where('ismndob', isEqualTo: true)
+                        .where('transport_company', isEqualTo: companyRef)
+                        .orderBy(FieldPath.documentId),
+                    builder: (context, drivers, listState) {
+                      return FutureBuilder<DashboardStats>(
+                        future: _statsFuture,
+                        builder: (context, statsSnap) {
                           final displayTotal = statsSnap.hasData
-                              ? totalDrivers
+                              ? (statsSnap.data?.representatives ??
+                                  drivers.length)
                               : (listState.totalAvailable ?? drivers.length);
 
                           return AdminContentCard(
@@ -189,88 +188,93 @@ class _CompanyDriversWidgetState extends State<CompanyDriversWidget> {
                               children: [
                                 Text(
                                   '${uiTr(context, 'عدد السائقين')}: $displayTotal',
-                              style: theme.labelLarge.override(
-                                fontFamily: theme.labelLargeFamily,
-                                color: theme.secondaryText,
-                                useGoogleFonts: !theme.labelLargeIsCustom,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            if (drivers.isEmpty)
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 32),
-                                child: Text(
-                                  uiTr(context, 'لا يوجد سائقون مسجّلون بعد'),
-                                  textAlign: TextAlign.center,
-                                  style: theme.titleMedium,
+                                  style: theme.labelLarge.override(
+                                    fontFamily: theme.labelLargeFamily,
+                                    color: theme.secondaryText,
+                                    useGoogleFonts: !theme.labelLargeIsCustom,
+                                  ),
                                 ),
-                              )
-                            else
-                              ListView.separated(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: drivers.length,
-                                separatorBuilder: (_, __) =>
-                                    const SizedBox(height: 8),
-                                itemBuilder: (context, index) {
-                                  final driver = drivers[index];
-                                  return ListTile(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      side: BorderSide(color: theme.alternate),
+                                const SizedBox(height: 12),
+                                if (drivers.isEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 32),
+                                    child: Text(
+                                      uiTr(context,
+                                          'لا يوجد سائقون مسجّلون بعد'),
+                                      textAlign: TextAlign.center,
+                                      style: theme.titleMedium,
                                     ),
-                                    leading: CircleAvatar(
-                                      backgroundColor: AdminUi.brandTeal
-                                          .withValues(alpha: 0.15),
-                                      child: Icon(
-                                        Icons.directions_car_rounded,
-                                        color: AdminUi.brandTeal,
-                                      ),
-                                    ),
-                                    title: Text(driver.displayName),
-                                    subtitle: Text(
-                                      '${driver.textTypeCarMndob.isNotEmpty ? driver.textTypeCarMndob : '—'} · ${driver.mndobVillText}',
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    trailing: IconButton(
-                                      tooltip: driver.actevMndob
-                                          ? uiTr(context, 'إيقاف السائق')
-                                          : uiTr(context, 'تفعيل السائق'),
-                                      icon: Icon(
-                                        driver.actevMndob
-                                            ? Icons.check_circle_rounded
-                                            : Icons.pause_circle_outline_rounded,
-                                        color: driver.actevMndob
-                                            ? Colors.green
-                                            : theme.secondaryText,
-                                      ),
-                                      onPressed: () => _toggleActivation(
-                                        driver,
-                                        activate: !driver.actevMndob,
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      context.pushNamed(
-                                        AddDrevWidget.routeName,
-                                        queryParameters: {
-                                          'editUser': serializeParam(
-                                            driver.reference,
-                                            ParamType.DocumentReference,
+                                  )
+                                else
+                                  ListView.separated(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: drivers.length,
+                                    separatorBuilder: (_, __) =>
+                                        const SizedBox(height: 8),
+                                    itemBuilder: (context, index) {
+                                      final driver = drivers[index];
+                                      return ListTile(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          side: BorderSide(
+                                              color: theme.alternate),
+                                        ),
+                                        leading: CircleAvatar(
+                                          backgroundColor: AdminUi.brandTeal
+                                              .withValues(alpha: 0.15),
+                                          child: Icon(
+                                            Icons.directions_car_rounded,
+                                            color: AdminUi.brandTeal,
                                           ),
-                                          'companyRef': serializeParam(
-                                            companyRef,
-                                            ParamType.DocumentReference,
+                                        ),
+                                        title: Text(driver.displayName),
+                                        subtitle: Text(
+                                          '${driver.textTypeCarMndob.isNotEmpty ? driver.textTypeCarMndob : '—'} · ${driver.mndobVillText}',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        trailing: IconButton(
+                                          tooltip: driver.actevMndob
+                                              ? uiTr(context, 'إيقاف السائق')
+                                              : uiTr(context, 'تفعيل السائق'),
+                                          icon: Icon(
+                                            driver.actevMndob
+                                                ? Icons.check_circle_rounded
+                                                : Icons
+                                                    .pause_circle_outline_rounded,
+                                            color: driver.actevMndob
+                                                ? Colors.green
+                                                : theme.secondaryText,
                                           ),
-                                        }.withoutNulls,
+                                          onPressed: () => _toggleActivation(
+                                            driver,
+                                            activate: !driver.actevMndob,
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          context.pushNamed(
+                                            AddDrevWidget.routeName,
+                                            queryParameters: {
+                                              'editUser': serializeParam(
+                                                driver.reference,
+                                                ParamType.DocumentReference,
+                                              ),
+                                              'companyRef': serializeParam(
+                                                companyRef,
+                                                ParamType.DocumentReference,
+                                              ),
+                                            }.withoutNulls,
+                                          );
+                                        },
                                       );
                                     },
-                                  );
-                                },
-                              ),
-                            if (drivers.isNotEmpty)
-                              AdminListLoadMoreFooter(state: listState),
+                                  ),
+                                if (drivers.isNotEmpty)
+                                  AdminListLoadMoreFooter(state: listState),
                               ],
                             ),
                           );

@@ -332,7 +332,7 @@ class _AdminBookingsFilterBarState extends State<AdminBookingsFilterBar> {
                   width: 96,
                   value: widget.pageSize,
                   label: uiTr(context, 'الصفحة'),
-                  items: const [20, 50, 100],
+                  items: const [40, 50, 100],
                   itemLabel: (n) => '$n',
                   onChanged: (v) {
                     if (v != null) widget.onPageSizeChanged(v);

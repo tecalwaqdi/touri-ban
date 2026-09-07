@@ -1,0 +1,150 @@
+{
+  "base": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin",
+  "env": {
+    "macos": "26.6",
+    "safariVer": "26.6",
+    "node": "v26.6.0"
+  },
+  "engineNote": "Playwright Chromium",
+  "results": {
+    "chromium": {
+      "browser": "chromium",
+      "runs": 3,
+      "settlements": {
+        "label": "settlements",
+        "n": 3,
+        "median": {
+          "route_to_paint": 301,
+          "query_to_snap": 282,
+          "route_to_summary": null,
+          "summary_only": null
+        },
+        "p90": {
+          "route_to_paint": 1921,
+          "query_to_snap": 1900,
+          "route_to_summary": null
+        },
+        "firstBeforeSummary": 0,
+        "visual": {
+          "blank": 0,
+          "rawError": 0,
+          "fakeZero": 0,
+          "samples": [
+            "",
+            ""
+          ]
+        }
+      },
+      "finance": {
+        "label": "finance_hub",
+        "n": 3,
+        "median": {
+          "route_to_paint": 985,
+          "query_to_snap": 963,
+          "route_to_summary": 2440,
+          "summary_only": 1568
+        },
+        "p90": {
+          "route_to_paint": 1713,
+          "query_to_snap": 1695,
+          "route_to_summary": 3286
+        },
+        "firstBeforeSummary": 3,
+        "visual": {
+          "blank": 0,
+          "rawError": 0,
+          "fakeZero": 0,
+          "samples": [
+            "",
+            ""
+          ]
+        }
+      },
+      "recon": {
+        "label": "reconciliation",
+        "n": 3,
+        "median": {
+          "route_to_paint": 871,
+          "query_to_snap": 828,
+          "route_to_summary": 3280,
+          "summary_only": 3277
+        },
+        "p90": {
+          "route_to_paint": 1721,
+          "query_to_snap": 1670,
+          "route_to_summary": 3849
+        },
+        "firstBeforeSummary": 3,
+        "visual": {
+          "blank": 0,
+          "rawError": 0,
+          "fakeZero": 0,
+          "samples": [
+            "",
+            ""
+          ]
+        }
+      },
+      "net": {
+        "fails": 0,
+        "tokenish": 54,
+        "retries": 0,
+        "channels": 86
+      },
+      "consoleErrorCount": 0,
+      "consoleErrorSample": [],
+      "smoke": {
+        "moneyMovement": {
+          "hasFlutter": true,
+          "textLen": 0,
+          "blankLikely": false,
+          "rawErrorLikely": false,
+          "fakeZeroLikely": false,
+          "sample": "",
+          "url": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin/adminFinanceChannels",
+          "stayedOnRoute": true
+        },
+        "agentFinance": {
+          "hasFlutter": true,
+          "textLen": 0,
+          "blankLikely": false,
+          "rawErrorLikely": false,
+          "fakeZeroLikely": false,
+          "sample": "",
+          "url": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin/adminAgentFinance",
+          "stayedOnRoute": true
+        },
+        "reports": {
+          "hasFlutter": true,
+          "textLen": 0,
+          "blankLikely": false,
+          "rawErrorLikely": false,
+          "fakeZeroLikely": false,
+          "sample": "",
+          "url": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin/adminFinanceReports",
+          "stayedOnRoute": true
+        },
+        "nonFinanceDrivers": {
+          "url": "https://tutorial-multi-language-70gx4j--admin-perf-p4c-rnrkev0q.web.app/admin/adminDrivers",
+          "rejected": false,
+          "visual": {
+            "hasFlutter": true,
+            "textLen": 0,
+            "blankLikely": false,
+            "rawErrorLikely": false,
+            "fakeZeroLikely": false,
+            "sample": ""
+          }
+        }
+      },
+      "sampleConfig": {
+        "platform": "web",
+        "webPersistenceEnabled": true,
+        "webAutoDetectLongPolling": false,
+        "webForceLongPolling": false,
+        "settingsApplyCount": 1,
+        "financeOneShotSource": "server"
+      }
+    }
+  }
+}

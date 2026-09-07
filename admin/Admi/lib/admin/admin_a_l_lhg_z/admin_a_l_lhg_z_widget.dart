@@ -47,7 +47,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
   AdminOpsFilterState _filters = const AdminOpsFilterState();
   AdminBookingsExtraFilters _extra = AdminBookingsExtraFilters.empty;
   AdminBookingsSortKey _sortKey = AdminBookingsSortKey.dateDesc;
-  int _pageSize = 20;
+  int _pageSize = 40;
   /// Super Admin only — default hides controlled finance QA fixtures.
   bool _showQaFixtures = false;
 
@@ -62,13 +62,20 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
     int expired,
   })? _opsLifecycle;
   int _opsKpiGen = 0;
+  bool _opsKpiKickoffPending = false;
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AdminALLhgZModel());
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      safeSetState(() {});
+    // PERF-P2B: KPI buckets deferred until first list page (see builder).
+  }
+
+  void _scheduleOpsKpiAfterFirstRows() {
+    if (_opsKpiKickoffPending) return;
+    _opsKpiKickoffPending = true;
+    Future<void>.delayed(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
       _reloadOpsKpi();
     });
   }
@@ -93,7 +100,11 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
       _serverSearchHits = null;
     });
     if (countryChanged) {
-      _reloadOpsKpi();
+      _opsKpiKickoffPending = false;
+      Future<void>.delayed(const Duration(milliseconds: 500), () {
+        if (!mounted) return;
+        _reloadOpsKpi();
+      });
     }
     final plan = AdminOpsSearch.classify(next.searchQuery);
     if (!plan.isServerSide) return;
@@ -347,6 +358,9 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                   child: AdminBookingsSkeleton(),
                 ),
                 builder: (context, allBookings, listState) {
+                  if (!listState.isLoading) {
+                    _scheduleOpsKpiAfterFirstRows();
+                  }
                   final bookings = _prepareBookings(allBookings);
                   final summary = _summaryFor(
                     results: bookings.length,
