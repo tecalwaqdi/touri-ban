@@ -21,7 +21,12 @@ abstract final class FinanceReconciliationQa {
     Map<String, dynamic> data, {
     String? orderId,
   }) {
-    if (AdminQaFixture.isFixtureMap(data, orderId: orderId)) return true;
+    if (AdminQaFixture.shouldExcludeFromFinanceReporting(
+      data,
+      orderId: orderId,
+    )) {
+      return true;
+    }
 
     if (data['functional_test'] == true) return true;
 

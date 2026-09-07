@@ -221,15 +221,20 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                 }
               }
 
-              // Normal accountant list excludes QA settlements.
-              // Super Admin diagnostics may re-include them.
+              // Normal accountant list excludes QA settlements + demo (unless
+              // Demo Mode ON). Super Admin diagnostics may re-include QA only.
               if (!_showQaDiagnostics) {
                 docs = docs
                     .where(
-                      (d) => !AdminQaFixture.isFinanceQaSettlement(
-                        d.data(),
-                        settlementId: d.id,
-                      ),
+                      (d) =>
+                          !AdminQaFixture.shouldExcludeFromFinanceReporting(
+                            d.data(),
+                            orderId: d.id,
+                          ) &&
+                          !AdminQaFixture.isFinanceQaSettlement(
+                            d.data(),
+                            settlementId: d.id,
+                          ),
                     )
                     .toList();
               } else if (AdminRoleService.isSuperAdmin) {
@@ -272,10 +277,14 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                   : const <Map<String, dynamic>>[];
               for (final s in summaryRows) {
                 if (!_showQaDiagnostics &&
-                    AdminQaFixture.isFinanceQaSettlement(
-                      s,
-                      settlementId: (s['id'] ?? '').toString(),
-                    )) {
+                    (AdminQaFixture.shouldExcludeFromFinanceReporting(
+                          s,
+                          orderId: (s['id'] ?? '').toString(),
+                        ) ||
+                        AdminQaFixture.isFinanceQaSettlement(
+                          s,
+                          settlementId: (s['id'] ?? '').toString(),
+                        ))) {
                   continue;
                 }
                 currency = (s['currency'] as String?) ?? currency;

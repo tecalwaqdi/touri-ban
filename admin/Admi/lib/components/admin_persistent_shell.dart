@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '/backend/admin_auth_session_owner.dart';
 import '/backend/admin_perf_trace.dart';
+import '/components/admin_finance_demo_chrome.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_shell_scope.dart';
 import '/components/menu2_model.dart';
@@ -69,7 +70,7 @@ class _AdminPersistentShellState extends State<AdminPersistentShell> {
         },
         padContent: false,
         forceFullChrome: true,
-        child: widget.child,
+        child: AdminFinanceDemoChrome(child: widget.child),
       ),
     );
   }

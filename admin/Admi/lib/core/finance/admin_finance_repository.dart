@@ -435,7 +435,19 @@ class AdminFinanceRepository {
         AdminPerfTrace.financeRepoQueryEnd(kind: 'settlements_maps', docs: snap.docs.length);
         if (snap.docs.isEmpty) break;
         for (final d in snap.docs) {
-          out.add(<String, dynamic>{'id': d.id, ...d.data()});
+          final data = d.data();
+          final asMap = <String, dynamic>{'id': d.id, ...data};
+          if (AdminQaFixture.shouldExcludeFromFinanceReporting(
+                asMap,
+                orderId: d.id,
+              ) ||
+              AdminQaFixture.isFinanceQaSettlement(
+                data,
+                settlementId: d.id,
+              )) {
+            continue;
+          }
+          out.add(asMap);
         }
         last = snap.docs.last;
         if (snap.docs.length < FinanceOrderQuery.tablePageSize) break;

@@ -1,9 +1,13 @@
 import '/backend/schema/order_record.dart';
+import '/core/admin_finance_demo_mode.dart';
 
 /// Controlled production QA / finance test fixture detection (presentation + ops filter).
 ///
 /// Does not rewrite historical data. Explicit metadata preferred; ID prefixes are
 /// a legacy fallback for fixtures created before the contract.
+///
+/// Admin finance demo fixtures (`admin_demo_fixture`) are excluded from normal
+/// KPIs unless [AdminFinanceDemoMode.enabled] is ON (controlled group only).
 abstract final class AdminQaFixture {
   AdminQaFixture._();
 
@@ -13,16 +17,59 @@ abstract final class AdminQaFixture {
   static const metaType = 'fixture_type';
   static const metaCreatedBy = 'created_by_qa';
 
+  static const metaAdminDemo = 'admin_demo_fixture';
+  static const metaDemoSeedGroup = 'demo_seed_group';
+  static const metaExcludeFromRealReporting = 'exclude_from_real_reporting';
+
   static final RegExp _legacyIdPrefix = RegExp(
     r'^(fin7_ctrl_|fin9_ctrl_|fin_rt_cash_|fin_rt_cash_ui_|fin_rt_)',
   );
+
+  /// Deterministic Admin finance demo IDs (`demo_fin_*`).
+  static final RegExp _adminFinanceDemoIdPrefix =
+      RegExp(r'^demo_fin_', caseSensitive: false);
 
   /// FIN-8 controlled settlement payment refs (repository-proven).
   static final RegExp _fin8PaymentRef = RegExp(r'^FIN8-', caseSensitive: false);
 
   static bool isFixtureId(String orderId) => _legacyIdPrefix.hasMatch(orderId);
 
-  static bool isFixtureMap(Map<String, dynamic> data, {String? orderId}) {
+  static bool isAdminFinanceDemoId(String id) =>
+      _adminFinanceDemoIdPrefix.hasMatch(id.trim());
+
+  /// Controlled removable demo seed (see seed_admin_finance_demo.js).
+  static bool isControlledAdminFinanceDemo(
+    Map<String, dynamic> data, {
+    String? id,
+  }) {
+    if (data[metaAdminDemo] != true) return false;
+    final group = '${data[metaDemoSeedGroup] ?? ''}'.trim();
+    if (group == AdminFinanceDemoMode.seedGroup) return true;
+    final docId = (id ?? '').trim();
+    return docId.isNotEmpty && isAdminFinanceDemoId(docId);
+  }
+
+  /// Hide from normal finance reporting / lists.
+  ///
+  /// - Classic QA / fin* fixtures: always hide (diagnostics chip separate).
+  /// - Controlled admin demo: hide unless [AdminFinanceDemoMode.enabled].
+  /// - Unknown `admin_demo_fixture` without our seed group: always hide.
+  static bool shouldExcludeFromFinanceReporting(
+    Map<String, dynamic> data, {
+    String? orderId,
+  }) {
+    if (isControlledAdminFinanceDemo(data, id: orderId)) {
+      return !AdminFinanceDemoMode.enabled;
+    }
+    if (data[metaAdminDemo] == true) return true;
+    return isClassicQaFixtureMap(data, orderId: orderId);
+  }
+
+  /// Classic QA markers only (never toggled by Demo Mode).
+  static bool isClassicQaFixtureMap(
+    Map<String, dynamic> data, {
+    String? orderId,
+  }) {
     if (data[metaIsTest] == true) return true;
     if (data['qa_fixture'] == true || data['test_fixture'] == true) {
       return true;
@@ -30,6 +77,10 @@ abstract final class AdminQaFixture {
     final id = (orderId ?? '').trim();
     if (id.isNotEmpty && isFixtureId(id)) return true;
     return false;
+  }
+
+  static bool isFixtureMap(Map<String, dynamic> data, {String? orderId}) {
+    return shouldExcludeFromFinanceReporting(data, orderId: orderId);
   }
 
   static bool isFixtureOrder(OrderRecord order) => isFixtureMap(
@@ -46,17 +97,18 @@ abstract final class AdminQaFixture {
 
   /// Settlement docs created by controlled finance scripts (e.g. FIN-8).
   ///
-  /// Proven markers (do not delete live docs — filter presentation only):
-  /// - explicit QA metadata
-  /// - [eligibleOrderIds] / line ids matching trip fixture prefixes
-  /// - idempotencyKey `fin8_*` / embedded fixture order ids
-  /// - payment refs `FIN8-*` when provided
+  /// Controlled Admin finance demos are **not** QA-diagnostics rows — they are
+  /// gated solely by [AdminFinanceDemoMode] via
+  /// [shouldExcludeFromFinanceReporting].
   static bool isFinanceQaSettlement(
     Map<String, dynamic> data, {
     String? settlementId,
     Iterable<String>? paymentExternalRefs,
   }) {
-    if (isFixtureMap(data, orderId: settlementId)) return true;
+    if (isControlledAdminFinanceDemo(data, id: settlementId)) {
+      return false;
+    }
+    if (isClassicQaFixtureMap(data, orderId: settlementId)) return true;
 
     final idemp = '${data['idempotencyKey'] ?? ''}'.trim().toLowerCase();
     if (idemp.startsWith('fin8_') ||
@@ -95,6 +147,10 @@ abstract final class AdminQaFixture {
 
   /// Badge for intentional Super Admin inspection of QA rows.
   static String badgeAr(OrderRecord order) {
+    final data = Map<String, dynamic>.from(order.snapshotData);
+    if (isControlledAdminFinanceDemo(data, id: order.reference.id)) {
+      return 'وضع تجريبي';
+    }
     final scope =
         (order.snapshotData[metaScope] ?? order.snapshotData['test_scope'] ?? '')
             .toString()
@@ -119,5 +175,17 @@ abstract final class AdminQaFixture {
         metaType: fixtureType,
         metaRunId: runId,
         metaCreatedBy: createdBy,
+      };
+
+  /// Markers for Admin finance UI demo seed (never real reporting).
+  static Map<String, dynamic> adminFinanceDemoStamp({
+    String seedVersion = AdminFinanceDemoMode.seedVersion,
+  }) =>
+      {
+        'is_demo': true,
+        metaAdminDemo: true,
+        'demo_seed_version': seedVersion,
+        metaDemoSeedGroup: AdminFinanceDemoMode.seedGroup,
+        metaExcludeFromRealReporting: true,
       };
 }

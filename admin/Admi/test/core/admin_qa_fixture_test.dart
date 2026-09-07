@@ -13,9 +13,14 @@ void main() {
 
   test('explicit metadata wins', () {
     expect(
-      AdminQaFixture.isFixtureMap({'is_test_fixture': true}, orderId: 'x'),
+      AdminQaFixture.isClassicQaFixtureMap({'is_test_fixture': true}, orderId: 'x'),
       isTrue,
     );
+  });
+
+  test('admin finance demo ids detected', () {
+    expect(AdminQaFixture.isAdminFinanceDemoId('demo_fin_trip_001'), isTrue);
+    expect(AdminQaFixture.isAdminFinanceDemoId('real_order'), isFalse);
   });
 
   test('money thousands + map formatter', () {
