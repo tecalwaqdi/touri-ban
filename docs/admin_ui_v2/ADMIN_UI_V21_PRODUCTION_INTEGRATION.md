@@ -61,3 +61,15 @@ Includes the recovery lineage already Human-QA’d on preview:
 | Driver Edit | UNCHANGED |
 
 STOP.
+
+
+## Live verification
+
+| Surface | Result |
+|---------|--------|
+| GitHub `main` | `66d88e7` (includes UI V2.1 + Render nudge) |
+| Firebase Hosting `/admin/version.json` | **1.0.17+2021** LIVE |
+| Approved UI commit on main | `52f853a` ancestor YES |
+| Render | pending rebuild / Manual Deploy if auto-deploy inactive |
+
+PR: https://github.com/tecalwaqdi/touri-ban/pull/2  
