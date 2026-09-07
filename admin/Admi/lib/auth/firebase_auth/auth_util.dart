@@ -39,14 +39,22 @@ bool get currentUserEmailVerified => currentUser?.emailVerified ?? false;
 /// Create a Stream that listens to the current user's JWT Token, since Firebase
 /// generates a new token every hour.
 String? _currentJwtToken;
-final jwtTokenStream = FirebaseAuth.instance.idTokenChanges().map((user) async {
-  _currentJwtToken = await user?.getIdToken();
-  if (user != null) {
-    await AdminRoleService.refreshClaims(forceRefresh: true);
-  } else {
-    AuthClaims.clearCache();
-    AdminRoleService.resetSession();
+final jwtTokenStream = FirebaseAuth.instance.idTokenChanges().asyncMap((user) async {
+  // AUTH-NAV-P0: idTokenChanges can emit null transiently. Only clear session
+  // when the SDK also has no currentUser (definitive sign-out).
+  if (user == null) {
+    if (FirebaseAuth.instance.currentUser == null) {
+      _currentJwtToken = null;
+      AuthClaims.clearCache();
+      AdminRoleService.resetSession();
+    }
+    return _currentJwtToken;
   }
+  _currentJwtToken = await user.getIdToken();
+  // Soft claim sync — avoid forceRefresh on every natural token tick
+  // (route navigation must not storm claim refresh).
+  final needForce = !AdminRoleService.hasClaimsPanelAccess;
+  await AdminRoleService.refreshClaims(forceRefresh: needForce);
   return _currentJwtToken;
 }).asBroadcastStream();
 
@@ -169,7 +177,13 @@ Future<void> refreshAuthClaims({String source = 'refreshAuthClaims'}) async {
   } catch (_) {
     // Fall through — still end bootstrap so stale profile cannot retain access.
   } finally {
-    AdminRoleService.markClaimsAuthoritative();
+    // AUTH-NAV-P0: never lock into authoritative DENY while Firebase user is
+    // still present and claims failed/empty — that falsely redirects to Login.
+    if (AdminRoleService.hasClaimsPanelAccess) {
+      AdminRoleService.markClaimsAuthoritative();
+    } else if (FirebaseAuth.instance.currentUser == null) {
+      AdminRoleService.markClaimsAuthoritative();
+    }
   }
 }
 

@@ -1,0 +1,75 @@
+{
+  "rows": [
+    {
+      "route": "/adminFinanceHub",
+      "path": "/admin/adminFinanceHub",
+      "paint": 1096,
+      "loginRedirect": false,
+      "idb": {
+        "ok": true,
+        "uidPresent": true
+      }
+    },
+    {
+      "route": "/adminFinanceReconciliation",
+      "path": "/admin/adminFinanceReconciliation",
+      "paint": 712,
+      "loginRedirect": false,
+      "idb": {
+        "ok": true,
+        "uidPresent": true
+      }
+    },
+    {
+      "route": "/adminFinanceChannels",
+      "path": "/admin/adminFinanceChannels",
+      "paint": null,
+      "loginRedirect": false,
+      "idb": {
+        "ok": true,
+        "uidPresent": true
+      }
+    },
+    {
+      "route": "/adminSettlements",
+      "path": "/admin/adminSettlements",
+      "paint": 593,
+      "loginRedirect": false,
+      "idb": {
+        "ok": true,
+        "uidPresent": true
+      }
+    },
+    {
+      "route": "/adminAgentFinance",
+      "path": "/admin/adminAgentFinance",
+      "paint": 1162,
+      "loginRedirect": false,
+      "idb": {
+        "ok": true,
+        "uidPresent": true
+      }
+    },
+    {
+      "route": "/adminFinanceReports",
+      "path": "/admin/adminFinanceReports",
+      "paint": null,
+      "loginRedirect": false,
+      "idb": {
+        "ok": true,
+        "uidPresent": true
+      }
+    },
+    {
+      "route": "/adminFinanceHub",
+      "path": "/admin/adminFinanceHub",
+      "paint": 2026,
+      "loginRedirect": false,
+      "idb": {
+        "ok": true,
+        "uidPresent": true
+      }
+    }
+  ],
+  "loginRedirects": 0
+}

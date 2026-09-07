@@ -154,6 +154,9 @@ class AppStateNotifier extends ChangeNotifier {
   bool showSplashImage = true;
   String? _redirectLocation;
 
+  /// AUTH-NAV-P0: first Firebase auth emission received (loading ≠ logged out).
+  bool authResolved = false;
+
   /// Determines whether the app will refresh and build again when a sign
   /// in or sign out happens. This is useful when the app is launched or
   /// on an unexpected logout. However, this must be turned off when we
@@ -161,8 +164,15 @@ class AppStateNotifier extends ChangeNotifier {
   /// Otherwise, this will trigger a refresh and interrupt the action(s).
   bool notifyOnAuthChange = true;
 
-  bool get loading => user == null || showSplashImage;
+  bool get loading => !authResolved || user == null || showSplashImage;
   bool get loggedIn => user?.loggedIn ?? false;
+
+  /// AUTH_LOADING — Firebase has not yet emitted a definitive auth state.
+  bool get isAuthLoading => !authResolved;
+
+  /// Definitive unauthenticated (never treat loading as this).
+  bool get isUnauthenticated => authResolved && !loggedIn;
+
   bool get initiallyLoggedIn => initialUser?.loggedIn ?? false;
   bool get shouldRedirect => loggedIn && _redirectLocation != null;
 
@@ -177,11 +187,13 @@ class AppStateNotifier extends ChangeNotifier {
 
   /// Updates auth user without triggering a router rebuild (during sign-in flow).
   void updateSilently(BaseAuthUser newUser) {
+    authResolved = true;
     initialUser ??= newUser;
     user = newUser;
   }
 
   void update(BaseAuthUser newUser, {bool forceNotify = false}) {
+    authResolved = true;
     final shouldUpdate =
         user?.uid == null || newUser.uid == null || user?.uid != newUser.uid;
     initialUser ??= newUser;
@@ -820,7 +832,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
       ...publicRoutes.map((r) => r.toRoute(appStateNotifier)),
       ShellRoute(
         builder: (context, state, child) {
-          if (!appStateNotifier.loggedIn) {
+          // AUTH-NAV-P0: keep persistent shell during AUTH_LOADING when the
+          // session was already authenticated — avoid chrome teardown flicker.
+          final keepShell = appStateNotifier.loggedIn ||
+              (appStateNotifier.isAuthLoading &&
+                  (appStateNotifier.initialUser?.loggedIn ?? false));
+          if (!keepShell) {
             return child;
           }
           return AdminPersistentShell(child: child);
@@ -1001,7 +1018,11 @@ class FFRoute {
             return redirectLocation;
           }
 
-          if (requireAuth && !appStateNotifier.loggedIn) {
+          // AUTH-NAV-P0: never treat AUTH_LOADING as UNAUTHENTICATED.
+          if (requireAuth && appStateNotifier.isAuthLoading) {
+            return null;
+          }
+          if (requireAuth && appStateNotifier.isUnauthenticated) {
             appStateNotifier.setRedirectLocationIfUnset(state.uri.toString());
             return '/homePage';
           }

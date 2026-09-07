@@ -359,6 +359,34 @@ class AdminRoleService {
     }
   }
 
+  /// Test/helper: route matrix for a role without mutating session claims.
+  static bool canAccessRouteForRole(AdminRole role, String routeName) {
+    switch (role) {
+      case AdminRole.superAdmin:
+        return routeName != 'adminRegesr';
+      case AdminRole.accountant:
+        return _accountantRoutes.contains(routeName);
+      case AdminRole.countryAgent:
+        if (_superAdminOnlyRoutes.contains(routeName)) return false;
+        if (_globalFinanceAdminRoutes.contains(routeName) ||
+            routeName == 'AdminDol' ||
+            routeName == 'AdminAgent' ||
+            routeName == 'AdminSuperAdmins' ||
+            routeName == 'AdminAuditLog' ||
+            routeName == 'AdminReportsHub' ||
+            routeName == 'AdminAgentReport') {
+          return false;
+        }
+        return _agentRoutes.contains(routeName);
+      case AdminRole.partner:
+        return _partnerRoutes.contains(routeName);
+      case AdminRole.transportCompany:
+        return _transportCompanyRoutes.contains(routeName);
+      case AdminRole.none:
+        return false;
+    }
+  }
+
   static const _agentRoutes = {
     'Home22Dashboard',
     'AdminM3alm',

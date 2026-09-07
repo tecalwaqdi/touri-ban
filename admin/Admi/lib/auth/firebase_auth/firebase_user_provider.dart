@@ -58,13 +58,31 @@ class AdminArawatanFirebaseUser extends BaseAuthUser {
       AdminArawatanFirebaseUser(user);
 }
 
-Stream<BaseAuthUser> adminArawatanFirebaseUserStream() => FirebaseAuth.instance
-        .authStateChanges()
-        .debounce((user) => user == null && !loggedIn
-            ? TimerStream(true, const Duration(seconds: 1))
-            : Stream.value(user))
-        .map<BaseAuthUser>(
+/// AUTH-NAV-P0: ignore transient authState nulls while the SDK still has a user,
+/// and debounce null emissions when the app currently believes it is logged in.
+///
+/// Previous debounce used `user == null && !loggedIn`, which *skipped* the hold
+/// exactly when a logged-in session saw a blip — causing GoRouter to treat
+/// AUTH_LOADING blips as UNAUTHENTICATED and redirect to `/homePage`.
+Stream<BaseAuthUser> adminArawatanFirebaseUserStream() =>
+    FirebaseAuth.instance.authStateChanges().debounce((user) {
+      final believedLoggedIn = currentUser?.loggedIn ?? false;
+      if (user == null && believedLoggedIn) {
+        return TimerStream(true, const Duration(milliseconds: 800));
+      }
+      return Stream.value(user);
+    }).map<BaseAuthUser>(
       (user) {
+        // SDK still has a session — do not publish a synthetic logout.
+        if (user == null && FirebaseAuth.instance.currentUser != null) {
+          final existing = currentUser;
+          if (existing != null && existing.loggedIn) {
+            return existing;
+          }
+          currentUser =
+              AdminArawatanFirebaseUser(FirebaseAuth.instance.currentUser);
+          return currentUser!;
+        }
         currentUser = AdminArawatanFirebaseUser(user);
         return currentUser!;
       },
