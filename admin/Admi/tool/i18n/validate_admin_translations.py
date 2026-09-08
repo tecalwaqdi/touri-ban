@@ -106,7 +106,7 @@ def main() -> int:
     lookup = set(
         m.group(1).replace("\\'", "'").replace("\\$", "$").replace("\\\\", "\\")
         for m in re.finditer(
-            r"'((?:\\'|[^'])*)'\s*:\s*'ui_[a-f0-9]+'",
+            r"'((?:\\'|[^'])*)'\s*:\s*'ui_[A-Za-z0-9_]+'",
             catalog[catalog.find("kArabicUiLookup") :],
         )
     )
