@@ -24,6 +24,7 @@
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint --max-warnings=0 .",
+    "test:security-f03-f07": "node --test test/agent_handoff_security_f03_f07.test.js test/agent_country_assignment.test.js",
     "serve": "firebase -P tutorial-multi-language-70gx4j emulators:start --only functions",
     "shell": "firebase -P tutorial-multi-language-70gx4j functions:shell",
     "start": "npm run shell",

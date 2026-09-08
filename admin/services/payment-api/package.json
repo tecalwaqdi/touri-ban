@@ -14,6 +14,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
+    "test:f07": "tsx --test src/lib/auth/verify.f07.node.test.ts",
     "test:watch": "vitest"
   },
   "dependencies": {

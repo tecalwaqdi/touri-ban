@@ -396,7 +396,12 @@ service cloud.firestore {
         'total_mndob2', 'total_vat', 'total_app', 'ksm', 'SrSAAH',
         'PaymentMethod', 'ngeniusOrderId', 'idMoyser', 'payment_status',
         'payment_session_id', 'payment_verified_at', 'carRev', 'Rev_dolh',
-        'total_taim', 'data_order'
+        'total_taim', 'data_order',
+        // Historical agent snapshot — immutable after write.
+        'agent_rate', 'agent_rate_type', 'agent_amount', 'agent_amount_minor',
+        'agent_snapshot_at', 'agent_id', 'agent_display_name',
+        'agent_attribution_status', 'agent_currency', 'agent_scope',
+        'agent_snapshot_version'
       ]);
     }
 
@@ -569,6 +574,9 @@ service cloud.firestore {
         && d.get('total_app', prev.get('total_app', 0)) == prev.get('total_app', 0)
         && d.get('finance', prev.get('finance', false)) == prev.get('finance', false)
         && d.get('super_admin', prev.get('super_admin', false)) == prev.get('super_admin', false)
+        // F03 — Agent commercial rates: client cannot create/update/delete
+        // (use diff so FieldValue.delete() cannot bypass get-default equality).
+        && agentCommercialRatesUnchanged()
         && d.get('active_order_id', prev.get('active_order_id', null)) == prev.get('active_order_id', null)
         && d.get('active_order_updated_at', prev.get('active_order_updated_at', null))
              == prev.get('active_order_updated_at', null)
@@ -609,6 +617,14 @@ service cloud.firestore {
     }
 
 
+    // F03 — commercial percent rates are CF / Admin SDK only (never client).
+    function agentCommercialRatesUnchanged() {
+      return resource == null
+        || !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'Agent_total', 'agent_total', 'vat_percent', 'app_commission_percent'
+        ]);
+    }
+
     // F3-C3: agent country assignment fields are server-authoritative (callables / Admin SDK).
     function agentAssignmentFieldsUnchanged() {
       let d = request.resource.data;
@@ -627,7 +643,8 @@ service cloud.firestore {
           (!wasAgent && !willBeAgent)
           || d.get('actev_user', prev.get('actev_user', true))
                == prev.get('actev_user', true)
-        );
+        )
+        && agentCommercialRatesUnchanged();
     }
 
     function tourGuideSelfClaimOk() {
@@ -825,14 +842,26 @@ service cloud.firestore {
       let notCreatingAgent =
         d.get('Isagent', false) == false
         && d.get('isagent', false) == false;
+      // F03: Country Admin cannot seed Agent commercial rates on create.
+      let notSettingAgentRates =
+        !('Agent_total' in d)
+        && !('agent_total' in d)
+        && !('vat_percent' in d)
+        && !('app_commission_percent' in d);
       return (isSuperAdmin() && notCreatingAgent)
-        || (isCountryAdmin() && notElevatingToSuper && notCreatingAgent && inCountryScope)
+        || (isCountryAdmin()
+            && notElevatingToSuper
+            && notCreatingAgent
+            && notSettingAgentRates
+            && inCountryScope)
         || (isTransportManager()
             && notElevatingToSuper
+            && notSettingAgentRates
             && d.get('ismndob', false) == true
             && d.get('isagent', false) == false
             && d.get('Isagent', false) == false
             && d.get('isPartner', false) == false
+            && d.get('is_partner', false) == false
             && d.transport_company != null
             && claimTransportCompanyPath() != null
             && d.transport_company.path == claimTransportCompanyPath());
@@ -903,6 +932,10 @@ service cloud.firestore {
         && !('Isagent' in request.resource.data)
         && !('ismndob' in request.resource.data)
         && !('isPartner' in request.resource.data)
+        && !('Agent_total' in request.resource.data)
+        && !('agent_total' in request.resource.data)
+        && !('vat_percent' in request.resource.data)
+        && !('app_commission_percent' in request.resource.data)
         && !('Rev_dloh_agent' in request.resource.data)
         && !('partner_mkan' in request.resource.data)
         && (
@@ -1017,10 +1050,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // Public catalog (needed for driver registration before account exists).
+    // Public GLOBAL vehicle catalog (no country field on type_car docs).
+    // Policy: GLOBAL CAR CATALOG — only Super Admin may mutate.
+    // Country Admin/Agent must not create/update/delete global catalog rows.
     match /type_car/{document} {
       allow read: if true;
-      allow create, update, delete: if isSuperAdmin() || isCountryAdmin();
+      allow create, update, delete: if isSuperAdmin();
     }
 
     // Order create is CF-only (createCashBooking Admin SDK). Client create disabled.
@@ -1378,21 +1413,34 @@ service cloud.firestore {
         );
     }
 
+    // F07 — child docs inherit parent settlement country scope (never global
+    // merely because caller has country_admin / rule=2).
+    function canReadSettlementChild(settlementId) {
+      return isSuperAdmin()
+        || isFinance()
+        || (
+          isCountryAdmin()
+          && claimCountryPath() != null
+          && (
+            get(/databases/$(database)/documents/financial_settlements/$(settlementId))
+              .data.countryId == claimCountryPath()
+            || get(/databases/$(database)/documents/financial_settlements/$(settlementId))
+              .data.countryRef == claimCountryPath()
+          )
+        );
+    }
+
     match /financial_settlements/{id} {
       allow read: if signedIn() && canReadSettlement();
       allow create, update, delete: if false;
 
       match /lines/{lineId} {
-        allow read: if signedIn() && (
-          isSuperAdmin() || isFinance() || isCountryAdmin()
-        );
+        allow read: if signedIn() && canReadSettlementChild(id);
         allow create, update, delete: if false;
       }
 
       match /events/{eventId} {
-        allow read: if signedIn() && (
-          isSuperAdmin() || isFinance() || isCountryAdmin()
-        );
+        allow read: if signedIn() && canReadSettlementChild(id);
         allow create, update, delete: if false;
       }
     }

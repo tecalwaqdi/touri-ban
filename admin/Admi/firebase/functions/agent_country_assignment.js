@@ -28,6 +28,30 @@ const ERR_CONFLICT = 'AGENT_COUNTRY_ALREADY_HAS_ACTIVE_AGENT';
 const ERR_DATE_OVERLAP = 'AGENT_COUNTRY_DATE_OVERLAP';
 const ERR_UNAUTHORIZED = 'AGENT_ASSIGNMENT_UNAUTHORIZED';
 const ERR_LOCK_AMBIGUOUS = 'AGENT_COUNTRY_LOCK_AMBIGUOUS';
+const ERR_INVALID_RATE = 'AGENT_COMMISSION_RATE_INVALID';
+
+/**
+ * F03 — Agent commercial percent rates (Agent_total / vat / app commission).
+ * Finite, not NaN, in [0, 100].
+ */
+function validateCommissionRatePercent(value, fieldName) {
+  const n = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(n) || Number.isNaN(n)) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      ERR_INVALID_RATE,
+      {code: ERR_INVALID_RATE, field: fieldName, reason: 'not_finite'},
+    );
+  }
+  if (n < 0 || n > 100) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      ERR_INVALID_RATE,
+      {code: ERR_INVALID_RATE, field: fieldName, reason: 'out_of_range', value: n},
+    );
+  }
+  return n;
+}
 
 function db() {
   return admin.firestore();
@@ -733,10 +757,23 @@ exports.updateCountryAgentAssignment = functions
     const patch = {};
     if (data.displayName != null) patch.display_name = str(data.displayName);
     if (data.phoneNumber != null) patch.phone_number = str(data.phoneNumber);
-    if (data.agentTotal != null) patch.Agent_total = Number(data.agentTotal);
-    if (data.vatPercent != null) patch.vat_percent = Number(data.vatPercent);
+    if (data.agentTotal != null) {
+      patch.Agent_total = validateCommissionRatePercent(
+        data.agentTotal,
+        'Agent_total',
+      );
+    }
+    if (data.vatPercent != null) {
+      patch.vat_percent = validateCommissionRatePercent(
+        data.vatPercent,
+        'vat_percent',
+      );
+    }
     if (data.appCommissionPercent != null) {
-      patch.app_commission_percent = Number(data.appCommissionPercent);
+      patch.app_commission_percent = validateCommissionRatePercent(
+        data.appCommissionPercent,
+        'app_commission_percent',
+      );
     }
     if (data.dolhAgent != null) patch.dolh_agent = str(data.dolhAgent);
     if (data.agentDateReg != null) {
@@ -815,6 +852,7 @@ exports.__test = {
   ERR_CONFLICT,
   ERR_DATE_OVERLAP,
   ERR_LOCK_AMBIGUOUS,
+  ERR_INVALID_RATE,
   claimCountryAgent,
   releaseCountryAgent,
   reassignCountryAgent,
@@ -823,6 +861,7 @@ exports.__test = {
   findOtherActiveAgents,
   findDateOverlap,
   assignmentRef,
+  validateCommissionRatePercent,
 };
 
 module.exports.claimCountryAgent = claimCountryAgent;
@@ -830,7 +869,9 @@ module.exports.releaseCountryAgent = releaseCountryAgent;
 module.exports.reassignCountryAgent = reassignCountryAgent;
 module.exports.moveActiveAgentCountry = moveActiveAgentCountry;
 module.exports.assertCanActivateNewAgent = assertCanActivateNewAgent;
+module.exports.validateCommissionRatePercent = validateCommissionRatePercent;
 module.exports.ASSIGNMENT_COLLECTION = ASSIGNMENT_COLLECTION;
 module.exports.ERR_CONFLICT = ERR_CONFLICT;
 module.exports.ERR_DATE_OVERLAP = ERR_DATE_OVERLAP;
 module.exports.ERR_LOCK_AMBIGUOUS = ERR_LOCK_AMBIGUOUS;
+module.exports.ERR_INVALID_RATE = ERR_INVALID_RATE;

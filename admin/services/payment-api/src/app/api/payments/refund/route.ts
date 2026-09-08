@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import { FieldValue } from "firebase-admin/firestore";
 import { z } from "zod";
-import { requireFinanceOrAdmin, verifyBearerToken } from "@/lib/auth/verify";
+import { requireFinanceOrAdmin, verifyBearerToken, assertResourceCountryAccess, resourceCountryFromDoc } from "@/lib/auth/verify";
 import { COLLECTIONS, db } from "@/lib/firebase/admin";
 import { refundNGeniusOrder } from "@/lib/ngenius/client";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     }
 
     const user = await verifyBearerToken(req.headers.get("authorization"));
-    await requireFinanceOrAdmin(user);
+    const access = await requireFinanceOrAdmin(user);
     const body = bodySchema.parse(await req.json());
 
     const sessionRef = db()
@@ -42,6 +42,7 @@ export async function POST(req: Request) {
       throw new ApiError(PaymentErrorCode.PAYMENT_SESSION_NOT_FOUND, 404);
     }
     const data = snap.data() || {};
+    assertResourceCountryAccess(access, resourceCountryFromDoc(data));
     const status = String(data.normalized_status || data.status);
     if (status !== PaymentStatus.paid && status !== "paid") {
       throw new ApiError(PaymentErrorCode.REFUND_NOT_ALLOWED, 409);

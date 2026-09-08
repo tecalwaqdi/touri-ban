@@ -1,5 +1,11 @@
 import { FieldValue } from "firebase-admin/firestore";
-import { verifyBearerToken, requireFinanceOrAdmin } from "@/lib/auth/verify";
+import {
+  verifyBearerToken,
+  requireFinanceOrAdmin,
+  assertResourceCountryAccess,
+  resourceCountryFromDoc,
+  type FinanceAccess,
+} from "@/lib/auth/verify";
 import { COLLECTIONS, db } from "@/lib/firebase/admin";
 import {
   extractGatewayAmount,
@@ -17,7 +23,11 @@ import {
 import { createBookingFromPaidSession } from "@/lib/bookings/create-from-session";
 import { creditWalletFromPaidSession } from "@/lib/wallet/credit";
 
-async function loadOwnedSession(sessionId: string, uid: string, asAdmin: boolean) {
+async function loadOwnedSession(
+  sessionId: string,
+  uid: string,
+  access: FinanceAccess | null,
+) {
   if (!/^[a-f0-9]{64}$/.test(sessionId)) {
     throw new ApiError(PaymentErrorCode.PAYMENT_SESSION_NOT_FOUND, 404);
   }
@@ -27,7 +37,9 @@ async function loadOwnedSession(sessionId: string, uid: string, asAdmin: boolean
     throw new ApiError(PaymentErrorCode.PAYMENT_SESSION_NOT_FOUND, 404);
   }
   const data = snap.data() || {};
-  if (!asAdmin && data.user_id !== uid) {
+  if (access) {
+    assertResourceCountryAccess(access, resourceCountryFromDoc(data));
+  } else if (data.user_id !== uid) {
     throw new ApiError(PaymentErrorCode.FORBIDDEN, 403);
   }
   return { ref, data };
@@ -35,15 +47,14 @@ async function loadOwnedSession(sessionId: string, uid: string, asAdmin: boolean
 
 export async function handlePaymentStatus(req: Request, sessionId: string) {
   const user = await verifyBearerToken(req.headers.get("authorization"));
-  let asAdmin = false;
+  let access: FinanceAccess | null = null;
   try {
-    await requireFinanceOrAdmin(user);
-    asAdmin = true;
+    access = await requireFinanceOrAdmin(user);
   } catch {
-    asAdmin = false;
+    access = null;
   }
 
-  const { ref, data } = await loadOwnedSession(sessionId, user.uid, asAdmin);
+  const { ref, data } = await loadOwnedSession(sessionId, user.uid, access);
   if (!data.provider_order_ref) {
     return {
       id: sessionId,

@@ -189,6 +189,33 @@ exports.createPanelUser = functions.https.onCall(async (data, context) => {
 
   const uid = userRecord.uid;
   try {
+    // F03 — validate commercial rates if present (same bounds as updateCountryAgentAssignment).
+    const {validateCommissionRatePercent} = require("./agent_country_assignment.js");
+    if (userData.Agent_total != null || userData.agentTotal != null) {
+      userData.Agent_total = validateCommissionRatePercent(
+        userData.Agent_total ?? userData.agentTotal,
+        "Agent_total",
+      );
+      delete userData.agentTotal;
+    }
+    if (userData.vat_percent != null || userData.vatPercent != null) {
+      userData.vat_percent = validateCommissionRatePercent(
+        userData.vat_percent ?? userData.vatPercent,
+        "vat_percent",
+      );
+      delete userData.vatPercent;
+    }
+    if (
+      userData.app_commission_percent != null ||
+      userData.appCommissionPercent != null
+    ) {
+      userData.app_commission_percent = validateCommissionRatePercent(
+        userData.app_commission_percent ?? userData.appCommissionPercent,
+        "app_commission_percent",
+      );
+      delete userData.appCommissionPercent;
+    }
+
     const doc = {
       email,
       uid,
