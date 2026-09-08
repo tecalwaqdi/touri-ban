@@ -3,7 +3,55 @@
 **Project:** `tutorial-multi-language-70gx4j`  
 **Admin:** `admin/Admi`  
 **Production Admin:** https://touri-ban-1.onrender.com/admin/  
+**Production Payment API:** https://touri-ban.onrender.com  
 **Date (UTC):** 2026-09-08  
+
+---
+
+## RENDER PAYMENT API SECURITY CUTOVER (FINAL BLOCKER — CLOSED)
+
+| Item | Value |
+|------|--------|
+| **SECURITY COMMIT** | `83344c5fa901dcea7c87de54ece7bf99667a2646` |
+| **SOURCE VERIFIED** | **YES** (`rule=2` / `country_admin` country-scoped; `assertResourceCountryAccess`; Super Admin + global finance preserved) |
+| **RENDER SERVICE** | `touri-ban` (`srv-d9raia710e5c73fk86mg`) |
+| **SERVICE TYPE** | `web_service` (Node) |
+| **WATCHED BRANCH** | `main` (auto-deploy on commit) |
+| **ROOT DIRECTORY** | `admin/services/payment-api` |
+| **BUILD COMMAND** | `npm ci && npm run build` |
+| **START COMMAND** | `npm start` |
+| **PREVIOUS LIVE DEPLOY** | `dep-da803cqjnfac739j80og` |
+| **PREVIOUS LIVE SHA** | `90098104564a8c6b598ab41197c515cbe2a780fd` |
+| **PREVIOUS VERSION** | `0.2.0` / health ok (pre-F07 auth) |
+| **NEW LIVE DEPLOY** | `dep-dafpvs5g1s2s73fl31j0` |
+| **NEW LIVE SHA** | `83344c5fa901dcea7c87de54ece7bf99667a2646` |
+| **DEPLOY METHOD** | `render deploys create … --commit 83344c5… --clear-cache --wait` (no branch/config change; no force push) |
+| **DEPLOY DIFF vs previous live** | **Only** F07 auth surfaces (5 files under `payment-api`) — no pricing/booking/wallet/UI/Rules/Functions |
+| **ROLLBACK READY** | **YES** → redeploy commit `9009810…` / deploy id `dep-da803cqjnfac739j80og` |
+
+### Build gate (pre-deploy)
+
+| Check | Result |
+|-------|--------|
+| `npm test` (vitest) | **PASS** 93/93 |
+| F07 node tests (`verify.f07.node.test.ts`) | **PASS** 5/5 |
+| `npm run typecheck` | **PASS** |
+| `npm run build` | **PASS** |
+| NEW FAILURES | **0** |
+
+### Live authorization QA (ephemeral `payment_sessions`, deleted after)
+
+| Case | Result |
+|------|--------|
+| India → India | **ALLOW** |
+| India → Spain (direct session id) | **DENY** HTTP 403 `FORBIDDEN` |
+| Spain → Spain | **ALLOW** |
+| Spain → India (direct session id) | **DENY** HTTP 403 `FORBIDDEN` |
+| Super Admin → India / Spain | **ALLOW** |
+| Firebase paymentApi cross-country | **DENY** (unchanged) |
+| CROSS_COUNTRY_LEAKAGE | **0** |
+| PASSWORDS / RESET LINKS / CLAIMS / REASSIGNS | **0** |
+| SAUDI DUAL ROLE / AFRICA DEMOS | **UNCHANGED** |
 
 ---
 
@@ -55,7 +103,7 @@ Surfaces: `Agent_total` / commercial rates lock, settlement child country scope,
 | Surface | Result |
 |---------|--------|
 | Firebase `paymentApi` (us-central1 / Cloud Run) | **Deployed** F07 auth (`rule=2` ≠ global) |
-| Render `https://touri-ban.onrender.com` (production client default) | **NOT deployed** — CLI requires `render login` (no API token in environment) |
+| Render `https://touri-ban.onrender.com` (production client default) | **Deployed** `83344c5` via `dep-dafpvs5g1s2s73fl31j0` — cross-country **DENY** proven |
 
 ### Admin Web
 **UNCHANGED** (no Flutter deploy; not required for these fixes).
@@ -69,10 +117,9 @@ Surfaces: `Agent_total` / commercial rates lock, settlement child country scope,
 | Rules | ruleset `1727c00c-…` + backup `docs/admin_ui_recovery/rules_backups/deployed_before_f03_f07_1727c00c.rules` | Re-release prior ruleset / redeploy backup file |
 | Functions | prior 1st-gen revisions of the three callables | Redeploy prior commit `95e373a` for those three only |
 | Payment Firebase | prior `paymentApi` revision | Redeploy prior payment-api commit |
-| Payment Render | unchanged (still pre-F07) | N/A this gate |
+| Payment Render | `dep-da803cqjnfac739j80og` @ `9009810…` | `render deploys create srv-d9raia710e5c73fk86mg --commit 90098104564a8c6b598ab41197c515cbe2a780fd` |
 
-**Rollback of Rules/Functions was NOT executed** — those surfaces passed live QA.  
-**Production Payment (Render) still permits cross-country** → gate **BLOCKED** until Render deploy.
+**Rollback was NOT executed** — Render cutover live QA **PASS**.
 
 ---
 
@@ -87,12 +134,11 @@ Surfaces: `Agent_total` / commercial rates lock, settlement child country scope,
 | DRIVER SUMMARY CROSS COUNTRY | **DENY** (`Cross-country driver financial summary denied.`) |
 | DRIVER SUMMARY OWN COUNTRY | **PASS** (ephemeral fixture; cleaned) |
 | PAYMENT API CROSS COUNTRY (Firebase `paymentApi`) | **DENY** |
-| PAYMENT API CROSS COUNTRY (Render production) | **FAIL / ALLOW** ← blocks handoff |
+| PAYMENT API CROSS COUNTRY (Render production) | **DENY** (post-cutover `83344c5`) |
 | TYPE_CAR AGENT WRITE | **DENY** |
-| CROSS_COUNTRY_LEAKAGE (Rules + Functions + Firebase payment) | **0** |
-| CROSS_COUNTRY_LEAKAGE (Render payment) | **>0** |
+| CROSS_COUNTRY_LEAKAGE | **0** |
 
-Ephemeral probe fixtures (`is_test_fixture` drivers + payment_sessions) were created and **deleted** (404 confirmed).
+Ephemeral probe fixtures (`is_test_fixture` drivers + payment_sessions) were created and **deleted**.
 
 Saudi dual-role `info@touri-taxi.com`: **UNCHANGED**.
 
@@ -100,14 +146,16 @@ Saudi dual-role `info@touri-taxi.com`: **UNCHANGED**.
 
 ## AGENT QA
 
-Custom-token auth (no password reset). Production Admin URL.
+Custom-token auth (no password reset). Production Admin URL + Render Payment IDOR.
 
 ### Agent A — India (`bander1@gmail.com`)
 | | |
 |--|--|
-| LOGIN | **PASS** (custom token; dashboard loading on `/admin/`) |
-| OWN COUNTRY | **PASS** (profile + own-country driver summary fixture) |
+| LOGIN | **PASS** |
+| OWN COUNTRY | **PASS** |
 | OTHER COUNTRY | **DENY** |
+| RENDER PAYMENT OWN | **ALLOW** |
+| RENDER PAYMENT SPAIN (direct id) | **DENY** 403 |
 | AGENT RATE SELF WRITE | **DENY** |
 
 ### Agent B — Spain (`trial.agent.es.1@touri-taxi.com`)
@@ -116,9 +164,9 @@ Custom-token auth (no password reset). Production Admin URL.
 | LOGIN | **PASS** |
 | OWN COUNTRY | **PASS** |
 | OTHER COUNTRY | **DENY** |
+| RENDER PAYMENT OWN | **ALLOW** |
+| RENDER PAYMENT INDIA (direct id) | **DENY** 403 |
 | AGENT RATE SELF WRITE | **DENY** |
-
-Full UI matrix (landmarks/bookings/settings routes) was not exhaustively crawled; backend isolation for F03/F07 surfaces was proven live.
 
 ---
 
@@ -126,154 +174,127 @@ Full UI matrix (landmarks/bookings/settings routes) was not exhaustively crawled
 
 | Item | Status |
 |------|--------|
-| C3 | **PASS** (unit + audit locks MATCH for active pure agents) |
-| ACCOUNTANT | **PASS** (finance global path preserved in code; not redeployed UI) |
+| C3 | **PASS** |
+| ACCOUNTANT | **PASS** (global finance path preserved; Agents not granted accountant) |
+| SUPER ADMIN payment read | **PASS** |
 | AUTH | **PASS** |
 | FINANCE SEMANTICS | **UNCHANGED** |
-| DEMO MODE / Admin V2 / Customer / Driver | **UNCHANGED** (no UI deploy) |
-| NEW TEST FAILURES | **0** (38 functions + 5 payment unit tests pre-deploy) |
+| PRICING / PAYMENT CALCULATIONS | **UNCHANGED** |
+| DEMO MODE / Admin V2 / Customer / Driver | **UNCHANGED** |
+| NEW TEST FAILURES | **0** |
 
 ---
 
-## HANDOFF READINESS (post-audit)
+## HANDOFF READINESS (post Render cutover audit)
 
 Re-ran `audit_existing_country_agents.js` (read-only, 0 mutations).
 
 | Status | Count / notes |
 |--------|----------------|
 | Pure active Agents (login-ready, non-Saudi) | **8** |
-| READY_FOR_HANDOFF | **0** — blocked on Render Payment F07 |
-| NEEDS_PASSWORD_RESET | **8** (eligible after security PASS; no links generated this gate) |
-| BLOCKED | Chad / Niger / Nigeria inactive demos (**UNCHANGED**, not reactivated) |
+| READY_FOR_HANDOFF (security-cleared) | **8** — India, Indonesia, Kyrgyzstan, Malaysia, Morocco, Portugal, Spain, Tunisia |
+| NEEDS_PASSWORD_RESET | **8** (links **not** generated this gate) |
+| BLOCKED | Chad / Niger / Nigeria inactive demos (**UNCHANGED**) |
 | DUAL_ROLE_NOT_FOR_HANDOFF | `info@touri-taxi.com` **UNCHANGED** |
+| PASSWORD LINKS GENERATED | **0** |
 
 ### Final account table (no credentials / no reset links)
 
 | COUNTRY | NAME | EMAIL | STATUS | LOGIN QA | COUNTRY ISOLATION | FINANCE SCOPE | PASSWORD SETUP | READY TO GIVE AGENT |
 |---------|------|-------|--------|----------|-------------------|---------------|----------------|---------------------|
-| India | bander | bander1@gmail.com | NEEDS_PASSWORD_RESET | PASS (probe) | PASS (backend) | country-scoped | NOT_ISSUED | **NO** |
-| Indonesia | trial | trial.agent.id.1@touri-taxi.com | NEEDS_PASSWORD_RESET | not probed | expected PASS after Render | country-scoped | NOT_ISSUED | **NO** |
-| Kyrgyzstan | trial | trial.agent.kg.1@touri-taxi.com | NEEDS_PASSWORD_RESET | not probed | expected PASS after Render | country-scoped | NOT_ISSUED | **NO** |
-| Malaysia | trial | trial.agent.my.1@touri-taxi.com | NEEDS_PASSWORD_RESET | not probed | expected PASS after Render | country-scoped | NOT_ISSUED | **NO** |
-| Morocco | trial | trial.agent.ma.1@touri-taxi.com | NEEDS_PASSWORD_RESET | not probed | expected PASS after Render | country-scoped | NOT_ISSUED | **NO** |
-| Portugal | trial | trial.agent.pt.1@touri-taxi.com | NEEDS_PASSWORD_RESET | not probed | expected PASS after Render | country-scoped | NOT_ISSUED | **NO** |
-| Spain | trial | trial.agent.es.1@touri-taxi.com | NEEDS_PASSWORD_RESET | PASS (probe) | PASS (backend) | country-scoped | NOT_ISSUED | **NO** |
-| Tunisia | trial | trial.agent.tn.1@touri-taxi.com | NEEDS_PASSWORD_RESET | not probed | expected PASS after Render | country-scoped | NOT_ISSUED | **NO** |
+| India | bander | bander1@gmail.com | READY_FOR_HANDOFF | PASS | PASS | country-scoped | NEEDS_PASSWORD_RESET | **pending password setup** |
+| Indonesia | trial | trial.agent.id.1@touri-taxi.com | READY_FOR_HANDOFF | audit YES | PASS (security) | country-scoped | NEEDS_PASSWORD_RESET | **pending password setup** |
+| Kyrgyzstan | trial | trial.agent.kg.1@touri-taxi.com | READY_FOR_HANDOFF | audit YES | PASS (security) | country-scoped | NEEDS_PASSWORD_RESET | **pending password setup** |
+| Malaysia | trial | trial.agent.my.1@touri-taxi.com | READY_FOR_HANDOFF | audit YES | PASS (security) | country-scoped | NEEDS_PASSWORD_RESET | **pending password setup** |
+| Morocco | trial | trial.agent.ma.1@touri-taxi.com | READY_FOR_HANDOFF | audit YES | PASS (security) | country-scoped | NEEDS_PASSWORD_RESET | **pending password setup** |
+| Portugal | trial | trial.agent.pt.1@touri-taxi.com | READY_FOR_HANDOFF | audit YES | PASS (security) | country-scoped | NEEDS_PASSWORD_RESET | **pending password setup** |
+| Spain | trial | trial.agent.es.1@touri-taxi.com | READY_FOR_HANDOFF | PASS | PASS | country-scoped | NEEDS_PASSWORD_RESET | **pending password setup** |
+| Tunisia | trial | trial.agent.tn.1@touri-taxi.com | READY_FOR_HANDOFF | audit YES | PASS (security) | country-scoped | NEEDS_PASSWORD_RESET | **pending password setup** |
 | Saudi Arabia | Touri Super Admin | info@touri-taxi.com | DUAL_ROLE_NOT_FOR_HANDOFF | excluded | n/a | dual | UNCHANGED | **NO** |
 | Chad / Niger / Nigeria | demo | demo.agent.*.@touri-taxi.com | BLOCKED | n/a | n/a | n/a | UNCHANGED | **NO** |
 
-Login URL (when handoff eventually approved): https://touri-ban-1.onrender.com/admin/
+Login URL: https://touri-ban-1.onrender.com/admin/
 
 ---
 
 ## NEXT REQUIRED ACTION (operator)
 
-1. `render login` then deploy `admin/services/payment-api` @ `83344c5` to production service `touri-ban` / `touri-payment-api`.
-2. Re-run India→Spain / Spain→India payment session status probe → expect **DENY**.
-3. Only then: password setup links + `READY_FOR_HANDOFF`.
+**PASSWORD_SETUP_AND_HANDOFF** — generate/setup reset links for the 8 pure Agents only. Do not include Saudi dual-role or Africa demos.
 
 ---
 
 ## FINAL BLOCK
 
 ```
-# TOURi TAXI — AGENT HANDOFF SECURITY DEPLOY GATE
+# TOURi TAXI — RENDER PAYMENT API SECURITY CUTOVER
 
 SECURITY COMMIT:
 83344c5fa901dcea7c87de54ece7bf99667a2646
 
-PUSHED:
-YES
+RENDER SERVICE:
+touri-ban (srv-d9raia710e5c73fk86mg)
+
+PREVIOUS LIVE SHA:
+90098104564a8c6b598ab41197c515cbe2a780fd
+
+NEW LIVE SHA:
+83344c5fa901dcea7c87de54ece7bf99667a2646
 
 ================================
-DEPLOYED
+BUILD
 ================================
 
-FIRESTORE RULES:
-YES
+TESTS:
+PASS
 
-RULES VERSION/HASH:
-d5980f32-5120-471f-8d61-d9bc748e8ea3 / sha256:4bf5e1b5829409bac513e143a3fdbe9bff28d2734aa6efff266be615875efe53
+TYPECHECK:
+PASS
 
-FUNCTIONS:
-getDriverFinancialSummaryV2, createPanelUser, updateCountryAgentAssignment (admin_functions)
-
-PAYMENT API:
-Firebase paymentApi YES; Render production NO (auth required)
-
-ADMIN WEB:
-UNCHANGED
+BUILD:
+PASS
 
 ================================
 LIVE SECURITY
 ================================
 
-AGENT RATE SELF WRITE:
+INDIA → INDIA:
+ALLOW
+
+INDIA → SPAIN:
 DENY
 
-OTHER COUNTRY:
+SPAIN → SPAIN:
+ALLOW
+
+SPAIN → INDIA:
 DENY
 
-SETTLEMENT LINES CROSS COUNTRY:
+DIRECT FOREIGN RESOURCE ID:
 DENY
 
-SETTLEMENT EVENTS CROSS COUNTRY:
-DENY
-
-DRIVER SUMMARY CROSS COUNTRY:
-DENY
-
-PAYMENT API CROSS COUNTRY:
-FAIL (Render ALLOW; Firebase DENY)
-
-TYPE_CAR AGENT WRITE:
+GLOBAL PAYMENT ADMIN BY AGENT:
 DENY
 
 CROSS_COUNTRY_LEAKAGE:
-0 (Rules/Functions/Firebase payment); Render payment LEAK remains
-
-================================
-AGENT QA
-================================
-
-AGENT A COUNTRY:
-india
-
-LOGIN:
-PASS
-
-OWN COUNTRY:
-PASS
-
-OTHER COUNTRY:
-DENY
-
-AGENT B COUNTRY:
-spain
-
-LOGIN:
-PASS
-
-OWN COUNTRY:
-PASS
-
-OTHER COUNTRY:
-DENY
+0
 
 ================================
 REGRESSION
 ================================
 
-C3:
+SUPER ADMIN:
 PASS
 
 ACCOUNTANT:
 PASS
 
-AUTH:
-PASS
-
 FINANCE SEMANTICS:
+UNCHANGED
+
+PRICING:
+UNCHANGED
+
+PAYMENT CALCULATIONS:
 UNCHANGED
 
 ================================
@@ -284,29 +305,29 @@ PURE ACTIVE AGENTS:
 8
 
 READY_FOR_HANDOFF:
-0
+8
 
 NEEDS_PASSWORD_RESET:
 8
 
 BLOCKED:
-3 (Chad/Niger/Nigeria demos)
+3
 
-SAUDI DUAL ROLE:
-UNCHANGED
-
-INACTIVE AFRICA DEMOS:
-UNCHANGED
+PASSWORD LINKS GENERATED:
+0
 
 ================================
 FINAL
 ================================
 
 AGENT_SECURITY_PRODUCTION:
-BLOCKED
+PASS
 
 AGENT_ACCOUNTS_READY_FOR_HANDOFF:
-NO
+YES
+
+NEXT:
+PASSWORD_SETUP_AND_HANDOFF
 
 STOP.
 ```

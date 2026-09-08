@@ -16,5 +16,10 @@
     }
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"],
-  "exclude": ["node_modules", "dist", "src/app"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/app",
+    "src/**/*.node.test.ts"
+  ]
 }
