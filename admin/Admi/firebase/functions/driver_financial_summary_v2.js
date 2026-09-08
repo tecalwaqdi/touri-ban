@@ -151,11 +151,57 @@ async function settlementTotals(db, driverId, currency) {
   return {paidMinor, pendingMinor};
 }
 
+function normalizeCountryPath(raw) {
+  if (raw == null) return '';
+  if (typeof raw === 'string' && raw.trim()) {
+    const s = raw.trim();
+    return s.startsWith('countries/') ? s : `countries/${s}`;
+  }
+  if (typeof raw === 'object' && raw.path) {
+    return normalizeCountryPath(String(raw.path).trim());
+  }
+  return '';
+}
+
+function countryPathFromUserOrOrder(data) {
+  if (!data || typeof data !== 'object') return '';
+  const fromRef = normalizeCountryPath(data.Rev_dolh || data.Rev_dloh_agent);
+  if (fromRef) return fromRef;
+  return normalizeCountryPath(data.country_id);
+}
+
 function canReadDriverSummary(auth, driverId) {
   if (!auth || !auth.uid) return false;
   if (driverId === auth.uid) return true;
   const t = auth.token || {};
   return t.super_admin === true || t.finance === true || t.country_admin === true;
+}
+
+/**
+ * F07 — country_admin / Agent may only read drivers in their claim country.
+ * Super Admin + global Accountant (finance without country scope) remain global.
+ */
+function assertDriverSummaryCountryScope(auth, driverCountryPath) {
+  const t = auth.token || {};
+  if (t.super_admin === true) return;
+  // Global accountant (finance claim, not country-scoped agent/admin hybrid).
+  if (t.finance === true && t.country_admin !== true && t.agent !== true) {
+    return;
+  }
+  if (t.country_admin === true || t.agent === true) {
+    const callerCountry = normalizeCountryPath(t.country_id);
+    if (!callerCountry) {
+      const err = new Error('Country scope required.');
+      err.code = 'permission-denied';
+      throw err;
+    }
+    const driverCountry = normalizeCountryPath(driverCountryPath);
+    if (!driverCountry || driverCountry !== callerCountry) {
+      const err = new Error('Cross-country driver financial summary denied.');
+      err.code = 'permission-denied';
+      throw err;
+    }
+  }
 }
 
 /**
@@ -173,6 +219,19 @@ async function getDriverFinancialSummaryV2({db, auth, data}) {
     const err = new Error('Drivers may only read their own financial summary.');
     err.code = 'permission-denied';
     throw err;
+  }
+
+  // Resolve driver country from authoritative server profile (never client).
+  let driverCountryPath = '';
+  if (driverId !== auth.uid || (auth.token || {}).country_admin === true) {
+    const driverSnap = await db.collection('user').doc(driverId).get();
+    if (!driverSnap.exists) {
+      const err = new Error('Driver not found.');
+      err.code = 'not-found';
+      throw err;
+    }
+    driverCountryPath = countryPathFromUserOrOrder(driverSnap.data() || {});
+    assertDriverSummaryCountryScope(auth, driverCountryPath);
   }
 
   const currency = v2.normalizeCode((data && data.currency) || 'SAR') || 'SAR';
@@ -242,4 +301,7 @@ module.exports = {
   emptyBucket,
   addToBucket,
   minorToMajor,
+  canReadDriverSummary,
+  assertDriverSummaryCountryScope,
+  countryPathFromUserOrOrder,
 };

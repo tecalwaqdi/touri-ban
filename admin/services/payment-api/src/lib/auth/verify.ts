@@ -9,6 +9,12 @@ export type AuthedUser = {
   token: DecodedIdToken;
 };
 
+/** Global finance/admin vs country-scoped panel access (F07). */
+export type FinanceAccess =
+  | { kind: "global" }
+  | { kind: "country"; countryPath: string }
+  | { kind: "denied" };
+
 function peekJwtClaims(token: string): Record<string, unknown> {
   try {
     const part = token.split(".")[1];
@@ -64,23 +70,117 @@ export async function verifyBearerToken(
   }
 }
 
+function normalizeCountryPath(raw: unknown): string | null {
+  if (raw == null) return null;
+  if (typeof raw === "string" && raw.trim()) {
+    const s = raw.trim();
+    return s.startsWith("countries/") ? s : `countries/${s}`;
+  }
+  if (typeof raw === "object" && raw && "path" in raw) {
+    const p = String((raw as { path: string }).path || "").trim();
+    return p || null;
+  }
+  return null;
+}
+
 /**
- * Reuses existing project role model:
- * custom claims super_admin / finance OR Firestore user admin flags.
+ * Resolve finance/admin access without treating isAdminRule=2 / country_admin
+ * as global. Pure Agents inherit country_admin claim today — they stay
+ * country-scoped here.
  */
-export async function requireFinanceOrAdmin(user: AuthedUser): Promise<void> {
+export async function resolveFinanceAccess(user: AuthedUser): Promise<FinanceAccess> {
   const claims = user.token as DecodedIdToken & {
     super_admin?: boolean;
     finance?: boolean;
+    country_admin?: boolean;
+    agent?: boolean;
+    country_id?: string;
   };
-  if (claims.super_admin === true || claims.finance === true) return;
+
+  if (claims.super_admin === true) return { kind: "global" };
+  // Global accountant: finance claim without country_admin/agent hybrid.
+  if (
+    claims.finance === true &&
+    claims.country_admin !== true &&
+    claims.agent !== true
+  ) {
+    return { kind: "global" };
+  }
 
   const snap = await db().collection(COLLECTIONS.users).doc(user.uid).get();
-  if (!snap.exists) throw new ApiError(PaymentErrorCode.FORBIDDEN, 403);
-  const data = snap.data() || {};
+  const data = snap.exists ? snap.data() || {} : {};
   const rule = Number(data.isAdminRule ?? data.IsAdminRule ?? 0);
-  if (data.isAdmin === true || data.IsAdmin === true || rule === 1 || rule === 2) {
-    return;
+
+  if (data.isAdmin === true || data.IsAdmin === true || rule === 1) {
+    return { kind: "global" };
   }
-  throw new ApiError(PaymentErrorCode.FORBIDDEN, 403);
+
+  // Country-scoped: claims country_id or profile country refs.
+  const fromClaim = normalizeCountryPath(claims.country_id);
+  const fromProfile =
+    normalizeCountryPath(data.Rev_dloh_agent) ||
+    normalizeCountryPath(data.Rev_dolh);
+  const countryPath = fromClaim || fromProfile;
+
+  if (
+    (claims.country_admin === true ||
+      claims.agent === true ||
+      rule === 2 ||
+      data.Isagent === true ||
+      data.isagent === true) &&
+    countryPath
+  ) {
+    return { kind: "country", countryPath };
+  }
+
+  // Finance + country_admin hybrid: still country-scoped when country present.
+  if (claims.finance === true && countryPath) {
+    return { kind: "country", countryPath };
+  }
+
+  return { kind: "denied" };
+}
+
+/**
+ * Throws unless caller is global finance/admin OR country-scoped panel role.
+ * Callers must still enforce resource country via assertResourceCountryAccess.
+ */
+export async function requireFinanceOrAdmin(
+  user: AuthedUser,
+): Promise<Exclude<FinanceAccess, { kind: "denied" }>> {
+  const access = await resolveFinanceAccess(user);
+  if (access.kind === "denied") {
+    throw new ApiError(PaymentErrorCode.FORBIDDEN, 403);
+  }
+  return access;
+}
+
+/** F07 — resource country must match caller country for scoped roles. */
+export function assertResourceCountryAccess(
+  access: FinanceAccess,
+  resourceCountryPath: string | null | undefined,
+): void {
+  if (access.kind === "global") return;
+  if (access.kind === "denied") {
+    throw new ApiError(PaymentErrorCode.FORBIDDEN, 403);
+  }
+  const resource = normalizeCountryPath(resourceCountryPath);
+  if (!resource || resource !== access.countryPath) {
+    throw new ApiError(PaymentErrorCode.FORBIDDEN, 403);
+  }
+}
+
+/** Extract country path from payment session / order-like docs. */
+export function resourceCountryFromDoc(
+  data: Record<string, unknown> | null | undefined,
+): string | null {
+  if (!data) return null;
+  return (
+    normalizeCountryPath(data.countryPath) ||
+    normalizeCountryPath(data.country_path) ||
+    normalizeCountryPath(data.countryId) ||
+    normalizeCountryPath(data.country_id) ||
+    normalizeCountryPath(data.Rev_dolh) ||
+    null
+  );
 }
