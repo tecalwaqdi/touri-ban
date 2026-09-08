@@ -12,6 +12,7 @@ import '/core/cloud_functions/cloud_functions_client.dart';
 import '/core/finance/admin_money_presentation.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/l10n/ui_catalog.dart';
 
 /// Admin view: driver wallets, top-ups, company payments, ledger.
 ///
@@ -84,7 +85,7 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
               ],
               decoration: InputDecoration(
                 labelText: uiTr(context, 'المبلغ (+ شحن / − خصم)'),
-                hintText: '100 أو -50',
+                hintText: uiTr(context, '100 أو -50'),
               ),
             ),
             const SizedBox(height: 8),

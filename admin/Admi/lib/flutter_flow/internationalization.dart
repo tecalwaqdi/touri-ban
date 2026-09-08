@@ -638,7 +638,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '图片',
     },
     'tg2kf523': {
-      'en': 'الصورة الرئيسية',
+      'en': 'Main image',
       'ar': 'الصورة الرئيسية',
       'az': '',
       'ka': '',
@@ -2367,7 +2367,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
   // adminRegesr
   {
     'zq2bu15t': {
-      'en': 'إنشاء حساب جديد',
+      'en': 'Create new account',
       'ar': 'إنشاء حساب جديد',
       'az': '',
       'ka': '',
@@ -2377,7 +2377,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'd2n6143x': {
-      'en': 'الاسم الكامل',
+      'en': 'Full name',
       'ar': 'الاسم الكامل',
       'az': '',
       'ka': '',
@@ -2387,7 +2387,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'dzqnitp1': {
-      'en': 'البريد الإلكتروني',
+      'en': 'Email',
       'ar': 'البريد الإلكتروني',
       'az': '',
       'ka': '',
@@ -2397,7 +2397,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '6o3sjwcm': {
-      'en': 'كلمة المرور',
+      'en': 'Password',
       'ar': 'كلمة المرور',
       'az': '',
       'ka': '',
@@ -2407,7 +2407,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '13c9weal': {
-      'en': 'تأكيد كلمة المرور',
+      'en': 'Confirm password',
       'ar': 'تأكيد كلمة المرور',
       'az': '',
       'ka': '',
@@ -2417,7 +2417,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'qojxmdv5': {
-      'en': 'تسجيل',
+      'en': 'Sign up',
       'ar': 'تسجيل',
       'az': '',
       'ka': '',
@@ -2633,7 +2633,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
   // AddDolh
   {
     '61sg1tog': {
-      'en': 'إضافة دولة جديدة',
+      'en': 'Add new country',
       'ar': 'إضافة دولة جديدة',
       'az': '',
       'ka': '',
@@ -2643,7 +2643,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'nu1kbpi4': {
-      'en': 'إضافة صورة الدولة',
+      'en': 'Add country image',
       'ar': 'إضافة صورة الدولة',
       'az': '',
       'ka': '',
@@ -2653,7 +2653,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '3xr0bz1h': {
-      'en': 'اسم الدولة',
+      'en': 'Country name',
       'ar': 'اسم الدولة',
       'az': '',
       'ka': '',
@@ -2663,7 +2663,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'c8hc6ev2': {
-      'en': 'وصف الدولة',
+      'en': 'Country description',
       'ar': 'وصف الدولة',
       'az': '',
       'ka': '',
@@ -2673,7 +2673,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '3qx4xf7p': {
-      'en': 'تفعيل الدولة',
+      'en': 'Activate country',
       'ar': 'تفعيل الدولة',
       'az': '',
       'ka': '',
@@ -2683,7 +2683,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '7jlnxpvu': {
-      'en': 'إضافة الدولة',
+      'en': 'Add country',
       'ar': 'إضافة الدولة',
       'az': '',
       'ka': '',
@@ -2746,7 +2746,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '图片',
     },
     'gla2qugx': {
-      'en': 'تغيير الصورة الرئيسية',
+      'en': 'Change main image',
       'ar': 'تغيير الصورة الرئيسية',
       'az': '',
       'ka': '',
@@ -3002,7 +3002,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'e1z6kq2o': {
-      'en': 'حدد الدولة',
+      'en': 'Select country',
       'ar': 'حدد الدولة',
       'az': '',
       'ka': '',
@@ -3105,7 +3105,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'zzvhvehf': {
-      'en': 'إضافة صورة الدولة',
+      'en': 'Add country image',
       'ar': '',
       'az': '',
       'ka': '',
@@ -3115,7 +3115,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'edf1nn0i': {
-      'en': 'اسم الدولة',
+      'en': 'Country name',
       'ar': 'اسم الدولة',
       'az': '',
       'ka': '',
@@ -3125,7 +3125,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'hmng2quh': {
-      'en': 'وصف الدولة',
+      'en': 'Country description',
       'ar': 'وصف الدولة',
       'az': '',
       'ka': '',
@@ -3135,7 +3135,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'htxydmsa': {
-      'en': 'تفعيل الدولة',
+      'en': 'Activate country',
       'ar': 'تفعيل الدولة',
       'az': '',
       'ka': '',
@@ -3427,7 +3427,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '汽车名称',
     },
     '2duv3mee': {
-      'en': 'Hourly Rate (ريال)',
+      'en': 'Hourly rate (SAR)',
       'ar': 'السعر بالساعة (ريال)',
       'az': 'Saatlıq Qiymət (ريال)',
       'ka': 'საათობრივი ტარიფი (ريال)',
@@ -3796,7 +3796,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '国家',
     },
     'u207wx5e': {
-      'en': 'الرصيد مدين ',
+      'en': 'Debit balance ',
       'ar': 'الرصيد مدين ',
       'az': 'Rezervasyonlar',
       'ka': 'ჯავშნები',
@@ -3879,7 +3879,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
   // Home
   {
     'w797o7xp': {
-      'en': 'لوحة التحكم الرئيسية',
+      'en': 'Main dashboard',
       'ar': '',
       'az': '',
       'ka': '',
@@ -3889,7 +3889,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '37rjegz3': {
-      'en': 'نظرة عامة على إحصائيات المنصة',
+      'en': 'Platform statistics overview',
       'ar': '',
       'az': '',
       'ka': '',
@@ -3909,7 +3909,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'x14883ev': {
-      'en': 'المعالم السياحية',
+      'en': 'Landmarks',
       'ar': '',
       'az': '',
       'ka': '',
@@ -3929,7 +3929,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'bzckdjse': {
-      'en': 'المناطق',
+      'en': 'Regions',
       'ar': '',
       'az': '',
       'ka': '',
@@ -3949,7 +3949,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'zjvphkej': {
-      'en': 'المدن',
+      'en': 'Cities',
       'ar': '',
       'az': '',
       'ka': '',
@@ -3969,7 +3969,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '5txi64og': {
-      'en': 'المستخدمين المسجلين',
+      'en': 'Registered users',
       'ar': '',
       'az': '',
       'ka': '',
@@ -3979,7 +3979,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'f8jep9y3': {
-      'en': 'المناديب',
+      'en': 'Drivers',
       'ar': '',
       'az': '',
       'ka': '',
@@ -3999,7 +3999,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'fjp298mv': {
-      'en': '+12% من الشهر الماضي',
+      'en': '+12% from last month',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4009,7 +4009,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '327t5bz6': {
-      'en': 'إجمالي المبيعات',
+      'en': 'Total sales',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4029,7 +4029,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'i3e1owk5': {
-      'en': '+8.5% من الشهر الماضي',
+      'en': '+8.5% from last month',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4039,7 +4039,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'lxk491wg': {
-      'en': 'إجمالي العمولات',
+      'en': 'Total commissions',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4059,7 +4059,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '5t083wo5': {
-      'en': '+15.2% من الشهر الماضي',
+      'en': '+15.2% from last month',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4069,7 +4069,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'dvmpg8vq': {
-      'en': 'الضرائب',
+      'en': 'Taxes',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4089,7 +4089,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '1xw52y67': {
-      'en': '+5.8% من الشهر الماضي',
+      'en': '+5.8% from last month',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4099,7 +4099,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '4jhmhzjd': {
-      'en': 'الإحصائيات الشهرية',
+      'en': 'Monthly statistics',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4109,7 +4109,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'xctink8r': {
-      'en': 'نمو المبيعات',
+      'en': 'Sales growth',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4129,7 +4129,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'a00x9wku': {
-      'en': 'مستخدمين جدد',
+      'en': 'New users',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4149,7 +4149,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'beiuvh27': {
-      'en': 'معدل التحويل',
+      'en': 'Conversion rate',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4169,7 +4169,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'ogfhfbts': {
-      'en': 'منصة السياحة',
+      'en': 'Tourism platform',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4760,7 +4760,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
   // addYser
   {
     '6mk2af00': {
-      'en': 'إنشاء حساب جديد',
+      'en': 'Create new account',
       'ar': 'إنشاء حساب جديد',
       'az': '',
       'ka': '',
@@ -4770,7 +4770,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'f8kjtaq0': {
-      'en': 'أدخل بيانات المستخدم لإنشاء  حساب جديد',
+      'en': 'Enter user details to create a new account',
       'ar': 'أدخل بيانات المستخدم لإنشاء  حساب جديد',
       'az': '',
       'ka': '',
@@ -4780,7 +4780,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'rje2k9u2': {
-      'en': 'الاسم الكامل',
+      'en': 'Full name',
       'ar': 'الاسم الكامل',
       'az': '',
       'ka': '',
@@ -4790,7 +4790,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '5v541syu': {
-      'en': 'الاسم الكامل',
+      'en': 'Full name',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4800,7 +4800,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '1zdilj8h': {
-      'en': 'البريد الإلكتروني',
+      'en': 'Email',
       'ar': 'البريد الإلكتروني',
       'az': '',
       'ka': '',
@@ -4810,7 +4810,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'gfgfbz8v': {
-      'en': 'البريد الإلكتروني',
+      'en': 'Email',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4820,7 +4820,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '96pf92yg': {
-      'en': 'كلمة المرور',
+      'en': 'Password',
       'ar': 'كلمة المرور',
       'az': '',
       'ka': '',
@@ -4830,7 +4830,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'ki9p4o9j': {
-      'en': 'كلمة المرور',
+      'en': 'Password',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4840,7 +4840,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     '3hutpg0t': {
-      'en': 'تأكيد كلمة المرور',
+      'en': 'Confirm password',
       'ar': 'تأكيد كلمة المرور',
       'az': '',
       'ka': '',
@@ -4850,7 +4850,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'oxwg3lte': {
-      'en': 'تأكيد كلمة المرور',
+      'en': 'Confirm password',
       'ar': '',
       'az': '',
       'ka': '',
@@ -4860,7 +4860,7 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
       'zh_Hans': '',
     },
     'qovynvtw': {
-      'en': 'إنشاء حساب جديد',
+      'en': 'Create new account',
       'ar': 'إنشاء حساب جديد',
       'az': '',
       'ka': '',
@@ -4914,20 +4914,27 @@ final kTranslationsMap = <Map<String, Map<String, String>>>[
     },
     '3by22lxj': {
       'en':
-          'السماح لتطبيق ارى وطن بالحصول على موقعك بغرض التوصيل للوجهات السياحية المحددة',
+          'Allow the TOURi TAXI app to access your location for delivery to selected tourist destinations',
       'ar':
-          'مما يسمح باستغلال منافع الوطن المستفيدة بغرض الوصول إلى المناطق السياحية المميزة',
+          'السماح لتطبيق TOURi TAXI بالحصول على موقعك بغرض التوصيل للوجهات السياحية المحددة',
       'az':
-          'السماح لتطبيق ارى وطن بالحصول على موقعك بغرض التوصيل للوجهات السياحية المحددة',
+          'Allow the TOURi TAXI app to access your location for delivery to selected tourist destinations',
       'ka':
-          'السماح لتطبيق ارى وطن بالحصول على موقعك بغرض التوصيل للوجهات السياحية المحددة',
+          'Allow the TOURi TAXI app to access your location for delivery to selected tourist destinations',
       'ru':
-          'Он сказал, что у него есть возможность сделать это в течение нескольких дней. المحددة',
-      'tr': 'En kısa sürede ödeme yapmak için gereken ödemeyi yapın.',
+          'Разрешите приложению TOURi TAXI доступ к вашему местоположению для доставки к выбранным туристическим направлениям',
+      'tr':
+          'Allow the TOURi TAXI app to access your location for delivery to selected tourist destinations',
       'ur':
-          'السماح لتطبيق ارى وطن بالحصول على موقعك بغرض التوصيل للوجهات السياحية المحددة',
+          'منتخب سیاحتی مقامات تک ڈیلیوری کے لیے TOURi TAXI ایپ کو آپ کے مقام تک رسائی کی اجازت دیں',
       'zh_Hans':
-          '???????????????????????????????????????????????????????????????????????????????????????????????????????????????',
+          'Allow the TOURi TAXI app to access your location for delivery to selected tourist destinations',
+      'ky':
+          'Тандалган туристтик багыттарга жеткирүү үчүн TOURi TAXI колдонмосуна жайгашкан жериңизге мүмкүнчүлүк бериңиз',
+      'fr':
+          'Autoriser l’application TOURi TAXI à accéder à votre position pour la livraison vers les destinations touristiques sélectionnées',
+      'pt':
+          'Permitir que o aplicativo TOURi TAXI acesse sua localização para entrega aos destinos turísticos selecionados',
     },
     '0dw1fdcn': {
       'en':
