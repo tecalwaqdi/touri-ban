@@ -68,3 +68,8 @@ admin/Admi/firebase/firestore.rules.bak*
 # Master A-Z audit local manifests (never commit)
 qa_master_audit/
 
+
+.venv-i18n/
+admin/Admi/tool/i18n/translate_cache.json
+admin/Admi/tool/i18n/*.log
+admin/Admi/tool/i18n/chunks/

@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+
+import '/l10n/ui_catalog.dart';
 import '/core/finance/financial_accounting_engine.dart';
 
 /// Arabic user-facing labels for financial classification (not raw enum names).
@@ -120,4 +123,23 @@ abstract final class FinancialStateLabels {
         return 'استثناء مالي';
     }
   }
+
+
+  static String lifecycle(BuildContext context, FinancialLifecycle lc) =>
+      uiTr(context, lifecycleAr(lc));
+  static String payment(BuildContext context, FinancialPaymentState p) =>
+      uiTr(context, paymentAr(p));
+  static String channel(BuildContext context, FinancialPaymentChannel c) =>
+      uiTr(context, channelAr(c));
+  static String bucket(BuildContext context, FinancialCollectionBucket b) =>
+      uiTr(context, bucketAr(b));
+  static String confidence(BuildContext context, FinancialConfidence c) =>
+      uiTr(context, confidenceAr(c));
+  static String financialStatus(BuildContext context, FinancialOrderLine line) =>
+      uiTr(context, financialStatusAr(line));
+  static String legacyLedgerType(BuildContext context, String raw) =>
+      uiTr(context, legacyLedgerTypeAr(raw));
+  static String exceptionCode(BuildContext context, String code) =>
+      uiTr(context, exceptionCodeAr(code));
+
 }

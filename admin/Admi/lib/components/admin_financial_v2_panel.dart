@@ -16,6 +16,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
+import '/l10n/ui_catalog.dart';
 
 /// Admin Financial Reporting V2 — read-only accounting view.
 class AdminFinancialV2Panel extends StatefulWidget {
@@ -84,7 +85,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
   }
 
   String _confLabel(FinancialConfidence c) =>
-      FinancialStateLabels.confidenceAr(c);
+      FinancialStateLabels.confidence(context, c);
 
   @override
   Widget build(BuildContext context) {
@@ -416,33 +417,33 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
                 _money(t.onlineCompanyOwesDrivers)),
           ],
           const Divider(),
-          Text(uiTr(context, 'التصنифات'), style: theme.titleSmall),
+          Text(uiTr(context, 'التصنيفات'), style: theme.titleSmall),
           _kv(
-            FinancialStateLabels.bucketAr(
+            FinancialStateLabels.bucket(context, 
               FinancialCollectionBucket.completedAndCollected,
             ),
             '${t.completedAndCollected}',
           ),
           _kv(
-            FinancialStateLabels.bucketAr(
+            FinancialStateLabels.bucket(context, 
               FinancialCollectionBucket.paidButNotCompleted,
             ),
             '${t.paidButNotCompleted}',
           ),
           _kv(
-            FinancialStateLabels.bucketAr(
+            FinancialStateLabels.bucket(context, 
               FinancialCollectionBucket.completedButNotCollected,
             ),
             '${t.completedButNotCollected}',
           ),
           _kv(
-            FinancialStateLabels.bucketAr(
+            FinancialStateLabels.bucket(context, 
               FinancialCollectionBucket.pendingPayment,
             ),
             '${t.pendingPayment}',
           ),
           _kv(
-            FinancialStateLabels.bucketAr(
+            FinancialStateLabels.bucket(context, 
               FinancialCollectionBucket.cancelledOrExpired,
             ),
             '${t.cancelledOrExpired}',
@@ -520,16 +521,16 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
                     ),
                   ),
                   DataCell(Text(r.line.currency)),
-                  DataCell(Text(FinancialStateLabels.channelAr(r.line.channel))),
-                  DataCell(Text(FinancialStateLabels.lifecycleAr(r.line.lifecycle))),
-                  DataCell(Text(FinancialStateLabels.paymentAr(r.line.payment))),
+                  DataCell(Text(FinancialStateLabels.channel(context, r.line.channel))),
+                  DataCell(Text(FinancialStateLabels.lifecycle(context, r.line.lifecycle))),
+                  DataCell(Text(FinancialStateLabels.payment(context, r.line.payment))),
                   DataCell(Text(_money(r.line.customerPaid))),
                   DataCell(Text(_money(r.line.platformFee))),
                   DataCell(Text(_money(r.line.recordedVat))),
                   DataCell(Text(_money(r.line.recordedDiscount))),
                   DataCell(Text(_money(r.line.driverNet))),
                   DataCell(
-                    Text(FinancialStateLabels.financialStatusAr(r.line)),
+                    Text(FinancialStateLabels.financialStatus(context, r.line)),
                   ),
                   DataCell(Text(_confLabel(r.line.confidence))),
                 ],

@@ -13,6 +13,7 @@ import '/core/finance/finance_reconciliation_read_model.dart';
 import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/l10n/ui_catalog.dart';
 
 /// F3-B2 Accountant Workspace — uses B1 [FinanceReconciliationReadModel] only.
 class AdminFinanceReconciliationWidget extends StatefulWidget {
@@ -130,13 +131,13 @@ class _AdminFinanceReconciliationWidgetState
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
-      title: 'المصالحة المالية',
+      title: uiTr(context, 'المصالحة المالية'),
       child: !canAccess
           ? Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  'ليس لديك صلاحية لعرض هذه الصفحة',
+                  uiTr(context, 'ليس لديك صلاحية لعرض هذه الصفحة'),
                   style: AccountantFinanceText.body(theme),
                 ),
               ),
@@ -157,7 +158,7 @@ class _AdminFinanceReconciliationWidgetState
                         const CircularProgressIndicator(),
                         const SizedBox(height: 16),
                         Text(
-                          'جاري تحميل البيانات المالية...',
+                          uiTr(context, 'جاري تحميل البيانات المالية...'),
                           style: AccountantFinanceText.body(theme),
                         ),
                       ],
@@ -168,7 +169,7 @@ class _AdminFinanceReconciliationWidgetState
                     rowsSource == null) {
                   return Center(
                     child: Text(
-                      'تعذر تحميل بيانات المصالحة المالية',
+                      uiTr(context, 'تعذر تحميل بيانات المصالحة المالية'),
                       style: AccountantFinanceText.body(theme),
                     ),
                   );
@@ -176,7 +177,7 @@ class _AdminFinanceReconciliationWidgetState
                 if (rowsSource == null) {
                   return Center(
                     child: Text(
-                      'لا توجد بيانات',
+                      uiTr(context, 'لا توجد بيانات'),
                       style: AccountantFinanceText.body(theme),
                     ),
                   );
@@ -192,7 +193,7 @@ class _AdminFinanceReconciliationWidgetState
                         Padding(
                           padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                           child: Text(
-                            'صفوف أولية جاهزة — جاري إكمال ملخص الفترة…',
+                            uiTr(context, 'صفوف أولية جاهزة — جاري إكمال ملخص الفترة…'),
                             style: AccountantFinanceText.label(theme),
                           ),
                         ),
@@ -200,7 +201,7 @@ class _AdminFinanceReconciliationWidgetState
                         Padding(
                           padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                           child: Text(
-                            'تعذر تحميل ملخص الفترة — السجل الأولي متاح.',
+                            uiTr(context, 'تعذر تحميل ملخص الفترة — السجل الأولي متاح.'),
                             style: AccountantFinanceText.label(theme).copyWith(
                               color: theme.error,
                             ),
@@ -247,15 +248,15 @@ class _WorkspaceBody extends StatelessWidget {
       padding: AdminUi.pagePadding(context),
       children: [
         AdminPageHeader(
-          title: 'المصالحة المالية',
+          title: uiTr(context, 'المصالحة المالية'),
           subtitle:
-              'مراجعة الرحلات المكتملة والحالة المالية والتحصيل والتسويات',
+              uiTr(context, 'مراجعة الرحلات المكتملة والحالة المالية والتحصيل والتسويات'),
         ),
         if (!summaryReady)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
-              'جاري حساب ملخص الفترة…',
+              uiTr(context, 'جاري حساب ملخص الفترة…'),
               style: AccountantFinanceText.label(theme).copyWith(
                 color: AdminUi.brandTeal,
               ),
@@ -292,16 +293,16 @@ class _WorkspaceBody extends StatelessWidget {
           runSpacing: 8,
           children: [
             _MoneyCard(
-              label: 'إجمالي مكتمل (موثوق)',
+              label: uiTr(context, 'إجمالي مكتمل (موثوق)'),
               value: summaryReady ? moneyOrDash(s.completedGross) : '—',
             ),
             _MoneyCard(
-              label: 'مستحق للشركة',
+              label: uiTr(context, 'مستحق للشركة'),
               value:
                   summaryReady ? moneyOrDash(s.companyReceivableTotal) : '—',
             ),
             _MoneyCard(
-              label: 'مستحق على الشركة',
+              label: uiTr(context, 'مستحق على الشركة'),
               value: summaryReady ? moneyOrDash(s.companyPayableTotal) : '—',
             ),
           ],
@@ -309,26 +310,26 @@ class _WorkspaceBody extends StatelessWidget {
         if (summaryReady && s.moneyOmittedIncompleteCount > 0) ...[
           const SizedBox(height: 8),
           Text(
-            'تم استبعاد ${s.moneyOmittedIncompleteCount} رحلة من مجاميع الأموال لعدم اكتمال البيانات.',
+            uiTr(context, 'تم استبعاد ${s.moneyOmittedIncompleteCount} رحلة من مجاميع الأموال لعدم اكتمال البيانات.'),
             style: AccountantFinanceText.label(theme),
           ),
         ],
         const SizedBox(height: 20),
         Text(
-          'استثناءات تحتاج المراجعة',
+          uiTr(context, 'استثناءات تحتاج المراجعة'),
           style: AccountantFinanceText.sectionTitle(theme),
         ),
         const SizedBox(height: 8),
         ..._exceptionTiles(context, theme, completedOnly),
         const SizedBox(height: 20),
         Text(
-          'سجل المصالحة',
+          uiTr(context, 'سجل المصالحة'),
           style: AccountantFinanceText.sectionTitle(theme),
         ),
         const SizedBox(height: 8),
         if (completedOnly.isEmpty)
           Text(
-            'لا توجد رحلات مكتملة ضمن النطاق الحالي.',
+            uiTr(context, 'لا توجد رحلات مكتملة ضمن النطاق الحالي.'),
             style: AccountantFinanceText.body(theme),
           )
         else
@@ -338,17 +339,17 @@ class _WorkspaceBody extends StatelessWidget {
               headingRowHeight: 40,
               dataRowMinHeight: 44,
               dataRowMaxHeight: 72,
-              columns: const [
-                DataColumn(label: Text('مرجع الرحلة')),
-                DataColumn(label: Text('الدولة')),
-                DataColumn(label: Text('طريقة الدفع')),
-                DataColumn(label: Text('الحالة المالية')),
-                DataColumn(label: Text('التحصيل')),
-                DataColumn(label: Text('الوكيل')),
-                DataColumn(label: Text('التسوية')),
-                DataColumn(label: Text('المصالحة')),
-                DataColumn(label: Text('المبلغ')),
-                DataColumn(label: Text('الملاحظات')),
+              columns: [
+                DataColumn(label: Text(uiTr(context, 'مرجع الرحلة'))),
+                DataColumn(label: Text(uiTr(context, 'الدولة'))),
+                DataColumn(label: Text(uiTr(context, 'طريقة الدفع'))),
+                DataColumn(label: Text(uiTr(context, 'الحالة المالية'))),
+                DataColumn(label: Text(uiTr(context, 'التحصيل'))),
+                DataColumn(label: Text(uiTr(context, 'الوكيل'))),
+                DataColumn(label: Text(uiTr(context, 'التسوية'))),
+                DataColumn(label: Text(uiTr(context, 'المصالحة'))),
+                DataColumn(label: Text(uiTr(context, 'المبلغ'))),
+                DataColumn(label: Text(uiTr(context, 'الملاحظات'))),
               ],
               rows: [
                 for (final r in completedOnly)
@@ -476,7 +477,7 @@ class _WorkspaceBody extends StatelessWidget {
     if (tiles.isEmpty) {
       return [
         Text(
-          'لا توجد استثناءات بيانات تتطلب مراجعة فورية.',
+          uiTr(context, 'لا توجد استثناءات بيانات تتطلب مراجعة فورية.'),
           style: AccountantFinanceText.body(theme),
         ),
       ];

@@ -1,10 +1,13 @@
+import 'package:flutter/material.dart';
+
 import '/backend/schema/order_record.dart';
 import '/core/toury_system_status_codes.dart';
+import '/l10n/ui_catalog.dart';
 
 /// Resolves admin booking status display labels.
 ///
 /// Preference order: machine `status_code` first, then legacy Arabic `halh_text`.
-/// Arabic map is the temporary admin display surface (not i18n keys yet).
+/// Canonical Arabic strings are localized via [localized] / [localizedOf] (uiTr).
 abstract final class AdminBookingStatusLabel {
   AdminBookingStatusLabel._();
 
@@ -117,6 +120,17 @@ abstract final class AdminBookingStatusLabel {
         statusCode: _rawStatusCode(order),
         halhText: order.halhText,
       );
+
+  /// Locale-aware badge label (Arabic canonical → uiTr).
+  static String localized(
+    BuildContext context, {
+    String? statusCode,
+    String? halhText,
+  }) =>
+      uiTr(context, arabic(statusCode: statusCode, halhText: halhText));
+
+  static String localizedOf(BuildContext context, OrderRecord order) =>
+      uiTr(context, of(order));
 
   static String codeOf(OrderRecord order) => resolveCode(
         statusCode: _rawStatusCode(order),

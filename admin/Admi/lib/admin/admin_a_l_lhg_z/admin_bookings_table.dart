@@ -13,6 +13,7 @@ import '/core/admin_qa_fixture.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/l10n/ui_catalog.dart';
 
 /// Modern bookings table with horizontal scroll (page stays RTL, no page overflow).
 class AdminBookingsTable extends StatelessWidget {
@@ -399,7 +400,7 @@ class AdminBookingStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
-    final status = AdminBookingStatusLabel.of(order);
+    final status = AdminBookingStatusLabel.localizedOf(context, order);
     final colors = _statusColors(AdminBookingStatusLabel.toneOf(order), theme);
     final label =
         status.isNotEmpty ? uiTr(context, status) : uiTr(context, 'غير محدد');
