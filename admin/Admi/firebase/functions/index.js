@@ -153,6 +153,15 @@ exports.createPanelUser = functions.https.onCall(async (data, context) => {
       if (field === "Rev_dloh_agent" && callerClaims.country_admin) {
         continue;
       }
+      // Country agents may attach a transport company when creating drivers;
+      // Rev_dolh is still forced from claims below.
+      if (
+        field === "transport_company" &&
+        callerClaims.country_admin &&
+        (userData.ismndob === true || userData.ismndom === true)
+      ) {
+        continue;
+      }
       throw new functions.https.HttpsError(
         "permission-denied",
         `Cannot set ${field}`,
@@ -160,17 +169,10 @@ exports.createPanelUser = functions.https.onCall(async (data, context) => {
     }
   }
 
-  if (callerClaims.country_admin && !callerClaims.super_admin) {
-    if (userData.Rev_dloh_agent && userData.Rev_dloh_agent !== callerClaims.country_id) {
-      throw new functions.https.HttpsError(
-        "permission-denied",
-        "Country scope mismatch.",
-      );
-    }
-    if (!userData.Rev_dloh_agent && callerClaims.country_id) {
-      userData.Rev_dloh_agent = db.doc(callerClaims.country_id);
-    }
-  }
+  // Country agents: force Rev_dolh (+ Rev_dloh_agent when missing) from claims.
+  // Admin SDK bypasses Firestore rules — never trust client country on create.
+  const {applyCountryAdminCreateLock} = require("./panel_user_country_lock.js");
+  applyCountryAdminCreateLock(userData, callerClaims, functions.https);
 
   let userRecord;
   try {

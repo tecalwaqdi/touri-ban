@@ -817,6 +817,26 @@ service cloud.firestore {
         && claimPartnerMkanPath() == /databases/$(database)/documents/mkan/$(mkanId);
     }
 
+    // Landmark create: Rev_dolh + region (cities) + city (villages) must match claim.
+    // Do not trust client hierarchy alone — resolve dolh from geo docs.
+    // rules-rev: country-admin-mkan-geo-hierarchy-2026-09-08
+    function mkanCreateInClaimCountry() {
+      let d = request.resource.data;
+      let regionRef = d.get('id_cit', null);
+      let cityRef = d.get('id_vill', null);
+      let regionOk = regionRef == null
+        || countryRefMatchesClaim(get(regionRef).data.get('dolh', null));
+      let cityDoc = cityRef == null ? null : get(cityRef).data;
+      let cityOk = cityRef == null
+        || (
+          countryRefMatchesClaim(cityDoc.get('dolh', null))
+          && (regionRef == null
+            || cityDoc.get('cities', null) == null
+            || cityDoc.cities == regionRef)
+        );
+      return countryRefMatchesClaim(d.Rev_dolh) && regionOk && cityOk;
+    }
+
   // ── Countries / cities / villages: public catalog read (registration) ──
     match /countries/{document} {
       allow read: if true;
@@ -850,10 +870,10 @@ service cloud.firestore {
         && d.get('isAdminRule', 0) != 1
         && d.get('IsAdminRule', 0) != 1;
       let inCountryScope =
-        countriesMatchAdminScope(d.get('Rev_dolh', null))
-        || countriesMatchAdminScope(d.get('Rev_dloh_agent', null))
-        || countriesMatchAdminScope(prev.get('Rev_dolh', null))
-        || countriesMatchAdminScope(prev.get('Rev_dloh_agent', null));
+        countryRefMatchesClaim(d.get('Rev_dolh', null))
+        || countryRefMatchesClaim(d.get('Rev_dloh_agent', null))
+        || countryRefMatchesClaim(prev.get('Rev_dolh', null))
+        || countryRefMatchesClaim(prev.get('Rev_dloh_agent', null));
       // F3-C3: client must not create/activate agents (use createPanelUser CF).
       let notCreatingAgent =
         d.get('Isagent', false) == false
@@ -1054,10 +1074,11 @@ service cloud.firestore {
 
     match /mkan/{document} {
       allow read: if request.auth != null;
-      // Create: panel roles as before.
-      allow create: if isSuperAdmin()
-        || (isCountryAdmin() && countriesMatchAdminScope(request.resource.data.Rev_dolh))
-        || (isAgent() && countriesMatchAdminScope(request.resource.data.Rev_dolh));
+      // Create: claim country + region/city hierarchy (get dolh from geo docs).
+      // rules-rev: country-admin-mkan-geo-hierarchy-2026-09-08
+      allow create: if claimBool('super_admin')
+        || (claimBool('country_admin') && mkanCreateInClaimCountry())
+        || (claimBool('agent') && mkanCreateInClaimCountry());
       // Update/delete: prefer custom claim to avoid get() recursion, then user doc flags.
       allow update, delete: if claimBool('super_admin')
         || (signedIn()
@@ -1066,8 +1087,10 @@ service cloud.firestore {
             && get(/databases/$(database)/documents/user/$(request.auth.uid)).data.get('isAdminRule', 0) == 1)
         || (signedIn()
             && get(/databases/$(database)/documents/user/$(request.auth.uid)).data.get('IsAdminRule', 0) == 1)
-        || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dolh))
-        || (isAgent() && countriesMatchAdminScope(resource.data.Rev_dolh))
+        || (claimBool('country_admin')
+            && countryRefMatchesClaim(resource.data.Rev_dolh))
+        || (claimBool('agent')
+            && countryRefMatchesClaim(resource.data.Rev_dolh))
         || partnerOwnsMkan(document);
     }
 
