@@ -23,34 +23,41 @@ MAP_FILES = [
 
 def parse_maps(path: Path) -> dict[str, dict[str, str]]:
     text = path.read_text(encoding="utf-8")
-    # Heuristic: top-level 'key': { ... },
     entries: dict[str, dict[str, str]] = {}
-    for m in re.finditer(r"\n  '((?:\\'|[^'])+)': \{\n((?:    .*\n)*?)  \},", text):
-        key = m.group(1).replace("\\'", "'")
-        body = m.group(2)
-        locs: dict[str, str] = {}
-        for loc in LOCALES + ["zh_Hans", "tr", "az", "ka"]:
-            mm = re.search(rf"'{re.escape(loc)}':\s*'((?:\\'|[^'])*)'", body)
-            if not mm:
-                mm = re.search(rf"'{re.escape(loc)}':\s*\"((?:\\\"|[^\"])*)\"", body)
-            if not mm:
-                # multiline string start: 'en':\n          '...'
-                mm = re.search(
-                    rf"'{re.escape(loc)}':\s*\n\s*'((?:\\'|[^'])*)'", body
-                )
-            if not mm:
-                mm = re.search(
-                    rf"'{re.escape(loc)}':\s*\n\s*\"((?:\\\"|[^\"])*)\"", body
-                )
-            if mm:
-                locs[loc] = (
-                    mm.group(1)
-                    .replace("\\'", "'")
-                    .replace('\\"', '"')
-                    .replace("\\$", "$")
-                )
-        entries[key] = locs
+    patterns = [
+        # Catalog / admin maps (2-space key indent)
+        "\n  '((?:\\\\'|[^'])+)': \\{\n((?:    .*\n)*?)  \\},",
+        # Compact FlutterFlow hash keys
+        "'([A-Za-z0-9_]+)':\\s*\\{([^{}]*?)\\}",
+    ]
+    for pat in patterns:
+        for m in re.finditer(pat, text):
+            key = m.group(1).replace("\\'", "'")
+            body = m.group(2)
+            if "'en':" not in body and '"en":' not in body:
+                continue
+            locs: dict[str, str] = {}
+            for loc in LOCALES + ["zh_Hans", "tr", "az", "ka"]:
+                mm = re.search(rf"'{re.escape(loc)}':\s*'((?:\\'|[^'])*)'", body)
+                if not mm:
+                    mm = re.search(
+                        rf"'{re.escape(loc)}':\s*\"((?:\\\"|[^\"])*)\"", body
+                    )
+                if mm:
+                    locs[loc] = (
+                        mm.group(1)
+                        .replace("\\'", "'")
+                        .replace('\\"', '"')
+                        .replace("\\$", "$")
+                    )
+            if not locs:
+                continue
+            # Skip intentional empty placeholders (all target locales blank).
+            if all(not (locs.get(loc) or "").strip() for loc in LOCALES if loc in locs):
+                continue
+            entries[key] = locs
     return entries
+
 
 
 def main() -> int:

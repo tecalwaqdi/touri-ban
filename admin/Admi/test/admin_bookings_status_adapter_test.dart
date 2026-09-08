@@ -12,19 +12,19 @@ void main() {
         AdminBookingStatusLabel.arabic(
           statusCode: TourySystemStatusCodes.pendingDriver,
         ),
-        'بانتظار قبول مندوب',
+        'بانتظار قبول سائق',
       );
       expect(
         AdminBookingStatusLabel.arabic(
           statusCode: TourySystemStatusCodes.driverAssigned,
         ),
-        'تم إسناد مندوب',
+        'تم إسناد سائق',
       );
       expect(
         AdminBookingStatusLabel.arabic(
           statusCode: TourySystemStatusCodes.driverArriving,
         ),
-        'المندوب في الطريق',
+        'السائق في الطريق',
       );
       expect(
         AdminBookingStatusLabel.arabic(
@@ -61,11 +61,11 @@ void main() {
     test('legacy Arabic maps with compatibility', () {
       expect(
         AdminBookingStatusLabel.arabic(halhText: 'بإنتظار قبول المندوب'),
-        'بانتظار قبول مندوب',
+        'بانتظار قبول سائق',
       );
       expect(
         AdminBookingStatusLabel.arabic(halhText: 'مقبول'),
-        'تم إسناد مندوب',
+        'تم إسناد سائق',
       );
       expect(
         AdminBookingStatusLabel.arabic(halhText: 'مكتمل'),

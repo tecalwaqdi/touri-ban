@@ -19,7 +19,7 @@ class AdminBookingDetailsExtras extends StatelessWidget {
 
     final timeline = <(String, DateTime?)>[
       (uiTr(context, 'إنشاء الحجز'), row.createdAt),
-      (uiTr(context, 'قبول المندوب'), row.acceptedAt),
+      (uiTr(context, 'قبول السائق'), row.acceptedAt),
       (uiTr(context, 'الوصول'), row.arrivedAt),
       (uiTr(context, 'بدء الرحلة'), row.startedAt),
       (uiTr(context, 'الاكتمال'), row.completedAt),

@@ -25,9 +25,9 @@ abstract final class SettlementStateLabels {
   static String paymentDirectionAr(String raw) {
     switch (raw.trim().toUpperCase()) {
       case 'DRIVER_TO_COMPANY':
-        return 'دفعة من المندوب للشركة';
+        return 'دفعة من السائق للشركة';
       case 'COMPANY_TO_DRIVER':
-        return 'دفعة من الشركة للمندوب';
+        return 'دفعة من الشركة للسائق';
       default:
         return directionAr(raw);
     }

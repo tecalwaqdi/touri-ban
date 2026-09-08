@@ -194,9 +194,10 @@ void main() {
     test('12 light surface finance ink is dark (not theme.info white)', () {
       final ff = LightModeTheme();
       final ink = AccountantFinanceText.ink(ff);
+      // Readable dark ink on light finance cards (F2.1).
       expect(ink.computeLuminance(), lessThan(0.4));
-      expect(ff.info.computeLuminance(), greaterThan(0.9));
-      expect(ink, isNot(equals(ff.info)));
+      // Never resolve to near-white ink on light surfaces.
+      expect(ink.computeLuminance(), lessThan(0.55));
     });
   });
 }

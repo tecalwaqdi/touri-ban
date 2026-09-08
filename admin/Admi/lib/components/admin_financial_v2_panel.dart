@@ -399,7 +399,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
           _kv(uiTr(context, 'نقد بيد المندوبين'), _money(t.cashHeldByDrivers)),
           _kv(uiTr(context, 'المندوب مدين للشركة'),
               _money(t.cashDriversOweCompany)),
-          _kv(uiTr(context, 'الشركة مدينة للمندوب'),
+          _kv(uiTr(context, 'الشركة مدينة للسائق'),
               _money(t.cashCompanyOwesDrivers)),
           if (t.cashUnreconciled.minorUnits != 0)
             _kv('RECONCILIATION_DIFFERENCE', _money(t.cashUnreconciled)),
@@ -413,7 +413,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
                 _money(t.onlineHeldByCompany)),
             _kv(uiTr(context, 'متبقي قبل رسوم البوابة'),
                 _money(t.onlineRemainingPosition)),
-            _kv(uiTr(context, 'الشركة مدينة للمندوب'),
+            _kv(uiTr(context, 'الشركة مدينة للسائق'),
                 _money(t.onlineCompanyOwesDrivers)),
           ],
           const Divider(),

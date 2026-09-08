@@ -222,12 +222,12 @@ class AdminBookingTimelineEvent {
         ),
       if (row.acceptedAt != null)
         AdminBookingTimelineEvent(
-          label: 'قبول المندوب',
+          label: 'قبول السائق',
           at: row.acceptedAt!,
         ),
       if (row.arrivedAt != null)
         AdminBookingTimelineEvent(
-          label: 'وصل المندوب',
+          label: 'وصل السائق',
           at: row.arrivedAt!,
         ),
       if (row.startedAt != null)
