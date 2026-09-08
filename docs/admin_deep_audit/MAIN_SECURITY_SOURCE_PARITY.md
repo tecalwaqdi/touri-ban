@@ -9,7 +9,8 @@
 | | |
 |--|--|
 | **OLD MAIN** | `d50d620ad97132a958351c0a6f2c44783bf6b6fb` |
-| **NEW MAIN** | `096525327b115bbe709570ffbf2168398651f856` |
+| **NEW MAIN** | `77f26f6dc8efafb20dd9130189d00a67bcf81e8d` |
+| **SECURITY COMMIT ON MAIN** | `096525327b115bbe709570ffbf2168398651f856` |
 | **SECURITY BASELINE** | `83344c5` equivalent (Rules byte-match live; Payment/Functions semantic match) |
 
 ## Ancestry
