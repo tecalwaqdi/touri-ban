@@ -92,11 +92,8 @@ class FFLocalizations {
         {};
     // Always resolve by ISO language code (fr, not fr_FR) so catalog keys match.
     final lang = locale.languageCode.toLowerCase();
-    final text = map[lang] ??
-        // Resilience only: Kyrgyz may fall back to Russian when a key is genuinely absent.
-        (lang == 'ky' ? (map['ru'] ?? map['en']) : null) ??
-        map['en'] ??
-        '';
+    // Missing keys fall back to English only — never KY->RU as a normal path.
+    final text = map[lang] ?? map['en'] ?? '';
     return text;
   }
 
@@ -122,7 +119,6 @@ class FFLocalizations {
         return (ruText != null && ruText.isNotEmpty) ? ruText : (enText ?? '');
       case 'ky':
         if (kyText != null && kyText.isNotEmpty) return kyText;
-        if (ruText != null && ruText.isNotEmpty) return ruText;
         return enText ?? '';
       case 'zh_Hans':
         return (zh_HansText != null && zh_HansText.isNotEmpty)

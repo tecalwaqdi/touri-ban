@@ -373,7 +373,7 @@ const kNavTranslations = <String, Map<String, String>>{
   'nav_company_drivers': {
     'en': 'Company Drivers',
     'pt': 'Company Motoristas',
-    'fr': 'Company Chauffeurs',
+    'fr': 'Chauffeurs de l\'entreprise',
     'ar': 'سائقو الشركة',
     'zh_Hans': '公司司机',
     'tr': 'Şirket sürücüleri',
