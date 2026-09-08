@@ -145,6 +145,22 @@ service cloud.firestore {
         && countryRef.path == claimCountryPath();
     }
 
+    // Prefer Reference equality — `.path == token` is unreliable for list/get.
+    // Token country_id format: countries/{docId}
+    function claimCountryDocId() {
+      return signedIn()
+        && request.auth.token.country_id is string
+        && request.auth.token.country_id.matches('countries/.*')
+        ? request.auth.token.country_id.split('/')[1]
+        : null;
+    }
+
+    function countryRefMatchesClaim(countryRef) {
+      return claimCountryDocId() != null
+        && countryRef
+          == /databases/$(database)/documents/countries/$(claimCountryDocId());
+    }
+
     function orderBelongsToPartner(data) {
       return isPartner()
         && claimPartnerMkanPath() != null
@@ -396,7 +412,12 @@ service cloud.firestore {
         'total_mndob2', 'total_vat', 'total_app', 'ksm', 'SrSAAH',
         'PaymentMethod', 'ngeniusOrderId', 'idMoyser', 'payment_status',
         'payment_session_id', 'payment_verified_at', 'carRev', 'Rev_dolh',
-        'total_taim', 'data_order'
+        'total_taim', 'data_order',
+        // Historical agent snapshot — immutable after write.
+        'agent_rate', 'agent_rate_type', 'agent_amount', 'agent_amount_minor',
+        'agent_snapshot_at', 'agent_id', 'agent_display_name',
+        'agent_attribution_status', 'agent_currency', 'agent_scope',
+        'agent_snapshot_version'
       ]);
     }
 
@@ -569,6 +590,9 @@ service cloud.firestore {
         && d.get('total_app', prev.get('total_app', 0)) == prev.get('total_app', 0)
         && d.get('finance', prev.get('finance', false)) == prev.get('finance', false)
         && d.get('super_admin', prev.get('super_admin', false)) == prev.get('super_admin', false)
+        // F03 — Agent commercial rates: client cannot create/update/delete
+        // (use diff so FieldValue.delete() cannot bypass get-default equality).
+        && agentCommercialRatesUnchanged()
         && d.get('active_order_id', prev.get('active_order_id', null)) == prev.get('active_order_id', null)
         && d.get('active_order_updated_at', prev.get('active_order_updated_at', null))
              == prev.get('active_order_updated_at', null)
@@ -609,6 +633,14 @@ service cloud.firestore {
     }
 
 
+    // F03 — commercial percent rates are CF / Admin SDK only (never client).
+    function agentCommercialRatesUnchanged() {
+      return resource == null
+        || !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'Agent_total', 'agent_total', 'vat_percent', 'app_commission_percent'
+        ]);
+    }
+
     // F3-C3: agent country assignment fields are server-authoritative (callables / Admin SDK).
     function agentAssignmentFieldsUnchanged() {
       let d = request.resource.data;
@@ -627,7 +659,8 @@ service cloud.firestore {
           (!wasAgent && !willBeAgent)
           || d.get('actev_user', prev.get('actev_user', true))
                == prev.get('actev_user', true)
-        );
+        )
+        && agentCommercialRatesUnchanged();
     }
 
     function tourGuideSelfClaimOk() {
@@ -825,14 +858,26 @@ service cloud.firestore {
       let notCreatingAgent =
         d.get('Isagent', false) == false
         && d.get('isagent', false) == false;
+      // F03: Country Admin cannot seed Agent commercial rates on create.
+      let notSettingAgentRates =
+        !('Agent_total' in d)
+        && !('agent_total' in d)
+        && !('vat_percent' in d)
+        && !('app_commission_percent' in d);
       return (isSuperAdmin() && notCreatingAgent)
-        || (isCountryAdmin() && notElevatingToSuper && notCreatingAgent && inCountryScope)
+        || (isCountryAdmin()
+            && notElevatingToSuper
+            && notCreatingAgent
+            && notSettingAgentRates
+            && inCountryScope)
         || (isTransportManager()
             && notElevatingToSuper
+            && notSettingAgentRates
             && d.get('ismndob', false) == true
             && d.get('isagent', false) == false
             && d.get('Isagent', false) == false
             && d.get('isPartner', false) == false
+            && d.get('is_partner', false) == false
             && d.transport_company != null
             && claimTransportCompanyPath() != null
             && d.transport_company.path == claimTransportCompanyPath());
@@ -903,6 +948,10 @@ service cloud.firestore {
         && !('Isagent' in request.resource.data)
         && !('ismndob' in request.resource.data)
         && !('isPartner' in request.resource.data)
+        && !('Agent_total' in request.resource.data)
+        && !('agent_total' in request.resource.data)
+        && !('vat_percent' in request.resource.data)
+        && !('app_commission_percent' in request.resource.data)
         && !('Rev_dloh_agent' in request.resource.data)
         && !('partner_mkan' in request.resource.data)
         && (
@@ -927,15 +976,31 @@ service cloud.firestore {
       allow create: if request.auth != null && panelCanProvisionUser();
       // Own profile first (separate statement) — avoids recursive isSuperAdmin()
       // get() while evaluating currentUserData() from other rules.
-      allow read: if signedIn() && request.auth.uid == document;
-      allow read: if request.auth != null && (
-        isSuperAdmin()
-        || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dloh_agent))
-        || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dolh))
-        || (isTransportManager()
-            && resource.data.transport_company != null
-            && resource.data.transport_company.path == claimTransportCompanyPath())
-      );
+      // Own profile GET only — never `allow read` here (list OR-poison with get()).
+      allow get: if signedIn() && request.auth.uid == document;
+      // Country panel — claim-only + Reference equality (not .path strings).
+      // Access NOT widened: still requires token country_id → same country doc.
+      // rules-rev: country-admin-user-list-split-2026-09-08
+      allow list: if claimBool('country_admin')
+        && countryRefMatchesClaim(resource.data.Rev_dolh);
+      allow list: if claimBool('country_admin')
+        && countryRefMatchesClaim(resource.data.Rev_dloh_agent);
+      allow get: if claimBool('country_admin')
+        && countryRefMatchesClaim(resource.data.Rev_dolh);
+      allow get: if claimBool('country_admin')
+        && countryRefMatchesClaim(resource.data.Rev_dloh_agent);
+      allow get: if claimBool('super_admin');
+      allow list: if claimBool('super_admin');
+      allow get: if claimBool('transport_manager')
+        && resource.data.transport_company != null
+        && request.auth.token.transport_company_id != null
+        && resource.data.transport_company.path
+          == request.auth.token.transport_company_id;
+      allow list: if claimBool('transport_manager')
+        && resource.data.transport_company != null
+        && request.auth.token.transport_company_id != null
+        && resource.data.transport_company.path
+          == request.auth.token.transport_company_id;
       // Own-profile update FIRST — critical: the panel OR-chain below exceeds the
       // 1000-expression limit and was denying ALL customer profile writes
       // (photo_url, phone, display_name, login sync).
@@ -1017,10 +1082,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // Public catalog (needed for driver registration before account exists).
+    // Public GLOBAL vehicle catalog (no country field on type_car docs).
+    // Policy: GLOBAL CAR CATALOG — only Super Admin may mutate.
+    // Country Admin/Agent must not create/update/delete global catalog rows.
     match /type_car/{document} {
       allow read: if true;
-      allow create, update, delete: if isSuperAdmin() || isCountryAdmin();
+      allow create, update, delete: if isSuperAdmin();
     }
 
     // Order create is CF-only (createCashBooking Admin SDK). Client create disabled.
@@ -1041,6 +1108,12 @@ service cloud.firestore {
       allow get: if resource == null;
       allow get: if canReadOrder(resource.data);
       allow get: if panelCanReadOrder(resource.data);
+      // Country panel order lists — claim-only (no isCountryAdmin get() fallback).
+      // Access NOT widened: still requires countriesMatchAdminScope(Rev_dolh).
+      // rules-rev: country-admin-order-list-split-2026-09-08
+      allow list: if signedIn()
+        && (claimBool('country_admin') || claimBool('agent') || claimBool('support'))
+        && countryRefMatchesClaim(resource.data.Rev_dolh);
       // Use canListOrder (not canReadOrder): partner/transport get() branches
       // in canReadOrder make Firestore reject consumer/driver list queries.
       // rules-rev: order-list-simple-2026-08-01
@@ -1154,7 +1227,12 @@ service cloud.firestore {
 
     match /support/{document} {
       allow create: if request.auth != null;
-      allow read, update: if request.auth != null && (
+      // Country-scoped support lists — claim-only (avoid isSupport→isSuperAdmin get()).
+      // rules-rev: country-admin-support-list-split-2026-09-08
+      allow list: if signedIn()
+        && (claimBool('support') || claimBool('country_admin') || claimBool('super_admin'))
+        && countryRefMatchesClaim(resource.data.Rev_dolh);
+      allow get, update: if request.auth != null && (
         isSuperAdmin()
         || (isSupport() && countriesMatchAdminScope(resource.data.Rev_dolh))
         || (isCountryAdmin() && countriesMatchAdminScope(resource.data.Rev_dolh))
@@ -1175,10 +1253,14 @@ service cloud.firestore {
 
     // Stage C — persistent admin notifications (server-written).
     match /admin_panel_notifications/{document} {
-      allow read: if isSuperAdmin()
-        || (isCountryAdmin()
-            && resource.data.countryRef != null
-            && countriesMatchAdminScope(resource.data.countryRef));
+      // Dedicated country list — claim-only; no isSuperAdmin() allow read (list poison).
+      // rules-rev: country-admin-notif-list-split-2026-09-08
+      allow list: if claimBool('country_admin')
+        && countryRefMatchesClaim(resource.data.countryRef);
+      allow list: if claimBool('super_admin');
+      allow get: if claimBool('super_admin')
+        || (claimBool('country_admin')
+            && countryRefMatchesClaim(resource.data.countryRef));
       allow update: if (isSuperAdmin() || isCountryAdmin())
         && request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['unread', 'read', 'readAt']);
@@ -1214,7 +1296,7 @@ service cloud.firestore {
 
     match /admin_financial_cache/{document} {
       allow read: if isSuperAdmin()
-        || claimBool('finance')
+        || isFinance()
         || (isCountryAdmin()
           && countriesMatchAdminScope(resource.data.Rev_dolh));
       allow write: if false;
@@ -1362,9 +1444,12 @@ service cloud.firestore {
     }
 
     // ── Settlement ledger V2 (Admin SDK writes only) ──
+    // Use isFinance() (claim OR profile isAdminRule=5) — same as order reads.
+    // claimBool('finance') alone breaks Global Accountant when token claims lag
+    // or a stale refreshMyClaims wiped the finance claim.
     function canReadSettlement() {
       return isSuperAdmin()
-        || claimBool('finance')
+        || isFinance()
         || (
           isCountryAdmin()
           && claimCountryPath() != null
@@ -1375,37 +1460,50 @@ service cloud.firestore {
         );
     }
 
+    // F07 — child docs inherit parent settlement country scope (never global
+    // merely because caller has country_admin / rule=2).
+    function canReadSettlementChild(settlementId) {
+      return isSuperAdmin()
+        || isFinance()
+        || (
+          isCountryAdmin()
+          && claimCountryPath() != null
+          && (
+            get(/databases/$(database)/documents/financial_settlements/$(settlementId))
+              .data.countryId == claimCountryPath()
+            || get(/databases/$(database)/documents/financial_settlements/$(settlementId))
+              .data.countryRef == claimCountryPath()
+          )
+        );
+    }
+
     match /financial_settlements/{id} {
       allow read: if signedIn() && canReadSettlement();
       allow create, update, delete: if false;
 
       match /lines/{lineId} {
-        allow read: if signedIn() && (
-          isSuperAdmin() || claimBool('finance') || isCountryAdmin()
-        );
+        allow read: if signedIn() && canReadSettlementChild(id);
         allow create, update, delete: if false;
       }
 
       match /events/{eventId} {
-        allow read: if signedIn() && (
-          isSuperAdmin() || claimBool('finance') || isCountryAdmin()
-        );
+        allow read: if signedIn() && canReadSettlementChild(id);
         allow create, update, delete: if false;
       }
     }
 
     match /financial_settlement_claims/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow read: if signedIn() && (isSuperAdmin() || isFinance());
       allow create, update, delete: if false;
     }
 
     match /financial_payment_allocations/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow read: if signedIn() && (isSuperAdmin() || isFinance());
       allow create, update, delete: if false;
     }
 
     match /financial_payment_allocation_claims/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow read: if signedIn() && (isSuperAdmin() || isFinance());
       allow create, update, delete: if false;
     }
 
@@ -1420,7 +1518,7 @@ service cloud.firestore {
     match /financial_settlement_payments/{id} {
       allow read: if signedIn() && (
         isSuperAdmin()
-        || claimBool('finance')
+        || isFinance()
         || (
           isCountryAdmin()
           && claimCountryPath() != null
@@ -1434,27 +1532,27 @@ service cloud.firestore {
     }
 
     match /financial_periods/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow read: if signedIn() && (isSuperAdmin() || isFinance() || isCountryAdmin());
       allow create, update, delete: if false;
     }
 
     match /financial_adjustments/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow read: if signedIn() && (isSuperAdmin() || isFinance() || isCountryAdmin());
       allow create, update, delete: if false;
     }
 
     match /financial_config/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow read: if signedIn() && (isSuperAdmin() || isFinance());
       allow create, update, delete: if false;
     }
 
     match /financial_audit_events/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance') || isCountryAdmin());
+      allow read: if signedIn() && (isSuperAdmin() || isFinance() || isCountryAdmin());
       allow create, update, delete: if false;
     }
 
     match /financial_aggregation_metrics/{id} {
-      allow read: if signedIn() && (isSuperAdmin() || claimBool('finance'));
+      allow read: if signedIn() && (isSuperAdmin() || isFinance());
       allow create, update, delete: if false;
     }
 

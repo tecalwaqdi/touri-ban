@@ -196,8 +196,8 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
                 Expanded(
                   child: Text(
                     f.activeFilterCount == 0
-                        ? uiTr(context, 'Filters')
-                        : '${uiTr(context, 'Filters')} (${f.activeFilterCount})',
+                        ? uiTr(context, 'الفلاتر')
+                        : '${uiTr(context, 'الفلاتر')} (${f.activeFilterCount})',
                     softWrap: true,
                     style: theme.titleSmall,
                   ),
@@ -509,19 +509,28 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
     );
   }
 
+  InputDecoration _geoDropdownDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+      isDense: true,
+      // Keep label clear of the outline (RTL + dense).
+      floatingLabelBehavior: FloatingLabelBehavior.auto,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    );
+  }
+
   Widget _dropdownCountry(FlutterFlowTheme theme) {
     return Semantics(
       identifier: 'qa-filter-country',
       label: 'qa-filter-country',
       child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: uiTr(context, 'الدولة'),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          isDense: true,
-        ),
+        decoration: _geoDropdownDecoration(uiTr(context, 'الدولة')),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<DocumentReference?>(
             isExpanded: true,
+            isDense: true,
+            itemHeight: 48,
             value: widget.value.countryRef,
             hint: Text(uiTr(context, 'كل الدول')),
             items: [
@@ -559,14 +568,12 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
 
   Widget _dropdownRegion(FlutterFlowTheme theme) {
     return InputDecorator(
-      decoration: InputDecoration(
-        labelText: uiTr(context, 'المنطقة'),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        isDense: true,
-      ),
+      decoration: _geoDropdownDecoration(uiTr(context, 'المنطقة')),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<DocumentReference?>(
           isExpanded: true,
+          isDense: true,
+          itemHeight: 48,
           value: widget.value.regionRef,
           hint: Text(uiTr(context, 'كل المناطق')),
           items: [
@@ -599,14 +606,12 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
 
   Widget _dropdownCity(FlutterFlowTheme theme) {
     return InputDecorator(
-      decoration: InputDecoration(
-        labelText: uiTr(context, 'المدينة'),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        isDense: true,
-      ),
+      decoration: _geoDropdownDecoration(uiTr(context, 'المدينة')),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<DocumentReference?>(
           isExpanded: true,
+          isDense: true,
+          itemHeight: 48,
           value: widget.value.cityRef,
           hint: Text(uiTr(context, 'كل المدن')),
           items: [

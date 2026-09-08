@@ -68,4 +68,104 @@ void main() {
       expect(AdminShellRules.contentMaxWidth(1000), 1200);
     });
   });
+
+  group('adminSidebarRouteIsActive', () {
+    const paths = <String, String>{
+      'Home22Dashboard': '/home22Dashboard',
+      'Adminuser': '/adminuser',
+      'AdminTourGuides': '/adminTourGuides',
+      'AdminPartners': '/adminPartners',
+      'AdminFinanceHub': '/adminFinanceHub',
+      'AdminFinanceReports': '/adminFinanceReports',
+      'AdminAgentFinance': '/adminFinanceAgents',
+    };
+
+    test('activates exact path match only', () {
+      expect(
+        adminSidebarRouteIsActive(
+          location: '/adminTourGuides',
+          routeName: 'AdminTourGuides',
+          pathByName: paths,
+        ),
+        isTrue,
+      );
+      expect(
+        adminSidebarRouteIsActive(
+          location: '/adminTourGuides',
+          routeName: 'AdminPartners',
+          pathByName: paths,
+        ),
+        isFalse,
+      );
+    });
+
+    test('does not activate dashboard for /admin* locations', () {
+      expect(
+        adminSidebarRouteIsActive(
+          location: '/adminuser',
+          routeName: 'Home22Dashboard',
+          pathByName: paths,
+        ),
+        isFalse,
+      );
+      expect(
+        adminSidebarRouteIsActive(
+          location: '/adminuser',
+          routeName: 'Adminuser',
+          pathByName: paths,
+        ),
+        isTrue,
+      );
+    });
+
+    test('prefers longest finance path match', () {
+      expect(
+        adminSidebarRouteIsActive(
+          location: '/adminFinanceReports?tab=1',
+          routeName: 'AdminFinanceReports',
+          pathByName: paths,
+        ),
+        isTrue,
+      );
+      expect(
+        adminSidebarRouteIsActive(
+          location: '/adminFinanceReports?tab=1',
+          routeName: 'AdminFinanceHub',
+          pathByName: paths,
+        ),
+        isFalse,
+      );
+      expect(
+        adminSidebarRouteIsActive(
+          location: '/adminFinanceAgents',
+          routeName: 'AdminAgentFinance',
+          pathByName: paths,
+        ),
+        isTrue,
+      );
+    });
+
+    test('longest match wins when shorter path is also a suffix', () {
+      const overlapping = <String, String>{
+        'Short': '/admin',
+        'Long': '/adminFinanceHub',
+      };
+      expect(
+        adminSidebarRouteIsActive(
+          location: '/adminFinanceHub',
+          routeName: 'Long',
+          pathByName: overlapping,
+        ),
+        isTrue,
+      );
+      expect(
+        adminSidebarRouteIsActive(
+          location: '/adminFinanceHub',
+          routeName: 'Short',
+          pathByName: overlapping,
+        ),
+        isFalse,
+      );
+    });
+  });
 }

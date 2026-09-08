@@ -620,7 +620,22 @@ class _AddDrevWidgetState extends State<AddDrevWidget> {
         : null;
 
     try {
-      final countryRef = await AdminCountrySync.countryFromVillage(workCityRef);
+      var countryRef = await AdminCountrySync.countryFromVillage(workCityRef);
+      // Country agents: never trust village-derived / client country alone.
+      if (AdminRoleService.isCountryAgent) {
+        countryRef =
+            AdminRoleService.scopedCountryRef ??
+            AdminCountryScope.activeCountryRef ??
+            countryRef;
+        if (countryRef == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(uiTr(context, 'يرجى اختيار الدولة أولاً'))),
+          );
+          safeSetState(() => _model.isSubmitting = false);
+          return;
+        }
+      }
 
       if (_isEdit) {
         final plateDisplay = AdminDriverPlate.display(plate);

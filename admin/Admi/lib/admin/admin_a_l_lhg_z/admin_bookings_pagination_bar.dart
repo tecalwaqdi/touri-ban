@@ -22,7 +22,13 @@ class AdminBookingsPaginationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final fetched = state.totalFetched;
-    final total = state.totalAvailable;
+    final rawTotal = state.totalAvailable;
+    // Never present aggregate 0 when the page already shows rows.
+    final total = (rawTotal != null && rawTotal <= 0 && visibleCount > 0)
+        ? visibleCount
+        : (rawTotal != null && rawTotal < visibleCount)
+            ? visibleCount
+            : rawTotal;
     final approxPage = fetched == 0 ? 1 : ((fetched - 1) ~/ pageSize) + 1;
     final totalPages = total == null || total <= 0
         ? null

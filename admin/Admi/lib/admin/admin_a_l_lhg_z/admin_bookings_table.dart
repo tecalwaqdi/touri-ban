@@ -72,7 +72,7 @@ class AdminBookingsTable extends StatelessWidget {
                         _h(context, uiTr(context, 'المبلغ'), 9),
                         if (!hidePayment)
                           _h(context, uiTr(context, 'الدفع'), 8),
-                        _h(context, uiTr(context, 'التاريخ'), 10),
+                        _h(context, uiTr(context, 'التاريخ'), 14),
                         _h(context, uiTr(context, 'إجراءات'), 8),
                       ],
                     ),
@@ -254,33 +254,40 @@ class _BookingsTableRow extends StatelessWidget {
                   message: AdminBookingsPresentation.tableDateTimeTooltip(
                     row.createdAt,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        AdminBookingsPresentation.tableDate(row.createdAt),
-                        maxLines: 1,
-                        style: theme.bodySmall.override(
-                          fontFamily: theme.bodySmallFamily,
-                          fontWeight: FontWeight.w600,
-                          useGoogleFonts: !theme.bodySmallIsCustom,
-                        ),
-                      ),
-                      if (row.createdAt != null)
+                  child: Directionality(
+                    textDirection: ui.TextDirection.ltr,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                         Text(
-                          AdminBookingsPresentation.tableTime(row.createdAt),
+                          AdminBookingsPresentation.tableDate(row.createdAt),
                           maxLines: 1,
-                          style: theme.labelSmall.override(
-                            fontFamily: theme.labelSmallFamily,
-                            color: theme.secondaryText,
-                            useGoogleFonts: !theme.labelSmallIsCustom,
+                          softWrap: false,
+                          overflow: TextOverflow.visible,
+                          style: theme.bodySmall.override(
+                            fontFamily: theme.bodySmallFamily,
+                            fontWeight: FontWeight.w600,
+                            useGoogleFonts: !theme.bodySmallIsCustom,
                           ),
                         ),
-                    ],
+                        if (row.createdAt != null)
+                          Text(
+                            AdminBookingsPresentation.tableTime(row.createdAt),
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.visible,
+                            style: theme.labelSmall.override(
+                              fontFamily: theme.labelSmallFamily,
+                              color: theme.secondaryText,
+                              useGoogleFonts: !theme.labelSmallIsCustom,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-                10,
+                14,
               ),
               _cell(
                 Row(

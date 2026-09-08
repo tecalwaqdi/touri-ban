@@ -1,5 +1,7 @@
 
-import '/auth/firebase_auth/auth_util.dart';
+import '/backend/admin_country_scope.dart';
+import '/backend/admin_role_service.dart';
+import '/backend/admin_user_creation.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -466,7 +468,6 @@ class _AddYserWidgetState extends State<AddYserWidget> {
                               false)) {
                             return;
                           }
-                          GoRouter.of(context).prepareAuthEvent();
                           if (_model.passTextController.text !=
                               _model.cpassTextController.text) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -477,30 +478,38 @@ class _AddYserWidgetState extends State<AddYserWidget> {
                             return;
                           }
 
-                          final user = await authManager.createAccountWithEmail(
-                            context,
-                            _model.emailTextController.text,
-                            _model.passTextController.text,
-                          );
-                          if (user == null) {
-                            return;
-                          }
-
                           try {
-                            await UserRecord.collection.doc(user.uid).set(
-                                  createUserRecordData(
-                                    displayName:
-                                        _model.textController1!.text.trim(),
-                                    email: _model.emailTextController!.text
-                                        .trim(),
-                                    actevUser: true,
-                                    createdTime: getCurrentTimestamp,
-                                    isagent: false,
-                                    ismndob: false,
-                                    uid: user.uid,
+                            final countryRef =
+                                AdminRoleService.isCountryAgent
+                                    ? (AdminRoleService.scopedCountryRef ??
+                                        AdminCountryScope.activeCountryRef)
+                                    : AdminCountryScope.activeCountryRef;
+                            if (AdminRoleService.isCountryAgent &&
+                                countryRef == null) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    uiTr(context, 'يرجى اختيار الدولة أولاً'),
                                   ),
-                                  SetOptions(merge: true),
-                                );
+                                ),
+                              );
+                              return;
+                            }
+
+                            await AdminUserCreation.createEmailUser(
+                              email: _model.emailTextController!.text.trim(),
+                              password: _model.passTextController!.text,
+                              userData: {
+                                'display_name':
+                                    _model.textController1!.text.trim(),
+                                'actev_user': true,
+                                'isagent': false,
+                                'ismndob': false,
+                                if (countryRef != null)
+                                  'Rev_dolh': countryRef.path,
+                              },
+                            );
 
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -519,7 +528,9 @@ class _AddYserWidgetState extends State<AddYserWidget> {
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('${appTr(context, 'adm_save_account_failed')}: ${AdminUserFacingErrors.from(context, e)}'),
+                                content: Text(
+                                  '${appTr(context, 'adm_save_account_failed')}: ${AdminUserFacingErrors.from(context, e)}',
+                                ),
                               ),
                             );
                           }

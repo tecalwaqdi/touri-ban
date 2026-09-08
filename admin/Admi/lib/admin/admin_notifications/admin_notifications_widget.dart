@@ -46,16 +46,15 @@ class _AdminNotificationsWidgetState extends State<AdminNotificationsWidget> {
     super.dispose();
   }
 
-  Query<Map<String, dynamic>> _baseQuery() {
+  Query<Map<String, dynamic>>? _baseQueryOrNull() {
     Query<Map<String, dynamic>> q = FirebaseFirestore.instance
         .collection('admin_panel_notifications')
         .orderBy('createdAt', descending: true);
-    if (AdminRoleService.isCountryAgent &&
-        AdminRoleService.scopedCountryRef != null) {
-      q = q.where(
-        'countryRef',
-        isEqualTo: AdminRoleService.scopedCountryRef,
-      );
+    if (AdminRoleService.isCountryAgent) {
+      final country = AdminRoleService.scopedCountryRef;
+      // Never run an unscoped notifications list for Country Agent.
+      if (country == null) return null;
+      q = q.where('countryRef', isEqualTo: country);
     }
     return q;
   }
@@ -231,13 +230,22 @@ class _AdminNotificationsWidgetState extends State<AdminNotificationsWidget> {
               ),
             ),
             const SizedBox(height: 10),
-            AdminFirestoreList<AdminPanelNotification>(
+            Builder(
+              builder: (context) {
+                final query = _baseQueryOrNull();
+                if (query == null) {
+                  return AdminErrorState(
+                    title: appTr(context, 'adm_scope_not_ready'),
+                    onRetry: () => setState(() {}),
+                  );
+                }
+                return AdminFirestoreList<AdminPanelNotification>(
               key: ValueKey('notif_${_categoryFilter}_$_unreadOnly'),
               reloadKey: '${_categoryFilter}_$_unreadOnly',
               refreshScope: 'admin_notifications',
               pageSize: 25,
               liveUpdates: true,
-              query: _baseQuery(),
+              query: query,
               recordBuilder: (doc) => AdminPanelNotification.fromDoc(
                 doc as QueryDocumentSnapshot<Map<String, dynamic>>,
                 tr: (k) => uiTr(context, k),
@@ -256,7 +264,11 @@ class _AdminNotificationsWidgetState extends State<AdminNotificationsWidget> {
 
                 if (listState.hasError) {
                   return AdminErrorState(
-                    title: uiTr(context, 'تعذر تحميل الإشعارات'),
+                    title: listState.errorMessage != null &&
+                            listState.errorMessage!.startsWith('adm_')
+                        ? appTr(context, listState.errorMessage!)
+                        : (listState.errorMessage ??
+                            uiTr(context, 'تعذر تحميل الإشعارات')),
                     onRetry: listState.refresh,
                   );
                 }
@@ -361,6 +373,8 @@ class _AdminNotificationsWidgetState extends State<AdminNotificationsWidget> {
                     ],
                   ),
                 );
+              },
+            );
               },
             ),
           ],

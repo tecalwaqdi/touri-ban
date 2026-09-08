@@ -29,3 +29,29 @@ class AdminShellRules {
     return 1200;
   }
 }
+
+/// Whether [routeName] should appear active in the admin sidebar for [location].
+///
+/// Picks the single best match among [pathByName]: exact path equality or
+/// `location.endsWith(path)`, preferring the longest matching path. Shorter or
+/// unrelated mapped items stay inactive. Unmapped / unmatched locations never
+/// activate a tile (avoids Dashboard-style prefix traps and stale name matches).
+bool adminSidebarRouteIsActive({
+  required String location,
+  required String routeName,
+  required Map<String, String> pathByName,
+}) {
+  final loc = location.split('?').first;
+  String? bestName;
+  var bestLen = -1;
+  for (final entry in pathByName.entries) {
+    final path = entry.value;
+    if (path.isEmpty) continue;
+    if (loc != path && !loc.endsWith(path)) continue;
+    if (path.length > bestLen) {
+      bestLen = path.length;
+      bestName = entry.key;
+    }
+  }
+  return bestName == routeName;
+}

@@ -147,6 +147,23 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
   }) {
     // Prefer operational bucket loads (QA-aware). Never use capped page `.length`
     // as the sole source for lifecycle KPIs.
+    //
+    // COUNTER SEMANTICS (bookings strip):
+    // - النتائج (results): rows in the current prepared/visible working set
+    // - الإجمالي (total): SOURCE_TOTAL from aggregate/lifecycle when reliable.
+    //   DISPLAY_SAFE_MINIMUM: if aggregate undercounts vs visible rows, UI
+    //   floors the *display* total to results so the strip is not contradictory.
+    //   This floor is presentation-only — never write it to finance/reports/
+    //   settlements/exports/server decisions.
+    // - الحالية/المكتملة/الملغية/المنتهية: operational lifecycle bucket sizes
+    //   for the agent/country scope (not limited to the current page).
+    int? sanitizeTotal(int? total) {
+      if (total == null) return null; // UNKNOWN — hide chip
+      if (total <= 0 && results > 0) return results; // DISPLAY_SAFE_MINIMUM
+      if (total < results) return results; // DISPLAY_SAFE_MINIMUM
+      return total; // SOURCE_TOTAL
+    }
+
     final ops = _opsLifecycle;
     if (ops != null) {
       int? total = queryTotal;
@@ -169,7 +186,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
       }
       return AdminBookingsSummaryCounts(
         results: results,
-        total: total,
+        total: sanitizeTotal(total),
         active: ops.active,
         completed: ops.completed,
         cancelled: ops.cancelled,
@@ -184,7 +201,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
     );
     return AdminBookingsSummaryCounts(
       results: results,
-      total: queryTotal,
+      total: sanitizeTotal(queryTotal),
       active: page.active,
       completed: page.completed,
       cancelled: page.cancelled,

@@ -10,6 +10,7 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_currency.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/core/finance/accountant_finance_loader.dart';
 import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
@@ -150,11 +151,11 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
                   )
                 else if (errored)
                   AdminErrorState(
-                    title: uiTr(context, 'تعذر تحميل المالية'),
-                    message: uiTr(
+                    title: AdminUserFacingErrors.from(
                       context,
-                      'حدث خطأ أثناء جلب البيانات. يرجى إعادة المحاولة.',
+                      snapshot.error ?? 'finance_load_failed',
                     ),
+                    message: null,
                     onRetry: _reload,
                   )
                 else if (bundle == null &&

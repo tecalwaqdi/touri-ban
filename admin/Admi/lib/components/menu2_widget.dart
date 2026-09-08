@@ -95,25 +95,38 @@ class _Menu2WidgetState extends State<Menu2Widget> {
   }
 
   bool _isActive(BuildContext context, String routeName) {
-    // Path identity is authoritative so shell chrome never leaves a stale
-    // Finance item highlighted after goNamed().
-    final loc = adminCurrentLocation(context).split('?').first;
-    final path = _routePathByName[routeName];
-    if (path != null && (loc == path || loc.endsWith(path))) {
-      return true;
-    }
-    final currentName = adminCurrentRouteName(context);
-    if (currentName == null || currentName != routeName) return false;
-    // Stale name guard: if location clearly maps to another Finance route,
-    // do not keep this tile active.
-    for (final e in _routePathByName.entries) {
-      if (e.key == routeName) continue;
-      if (loc == e.value || loc.endsWith(e.value)) return false;
-    }
-    return true;
+    return adminSidebarRouteIsActive(
+      location: adminCurrentLocation(context),
+      routeName: routeName,
+      pathByName: _routePathByName,
+    );
   }
 
+  /// Exact `routePath` values for every sidebar destination (longest-path wins).
   static const _routePathByName = <String, String>{
+    // Operations
+    'Home22Dashboard': '/home22Dashboard',
+    'AdminALLhgZ': '/adminALLhgZ',
+    'Adminuser': '/adminuser',
+    'Admindrever': '/drever',
+    'AdminSuport': '/adminSuport',
+    // Reviews
+    'AdminNotifications': '/adminNotifications',
+    'AdminDriverExpiryQueue': '/driverDocExpiry',
+    // Catalog
+    'Admintypecar': '/admintypecar',
+    'AdminDol': '/adminDol',
+    'Adminregion': '/adminregion',
+    'Adminvill': '/adminvill',
+    'AdminM3alm': '/adminM3alm',
+    // Partners
+    'AdminAgent': '/adminAgent',
+    'AdminTransportCompanies': '/adminTransportCompanies',
+    'CompanyDrivers': '/companyDrivers',
+    'AdminTourGuides': '/adminTourGuides',
+    'AdminPartners': '/adminPartners',
+    'PartnerBookings': '/partnerBookings',
+    // Finance
     'AdminFinanceHub': '/adminFinanceHub',
     'AdminFinanceReconciliation': '/adminFinanceReconciliation',
     'AdminFinanceChannels': '/adminFinanceChannels',
@@ -122,6 +135,13 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     'AdminFinanceReports': '/adminFinanceReports',
     'AdminFinanceAudit': '/adminFinanceAudit',
     'AdminReconciliation': '/adminReconciliation',
+    // Reports
+    'AdminReportsHub': '/adminReportsHub',
+    'AdminAuditLog': '/adminAuditLog',
+    // System
+    'AdminDiagnostics': '/adminDiagnostics',
+    'AdminSuperAdmins': '/adminSuperAdmins',
+    'Settings': '/settings',
   };
 
   String _menuLabel(BuildContext context, String routeName) =>

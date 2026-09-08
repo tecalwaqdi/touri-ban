@@ -12,6 +12,7 @@ import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_ui.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -353,7 +354,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
       setState(() {
         _loading = false;
         _hasError = true;
-        _errorMessage = 'adm_load_failed_network';
+        _errorMessage = _errorKeyFor(e);
       });
     }
   }
@@ -423,7 +424,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
       setState(() {
         _loading = false;
         _hasError = true;
-        _errorMessage = 'adm_load_failed_network';
+        _errorMessage = _errorKeyFor(e);
       });
     }
   }
@@ -482,7 +483,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
       setState(() {
         _loading = false;
         _hasError = true;
-        _errorMessage = 'adm_load_failed_network';
+        _errorMessage = _errorKeyFor(e);
       });
     }
   }
@@ -582,6 +583,41 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
     totalFetched: _items.length,
     totalAvailable: _totalAvailable,
   );
+
+  String _errorKeyFor(Object error) {
+    // Prefer stable adm_* keys when we can classify; otherwise localized text.
+    final s = error.toString().toLowerCase();
+    if (error is FirebaseException) {
+      switch (error.code) {
+        case 'permission-denied':
+        case 'unauthorized':
+          return 'adm_err_permission';
+        case 'unauthenticated':
+          return 'adm_err_unauthenticated';
+        case 'unavailable':
+          return 'adm_err_unavailable';
+        case 'failed-precondition':
+          return 'adm_err_query_index';
+      }
+    }
+    if (s.contains('permission-denied') || s.contains('permission_denied')) {
+      return 'adm_err_permission';
+    }
+    if (s.contains('adm_scope_not_ready') || s.contains('scope_not_ready')) {
+      return 'adm_scope_not_ready';
+    }
+    if (s.contains('failed-precondition') || s.contains('requires an index')) {
+      return 'adm_err_query_index';
+    }
+    if (s.contains('socket') ||
+        s.contains('network') ||
+        s.contains('failed host lookup') ||
+        s.contains('timeout')) {
+      return 'adm_load_failed_network';
+    }
+    // Fall back to mapped user-facing text (not a raw Firebase dump).
+    return AdminUserFacingErrors.from(context, error);
+  }
 
   String _localizedError(BuildContext context, String? key) {
     if (key == null) {

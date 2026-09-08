@@ -329,6 +329,16 @@ class _AdminTourGuidesWidgetState extends State<AdminTourGuidesWidget> {
               pageSize: kAdminPageSize,
               queryBuilder: _guidesQuery,
               builder: (context, allGuides, listState) {
+                if (listState.hasError) {
+                  return AdminErrorState(
+                    title: listState.errorMessage != null &&
+                            listState.errorMessage!.startsWith('adm_')
+                        ? appTr(context, listState.errorMessage!)
+                        : (listState.errorMessage ??
+                            appTr(context, 'ent_guides_empty')),
+                    onRetry: listState.refresh,
+                  );
+                }
                 final list = _filtered(allGuides);
                 if (list.isEmpty && !listState.isLoading) {
                   return AdminEmptyState(

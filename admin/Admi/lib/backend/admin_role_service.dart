@@ -242,13 +242,12 @@ class AdminRoleService {
     if (isSuperAdmin) return null;
     if (!isCountryAgent && !isCountryAccountant) return null;
     final path = scopedCountryIdClaim;
-    if (path != null) {
+    if (path != null && path.isNotEmpty) {
       return FirebaseFirestore.instance.doc(path);
     }
-    if (_phase != AdminRbacPhase.authoritative) {
-      return _boundProfile?.revDlohAgent;
-    }
-    return null;
+    // Prefer profile lock even after claims are authoritative — missing
+    // country_id must not silently drop country scope (unscoped lists deny).
+    return _boundProfile?.revDlohAgent;
   }
 
   static String get scopedCountryName => _boundProfile?.dolhAgent ?? '';

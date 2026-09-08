@@ -27,6 +27,7 @@ import '/core/admin_driver_review_actions.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
+import '/l10n/nav_translations.dart';
 import 'package:flutter/material.dart';
 import 'admindrever_model.dart';
 export 'admindrever_model.dart';
@@ -306,13 +307,10 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
         padContent: false,
         title: l10n.getText('xqeazwes'),
         child: AdminPageBody(
-          title: uiTr(context, 'المناديب'),
-          subtitle: uiTr(
-            context,
-            'إدارة حسابات المناديب، التسجيل، المركبات، الوثائق والحالة التشغيلية.',
-          ),
+          title: navLabel(context, AdmindreverWidget.routeName),
+          subtitle: appTr(context, 'scr_reps_subtitle'),
           actions: AdminPrimaryButton(
-            label: uiTr(context, 'إضافة مندوب'),
+            label: uiTr(context, 'إضافة المندوب'),
             icon: Icons.person_add_rounded,
             onPressed: () => context.pushNamed(AddDrevWidget.routeName),
           ),
@@ -443,7 +441,14 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             children: [
-                              Text(uiTr(context, 'تعذر تحميل المناديب')),
+                              Text(
+                                listState.errorMessage != null &&
+                                        listState.errorMessage!
+                                            .startsWith('adm_')
+                                    ? appTr(context, listState.errorMessage!)
+                                    : (listState.errorMessage ??
+                                        uiTr(context, 'تعذر تحميل السائقين')),
+                              ),
                               const SizedBox(height: 8),
                               TextButton(
                                 onPressed: listState.refresh,

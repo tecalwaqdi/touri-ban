@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import '/admin/admindrever/admin_driver_expiry_adapter.dart';
 import '/admin/admindrever/admin_drivers_adapter.dart';
 import '/admin/admindrever/admin_drivers_ui_shared.dart';
-import '/backend/admin_ops_filters.dart';
+import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_status_badge.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_driver_document_access.dart';
 import '/core/admin_driver_profile_view.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -57,9 +58,14 @@ class _AdminDriverExpiryQueueWidgetState
   }
 
   Future<List<AdminDriverExpiryRow>> _queryBucket(String bucket) async {
+    await AdminAgentCountryLock.ensureCountryResolved();
+    AdminAgentCountryLock.applyToAppState();
     final country = AdminRoleService.isCountryAgent
-        ? AdminOpsFilterState.empty.effectiveCountryRef
+        ? AdminRoleService.scopedCountryRef
         : null;
+    if (AdminRoleService.isCountryAgent && country == null) {
+      throw StateError('adm_scope_not_ready');
+    }
     Query q;
     if (country != null) {
       q = UserRecord.collection
@@ -102,7 +108,7 @@ class _AdminDriverExpiryQueueWidgetState
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = '$e';
+        _error = AdminUserFacingErrors.from(context, e);
         _expired = const [];
         _expiringSoon = const [];
       });
@@ -170,7 +176,7 @@ class _AdminDriverExpiryQueueWidgetState
     final filtered = _filtered;
 
     return AdminDriverModuleScaffold(
-      title: uiTr(context, 'انتهاء وثائق المناديب'),
+      title: uiTr(context, 'انتهاء وثائق السائقين'),
       subtitle: uiTr(
         context,
         'متابعة الوثائق المنتهية أو التي اقترب موعد انتهائها.',
@@ -323,7 +329,7 @@ class _FilterBar extends StatelessWidget {
               decoration: InputDecoration(
                 isDense: true,
                 prefixIcon: const Icon(Icons.search, size: 20),
-                hintText: uiTr(context, 'بحث بالمندوب'),
+                hintText: uiTr(context, 'بحث بالسائق'),
               ),
               onChanged: onSearchChanged,
             ),
@@ -646,7 +652,7 @@ class _ExpiryActions extends StatelessWidget {
       itemBuilder: (ctx) => [
         PopupMenuItem(
           value: 'profile',
-          child: Text(uiTr(context, 'عرض المندوب')),
+          child: Text(uiTr(context, 'عرض السائق')),
         ),
         PopupMenuItem(
           value: 'doc',
