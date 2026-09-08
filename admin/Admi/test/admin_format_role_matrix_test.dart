@@ -17,7 +17,14 @@ void main() {
 
   test('role matrix includes settlements approve for finance', () {
     final s = kAdminRoleMatrix['Settlements']![AdminPermRole.finance]!;
-    expect(s.contains(AdminPermAction.approve), isTrue);
+    // F3-B2: Accountant (finance) is view/export only — approve is SuperAdmin.
+    expect(s.contains(AdminPermAction.approve), isFalse);
+    expect(s.contains(AdminPermAction.view), isTrue);
+    expect(
+      kAdminRoleMatrix['Settlements']![AdminPermRole.superAdmin]!
+          .contains(AdminPermAction.approve),
+      isTrue,
+    );
     expect(
       kAdminRoleMatrix['Periods']![AdminPermRole.countryAdmin]!
           .contains(AdminPermAction.closePeriod),

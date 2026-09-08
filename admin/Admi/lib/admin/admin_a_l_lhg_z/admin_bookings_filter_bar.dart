@@ -622,7 +622,7 @@ class _AdminBookingsFilterBarState extends State<AdminBookingsFilterBar> {
       case AdminOrderLifecycleFilter.all:
         return uiTr(context, 'كل الحالات');
       case AdminOrderLifecycleFilter.pending:
-        return uiTr(context, 'بانتظار قبول مندوب');
+        return uiTr(context, 'بانتظار قبول سائق');
       case AdminOrderLifecycleFilter.active:
         return uiTr(context, 'الحالية');
       case AdminOrderLifecycleFilter.completed:

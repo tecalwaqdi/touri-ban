@@ -159,7 +159,7 @@ void main() {
 
       expect(view.timeline.length, 2);
       expect(view.timeline.first.label, 'تم إنشاء الطلب');
-      expect(view.timeline.last.label, 'قبول المندوب');
+      expect(view.timeline.last.label, 'قبول السائق');
     });
 
     test('payment method cash maps to Arabic label', () {

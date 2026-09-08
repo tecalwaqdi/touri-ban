@@ -13,14 +13,14 @@ abstract final class AdminBookingStatusLabel {
 
   /// Canonical / aliased `status_code` → Arabic badge label (granular lifecycle).
   static const Map<String, String> codeToArabic = {
-    TourySystemStatusCodes.pendingDriver: 'بانتظار قبول مندوب',
-    TourySystemStatusCodes.legacyAwaitingDriver: 'بانتظار قبول مندوب',
+    TourySystemStatusCodes.pendingDriver: 'بانتظار قبول سائق',
+    TourySystemStatusCodes.legacyAwaitingDriver: 'بانتظار قبول سائق',
     'pending': 'قيد الانتظار',
     'payment_pending': 'قيد الانتظار',
     'draft': 'قيد الانتظار',
     'payment': 'قيد الانتظار',
-    TourySystemStatusCodes.driverAssigned: 'تم إسناد مندوب',
-    TourySystemStatusCodes.driverArriving: 'المندوب في الطريق',
+    TourySystemStatusCodes.driverAssigned: 'تم إسناد سائق',
+    TourySystemStatusCodes.driverArriving: 'السائق في الطريق',
     TourySystemStatusCodes.driverArrived: 'وصل لنقطة الانطلاق',
     TourySystemStatusCodes.tripStarted: 'الرحلة بدأت',
     TourySystemStatusCodes.tripInProgress: 'الرحلة بدأت',
@@ -36,14 +36,17 @@ abstract final class AdminBookingStatusLabel {
 
   /// Legacy Arabic (and close variants) → normalized Arabic badge label.
   static const Map<String, String> legacyArabicToArabic = {
-    'بإنتظار قبول المندوب': 'بانتظار قبول مندوب',
-    'بانتظار قبول المندوب': 'بانتظار قبول مندوب',
-    'بانتظار قبول السائق': 'بانتظار قبول مندوب',
+    'بإنتظار قبول السائق': 'بانتظار قبول سائق',
+    'بانتظار قبول السائق': 'بانتظار قبول سائق',
+    'بإنتظار قبول المندوب': 'بانتظار قبول سائق',
+    'بانتظار قبول المندوب': 'بانتظار قبول سائق',
+    'بانتظار قبول مندوب': 'بانتظار قبول سائق',
     'قيد الانتظار': 'قيد الانتظار',
-    'مقبول': 'تم إسناد مندوب',
-    'تم إسناد مندوب': 'تم إسناد مندوب',
-    'المندوب في الطريق': 'المندوب في الطريق',
-    'وصل المندوب': 'وصل لنقطة الانطلاق',
+    'مقبول': 'تم إسناد سائق',
+    'تم إسناد سائق': 'تم إسناد سائق',
+    'تم إسناد مندوب': 'تم إسناد سائق',
+    'السائق في الطريق': 'السائق في الطريق',
+    'المندوب في الطريق': 'السائق في الطريق',
     'وصل السائق': 'وصل لنقطة الانطلاق',
     'وصل لنقطة الانطلاق': 'وصل لنقطة الانطلاق',
     'تم البدء في الرحلة': 'الرحلة بدأت',
@@ -164,7 +167,7 @@ abstract final class AdminBookingStatusLabel {
         code == 'payment_pending' ||
         code == 'draft' ||
         code == 'payment' ||
-        label == 'بانتظار قبول مندوب' ||
+        label == 'بانتظار قبول سائق' ||
         label == 'قيد الانتظار') {
       return AdminBookingStatusTone.pending;
     }
@@ -195,7 +198,7 @@ abstract final class AdminBookingStatusLabel {
     }
 
     // Legacy "مقبول" without finer code → assigned bucket.
-    if (label == 'تم إسناد مندوب') {
+    if (label == 'تم إسناد سائق') {
       return AdminBookingStatusTone.assigned;
     }
 
