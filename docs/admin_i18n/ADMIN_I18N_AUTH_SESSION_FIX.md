@@ -53,6 +53,10 @@ Side effect was **downstream auth gate misclassification**, not locale storage i
 4. Ignore transient null profile while `currentUser` present.
 5. `_PanelSessionGate` 25s timeout → retry (no infinite splash).
 6. Copy: Drivers subtitle/CTA, role badge, Gallery picker labels (all 7 locales for Gallery keys).
+7. **Follow-up from repro agent:** do not mark `_scopeReadyForUid` when bootstrap
+   exited on `AdminRole.none`; retry profile/claims once while RBAC unsettled;
+   `ensureScopeReady` syncs profile before no-op when access briefly false
+   (Accountant HTML splash / `isScopeReady` forever-false).
 
 **Unchanged:** Rules, Functions, Payment API, Agent security model, sidebar map, Cairo fonts.
 

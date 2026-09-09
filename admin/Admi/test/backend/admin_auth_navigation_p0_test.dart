@@ -214,5 +214,44 @@ void main() {
         AuthPanelHomeDecision.panel,
       );
     });
+
+    test('none-role bootstrap retries only while RBAC unsettled', () {
+      expect(
+        AdminAuthNavPolicy.shouldRetryBootstrapForNoneRole(
+          rbacAuthoritative: false,
+        ),
+        isTrue,
+      );
+      expect(
+        AdminAuthNavPolicy.shouldRetryBootstrapForNoneRole(
+          rbacAuthoritative: true,
+        ),
+        isFalse,
+      );
+    });
+
+    test('scope ready requires bootstrap + panel access', () {
+      expect(
+        AdminAuthNavPolicy.canMarkScopeReady(
+          bootstrapReady: true,
+          hasPanelAccess: true,
+        ),
+        isTrue,
+      );
+      expect(
+        AdminAuthNavPolicy.canMarkScopeReady(
+          bootstrapReady: false,
+          hasPanelAccess: true,
+        ),
+        isFalse,
+      );
+      expect(
+        AdminAuthNavPolicy.canMarkScopeReady(
+          bootstrapReady: true,
+          hasPanelAccess: false,
+        ),
+        isFalse,
+      );
+    });
   });
 }

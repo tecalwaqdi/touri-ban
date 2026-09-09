@@ -68,6 +68,21 @@ abstract final class AdminAuthNavPolicy {
   /// Authorization deny must never be treated as logout.
   static bool unauthorizedShouldSignOut() => false;
 
+  /// When bootstrap sees [AdminRole.none], retry profile/claims only while RBAC
+  /// is still settling — never leave the panel gate permanently unready on a
+  /// transient claims/profile race (Accountant HTML splash stall).
+  static bool shouldRetryBootstrapForNoneRole({
+    required bool rbacAuthoritative,
+  }) =>
+      !rbacAuthoritative;
+
+  /// Mark panel scope ready only after data bootstrap actually completed.
+  static bool canMarkScopeReady({
+    required bool bootstrapReady,
+    required bool hasPanelAccess,
+  }) =>
+      bootstrapReady && hasPanelAccess;
+
   /// Firestore permission / index / network errors must not sign out.
   static bool firestoreErrorShouldSignOut() => false;
 

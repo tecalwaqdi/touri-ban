@@ -1,7 +1,9 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_agent_session_ready.dart';
 import '/backend/admin_agent_country_lock.dart';
+import '/backend/admin_auth_nav_policy.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_rbac_phase.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_saudi_country.dart';
 import '/backend/backend.dart';
@@ -78,7 +80,23 @@ class AdminPanelDataBootstrap {
       );
     }
 
-    switch (AdminRoleService.currentRole) {
+    // Transient claims reset can leave currentRole=none while Firebase user is
+    // still present. Retry once before giving up (keeps Accountant gate alive).
+    var role = AdminRoleService.currentRole;
+    if (role == AdminRole.none &&
+        AdminAuthNavPolicy.shouldRetryBootstrapForNoneRole(
+          rbacAuthoritative:
+              AdminRoleService.rbacPhase == AdminRbacPhase.authoritative,
+        )) {
+      await ensureCurrentUserDocument(
+        forceRefresh: true,
+        syncClaims: true,
+        source: 'AdminPanelDataBootstrap.noneRetry',
+      );
+      role = AdminRoleService.currentRole;
+    }
+
+    switch (role) {
       case AdminRole.countryAgent:
         await AdminAgentCountryLock.ensureCountryResolved();
         await AdminSaudiCountry.ensureQueryRefsLoaded();
