@@ -258,6 +258,10 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 icon: Icons.directions_car_rounded
               ),
               (
+                route: AdminDriversWidget.routeName,
+                icon: Icons.how_to_reg_rounded
+              ),
+              (
                 route: AdminSuportWidget.routeName,
                 icon: Icons.support_agent_rounded
               ),
@@ -348,12 +352,28 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 icon: Icons.handshake_outlined
               ),
               (
+                route: AdminFinanceReceivablesWidget.routeName,
+                icon: Icons.request_quote_outlined
+              ),
+              (
+                route: AdminReconciliationWidget.routeName,
+                icon: Icons.rule_folder_outlined
+              ),
+              (
+                route: AdminFinancialPeriodsWidget.routeName,
+                icon: Icons.calendar_month_outlined
+              ),
+              (
                 route: AdminFinanceReportsWidget.routeName,
                 icon: Icons.table_chart_outlined
               ),
               (
                 route: AdminFinanceAuditWidget.routeName,
                 icon: Icons.manage_search_rounded
+              ),
+              (
+                route: AdminDriverWalletsWidget.routeName,
+                icon: Icons.account_balance_wallet_outlined
               ),
             ],
           ),
