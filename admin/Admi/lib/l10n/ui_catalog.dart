@@ -24000,6 +24000,19 @@ const kUiCatalog = <String, Map<String, String>>{
     'az': 'Currency',
     'ka': 'Currency',
   },
+  'ui_ae0e04d2fa': {
+    'en': 'Unable to load the control panel',
+    'pt': 'Não foi possível carregar o painel de controlo',
+    'fr': 'Impossible de charger le tableau de bord',
+    'ar': 'تعذر تحميل لوحة التحكم',
+    'zh_Hans': 'Unable to load the control panel',
+    'tr': 'Unable to load the control panel',
+    'ur': 'کنٹرول پینل لوڈ نہیں ہو سکا',
+    'ru': 'Не удалось загрузить панель управления',
+    'ky': 'Башкаруу панели жүктөлгөн жок',
+    'az': 'Unable to load the control panel',
+    'ka': 'Unable to load the control panel',
+  },
 };
 
 const kArabicUiLookup = <String, String>{
@@ -24781,6 +24794,7 @@ const kArabicUiLookup = <String, String>{
   'تعذر تحميل الفترات المالية': 'ui_f4e27bec00',
   'تعذر تحميل القائمة': 'ui_da716835b0',
   'تعذر تحميل المالية': 'ui_ff2d21953a',
+  'تعذر تحميل لوحة التحكم': 'ui_ae0e04d2fa',
   'تعذر تحميل المدفوعات': 'ui_55f7ac80dc',
   'تعذر تحميل المدن': 'ui_9ebd05ebaf',
   'تعذر تحميل المركز المالي': 'ui_4bef734af7',
