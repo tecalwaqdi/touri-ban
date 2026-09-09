@@ -1,0 +1,269 @@
+{
+  "base": "https://touri-ban-1.onrender.com",
+  "roles": {
+    "super": {
+      "steps": {
+        "home": {
+          "url": "https://touri-ban-1.onrender.com/home22Dashboard",
+          "onLogin": false,
+          "splash": false,
+          "sample": ""
+        },
+        "loc_ar": {
+          "url": "https://touri-ban-1.onrender.com/home22Dashboard",
+          "onLogin": false,
+          "splash": false
+        },
+        "loc_en": {
+          "url": "https://touri-ban-1.onrender.com/home22Dashboard",
+          "onLogin": false,
+          "splash": false
+        },
+        "deep": {
+          "url": "https://touri-ban-1.onrender.com/adminDrivers",
+          "onLogin": false,
+          "splash": false
+        }
+      },
+      "login": 0,
+      "splash": 0,
+      "pass": true
+    },
+    "acct": {
+      "steps": {
+        "home": {
+          "url": "https://touri-ban-1.onrender.com/adminFinanceHub",
+          "onLogin": false,
+          "splash": false,
+          "sample": ""
+        },
+        "loc_ar": {
+          "url": "https://touri-ban-1.onrender.com/adminFinanceHub",
+          "onLogin": false,
+          "splash": false
+        },
+        "loc_fr": {
+          "url": "https://touri-ban-1.onrender.com/adminFinanceHub",
+          "onLogin": false,
+          "splash": false
+        },
+        "loc_en": {
+          "url": "https://touri-ban-1.onrender.com/adminFinanceHub",
+          "onLogin": false,
+          "splash": false
+        },
+        "deep": {
+          "url": "https://touri-ban-1.onrender.com/adminSettlements",
+          "onLogin": false,
+          "splash": false
+        }
+      },
+      "login": 0,
+      "splash": 0,
+      "finance": {
+        "/adminFinanceHub": {
+          "url": "https://touri-ban-1.onrender.com/adminFinanceHub",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminFinanceReconciliation": {
+          "url": "https://touri-ban-1.onrender.com/adminFinanceReconciliation",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminFinanceChannels": {
+          "url": "https://touri-ban-1.onrender.com/adminFinanceChannels",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminSettlements": {
+          "url": "https://touri-ban-1.onrender.com/adminSettlements",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminFinanceReports": {
+          "url": "https://touri-ban-1.onrender.com/adminFinanceReports",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminFinanceAudit": {
+          "url": "https://touri-ban-1.onrender.com/adminFinanceAudit",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminFinanceAgents": {
+          "url": "https://touri-ban-1.onrender.com/adminFinanceAgents",
+          "onLogin": false,
+          "splash": false
+        }
+      },
+      "pass": true
+    },
+    "agent": {
+      "steps": {
+        "home": {
+          "url": "https://touri-ban-1.onrender.com/home22Dashboard",
+          "onLogin": false,
+          "splash": false,
+          "sample": ""
+        },
+        "loc_ar": {
+          "url": "https://touri-ban-1.onrender.com/home22Dashboard",
+          "onLogin": false,
+          "splash": false
+        },
+        "loc_ky": {
+          "url": "https://touri-ban-1.onrender.com/home22Dashboard",
+          "onLogin": false,
+          "splash": false
+        },
+        "loc_ru": {
+          "url": "https://touri-ban-1.onrender.com/home22Dashboard",
+          "onLogin": false,
+          "splash": false
+        },
+        "deep": {
+          "url": "https://touri-ban-1.onrender.com/adminALLhgZ",
+          "onLogin": false,
+          "splash": false
+        }
+      },
+      "login": 0,
+      "splash": 0,
+      "routes": {
+        "/adminuser": {
+          "url": "https://touri-ban-1.onrender.com/adminuser",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminDrivers": {
+          "url": "https://touri-ban-1.onrender.com/adminDrivers",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminALLhgZ": {
+          "url": "https://touri-ban-1.onrender.com/adminALLhgZ",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminM3alm": {
+          "url": "https://touri-ban-1.onrender.com/adminM3alm",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminSuport": {
+          "url": "https://touri-ban-1.onrender.com/adminSuport",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminNotifications": {
+          "url": "https://touri-ban-1.onrender.com/adminNotifications",
+          "onLogin": false,
+          "splash": false
+        },
+        "/driverDocExpiry": {
+          "url": "https://touri-ban-1.onrender.com/driverDocExpiry",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminTourGuides": {
+          "url": "https://touri-ban-1.onrender.com/adminTourGuides",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminFinanceAgents": {
+          "url": "https://touri-ban-1.onrender.com/adminFinanceAgents",
+          "onLogin": false,
+          "splash": false
+        },
+        "/settings": {
+          "url": "https://touri-ban-1.onrender.com/settings",
+          "onLogin": false,
+          "splash": false
+        },
+        "/adminFinanceHub": {
+          "url": "https://touri-ban-1.onrender.com/home22Dashboard",
+          "onLogin": false,
+          "splash": false
+        }
+      },
+      "pass": true
+    }
+  },
+  "locales": {
+    "ar": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    },
+    "en": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    },
+    "ru": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    },
+    "ky": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    },
+    "fr": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    },
+    "ur": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    },
+    "pt": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    }
+  },
+  "viewports": {
+    "390": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    },
+    "768": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    },
+    "1024": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    },
+    "1280": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    },
+    "1440": {
+      "url": "https://touri-ban-1.onrender.com/adminDrivers",
+      "onLogin": false,
+      "splash": false,
+      "pass": true
+    }
+  }
+}
