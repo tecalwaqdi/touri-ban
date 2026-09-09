@@ -122,4 +122,136 @@ void main() {
       }
     });
   });
+
+  group('AUTH panel home decisions', () {
+    test('locale/auth blip with Firebase user keeps loading not login', () {
+      expect(
+        AdminAuthNavPolicy.decidePanelHome(
+          loggedIn: false,
+          firebaseUserPresent: true,
+          hasUserDocument: false,
+          hasPanelAccess: false,
+          isRoleResolving: true,
+          rbacAuthoritative: false,
+          profileHasPanelRole: false,
+        ),
+        AuthPanelHomeDecision.loading,
+      );
+    });
+
+    test('role resolving while signed in never maps to login', () {
+      expect(
+        AdminAuthNavPolicy.decidePanelHome(
+          loggedIn: true,
+          firebaseUserPresent: true,
+          hasUserDocument: true,
+          hasPanelAccess: false,
+          isRoleResolving: true,
+          rbacAuthoritative: false,
+          profileHasPanelRole: true,
+        ),
+        AuthPanelHomeDecision.loading,
+      );
+    });
+
+    test('claims race with profile role keeps loading', () {
+      expect(
+        AdminAuthNavPolicy.decidePanelHome(
+          loggedIn: true,
+          firebaseUserPresent: true,
+          hasUserDocument: true,
+          hasPanelAccess: false,
+          isRoleResolving: false,
+          rbacAuthoritative: true,
+          profileHasPanelRole: true,
+        ),
+        AuthPanelHomeDecision.loading,
+      );
+    });
+
+    test('authoritative deny without profile role is unauthorized not login',
+        () {
+      expect(
+        AdminAuthNavPolicy.decidePanelHome(
+          loggedIn: true,
+          firebaseUserPresent: true,
+          hasUserDocument: true,
+          hasPanelAccess: false,
+          isRoleResolving: false,
+          rbacAuthoritative: true,
+          profileHasPanelRole: false,
+        ),
+        AuthPanelHomeDecision.unauthorized,
+      );
+    });
+
+    test('definitive unauthenticated shows login', () {
+      expect(
+        AdminAuthNavPolicy.decidePanelHome(
+          loggedIn: false,
+          firebaseUserPresent: false,
+          hasUserDocument: false,
+          hasPanelAccess: false,
+          isRoleResolving: false,
+          rbacAuthoritative: false,
+          profileHasPanelRole: false,
+        ),
+        AuthPanelHomeDecision.login,
+      );
+    });
+
+    test('panel access ready shows panel', () {
+      expect(
+        AdminAuthNavPolicy.decidePanelHome(
+          loggedIn: true,
+          firebaseUserPresent: true,
+          hasUserDocument: true,
+          hasPanelAccess: true,
+          isRoleResolving: false,
+          rbacAuthoritative: true,
+          profileHasPanelRole: true,
+        ),
+        AuthPanelHomeDecision.panel,
+      );
+    });
+
+    test('none-role bootstrap retries only while RBAC unsettled', () {
+      expect(
+        AdminAuthNavPolicy.shouldRetryBootstrapForNoneRole(
+          rbacAuthoritative: false,
+        ),
+        isTrue,
+      );
+      expect(
+        AdminAuthNavPolicy.shouldRetryBootstrapForNoneRole(
+          rbacAuthoritative: true,
+        ),
+        isFalse,
+      );
+    });
+
+    test('scope ready requires bootstrap + panel access', () {
+      expect(
+        AdminAuthNavPolicy.canMarkScopeReady(
+          bootstrapReady: true,
+          hasPanelAccess: true,
+        ),
+        isTrue,
+      );
+      expect(
+        AdminAuthNavPolicy.canMarkScopeReady(
+          bootstrapReady: false,
+          hasPanelAccess: true,
+        ),
+        isFalse,
+      );
+      expect(
+        AdminAuthNavPolicy.canMarkScopeReady(
+          bootstrapReady: true,
+          hasPanelAccess: false,
+        ),
+        isFalse,
+      );
+    });
+  });
 }

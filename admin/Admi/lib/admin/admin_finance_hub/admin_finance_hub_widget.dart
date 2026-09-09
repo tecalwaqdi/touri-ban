@@ -19,6 +19,7 @@ import '/core/finance/financial_amount_resolution.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
+import '/l10n/ui_catalog.dart';
 
 /// Canonical accountant Finance entry — F1 [AccountantFinanceReadModel] only.
 class AdminFinanceHubWidget extends StatefulWidget {
@@ -248,7 +249,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                           ),
                           _drop(
                             context,
-                            label: 'طريقة الدفع',
+                            label: uiTr(context, 'طريقة الدفع'),
                             value: _paymentMethod,
                             items: const ['نقدي', 'إلكتروني'],
                             onChanged: (v) =>
@@ -256,7 +257,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                           ),
                           _drop(
                             context,
-                            label: 'حالة التحصيل',
+                            label: uiTr(context, 'حالة التحصيل'),
                             value: _collectionStatus,
                             items: const ['محصّل', 'غير محصّل'],
                             onChanged: (v) =>
@@ -264,7 +265,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                           ),
                           _drop(
                             context,
-                            label: 'حالة التسوية',
+                            label: uiTr(context, 'حالة التسوية'),
                             value: _settlementStatus,
                             items: const ['مسددة', 'مسددة جزئيًا', 'غير مسددة'],
                             onChanged: (v) =>

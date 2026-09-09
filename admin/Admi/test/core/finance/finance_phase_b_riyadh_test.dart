@@ -166,7 +166,8 @@ void main() {
       );
       expect(csv.contains('تم الإنشاء (الرياض)'), isTrue);
       expect(csv.contains('01/09/2026'), isTrue);
-      expect(csv.contains('Z'), isFalse);
+      // No UTC Zulu timestamp suffix (ZATCA mention in disclaimer is allowed).
+      expect(RegExp(r'\d{2}:\d{2}(:\d{2})?Z\b').hasMatch(csv), isFalse);
     });
   });
 

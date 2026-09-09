@@ -14,6 +14,7 @@ import '/index.dart';
 import '/l10n/nav_translations.dart';
 import 'package:flutter/material.dart';
 import 'home22_dashboard_model.dart';
+import '/l10n/ui_catalog.dart';
 export 'home22_dashboard_model.dart';
 
 class Home22DashboardWidget extends StatefulWidget {
@@ -190,7 +191,7 @@ class _DashboardHeroBanner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$greeting، $name',
+                    uiTr(context, '$greeting، $name'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.titleSmall.override(

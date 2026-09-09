@@ -1,0 +1,67 @@
+{
+  "roles": {
+    "super": {
+      "landing": {
+        "url": "https://tutorial-multi-language-70gx4j--admin-i18n-auth-sessio-1mqhbr0d.web.app/admin/home22Dashboard",
+        "sample": "",
+        "onLogin": false,
+        "stuck": false
+      },
+      "afterLocaleReload": {
+        "url": "https://tutorial-multi-language-70gx4j--admin-i18n-auth-sessio-1mqhbr0d.web.app/admin/home22Dashboard",
+        "sample": "",
+        "onLogin": false,
+        "stuck": false
+      },
+      "deepRefresh": {
+        "url": "https://tutorial-multi-language-70gx4j--admin-i18n-auth-sessio-1mqhbr0d.web.app/admin/adminDrivers",
+        "sample": "",
+        "onLogin": false,
+        "stuck": false
+      },
+      "pass": true
+    },
+    "acct": {
+      "landing": {
+        "url": "https://tutorial-multi-language-70gx4j--admin-i18n-auth-sessio-1mqhbr0d.web.app/admin/adminFinanceHub",
+        "sample": "",
+        "onLogin": false,
+        "stuck": false
+      },
+      "afterLocaleReload": {
+        "url": "https://tutorial-multi-language-70gx4j--admin-i18n-auth-sessio-1mqhbr0d.web.app/admin/adminFinanceHub",
+        "sample": "",
+        "onLogin": false,
+        "stuck": false
+      },
+      "deepRefresh": {
+        "url": "https://tutorial-multi-language-70gx4j--admin-i18n-auth-sessio-1mqhbr0d.web.app/admin/adminFinanceReconciliation",
+        "sample": "",
+        "onLogin": false,
+        "stuck": false
+      },
+      "pass": true
+    },
+    "agent": {
+      "landing": {
+        "url": "https://tutorial-multi-language-70gx4j--admin-i18n-auth-sessio-1mqhbr0d.web.app/admin/home22Dashboard",
+        "sample": "",
+        "onLogin": false,
+        "stuck": false
+      },
+      "afterLocaleReload": {
+        "url": "https://tutorial-multi-language-70gx4j--admin-i18n-auth-sessio-1mqhbr0d.web.app/admin/home22Dashboard",
+        "sample": "",
+        "onLogin": false,
+        "stuck": false
+      },
+      "deepRefresh": {
+        "url": "https://tutorial-multi-language-70gx4j--admin-i18n-auth-sessio-1mqhbr0d.web.app/admin/adminDrivers",
+        "sample": "",
+        "onLogin": false,
+        "stuck": false
+      },
+      "pass": true
+    }
+  }
+}

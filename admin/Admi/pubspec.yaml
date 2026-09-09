@@ -193,6 +193,7 @@ flutter:
     - assets/images/__2025-07-09_133622.png
 
   fonts:
+    # Canonical family id used by FlutterFlowTheme (`cairo`).
     - family: 'cairo'
       fonts:
         - asset: assets/fonts/Cairo-ExtraLight.ttf
@@ -200,6 +201,26 @@ flutter:
         - asset: assets/fonts/Cairo-Light.ttf
           weight: 300
         - asset: assets/fonts/Cairo-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Cairo-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Cairo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Cairo-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Cairo-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Cairo-Black.ttf
+          weight: 900
+    # Alias for call sites that request `Cairo` (Safari/CanvasKit is case-sensitive).
+    - family: 'Cairo'
+      fonts:
+        - asset: assets/fonts/Cairo-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Cairo-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Cairo-Regular.ttf
+          weight: 400
         - asset: assets/fonts/Cairo-Medium.ttf
           weight: 500
         - asset: assets/fonts/Cairo-SemiBold.ttf

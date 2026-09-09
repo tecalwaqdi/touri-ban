@@ -481,7 +481,10 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                                   ),
                                   child: Text(
                                     rolePending
-                                        ? uiTr(context, 'Resolving role…')
+                                        ? uiTr(
+                                            context,
+                                            'جارٍ التحقق من صلاحيات الحساب…',
+                                          )
                                         : (countryLabel.isNotEmpty
                                             ? '${AdminRoleService.roleLabelL10n(context, role)} · $countryLabel'
                                             : AdminRoleService.roleLabelL10n(

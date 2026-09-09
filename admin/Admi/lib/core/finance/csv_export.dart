@@ -28,11 +28,12 @@ String financeCsvDocument({
     generatedAtUtc ?? DateTime.now().toUtc(),
   );
   return [
-    '# تقرير محاسبي داخلي — ليس فاتورة ضريبية',
-    '# تم الإنشاء (الرياض): $at',
-    '# أعدّه: $preparedBy',
-    '# الفلاتر: $filters',
-    '# العملة: $currency',
+    '# Internal accounting report — not a tax invoice / تقرير محاسبي داخلي — ليس فاتورة ضريبية',
+    '# No ZATCA QR',
+    '# Generated (Riyadh): $at / تم الإنشاء (الرياض): $at',
+    '# Prepared by: $preparedBy / أعدّه: $preparedBy',
+    '# Filters: $filters / الفلاتر: $filters',
+    '# Currency: $currency / العملة: $currency',
     body,
   ].join('\n');
 }

@@ -4,9 +4,11 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_auth_session_owner.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_agent_session_ready.dart';
+import '/backend/admin_auth_nav_policy.dart';
 import '/backend/admin_panel_data_bootstrap.dart';
 import '/backend/admin_perf_trace.dart';
 import '/backend/admin_prefetch.dart';
+import '/backend/admin_rbac_phase.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_stats_coordinator.dart';
 import '/backend/dashboard_stats_loader.dart';
@@ -47,7 +49,22 @@ class AdminPanelSession {
 
   /// Bootstrap only — opens the panel immediately after this completes.
   static Future<void> ensureScopeReady({bool force = false}) async {
-    if (!loggedIn || !AdminRoleService.hasPanelAccess) return;
+    if (!loggedIn) return;
+
+    // Claims/profile race: do not no-op forever while the user is still signed
+    // in but hasPanelAccess is briefly false (Accountant splash stall).
+    if (!AdminRoleService.hasPanelAccess) {
+      if (AdminRoleService.isRoleResolving ||
+          AdminRoleService.rbacPhase != AdminRbacPhase.authoritative ||
+          AdminRoleService.profileRole != AdminRole.none) {
+        await ensureCurrentUserDocument(
+          forceRefresh: true,
+          syncClaims: true,
+          source: 'AdminPanelSession.ensureScopeReady',
+        );
+      }
+      if (!AdminRoleService.hasPanelAccess) return;
+    }
 
     final uid = currentUserUid;
     if (uid.isEmpty) return;
@@ -128,6 +145,16 @@ class AdminPanelSession {
         !AdminPanelDataBootstrap.isAgentScopeReady) {
       await AdminPanelDataBootstrap.ensureReady(force: true);
       AdminAgentCountryLock.applyToAppState();
+    }
+
+    // Never mark scope ready when bootstrap exited early on AdminRole.none —
+    // otherwise isScopeReady stays false forever (_readyForUid unset) while
+    // _scopeReadyForUid is set, trapping _PanelSessionGate.
+    if (!AdminAuthNavPolicy.canMarkScopeReady(
+      bootstrapReady: AdminPanelDataBootstrap.isReady,
+      hasPanelAccess: AdminRoleService.hasPanelAccess,
+    )) {
+      return;
     }
 
     _scopeReadyForUid = uid;

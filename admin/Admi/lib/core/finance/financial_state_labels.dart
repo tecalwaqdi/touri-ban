@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+
+import '/l10n/ui_catalog.dart';
 import '/core/finance/financial_accounting_engine.dart';
 
 /// Arabic user-facing labels for financial classification (not raw enum names).
@@ -83,7 +86,7 @@ abstract final class FinancialStateLabels {
       case 'ONLINE_PAID_NOT_COMPLETED':
         return 'مدفوع إلكترونيًا وغير مكتمل';
       case 'DRIVER_NET_MISSING':
-        return 'صافي المندوب ناقص';
+        return 'صافي السائق ناقص';
       case 'PLATFORM_FEE_MISSING':
         return 'عمولة المنصة ناقصة';
       case 'VAT_INVALID':
@@ -105,7 +108,7 @@ abstract final class FinancialStateLabels {
       case 'MISSING_STATUS_CODE':
         return 'حالة الرحلة ناقصة';
       case 'MISSING_DRIVER':
-        return 'المندوب ناقص';
+        return 'السائق ناقص';
       case 'UNALLOCATED_PAYMENT':
         return 'دفعة غير مخصصة';
       case 'UNSUPPORTED_CURRENCY':
@@ -120,4 +123,23 @@ abstract final class FinancialStateLabels {
         return 'استثناء مالي';
     }
   }
+
+
+  static String lifecycle(BuildContext context, FinancialLifecycle lc) =>
+      uiTr(context, lifecycleAr(lc));
+  static String payment(BuildContext context, FinancialPaymentState p) =>
+      uiTr(context, paymentAr(p));
+  static String channel(BuildContext context, FinancialPaymentChannel c) =>
+      uiTr(context, channelAr(c));
+  static String bucket(BuildContext context, FinancialCollectionBucket b) =>
+      uiTr(context, bucketAr(b));
+  static String confidence(BuildContext context, FinancialConfidence c) =>
+      uiTr(context, confidenceAr(c));
+  static String financialStatus(BuildContext context, FinancialOrderLine line) =>
+      uiTr(context, financialStatusAr(line));
+  static String legacyLedgerType(BuildContext context, String raw) =>
+      uiTr(context, legacyLedgerTypeAr(raw));
+  static String exceptionCode(BuildContext context, String code) =>
+      uiTr(context, exceptionCodeAr(code));
+
 }
