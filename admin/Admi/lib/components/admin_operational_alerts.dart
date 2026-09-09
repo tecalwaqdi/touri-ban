@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '/admin/admin_suport/admin_support_stats_loader.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
+import '/backend/dashboard_metric_keys.dart';
 import '/backend/dashboard_stats_loader.dart';
 import '/backend/driver_admin_stats_loader.dart';
 import '/components/admin_enterprise_kit.dart';
@@ -41,10 +42,10 @@ class AdminOperationalAlerts extends StatefulWidget {
   const AdminOperationalAlerts({super.key});
 
   @override
-  State<AdminOperationalAlerts> createState() => _AdminOperationalAlertsState();
+  State<AdminOperationalAlerts> createState() => AdminOperationalAlertsState();
 }
 
-class _AdminOperationalAlertsState extends State<AdminOperationalAlerts> {
+class AdminOperationalAlertsState extends State<AdminOperationalAlerts> {
   _AlertCounts? _counts;
   bool _loading = true;
   Object? _error;
@@ -55,11 +56,32 @@ class _AdminOperationalAlertsState extends State<AdminOperationalAlerts> {
     _load();
   }
 
-  Future<void> _load() async {
+  Future<void> refresh() => _load(keepCurrent: _counts != null);
+
+  /// Re-read cached dashboard bookings after the KPI strip finishes loading.
+  void applyDashboardPeek() {
+    final dash = peekDashboardStats();
+    if (!mounted || dash == null || _counts == null) return;
+    if (!dash.metricReliable(DashboardMetricKeys.activeBookings)) return;
+    if (dash.activeBookings == _counts!.activeBookings) return;
     setState(() {
-      _loading = true;
-      _error = null;
+      _counts = _AlertCounts(
+        pendingReview: _counts!.pendingReview,
+        expiringSoon: _counts!.expiringSoon,
+        expired: _counts!.expired,
+        supportOpen: _counts!.supportOpen,
+        activeBookings: dash.activeBookings,
+      );
     });
+  }
+
+  Future<void> _load({bool keepCurrent = false}) async {
+    if (!keepCurrent) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    }
     try {
       final countryRef = AdminRoleService.isCountryAgent
           ? AdminRoleService.scopedCountryRef
@@ -155,6 +177,12 @@ class _AdminOperationalAlertsState extends State<AdminOperationalAlerts> {
       _AlertSeverity.warning => AdminBadgeTone.warning,
       _AlertSeverity.critical => AdminBadgeTone.danger,
     };
+  }
+
+  IconData _alertChevronIcon(BuildContext context) {
+    final lang = FFLocalizations.of(context).languageCode.toLowerCase();
+    final rtl = lang == 'ar' || lang == 'ur';
+    return rtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded;
   }
 
   @override
@@ -283,7 +311,7 @@ class _AdminOperationalAlertsState extends State<AdminOperationalAlerts> {
                         ),
                         const SizedBox(width: 4),
                         Icon(
-                          Icons.chevron_left_rounded,
+                          _alertChevronIcon(context),
                           size: 18,
                           color: theme.secondaryText,
                         ),

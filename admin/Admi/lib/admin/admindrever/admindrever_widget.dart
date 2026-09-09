@@ -811,7 +811,7 @@ class _UnknownDriversPanelState extends State<_UnknownDriversPanel> {
           if (rows.isEmpty)
             AdminEmptyState(
               title: uiTr(context, 'لا يوجد مناديب بحالة غير محددة'),
-              message: uiTr(context, 'جميع المندوبين لديهم actev_mndob'),
+              message: appTr(context, 'drivers_unknown_empty_message'),
               icon: Icons.verified_outlined,
             )
           else

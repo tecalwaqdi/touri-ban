@@ -22,7 +22,10 @@ import 'package:flutter/material.dart';
 
 /// Dashboard stats with accurate counts and grouped graphical cards.
 class DashboardStatsSection extends StatefulWidget {
-  const DashboardStatsSection({super.key});
+  const DashboardStatsSection({super.key, this.onStatsUpdated});
+
+  /// Fired after a stats load is applied so sibling dashboard strips can peek.
+  final VoidCallback? onStatsUpdated;
 
   @override
   State<DashboardStatsSection> createState() => DashboardStatsSectionState();
@@ -182,6 +185,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
         _loadedScope = scope;
         _loading = !cached.loadComplete;
       });
+      widget.onStatsUpdated?.call();
     }
     _scheduleLoad(
       force: forceFromDelete || cached == null || scope.contains(':no-country'),
@@ -372,6 +376,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
               _spinnerGuardStartedAt = null;
             }
           });
+          widget.onStatsUpdated?.call();
         })
         .catchError((Object e) {
           if (!mounted || generation != _loadGeneration) return;
@@ -453,6 +458,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
         icon: Icons.travel_explore_rounded,
         items: [
           _DashboardStatItem(
+            id: DashboardMetricKeys.attractions,
             title: l10n.getText('wx29ht01'),
             subtitle: appTr(context, 'dash_sub_landmarks'),
             icon: Icons.place_rounded,
@@ -462,6 +468,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminM3almWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.partners,
             title: l10n.getText('f0wi63xt'),
             subtitle: appTr(context, 'dash_sub_partner_landmarks'),
             icon: Icons.handshake_rounded,
@@ -471,6 +478,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminPartnersWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.countries,
             title: l10n.getText('l0vvemch'),
             subtitle: appTr(context, 'dash_sub_countries'),
             icon: Icons.flag_rounded,
@@ -480,6 +488,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminDolWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.regions,
             title: l10n.getText('yssiqef1'),
             subtitle: appTr(context, 'dash_sub_regions'),
             icon: Icons.filter_hdr_rounded,
@@ -489,6 +498,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminregionWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.cities,
             title: l10n.getText('1yttxia9'),
             subtitle: appTr(context, 'dash_sub_cities'),
             icon: Icons.location_city_rounded,
@@ -504,6 +514,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
         icon: Icons.hub_rounded,
         items: [
           _DashboardStatItem(
+            id: DashboardMetricKeys.appUsers,
             title: l10n.getText('s8utoq9k'),
             subtitle: appTr(context, 'dash_sub_app_users'),
             icon: Icons.groups_rounded,
@@ -513,6 +524,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminuserWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.agents,
             title: l10n.getText('l1e7dn8b'),
             subtitle: appTr(context, 'dash_sub_agents'),
             icon: Icons.real_estate_agent_rounded,
@@ -522,6 +534,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminAgentWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.representatives,
             title: l10n.getText('ondrq8ci'),
             subtitle: appTr(context, 'dash_sub_reps'),
             icon: Icons.directions_car_rounded,
@@ -531,8 +544,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: DashboardPresentation.canonicalDriversRoute,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.driversActive,
             title: appTr(context, 'dash_sub_drivers_active'),
-            subtitle: appTr(context, 'dash_sub_reps'),
+            subtitle: appTr(context, 'dash_sub_drivers_active_hint'),
             icon: Icons.verified_user_rounded,
             count: stats.driversActive,
             reliable: rel(DashboardMetricKeys.driversActive),
@@ -540,8 +554,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: DashboardPresentation.canonicalDriversRoute,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.driversInactive,
             title: appTr(context, 'dash_sub_drivers_inactive'),
-            subtitle: appTr(context, 'dash_sub_reps'),
+            subtitle: appTr(context, 'dash_sub_drivers_inactive_hint'),
             icon: Icons.person_off_rounded,
             count: stats.driversInactive,
             reliable: rel(DashboardMetricKeys.driversInactive),
@@ -549,6 +564,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: DashboardPresentation.canonicalDriversRoute,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.driversUnknown,
             title: appTr(context, 'dash_sub_drivers_unknown'),
             subtitle: appTr(context, 'dash_sub_drivers_unknown_hint'),
             icon: Icons.help_outline_rounded,
@@ -558,6 +574,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: DashboardPresentation.canonicalDriversRoute,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.tourGuides,
             title: appTr(context, 'nav_tour_guides'),
             subtitle: appTr(context, 'dash_sub_tour_guides'),
             icon: Icons.tour_rounded,
@@ -567,6 +584,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminTourGuidesWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.transportCompanies,
             title: appTr(context, 'nav_transport_companies'),
             subtitle: appTr(context, 'dash_sub_transport_cos'),
             icon: Icons.local_shipping_rounded,
@@ -576,6 +594,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminTransportCompaniesWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.supportTickets,
             title: l10n.getText('8d66hs1w'),
             subtitle: appTr(context, 'dash_sub_support_tickets'),
             icon: Icons.support_agent_rounded,
@@ -585,6 +604,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminSuportWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.supportOpenTickets,
             title: appTr(context, 'dash_sub_support_open'),
             subtitle: l10n.getText('8d66hs1w'),
             icon: Icons.mark_email_unread_rounded,
@@ -600,8 +620,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
         icon: Icons.event_note_rounded,
         items: [
           _DashboardStatItem(
+            id: DashboardMetricKeys.bookingsTotal,
             title: appTr(context, 'dash_sub_bookings_total'),
-            subtitle: appTr(context, 'dash_section_bookings'),
+            subtitle: appTr(context, 'dash_sub_bookings_total_hint'),
             icon: Icons.receipt_long_rounded,
             count: stats.bookingsTotal,
             reliable: rel(DashboardMetricKeys.bookingsTotal),
@@ -609,6 +630,7 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminALLhgZWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.activeBookings,
             title: l10n.getText('kw5c519x'),
             subtitle: appTr(context, 'dash_sub_active_bookings'),
             icon: Icons.event_available_rounded,
@@ -618,8 +640,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminALLhgZWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.bookingsCompleted,
             title: appTr(context, 'dash_sub_bookings_completed'),
-            subtitle: appTr(context, 'dash_section_bookings'),
+            subtitle: appTr(context, 'dash_sub_bookings_completed_hint'),
             icon: Icons.check_circle_rounded,
             count: stats.bookingsCompleted,
             reliable: rel(DashboardMetricKeys.bookingsCompleted),
@@ -627,8 +650,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminALLhgZWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.bookingsCancelled,
             title: appTr(context, 'dash_sub_bookings_cancelled'),
-            subtitle: appTr(context, 'dash_section_bookings'),
+            subtitle: appTr(context, 'dash_sub_bookings_cancelled_hint'),
             icon: Icons.cancel_rounded,
             count: stats.bookingsCancelled,
             reliable: rel(DashboardMetricKeys.bookingsCancelled),
@@ -636,8 +660,9 @@ class DashboardStatsSectionState extends State<DashboardStatsSection> {
             route: AdminALLhgZWidget.routeName,
           ),
           _DashboardStatItem(
+            id: DashboardMetricKeys.bookingsExpired,
             title: appTr(context, 'dash_sub_bookings_expired'),
-            subtitle: appTr(context, 'dash_section_bookings'),
+            subtitle: appTr(context, 'dash_sub_bookings_expired_hint'),
             icon: Icons.timer_off_rounded,
             count: stats.bookingsExpired,
             reliable: rel(DashboardMetricKeys.bookingsExpired),
@@ -723,6 +748,7 @@ class _DashboardStatGroup {
 
 class _DashboardStatItem {
   const _DashboardStatItem({
+    required this.id,
     required this.title,
     required this.subtitle,
     required this.icon,
@@ -732,6 +758,7 @@ class _DashboardStatItem {
     this.reliable = true,
   });
 
+  final String id;
   final String title;
   final String subtitle;
   final IconData icon;
@@ -940,7 +967,12 @@ class _DashboardGroupSection extends StatelessWidget {
                   SizedBox(
                     width: itemWidth,
                     child: _DashboardStatCard(
-                      key: ValueKey('${group.title}_${group.items[i].route}'),
+                      key: ValueKey(
+                        DashboardPresentation.statCardKey(
+                          groupTitle: group.title,
+                          metricId: group.items[i].id,
+                        ),
+                      ),
                       item: group.items[i],
                       onTap: () => onNavigate(group.items[i]),
                     ),

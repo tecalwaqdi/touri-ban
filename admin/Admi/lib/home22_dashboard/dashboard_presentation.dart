@@ -5,6 +5,30 @@ class DashboardPresentation {
   /// Canonical Drivers list route (menu SoT). Never legacy AdminDrivers.
   static const String canonicalDriversRoute = 'Admindrever';
 
+  static const _rtlLanguageCodes = {'ar', 'ur', 'fa', 'he'};
+
+  /// Compose hero greeting + display name without treating the line as a
+  /// translation lookup key (dynamic `uiTr('$greeting، $name')` never matches).
+  static String heroGreetingLine({
+    required String greeting,
+    required String name,
+    required String languageCode,
+  }) {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return greeting;
+    final rtl = _rtlLanguageCodes.contains(languageCode.toLowerCase());
+    final sep = rtl ? '، ' : ', ';
+    return '$greeting$sep$trimmed';
+  }
+
+  /// Stable KPI card identity — route is not unique (several driver KPIs
+  /// share [canonicalDriversRoute]).
+  static String statCardKey({
+    required String groupTitle,
+    required String metricId,
+  }) =>
+      '$groupTitle::$metricId';
+
   /// Routes allowed as Dashboard quick actions (must still pass canAccess).
   static const List<String> quickActionRouteOrder = [
     'AdminaddMkan',

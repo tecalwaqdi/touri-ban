@@ -32,6 +32,7 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final _statsKey = GlobalKey<DashboardStatsSectionState>();
+  final _alertsKey = GlobalKey<AdminOperationalAlertsState>();
 
   @override
   void initState() {
@@ -59,7 +60,10 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
   }
 
   Future<void> _onRefresh() async {
-    await _statsKey.currentState?.refresh();
+    await Future.wait([
+      _statsKey.currentState?.refresh() ?? Future<void>.value(),
+      _alertsKey.currentState?.refresh() ?? Future<void>.value(),
+    ]);
   }
 
   void _navigate(String routeName) {
@@ -116,7 +120,7 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
                   photoUrl: photo,
                 ),
                 const SizedBox(height: 14),
-                const AdminOperationalAlerts(),
+                AdminOperationalAlerts(key: _alertsKey),
                 const SizedBox(height: 14),
                 _DashboardQuickActionsGrid(onNavigate: _navigate),
                 const SizedBox(height: 16),
@@ -131,7 +135,11 @@ class _Home22DashboardWidgetState extends State<Home22DashboardWidget> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                DashboardStatsSection(key: _statsKey),
+                DashboardStatsSection(
+                  key: _statsKey,
+                  onStatsUpdated: () =>
+                      _alertsKey.currentState?.applyDashboardPeek(),
+                ),
                 const SizedBox(height: 16),
               ],
             ),
@@ -191,7 +199,11 @@ class _DashboardHeroBanner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    uiTr(context, '$greeting، $name'),
+                    DashboardPresentation.heroGreetingLine(
+                      greeting: greeting,
+                      name: name,
+                      languageCode: FFLocalizations.of(context).languageCode,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.titleSmall.override(
