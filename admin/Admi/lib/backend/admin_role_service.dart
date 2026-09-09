@@ -151,7 +151,8 @@ class AdminRoleService {
   static bool get isRoleResolving {
     if (_claims.hasPanelAccess) return false;
     if (_boundProfile != null) return false;
-    return _phase == AdminRbacPhase.loading;
+    return _phase == AdminRbacPhase.loading ||
+        _phase == AdminRbacPhase.bootstrap;
   }
 
   static bool get hasClaimsPanelAccess => _claims.hasPanelAccess;

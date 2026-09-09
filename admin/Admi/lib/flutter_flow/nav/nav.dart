@@ -9,8 +9,11 @@ import '/backend/backend.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_panel_session.dart';
 import '/backend/admin_agent_session_ready.dart';
+import '/backend/admin_auth_nav_policy.dart';
+import '/backend/admin_rbac_phase.dart';
 import '/backend/admin_route_guard.dart';
 import '/backend/admin_role_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '/core/admin_splash_screen.dart';
 import '/core/admin_qa_fixtures.dart';
@@ -44,17 +47,77 @@ Widget _panelHomeForCurrentUser() {
 
 /// Login screen, loading while profile loads, or panel home when authenticated.
 Widget _loginOrPanelHome() {
-  if (!loggedIn) {
-    return HomePageWidget();
+  return _panelHomeForAuthDecision(_authPanelHomeDecision());
+}
+
+AuthPanelHomeDecision _authPanelHomeDecision() {
+  return AdminAuthNavPolicy.decidePanelHome(
+    loggedIn: loggedIn,
+    firebaseUserPresent: FirebaseAuth.instance.currentUser != null,
+    hasUserDocument: currentUserDocument != null,
+    hasPanelAccess: AdminRoleService.hasPanelAccess,
+    isRoleResolving: AdminRoleService.isRoleResolving,
+    rbacAuthoritative:
+        AdminRoleService.rbacPhase == AdminRbacPhase.authoritative,
+    profileHasPanelRole: AdminRoleService.profileRole != AdminRole.none,
+  );
+}
+
+Widget _panelHomeForAuthDecision(AuthPanelHomeDecision decision) {
+  switch (decision) {
+    case AuthPanelHomeDecision.login:
+      return HomePageWidget();
+    case AuthPanelHomeDecision.loading:
+      return const _AuthLoadingScreen();
+    case AuthPanelHomeDecision.unauthorized:
+      return const _PanelUnauthorizedScreen();
+    case AuthPanelHomeDecision.panel:
+      WidgetsBinding.instance.addPostFrameCallback((_) => syncPanelHomeUrl());
+      return _PanelSessionGate(child: _panelHomeForCurrentUser());
   }
-  if (currentUserDocument == null) {
-    return const _AuthLoadingScreen();
+}
+
+/// Signed-in but no panel role after claims resolved — never fake a logout.
+class _PanelUnauthorizedScreen extends StatelessWidget {
+  const _PanelUnauthorizedScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.lock_outline_rounded, size: 40),
+                const SizedBox(height: 16),
+                Text(
+                  FFLocalizations.of(context).getText('role_unauthorized'),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 20),
+                FilledButton(
+                  onPressed: () async {
+                    await ensureCurrentUserDocument(
+                      forceRefresh: true,
+                      syncClaims: true,
+                      source: 'PanelUnauthorized.retry',
+                    );
+                    AppStateNotifier.instance.notifyProfileReady();
+                  },
+                  child: Text(uiTr(context, 'إعادة')),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
-  if (!AdminRoleService.hasPanelAccess) {
-    return HomePageWidget();
-  }
-  WidgetsBinding.instance.addPostFrameCallback((_) => syncPanelHomeUrl());
-  return _PanelSessionGate(child: _panelHomeForCurrentUser());
 }
 
 /// Blocks panel home until role scope + dashboard cache are prepared.
@@ -69,15 +132,24 @@ class _PanelSessionGate extends StatefulWidget {
 
 class _PanelSessionGateState extends State<_PanelSessionGate> {
   bool _ready = AdminPanelSession.isScopeReady;
+  bool _timedOut = false;
   StreamSubscription<void>? _readySub;
+  Timer? _timeout;
 
   @override
   void initState() {
     super.initState();
     _readySub = AdminAgentSessionReady.onReady.listen((_) {
       if (mounted && AdminPanelSession.isScopeReady) {
-        setState(() => _ready = true);
+        setState(() {
+          _ready = true;
+          _timedOut = false;
+        });
       }
+    });
+    _timeout = Timer(const Duration(seconds: 25), () {
+      if (!mounted || _ready) return;
+      setState(() => _timedOut = true);
     });
     _prepare();
   }
@@ -85,7 +157,10 @@ class _PanelSessionGateState extends State<_PanelSessionGate> {
   Future<void> _prepare() async {
     await AdminPanelSession.ensureScopeReady();
     if (!mounted) return;
-    setState(() => _ready = AdminPanelSession.isScopeReady);
+    setState(() {
+      _ready = AdminPanelSession.isScopeReady;
+      if (_ready) _timedOut = false;
+    });
     // Let the home UI paint before background stats queries start.
     Future<void>.delayed(const Duration(milliseconds: 600), () {
       if (mounted) unawaited(AdminPanelSession.warmDashboard());
@@ -94,20 +169,59 @@ class _PanelSessionGateState extends State<_PanelSessionGate> {
 
   @override
   void dispose() {
+    _timeout?.cancel();
     _readySub?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_ready) {
-      return const _AuthLoadingScreen();
+    if (_ready) {
+      return Semantics(
+        identifier: 'qa-panel-ready',
+        label: 'qa-panel-ready',
+        child: widget.child,
+      );
     }
-    return Semantics(
-      identifier: 'qa-panel-ready',
-      label: 'qa-panel-ready',
-      child: widget.child,
-    );
+    if (_timedOut) {
+      return Scaffold(
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    uiTr(context, 'تعذر تحميل لوحة التحكم'),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: () {
+                      setState(() {
+                        _timedOut = false;
+                        _ready = false;
+                      });
+                      _timeout?.cancel();
+                      _timeout = Timer(const Duration(seconds: 25), () {
+                        if (!mounted || _ready) return;
+                        setState(() => _timedOut = true);
+                      });
+                      unawaited(_prepare());
+                    },
+                    child: Text(uiTr(context, 'إعادة')),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return const _AuthLoadingScreen();
   }
 }
 
@@ -224,16 +338,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
         FFRoute(
           name: '_initialize',
           path: '/',
-          builder: (context, _) => appStateNotifier.loggedIn
-              ? AuthUserStreamWidget(
-                  builder: (context) {
-                    if (!AdminRoleService.hasPanelAccess) {
-                      return HomePageWidget();
-                    }
-                    return _panelHomeForCurrentUser();
-                  },
-                )
-              : HomePageWidget(),
+          builder: (context, _) => AuthUserStreamWidget(
+            builder: (context) => _panelHomeForAuthDecision(
+              _authPanelHomeDecision(),
+            ),
+          ),
         ),
         //add_page
         FFRoute(
@@ -818,16 +927,9 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
     refreshListenable: appStateNotifier,
     navigatorKey: appNavigatorKey,
     redirect: (context, state) => globalAuthRedirect(appStateNotifier, state),
-    errorBuilder: (context, state) => appStateNotifier.loggedIn
-        ? AuthUserStreamWidget(
-            builder: (context) {
-              if (!AdminRoleService.hasPanelAccess) {
-                return HomePageWidget();
-              }
-              return _panelHomeForCurrentUser();
-            },
-          )
-        : HomePageWidget(),
+    errorBuilder: (context, state) => AuthUserStreamWidget(
+      builder: (context) => _panelHomeForAuthDecision(_authPanelHomeDecision()),
+    ),
     routes: [
       ...publicRoutes.map((r) => r.toRoute(appStateNotifier)),
       ShellRoute(

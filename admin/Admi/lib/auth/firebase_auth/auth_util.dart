@@ -40,13 +40,27 @@ bool get currentUserEmailVerified => currentUser?.emailVerified ?? false;
 /// generates a new token every hour.
 String? _currentJwtToken;
 final jwtTokenStream = FirebaseAuth.instance.idTokenChanges().asyncMap((user) async {
-  // AUTH-NAV-P0: idTokenChanges can emit null transiently. Only clear session
-  // when the SDK also has no currentUser (definitive sign-out).
+  // AUTH-NAV-P0: idTokenChanges can emit null transiently (web locale rebuild /
+  // persistence rehydrate). Only clear session when the SDK still has no user
+  // after a short confirmation — never treat a blip as logout.
   if (user == null) {
+    await Future<void>.delayed(const Duration(milliseconds: 120));
     if (FirebaseAuth.instance.currentUser == null) {
       _currentJwtToken = null;
       AuthClaims.clearCache();
       AdminRoleService.resetSession();
+      currentUserDocument = null;
+      AdminPanelSession.reset();
+    } else {
+      // Persistence restored mid-tick — soft-refresh claims if needed.
+      final restored = FirebaseAuth.instance.currentUser!;
+      _currentJwtToken = await restored.getIdToken();
+      if (!AdminRoleService.hasClaimsPanelAccess) {
+        await AdminRoleService.refreshClaims(forceRefresh: true);
+      }
+      if (currentUserDocument != null) {
+        AdminRoleService.bindProfile(currentUserDocument);
+      }
     }
     return _currentJwtToken;
   }
@@ -72,6 +86,12 @@ final authenticatedUserStream = FirebaseAuth.instance
               .handleError((_) {}),
     )
     .map((user) {
+  // AUTH-NAV-P0 / locale rebuild: switchMap may briefly emit null while
+  // FirebaseAuth.currentUser is still present. Never clear the bound profile
+  // in that gap — it was previously mapped to login / endless "Resolving role".
+  if (user == null && FirebaseAuth.instance.currentUser != null) {
+    return currentUserDocument;
+  }
   final hadProfile = currentUserDocument != null;
   final prevRole = AdminRoleService.roleFrom(currentUserDocument);
   currentUserDocument = user;

@@ -142,7 +142,7 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
         title: l10n.getText('ksgnau0w'),
         child: AdminPageBody(
           title: l10n.getText('ksgnau0w'),
-          subtitle: uiTr(context, 'مناديب بانتظار التفعيل أو المراجعة'),
+          subtitle: uiTr(context, 'السائقون بانتظار التفعيل أو المراجعة'),
           scrollable: true,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -212,7 +212,7 @@ class _AdminDriversWidgetState extends State<AdminDriversWidget> {
                                 Text(
                                   _searchQuery.isEmpty
                                       ? uiTr(context,
-                                          'لا يوجد مناديب بانتظار التفعيل')
+                                          'لا يوجد سائقون بانتظار التفعيل')
                                       : uiTr(context, 'لا توجد نتائج للبحث'),
                                   style: theme.titleMedium,
                                   textAlign: TextAlign.center,
