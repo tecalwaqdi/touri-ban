@@ -1,16 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
+import '/core/admin_error_messages.dart';
 import '/core/cloud_functions/cloud_functions_client.dart';
 import '/core/finance/admin_money_presentation.dart';
+import '/core/finance/finance_controls_client.dart';
 import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
-/// FIN-8 — Company receivables / payables (server aggregate, read-only).
+/// FIN-8 — Company receivables / payables + admin cash exception confirm.
 class AdminFinanceReceivablesWidget extends StatefulWidget {
   const AdminFinanceReceivablesWidget({super.key});
 
@@ -27,6 +31,7 @@ class _AdminFinanceReceivablesWidgetState
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late Menu2Model _menu2Model;
   Future<Map<String, dynamic>>? _future;
+  bool _busy = false;
 
   @override
   void initState() {
@@ -52,11 +57,70 @@ class _AdminFinanceReceivablesWidgetState
         MoneyAmount(currency: currency, minorUnits: minor),
       );
 
+  Future<void> _adminConfirmCash(String orderId) async {
+    if (!AdminRoleService.canWriteSettlements) return;
+    final reasonCtrl = TextEditingController();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(uiTr(ctx, 'تأكيد تحصيل نقدي استثنائي')),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              uiTr(
+                ctx,
+                'المسار الأساسي هو تأكيد السائق. استخدم هذا للإغلاق اليدوي للحالات العالقة فقط.',
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text('order/$orderId'),
+            TextField(
+              controller: reasonCtrl,
+              decoration: InputDecoration(labelText: uiTr(ctx, 'السبب')),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(uiTr(ctx, 'إلغاء')),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(uiTr(ctx, 'تأكيد')),
+          ),
+        ],
+      ),
+    );
+    final reason = reasonCtrl.text.trim();
+    reasonCtrl.dispose();
+    if (ok != true || reason.length < 3 || !mounted) return;
+    setState(() => _busy = true);
+    try {
+      await FinanceControlsClient.adminConfirmCashCollection(
+        orderId: orderId,
+        reason: reason,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(uiTr(context, 'تم تأكيد التحصيل'))),
+      );
+      setState(() {});
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(adminFriendlyError(context, e))),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     return AdminLayoutWidget(
-      padContent: false,
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
@@ -64,6 +128,17 @@ class _AdminFinanceReceivablesWidgetState
       child: FutureBuilder<Map<String, dynamic>>(
         future: _future,
         builder: (context, snap) {
+          if (snap.hasError) {
+            return AdminEmptyState(
+              title: uiTr(context, 'تعذر التحميل'),
+              message: adminFriendlyError(context, snap.error!),
+              icon: Icons.error_outline,
+              action: AdminPrimaryButton(
+                label: uiTr(context, 'إعادة المحاولة'),
+                onPressed: _reload,
+              ),
+            );
+          }
           if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -144,6 +219,68 @@ class _AdminFinanceReceivablesWidgetState
                   message: uiTr(context, 'لا ذمم مفتوحة بعد'),
                   icon: Icons.account_balance_outlined,
                 ),
+              const SizedBox(height: 16),
+              AdminContentCard(
+                title: uiTr(context, 'نقد عالق — تأكيد استثنائي'),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      uiTr(
+                        context,
+                        'طلبات مكتملة بـ pending_cash. التأكيد من اللوحة استثنائي (يتطلب علم التحصيل V2).',
+                      ),
+                      style: theme.bodySmall,
+                    ),
+                    const SizedBox(height: 8),
+                    StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: FirebaseFirestore.instance
+                          .collection('order')
+                          .where('payment_status', isEqualTo: 'pending_cash')
+                          .limit(30)
+                          .snapshots(),
+                      builder: (context, cashSnap) {
+                        if (!cashSnap.hasData) {
+                          return const LinearProgressIndicator(minHeight: 2);
+                        }
+                        final docs = cashSnap.data!.docs.where((d) {
+                          final code =
+                              '${d.data()['status_code'] ?? ''}'.toLowerCase();
+                          return code == 'completed' ||
+                              code == 'trip_completed';
+                        }).toList();
+                        if (docs.isEmpty) {
+                          return Text(
+                            uiTr(context, 'لا توجد حالات عالقة ظاهرة'),
+                            style: theme.bodySmall,
+                          );
+                        }
+                        return Column(
+                          children: [
+                            for (final d in docs)
+                              ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(d.id),
+                                subtitle: Text(
+                                  '${d.data()['PaymentMethod'] ?? ''} · '
+                                  '${d.data()['total'] ?? ''}',
+                                ),
+                                trailing: AdminRoleService.canWriteSettlements
+                                    ? TextButton(
+                                        onPressed: _busy
+                                            ? null
+                                            : () => _adminConfirmCash(d.id),
+                                        child: Text(uiTr(context, 'تأكيد')),
+                                      )
+                                    : null,
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ],
           );
         },

@@ -485,6 +485,48 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 ),
               ),
               AdminContentCard(
+                title: uiTr(context, 'صلاحية الحساب'),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      AdminRoleService.roleLabelL10n(
+                        context,
+                        AdminRoleService.currentRole,
+                      ),
+                      style: theme.titleSmall.override(
+                        fontFamily: theme.titleSmallFamily,
+                        fontWeight: FontWeight.w700,
+                        useGoogleFonts: !theme.titleSmallIsCustom,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      AdminRoleService.isAccountant ||
+                              AdminRoleService.isFinanceStaff
+                          ? uiTr(
+                              context,
+                              'محاسب: عرض المالية والتقارير والذمم؛ الكتابة تبقى مقفولة حتى تفعيل أعلام الإنتاج.',
+                            )
+                          : AdminRoleService.isSuperAdmin
+                              ? uiTr(
+                                  context,
+                                  'سوبر أدمن: إدارة كاملة للوحة والصلاحيات.',
+                                )
+                              : uiTr(
+                                  context,
+                                  'صلاحيتك تحدد الصفحات والإجراءات المتاحة في اللوحة.',
+                                ),
+                      style: theme.bodySmall.override(
+                        fontFamily: theme.bodySmallFamily,
+                        color: theme.secondaryText,
+                        useGoogleFonts: !theme.bodySmallIsCustom,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              AdminContentCard(
                 title: l10n.getText('h9szauvt' /* Password */),
                 child: Form(
                   key: _model.passwordFormKey,

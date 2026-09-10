@@ -1257,6 +1257,35 @@ exports.confirmCashCollectionV2 = functions
     }
   });
 
+// Admin exceptional path — stuck pending_cash (flag-gated; driver remains primary).
+exports.adminConfirmCashCollectionV2 = functions
+  .region('us-central1')
+  .runWith({timeoutSeconds: 60, memory: '256MB'})
+  .https.onCall(async (data, context) => {
+    try {
+      return await cashCollectionRealization.adminConfirmCashCollectionV2({
+        db,
+        auth: context.auth,
+        data: data || {},
+        admin,
+      });
+    } catch (e) {
+      const code =
+        e.code === 'permission-denied' ||
+        e.code === 'unauthenticated' ||
+        e.code === 'failed-precondition' ||
+        e.code === 'invalid-argument' ||
+        e.code === 'not-found'
+          ? e.code
+          : 'internal';
+      throw new functions.https.HttpsError(
+        code,
+        e.message || 'Admin cash confirm failed',
+        e.details,
+      );
+    }
+  });
+
 // Driver Email OTP verification (Resend) — replaces email link for Registration V2.
 const emailVerificationOtp = require('./email_verification_otp.js');
 const emailOtpSecrets = ['RESEND_API_KEY', 'EMAIL_OTP_HMAC_SECRET'];

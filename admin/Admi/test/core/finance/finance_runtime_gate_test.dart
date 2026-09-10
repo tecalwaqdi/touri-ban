@@ -18,4 +18,13 @@ void main() {
     expect(FinanceRuntimeGate.authoritativeBackendData, isFalse);
     expect(FinanceRuntimeGate.canAttemptFinanceWrites, isFalse);
   });
+
+  test('markAuthoritative sticks until explicit clear', () {
+    FinanceRuntimeGate.markAuthoritativeBackendData();
+    expect(FinanceRuntimeGate.canAttemptFinanceWrites, isTrue);
+    FinanceRuntimeGate.markAuthoritativeBackendData();
+    expect(FinanceRuntimeGate.canAttemptFinanceWrites, isTrue);
+    FinanceRuntimeGate.setAuthoritativeBackendData(false);
+    expect(FinanceRuntimeGate.canAttemptFinanceWrites, isFalse);
+  });
 }

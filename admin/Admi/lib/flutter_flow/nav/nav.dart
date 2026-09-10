@@ -494,6 +494,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
           builder: (context, params) => AdminAddSuperAdminWidget(),
         ),
         FFRoute(
+          name: AdminAddAccountantWidget.routeName,
+          path: AdminAddAccountantWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminAddAccountantWidget(),
+        ),
+        FFRoute(
           name: EdetSuperAdminWidget.routeName,
           path: EdetSuperAdminWidget.routePath,
           requireAuth: true,
@@ -756,6 +762,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
           path: AdminFinanceReceivablesWidget.routePath,
           requireAuth: true,
           builder: (context, params) => const AdminFinanceReceivablesWidget(),
+        ),
+        FFRoute(
+          name: AdminFinanceAdjustmentsWidget.routeName,
+          path: AdminFinanceAdjustmentsWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminFinanceAdjustmentsWidget(),
         ),
         FFRoute(
           name: AdminAgentFinanceWidget.routeName,

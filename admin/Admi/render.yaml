@@ -38,4 +38,4 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
-# last_manual_trigger: 2026-09-07T07:12Z (UI V2.1 prod 1.0.17+2021)
+# last_manual_trigger: 2026-09-10T04:45Z (accountant panel + finance adjustments)

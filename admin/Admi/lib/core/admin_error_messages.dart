@@ -17,13 +17,13 @@ String adminFriendlyError(BuildContext context, Object error) {
   if (raw.contains('FEATURE_FLAG_DISABLED')) {
     return uiTr(
       context,
-      'This financial write is disabled by production feature flags.',
+      'هذه الكتابة المالية معطّلة حالياً (أعلام الإنتاج OFF). الواجهة جاهزة والتفعيل يتم لاحقاً.',
     );
   }
   if (raw.contains('SELF_APPROVAL_FORBIDDEN')) {
     return uiTr(
       context,
-      'Maker cannot approve their own item. Use an independent checker.',
+      'لا يمكن لمن أنشأ العملية أن يوافق عليها بنفسه. استخدم محاسباً ثانياً (maker-checker).',
     );
   }
   if (raw.contains('PERIOD_CLOSED')) {

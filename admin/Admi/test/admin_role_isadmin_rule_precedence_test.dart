@@ -50,4 +50,28 @@ void main() {
       AdminRole.partner,
     );
   });
+
+  test('isAdminRule=5 is finance / accountant', () {
+    expect(
+      AdminRoleService.roleFromFields(
+        isAdmin: false,
+        isAdminRule: AdminRoleService.ruleFinance,
+        hasIsAdminRule: true,
+      ),
+      AdminRole.accountant,
+    );
+  });
+
+  test('finance claim maps to AdminRole.accountant not countryAgent', () {
+    AdminRoleService.bindClaims(
+      AuthClaims.fromToken({'finance': true}),
+    );
+    expect(AdminRoleService.currentRole, AdminRole.accountant);
+    expect(AdminRoleService.isFinanceStaff, isTrue);
+    expect(AdminRoleService.isCountryAgent, isFalse);
+    expect(
+      AdminRoleService.homeRouteFor(AdminRole.accountant),
+      'AdminFinanceHub',
+    );
+  });
 }

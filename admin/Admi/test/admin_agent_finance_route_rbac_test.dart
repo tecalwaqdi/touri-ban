@@ -34,6 +34,7 @@ void main() {
         'AdminProfits',
         'AdminFinanceChannels',
         'AdminFinanceReceivables',
+        'AdminFinanceAdjustments',
         'AdminSettlements',
         'AdminSettlementDetails',
         'AdminSettlementReceipt',
