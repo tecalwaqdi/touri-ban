@@ -26,8 +26,9 @@ abstract final class AdminDriverMarketReadinessResolver {
   AdminDriverMarketReadinessResolver._();
 
   static int _enabledRequirements(CountriesRecord country) {
-    final raw = country.driverRequirements;
-    if (raw.isEmpty) return 0;
+    final raw = country.snapshotData['driver_requirements'] ??
+        country.snapshotData['driverRequirements'];
+    if (raw is! Map) return 0;
     return raw.values.where((v) {
       if (v is! Map) return false;
       return v['enabled'] == true;

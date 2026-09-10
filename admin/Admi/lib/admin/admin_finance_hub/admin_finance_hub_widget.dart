@@ -367,6 +367,16 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                 context.pushNamed(AdminSettlementsWidget.routeName),
           ),
         if (AdminRoleService.canAccessRoute(
+          AdminFinanceAdjustmentsWidget.routeName,
+        ))
+          AdminPrimaryButton(
+            label: appTr(context, 'nav_finance_adjustments'),
+            outlined: true,
+            icon: Icons.tune_rounded,
+            onPressed: () =>
+                context.pushNamed(AdminFinanceAdjustmentsWidget.routeName),
+          ),
+        if (AdminRoleService.canAccessRoute(
           AdminFinanceReportsWidget.routeName,
         ))
           AdminPrimaryButton(

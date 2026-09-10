@@ -205,6 +205,23 @@ class AdminRoleService {
     return user.isAdmin;
   }
 
+  /// Accountant document (isAdminRule == 5).
+  static bool isAccountantUser(UserRecord? user) {
+    if (user == null) return false;
+    return user.hasIsAdminRule() && user.isAdminRule == ruleAccountant;
+  }
+
+  /// SuperAdmin or accountant — editable from the panel operators list.
+  static bool isPrivilegedPanelUser(UserRecord? user) {
+    return isSuperAdminUser(user) || isAccountantUser(user);
+  }
+
+  /// Legacy alias used by older call sites.
+  static bool isFinanceUser(UserRecord? user) => isAccountantUser(user);
+
+  /// Legacy alias for [ruleAccountant].
+  static const int ruleFinance = ruleAccountant;
+
   static bool get isPartner => currentRole == AdminRole.partner;
 
   static bool get isTransportCompany =>
@@ -289,6 +306,7 @@ class AdminRoleService {
     'AdminFinanceHub',
     'AdminFinanceChannels',
     'AdminFinanceReceivables',
+    'AdminFinanceAdjustments',
     'AdminAgentFinance',
     'AdminSettlements',
     'AdminSettlementDetails',
@@ -298,7 +316,8 @@ class AdminRoleService {
     'AdminFinancialPeriods',
     'AdminFinanceReports',
     'AdminFinanceAudit',
-    // Settings intentionally omitted — Accountant must not open system config.
+    'AdminDriverWallets',
+    'Settings',
     // PERF-P4B diagnostic routes (not in menu).
     'AdminPerfP4bStatic',
     'AdminPerfP4bControlQuery',
@@ -312,6 +331,7 @@ class AdminRoleService {
     'AdminProfits',
     'AdminFinanceChannels',
     'AdminFinanceReceivables',
+    'AdminFinanceAdjustments',
     'AdminSettlements',
     'AdminSettlementDetails',
     'AdminSettlementReceipt',

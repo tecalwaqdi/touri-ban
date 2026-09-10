@@ -146,6 +146,60 @@ describe('agent_order_snapshot', () => {
     });
     assert.equal(patch.agent_attribution_status, 'none');
   });
+
+  it('excludes demo agents from attribution (no ambiguous pollution)', async () => {
+    const db = new FakeFirestore();
+    db.users.push(
+      {
+        id: 'demoNg',
+        data: {
+          Isagent: true,
+          actev_user: true,
+          Agent_total: 10,
+          is_demo_agent: true,
+          exclude_from_agent_attribution: true,
+          Rev_dloh_agent: {path: 'countries/nigeria'},
+        },
+      },
+      {
+        id: 'realNg',
+        data: {
+          Isagent: true,
+          actev_user: true,
+          Agent_total: 12,
+          Rev_dloh_agent: {path: 'countries/nigeria'},
+        },
+      },
+    );
+    const patch = await agentSnap.buildAgentSnapshotPatch(db, 'o5', {
+      Rev_dolh: {path: 'countries/nigeria'},
+      total_app: 10,
+      total: 100,
+    });
+    assert.equal(patch.agent_attribution_status, 'attributed');
+    assert.equal(patch.agent_id, 'realNg');
+    assert.equal(patch.agent_amount_minor, 120);
+  });
+
+  it('demo-only country → none (not attributed)', async () => {
+    const db = new FakeFirestore();
+    db.users.push({
+      id: 'demoOnly',
+      data: {
+        Isagent: true,
+        actev_user: true,
+        Agent_total: 10,
+        demo_agent: true,
+        exclude_from_agent_attribution: true,
+        Rev_dloh_agent: {path: 'countries/chad'},
+      },
+    });
+    const patch = await agentSnap.buildAgentSnapshotPatch(db, 'o6', {
+      Rev_dolh: {path: 'countries/chad'},
+      total_app: 10,
+    });
+    assert.equal(patch.agent_attribution_status, 'none');
+  });
 });
 
 console.log('agent_order_snapshot tests OK');

@@ -102,4 +102,15 @@ abstract final class FinanceControlsClient {
 
   static Future<Map<String, dynamic>> approvalPolicy() =>
       CloudFunctionsClient.callMap('financeApprovalPolicyV2');
+
+  static Future<Map<String, dynamic>> adminConfirmCashCollection({
+    required String orderId,
+    required String reason,
+    String? operationId,
+  }) =>
+      CloudFunctionsClient.callMap('adminConfirmCashCollectionV2', {
+        'orderId': orderId,
+        'reason': reason,
+        if (operationId != null) 'operationId': operationId,
+      });
 }

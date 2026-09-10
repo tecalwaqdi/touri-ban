@@ -136,6 +136,66 @@ async function confirmCashCollectionV2({db, auth, data, admin, now}) {
   const flags = await loadFinanceFeatureFlags(db);
   assertFlag(flags, 'FINANCIAL_CASH_REALIZATION_V2_ENABLED', fail);
 
+  return runCashRealizationTx({
+    db,
+    auth,
+    admin,
+    now,
+    orderId,
+    operationId,
+    mode: 'driver',
+  });
+}
+
+/**
+ * Admin/finance exception path for stuck pending_cash orders.
+ * Same flag + transaction semantics; requires reason; audits realized_by_role=admin.
+ */
+async function adminConfirmCashCollectionV2({db, auth, data, admin, now}) {
+  if (!auth || !auth.uid) {
+    fail('unauthenticated', 'Sign in required.');
+  }
+  const token = auth.token || {};
+  if (token.super_admin !== true && token.finance !== true) {
+    fail('permission-denied', 'ADMIN_OR_FINANCE_REQUIRED');
+  }
+
+  const orderId = String(data.orderId || '').trim();
+  if (!orderId) fail('invalid-argument', 'orderId required');
+  const reason = String(data.reason || '').trim();
+  if (reason.length < 3) fail('invalid-argument', 'reason required (min 3 chars)');
+
+  const operationId = String(
+    data.operationId ||
+      data.idempotencyKey ||
+      `admin_cash_realization:${orderId}`,
+  ).trim();
+
+  const flags = await loadFinanceFeatureFlags(db);
+  assertFlag(flags, 'FINANCIAL_CASH_REALIZATION_V2_ENABLED', fail);
+
+  return runCashRealizationTx({
+    db,
+    auth,
+    admin,
+    now,
+    orderId,
+    operationId,
+    mode: 'admin',
+    reason,
+  });
+}
+
+async function runCashRealizationTx({
+  db,
+  auth,
+  admin,
+  now,
+  orderId,
+  operationId,
+  mode,
+  reason,
+}) {
   const FieldValue = admin.firestore.FieldValue;
   const orderRef = db.collection('order').doc(orderId);
   const idemRef = db.collection('financial_realization_idempotency').doc(operationId);
@@ -154,10 +214,12 @@ async function confirmCashCollectionV2({db, auth, data, admin, now}) {
     if (!orderSnap.exists) fail('not-found', 'Order not found', {orderId});
     const order = orderSnap.data();
 
-    const assigned = driverRefPath(order);
-    const caller = `user/${auth.uid}`;
-    if (!assigned || assigned !== caller) {
-      fail('permission-denied', 'NOT_ASSIGNED_DRIVER', {orderId, assigned});
+    if (mode === 'driver') {
+      const assigned = driverRefPath(order);
+      const caller = `user/${auth.uid}`;
+      if (!assigned || assigned !== caller) {
+        fail('permission-denied', 'NOT_ASSIGNED_DRIVER', {orderId, assigned});
+      }
     }
 
     if (!isCashPaymentMethod(order)) {
@@ -187,10 +249,11 @@ async function confirmCashCollectionV2({db, auth, data, admin, now}) {
     }
 
     const line = validateCashRealization(orderId, order);
+    const assigned = driverRefPath(order);
 
     tx.update(orderRef, {
       payment_status: 'cash_collected',
-      cashCollectedByDriver: true,
+      cashCollectedByDriver: mode === 'driver',
       cashCollectedAt: FieldValue.serverTimestamp(),
       cash_collection_status: 'collected',
       halh: 'paid',
@@ -198,6 +261,13 @@ async function confirmCashCollectionV2({db, auth, data, admin, now}) {
       financial_realized_at: FieldValue.serverTimestamp(),
       financial_realization_version: REALIZATION_VERSION,
       cash_confirm_operation_id: operationId,
+      ...(mode === 'admin'
+        ? {
+            cash_realized_by_admin: true,
+            cash_realized_by_uid: auth.uid,
+            cash_realized_admin_reason: reason,
+          }
+        : {}),
     });
 
     const auditRef = db.collection('financial_audit_events').doc();
@@ -205,7 +275,7 @@ async function confirmCashCollectionV2({db, auth, data, admin, now}) {
       eventId: auditRef.id,
       eventType: 'CASH_COLLECTION_REALIZED',
       actorUid: auth.uid,
-      driverId: auth.uid,
+      driverId: assigned ? String(assigned).replace(/^user\//, '') : null,
       orderId,
       timestamp: tsIso,
       metadata: {
@@ -217,10 +287,14 @@ async function confirmCashCollectionV2({db, auth, data, admin, now}) {
         currency: line.currency,
         realizationVersion: REALIZATION_VERSION,
         operationId,
+        realized_by_role: mode === 'admin' ? 'admin' : 'driver',
+        reason: mode === 'admin' ? reason : null,
       },
     });
 
-    const response = buildResponse(orderId, order, line, 'COLLECTED');
+    const response = buildResponse(orderId, order, line, 'COLLECTED', {
+      realizedByRole: mode === 'admin' ? 'admin' : 'driver',
+    });
     tx.set(
       idemRef,
       {
@@ -238,6 +312,7 @@ async function confirmCashCollectionV2({db, auth, data, admin, now}) {
 module.exports = {
   REALIZATION_VERSION,
   confirmCashCollectionV2,
+  adminConfirmCashCollectionV2,
   validateCashRealization,
   isAlreadyCashCollected,
   isCashPaymentMethod,

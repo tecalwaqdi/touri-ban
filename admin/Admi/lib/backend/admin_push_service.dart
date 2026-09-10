@@ -187,10 +187,15 @@ class AdminPushService {
         data['isAdmin'] == true ||
         _firestoreAdminRule(data['isAdminRule']) == 1 ||
         _firestoreAdminRule(data['IsAdminRule']) == 1;
+    final isFinance = _firestoreAdminRule(data['isAdminRule']) ==
+            AdminRoleService.ruleFinance ||
+        _firestoreAdminRule(data['IsAdminRule']) ==
+            AdminRoleService.ruleFinance ||
+        data['panel_role']?.toString() == 'accountant';
     final isCountryAdmin = data['isagent'] == true ||
         data['Isagent'] == true ||
         AdminRoleService.isCountryAgent;
-    if (!isSuperAdmin && !isCountryAdmin) return;
+    if (!isSuperAdmin && !isCountryAdmin && !isFinance) return;
 
     final existing = List<String>.from(
       (data['fcm_tokens'] as List<dynamic>? ?? const [])

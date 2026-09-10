@@ -227,9 +227,13 @@ class AdminCountryScope {
   }
 
   static Query applySuperAdminUserQuery(Query collection) {
+    // Privileged panel operators: SuperAdmin + Accountant (finance).
     return (collection as Query<Map<String, dynamic>>).where(
       'isAdminRule',
-      isEqualTo: AdminRoleService.ruleSuperAdmin,
+      whereIn: [
+        AdminRoleService.ruleSuperAdmin,
+        AdminRoleService.ruleFinance,
+      ],
     );
   }
 

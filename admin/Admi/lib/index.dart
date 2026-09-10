@@ -37,6 +37,8 @@ export '/admin/admin_agent_finance/admin_agent_finance_widget.dart'
     show AdminAgentFinanceWidget;
 export '/admin/admin_finance_receivables/admin_finance_receivables_widget.dart'
     show AdminFinanceReceivablesWidget;
+export '/admin/admin_finance_adjustments/admin_finance_adjustments_widget.dart'
+    show AdminFinanceAdjustmentsWidget;
 export '/admin/admin_reconciliation/admin_reconciliation_widget.dart'
     show AdminReconciliationWidget;
 export '/admin/admin_financial_periods/admin_financial_periods_widget.dart'
@@ -72,6 +74,8 @@ export '/admin/admin_super_admins/admin_super_admins_widget.dart'
     show AdminSuperAdminsWidget;
 export '/admin/admin_add_super_admin/admin_add_super_admin_widget.dart'
     show AdminAddSuperAdminWidget;
+export '/admin/admin_add_accountant/admin_add_accountant_widget.dart'
+    show AdminAddAccountantWidget;
 export '/admin/edet_super_admin/edet_super_admin_widget.dart'
     show EdetSuperAdminWidget;
 export '/admin/admin_suport/admin_suport_widget.dart' show AdminSuportWidget;

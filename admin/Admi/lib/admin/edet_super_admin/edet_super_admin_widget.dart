@@ -50,9 +50,13 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
       final admin = await UserRecord.getDocumentOnce(ref);
       if (!mounted) return;
 
-      if (!AdminRoleService.isSuperAdminUser(admin)) {
+      if (!AdminRoleService.isPrivilegedPanelUser(admin)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(uiTr(context, 'هذا الحساب ليس سوبر أدمن'))),
+          SnackBar(
+            content: Text(
+              uiTr(context, 'هذا الحساب ليس سوبر أدمن أو محاسب'),
+            ),
+          ),
         );
         context.safePop();
         return;
@@ -83,6 +87,11 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
     try {
       final displayName = _model.nameTextController!.text.trim();
       final activating = _model.activeValue && !_admin!.actevUser;
+      final isFinance = AdminRoleService.isFinanceUser(_admin);
+      final preservedRule = isFinance
+          ? AdminRoleService.ruleFinance
+          : AdminRoleService.ruleSuperAdmin;
+      final auditType = isFinance ? 'accountant' : 'super_admin';
 
       await AdminFirestoreDelete.updateDocument(
         ref,
@@ -90,28 +99,29 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
           displayName: displayName,
           phoneNumber: _model.phoneTextController!.text.trim(),
           actevUser: _model.activeValue,
-          isAdmin: true,
-          isAdminRule: AdminRoleService.ruleSuperAdmin,
+          // Keep role as-is; never promote accountants to SuperAdmin on edit.
+          isAdmin: !isFinance,
+          isAdminRule: preservedRule,
         ),
       );
 
       await AdminAuditLog.record(
         action: 'update',
-        targetType: 'super_admin',
+        targetType: auditType,
         targetId: ref.id,
         targetLabel: displayName,
       );
 
       if (activating) {
         await AdminAuditLog.recordToggle(
-          targetType: 'super_admin',
+          targetType: auditType,
           targetId: ref.id,
           targetLabel: displayName,
           activated: true,
         );
       } else if (!_model.activeValue && _admin!.actevUser) {
         await AdminAuditLog.recordToggle(
-          targetType: 'super_admin',
+          targetType: auditType,
           targetId: ref.id,
           targetLabel: displayName,
           activated: false,
@@ -122,7 +132,9 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
       await AdminCrudFeedback.success(
         context,
         action: AdminCrudAction.edit,
-        message: uiTr(context, 'تم تحديث بيانات السوبر أدمن'),
+        message: isFinance
+            ? uiTr(context, 'تم تحديث بيانات المحاسب')
+            : uiTr(context, 'تم تحديث بيانات السوبر أدمن'),
         refreshScope: AdminListScope.superAdmins,
         popPage: true,
         deferHeavyWork: false,
@@ -147,10 +159,15 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
     final ref = widget.superAdminRef;
     if (ref == null || _admin == null) return;
 
+    final isFinance = AdminRoleService.isFinanceUser(_admin);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(uiTr(context, 'حذف السوبر أدمن')),
+        title: Text(
+          isFinance
+              ? uiTr(context, 'حذف المحاسب')
+              : uiTr(context, 'حذف السوبر أدمن'),
+        ),
         content: Text(
           '${uiTr(context, 'هل أنت متأكد من حذف')} "${_admin!.displayName}"؟\n' +
           uiTr(context, 'سيتم حذف بياناته من قاعدة البيانات فقط.'),
@@ -173,7 +190,7 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
     try {
       await AdminFirestoreDelete.deleteDocument(ref);
       await AdminAuditLog.recordDelete(
-        targetType: 'super_admin',
+        targetType: isFinance ? 'accountant' : 'super_admin',
         targetId: ref.id,
         targetLabel: _admin!.displayName,
       );
@@ -181,7 +198,9 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
       await AdminCrudFeedback.success(
         context,
         action: AdminCrudAction.delete,
-        message: uiTr(context, 'تم حذف السوبر أدمن'),
+        message: isFinance
+            ? uiTr(context, 'تم حذف المحاسب')
+            : uiTr(context, 'تم حذف السوبر أدمن'),
         refreshScope: AdminListScope.superAdmins,
         removedDocumentId: ref.id,
         popPage: true,
@@ -202,10 +221,15 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isFinance = AdminRoleService.isFinanceUser(_admin);
+    final editTitle = isFinance
+        ? uiTr(context, 'تعديل المحاسب')
+        : appTr(context, 'scr_edit_super_admin');
+
     if (!AdminSuperAdminGate.isAllowed) {
       return AdminSuperAdminGate.deniedEditScaffold(
         context: context,
-        title: appTr(context, 'scr_edit_super_admin'),
+        title: editTitle,
       );
     }
 
@@ -222,7 +246,7 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
         title: appTr(context, 'scr_edit_super_admin'),
         child: AdminContentCard(
           child: Text(
-            uiTr(context, 'تعذر تحميل بيانات السوبر أدمن'),
+            uiTr(context, 'تعذر تحميل بيانات الحساب'),
             textAlign: TextAlign.center,
           ),
         ),
@@ -230,8 +254,12 @@ class _EdetSuperAdminWidgetState extends State<EdetSuperAdminWidget> {
     }
 
     return AdminEditScaffold(
-      title: appTr(context, 'scr_edit_super_admin'),
-      subtitle: _isSelf ? uiTr(context, 'حسابك الحالي') : null,
+      title: editTitle,
+      subtitle: _isSelf
+          ? uiTr(context, 'حسابك الحالي')
+          : (isFinance
+              ? AdminRoleService.roleLabelL10n(context, AdminRole.accountant)
+              : AdminRoleService.roleLabelL10n(context, AdminRole.superAdmin)),
       isLoading: _model.isSubmitting,
       floatingAction: AdminPrimaryButton(
         label: uiTr(context, 'حفظ التعديلات'),

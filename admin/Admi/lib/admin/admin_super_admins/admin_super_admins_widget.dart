@@ -2,6 +2,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_firestore_list.dart';
@@ -64,12 +65,13 @@ class _AdminSuperAdminsWidgetState extends State<AdminSuperAdminsWidget> {
       return;
     }
 
+    final isFinance = AdminRoleService.isFinanceUser(admin);
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text(appTr(context, 'adm_delete_confirm_title')),
             content: Text(
-              '${uiTr(context, 'هل أنت متأكد من حذف السوبر أدمن')} "${admin.displayName}"؟\n' +
+              '${uiTr(context, isFinance ? 'هل أنت متأكد من حذف المحاسب' : 'هل أنت متأكد من حذف السوبر أدمن')} "${admin.displayName}"؟\n' +
               uiTr(context, 'سيتم حذف بياناته من قاعدة البيانات فقط.'),
             ),
             actions: [
@@ -91,7 +93,7 @@ class _AdminSuperAdminsWidgetState extends State<AdminSuperAdminsWidget> {
     try {
       await AdminFirestoreDelete.deleteDocument(admin.reference);
       await AdminAuditLog.recordDelete(
-        targetType: 'super_admin',
+        targetType: isFinance ? 'accountant' : 'super_admin',
         targetId: admin.reference.id,
         targetLabel: admin.displayName,
       );
@@ -99,7 +101,10 @@ class _AdminSuperAdminsWidgetState extends State<AdminSuperAdminsWidget> {
       await AdminCrudFeedback.success(
         context,
         action: AdminCrudAction.delete,
-        message: uiTr(context, 'تم حذف السوبر أدمن'),
+        message: uiTr(
+          context,
+          isFinance ? 'تم حذف المحاسب' : 'تم حذف السوبر أدمن',
+        ),
         refreshScope: AdminListScope.superAdmins,
         removedDocumentId: admin.reference.id,
       );
@@ -196,7 +201,10 @@ class _AdminSuperAdminsWidgetState extends State<AdminSuperAdminsWidget> {
                           const SizedBox(height: 12),
                           Text(
                             _searchQuery.isEmpty
-                                ? uiTr(context, 'لا يوجد سوبر أدمن مسجل')
+                                ? uiTr(
+                                    context,
+                                    'لا يوجد سوبر أدمن أو محاسب مسجل',
+                                  )
                                 : uiTr(context, 'لا توجد نتائج للبحث'),
                             style: theme.titleMedium,
                           ),
@@ -280,10 +288,24 @@ class _AdminSuperAdminsWidgetState extends State<AdminSuperAdminsWidget> {
   }
 
   Widget _buildAddButton() {
-    return AdminPrimaryButton(
-      label: uiTr(context, 'إضافة سوبر أدمن'),
-      icon: Icons.person_add_alt_1_rounded,
-      onPressed: () => context.pushNamed(AdminAddSuperAdminWidget.routeName),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AdminPrimaryButton(
+          label: appTr(context, 'scr_add_accountant'),
+          icon: Icons.account_balance_outlined,
+          outlined: true,
+          onPressed: () =>
+              context.pushNamed(AdminAddAccountantWidget.routeName),
+        ),
+        const SizedBox(width: 8),
+        AdminPrimaryButton(
+          label: uiTr(context, 'إضافة سوبر أدمن'),
+          icon: Icons.person_add_alt_1_rounded,
+          onPressed: () =>
+              context.pushNamed(AdminAddSuperAdminWidget.routeName),
+        ),
+      ],
     );
   }
 }
@@ -311,6 +333,7 @@ class _SuperAdminsTable extends StatelessWidget {
         ),
         columns: [
           DataColumn(label: Text(uiTr(context, 'الاسم'))),
+          DataColumn(label: Text(uiTr(context, 'الدور'))),
           DataColumn(label: Text(uiTr(context, 'البريد'))),
           DataColumn(label: Text(uiTr(context, 'الجوال'))),
           DataColumn(label: Text(uiTr(context, 'الحالة'))),
@@ -318,9 +341,14 @@ class _SuperAdminsTable extends StatelessWidget {
         ],
         rows: admins.map((admin) {
           final isSelf = admin.reference.id == currentUserUid;
+          final isFinance = AdminRoleService.isFinanceUser(admin);
+          final role = isFinance ? AdminRole.accountant : AdminRole.superAdmin;
           return DataRow(
             cells: [
               DataCell(Text(admin.displayName.isNotEmpty ? admin.displayName : '—')),
+              DataCell(
+                Text(AdminRoleService.roleLabelL10n(context, role)),
+              ),
               DataCell(Text(admin.email.isNotEmpty ? admin.email : '—')),
               DataCell(Text(admin.phoneNumber.isNotEmpty ? admin.phoneNumber : '—')),
               DataCell(
@@ -370,6 +398,8 @@ class _SuperAdminCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final isSelf = admin.reference.id == currentUserUid;
+    final isFinance = AdminRoleService.isFinanceUser(admin);
+    final role = isFinance ? AdminRole.accountant : AdminRole.superAdmin;
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -386,7 +416,12 @@ class _SuperAdminCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 backgroundColor: AdminUi.brandTeal.withValues(alpha: 0.12),
-                child: const Icon(Icons.shield_rounded, color: AdminUi.brandTeal),
+                child: Icon(
+                  isFinance
+                      ? Icons.account_balance_outlined
+                      : Icons.shield_rounded,
+                  color: AdminUi.brandTeal,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -399,6 +434,15 @@ class _SuperAdminCard extends StatelessWidget {
                         fontFamily: theme.titleSmallFamily,
                         fontWeight: FontWeight.w700,
                         useGoogleFonts: !theme.titleSmallIsCustom,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      AdminRoleService.roleLabelL10n(context, role),
+                      style: theme.labelSmall.override(
+                        fontFamily: theme.labelSmallFamily,
+                        color: AdminUi.brandTeal,
+                        useGoogleFonts: !theme.labelSmallIsCustom,
                       ),
                     ),
                     if (isSelf)
