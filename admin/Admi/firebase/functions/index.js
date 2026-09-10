@@ -563,6 +563,8 @@ exports.aggregateFinancialAccountingV2 = functions
     let unsupportedCurrency = 0;
 
     for (const order of orders) {
+      // Exclude QA/demo fixtures from canonical company KPIs (matches AdminQaFixture).
+      if (financialV2.isQaDemoFixture(order.id, order)) continue;
       const line = financialV2.analyzeOrder(order.id, order);
       if (!order.payment_status) missingPaymentStatus++;
       if (!order.status_code) missingLifecycle++;

@@ -127,4 +127,19 @@ function cashCollected(overrides) {
   assert.strictEqual(by.SAR.cashCustomerCollectedMinor, 600 * 10000);
 }
 
+{
+  assert.strictEqual(v2.isQaDemoFixture('demo_fin_1', {}), true);
+  assert.strictEqual(v2.isQaDemoFixture('demo_x', {}), true);
+  assert.strictEqual(v2.isQaDemoFixture('fin7_ctrl_1', {}), true);
+  assert.strictEqual(
+    v2.isQaDemoFixture('real_1', {is_demo: true}),
+    true,
+  );
+  assert.strictEqual(
+    v2.isQaDemoFixture('real_2', {exclude_from_real_reporting: true}),
+    true,
+  );
+  assert.strictEqual(v2.isQaDemoFixture('real_live_abc', {}), false);
+}
+
 console.log('financial_accounting_v2 tests OK');

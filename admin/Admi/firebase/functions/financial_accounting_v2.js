@@ -182,6 +182,24 @@ function emptyCurrency(code) {
   };
 }
 
+function isQaDemoFixture(id, o) {
+  const data = o || {};
+  if (
+    data.is_test_fixture === true ||
+    data.qa_fixture === true ||
+    data.test_fixture === true ||
+    data.is_demo === true ||
+    data.admin_demo_fixture === true ||
+    data.exclude_from_real_reporting === true
+  ) {
+    return true;
+  }
+  const s = String(id || '');
+  return /^(fin7_ctrl_|fin9_ctrl_|fin_rt_cash_|fin_rt_cash_ui_|fin_rt_|demo_fin_|demo_)/.test(
+    s,
+  );
+}
+
 function analyzeOrder(id, o) {
   const currency = normalizeCode(o.currency || o.currency_code || 'SAR') || 'SAR';
   const supported = exponentOrNull(currency) != null;
@@ -573,5 +591,6 @@ module.exports = {
   emptyCurrency,
   normalizeCode,
   toMinor,
+  isQaDemoFixture,
   MATCH_TOLERANCE,
 };
