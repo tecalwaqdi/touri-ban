@@ -1,3 +1,4 @@
+import '/admin/admin_a_l_lhg_z/admin_booking_settlement_lookup.dart';
 import '/admin/admin_a_l_lhg_z/admin_bookings_adapter.dart';
 import '/admin/admin_a_l_lhg_z/admin_bookings_filter_bar.dart';
 import '/admin/admin_a_l_lhg_z/admin_bookings_pagination_bar.dart';
@@ -54,14 +55,17 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
   List<OrderRecord>? _serverSearchHits;
   int _searchGen = 0;
 
-  /// Operational lifecycle KPIs (full bucket queries, QA-aware) — not page `.length`.
+  /// Operational lifecycle KPIs (same scope/filters as table).
   ({
+    int total,
     int active,
     int completed,
     int cancelled,
     int expired,
   })? _opsLifecycle;
   int _opsKpiGen = 0;
+  Map<String, String> _settlementByOrderId = const {};
+  int _settlementGen = 0;
 
   @override
   void initState() {
@@ -70,6 +74,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       safeSetState(() {});
       _reloadOpsKpi();
+      _reloadSettlements();
     });
   }
 
@@ -92,8 +97,9 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
       _filters = next;
       _serverSearchHits = null;
     });
+    _reloadOpsKpi();
     if (countryChanged) {
-      _reloadOpsKpi();
+      _reloadSettlements();
     }
     final plan = AdminOpsSearch.classify(next.searchQuery);
     if (!plan.isServerSide) return;
@@ -107,7 +113,8 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
     final gen = ++_opsKpiGen;
     try {
       final counts = await AdminBookingsLifecycle.loadOperational(
-        countryRef: _filters.effectiveCountryRef,
+        filters: _filters,
+        extra: _extra,
         includeQaFixtures: _showQaFixtures,
       );
       if (!mounted || gen != _opsKpiGen) return;
@@ -116,6 +123,15 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
       if (!mounted || gen != _opsKpiGen) return;
       // Keep prior KPI if any; do not invent zeros.
     }
+  }
+
+  Future<void> _reloadSettlements() async {
+    final gen = ++_settlementGen;
+    final map = await AdminBookingSettlementLookup.loadStatusByOrderId(
+      countryRef: _filters.effectiveCountryRef,
+    );
+    if (!mounted || gen != _settlementGen) return;
+    setState(() => _settlementByOrderId = map);
   }
 
   void _onLifecycleChip(AdminOrderLifecycleFilter lifecycle) {
@@ -145,48 +161,19 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
     required int? queryTotal,
     required List<OrderRecord> prepared,
   }) {
-    // Prefer operational bucket loads (QA-aware). Never use capped page `.length`
-    // as the sole source for lifecycle KPIs.
-    //
-    // COUNTER SEMANTICS (bookings strip):
-    // - النتائج (results): rows in the current prepared/visible working set
-    // - الإجمالي (total): SOURCE_TOTAL from aggregate/lifecycle when reliable.
-    //   DISPLAY_SAFE_MINIMUM: if aggregate undercounts vs visible rows, UI
-    //   floors the *display* total to results so the strip is not contradictory.
-    //   This floor is presentation-only — never write it to finance/reports/
-    //   settlements/exports/server decisions.
-    // - الحالية/المكتملة/الملغية/المنتهية: operational lifecycle bucket sizes
-    //   for the agent/country scope (not limited to the current page).
     int? sanitizeTotal(int? total) {
-      if (total == null) return null; // UNKNOWN — hide chip
-      if (total <= 0 && results > 0) return results; // DISPLAY_SAFE_MINIMUM
-      if (total < results) return results; // DISPLAY_SAFE_MINIMUM
-      return total; // SOURCE_TOTAL
+      if (total == null) return null;
+      if (total <= 0 && results > 0) return results;
+      if (total < results) return results;
+      return total;
     }
 
     final ops = _opsLifecycle;
     if (ops != null) {
-      int? total = queryTotal;
-      switch (_filters.orderLifecycle) {
-        case AdminOrderLifecycleFilter.completed:
-          total = ops.completed;
-          break;
-        case AdminOrderLifecycleFilter.cancelled:
-          total = ops.cancelled;
-          break;
-        case AdminOrderLifecycleFilter.expired:
-          total = ops.expired;
-          break;
-        case AdminOrderLifecycleFilter.active:
-          total = ops.active;
-          break;
-        case AdminOrderLifecycleFilter.all:
-        case AdminOrderLifecycleFilter.pending:
-          break;
-      }
+      // KPIs always reflect the shared scoped dataset (not the lifecycle chip).
       return AdminBookingsSummaryCounts(
         results: results,
-        total: sanitizeTotal(total),
+        total: sanitizeTotal(ops.total),
         active: ops.active,
         completed: ops.completed,
         cancelled: ops.cancelled,
@@ -194,10 +181,9 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
         fromDashboard: false,
       );
     }
-    // Fallback while ops KPI loads: classify current prepared set only.
     final page = AdminBookingsLifecycle.countOperational(
       prepared,
-      includeQaFixtures: true, // already QA-filtered in prepared
+      includeQaFixtures: true,
     );
     return AdminBookingsSummaryCounts(
       results: results,
@@ -300,7 +286,6 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = FFLocalizations.of(context);
     final isWide = AdminUi.useTableLayout(context);
 
     return GestureDetector(
@@ -313,10 +298,15 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
         menu2Model: _model.menu2Model,
         updateCallback: () => safeSetState(() {}),
         padContent: false,
-        title: l10n.getText('kw5c519x'),
+        title: uiTr(context, 'العمليات'),
         child: AdminPageBody(
-          title: l10n.getText('kw5c519x'),
-          subtitle: appTr(context, 'scr_bookings_subtitle'),
+          title: uiTr(context, 'العمليات'),
+          subtitle: uiTr(
+            context,
+            AdminRoleService.isCountryAgent
+                ? 'حجوزات دولتك — إجمالي، حالية، مكتملة، ملغية.'
+                : 'مساحة العمليات: الحجوزات بنفس النطاق والفلاتر.',
+          ),
           compactHeader: true,
           scrollable: true,
           child: Column(
@@ -328,7 +318,10 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                 sortKey: _sortKey,
                 pageSize: _pageSize,
                 onChanged: _onFiltersChanged,
-                onExtraChanged: (e) => setState(() => _extra = e),
+                onExtraChanged: (e) {
+                  setState(() => _extra = e);
+                  _reloadOpsKpi();
+                },
                 onSortChanged: (k) => setState(() => _sortKey = k),
                 onPageSizeChanged: (n) => setState(() => _pageSize = n),
               ),
@@ -416,6 +409,7 @@ class _AdminALLhgZWidgetState extends State<AdminALLhgZWidget> {
                         else if (isWide)
                           AdminBookingsTable(
                             bookings: bookings,
+                            settlementByOrderId: _settlementByOrderId,
                             onDetails: _openDetails,
                             onCancel: _cancelBooking,
                             canCancel: _canCancelBooking,

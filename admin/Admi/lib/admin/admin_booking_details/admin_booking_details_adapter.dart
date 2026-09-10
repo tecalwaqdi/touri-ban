@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '/admin/admin_a_l_lhg_z/admin_booking_settlement_lookup.dart';
 import '/admin/admin_a_l_lhg_z/admin_bookings_adapter.dart';
 import '/backend/schema/order_record.dart';
 import '/core/admin_booking_status_label.dart';
@@ -50,7 +51,11 @@ class AdminBookingDetailsView {
   final String tripTypeLabel;
   final AdminBookingGeography geography;
 
-  factory AdminBookingDetailsView.fromOrder(OrderRecord order) {
+  factory AdminBookingDetailsView.fromOrder(
+    OrderRecord order, {
+    String? settlementStatus,
+    DateTime? settlementAt,
+  }) {
     final row = AdminBookingRow.fromOrder(order);
     final data = order.snapshotData;
 
@@ -72,7 +77,11 @@ class AdminBookingDetailsView {
       pickupCoords: _coordsLabel(_pickupLatLng(order)),
       destinationCoords: _coordsLabel(_destinationLatLng(order, data)),
       hasDriver: order.hasMndobUser() || order.naimMndobText.trim().isNotEmpty,
-      timeline: AdminBookingTimelineEvent.build(row),
+      timeline: AdminBookingTimelineEvent.build(
+        row,
+        settlementStatus: settlementStatus,
+        settlementAt: settlementAt,
+      ),
       showVat: order.totalVat > 0,
       showDiscount: _discount(data) > 0,
       discountAmount: _discount(data),
@@ -213,7 +222,11 @@ class AdminBookingTimelineEvent {
   final String label;
   final DateTime at;
 
-  static List<AdminBookingTimelineEvent> build(AdminBookingRow row) {
+  static List<AdminBookingTimelineEvent> build(
+    AdminBookingRow row, {
+    String? settlementStatus,
+    DateTime? settlementAt,
+  }) {
     final events = <AdminBookingTimelineEvent>[
       if (row.createdAt != null)
         AdminBookingTimelineEvent(
@@ -239,6 +252,32 @@ class AdminBookingTimelineEvent {
         AdminBookingTimelineEvent(
           label: 'اكتملت الرحلة',
           at: row.completedAt!,
+        ),
+      if (row.paymentAt != null)
+        AdminBookingTimelineEvent(
+          label: 'الدفع / التحصيل',
+          at: row.paymentAt!,
+        )
+      else if (OrderStatusHelper.isPaid(row.order) &&
+          (row.completedAt != null || row.createdAt != null))
+        AdminBookingTimelineEvent(
+          label: 'الدفع / التحصيل',
+          at: (row.completedAt ?? row.createdAt)!
+              .add(const Duration(seconds: 1)),
+        ),
+      if (settlementAt != null)
+        AdminBookingTimelineEvent(
+          label: 'التسوية',
+          at: settlementAt,
+        )
+      else if ((settlementStatus ?? '').trim().isNotEmpty &&
+          settlementStatus != 'voided' &&
+          (row.completedAt != null || row.paymentAt != null))
+        AdminBookingTimelineEvent(
+          label:
+              'التسوية (${AdminBookingSettlementLookup.labelAr(settlementStatus)})',
+          at: (row.paymentAt ?? row.completedAt)!
+              .add(const Duration(seconds: 2)),
         ),
       if (row.cancelledAt != null)
         AdminBookingTimelineEvent(

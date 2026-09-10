@@ -3,6 +3,7 @@ import 'dart:ui' as ui show TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '/admin/admin_a_l_lhg_z/admin_booking_settlement_lookup.dart';
 import '/admin/admin_a_l_lhg_z/admin_bookings_adapter.dart';
 import '/admin/admin_a_l_lhg_z/admin_bookings_presentation.dart';
 import '/backend/schema/order_record.dart';
@@ -23,6 +24,7 @@ class AdminBookingsTable extends StatelessWidget {
     required this.onDetails,
     required this.onCancel,
     required this.canCancel,
+    this.settlementByOrderId,
   });
 
   final List<OrderRecord> bookings;
@@ -30,7 +32,10 @@ class AdminBookingsTable extends StatelessWidget {
   final Future<void> Function(OrderRecord) onCancel;
   final bool canCancel;
 
-  static const double _minWidth = 1120;
+  /// Order id → settlement status from `financial_settlements` (optional).
+  final Map<String, String>? settlementByOrderId;
+
+  static const double _minWidth = 1280;
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +43,8 @@ class AdminBookingsTable extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final narrow = constraints.maxWidth < 1280;
-        final hidePayment = constraints.maxWidth < 1100;
-        final hideCity = constraints.maxWidth < 1024;
+        final narrow = constraints.maxWidth < 1320;
+        final hideSettlement = constraints.maxWidth < 1180;
         final width =
             constraints.maxWidth < _minWidth ? _minWidth : constraints.maxWidth;
         return Scrollbar(
@@ -63,17 +67,16 @@ class AdminBookingsTable extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        _h(context, uiTr(context, 'الحجز'), 15),
-                        _h(context, uiTr(context, 'العميل'), 12),
-                        _h(context, uiTr(context, 'المندوب'), 11),
-                        _h(context, uiTr(context, 'الحالة'), 12),
-                        if (!hideCity) _h(context, uiTr(context, 'المدينة'), 9),
-                        _h(context, uiTr(context, 'الانطلاق'), narrow ? 10 : 12),
-                        _h(context, uiTr(context, 'الوجهة'), narrow ? 10 : 12),
-                        _h(context, uiTr(context, 'المبلغ'), 9),
-                        if (!hidePayment)
-                          _h(context, uiTr(context, 'الدفع'), 8),
-                        _h(context, uiTr(context, 'التاريخ'), 14),
+                        _h(context, uiTr(context, 'الحجز'), 11),
+                        _h(context, uiTr(context, 'العميل'), 11),
+                        _h(context, uiTr(context, 'السائق'), 10),
+                        _h(context, uiTr(context, 'المسار'), narrow ? 12 : 14),
+                        _h(context, uiTr(context, 'حالة الرحلة'), 11),
+                        _h(context, uiTr(context, 'حالة الدفع'), 10),
+                        _h(context, uiTr(context, 'المبلغ'), 8),
+                        if (!hideSettlement)
+                          _h(context, uiTr(context, 'التسوية'), 9),
+                        _h(context, uiTr(context, 'التاريخ'), 12),
                         _h(context, uiTr(context, 'إجراءات'), 8),
                       ],
                     ),
@@ -81,12 +84,18 @@ class AdminBookingsTable extends StatelessWidget {
                   const SizedBox(height: 2),
                   ...bookings.map((order) {
                     final row = AdminBookingRow.fromOrder(order);
+                    final settlement = settlementByOrderId == null
+                        ? '—'
+                        : AdminBookingSettlementLookup.labelAr(
+                            settlementByOrderId![row.orderId] ??
+                                settlementByOrderId![order.reference.id],
+                          );
                     return _BookingsTableRow(
                       row: row,
                       theme: theme,
                       canCancel: canCancel && !row.isTerminal,
-                      hideCity: hideCity,
-                      hidePayment: hidePayment,
+                      hideSettlement: hideSettlement,
+                      settlementLabel: settlement,
                       onDetails: () => onDetails(order),
                       onCancel: () => onCancel(order),
                     );
@@ -125,8 +134,8 @@ class _BookingsTableRow extends StatelessWidget {
     required this.row,
     required this.theme,
     required this.canCancel,
-    required this.hideCity,
-    required this.hidePayment,
+    required this.hideSettlement,
+    required this.settlementLabel,
     required this.onDetails,
     required this.onCancel,
   });
@@ -134,8 +143,8 @@ class _BookingsTableRow extends StatelessWidget {
   final AdminBookingRow row;
   final FlutterFlowTheme theme;
   final bool canCancel;
-  final bool hideCity;
-  final bool hidePayment;
+  final bool hideSettlement;
+  final String settlementLabel;
   final VoidCallback onDetails;
   final VoidCallback onCancel;
 
@@ -150,6 +159,7 @@ class _BookingsTableRow extends StatelessWidget {
       decimalType: DecimalType.automatic,
       currency: AdminCurrency.asFormatPrefix(row.currencySymbol),
     );
+    final route = row.routeLabel.isEmpty ? '—' : row.routeLabel;
 
     return Material(
       color: Colors.transparent,
@@ -165,7 +175,7 @@ class _BookingsTableRow extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _cell(_BookingIdCell(orderId: row.orderId, theme: theme), 15),
+              _cell(_BookingIdCell(orderId: row.orderId, theme: theme), 11),
               _cell(
                 _EllipsisText(
                   customer,
@@ -176,7 +186,7 @@ class _BookingsTableRow extends StatelessWidget {
                     useGoogleFonts: !theme.bodySmallIsCustom,
                   ),
                 ),
-                12,
+                11,
               ),
               _cell(
                 _EllipsisText(
@@ -190,33 +200,30 @@ class _BookingsTableRow extends StatelessWidget {
                     useGoogleFonts: !theme.bodySmallIsCustom,
                   ),
                 ),
-                11,
+                10,
               ),
-              _cell(AdminBookingStatusBadge(order: row.order), 12),
-              if (!hideCity)
-                _cell(
-                  _EllipsisText(
-                    row.city.isEmpty ? '—' : row.city,
-                    maxLines: 1,
-                    style: theme.bodySmall,
+              _cell(
+                _EllipsisText(
+                  route,
+                  maxLines: 2,
+                  style: theme.bodySmall,
+                ),
+                14,
+              ),
+              _cell(AdminBookingStatusBadge(order: row.order), 11),
+              _cell(
+                _EllipsisText(
+                  row.paymentStatusLabel.isEmpty
+                      ? '—'
+                      : uiTr(context, row.paymentStatusLabel),
+                  maxLines: 1,
+                  style: theme.bodySmall.override(
+                    fontFamily: theme.bodySmallFamily,
+                    color: theme.secondaryText,
+                    useGoogleFonts: !theme.bodySmallIsCustom,
                   ),
-                  9,
                 ),
-              _cell(
-                _EllipsisText(
-                  row.pickupLabel.isEmpty ? '—' : row.pickupLabel,
-                  maxLines: 2,
-                  style: theme.bodySmall,
-                ),
-                12,
-              ),
-              _cell(
-                _EllipsisText(
-                  row.destinationLabel.isEmpty ? '—' : row.destinationLabel,
-                  maxLines: 2,
-                  style: theme.bodySmall,
-                ),
-                12,
+                10,
               ),
               _cell(
                 Directionality(
@@ -233,14 +240,12 @@ class _BookingsTableRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                9,
+                8,
               ),
-              if (!hidePayment)
+              if (!hideSettlement)
                 _cell(
                   _EllipsisText(
-                    row.paymentLabel.isEmpty
-                        ? '—'
-                        : uiTr(context, row.paymentLabel),
+                    settlementLabel,
                     maxLines: 1,
                     style: theme.bodySmall.override(
                       fontFamily: theme.bodySmallFamily,
@@ -248,7 +253,7 @@ class _BookingsTableRow extends StatelessWidget {
                       useGoogleFonts: !theme.bodySmallIsCustom,
                     ),
                   ),
-                  8,
+                  9,
                 ),
               _cell(
                 Tooltip(
@@ -288,7 +293,7 @@ class _BookingsTableRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                14,
+                12,
               ),
               _cell(
                 Row(
@@ -297,28 +302,24 @@ class _BookingsTableRow extends StatelessWidget {
                     FlutterFlowIconButton(
                       borderRadius: 8,
                       buttonSize: 32,
-                      fillColor: AdminUi.brandTeal.withValues(alpha: 0.1),
-                      icon: const Icon(
-                        Icons.visibility_outlined,
+                      icon: Icon(
+                        Icons.visibility_rounded,
                         color: AdminUi.brandTeal,
-                        size: 16,
+                        size: 18,
                       ),
                       onPressed: onDetails,
                     ),
-                    if (canCancel) ...[
-                      const SizedBox(width: 2),
+                    if (canCancel)
                       FlutterFlowIconButton(
                         borderRadius: 8,
                         buttonSize: 32,
-                        fillColor: const Color(0xFFFFEBEE),
                         icon: Icon(
                           Icons.cancel_outlined,
                           color: theme.error,
-                          size: 16,
+                          size: 18,
                         ),
                         onPressed: onCancel,
                       ),
-                    ],
                   ],
                 ),
                 8,

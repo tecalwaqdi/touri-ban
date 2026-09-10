@@ -5,6 +5,7 @@ import '/backend/schema/order_record.dart';
 import '/core/admin_booking_status_label.dart';
 import '/core/admin_qa_fixture.dart';
 import '/core/finance/admin_money_presentation.dart';
+import '/core/finance/financial_engine.dart';
 
 /// Admin-only view model over [OrderRecord] — does not mutate Firestore contracts.
 class AdminBookingRow {
@@ -29,6 +30,8 @@ class AdminBookingRow {
     required this.driverNetIsDerived,
     required this.currencySymbol,
     required this.paymentLabel,
+    required this.paymentStatusLabel,
+    required this.routeLabel,
     required this.createdAt,
     required this.acceptedAt,
     required this.arrivedAt,
@@ -36,6 +39,7 @@ class AdminBookingRow {
     required this.completedAt,
     required this.cancelledAt,
     required this.expiresAt,
+    this.paymentAt,
     required this.durationMinutes,
     required this.isTerminal,
     required this.isActivePool,
@@ -65,6 +69,8 @@ class AdminBookingRow {
   final bool driverNetIsDerived;
   final String currencySymbol;
   final String paymentLabel;
+  final String paymentStatusLabel;
+  final String routeLabel;
   final DateTime? createdAt;
   final DateTime? acceptedAt;
   final DateTime? arrivedAt;
@@ -72,6 +78,7 @@ class AdminBookingRow {
   final DateTime? completedAt;
   final DateTime? cancelledAt;
   final DateTime? expiresAt;
+  final DateTime? paymentAt;
   final int durationMinutes;
   final bool isTerminal;
   final bool isActivePool;
@@ -123,6 +130,8 @@ class AdminBookingRow {
       driverNetIsDerived: money.driverNetIsDerived,
       currencySymbol: money.currencySymbol,
       paymentLabel: _paymentLabel(order),
+      paymentStatusLabel: OrderStatusHelper.paymentStatusArabicLabel(order),
+      routeLabel: _routeLabel(pickup, destination),
       createdAt: order.dataOrder ?? _asDate(data['createdAt']),
       acceptedAt: _asDate(data['acceptedAt']),
       arrivedAt: _asDate(data['arrivedAt']),
@@ -130,6 +139,12 @@ class AdminBookingRow {
       completedAt: _asDate(data['completedAt']),
       cancelledAt: _asDate(data['cancelledAt']),
       expiresAt: _asDate(data['expiresAt']),
+      paymentAt: _asDate(
+        data['cash_collected_at'] ??
+            data['paid_at'] ??
+            data['payment_verified_at'] ??
+            data['paymentCollectedAt'],
+      ),
       durationMinutes: order.totalTaim,
       isTerminal: AdminBookingStatusLabel.isTerminal(order),
       isActivePool: order.allnow ||
@@ -209,6 +224,14 @@ class AdminBookingRow {
       default:
         return order.paymentGatewayOrderId.isNotEmpty ? 'إلكتروني' : '';
     }
+  }
+
+  static String _routeLabel(String pickup, String destination) {
+    if (pickup.isEmpty && destination.isEmpty) return '';
+    if (pickup.isEmpty) return destination;
+    if (destination.isEmpty) return pickup;
+    if (pickup == destination) return pickup;
+    return '$pickup → $destination';
   }
 }
 

@@ -1,3 +1,4 @@
+import '/admin/admin_a_l_lhg_z/admin_booking_settlement_lookup.dart';
 import '/admin/admin_booking_details/admin_booking_details_adapter.dart';
 import '/admin/admin_booking_details/admin_booking_journey_section.dart';
 import '/admin/admin_booking_details/admin_booking_details_sections.dart';
@@ -252,7 +253,30 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
   }
 
   Widget _buildDetails(BuildContext context, OrderRecord order) {
-    final view = AdminBookingDetailsView.fromOrder(order);
+    return FutureBuilder<Map<String, String>>(
+      future: AdminBookingSettlementLookup.loadStatusByOrderId(
+        countryRef: order.revDolh,
+      ),
+      builder: (context, settleSnap) {
+        final map = settleSnap.data ?? const <String, String>{};
+        final oid = order.iDorder.trim().isNotEmpty
+            ? order.iDorder.trim()
+            : order.reference.id;
+        final settlementStatus = map[oid] ?? map[order.reference.id];
+        final view = AdminBookingDetailsView.fromOrder(
+          order,
+          settlementStatus: settlementStatus,
+        );
+        return _buildDetailsBody(context, order, view);
+      },
+    );
+  }
+
+  Widget _buildDetailsBody(
+    BuildContext context,
+    OrderRecord order,
+    AdminBookingDetailsView view,
+  ) {
     final pickupLocation = order.lokeshn;
     final driverLocation = order.mapuser;
     final mapLocation = driverLocation ?? pickupLocation;

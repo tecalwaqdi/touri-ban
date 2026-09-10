@@ -86,23 +86,15 @@ class AdminBookingsExtraFilters {
 abstract final class AdminBookingsQuery {
   AdminBookingsQuery._();
 
-  /// Same predicates as [AdminOpsQueryBuilder.applyOrderFilters] without orderBy
-  /// (safe for Aggregate Count).
-  static Query applyFiltersCore(Query q, AdminOpsFilterState filters) {
+  /// Scope filters shared by table + KPI buckets (no lifecycle predicate).
+  ///
+  /// Country / city / date only — lifecycle is applied per KPI bucket.
+  static Query applyScopeFiltersCore(Query q, AdminOpsFilterState filters) {
     q = AdminOpsCountryScope.applyCountryFieldFilter(
       q,
       field: 'Rev_dolh',
       explicitCountry: filters.effectiveCountryRef,
     );
-
-    final codes = AdminOpsQueryBuilder.statusCodesFor(filters.orderLifecycle);
-    if (filters.orderLifecycle == AdminOrderLifecycleFilter.active) {
-      q = q.where('ALLNOW', isEqualTo: true);
-    } else if (codes.length == 1) {
-      q = q.where('status_code', isEqualTo: codes.first);
-    } else if (codes.length > 1) {
-      q = q.where('status_code', whereIn: codes.take(30).toList());
-    }
 
     final range = filters.resolvedDateRange;
     if (range != null) {
@@ -113,6 +105,23 @@ abstract final class AdminBookingsQuery {
 
     if (filters.cityRef != null) {
       q = q.where('vill', isEqualTo: filters.cityRef);
+    }
+
+    return q;
+  }
+
+  /// Same predicates as [AdminOpsQueryBuilder.applyOrderFilters] without orderBy
+  /// (safe for Aggregate Count).
+  static Query applyFiltersCore(Query q, AdminOpsFilterState filters) {
+    q = applyScopeFiltersCore(q, filters);
+
+    final codes = AdminOpsQueryBuilder.statusCodesFor(filters.orderLifecycle);
+    if (filters.orderLifecycle == AdminOrderLifecycleFilter.active) {
+      q = q.where('ALLNOW', isEqualTo: true);
+    } else if (codes.length == 1) {
+      q = q.where('status_code', isEqualTo: codes.first);
+    } else if (codes.length > 1) {
+      q = q.where('status_code', whereIn: codes.take(30).toList());
     }
 
     return q;
@@ -282,7 +291,10 @@ class AdminBookingsSummaryCounts {
     this.fromDashboard = false,
   });
 
+  /// Rows in the current visible/prepared working set (page).
   final int results;
+
+  /// Scoped dataset total (same filters as table, lifecycle=all).
   final int? total;
   final int? active;
   final int? completed;
@@ -354,67 +366,87 @@ abstract final class AdminBookingsLifecycle {
 
   /// Loads lifecycle buckets via status queries (not page `.length`).
   ///
-  /// Completed / cancelled / expired use status_code sets; active uses ALLNOW.
+  /// Uses the **same** country/city/date scope as the table
+  /// ([AdminBookingsQuery.applyScopeFiltersCore]) plus client extras / QA gate.
+  /// Completed / cancelled / expired use `status_code` sets; active uses ALLNOW.
   static Future<({
+    int total,
     int active,
     int completed,
     int cancelled,
     int expired,
   })> loadOperational({
-    DocumentReference? countryRef,
+    required AdminOpsFilterState filters,
+    AdminBookingsExtraFilters extra = AdminBookingsExtraFilters.empty,
     bool includeQaFixtures = false,
     int limitPerBucket = 500,
   }) async {
-    Future<List<OrderRecord>> byStatusCodes(List<String> codes) async {
-      if (codes.isEmpty) return const [];
+    // Ignore selected lifecycle chip — each bucket applies its own predicate.
+    final scope = filters.copyWith(
+      orderLifecycle: AdminOrderLifecycleFilter.all,
+    );
+
+    Future<List<OrderRecord>> scoped(
+      Query Function(Query q) bucket,
+    ) async {
       return queryOrderRecordOnce(
-        queryBuilder: (q) {
-          var qq = q.where('status_code', whereIn: codes);
-          if (countryRef != null) {
-            qq = qq.where('Rev_dolh', isEqualTo: countryRef);
-          }
-          return qq;
-        },
+        queryBuilder: (q) => bucket(AdminBookingsQuery.applyScopeFiltersCore(q, scope)),
         limit: limitPerBucket,
       );
     }
 
-    Future<List<OrderRecord>> activeNow() => queryOrderRecordOnce(
-          queryBuilder: (q) {
-            var qq = q.where('ALLNOW', isEqualTo: true);
-            if (countryRef != null) {
-              qq = qq.where('Rev_dolh', isEqualTo: countryRef);
-            }
-            return qq;
-          },
-          limit: limitPerBucket,
-        );
-
     final parts = await Future.wait([
-      activeNow(),
-      byStatusCodes(AdminOpsCounters.completedStatusCodes),
-      byStatusCodes(AdminOpsCounters.cancelledStatusCodes),
-      byStatusCodes([TourySystemStatusCodes.expired]),
+      scoped((q) => q), // total / all scoped
+      scoped((q) => q.where('ALLNOW', isEqualTo: true)),
+      scoped(
+        (q) => q.where(
+          'status_code',
+          whereIn: AdminOpsCounters.completedStatusCodes.take(30).toList(),
+        ),
+      ),
+      scoped(
+        (q) => q.where(
+          'status_code',
+          whereIn: AdminOpsCounters.cancelledStatusCodes.take(30).toList(),
+        ),
+      ),
+      scoped(
+        (q) => q.where(
+          'status_code',
+          isEqualTo: TourySystemStatusCodes.expired,
+        ),
+      ),
     ]);
 
+    List<OrderRecord> finish(List<OrderRecord> raw) {
+      return AdminBookingsQuery.applyClientFilters(
+        raw,
+        filters: scope,
+        extra: extra,
+        includeQaFixtures: includeQaFixtures,
+      );
+    }
+
+    final all = finish(parts[0]);
     final activeN = countOperational(
-      parts[0],
-      includeQaFixtures: includeQaFixtures,
+      finish(parts[1]),
+      includeQaFixtures: true,
     ).active;
     final completedN = countOperational(
-      parts[1],
-      includeQaFixtures: includeQaFixtures,
+      finish(parts[2]),
+      includeQaFixtures: true,
     ).completed;
     final cancelledN = countOperational(
-      parts[2],
-      includeQaFixtures: includeQaFixtures,
+      finish(parts[3]),
+      includeQaFixtures: true,
     ).cancelled;
     final expiredN = countOperational(
-      parts[3],
-      includeQaFixtures: includeQaFixtures,
+      finish(parts[4]),
+      includeQaFixtures: true,
     ).expired;
 
     return (
+      total: all.length,
       active: activeN,
       completed: completedN,
       cancelled: cancelledN,

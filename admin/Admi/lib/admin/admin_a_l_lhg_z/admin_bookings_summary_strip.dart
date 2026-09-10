@@ -6,7 +6,9 @@ import '/components/admin_ui.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
-/// Compact horizontal summary strip for the bookings page.
+/// Operations Hub KPI strip — Total / Active / Completed / Cancelled.
+///
+/// Counts must share the same scope/filters as the bookings table.
 class AdminBookingsSummaryStrip extends StatelessWidget {
   const AdminBookingsSummaryStrip({
     super.key,
@@ -25,81 +27,76 @@ class AdminBookingsSummaryStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: theme.secondaryBackground,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.alternate.withValues(alpha: 0.7)),
-      ),
-      child: isLoading
-          ? Row(
-              children: List.generate(
-                5,
-                (i) => Expanded(
-                  child: Container(
-                    height: 28,
-                    margin: EdgeInsetsDirectional.only(end: i == 4 ? 0 : 8),
-                    decoration: BoxDecoration(
-                      color: theme.alternate.withValues(alpha: 0.35),
-                      borderRadius: BorderRadius.circular(8),
+    return Semantics(
+      identifier: 'qa-bookings-ops-kpis',
+      label:
+          'total:${counts.total ?? '-'} active:${counts.active ?? '-'} completed:${counts.completed ?? '-'} cancelled:${counts.cancelled ?? '-'}',
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: theme.secondaryBackground,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: theme.alternate.withValues(alpha: 0.7)),
+        ),
+        child: isLoading
+            ? Row(
+                children: List.generate(
+                  4,
+                  (i) => Expanded(
+                    child: Container(
+                      height: 28,
+                      margin: EdgeInsetsDirectional.only(end: i == 3 ? 0 : 8),
+                      decoration: BoxDecoration(
+                        color: theme.alternate.withValues(alpha: 0.35),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            )
-          : SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _chip(
-                    context,
-                    uiTr(context, 'النتائج'),
-                    counts.results.toString(),
-                    AdminUi.brandTeal,
-                  ),
-                  if (counts.total != null)
+              )
+            : SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
                     _chip(
                       context,
                       uiTr(context, 'الإجمالي'),
-                      counts.total!.toString(),
+                      '${counts.total ?? '—'}',
                       theme.secondaryText,
+                      lifecycle: AdminOrderLifecycleFilter.all,
                     ),
-                  if (counts.active != null)
                     _chip(
                       context,
                       uiTr(context, 'الحالية'),
-                      counts.active!.toString(),
+                      '${counts.active ?? '—'}',
                       const Color(0xFFE65100),
                       lifecycle: AdminOrderLifecycleFilter.active,
                     ),
-                  if (counts.completed != null)
                     _chip(
                       context,
                       uiTr(context, 'المكتملة'),
-                      counts.completed!.toString(),
+                      '${counts.completed ?? '—'}',
                       theme.success,
                       lifecycle: AdminOrderLifecycleFilter.completed,
                     ),
-                  if (counts.cancelled != null)
                     _chip(
                       context,
                       uiTr(context, 'الملغية'),
-                      counts.cancelled!.toString(),
+                      '${counts.cancelled ?? '—'}',
                       theme.error,
                       lifecycle: AdminOrderLifecycleFilter.cancelled,
                     ),
-                  if (counts.expired != null)
-                    _chip(
-                      context,
-                      uiTr(context, 'المنتهية'),
-                      counts.expired!.toString(),
-                      theme.secondaryText,
-                      lifecycle: AdminOrderLifecycleFilter.expired,
-                    ),
-                ],
+                    if (counts.results > 0)
+                      _chip(
+                        context,
+                        uiTr(context, 'النتائج'),
+                        counts.results.toString(),
+                        AdminUi.brandTeal,
+                      ),
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 
@@ -118,10 +115,9 @@ class AdminBookingsSummaryStrip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: accent.withValues(alpha: selected ? 0.18 : 0.08),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: accent.withValues(alpha: selected ? 0.55 : 0.2),
-          width: selected ? 1.4 : 1,
+          color: accent.withValues(alpha: selected ? 0.55 : 0.22),
         ),
       ),
       child: Row(
@@ -131,7 +127,7 @@ class AdminBookingsSummaryStrip extends StatelessWidget {
             label,
             style: theme.labelSmall.override(
               fontFamily: theme.labelSmallFamily,
-              color: theme.secondaryText,
+              color: accent,
               useGoogleFonts: !theme.labelSmallIsCustom,
             ),
           ),
@@ -150,14 +146,8 @@ class AdminBookingsSummaryStrip extends StatelessWidget {
     );
     if (lifecycle == null || onLifecycleSelected == null) return child;
     return InkWell(
-      onTap: () {
-        if (selectedLifecycle == lifecycle) {
-          onLifecycleSelected!(AdminOrderLifecycleFilter.all);
-        } else {
-          onLifecycleSelected!(lifecycle);
-        }
-      },
-      borderRadius: BorderRadius.circular(20),
+      onTap: () => onLifecycleSelected!(lifecycle),
+      borderRadius: BorderRadius.circular(8),
       child: child,
     );
   }
