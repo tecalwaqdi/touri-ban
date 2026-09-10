@@ -19,6 +19,7 @@ class AdminDriverRow {
     required this.phone,
     required this.city,
     required this.operatingCity,
+    required this.countryLabel,
     required this.photoUrl,
     required this.vehicle,
     required this.review,
@@ -31,6 +32,9 @@ class AdminDriverRow {
     required this.normalizedPlate,
     required this.rawPlate,
     required this.statusTruth,
+    required this.documentsStatus,
+    required this.ratingLabel,
+    required this.lastActivityLabel,
   });
 
   final UserRecord user;
@@ -39,6 +43,7 @@ class AdminDriverRow {
   final String phone;
   final String city;
   final String operatingCity;
+  final String countryLabel;
   final String photoUrl;
   final AdminDriverVehicleSummary vehicle;
   final AdminDriverReviewBucket review;
@@ -51,6 +56,9 @@ class AdminDriverRow {
   final String normalizedPlate;
   final String rawPlate;
   final AdminDriverStatusTruth statusTruth;
+  final String documentsStatus;
+  final String ratingLabel;
+  final String lastActivityLabel;
 
   static AdminDriverRow fromUser(UserRecord user) {
     final data = user.snapshotData;
@@ -93,6 +101,15 @@ class AdminDriverRow {
         ? user.totalApp.toStringAsFixed(0)
         : (_num(data, 'total_app')?.toStringAsFixed(0) ?? '—');
 
+    final country = AdminDriverProfileView.countryLabel(user);
+    final docsRaw = AdminDriverProfileView.authoritativeDocumentsStatus(user);
+    final rating = _num(data, 'rating') ??
+        _num(data, 'avg_rating') ??
+        _num(data, 'driver_rating');
+    final lastAt = AdminDriverProfileView.lastUpdatedAt(user) ??
+        _date(data, 'last_seen') ??
+        _date(data, 'last_active_at');
+
     return AdminDriverRow(
       user: user,
       displayName: name,
@@ -102,6 +119,7 @@ class AdminDriverRow {
       ),
       city: registrationCity.isNotEmpty ? registrationCity : '—',
       operatingCity: operating.isNotEmpty ? operating : '—',
+      countryLabel: country.isNotEmpty ? country : '—',
       photoUrl: photoUrl,
       vehicle: vehicle,
       review: truth.registration,
@@ -114,6 +132,11 @@ class AdminDriverRow {
       normalizedPlate: plateNorm,
       rawPlate: plateRaw.isNotEmpty ? plateRaw : vehicle.plate,
       statusTruth: truth,
+      documentsStatus: docsRaw.isNotEmpty ? docsRaw : '—',
+      ratingLabel: rating == null ? '—' : rating.toStringAsFixed(1),
+      lastActivityLabel: lastAt == null
+          ? '—'
+          : dateTimeFormat('yMMMd', lastAt),
     );
   }
 
@@ -147,6 +170,13 @@ class AdminDriverRow {
     final v = data[key];
     if (v is num) return v.toDouble();
     return double.tryParse('$v');
+  }
+
+  static DateTime? _date(Map<String, dynamic> data, String key) {
+    final v = data[key];
+    if (v is DateTime) return v;
+    if (v is Timestamp) return v.toDate();
+    return null;
   }
 
   static String formatPhoneDisplay(String raw) {

@@ -61,6 +61,7 @@ void main() {
         'AdminALLhgZ',
         'Adminuser',
         'Admindrever',
+        'AdminDriversHub',
         'AdminSuport',
         'AdminNotifications',
         'AdminDriverExpiryQueue',
@@ -185,9 +186,9 @@ void main() {
 
   group('Filters localization', () {
     test('الفلاتر catalog entry exists', () {
-      expect(kArabicUiLookup['الفلاتر'], 'ui_filters_label');
-      expect(kUiCatalog['ui_filters_label']?['ar'], 'الفلاتر');
-      expect(kUiCatalog['ui_filters_label']?['en'], 'Filters');
+      expect(kArabicUiLookup['الفلاتر'], 'ui_347df089d6');
+      expect(kUiCatalog['ui_347df089d6']?['ar'], 'الفلاتر');
+      expect(kUiCatalog['ui_347df089d6']?['en'], 'Filters');
     });
   });
 

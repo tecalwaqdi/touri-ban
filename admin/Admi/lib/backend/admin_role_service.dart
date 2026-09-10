@@ -420,6 +420,7 @@ class AdminRoleService {
     'edetVill',
     'Adminuser',
     'Admindrever',
+    'AdminDriversHub',
     'AdminDrivers',
     'AdminDriverExpiryQueue',
     'DriverActivation',

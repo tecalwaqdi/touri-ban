@@ -421,7 +421,7 @@ abstract final class AdminOpsQueryBuilder {
       case AdminDriverReviewFilter.all:
         break;
       case AdminDriverReviewFilter.pendingReview:
-        out.add('registration_status==pending_review');
+        out.add('registration_status in [pending_review,submitted]');
         break;
       case AdminDriverReviewFilter.approved:
         out.add('registration_status==approved');
@@ -499,7 +499,10 @@ abstract final class AdminOpsQueryBuilder {
       case AdminDriverReviewFilter.all:
         break;
       case AdminDriverReviewFilter.pendingReview:
-        q = q.where('registration_status', isEqualTo: 'pending_review');
+        q = q.where(
+          'registration_status',
+          whereIn: const ['pending_review', 'submitted'],
+        );
         break;
       case AdminDriverReviewFilter.approved:
         q = q.where('registration_status', isEqualTo: 'approved');

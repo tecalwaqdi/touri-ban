@@ -144,13 +144,15 @@ class _Header extends StatelessWidget {
       ),
       child: Row(
         children: [
-          cell(uiTr(context, 'المندوب'), flex: 3),
-          cell(uiTr(context, 'الهاتف')),
+          cell(uiTr(context, 'السائق'), flex: 3),
+          cell(uiTr(context, 'الدولة')),
           cell(uiTr(context, 'المدينة')),
-          cell(uiTr(context, 'المركبة'), flex: 3),
+          cell(uiTr(context, 'المركبة'), flex: 2),
           cell(uiTr(context, 'التسجيل')),
-          cell(uiTr(context, 'الحالة التشغيلية'), flex: 2),
-          cell(uiTr(context, 'الرحلات')),
+          cell(uiTr(context, 'الاتصال')),
+          cell(uiTr(context, 'الوثائق')),
+          cell(uiTr(context, 'التقييم')),
+          cell(uiTr(context, 'آخر نشاط'), flex: 2),
           cell(uiTr(context, 'الإجراءات'), flex: 2),
         ],
       ),
@@ -192,15 +194,17 @@ class _DataRow extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(flex: 3, child: _DriverIdentity(row: row)),
-            Expanded(flex: 2, child: _text(theme, row.phone, mono: true)),
+            Expanded(flex: 2, child: _text(theme, row.countryLabel)),
             Expanded(flex: 2, child: _text(theme, row.city)),
-            Expanded(flex: 3, child: _VehicleCell(row: row)),
+            Expanded(flex: 2, child: _VehicleCell(row: row)),
             Expanded(
               flex: 2,
               child: AdminDriverRegistrationStatusCell(row: row),
             ),
             Expanded(flex: 2, child: AdminDriverOperationalStatus(row: row)),
-            Expanded(flex: 2, child: _text(theme, row.tripsLabel)),
+            Expanded(flex: 2, child: _text(theme, row.documentsStatus)),
+            Expanded(flex: 2, child: _text(theme, row.ratingLabel)),
+            Expanded(flex: 2, child: _text(theme, row.lastActivityLabel)),
             Expanded(
               flex: 2,
               child: _Actions(

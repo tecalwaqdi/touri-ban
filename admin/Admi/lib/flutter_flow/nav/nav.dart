@@ -722,6 +722,16 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
           builder: (context, params) => AdmindreverWidget(),
         ),
         FFRoute(
+          name: AdminDriversHubWidget.routeName,
+          path: AdminDriversHubWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => AdminDriversHubWidget(
+            initialTab: AdminDriversHubWidget.tabFromQuery(
+              params.getParam('tab', ParamType.String),
+            ),
+          ),
+        ),
+        FFRoute(
           name: AdminTourGuidesWidget.routeName,
           path: AdminTourGuidesWidget.routePath,
           requireAuth: true,

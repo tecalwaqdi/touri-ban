@@ -109,6 +109,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     'AdminALLhgZ': '/adminALLhgZ',
     'Adminuser': '/adminuser',
     'Admindrever': '/drever',
+    'AdminDriversHub': '/adminDriversHub',
     'AdminSuport': '/adminSuport',
     // Reviews
     'AdminNotifications': '/adminNotifications',
@@ -256,7 +257,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
               ),
               (route: AdminuserWidget.routeName, icon: Icons.groups_rounded),
               (
-                route: AdmindreverWidget.routeName,
+                route: AdminDriversHubWidget.routeName,
                 icon: Icons.directions_car_rounded
               ),
               (
@@ -271,10 +272,6 @@ class _Menu2WidgetState extends State<Menu2Widget> {
               (
                 route: AdminNotificationsWidget.routeName,
                 icon: Icons.notifications_rounded
-              ),
-              (
-                route: AdminDriverExpiryQueueWidget.routeName,
-                icon: Icons.event_busy_rounded
               ),
             ],
           ),

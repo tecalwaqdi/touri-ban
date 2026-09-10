@@ -1328,6 +1328,7 @@ const kNavRouteKeys = <String, String>{
   'AdminSuperAdmins': 'nav_super_admin',
   'AdminTransportCompanies': 'nav_transport_companies',
   'Admindrever': 'nav_representatives',
+  'AdminDriversHub': 'nav_representatives',
   'AdminDriverExpiryQueue': 'nav_driver_doc_expiry',
   'AdminALLhgZ': 'nav_bookings',
   'AdminProfits': 'nav_profits',

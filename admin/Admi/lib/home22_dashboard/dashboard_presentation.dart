@@ -3,7 +3,7 @@ class DashboardPresentation {
   DashboardPresentation._();
 
   /// Canonical Drivers list route (menu SoT). Never legacy AdminDrivers.
-  static const String canonicalDriversRoute = 'Admindrever';
+  static const String canonicalDriversRoute = 'AdminDriversHub';
 
   /// Routes allowed as Dashboard quick actions (must still pass canAccess).
   static const List<String> quickActionRouteOrder = [

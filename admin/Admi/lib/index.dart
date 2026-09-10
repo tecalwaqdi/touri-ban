@@ -106,6 +106,8 @@ export '/car_type_addition/car_type_addition_widget.dart'
 export '/admin/adminvill/adminvill_widget.dart' show AdminvillWidget;
 export '/add_drev/add_drev_widget.dart' show AddDrevWidget;
 export '/admin/admindrever/admindrever_widget.dart' show AdmindreverWidget;
+export '/admin/admin_drivers_hub/admin_drivers_hub_widget.dart'
+    show AdminDriversHubWidget;
 export '/add_user/add_user_widget.dart' show AddUserWidget;
 export '/home/home_widget.dart' show HomeWidget;
 export '/admin/home3/home3_widget.dart' show Home3Widget;

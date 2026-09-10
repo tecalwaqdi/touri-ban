@@ -4,6 +4,8 @@ import '/admin/admindrever/admin_driver_expiry_adapter.dart';
 import '/admin/admindrever/admin_drivers_adapter.dart';
 import '/admin/admindrever/admin_drivers_ui_shared.dart';
 import '/backend/admin_agent_country_lock.dart';
+import '/backend/admin_ops_country_scope.dart';
+import '/backend/admin_panel_data_bootstrap.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_status_badge.dart';
@@ -20,9 +22,13 @@ class AdminDriverExpiryQueueWidget extends StatefulWidget {
   const AdminDriverExpiryQueueWidget({
     super.key,
     this.initialBucket = 'expiring_soon',
+    this.embedded = false,
   });
 
   final String initialBucket;
+
+  /// When true, omit outer [Scaffold]/[AdminLayout]-style page chrome.
+  final bool embedded;
 
   static String routeName = 'AdminDriverExpiryQueue';
   static String routePath = '/driverDocExpiry';
@@ -58,27 +64,22 @@ class _AdminDriverExpiryQueueWidgetState
   }
 
   Future<List<AdminDriverExpiryRow>> _queryBucket(String bucket) async {
-    await AdminAgentCountryLock.ensureCountryResolved();
-    AdminAgentCountryLock.applyToAppState();
-    final country = AdminRoleService.isCountryAgent
-        ? AdminRoleService.scopedCountryRef
-        : null;
-    if (AdminRoleService.isCountryAgent && country == null) {
-      throw StateError('adm_scope_not_ready');
+    // Never run an unscoped expiry list for Country Agent — Rules deny it and
+    // the Hub would flash "ليس لديك صلاحية" while claims/scope are still binding.
+    if (AdminRoleService.isCountryAgent &&
+        AdminRoleService.scopedCountryRef == null) {
+      return const [];
     }
-    Query q;
-    if (country != null) {
-      q = UserRecord.collection
-          .where('ismndob', isEqualTo: true)
-          .where('Rev_dolh', isEqualTo: country)
-          .where('doc_expiry_bucket', isEqualTo: bucket)
-          .limit(200);
-    } else {
-      q = UserRecord.collection
-          .where('ismndob', isEqualTo: true)
-          .where('doc_expiry_bucket', isEqualTo: bucket)
-          .limit(200);
+    if (!AdminRoleService.isSuperAdmin && !AdminRoleService.isCountryAgent) {
+      return const [];
     }
+
+    Query q = UserRecord.collection.where('ismndob', isEqualTo: true);
+    q = AdminOpsCountryScope.applyCountryFieldFilter(
+      q,
+      field: 'Rev_dolh',
+    );
+    q = q.where('doc_expiry_bucket', isEqualTo: bucket).limit(200);
     final snap = await q.get();
     return snap.docs
         .map((d) => AdminDriverExpiryRow.fromUser(
@@ -94,6 +95,13 @@ class _AdminDriverExpiryQueueWidgetState
       _error = '';
     });
     try {
+      await AdminPanelDataBootstrap.ensureReady();
+      for (var i = 0; i < 25 && AdminRoleService.isRoleResolving; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+      await AdminAgentCountryLock.ensureCountryResolved();
+      AdminAgentCountryLock.applyToAppState();
+
       final results = await Future.wait([
         _queryBucket('expired'),
         _queryBucket('expiring_soon'),
@@ -103,12 +111,16 @@ class _AdminDriverExpiryQueueWidgetState
         _expired = results[0];
         _expiringSoon = results[1];
         _loading = false;
+        _error = '';
       });
     } catch (e) {
       if (!mounted) return;
+      // Scope not ready yet — empty queue, not a permission scare.
+      final softEmpty = AdminRoleService.isCountryAgent &&
+          AdminRoleService.scopedCountryRef == null;
       setState(() {
         _loading = false;
-        _error = AdminUserFacingErrors.from(context, e);
+        _error = softEmpty ? '' : AdminUserFacingErrors.from(context, e);
         _expired = const [];
         _expiringSoon = const [];
       });
@@ -175,14 +187,7 @@ class _AdminDriverExpiryQueueWidgetState
     final theme = FlutterFlowTheme.of(context);
     final filtered = _filtered;
 
-    return AdminDriverModuleScaffold(
-      title: uiTr(context, 'انتهاء وثائق السائقين'),
-      subtitle: uiTr(
-        context,
-        'متابعة الوثائق المنتهية أو التي اقترب موعد انتهائها.',
-      ),
-      isLoading: _loading,
-      body: _loading
+    final body = _loading
           ? const SizedBox.shrink()
           : ListView(
               padding: AdminUi.pagePadding(context).copyWith(top: 12, bottom: 24),
@@ -224,7 +229,26 @@ class _AdminDriverExpiryQueueWidgetState
                     child: _ExpiryTable(rows: filtered),
                   ),
               ],
-            ),
+            );
+
+    if (widget.embedded) {
+      if (_loading) {
+        return const Padding(
+          padding: EdgeInsets.all(32),
+          child: Center(child: CircularProgressIndicator()),
+        );
+      }
+      return body;
+    }
+
+    return AdminDriverModuleScaffold(
+      title: uiTr(context, 'انتهاء وثائق السائقين'),
+      subtitle: uiTr(
+        context,
+        'متابعة الوثائق المنتهية أو التي اقترب موعد انتهائها.',
+      ),
+      isLoading: _loading,
+      body: body,
     );
   }
 }

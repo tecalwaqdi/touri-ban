@@ -33,7 +33,21 @@ import 'admindrever_model.dart';
 export 'admindrever_model.dart';
 
 class AdmindreverWidget extends StatefulWidget {
-  const AdmindreverWidget({super.key});
+  const AdmindreverWidget({
+    super.key,
+    this.initialFilters,
+    this.embedded = false,
+    this.showPageChrome = true,
+  });
+
+  /// Optional seed filters (Drivers Hub tabs).
+  final AdminOpsFilterState? initialFilters;
+
+  /// When true, omit [AdminLayoutWidget] — parent shell owns chrome.
+  final bool embedded;
+
+  /// When false (embedded Hub), hide title/subtitle/add row provided by Hub.
+  final bool showPageChrome;
 
   static String routeName = 'Admindrever';
   static String routePath = '/drever';
@@ -68,6 +82,9 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => AdmindreverModel());
+    if (widget.initialFilters != null) {
+      _filters = widget.initialFilters!;
+    }
 
     if (AdminRoleService.isCountryAgent) {
       AdminAgentCountryLock.applyToAppState();
@@ -295,27 +312,7 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
     final l10n = FFLocalizations.of(context);
     final theme = FlutterFlowTheme.of(context);
 
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: AdminLayoutWidget(
-        scaffoldKey: scaffoldKey,
-        menu2Model: _model.menu2Model,
-        updateCallback: () => safeSetState(() {}),
-        padContent: false,
-        title: l10n.getText('xqeazwes'),
-        child: AdminPageBody(
-          title: navLabel(context, AdmindreverWidget.routeName),
-          subtitle: appTr(context, 'scr_reps_subtitle'),
-          actions: AdminPrimaryButton(
-            label: uiTr(context, 'إضافة المندوب'),
-            icon: Icons.person_add_rounded,
-            onPressed: () => context.pushNamed(AddDrevWidget.routeName),
-          ),
-          scrollable: true,
-          child: Semantics(
+    final listBody = Semantics(
             identifier: 'qa-driver-list',
             label: 'qa-driver-list',
             child: Column(
@@ -589,8 +586,38 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
                   ),
               ],
             ),
-          ),
-        ),
+    );
+
+    final page = widget.showPageChrome
+        ? AdminPageBody(
+            title: navLabel(context, AdmindreverWidget.routeName),
+            subtitle: appTr(context, 'scr_reps_subtitle'),
+            actions: AdminPrimaryButton(
+              label: uiTr(context, 'إضافة سائق'),
+              icon: Icons.person_add_rounded,
+              onPressed: () => context.pushNamed(AddDrevWidget.routeName),
+            ),
+            scrollable: true,
+            child: listBody,
+          )
+        : listBody;
+
+    if (widget.embedded) {
+      return page;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: AdminLayoutWidget(
+        scaffoldKey: scaffoldKey,
+        menu2Model: _model.menu2Model,
+        updateCallback: () => safeSetState(() {}),
+        padContent: false,
+        title: l10n.getText('xqeazwes'),
+        child: page,
       ),
     );
   }
