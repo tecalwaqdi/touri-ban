@@ -6,28 +6,35 @@ import '/core/admin_design/admin_design.dart';
 import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/core/finance/admin_money_presentation.dart';
+import '/core/finance/finance_company_snapshot.dart';
 import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 /// Compact accountant summary — primary vs secondary emphasis (F2.1 / UI V2.1).
+///
+/// When [canonical] is set (Phase 2 Hub), KPI chips use V2 / settlements SoT
+/// totals; [bundle] still supplies incomplete-trip warnings for the scan.
 class AccountantFinanceSummaryStrip extends StatelessWidget {
   const AccountantFinanceSummaryStrip({
     super.key,
     required this.bundle,
+    this.canonical,
   });
 
   final AccountantFinanceViewBundle bundle;
+  final FinanceCompanySnapshot? canonical;
 
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final m = bundle.model;
-    final sym = AdminCurrency.symbolByCode[bundle.currency] ?? bundle.currency;
-    String money(MoneyAmount amount) {
-      // Real zero is valid for COMPLETE empty sums; never fabricate missing.
-      if (m.completedTripsWithCompleteFinancialData == 0 &&
-          amount.minorUnits == 0) {
+    final c = canonical;
+    final currency = c?.currency ?? bundle.currency;
+    final sym = AdminCurrency.symbolByCode[currency] ?? currency;
+
+    String money(MoneyAmount amount, {required bool hasCompleteMoney}) {
+      if (!hasCompleteMoney && amount.minorUnits == 0) {
         return m.completedTripCount == 0
             ? AccountantFinanceTextMoney.zeroOrDash(
                 amount,
@@ -43,6 +50,37 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
     }
 
     final incomplete = bundle.partialOrUnresolved;
+    final useCanonical = c != null;
+    final tripCount =
+        useCanonical ? c.completedTrips : m.completedTripCount;
+    final completeMoney = useCanonical
+        ? c.completedTrips > 0
+        : m.completedTripsWithCompleteFinancialData > 0;
+    final gross = useCanonical ? c.completedTripValue : m.completedGross;
+    final collected =
+        useCanonical ? c.collectedTripValue : m.collectedAmount;
+    final uncollected =
+        useCanonical ? c.unCollectedTripValue : m.uncollectedAmount;
+    final commission =
+        useCanonical ? c.realizedPlatformFee : m.companyCommission;
+    final vat = useCanonical ? c.realizedVat : m.vat;
+    final driverNet =
+        useCanonical ? c.realizedDriverNet : m.driverNet;
+    final companyRecv =
+        useCanonical ? c.companyReceivable : m.companyReceivable;
+    final driverPay =
+        useCanonical ? c.companyPayable : m.driverPayable;
+    final openSettlements = useCanonical
+        ? c.pendingSettlementCount
+        : bundle.openSettlementsRemaining;
+    final settledCount = useCanonical ? c.settledCount : null;
+    final outstandingMinor =
+        useCanonical ? c.outstandingSettlementMinor : null;
+    final sourceLabel = useCanonical
+        ? (c.totalsSource.startsWith('server')
+            ? 'V2 · ${c.totalsSource}'
+            : 'V2 engine · ${c.totalsSource}')
+        : 'F1';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -63,16 +101,18 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
               Text(
                 uiTr(
                   context,
-                  'رحلات مكتملة: ${m.completedTripCount} · موثقة ماليًا: ${m.completedTripsWithCompleteFinancialData} · بيانات ناقصة: $incomplete',
+                  useCanonical
+                      ? 'رحلات مكتملة (V2): $tripCount · مصدر: $sourceLabel · بيانات ناقصة في الجدول: $incomplete'
+                      : 'رحلات مكتملة: ${m.completedTripCount} · موثقة ماليًا: ${m.completedTripsWithCompleteFinancialData} · بيانات ناقصة: $incomplete',
                 ),
                 style: AccountantFinanceText.label(theme),
               ),
-              if (bundle.openSettlementsRemaining > 0) ...[
+              if (openSettlements > 0) ...[
                 const SizedBox(height: 6),
                 Text(
                   uiTr(
                     context,
-                    'تسويات غير مسددة: ${bundle.openSettlementsRemaining}',
+                    'تسويات غير مسددة: $openSettlements',
                   ),
                   style: AccountantFinanceText.label(theme),
                 ),
@@ -89,20 +129,24 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
                 spacing: 10,
                 runSpacing: 10,
                 children: [
-                  _chip(context, 'الرحلات المكتملة', '${m.completedTripCount}',
+                  _chip(context, 'الرحلات المكتملة', '$tripCount',
                       primary: true),
                   _chip(
                     context,
                     'القيمة المالية الموثقة',
-                    money(m.completedGross),
+                    money(gross, hasCompleteMoney: completeMoney),
                     primary: true,
                   ),
-                  _chip(context, 'المحصّل', money(m.collectedAmount),
-                      primary: true),
+                  _chip(
+                    context,
+                    'المحصّل',
+                    money(collected, hasCompleteMoney: completeMoney),
+                    primary: true,
+                  ),
                   _chip(
                     context,
                     'غير المحصّل',
-                    money(m.uncollectedAmount),
+                    money(uncollected, hasCompleteMoney: completeMoney),
                     primary: true,
                   ),
                 ],
@@ -119,11 +163,45 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
                 spacing: 10,
                 runSpacing: 10,
                 children: [
-                  _chip(context, 'عمولة الشركة', money(m.companyCommission)),
-                  _chip(context, 'الضريبة', money(m.vat)),
-                  _chip(context, 'صافي السائقين', money(m.driverNet)),
-                  _chip(context, 'المستحق للشركة', money(m.companyReceivable)),
-                  _chip(context, 'المستحق للسائقين', money(m.driverPayable)),
+                  _chip(
+                    context,
+                    'عمولة الشركة',
+                    money(commission, hasCompleteMoney: completeMoney),
+                  ),
+                  _chip(
+                    context,
+                    'الضريبة',
+                    money(vat, hasCompleteMoney: completeMoney),
+                  ),
+                  _chip(
+                    context,
+                    'صافي السائقين',
+                    money(driverNet, hasCompleteMoney: completeMoney),
+                  ),
+                  _chip(
+                    context,
+                    'المستحق للشركة',
+                    money(companyRecv, hasCompleteMoney: completeMoney),
+                  ),
+                  _chip(
+                    context,
+                    'المستحق للسائقين',
+                    money(driverPay, hasCompleteMoney: completeMoney),
+                  ),
+                  if (settledCount != null)
+                    _chip(context, 'تسويات مسددة', '$settledCount'),
+                  if (outstandingMinor != null)
+                    _chip(
+                      context,
+                      'متبقي التسويات',
+                      money(
+                        MoneyAmount(
+                          currency: currency,
+                          minorUnits: outstandingMinor,
+                        ),
+                        hasCompleteMoney: true,
+                      ),
+                    ),
                 ],
               ),
             ],

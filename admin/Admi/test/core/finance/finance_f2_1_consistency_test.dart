@@ -7,6 +7,7 @@ import 'package:admin_arawatan/backend/schema/order_record.dart';
 import 'package:admin_arawatan/core/finance/accountant_finance_labels.dart';
 import 'package:admin_arawatan/core/finance/accountant_finance_loader.dart';
 import 'package:admin_arawatan/core/finance/accountant_finance_read_model.dart';
+import 'package:admin_arawatan/core/finance/finance_v2_read_projection.dart';
 import 'package:admin_arawatan/core/finance/accountant_finance_text.dart';
 import 'package:admin_arawatan/core/finance/accountant_finance_view_model.dart';
 import 'package:admin_arawatan/core/finance/financial_accounting_engine.dart';
@@ -51,7 +52,7 @@ void main() {
     test('1 QA fixture excluded from summary', () {
       final live = _order(_completeCash(), 'live_ok');
       final fix = _order(_completeCash(fixture: true), 'fin7_ctrl_x');
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: [live, fix],
         scope: const AccountantFinanceScope(includeAllCountries: true),
         currency: 'SAR',
@@ -88,12 +89,12 @@ void main() {
         _order(_completeCash(), 'r2'),
         _order(_completeCash(fixture: true), 'fin7_ctrl_1'),
       ];
-      final hub = AccountantFinanceReadModel.aggregate(
+      final hub = FinanceV2ReadProjection.fromOrders(
         orders: orders,
         scope: const AccountantFinanceScope(includeAllCountries: true),
         currency: 'SAR',
       );
-      final report = AccountantFinanceReadModel.aggregate(
+      final report = FinanceV2ReadProjection.fromOrders(
         orders: orders,
         scope: const AccountantFinanceScope(includeAllCountries: true),
         currency: 'SAR',

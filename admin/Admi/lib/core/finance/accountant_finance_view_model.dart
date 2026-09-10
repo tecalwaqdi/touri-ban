@@ -9,7 +9,7 @@ import '/core/finance/financial_order_adapter.dart';
 import '/core/finance/financial_trip_semantics.dart';
 import '/core/finance/money_amount.dart';
 
-/// One accountant table row — derived only from F1 helpers (no widget math).
+/// One accountant table row — money from V2 engine line; settlement from ledger.
 class AccountantTripRow {
   const AccountantTripRow({
     required this.orderId,
@@ -24,6 +24,7 @@ class AccountantTripRow {
     required this.agentLabel,
     required this.agentAttribution,
     required this.paymentMethodLabel,
+    required this.paymentChannelLabel,
     required this.paymentStatusLabel,
     required this.tripStatusLabel,
     required this.collectionStatusLabel,
@@ -57,6 +58,8 @@ class AccountantTripRow {
   final String agentLabel;
   final FinancialAgentAttribution agentAttribution;
   final String paymentMethodLabel;
+  /// Cash / online channel from V2 line (not a separate formula).
+  final String paymentChannelLabel;
   final String paymentStatusLabel;
   final String tripStatusLabel;
   final String collectionStatusLabel;
@@ -77,7 +80,15 @@ class AccountantTripRow {
   final String confidenceLabel;
   final String currency;
 
-  static AccountantTripRow fromOrder(OrderRecord order, {String? symbol}) {
+  /// Builds a row from V2 [FinancialAccountingEngine] line.
+  ///
+  /// [settlementStatusFromLedger] must come from [financial_settlements]
+  /// membership — never inferred from order settlement flags.
+  static AccountantTripRow fromOrder(
+    OrderRecord order, {
+    String? symbol,
+    String? settlementStatusFromLedger,
+  }) {
     final snap = FinancialOrderAdapter.fromOrder(order);
     final line = FinancialAccountingEngine.analyze(snap);
     final resolution = FinancialAmountResolution.fromLine(line);
@@ -99,10 +110,11 @@ class AccountantTripRow {
     }
 
     final channel = line.channel;
-    final settlementRaw = (order.snapshotData['settlement_status'] ??
-            order.snapshotData['financial_settlement_status'] ??
-            '')
-        .toString();
+    final channelLabel = switch (channel) {
+      FinancialPaymentChannel.cash => 'نقدي',
+      FinancialPaymentChannel.online => 'إلكتروني',
+      _ => AccountantFinanceLabels.emDash(),
+    };
 
     final hasAgentAmount = snap.agentAmountMinor != null &&
         agentAttr == FinancialAgentAttribution.confident;
@@ -139,6 +151,7 @@ class AccountantTripRow {
       agentAttribution: agentAttr,
       paymentMethodLabel:
           AccountantFinanceLabels.paymentMethodAr(snap.paymentMethodRaw),
+      paymentChannelLabel: channelLabel,
       paymentStatusLabel:
           AccountantFinanceLabels.paymentStatusAr(snap.paymentStatus),
       tripStatusLabel:
@@ -159,8 +172,9 @@ class AccountantTripRow {
         cashCollected: cashCollected,
         paymentPaid: paid,
       ),
-      settlementStatusLabel:
-          AccountantFinanceLabels.settlementStatusAr(settlementRaw),
+      settlementStatusLabel: AccountantFinanceLabels.settlementStatusAr(
+        settlementStatusFromLedger ?? '',
+      ),
       dataQuality: resolution.quality,
       dataQualityLabel:
           AccountantFinanceLabels.dataQualityAr(resolution.quality),
@@ -172,7 +186,7 @@ class AccountantTripRow {
       agentAmountDisplay: agentAmount,
       agentAmountIsShareOfCommission: hasAgentAmount,
       missingFields: resolution.missingFields,
-      source: resolution.source,
+      source: 'financial_accounting_v2',
       confidenceLabel: switch (resolution.confidence) {
         FinancialConfidence.high => 'مؤكد',
         FinancialConfidence.derived => 'مشتق',
@@ -207,7 +221,12 @@ class AccountantFinanceViewBundle {
   final int openSettlementsRemaining;
   final int fixturesExcludedFromTable;
 
-  int get partialOrUnresolved =>
-      model.completedTripsWithPartialFinancialData +
-      model.completedTripsWithUnresolvedFinancialData;
+  int get partialOrUnresolved => trips
+      .where(
+        (t) =>
+            t.operationallyCompleted &&
+            (t.dataQuality == FinancialDataQuality.partial ||
+                t.dataQuality == FinancialDataQuality.unresolved),
+      )
+      .length;
 }

@@ -14,6 +14,10 @@ import '/core/finance/accountant_finance_read_model.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/core/finance/finance_order_query.dart';
 import '/core/finance/finance_reconciliation_read_model.dart';
+import '/core/finance/finance_sot_settlement_index.dart';
+import '/core/finance/finance_sot_settlement_stats.dart';
+import '/core/finance/finance_v2_alerts.dart';
+import '/core/finance/finance_v2_read_projection.dart';
 import '/core/finance/financial_trip_semantics.dart';
 
 /// PERF-P3 — shared Finance **source** reads (coalescing + short session cache).
@@ -256,7 +260,7 @@ class AdminFinanceRepository {
     );
   }
 
-  /// Hub/Agent first useful rows — does not await summary or settlements maps.
+  /// Hub/Agent first useful rows — joins settlement ledger when maps available.
   Future<List<AccountantTripRow>> loadHubFirstPage({
     AdminDatePreset datePreset = AdminDatePreset.thisMonth,
     DateTime? customStart,
@@ -270,7 +274,7 @@ class AdminFinanceRepository {
       countryOverride: countryRef,
     );
     final sym = AdminCurrency.symbolByCode[currency] ?? currency;
-    final page = await loadModernFirstPage(
+    final pageFuture = loadModernFirstPage(
       datePreset: datePreset,
       customStart: customStart,
       customEnd: customEnd,
@@ -278,12 +282,23 @@ class AdminFinanceRepository {
       driverRef: driverRef,
       forceRefresh: forceRefresh,
     );
+    final settlementsFuture =
+        loadSettlementsMaps(forceRefresh: forceRefresh);
+    final page = await pageFuture;
+    final maps = await settlementsFuture;
+    final settlementByOrder = FinanceSotSettlementIndex.statusByOrderId(maps);
     AdminFinanceRouteTrace.mark('REPOSITORY_COMPLETE', extra: {
       'orders': page.orders.length,
       'fromCache': page.fromCache,
+      'settlements': maps.length,
     });
     AdminFinanceRouteTrace.mark('MODEL_BUILD_START');
-    final rows = _tripsFromOrders(page.orders, scope: scope, symbol: sym);
+    final rows = _tripsFromOrders(
+      page.orders,
+      scope: scope,
+      symbol: sym,
+      settlementByOrder: settlementByOrder,
+    );
     AdminFinanceRouteTrace.mark('MODEL_BUILD_END', extra: {'rows': rows.length});
     return rows;
   }
@@ -446,23 +461,8 @@ class AdminFinanceRepository {
     }
   }
 
-  int countOpenSettlementsFromMaps(List<Map<String, dynamic>> maps) {
-    var open = 0;
-    for (final map in maps) {
-      final st = (map['status'] ?? '').toString().toLowerCase();
-      final outstanding = (map['outstandingMinor'] as num?)?.toInt() ?? 0;
-      if (st == 'settled' || st == 'voided') continue;
-      if (outstanding > 0 ||
-          st == 'draft' ||
-          st == 'locked' ||
-          st == 'partially_paid' ||
-          st == 'open' ||
-          st == 'pending') {
-        open++;
-      }
-    }
-    return open;
-  }
+  int countOpenSettlementsFromMaps(List<Map<String, dynamic>> maps) =>
+      FinanceSotSettlementStats.countOpen(maps);
 
   // ---------------------------------------------------------------------------
   // Hub / Agent / Reports bundle (F1 aggregate outside cache of formulas)
@@ -495,6 +495,7 @@ class AdminFinanceRepository {
       forceRefresh: forceRefresh,
       onFirstPage: (orders, docs) {
         if (onFirstPage == null) return;
+        // Settlement join applied after maps resolve; early rows may show —.
         final rows = _tripsFromOrders(orders, scope: scope, symbol: sym);
         onFirstPage(rows, docs);
       },
@@ -502,14 +503,15 @@ class AdminFinanceRepository {
     final settled = await Future.wait<Object>([scanFuture, settlementsFuture]);
     final scan = settled[0] as FinanceOrderScanResult;
     final maps = settled[1] as List<Map<String, dynamic>>;
+    final settlementByOrder = FinanceSotSettlementIndex.statusByOrderId(maps);
 
     final orders = scan.orders;
-    final model = AccountantFinanceReadModel.aggregate(
-      orders: orders,
+    final trips = _tripsFromOrders(
+      orders,
       scope: scope,
-      currency: currency,
+      symbol: sym,
+      settlementByOrder: settlementByOrder,
     );
-    final trips = _tripsFromOrders(orders, scope: scope, symbol: sym);
     var fixturesSkippedForTable = 0;
     for (final o in orders) {
       if (FinancialTripSemantics.isFinanceQaFixture(o) ||
@@ -519,26 +521,20 @@ class AdminFinanceRepository {
     }
 
     final openSettlements = countOpenSettlementsFromMaps(maps);
-
-    final alerts = <String>[];
-    final incomplete = model.completedTripsWithPartialFinancialData +
-        model.completedTripsWithUnresolvedFinancialData;
-    if (incomplete > 0) {
-      alerts.add('$incomplete رحلات مكتملة تحتاج استكمال بيانات مالية');
-    }
-    if (model.unattributedAgentCompleted > 0) {
-      alerts.add(
-        '${model.unattributedAgentCompleted} رحلات بدون إسناد وكيل تاريخي موثوق',
-      );
-    }
-    if (openSettlements > 0) {
-      alerts.add('$openSettlements تسويات بها مبلغ متبقٍ / غير مسددة');
-    }
+    final model = FinanceV2ReadProjection.fromV2TripRows(
+      trips: trips,
+      currency: currency,
+      fixturesExcluded: fixturesSkippedForTable,
+    );
+    final alertPack = FinanceV2Alerts.build(
+      trips: trips,
+      openSettlementsRemaining: openSettlements,
+    );
 
     return AccountantFinanceViewBundle(
       model: model,
       trips: trips,
-      alerts: alerts,
+      alerts: alertPack.alerts,
       currency: currency,
       periodLabel: periodLabel.isEmpty ? datePreset.name : periodLabel,
       docsScanned: scan.docsRead,
@@ -696,6 +692,7 @@ class AdminFinanceRepository {
     List<OrderRecord> orders, {
     required AccountantFinanceScope scope,
     required String symbol,
+    Map<String, String> settlementByOrder = const {},
   }) {
     final trips = <AccountantTripRow>[];
     for (final o in orders) {
@@ -707,7 +704,11 @@ class AdminFinanceRepository {
       if (AdminRoleService.usesCountryFinanceScope) {
         if (AdminCountryScope.filterOrders([o]).isEmpty) continue;
       }
-      final row = AccountantTripRow.fromOrder(o, symbol: symbol);
+      final row = AccountantTripRow.fromOrder(
+        o,
+        symbol: symbol,
+        settlementStatusFromLedger: settlementByOrder[o.reference.id],
+      );
       if (!row.operationallyCompleted) continue;
       trips.add(row);
     }

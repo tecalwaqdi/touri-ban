@@ -15,13 +15,15 @@ import '/core/finance/accountant_finance_labels.dart';
 import '/core/finance/accountant_finance_loader.dart';
 import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
+import '/core/finance/finance_company_service.dart';
+import '/core/finance/finance_company_snapshot.dart';
 import '/core/finance/financial_amount_resolution.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import '/l10n/ui_catalog.dart';
 
-/// Canonical accountant Finance entry — F1 [AccountantFinanceReadModel] only.
+/// Canonical accountant Finance entry — trip table stays F1; KPI strip uses V2.
 class AdminFinanceHubWidget extends StatefulWidget {
   const AdminFinanceHubWidget({super.key});
 
@@ -38,6 +40,8 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   AdminDatePreset _preset = AdminDatePreset.thisMonth;
   Future<AccountantFinanceViewBundle>? _future;
   AccountantFinanceViewBundle? _lastOk;
+  Future<FinanceCompanySnapshot>? _canonicalKpiFuture;
+  FinanceCompanySnapshot? _canonicalKpi;
   /// PERF-P4A: first modern page independent of period summary.
   List<AccountantTripRow>? _earlyRows;
   bool _rowsLoading = false;
@@ -91,12 +95,14 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
       if (forceRefresh) {
         _earlyRows = null;
         _lastOk = null;
+        _canonicalKpi = null;
       }
       _rowsLoading = true;
       _summaryLoading = true;
       _rowsError = null;
       _summaryError = null;
       _future = null;
+      _canonicalKpiFuture = null;
     });
 
     // CRITICAL PATH then BACKGROUND — do not start settlement maps / full scan
@@ -111,6 +117,15 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
         _rowsLoading = false;
         AdminFinanceRouteTrace.markStateEmitAndSchedulePaint();
         AdminFinanceRouteTrace.mark('SUMMARY_START');
+        // Phase 2: KPI strip from aggregateFinancialAccountingV2 + settlements.
+        _canonicalKpiFuture = FinanceCompanyService.load(
+          datePreset: _preset,
+          periodLabel: label,
+        ).then((snap) {
+          _canonicalKpi = snap;
+          if (mounted) setState(() {});
+          return snap;
+        });
         _future = AccountantFinanceLoader.load(
           datePreset: _preset,
           periodLabel: label,
@@ -330,7 +345,17 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                   else if (bundle != null) ...[
                     AccountantFinanceAlertsBanner(alerts: bundle.alerts),
                     if (bundle.alerts.isNotEmpty) const SizedBox(height: 10),
-                    AccountantFinanceSummaryStrip(bundle: bundle),
+                    FutureBuilder<FinanceCompanySnapshot>(
+                      future: _canonicalKpiFuture,
+                      builder: (context, kpiSnap) {
+                        final canonical =
+                            kpiSnap.data ?? _canonicalKpi;
+                        return AccountantFinanceSummaryStrip(
+                          bundle: bundle,
+                          canonical: canonical,
+                        );
+                      },
+                    ),
                     const SizedBox(height: 12),
                   ] else
                     Padding(

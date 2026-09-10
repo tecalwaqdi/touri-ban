@@ -3,6 +3,7 @@ import '/backend/admin_ops_filters.dart';
 import '/backend/admin_performance.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
+import '/core/admin_qa_fixture.dart';
 import '/core/cloud_functions/cloud_functions_client.dart';
 import '/core/finance/financial_accounting_engine.dart';
 import '/core/finance/financial_accounting_unavailable.dart';
@@ -143,7 +144,8 @@ abstract final class FinancialAccountingLoader {
   static const int tablePageSize = 50;
 
   static DocumentReference? _effectiveCountry(FinancialReportFilter f) {
-    if (AdminRoleService.isCountryAgent) {
+    if (AdminRoleService.isCountryAgent ||
+        AdminRoleService.usesCountryFinanceScope) {
       return AdminRoleService.scopedCountryRef ??
           AdminCountryScope.activeCountryRef;
     }
@@ -422,7 +424,8 @@ abstract final class FinancialAccountingLoader {
           }
         }
         if (country != null && order.revDolh?.path != country.path) continue;
-        if (AdminRoleService.isCountryAgent) {
+        if (AdminRoleService.isCountryAgent ||
+            AdminRoleService.usesCountryFinanceScope) {
           if (AdminCountryScope.filterOrders([order]).isEmpty) continue;
         }
         results.add(order);
@@ -436,6 +439,7 @@ abstract final class FinancialAccountingLoader {
     var missingPay = 0, missingLife = 0, missingDriver = 0, unsupported = 0;
     var reconciled = 0, reconDiff = 0;
     for (final order in results) {
+      if (AdminQaFixture.isFixtureOrder(order)) continue;
       final data = order.snapshotData;
       if (data['payment_status'] == null) missingPay++;
       if (data['status_code'] == null) missingLife++;

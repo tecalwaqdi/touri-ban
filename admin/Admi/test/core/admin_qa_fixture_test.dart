@@ -8,12 +8,17 @@ void main() {
     expect(AdminQaFixture.isFixtureId('fin7_ctrl_1'), isTrue);
     expect(AdminQaFixture.isFixtureId('fin9_ctrl_1'), isTrue);
     expect(AdminQaFixture.isFixtureId('fin_rt_cash_1'), isTrue);
+    expect(AdminQaFixture.isFixtureId('demo_fin_1'), isTrue);
     expect(AdminQaFixture.isFixtureId('real_order_abc'), isFalse);
   });
 
   test('explicit metadata wins', () {
     expect(
       AdminQaFixture.isFixtureMap({'is_test_fixture': true}, orderId: 'x'),
+      isTrue,
+    );
+    expect(
+      AdminQaFixture.isFixtureMap({'is_demo': true}, orderId: 'x'),
       isTrue,
     );
   });

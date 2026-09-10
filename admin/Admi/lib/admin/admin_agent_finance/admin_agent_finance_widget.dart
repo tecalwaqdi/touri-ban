@@ -15,10 +15,12 @@ import '/core/finance/accountant_finance_loader.dart';
 import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/core/finance/admin_money_presentation.dart';
+import '/core/finance/finance_company_service.dart';
+import '/core/finance/finance_company_snapshot.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
-/// Country Agent + Super Admin accountant finance (same F1 read model; scope differs).
+/// Country Agent + Super Admin accountant finance (V2 KPIs + V2 trip lines).
 class AdminAgentFinanceWidget extends StatefulWidget {
   const AdminAgentFinanceWidget({super.key});
 
@@ -36,6 +38,8 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
   AdminDatePreset _preset = AdminDatePreset.thisMonth;
   Future<AccountantFinanceViewBundle>? _future;
   AccountantFinanceViewBundle? _lastOk;
+  Future<FinanceCompanySnapshot>? _canonicalKpiFuture;
+  FinanceCompanySnapshot? _canonicalKpi;
   List<AccountantTripRow>? _earlyRows;
   bool _summaryLoading = false;
 
@@ -66,9 +70,11 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
       if (forceRefresh) {
         _earlyRows = null;
         _lastOk = null;
+        _canonicalKpi = null;
       }
       _summaryLoading = true;
       _future = null;
+      _canonicalKpiFuture = null;
     });
 
     AccountantFinanceLoader.loadFirstPage(
@@ -78,6 +84,14 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
       if (!mounted) return;
       setState(() {
         _earlyRows = rows;
+        _canonicalKpiFuture = FinanceCompanyService.load(
+          datePreset: _preset,
+          periodLabel: label,
+        ).then((snap) {
+          _canonicalKpi = snap;
+          if (mounted) setState(() {});
+          return snap;
+        });
         _future = AccountantFinanceLoader.load(
           datePreset: _preset,
           periodLabel: label,
@@ -189,7 +203,16 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
                     const SizedBox(height: 12),
                     AccountantFinanceAlertsBanner(alerts: bundle.alerts),
                     if (bundle.alerts.isNotEmpty) const SizedBox(height: 10),
-                    AccountantFinanceSummaryStrip(bundle: bundle),
+                    FutureBuilder<FinanceCompanySnapshot>(
+                      future: _canonicalKpiFuture,
+                      builder: (context, kpiSnap) {
+                        final canonical = kpiSnap.data ?? _canonicalKpi;
+                        return AccountantFinanceSummaryStrip(
+                          bundle: bundle,
+                          canonical: canonical,
+                        );
+                      },
+                    ),
                     const SizedBox(height: 12),
                   ],
                   AccountantMoneyMovementTable(
@@ -207,7 +230,7 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
   }
 }
 
-/// Agent-specific scope strip — existing F1 fields only (no invented metrics).
+/// Agent-specific scope strip — V2 trip rows only (no invented metrics).
 class _AgentFinanceScopeStrip extends StatelessWidget {
   const _AgentFinanceScopeStrip({required this.bundle});
 

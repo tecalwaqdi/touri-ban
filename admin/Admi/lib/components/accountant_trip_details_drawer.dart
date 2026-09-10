@@ -88,6 +88,7 @@ class AccountantTripDetailsPanel extends StatelessWidget {
         ]),
         _section(context, 'الدفع', [
           _kv(context, 'طريقة الدفع', row.paymentMethodLabel),
+          _kv(context, 'القناة', row.paymentChannelLabel),
           _kv(context, 'حالة الدفع', row.paymentStatusLabel),
         ]),
         _section(context, 'التحصيل', [

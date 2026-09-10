@@ -10,7 +10,11 @@ import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
 import '/core/admin_qa_fixture.dart';
 
-/// Loads orders (scoped) and builds [AccountantFinanceViewBundle] via F1 only.
+/// Loads orders (scoped) and builds [AccountantFinanceViewBundle].
+///
+/// Trip money columns use V2 engine lines; settlement status from
+/// [financial_settlements]. KPI strips on Hub/Agent/Reports use
+/// [FinanceCompanyService] (aggregateFinancialAccountingV2).
 ///
 /// PERF-P2A: completed-candidate server queries + first-page callback.
 /// PERF-P3: delegates Firestore source loading to [AdminFinanceRepository]

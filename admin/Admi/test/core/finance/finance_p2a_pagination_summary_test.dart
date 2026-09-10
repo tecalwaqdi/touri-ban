@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:admin_arawatan/backend/schema/order_record.dart';
 import 'package:admin_arawatan/core/finance/accountant_finance_read_model.dart';
+import 'package:admin_arawatan/core/finance/finance_v2_read_projection.dart';
 import 'package:admin_arawatan/core/finance/finance_order_query.dart';
 import 'package:admin_arawatan/core/finance/financial_trip_semantics.dart';
 import 'package:admin_arawatan/core/toury_system_status_codes.dart';
@@ -84,12 +85,12 @@ void main() {
       expect(page.length, 25);
 
       const scope = AccountantFinanceScope(includeAllCountries: true);
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: orders,
         scope: scope,
         currency: 'SAR',
       );
-      final pageModel = AccountantFinanceReadModel.aggregate(
+      final pageModel = FinanceV2ReadProjection.fromOrders(
         orders: page,
         scope: scope,
         currency: 'SAR',
@@ -108,7 +109,7 @@ void main() {
       final live = _order(_complete(), 'live_ok');
       final qa = _order(_complete(fixture: true, total: 999), 'TOURi_GOLDEN_1');
       const scope = AccountantFinanceScope(includeAllCountries: true);
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: [live, qa],
         scope: scope,
         currency: 'SAR',
@@ -130,7 +131,7 @@ void main() {
         includeAllCountries: false,
         countryPaths: ['countries/spain'],
       );
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: [own, foreign],
         scope: scope,
         currency: 'SAR',

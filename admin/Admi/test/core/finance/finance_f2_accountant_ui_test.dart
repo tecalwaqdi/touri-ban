@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:admin_arawatan/backend/schema/order_record.dart';
 import 'package:admin_arawatan/core/finance/accountant_finance_labels.dart';
 import 'package:admin_arawatan/core/finance/accountant_finance_read_model.dart';
+import 'package:admin_arawatan/core/finance/finance_v2_read_projection.dart';
 import 'package:admin_arawatan/core/finance/accountant_finance_view_model.dart';
 import 'package:admin_arawatan/core/finance/financial_accounting_engine.dart';
 import 'package:admin_arawatan/core/finance/financial_amount_resolution.dart';
@@ -69,7 +70,7 @@ void main() {
         mndob: 42.5,
         mndob2: 50,
       ));
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: [unpaid, paid],
         scope: const AccountantFinanceScope(includeAllCountries: true),
         currency: 'SAR',
@@ -98,7 +99,7 @@ void main() {
       ));
       final row = AccountantTripRow.fromOrder(o);
       expect(row.operationallyCompleted, isFalse);
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: [o],
         scope: const AccountantFinanceScope(includeAllCountries: true),
         currency: 'SAR',
@@ -131,7 +132,7 @@ void main() {
         ),
         'fin7_ctrl_x',
       );
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: [live, fix],
         scope: const AccountantFinanceScope(includeAllCountries: true),
         currency: 'SAR',
@@ -149,7 +150,7 @@ void main() {
         ..._base(mndob: 42.5, mndob2: 50, payment: 'cash_collected'),
         'Rev_dolh': FirebaseFirestore.instance.doc('countries/egypt'),
       }, 'eg');
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: [sa, eg],
         scope: const AccountantFinanceScope(
           includeAllCountries: false,
@@ -230,7 +231,7 @@ void main() {
           'c',
         ),
       ];
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: orders,
         scope: const AccountantFinanceScope(includeAllCountries: true),
         currency: 'SAR',

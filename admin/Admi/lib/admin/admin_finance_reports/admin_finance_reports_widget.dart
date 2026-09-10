@@ -15,10 +15,12 @@ import '/core/finance/accountant_finance_loader.dart';
 import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/core/finance/admin_finance_date_range.dart';
+import '/core/finance/finance_company_service.dart';
+import '/core/finance/finance_company_snapshot.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
-/// On-screen accountant reports — same F1 read model as Finance Hub (F2.1).
+/// On-screen accountant reports — same V2 KPIs + trip lines as Finance Hub.
 /// Legacy CSV/PDF exporters remain deferred.
 class AdminFinanceReportsWidget extends StatefulWidget {
   const AdminFinanceReportsWidget({super.key});
@@ -37,6 +39,8 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
   AdminDatePreset _preset = AdminDatePreset.thisMonth;
   Future<AccountantFinanceViewBundle>? _future;
   AccountantFinanceViewBundle? _lastOk;
+  Future<FinanceCompanySnapshot>? _canonicalKpiFuture;
+  FinanceCompanySnapshot? _canonicalKpi;
   String? _error;
 
   static const _presetLabels = <AdminDatePreset, String>{
@@ -66,6 +70,15 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
     final label = _presetLabels[_preset] ?? _preset.name;
     setState(() {
       _error = null;
+      if (forceRefresh) _canonicalKpi = null;
+      _canonicalKpiFuture = FinanceCompanyService.load(
+        datePreset: _preset,
+        periodLabel: label,
+      ).then((snap) {
+        _canonicalKpi = snap;
+        if (mounted) setState(() {});
+        return snap;
+      });
       _future = AccountantFinanceLoader.load(
         datePreset: _preset,
         periodLabel: label,
@@ -163,7 +176,16 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
                   },
                 ),
                 const SizedBox(height: 12),
-                AccountantFinanceSummaryStrip(bundle: bundle),
+                FutureBuilder<FinanceCompanySnapshot>(
+                  future: _canonicalKpiFuture,
+                  builder: (context, kpiSnap) {
+                    final canonical = kpiSnap.data ?? _canonicalKpi;
+                    return AccountantFinanceSummaryStrip(
+                      bundle: bundle,
+                      canonical: canonical,
+                    );
+                  },
+                ),
                 const SizedBox(height: 12),
                 AccountantMoneyMovementTable(
                   rows: bundle.trips,

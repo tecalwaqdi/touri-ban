@@ -5,6 +5,7 @@ import 'package:admin_arawatan/core/finance/admin_finance_repository.dart';
 import 'package:admin_arawatan/core/finance/finance_order_query.dart';
 import 'package:admin_arawatan/core/finance/finance_reconciliation_read_model.dart';
 import 'package:admin_arawatan/core/finance/accountant_finance_read_model.dart';
+import 'package:admin_arawatan/core/finance/finance_v2_read_projection.dart';
 
 /// PERF-P4A progressive pipeline + memoization (no Firestore).
 void main() {
@@ -90,7 +91,7 @@ void main() {
 
   group('PERF-P4A F1 aggregate empty', () {
     test('empty aggregate does not invent completed trips', () {
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: const [],
         scope: const AccountantFinanceScope(includeAllCountries: true),
         currency: 'SAR',

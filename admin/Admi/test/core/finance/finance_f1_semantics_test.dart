@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:admin_arawatan/backend/schema/order_record.dart';
 import 'package:admin_arawatan/core/finance/accountant_finance_read_model.dart';
+import 'package:admin_arawatan/core/finance/finance_v2_read_projection.dart';
 import 'package:admin_arawatan/core/finance/financial_accounting_engine.dart';
 import 'package:admin_arawatan/core/finance/financial_amount_resolution.dart';
 import 'package:admin_arawatan/core/finance/financial_engine.dart';
@@ -162,7 +163,7 @@ void main() {
         ),
         'fin7_ctrl_x',
       );
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: [live, fixture],
         scope: const AccountantFinanceScope(includeAllCountries: true),
         currency: 'SAR',
@@ -188,7 +189,7 @@ void main() {
       final res = FinancialAmountResolution.fromLine(line);
       expect(res.quality, isNot(FinancialDataQuality.complete));
 
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: [o],
         scope: const AccountantFinanceScope(includeAllCountries: true),
         currency: 'SAR',
@@ -248,7 +249,7 @@ void main() {
         ),
         'eg1',
       );
-      final model = AccountantFinanceReadModel.aggregate(
+      final model = FinanceV2ReadProjection.fromOrders(
         orders: [sa, eg],
         scope: const AccountantFinanceScope(
           includeAllCountries: false,

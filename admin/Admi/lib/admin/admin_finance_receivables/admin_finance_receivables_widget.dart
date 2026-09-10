@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '/backend/admin_country_scope.dart';
 import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_error_messages.dart';
+import '/core/admin_qa_fixture.dart';
 import '/core/cloud_functions/cloud_functions_client.dart';
 import '/core/finance/admin_money_presentation.dart';
 import '/core/finance/finance_controls_client.dart';
@@ -233,48 +235,81 @@ class _AdminFinanceReceivablesWidgetState
                       style: theme.bodySmall,
                     ),
                     const SizedBox(height: 8),
-                    StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                      stream: FirebaseFirestore.instance
-                          .collection('order')
-                          .where('payment_status', isEqualTo: 'pending_cash')
-                          .limit(30)
-                          .snapshots(),
-                      builder: (context, cashSnap) {
-                        if (!cashSnap.hasData) {
-                          return const LinearProgressIndicator(minHeight: 2);
-                        }
-                        final docs = cashSnap.data!.docs.where((d) {
-                          final code =
-                              '${d.data()['status_code'] ?? ''}'.toLowerCase();
-                          return code == 'completed' ||
-                              code == 'trip_completed';
-                        }).toList();
-                        if (docs.isEmpty) {
+                    Builder(
+                      builder: (context) {
+                        final country = AdminCountryScope.activeCountryRef ??
+                            (AdminRoleService.usesCountryFinanceScope
+                                ? AdminRoleService.scopedCountryRef
+                                : null);
+                        if (AdminRoleService.usesCountryFinanceScope &&
+                            country == null) {
                           return Text(
-                            uiTr(context, 'لا توجد حالات عالقة ظاهرة'),
+                            uiTr(
+                              context,
+                              'نطاق الدولة مطلوب لعرض الذمم النقدية',
+                            ),
                             style: theme.bodySmall,
                           );
                         }
-                        return Column(
-                          children: [
-                            for (final d in docs)
-                              ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(d.id),
-                                subtitle: Text(
-                                  '${d.data()['PaymentMethod'] ?? ''} · '
-                                  '${d.data()['total'] ?? ''}',
-                                ),
-                                trailing: AdminRoleService.canWriteSettlements
-                                    ? TextButton(
-                                        onPressed: _busy
-                                            ? null
-                                            : () => _adminConfirmCash(d.id),
-                                        child: Text(uiTr(context, 'تأكيد')),
-                                      )
-                                    : null,
-                              ),
-                          ],
+                        Query<Map<String, dynamic>> q = FirebaseFirestore
+                            .instance
+                            .collection('order')
+                            .where('payment_status',
+                                isEqualTo: 'pending_cash');
+                        if (country != null) {
+                          q = q.where('Rev_dolh', isEqualTo: country);
+                        }
+                        return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                          stream: q.limit(50).snapshots(),
+                          builder: (context, cashSnap) {
+                            if (!cashSnap.hasData) {
+                              return const LinearProgressIndicator(
+                                  minHeight: 2);
+                            }
+                            final docs = cashSnap.data!.docs.where((d) {
+                              final data = d.data();
+                              if (AdminQaFixture.isFixtureMap(
+                                data,
+                                orderId: d.id,
+                              )) {
+                                return false;
+                              }
+                              final code =
+                                  '${data['status_code'] ?? ''}'.toLowerCase();
+                              return code == 'completed' ||
+                                  code == 'trip_completed';
+                            }).toList();
+                            if (docs.isEmpty) {
+                              return Text(
+                                uiTr(context, 'لا توجد حالات عالقة ظاهرة'),
+                                style: theme.bodySmall,
+                              );
+                            }
+                            return Column(
+                              children: [
+                                for (final d in docs)
+                                  ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    title: Text(d.id),
+                                    subtitle: Text(
+                                      '${d.data()['PaymentMethod'] ?? ''} · '
+                                      '${d.data()['total'] ?? ''}',
+                                    ),
+                                    trailing:
+                                        AdminRoleService.canWriteSettlements
+                                            ? TextButton(
+                                                onPressed: _busy
+                                                    ? null
+                                                    : () =>
+                                                        _adminConfirmCash(d.id),
+                                                child: Text(
+                                                    uiTr(context, 'تأكيد')),
+                                              )
+                                            : null,
+                                  ),
+                              ],
+                            );
+                          },
                         );
                       },
                     ),

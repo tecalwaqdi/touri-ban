@@ -1,11 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '/backend/admin_ops_filters.dart';
 import '/backend/financial_accounting_loader.dart';
 import '/core/finance/finance_cash_online_summary.dart';
 import '/core/finance/finance_company_snapshot.dart';
 import '/core/finance/finance_exception_classifier.dart';
 import '/core/finance/finance_runtime_gate.dart';
+import '/core/finance/finance_sot_settlement_stats.dart';
 import '/core/finance/financial_accounting_engine.dart';
 
 /// Loads FIN-2 company snapshot + FIN-5/6 helpers (server-authoritative totals).
@@ -86,26 +85,11 @@ abstract final class FinanceCompanyService {
 
   static Future<({int settled, int pending, int outstandingMinor})>
       _loadSettlementReadOnlyStats() async {
-    try {
-      final snap = await FirebaseFirestore.instance
-          .collection('financial_settlements')
-          .limit(500)
-          .get();
-      var settled = 0;
-      var pending = 0;
-      var outstanding = 0;
-      for (final doc in snap.docs) {
-        final d = doc.data();
-        final st = (d['status'] ?? '').toString();
-        if (st == 'settled') settled++;
-        if (st == 'draft' || st == 'locked' || st == 'partially_paid') {
-          pending++;
-        }
-        outstanding += (d['outstandingMinor'] as num?)?.toInt() ?? 0;
-      }
-      return (settled: settled, pending: pending, outstandingMinor: outstanding);
-    } catch (_) {
-      return (settled: 0, pending: 0, outstandingMinor: 0);
-    }
+    final s = await FinanceSotSettlementStats.load();
+    return (
+      settled: s.settled,
+      pending: s.pending,
+      outstandingMinor: s.outstandingMinor,
+    );
   }
 }

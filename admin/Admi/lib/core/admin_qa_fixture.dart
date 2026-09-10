@@ -14,7 +14,7 @@ abstract final class AdminQaFixture {
   static const metaCreatedBy = 'created_by_qa';
 
   static final RegExp _legacyIdPrefix = RegExp(
-    r'^(fin7_ctrl_|fin9_ctrl_|fin_rt_cash_|fin_rt_cash_ui_|fin_rt_)',
+    r'^(fin7_ctrl_|fin9_ctrl_|fin_rt_cash_|fin_rt_cash_ui_|fin_rt_|demo_fin_|demo_)',
   );
 
   /// FIN-8 controlled settlement payment refs (repository-proven).
@@ -25,6 +25,12 @@ abstract final class AdminQaFixture {
   static bool isFixtureMap(Map<String, dynamic> data, {String? orderId}) {
     if (data[metaIsTest] == true) return true;
     if (data['qa_fixture'] == true || data['test_fixture'] == true) {
+      return true;
+    }
+    // Known demo / ops fixtures stamped on live docs (presentation filter only).
+    if (data['is_demo'] == true ||
+        data['admin_demo_fixture'] == true ||
+        data['exclude_from_real_reporting'] == true) {
       return true;
     }
     final id = (orderId ?? '').trim();
@@ -62,9 +68,11 @@ abstract final class AdminQaFixture {
     if (idemp.startsWith('fin8_') ||
         idemp.startsWith('fin7_') ||
         idemp.startsWith('fin9_') ||
+        idemp.startsWith('demo_') ||
         idemp.contains('fin7_ctrl_') ||
         idemp.contains('fin9_ctrl_') ||
-        idemp.contains('fin_rt_')) {
+        idemp.contains('fin_rt_') ||
+        idemp.contains('demo_fin_')) {
       return true;
     }
 
