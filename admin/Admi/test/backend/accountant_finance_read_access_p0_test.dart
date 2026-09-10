@@ -15,10 +15,10 @@ void main() {
   });
 
   group('ACCOUNTANT_READ_ACCESS_P0', () {
-    test('Settings route denied for Accountant', () {
+    test('Settings route allowed for Accountant (Phase 5)', () {
       expect(
         AdminRoleService.canAccessRouteForRole(AdminRole.accountant, 'Settings'),
-        isFalse,
+        isTrue,
       );
       expect(
         AdminRoleService.canAccessRouteForRole(
@@ -90,7 +90,8 @@ void main() {
       expect(AdminRoleService.isAccountant, isTrue);
       expect(AdminRoleService.hasPanelAccess, isTrue);
       expect(AdminRoleService.canAccessRoute('AdminSettlements'), isTrue);
-      expect(AdminRoleService.canAccessRoute('Settings'), isFalse);
+      expect(AdminRoleService.canAccessRoute('Settings'), isTrue);
+      expect(AdminRoleService.canWriteSettlements, isFalse);
     });
   });
 }
