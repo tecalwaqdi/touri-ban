@@ -12,7 +12,6 @@ class DashboardPresentation {
     'AdminALLhgZ',
     'AdminFinanceHub',
     'AdminAgentFinance',
-    'AdminProfits',
     'AdminTourGuides',
     'AdminSuport',
   ];

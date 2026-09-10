@@ -5,6 +5,7 @@ import '/backend/admin_settlements_query.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/components/finance_home_overview_cards.dart';
 import '/core/admin_currency.dart';
 import '/core/admin_qa_fixture.dart';
 import '/core/finance/accountant_finance_labels.dart';
@@ -134,6 +135,8 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
             title: uiTr(context, 'التسويات'),
             subtitle: uiTr(context, 'المستحق والمدفوع والمتبقي لكل تسوية.'),
           ),
+          if (!AdminRoleService.canWriteSettlements)
+            const FinanceWritesDisabledBanner(),
           Wrap(
             spacing: 8,
             runSpacing: 8,

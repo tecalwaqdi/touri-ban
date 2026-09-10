@@ -5,6 +5,7 @@ import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/components/finance_home_overview_cards.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_error_messages.dart';
 import '/core/admin_currency.dart';
@@ -302,6 +303,7 @@ class _AdminFinanceAdjustmentsWidgetState
               'قيود محاسبية فقط — لا حركة محفظة. الموافقة تتطلب maker-checker عند تفعيل الأعلام.',
             ),
           ),
+          if (!canWrite) const FinanceWritesDisabledBanner(),
           if (canWrite)
             Wrap(
               spacing: 8,

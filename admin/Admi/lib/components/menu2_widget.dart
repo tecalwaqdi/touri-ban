@@ -157,6 +157,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
       'partners': 'ent_section_partners',
       'geography': 'ent_section_geography',
       'finance': 'ent_section_finance',
+      'legacy': 'ent_section_legacy',
       'reports': 'ent_section_reports',
       'system': 'ent_section_system',
     };
@@ -337,16 +338,20 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 icon: Icons.fact_check_outlined
               ),
               (
-                route: AdminFinanceChannelsWidget.routeName,
-                icon: Icons.swap_horiz_rounded
+                route: AdminSettlementsWidget.routeName,
+                icon: Icons.receipt_long_outlined
+              ),
+              (
+                route: AdminFinanceReceivablesWidget.routeName,
+                icon: Icons.account_balance_wallet_outlined
               ),
               (
                 route: AdminFinanceAdjustmentsWidget.routeName,
                 icon: Icons.tune_rounded
               ),
               (
-                route: AdminSettlementsWidget.routeName,
-                icon: Icons.receipt_long_outlined
+                route: AdminFinancialPeriodsWidget.routeName,
+                icon: Icons.date_range_outlined
               ),
               (
                 route: AdminAgentFinanceWidget.routeName,
@@ -359,6 +364,15 @@ class _Menu2WidgetState extends State<Menu2Widget> {
               (
                 route: AdminFinanceAuditWidget.routeName,
                 icon: Icons.manage_search_rounded
+              ),
+            ],
+          ),
+          (
+            key: 'legacy',
+            items: [
+              (
+                route: AdminDriverWalletsWidget.routeName,
+                icon: Icons.account_balance_wallet_rounded
               ),
             ],
           ),

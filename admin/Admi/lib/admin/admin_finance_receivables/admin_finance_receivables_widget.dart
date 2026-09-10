@@ -6,6 +6,7 @@ import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/components/finance_home_overview_cards.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_error_messages.dart';
 import '/core/admin_qa_fixture.dart';
@@ -157,6 +158,8 @@ class _AdminFinanceReceivablesWidgetState
                   'مصدر الخادم — التسويات المقفلة والمدفوعة جزئيًا فقط.',
                 ),
               ),
+              if (!AdminRoleService.canWriteSettlements)
+                const FinanceWritesDisabledBanner(),
               IconButton(
                 onPressed: _reload,
                 icon: const Icon(Icons.refresh_rounded),

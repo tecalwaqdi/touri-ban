@@ -287,7 +287,7 @@ class _AdminReportsHubWidgetState extends State<AdminReportsHubWidget> {
                   report: _report!,
                   countsLoading: _isRefreshing && !_report!.loadComplete,
                   formatMoney: _formatMoney,
-                  onProfits: () => _openRoute(AdminProfitsWidget.routeName),
+                  onProfits: () => _openRoute(AdminFinanceHubWidget.routeName),
                   onAudit: _openAuditLog,
                   onLandmarks: () => _openLandmarks(partnersOnly: false),
                   onPartners: () => _openLandmarks(partnersOnly: true),

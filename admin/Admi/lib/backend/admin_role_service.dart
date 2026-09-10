@@ -304,19 +304,19 @@ class AdminRoleService {
 
   static const _accountantRoutes = {
     'AdminFinanceHub',
-    'AdminFinanceChannels',
     'AdminFinanceReceivables',
     'AdminFinanceAdjustments',
     'AdminAgentFinance',
     'AdminSettlements',
     'AdminSettlementDetails',
     'AdminSettlementReceipt',
+    // Soft-redirect targets kept for deep links.
+    'AdminFinanceChannels',
     'AdminReconciliation',
     'AdminFinanceReconciliation',
     'AdminFinancialPeriods',
     'AdminFinanceReports',
     'AdminFinanceAudit',
-    'AdminDriverWallets',
     'Settings',
     // PERF-P4B diagnostic routes (not in menu).
     'AdminPerfP4bStatic',

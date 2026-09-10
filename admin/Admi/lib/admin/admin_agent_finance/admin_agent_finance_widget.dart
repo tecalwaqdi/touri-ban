@@ -8,6 +8,7 @@ import '/components/accountant_trip_details_drawer.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/components/finance_home_overview_cards.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_currency.dart';
 import '/core/admin_user_facing_errors.dart';
@@ -207,9 +208,18 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
                       future: _canonicalKpiFuture,
                       builder: (context, kpiSnap) {
                         final canonical = kpiSnap.data ?? _canonicalKpi;
-                        return AccountantFinanceSummaryStrip(
-                          bundle: bundle,
-                          canonical: canonical,
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            AccountantFinanceSummaryStrip(
+                              bundle: bundle,
+                              canonical: canonical,
+                            ),
+                            if (canonical != null) ...[
+                              const SizedBox(height: 12),
+                              FinanceHomeOverviewCards(snapshot: canonical),
+                            ],
+                          ],
                         );
                       },
                     ),

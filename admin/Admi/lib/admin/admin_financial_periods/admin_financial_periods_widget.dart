@@ -6,6 +6,7 @@ import '/components/admin_confirm_dialog.dart';
 import '/components/admin_enterprise_kit.dart' hide showAdminConfirmDialog;
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/components/finance_home_overview_cards.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_error_messages.dart';
 import '/core/finance/admin_finance_ui_labels.dart';
@@ -305,7 +306,9 @@ class _AdminFinancialPeriodsWidgetState
                     onPressed: _busy ? null : _create,
                     child: Text(uiTr(context, '+ إنشاء فترة مالية')),
                   ),
-                ),
+                )
+              else
+                const FinanceWritesDisabledBanner(),
               if (docs.isEmpty)
                 AdminEmptyState(
                   title: uiTr(context, 'لا توجد فترات مالية حتى الآن'),

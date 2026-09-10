@@ -10,6 +10,7 @@ import '/components/accountant_trip_details_drawer.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
+import '/components/finance_home_overview_cards.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/accountant_finance_labels.dart';
 import '/core/finance/accountant_finance_loader.dart';
@@ -350,9 +351,18 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                       builder: (context, kpiSnap) {
                         final canonical =
                             kpiSnap.data ?? _canonicalKpi;
-                        return AccountantFinanceSummaryStrip(
-                          bundle: bundle,
-                          canonical: canonical,
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            AccountantFinanceSummaryStrip(
+                              bundle: bundle,
+                              canonical: canonical,
+                            ),
+                            if (canonical != null) ...[
+                              const SizedBox(height: 12),
+                              FinanceHomeOverviewCards(snapshot: canonical),
+                            ],
+                          ],
                         );
                       },
                     ),
@@ -383,6 +393,17 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
       spacing: 8,
       runSpacing: 8,
       children: [
+        if (AdminRoleService.canAccessRoute(
+          AdminFinanceReconciliationWidget.routeName,
+        ))
+          AdminPrimaryButton(
+            label: uiTr(context, 'المطابقة'),
+            outlined: true,
+            icon: Icons.fact_check_outlined,
+            onPressed: () => context.pushNamed(
+              AdminFinanceReconciliationWidget.routeName,
+            ),
+          ),
         if (AdminRoleService.canAccessRoute(AdminSettlementsWidget.routeName))
           AdminPrimaryButton(
             label: uiTr(context, 'التسويات'),
@@ -390,6 +411,16 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
             icon: Icons.receipt_long_outlined,
             onPressed: () =>
                 context.pushNamed(AdminSettlementsWidget.routeName),
+          ),
+        if (AdminRoleService.canAccessRoute(
+          AdminFinanceReceivablesWidget.routeName,
+        ))
+          AdminPrimaryButton(
+            label: uiTr(context, 'الذمم'),
+            outlined: true,
+            icon: Icons.account_balance_wallet_outlined,
+            onPressed: () =>
+                context.pushNamed(AdminFinanceReceivablesWidget.routeName),
           ),
         if (AdminRoleService.canAccessRoute(
           AdminFinanceAdjustmentsWidget.routeName,
@@ -402,6 +433,16 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                 context.pushNamed(AdminFinanceAdjustmentsWidget.routeName),
           ),
         if (AdminRoleService.canAccessRoute(
+          AdminFinancialPeriodsWidget.routeName,
+        ))
+          AdminPrimaryButton(
+            label: uiTr(context, 'الفترات'),
+            outlined: true,
+            icon: Icons.date_range_outlined,
+            onPressed: () =>
+                context.pushNamed(AdminFinancialPeriodsWidget.routeName),
+          ),
+        if (AdminRoleService.canAccessRoute(
           AdminFinanceReportsWidget.routeName,
         ))
           AdminPrimaryButton(
@@ -410,7 +451,8 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
             onPressed: () =>
                 context.pushNamed(AdminFinanceReportsWidget.routeName),
           ),
-        if (AdminRoleService.canAccessRoute(AdminAgentFinanceWidget.routeName))
+        if (!AdminRoleService.isCountryAgent &&
+            AdminRoleService.canAccessRoute(AdminAgentFinanceWidget.routeName))
           AdminPrimaryButton(
             label: uiTr(context, 'مالية الوكلاء'),
             outlined: true,

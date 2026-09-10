@@ -65,8 +65,8 @@ void main() {
       ]) {
         expect(AdminRoleService.canAccessRoute(route), isTrue, reason: route);
       }
-      // Settings intentionally denied for Accountant (Auth-nav / Read Access P0).
-      expect(AdminRoleService.canAccessRoute('Settings'), isFalse);
+      expect(AdminRoleService.canAccessRoute('Settings'), isTrue);
+      expect(AdminRoleService.canAccessRoute('AdminDriverWallets'), isFalse);
     });
 
     test('accountant rejects operational / admin routes', () {

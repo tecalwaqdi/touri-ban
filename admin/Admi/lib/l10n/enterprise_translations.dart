@@ -74,6 +74,15 @@ const kEnterpriseTranslations = <String, Map<String, String>>{
     'ru': 'Финансы',
     'ky': 'Финансы',
   },
+  'ent_section_legacy': {
+    'en': 'Legacy',
+    'ur': 'پرانا',
+    'pt': 'Legado',
+    'fr': 'Héritage',
+    'ar': 'قديم',
+    'ru': 'Устаревшее',
+    'ky': 'Эски',
+  },
   'ent_section_system': {
     'en': 'System',
     'ur': 'سسٹم',
