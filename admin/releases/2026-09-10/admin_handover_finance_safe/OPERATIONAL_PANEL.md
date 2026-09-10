@@ -28,9 +28,8 @@ Buttons are present; callables return clear feature-flag errors until enablement
 
 ## Deploy checklist
 
-1. ~~Deploy Functions (`auth_claims_derive`, `adminConfirmCashCollectionV2`, finance controls unchanged).~~ **DONE 2026-09-10**  
-   Deployed: `syncUserClaimsOnWrite`, `createPanelUser`, `refreshMyClaims`, `confirmCashCollectionV2`, `adminConfirmCashCollectionV2`, `syncAgentSnapshotOnOrderCreate`.
-2. **Deploy Admin hosting** with Hub / Settlements / Adjustments / Receivables updates (Flutter web build still local until hosted).
+1. ~~Deploy Functions (`adminConfirmCashCollectionV2`, claims, `createPanelUser`).~~ **DONE 2026-09-10**
+2. ~~Deploy Admin hosting~~ **DONE 2026-09-10** — Firebase Hosting `/admin/` + Render root both on git `d829939` (`1.0.17+2021`).
 3. **Provision accountant** (`isAdminRule=5`) via SuperAdmin UI **إضافة محاسب** or `provision_handover_accountant.js`, then sign out/in (or `refreshMyClaims`) so token has `finance: true`.
 4. Do **not** flip flags until a controlled pilot trip is approved.
 
@@ -38,16 +37,17 @@ Buttons are present; callables return clear feature-flag errors until enablement
 
 - Backend claims for accountant: **live**
 - Admin cash confirm callable: **live** (still flag-gated OFF)
-- Admin panel UI: **live on Firebase Hosting** → https://tutorial-multi-language-70gx4j.web.app/admin/ (`1.0.16+2018`)
+- Admin panel UI: **live on Render** → https://touri-ban-1.onrender.com/ (`1.0.17+2021`, git `d829939`)
+- Admin panel UI: **live on Firebase Hosting** → https://tutorial-multi-language-70gx4j.web.app/admin/ (`1.0.17+2021`, git `d829939`)
 - Finance write flags: remain OFF
 
 ## Create accountant now
 
-1. Open https://tutorial-multi-language-70gx4j.web.app/admin/ as SuperAdmin.
+1. Open https://touri-ban-1.onrender.com/ (or Firebase Hosting `/admin/`) as SuperAdmin.
 2. Super Admins → **إضافة محاسب**.
 3. Deliver email + temp password out of band.
 4. Accountant signs in → lands on Finance Hub; must refresh session once if claims look stale (`refreshMyClaims` / sign-out/in).
-
+5. Ensure Auth authorized domains include `touri-ban-1.onrender.com`.
 
 ## Out of scope (unchanged)
 
