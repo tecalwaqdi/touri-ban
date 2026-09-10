@@ -47,7 +47,14 @@ Buttons are present; callables return clear feature-flag errors until enablement
 2. Super Admins → **إضافة محاسب**.
 3. Deliver email + temp password out of band.
 4. Accountant signs in → lands on Finance Hub; must refresh session once if claims look stale (`refreshMyClaims` / sign-out/in).
-5. Ensure Auth authorized domains include `touri-ban-1.onrender.com`.
+5. Auth authorized domains: **`touri-ban-1.onrender.com` added 2026-09-10**.
+
+### Provisioned handover accountant (2026-09-10)
+
+- Email: `accountant.handover@tecalwaqdi.com`
+- UID: `NE74q01TQrRGzt2o5JKFa0gwuaC3`
+- Claims verified: `{ finance: true }` only; `isAdminRule=5`
+- Temporary password: stored locally only at `~/Downloads/touri_accountant_handover_credentials.txt` (not in git)
 
 ## Out of scope (unchanged)
 

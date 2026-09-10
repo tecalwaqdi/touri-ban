@@ -17,7 +17,7 @@
 
 const path = require('path');
 const admin = require(path.join(__dirname, '..', 'functions', 'node_modules', 'firebase-admin'));
-const {deriveClaimsFromUserData} = require('../functions/auth_claims_derive.js');
+const {deriveClaimsFromUserData} = require('../functions/panel_claims.js');
 
 const PROJECT_ID = 'tutorial-multi-language-70gx4j';
 const DRY_RUN = process.argv.includes('--dry-run');
