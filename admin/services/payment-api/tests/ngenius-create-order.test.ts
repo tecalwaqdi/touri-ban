@@ -11,8 +11,8 @@ describe("N-Genius create-order payload", () => {
     amountMinor: 30000,
     currency: "SAR",
     merchantOrderReference: "Toury-abc123",
-    redirectUrl: "https://tutorial-multi-language-70gx4j.web.app/payment-return.html",
-    cancelUrl: "https://tutorial-multi-language-70gx4j.web.app/payment-return.html",
+    redirectUrl: "https://touri-ban.onrender.com/payment-return",
+    cancelUrl: "https://touri-ban.onrender.com/payment-return?outcome=cancel",
   };
 
   it("builds official Pay Page PURCHASE body with SAR minor units", () => {

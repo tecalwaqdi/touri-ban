@@ -656,6 +656,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'awaitingExternalHpp',
               ParamType.bool,
             ),
+            sessionId: params.getParam(
+              'sessionId',
+              ParamType.String,
+            ),
           ),
         ),
         FFRoute(
@@ -670,6 +674,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
             awaitingExternalHpp: params.getParam(
               'awaitingExternalHpp',
               ParamType.bool,
+            ),
+            sessionId: params.getParam(
+              'sessionId',
+              ParamType.String,
             ),
           ),
         ),

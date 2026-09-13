@@ -20,10 +20,9 @@ function applyFirebaseRuntimeDefaults(): void {
     "https://api-gateway.sandbox.ngenius-payments.com";
   process.env.NGENIUS_WEBHOOK_HEADER ||= "x-toury-webhook-token";
   process.env.PAYMENT_RETURN_BASE_URL ||=
-    "https://tutorial-multi-language-70gx4j.web.app/payment-return.html";
+    "https://touri-ban.onrender.com/payment-return";
   process.env.PAYMENT_CANCEL_BASE_URL ||=
-    process.env.PAYMENT_RETURN_BASE_URL ||
-    "https://tutorial-multi-language-70gx4j.web.app/payment-return.html";
+    "https://touri-ban.onrender.com/payment-return?outcome=cancel";
   process.env.SERVICE_VERSION ||= "0.2.0";
   process.env.FIREBASE_USE_APPLICATION_DEFAULT ||= "true";
 }

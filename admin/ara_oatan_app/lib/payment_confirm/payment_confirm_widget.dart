@@ -37,6 +37,7 @@ class PaymentConfirmWidget extends StatefulWidget {
     super.key,
     this.fromWebView,
     this.awaitingExternalHpp,
+    this.sessionId,
   });
 
   /// true = closed/failed HPP without verified pay — keep unpaid order + retry CTA.
@@ -44,6 +45,9 @@ class PaymentConfirmWidget extends StatefulWidget {
 
   /// true when HPP was opened in Safari / external browser (fallback only).
   final bool? awaitingExternalHpp;
+
+  /// Optional payment session id from deep-link return (external HPP).
+  final String? sessionId;
 
   static String routeName = 'paymentConfirm';
   static String routePath = '/paymentConfirm';
@@ -72,6 +76,18 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _model = createModel(context, () => PaymentConfirmModel());
+
+    final deepLinkSession = widget.sessionId?.trim() ?? '';
+    if (deepLinkSession.isNotEmpty) {
+      FFAppState().update(() {
+        if (FFAppState().paymentOrderId.trim().isEmpty) {
+          FFAppState().paymentOrderId = deepLinkSession;
+        }
+        if (FFAppState().pendingPaymentOrderId.trim().isEmpty) {
+          FFAppState().pendingPaymentOrderId = deepLinkSession;
+        }
+      });
+    }
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       FFAppState().paymentInProgress = false;

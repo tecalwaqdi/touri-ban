@@ -18,7 +18,7 @@ const SANDBOX_IDENTITY =
 const SANDBOX_GATEWAY_BASE =
   "https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets";
 const DEFAULT_RETURN_URL =
-  "https://tutorial-multi-language-70gx4j.web.app/payment-return.html";
+  "https://touri-ban.onrender.com/payment-return";
 const PAYMENT_SESSIONS = "payment_sessions";
 const WEBHOOK_EVENTS = "webhook_events";
 const WALLET_TOPUP_PACKAGES_PATH = "settings/wallet_topup_packages";
@@ -97,7 +97,9 @@ function ngeniusConfig() {
     realm: process.env.NGENIUS_REALM ||
       (production ? "networkinternational" : "ni"),
     redirectUrl: process.env.NGENIUS_REDIRECT_URL || DEFAULT_RETURN_URL,
-    cancelUrl: process.env.NGENIUS_CANCEL_URL || DEFAULT_RETURN_URL,
+    cancelUrl:
+      process.env.NGENIUS_CANCEL_URL ||
+      `${DEFAULT_RETURN_URL}?outcome=cancel`,
     webhookSecret: process.env.NGENIUS_WEBHOOK_SECRET || "",
     webhookHeader: String(
       process.env.NGENIUS_WEBHOOK_HEADER || "x-toury-webhook-token",

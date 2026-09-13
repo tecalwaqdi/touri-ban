@@ -501,8 +501,10 @@ export async function createNGeniusOrder(input: {
   const token = await getNGeniusAccessToken();
   const redirectUrl =
     env.PAYMENT_RETURN_BASE_URL ||
-    "https://tutorial-multi-language-70gx4j.web.app/payment-return.html";
-  const cancelUrl = env.PAYMENT_CANCEL_BASE_URL || redirectUrl;
+    "https://touri-ban.onrender.com/payment-return";
+  const cancelUrl =
+    env.PAYMENT_CANCEL_BASE_URL ||
+    `${redirectUrl}${redirectUrl.includes("?") ? "&" : "?"}outcome=cancel`;
 
   const orderBody = buildNGeniusCreateOrderBody({
     amountMinor: input.amountMinor,

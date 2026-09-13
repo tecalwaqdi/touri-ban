@@ -69,7 +69,13 @@ class _WebviewWidgetState extends State<WebviewWidget> {
     }());
 
     // Provider return page — keep polling; do not treat as paid.
-    if (host.contains('web.app') && lower.contains('payment-return')) {
+    final isPaymentReturnPath =
+        lower.contains('payment-return') ||
+        (uri?.path.toLowerCase().contains('payment-return') ?? false);
+    final isKnownReturnHost = host.contains('web.app') ||
+        host.contains('onrender.com') ||
+        host == 'touri-ban.onrender.com';
+    if (isKnownReturnHost && isPaymentReturnPath) {
       return;
     }
 

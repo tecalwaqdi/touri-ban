@@ -5,6 +5,7 @@ import { config as loadEnv } from "dotenv";
 import { handleCreatePayment } from "@/lib/payments/create";
 import { handleCancelPayment } from "@/lib/payments/cancel";
 import { handlePaymentStatus } from "@/lib/payments/status-handler";
+import { handlePaymentReturn } from "@/lib/payments/payment-return";
 import { handleNGeniusWebhook } from "@/lib/payments/webhook";
 import {
   probeNGeniusHostedPaymentPage,
@@ -153,6 +154,18 @@ export function createPaymentApp(): express.Express {
       const fetchReq = toFetchRequest(req);
       const result = await handleNGeniusWebhook(fetchReq);
       sendJson(res, 200, result);
+    }),
+  );
+
+  /**
+   * GET /payment-return(+.html) — N-Genius HPP redirect/cancel bridge.
+   * Does not trust browser "Payment accepted"; deep-links to Customer app
+   * which re-verifies via status/finalize.
+   */
+  app.get(
+    ["/payment-return", "/payment-return.html"],
+    asyncRoute(async (req, res) => {
+      await handlePaymentReturn(req, res);
     }),
   );
 
