@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/widgets.dart';
 
 import '/core/driver_registration_document_status.dart';
+import '/flutter_flow/flutter_flow_util.dart';
 
 /// Admin-side dual-write patches for driver registration review.
 /// Mirrors mndob-main `DriverLegacyFieldCompat` (no cross-package import).
@@ -358,5 +362,43 @@ abstract final class AdminDriverReviewActions {
     }
 
     return blockers;
+  }
+
+  /// Map Cloud Function / Firebase approval failures to Arabic operator copy.
+  /// Never treat generic failed-precondition as a Firestore index error.
+  static String approvalFailureMessage(BuildContext context, Object error) {
+    String raw = '';
+    if (error is FirebaseFunctionsException) {
+      raw = '${error.message ?? ''} ${error.code} ${error.details ?? ''}';
+    } else if (error is FirebaseException) {
+      raw = '${error.message ?? ''} ${error.code}';
+    } else {
+      raw = error.toString();
+    }
+    final u = raw.toUpperCase();
+    if (u.contains('REQUIRED_DOCUMENTS_NOT_APPROVED')) {
+      return appTr(context, 'adm_drv_err_docs_not_approved');
+    }
+    if (u.contains('EMAIL_NOT_VERIFIED')) {
+      return appTr(context, 'adm_drv_err_email_not_verified');
+    }
+    if (u.contains('PHONE_REQUIRED')) {
+      return appTr(context, 'adm_drv_err_phone_required');
+    }
+    if (u.contains('DRIVER_REVIEW_STALE') || u.contains('NOT_PENDING_REVIEW')) {
+      return appTr(context, 'adm_drv_err_stale');
+    }
+    if (u.contains('AUTH_USER_MISSING')) {
+      return appTr(context, 'adm_drv_err_auth_missing');
+    }
+    if (u.contains('VILLAGE_REQUIRED') || u.contains('VEHICLE_TYPE_REQUIRED')) {
+      return appTr(context, 'adm_drv_err_profile_incomplete');
+    }
+    if (u.contains('REQUIRES AN INDEX') ||
+        u.contains('CREATE_COMPOSITE') ||
+        u.contains('CONSOLE.FIREBASE.GOOGLE.COM')) {
+      return appTr(context, 'adm_err_query_index');
+    }
+    return appTr(context, 'adm_drv_err_approve_failed');
   }
 }

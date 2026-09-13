@@ -120,12 +120,26 @@ abstract final class AdminUserFacingErrors {
         msg.contains('payment')) {
       return appTr(context, 'adm_err_storage_billing');
     }
-    // Never surface composite-index console URLs or raw query text to operators.
-    if (code == 'failed-precondition' ||
-        msg.contains('requires an index') ||
+    // Firestore index failures only — never map every failed-precondition
+    // (e.g. driver approval blockers) to the index message.
+    if (msg.contains('requires an index') ||
         msg.contains('create_composite') ||
         msg.contains('console.firebase.google.com')) {
       return appTr(context, 'adm_err_query_index');
+    }
+    if (code == 'failed-precondition') {
+      final upper = (error.message ?? '').toUpperCase();
+      if (upper.contains('REQUIRED_DOCUMENTS_NOT_APPROVED')) {
+        return appTr(context, 'adm_drv_err_docs_not_approved');
+      }
+      if (upper.contains('EMAIL_NOT_VERIFIED')) {
+        return appTr(context, 'adm_drv_err_email_not_verified');
+      }
+      if (upper.contains('DRIVER_REVIEW_STALE') ||
+          upper.contains('NOT_PENDING_REVIEW')) {
+        return appTr(context, 'adm_drv_err_stale');
+      }
+      return appTr(context, 'adm_drv_err_approve_failed');
     }
     switch (error.code) {
       case 'permission-denied':

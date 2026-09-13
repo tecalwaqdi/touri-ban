@@ -219,6 +219,7 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
     final ref = _resolvedRef ?? _resolveRef();
     if (_busy || ref == null) return;
     setState(() => _busy = true);
+    var approvalSucceeded = false;
     try {
       final snap = await ref.get();
       final data = snap.data() as Map<String, dynamic>? ?? {};
@@ -248,13 +249,13 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
         builder: (ctx) => AlertDialog(
           title: Text(appTr(context, 'adm_drv_approve_confirm_title')),
           content: Text(
-            [
-              '${appTr(context, 'adm_drv_driver')}: ${_model.naimTextController.text}',
-              '${appTr(context, 'adm_drv_vehicle')}: ${data['text_type_car_mndob'] ?? data['mdenh_aml'] ?? ''}',
-              'Email verified (Auth): server-checked',
-              'Phone provided: profile field (no OTP)',
-              'Documents: ${isV2 ? 'V2 required' : 'legacy'}',
-            ].join('\n'),
+            appTrFormat(
+              context,
+              'adm_drv_approve_confirm_body',
+              _model.naimTextController.text.trim().isEmpty
+                  ? '—'
+                  : _model.naimTextController.text.trim(),
+            ),
           ),
           actions: [
             TextButton(
@@ -286,19 +287,28 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
         reviewVersion: (data['reviewVersion'] as num?)?.toInt(),
         adminProfile: adminProfile.isEmpty ? null : adminProfile,
       );
-      await AdminAuditLog.record(
-        action: 'driver_approve',
-        targetType: 'user',
-        targetId: ref.id,
-        targetLabel: _model.naimTextController.text,
-      );
+      approvalSucceeded = true;
+
+      // Post-success side effects must never look like approval failure.
+      try {
+        await AdminAuditLog.record(
+          action: 'driver_approve',
+          targetType: 'user',
+          targetId: ref.id,
+          targetLabel: _model.naimTextController.text,
+        );
+      } catch (_) {}
+      try {
+        AdminListRefresh.notify(AdminListScope.representatives);
+      } catch (_) {}
+
       if (!mounted) return;
       await showDialog(
         context: context,
         builder: (alertDialogContext) {
           return AlertDialog(
-            title: Text(appTr(context, 'adm_drv_activated_title')),
-            content: Text(appTr(context, 'adm_drv_activated_body')),
+            title: Text(appTr(context, 'adm_drv_approved_title')),
+            content: Text(appTr(context, 'adm_drv_approved_body')),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(alertDialogContext),
@@ -312,8 +322,17 @@ class _DriverActivationWidgetState extends State<DriverActivationWidget> {
       context.safePop();
     } catch (e) {
       if (!mounted) return;
+      if (approvalSucceeded) {
+        // Backend already approved — do not report refresh/audit noise as failure.
+        context.safePop();
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AdminCrudFeedback.updateFailed(context, e))),
+        SnackBar(
+          content: Text(
+            AdminDriverReviewActions.approvalFailureMessage(context, e),
+          ),
+        ),
       );
     } finally {
       if (mounted) setState(() => _busy = false);

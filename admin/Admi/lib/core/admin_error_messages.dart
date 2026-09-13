@@ -76,12 +76,22 @@ String adminFriendlyError(BuildContext context, Object error) {
       .replaceAll(RegExp(r'https?://\S+', caseSensitive: false), '')
       .trim();
   if (cleaned.toLowerCase().contains('requires an index') ||
-      cleaned.toLowerCase().contains('failed-precondition')) {
+      cleaned.toLowerCase().contains('create_composite')) {
     return uiTr(context, 'A Firestore index is required for this query.');
+  }
+  if (raw.contains('REQUIRED_DOCUMENTS_NOT_APPROVED')) {
+    return uiTr(context, 'يجب مراجعة واعتماد وثائق المندوب قبل الاعتماد النهائي.');
+  }
+  if (raw.contains('EMAIL_NOT_VERIFIED')) {
+    return uiTr(context, 'بريد المندوب غير مُوثَّق بعد.');
+  }
+  if (raw.contains('DRIVER_REVIEW_STALE') || raw.contains('NOT_PENDING_REVIEW')) {
+    return uiTr(context, 'حالة الطلب تغيّرت. حدّث الصفحة ثم أعد المحاولة.');
   }
   if (cleaned.length < 180 &&
       !cleaned.contains('FirebaseException') &&
-      !cleaned.contains('Instance of')) {
+      !cleaned.contains('Instance of') &&
+      !cleaned.toLowerCase().contains('failed-precondition')) {
     return cleaned.isEmpty
         ? uiTr(context, 'Something went wrong. Please try again.')
         : cleaned;
