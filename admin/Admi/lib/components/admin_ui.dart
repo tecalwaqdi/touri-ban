@@ -891,14 +891,22 @@ class AdminPageBody extends StatelessWidget {
       );
     }
 
-    return SingleChildScrollView(
-      primary: false,
-      physics: const AlwaysScrollableScrollPhysics(
-        parent: ClampingScrollPhysics(),
+    // Desktop/web: keep scrollbar thumb visible so long ops lists (drivers hub)
+    // are discoverable — Flutter web often hides overlay scrollbars otherwise.
+    final showThumb = MediaQuery.sizeOf(context).width >= 700;
+
+    return Scrollbar(
+      thumbVisibility: showThumb,
+      trackVisibility: showThumb,
+      child: SingleChildScrollView(
+        primary: false,
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: ClampingScrollPhysics(),
+        ),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: scrollPadding,
+        child: content,
       ),
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      padding: scrollPadding,
-      child: content,
     );
   }
 }

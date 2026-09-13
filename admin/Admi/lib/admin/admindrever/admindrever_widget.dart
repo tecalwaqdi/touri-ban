@@ -588,19 +588,28 @@ class _AdmindreverWidgetState extends State<AdmindreverWidget> {
             ),
     );
 
-    final page = widget.showPageChrome
-        ? AdminPageBody(
-            title: navLabel(context, AdmindreverWidget.routeName),
-            subtitle: appTr(context, 'scr_reps_subtitle'),
-            actions: AdminPrimaryButton(
+    // Hub embeds this without AdminPageBody chrome; still must scroll vertically
+    // (filters + table are taller than the viewport). Standalone uses the same
+    // scroll shell with a page header.
+    final page = AdminPageBody(
+      title: widget.showPageChrome
+          ? navLabel(context, AdmindreverWidget.routeName)
+          : null,
+      subtitle: widget.showPageChrome
+          ? appTr(context, 'scr_reps_subtitle')
+          : null,
+      actions: widget.showPageChrome
+          ? AdminPrimaryButton(
               label: uiTr(context, 'إضافة سائق'),
               icon: Icons.person_add_rounded,
               onPressed: () => context.pushNamed(AddDrevWidget.routeName),
-            ),
-            scrollable: true,
-            child: listBody,
-          )
-        : listBody;
+            )
+          : null,
+      scrollable: true,
+      // Hub already pads the header/chips; keep list padding for table edges.
+      usePadding: true,
+      child: listBody,
+    );
 
     if (widget.embedded) {
       return page;

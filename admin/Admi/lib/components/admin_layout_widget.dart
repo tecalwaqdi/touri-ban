@@ -68,13 +68,25 @@ class AdminLayoutWidget extends StatelessWidget {
             child: child,
           )
         : child;
+    // Fill shell height so nested Column/Expanded (e.g. Drivers Hub) receive
+    // a bounded max height and can host an inner scroll view.
     return ColoredBox(
       color: theme.primaryBackground,
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: contentMax),
-          child: RepaintBoundary(child: content),
+      child: SizedBox.expand(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: contentMax,
+              minHeight: 0,
+              maxHeight: double.infinity,
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: RepaintBoundary(child: content),
+            ),
+          ),
         ),
       ),
     );
