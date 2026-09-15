@@ -1,5 +1,6 @@
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_geo_aliases.dart';
 import '/backend/admin_geo_cascade.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_firestore_delete.dart';
@@ -163,6 +164,17 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
               cleanupReplaced: false,
             );
 
+      final nextCityRef = AdminGeoAliases.canonicalVillageRef(
+        FFAppState().REvCITE ?? record.idVill,
+      );
+      final nextRegionRef = AdminGeoAliases.canonicalRegionRef(
+        FFAppState().Revreg ?? record.idCit,
+      );
+      final nextTsnef = record.tsnef.trim().isNotEmpty
+          ? record.tsnef.trim()
+          : AdminGeoAliases.defaultLandmarkCategory;
+
+      // Keep the exact pin from search / paste / map — never clamp to city bbox.
       await AdminFirestoreDelete.updateDocument(
         widget.idmkan!,
         createMkanRecordData(
@@ -188,21 +200,19 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
           asAds: _model.switchValue ?? record.asAds,
           isShrek: record.isShrek,
           idclassification: record.idclassification,
-          idCit: FFAppState().Revreg ?? record.idCit,
-          idVill: FFAppState().REvCITE ?? record.idVill,
+          idCit: nextRegionRef,
+          idVill: nextCityRef,
           revDolh: countryRef ?? record.revDolh,
           location: nextLocation,
           userMalk: record.userMalk,
           ser: record.ser,
           address: _model.placePickerValue.address.isNotEmpty
               ? _model.placePickerValue.address
-              : (_model.googleMapsCenter != null
-                  ? AdminLocationService.formatCoordinates(
-                      _model.googleMapsCenter!,
-                    )
+              : (nextLocation != null
+                  ? AdminLocationService.formatCoordinates(nextLocation)
                   : record.address),
           mdh: record.mdh,
-          tsnef: record.tsnef,
+          tsnef: nextTsnef,
           catgory: record.catgory,
           rate: _model.ratingValue,
           addSaat: record.addSaat,
@@ -1054,6 +1064,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                   mapController: _model.googleMapsController,
                                   initialCenter: _model.googleMapsCenter ??
                                       adminaddMkanCopyMkanRecord.location,
+                                  regionHint: FFAppState().RevciteTEXT,
                                   onPlaceChanged: (place) {
                                     safeSetState(() {
                                       _model.placePickerValue = place;

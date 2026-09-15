@@ -3,6 +3,7 @@ import '/core/admin_content_locale.dart';
 import '/components/admin_i18n_fields.dart';
 import '/core/i18n/toury_i18n_text.dart';
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_geo_aliases.dart';
 import '/backend/admin_geo_cascade.dart';
 import '/backend/admin_firestore_delete.dart';
 import '/backend/admin_role_service.dart';
@@ -14,12 +15,14 @@ import '/components/admin_location_section.dart';
 import '/components/admin_location_service.dart';
 import '/components/admin_region_picker.dart';
 import '/components/admin_ui.dart';
+import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 import 'adminadd_mkan_model.dart';
 export 'adminadd_mkan_model.dart';
 
@@ -57,7 +60,8 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
     _model.switchMosqueValue = true;
     _model.switchRestroomValue = true;
     _model.switchrestaurantValue = true;
-    _model.switchValue = true;
+    // Ads carousel flag — must be explicit, not default-on.
+    _model.switchValue = false;
     _model.switchACCTEVValue = true;
 
     AdminAgentCountryLock.applyToAppState();
@@ -67,6 +71,34 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
       await AdminAgentCountryLock.ensureCountryResolved();
       if (mounted) safeSetState(() {});
     });
+  }
+
+  DocumentReference? _mapCenteredForCity;
+
+  Future<void> _centerMapOnSelectedCity(DocumentReference cityRef) async {
+    if (_mapCenteredForCity?.path == cityRef.path) return;
+    _mapCenteredForCity = cityRef;
+    try {
+      final village = await VillagesRecord.getDocumentOnce(cityRef);
+      if (!mounted) return;
+      final center = village.latLing;
+      if (!AdminLocationService.isValidLocation(center)) return;
+      final resolved = center!;
+      safeSetState(() {
+        _model.placePickerValue = FFPlace(
+          latLng: resolved,
+          name: village.naim,
+          address: village.naim,
+        );
+        _model.googleMapsCenter = resolved;
+      });
+      try {
+        final controller = await _model.googleMapsController.future;
+        await controller.animateCamera(
+          CameraUpdate.newLatLngZoom(resolved.toGoogleMaps(), 13),
+        );
+      } catch (_) {}
+    } catch (_) {}
   }
 
   String _cityPickerLabel() {
@@ -185,6 +217,14 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
+
+    final selectedCity = FFAppState().REvCITE;
+    if (selectedCity != null &&
+        selectedCity.path != _mapCenteredForCity?.path) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_centerMapOnSelectedCity(selectedCity));
+      });
+    }
 
     return GestureDetector(
       onTap: () {
@@ -658,6 +698,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                               place: _model.placePickerValue,
                               mapController: _model.googleMapsController,
                               initialCenter: _model.googleMapsCenter,
+                              regionHint: FFAppState().RevciteTEXT,
                               onPlaceChanged: (place) {
                                 safeSetState(() {
                                   _model.placePickerValue = place;
@@ -1206,7 +1247,23 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                         );
                         return;
                       }
-                      final resolvedLocation = location;
+                      // Prevent silent Riyadh-default pin when another city is selected.
+                      if (!AdminLocationService.isUsableLandmarkLocationForCity(
+                        location,
+                        cityName: FFAppState().RevciteTEXT,
+                      )) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              uiTr(
+                                context,
+                                'حرّك الدبوس إلى موقع المعلم داخل المدينة المختارة (لا تترك الخريطة على الرياض الافتراضية)',
+                              ),
+                            ),
+                          ),
+                        );
+                        return;
+                      }
 
                       try {
                         setState(() => _isSaving = true);
@@ -1265,6 +1322,17 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                           _model.textController2.text.trim(),
                         );
 
+                        // Write canonical city/region ids — user app queries
+                        // city_sa_* / region_sa_* after remapping.
+                        final cityRef = AdminGeoAliases.canonicalVillageRef(
+                          FFAppState().REvCITE,
+                        );
+                        final regionRef = AdminGeoAliases.canonicalRegionRef(
+                          FFAppState().Revreg,
+                        );
+                        // Save the exact pin the admin chose (search / paste /
+                        // map drag). Do not clamp into city bboxes — that moved
+                        // landmarks away from their real Google Maps location.
                         final ref = MkanRecord.collection.doc();
                         await AdminFirestoreDelete.setDocument(
                           ref,
@@ -1276,21 +1344,23 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                 osfI18n: osfMap,
                                 img1: img1,
                                 ismsgd: _model.switchMosqueValue,
-                                idVill: FFAppState().REvCITE,
-                                idCit: FFAppState().Revreg,
+                                idVill: cityRef,
+                                idCit: regionRef,
                                 revDolh: countryRef,
-                                location: resolvedLocation,
+                                location: location,
                                 address: _model.placePickerValue.address.isNotEmpty
                                     ? _model.placePickerValue.address
                                     : AdminLocationService.formatCoordinates(
-                                        resolvedLocation,
+                                        location,
                                       ),
                                 asAds: _model.switchValue,
                                 isfood: _model.switchrestaurantValue,
                                 ishmam: _model.switchRestroomValue,
                                 img2: img2,
                                 img3: img3,
-                                acctev: _model.switchACCTEVValue,
+                                acctev: _model.switchACCTEVValue ?? true,
+                                // Required for customer category chips / queries.
+                                tsnef: AdminGeoAliases.defaultLandmarkCategory,
                                 rate: _model.ratingValue,
                                 contentLocale: sourceLocale,
                               ),

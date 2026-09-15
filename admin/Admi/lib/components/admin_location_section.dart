@@ -16,6 +16,7 @@ class AdminLocationSection extends StatefulWidget {
     required this.mapController,
     required this.onPlaceChanged,
     this.initialCenter,
+    this.regionHint,
     this.googleMapsApiKey = kAdminGoogleMapsApiKey,
   });
 
@@ -23,6 +24,8 @@ class AdminLocationSection extends StatefulWidget {
   final Completer<GoogleMapController> mapController;
   final ValueChanged<FFPlace> onPlaceChanged;
   final LatLng? initialCenter;
+  /// City / region name appended to place search (e.g. الطائف) for better hits.
+  final String? regionHint;
   final String googleMapsApiKey;
 
   @override
@@ -33,6 +36,10 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
   late final TextEditingController _searchController;
   late final TextEditingController _coordsController;
   bool _searching = false;
+  /// Map fires camera-idle on first paint at [defaultCenter] (Riyadh).
+  /// Ignore that so create-flow doesn't silently save Riyadh coords.
+  int _suppressCameraIdleCount = 2;
+  bool _programmaticMove = false;
 
   @override
   void initState() {
@@ -81,7 +88,7 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            uiTr(context, 'صيغة غير صحيحة — استخدم: 24.713600, 46.675300 أو إحداثيات DMS من Google Earth'),
+            uiTr(context, 'صيغة غير صحيحة — الصق إحداثيات أو رابط Google Maps، أو ابحث بالاسم أعلاه'),
           ),
         ),
       );
@@ -99,21 +106,31 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
     _searchController.text = address;
 
     try {
+      _programmaticMove = true;
+      _suppressCameraIdleCount = 1;
       final controller = await widget.mapController.future;
       await controller.animateCamera(
         gmaps.CameraUpdate.newLatLngZoom(parsed.toGoogleMaps(), 16),
       );
-    } catch (_) {}
+    } catch (_) {
+      _programmaticMove = false;
+    }
   }
 
   Future<void> _search() async {
-    final query = _searchController.text.trim();
-    if (query.isEmpty) {
+    final raw = _searchController.text.trim();
+    if (raw.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(uiTr(context, 'اكتب اسم المكان أو العنوان للبحث'))),
+        SnackBar(content: Text(uiTr(context, 'اكتب اسم المعلم للبحث عن موقعه الحقيقي'))),
       );
       return;
     }
+
+    final hint = (widget.regionHint ?? '').trim();
+    final query = hint.isNotEmpty &&
+            !raw.toLowerCase().contains(hint.toLowerCase())
+        ? '$raw $hint'
+        : raw;
 
     FocusScope.of(context).unfocus();
     setState(() => _searching = true);
@@ -142,6 +159,8 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
       );
 
       try {
+        _programmaticMove = true;
+        _suppressCameraIdleCount = 1;
         final controller = await widget.mapController.future;
         await controller.animateCamera(
           gmaps.CameraUpdate.newLatLngZoom(
@@ -149,7 +168,9 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
             16,
           ),
         );
-      } catch (_) {}
+      } catch (_) {
+        _programmaticMove = false;
+      }
     } finally {
       if (mounted) {
         setState(() => _searching = false);
@@ -158,11 +179,22 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
   }
 
   void _onCameraIdle(LatLng latLng) {
+    if (_suppressCameraIdleCount > 0) {
+      _suppressCameraIdleCount -= 1;
+      _programmaticMove = false;
+      return;
+    }
+    if (_programmaticMove) {
+      _programmaticMove = false;
+      return;
+    }
     widget.onPlaceChanged(
       FFPlace(
         latLng: latLng,
         name: widget.place.name,
-        address: widget.place.address,
+        address: widget.place.address.isNotEmpty
+            ? widget.place.address
+            : AdminLocationService.formatCoordinates(latLng),
       ),
     );
     if (AdminLocationService.isValidLocation(latLng)) {
@@ -183,7 +215,10 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
           textInputAction: TextInputAction.search,
           onSubmitted: (_) => _search(),
           decoration: InputDecoration(
-            hintText: uiTr(context, 'ابحث عن موقع أو عنوان'),
+            hintText: uiTr(
+              context,
+              'ابحث باسم المعلم أو الصق رابط Google Maps',
+            ),
             filled: true,
             fillColor: AdminUi.fieldFill(context, muted: true),
             contentPadding: const EdgeInsets.symmetric(
@@ -223,8 +258,14 @@ class _AdminLocationSectionState extends State<AdminLocationSection> {
                 textInputAction: TextInputAction.done,
                 onSubmitted: (_) => _applyCoordinates(),
                 decoration: InputDecoration(
-                  hintText: uiTr(context, 'خط العرض، خط الطول (من Google Earth)'),
-                  helperText: appTr(context, 'adm_coords_example'),
+                  hintText: uiTr(
+                    context,
+                    'إحداثيات أو رابط Maps (اختياري)',
+                  ),
+                  helperText: uiTr(
+                    context,
+                    'الأفضل: ابحث بالاسم أعلاه — الموقع الحقيقي يظهر على الخريطة وفي التطبيق',
+                  ),
                   filled: true,
                   fillColor: AdminUi.fieldFill(context, muted: true),
                   contentPadding: const EdgeInsets.symmetric(
