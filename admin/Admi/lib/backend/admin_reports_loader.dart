@@ -4,6 +4,7 @@ import '/backend/admin_country_scope.dart';
 import '/backend/admin_performance.dart';
 import '/backend/backend.dart';
 import '/backend/dashboard_stats_loader.dart';
+import '/core/finance/admin_money_presentation.dart';
 import '/core/finance/financial_engine.dart';
 
 /// Country-scoped admin report for super-admin dashboard.
@@ -168,18 +169,25 @@ Future<int> _countQuery(Future<int> Function() load) async {
 
   for (final order in orders) {
     if (order.allnow) active++;
-    final f = FinancialEngine.orderFinancials(order);
-    if (f.isPaid) {
+    final money = AdminOrderMoneyDisplay.fromOrder(order);
+    final isPaid = OrderStatusHelper.isPaid(order);
+    if (isPaid) {
       paid++;
-      sales += f.totalSales;
+      // Sum only provable customer/gross — never invent from schema zero defaults.
+      final sale = money.gross?.majorUnits ?? money.line.customerPaid?.majorUnits;
+      if (sale != null) sales += sale;
     }
     final countryPath = order.revDolh?.path;
     if (countryPath != null) {
       bookingsByCountry[countryPath] =
           (bookingsByCountry[countryPath] ?? 0) + 1;
-      if (f.isPaid) {
-        salesByCountry[countryPath] =
-            (salesByCountry[countryPath] ?? 0) + f.totalSales;
+      if (isPaid) {
+        final sale =
+            money.gross?.majorUnits ?? money.line.customerPaid?.majorUnits;
+        if (sale != null) {
+          salesByCountry[countryPath] =
+              (salesByCountry[countryPath] ?? 0) + sale;
+        }
       }
     }
   }

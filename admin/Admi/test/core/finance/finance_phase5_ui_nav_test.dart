@@ -21,6 +21,7 @@ void main() {
     AdminRoleService.bindClaims(AuthClaims.fromToken({'finance': true}));
     expect(AdminRoleService.canAccessRoute('AdminFinanceHub'), isTrue);
     expect(AdminRoleService.canAccessRoute('AdminFinanceReconciliation'), isTrue);
+    expect(AdminRoleService.canAccessRoute('AdminFinanceDataQuality'), isTrue);
     expect(AdminRoleService.canAccessRoute('AdminSettlements'), isTrue);
     expect(AdminRoleService.canAccessRoute('AdminFinanceReceivables'), isTrue);
     expect(AdminRoleService.canAccessRoute('AdminFinancialPeriods'), isTrue);
@@ -38,6 +39,7 @@ void main() {
     );
     expect(AdminRoleService.canAccessRoute('AdminAgentFinance'), isTrue);
     expect(AdminRoleService.canAccessRoute('AdminFinanceHub'), isFalse);
+    expect(AdminRoleService.canAccessRoute('AdminFinanceDataQuality'), isFalse);
     expect(AdminRoleService.canAccessRoute('AdminFinanceChannels'), isFalse);
     expect(AdminRoleService.canAccessRoute('AdminDriverWallets'), isFalse);
     expect(AdminRoleService.canWriteSettlements, isFalse);

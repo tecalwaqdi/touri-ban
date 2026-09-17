@@ -316,6 +316,7 @@ class AdminRoleService {
     'AdminFinanceReconciliation',
     'AdminFinancialPeriods',
     'AdminFinanceReports',
+    'AdminFinanceDataQuality',
     'AdminFinanceAudit',
     'Settings',
     // PERF-P4B diagnostic routes (not in menu).
@@ -339,6 +340,7 @@ class AdminRoleService {
     'AdminFinanceReconciliation',
     'AdminFinancialPeriods',
     'AdminFinanceReports',
+    'AdminFinanceDataQuality',
     'AdminFinanceAudit',
     'AdminDiagnostics',
     'AdminDriverWallets',

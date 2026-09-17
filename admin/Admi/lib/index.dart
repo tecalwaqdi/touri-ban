@@ -45,6 +45,8 @@ export '/admin/admin_financial_periods/admin_financial_periods_widget.dart'
     show AdminFinancialPeriodsWidget;
 export '/admin/admin_finance_reports/admin_finance_reports_widget.dart'
     show AdminFinanceReportsWidget;
+export '/admin/admin_finance_data_quality/admin_finance_data_quality_widget.dart'
+    show AdminFinanceDataQualityWidget;
 export '/admin/admin_finance_audit/admin_finance_audit_widget.dart'
     show AdminFinanceAuditWidget;
 export '/admin/admin_diagnostics/admin_diagnostics_widget.dart'

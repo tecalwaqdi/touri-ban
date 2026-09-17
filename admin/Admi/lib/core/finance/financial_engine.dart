@@ -1,5 +1,6 @@
 import '/backend/schema/enums/enums.dart';
 import '/backend/schema/order_record.dart';
+import '/core/finance/admin_money_presentation.dart';
 import '/core/toury_system_status_codes.dart';
 
 /// Unified order payment / lifecycle status for finance dashboards.
@@ -211,6 +212,13 @@ class FinancialTotals {
 }
 
 /// Unified financial calculations for admin dashboards and reports.
+///
+/// DEPRECATED for new call sites: prefer [FinancialAccountingEngine] /
+/// [AdminOrderMoneyDisplay]. This shim maps to V2 persisted majors and does
+/// not invent rates. Missing majors contribute 0 only to legacy double
+/// aggregates when the trip is unpaid/cancelled; paid trips with a missing
+/// fee still surface 0 in this legacy shape — use nullable presentation APIs
+/// for operator-facing money.
 abstract final class FinancialEngine {
   FinancialEngine._();
 
@@ -221,21 +229,38 @@ abstract final class FinancialEngine {
     final pending = OrderStatusHelper.isPending(order);
     final canceled = OrderStatusHelper.isCanceled(order);
 
+    if (!paid) {
+      return OrderFinancials(
+        totalSales: 0,
+        appProfit: 0,
+        vat: 0,
+        repCommission: 0,
+        deliveryFees: 0,
+        isPaid: paid,
+        isPending: pending,
+        isCanceled: canceled,
+      );
+    }
+
+    final money = AdminOrderMoneyDisplay.fromOrder(order);
     return OrderFinancials(
-      totalSales: paid ? order.total.toDouble() : 0,
-      appProfit: paid ? order.totalApp.toDouble() : 0,
-      vat: paid ? order.totalVat.toDouble() : 0,
+      // Only sum persisted / engine values — never invent commission rate.
+      totalSales: money.gross?.majorUnits ??
+          (order.hasTotal() ? order.total.toDouble() : 0),
+      appProfit: money.platformFee?.majorUnits ?? 0,
+      vat: money.vat?.majorUnits ?? 0,
       // Driver Net (legacy name repCommission — misleading).
-      repCommission: paid ? order.totalMndob.toDouble() : 0,
+      repCommission: money.driverNetMajor ?? 0,
       // Gross Base Fare (legacy name deliveryFees — misleading).
-      deliveryFees: paid ? order.totalMndob2.toDouble() : 0,
+      deliveryFees: money.line.grossBase?.majorUnits ??
+          (order.hasTotalMndob2() ? order.totalMndob2.toDouble() : 0),
       isPaid: paid,
       isPending: pending,
       isCanceled: canceled,
     );
   }
 
-  /// Revenue from paid orders only.
+  /// Revenue from paid orders only (customer paid / gross when present).
   static double calculateRevenue(Iterable<OrderRecord> orders) {
     var total = 0.0;
     for (final order in orders) {
@@ -247,7 +272,10 @@ abstract final class FinancialEngine {
   static double calculateProfit(Iterable<OrderRecord> orders) {
     var total = 0.0;
     for (final order in orders) {
-      total += orderFinancials(order).appProfit;
+      final fee = AdminOrderMoneyDisplay.fromOrder(order).platformFee;
+      if (OrderStatusHelper.isPaid(order) && fee != null) {
+        total += fee.majorUnits;
+      }
     }
     return total;
   }
@@ -255,7 +283,10 @@ abstract final class FinancialEngine {
   static double calculateVAT(Iterable<OrderRecord> orders) {
     var total = 0.0;
     for (final order in orders) {
-      total += orderFinancials(order).vat;
+      final vat = AdminOrderMoneyDisplay.fromOrder(order).vat;
+      if (OrderStatusHelper.isPaid(order) && vat != null) {
+        total += vat.majorUnits;
+      }
     }
     return total;
   }
@@ -263,7 +294,10 @@ abstract final class FinancialEngine {
   static double calculateCommission(Iterable<OrderRecord> orders) {
     var total = 0.0;
     for (final order in orders) {
-      total += orderFinancials(order).repCommission;
+      final net = AdminOrderMoneyDisplay.fromOrder(order).driverNetMajor;
+      if (OrderStatusHelper.isPaid(order) && net != null) {
+        total += net;
+      }
     }
     return total;
   }
@@ -271,7 +305,11 @@ abstract final class FinancialEngine {
   static double calculateDeliveryFees(Iterable<OrderRecord> orders) {
     var total = 0.0;
     for (final order in orders) {
-      total += orderFinancials(order).deliveryFees;
+      final gross =
+          AdminOrderMoneyDisplay.fromOrder(order).line.grossBase?.majorUnits;
+      if (OrderStatusHelper.isPaid(order) && gross != null) {
+        total += gross;
+      }
     }
     return total;
   }

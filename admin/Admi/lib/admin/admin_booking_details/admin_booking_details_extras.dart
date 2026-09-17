@@ -84,16 +84,16 @@ class AdminBookingDetailsExtras extends StatelessWidget {
                 ),
                 _kv(
                   context,
-                  uiTr(context, 'عمولة الشركة'),
-                  row.commission > 0
-                      ? '${row.commission.toStringAsFixed(2)} ${row.currencySymbol}'
+                  uiTr(context, 'عمولة توري'),
+                  row.commission != null
+                      ? '${row.commission!.toStringAsFixed(2)} ${row.currencySymbol}'
                       : '—',
                 ),
                 _kv(
                   context,
                   row.driverNetIsDerived
-                      ? uiTr(context, 'صافي المندوب (مشتق)')
-                      : uiTr(context, 'صافي المندوب'),
+                      ? uiTr(context, 'صافي السائق (مشتق)')
+                      : uiTr(context, 'صافي السائق'),
                   row.driverNetLabel,
                 ),
                 _kv(

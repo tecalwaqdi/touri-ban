@@ -200,15 +200,43 @@ abstract final class FinancialAccountingLoader {
 
     final driverScoped = filter.driverRef != null;
 
-    // Driver-scoped: prefer full client scan (small set) so statement lines exist.
+    // Driver-scoped: prefer CF aggregate for KPI parity with Hub, then load
+    // statement lines via client scan (CF totals mode does not return lines).
     if (driverScoped) {
+      try {
+        final remote =
+            await CloudFunctionsClient.aggregateFinancialAccountingV2(
+          countryPath: country?.path,
+          periodStart: range?.startInclusive,
+          periodEnd: range?.endExclusive,
+          driverId: filter.driverRef?.id,
+          channel: filter.channel?.name,
+          lifecycle: filter.lifecycle?.name,
+          payment: filter.payment?.name,
+          confidence: filter.confidence?.name,
+          currency: filter.currency,
+        );
+        byCurrency = _parseRemoteTotals(remote);
+        quality = _parseQuality(remote);
+        docsScanned = (remote['quality'] is Map)
+            ? ((remote['quality'] as Map)['docsScanned'] as num?)?.toInt() ?? 0
+            : 0;
+        totalsSource = (remote['source'] as String?) ?? 'server_v2';
+      } catch (_) {
+        // Fall through — client scan supplies both totals and lines.
+      }
       final scanned = await _clientFullScan(scopedFilter);
-      byCurrency = scanned.byCurrency;
-      quality = scanned.quality;
-      docsScanned = scanned.docsScanned;
-      truncated = scanned.truncated;
       allLines = scanned.lines;
-      totalsSource = 'client_full';
+      truncated = scanned.truncated;
+      if (byCurrency == null) {
+        byCurrency = scanned.byCurrency;
+        quality = scanned.quality;
+        docsScanned = scanned.docsScanned;
+        totalsSource = 'client_full';
+      } else {
+        // Keep remote KPI totals; still surface line count from the scan.
+        docsScanned = docsScanned > 0 ? docsScanned : scanned.docsScanned;
+      }
     } else {
       try {
         final remote =

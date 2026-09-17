@@ -62,7 +62,9 @@ class AdminBookingRow {
   final String vehicleLabel;
   final String plateLabel;
   final double amount;
-  final double commission;
+
+  /// Platform fee (`total_app`). Null when unprovable — never coerce missing → 0.
+  final double? commission;
 
   /// Driver net from canonical V2 engine. Null when unprovable — never gross.
   final double? driverNet;
@@ -123,8 +125,8 @@ class AdminBookingRow {
       ]),
       // Presentation: prefer engine gross/customer paid; else stored total.
       amount: money.gross?.majorUnits ?? order.total,
-      commission: money.platformFee?.majorUnits ??
-          (order.hasTotalApp() ? order.totalApp : 0),
+      // Missing platform fee stays null (never ?? 0).
+      commission: money.platformFee?.majorUnits,
       // Never fallback total_mndob2 (gross) → driver net.
       driverNet: money.driverNetMajor,
       driverNetIsDerived: money.driverNetIsDerived,
@@ -160,6 +162,15 @@ class AdminBookingRow {
     if (driverNet == null) return '—';
     return AdminOrderMoneyDisplay.formatMajor(
       driverNet,
+      symbol: currencySymbol,
+    );
+  }
+
+  /// Display string for platform commission (`—` when missing).
+  String get commissionLabel {
+    if (commission == null) return '—';
+    return AdminOrderMoneyDisplay.formatMajor(
+      commission,
       symbol: currencySymbol,
     );
   }

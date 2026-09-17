@@ -10,6 +10,7 @@ import '/components/admin_ui.dart';
 import '/components/profile_photo_image.dart';
 import '/core/admin_booking_status_label.dart';
 import '/core/admin_currency.dart';
+import '/backend/schema/enums/enums.dart';
 import '/core/finance/financial_engine.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -716,6 +717,30 @@ class AdminBookingDetailsTripCard extends StatelessWidget {
           label: uiTr(context, 'مدينة الرحلة'),
           value: view.geography.tripCity,
         ),
+        if (view.geography.driverCountry.isNotEmpty)
+          AdminBookingDetailsKvRow(
+            label: uiTr(context, 'دولة السائق'),
+            value: view.geography.driverCountry,
+          ),
+        if (view.geography.driverCity.isNotEmpty)
+          AdminBookingDetailsKvRow(
+            label: uiTr(context, 'مدينة السائق'),
+            value: view.geography.driverCity,
+          ),
+        if (view.geography.hasScopeMismatch)
+          AdminBookingDetailsKvRow(
+            label: uiTr(context, 'تحذير النطاق'),
+            value: uiTr(
+              context,
+              view.geography.hasCountryMismatch &&
+                      view.geography.hasCityMismatch
+                  ? 'اختلاف دولة/مدينة الرحلة عن السائق'
+                  : (view.geography.hasCountryMismatch
+                      ? 'اختلاف دولة الرحلة عن السائق'
+                      : 'اختلاف مدينة الرحلة عن السائق'),
+            ),
+            emphasizeValue: true,
+          ),
       ],
     );
   }
@@ -764,6 +789,15 @@ class AdminBookingDetailsPaymentCard extends StatelessWidget {
           label: uiTr(context, 'طريقة الدفع'),
           value: row.paymentLabel,
         ),
+        if (row.paymentLabel.contains('إلكتروني') ||
+            row.order.paymentMethod == PaymentMethod.OnlinePayment)
+          AdminBookingDetailsKvRow(
+            label: uiTr(context, 'سياسة الدفع'),
+            value: uiTr(
+              context,
+              'سجل إلكتروني تاريخي — العمليات الحالية نقدًا فقط',
+            ),
+          ),
         AdminBookingDetailsKvRow(
           label: uiTr(context, 'حالة الدفع'),
           value: view.paymentStatusLabel,
@@ -797,30 +831,37 @@ class AdminBookingDetailsPaymentCard extends StatelessWidget {
             value: AdminBookingDetailsView.money(row.amount, sym),
             emphasizeValue: true,
           ),
-        if (row.commission > 0)
+        if (row.commission != null)
           AdminBookingDetailsKvRow(
-            label: uiTr(context, 'رسوم التطبيق'),
-            value: AdminBookingDetailsView.money(row.commission, sym),
+            label: uiTr(context, 'عمولة توري'),
+            value: AdminBookingDetailsView.money(row.commission!, sym),
+          )
+        else
+          AdminBookingDetailsKvRow(
+            label: uiTr(context, 'عمولة توري'),
+            value: '—',
           ),
         if (row.driverNet != null)
           AdminBookingDetailsKvRow(
             label: row.driverNetIsDerived
                 ? uiTr(context, 'صافي المندوب (مشتق)')
-                : uiTr(context, 'صافي المندوب'),
+                : uiTr(context, 'صافي السائق'),
             value: AdminBookingDetailsView.money(row.driverNet!, sym),
           )
         else
           AdminBookingDetailsKvRow(
-            label: uiTr(context, 'صافي المندوب'),
+            label: uiTr(context, 'صافي السائق'),
             value: '—',
           ),
         if (view.showVat)
           AdminBookingDetailsKvRow(
             label: uiTr(context, 'الضريبة'),
-            value: AdminBookingDetailsView.money(
-              row.order.totalVat.toDouble(),
-              sym,
-            ),
+            value: row.order.hasTotalVat()
+                ? AdminBookingDetailsView.money(
+                    row.order.totalVat.toDouble(),
+                    sym,
+                  )
+                : '—',
           ),
         if (view.showDiscount)
           AdminBookingDetailsKvRow(

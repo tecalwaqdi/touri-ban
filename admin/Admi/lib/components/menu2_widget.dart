@@ -130,6 +130,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     // Finance
     'AdminFinanceHub': '/adminFinanceHub',
     'AdminFinanceReconciliation': '/adminFinanceReconciliation',
+    'AdminFinanceDataQuality': '/adminFinanceDataQuality',
     'AdminFinanceChannels': '/adminFinanceChannels',
     'AdminFinanceAdjustments': '/adminFinanceAdjustments',
     'AdminSettlements': '/adminSettlements',
@@ -333,6 +334,10 @@ class _Menu2WidgetState extends State<Menu2Widget> {
               (
                 route: AdminFinanceReconciliationWidget.routeName,
                 icon: Icons.fact_check_outlined
+              ),
+              (
+                route: AdminFinanceDataQualityWidget.routeName,
+                icon: Icons.rule_folder_outlined
               ),
               (
                 route: AdminSettlementsWidget.routeName,

@@ -13,6 +13,7 @@ class FinanceCashOnlineSummary {
     required this.companyDueFromDrivers,
     required this.settledCompanyDueMinor,
     required this.outstandingCompanyDue,
+    this.settlementStatsAvailable = true,
     required this.onlineCompletedPaid,
     required this.onlineCompletedUnpaid,
     required this.onlineCancelledPaid,
@@ -36,6 +37,10 @@ class FinanceCashOnlineSummary {
   final int settledCompanyDueMinor;
   final MoneyAmount outstandingCompanyDue;
 
+  /// False when confirmed-payment rollup is unavailable (do not treat settled
+  /// or outstanding company-due as authoritative zeros).
+  final bool settlementStatsAvailable;
+
   final int onlineCompletedPaid;
   final int onlineCompletedUnpaid;
   final int onlineCancelledPaid;
@@ -53,6 +58,7 @@ class FinanceCashOnlineSummary {
     Iterable<FinancialOrderLine> lines = const [],
     int settledCompanyDueMinor = 0,
     int paidToDriverMinor = 0,
+    bool settlementStatsAvailable = true,
   }) {
     var onlineCompletedPaid = 0;
     var onlineCompletedUnpaid = 0;
@@ -106,9 +112,15 @@ class FinanceCashOnlineSummary {
       settledCompanyDueMinor: settledCompanyDueMinor,
       outstandingCompanyDue: MoneyAmount(
         currency: t.currency,
-        minorUnits: (t.cashDriversOweCompany.minorUnits - settledCompanyDueMinor)
-            .clamp(0, 1 << 31),
+        // Only subtract confirmed payments when the settlement SoT rollup is
+        // available; otherwise outstanding stays equal to company due (unknown
+        // settlement offset must not look like "fully unpaid with certainty").
+        minorUnits: settlementStatsAvailable
+            ? (t.cashDriversOweCompany.minorUnits - settledCompanyDueMinor)
+                .clamp(0, 1 << 31)
+            : t.cashDriversOweCompany.minorUnits,
       ),
+      settlementStatsAvailable: settlementStatsAvailable,
       onlineCompletedPaid: onlineCompletedPaid,
       onlineCompletedUnpaid: onlineCompletedUnpaid,
       onlineCancelledPaid: onlineCancelledPaid,

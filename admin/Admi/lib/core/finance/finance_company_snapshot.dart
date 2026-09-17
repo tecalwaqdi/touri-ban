@@ -43,6 +43,7 @@ class FinanceCompanySnapshot {
     required this.settledCount,
     required this.pendingSettlementCount,
     required this.outstandingSettlementMinor,
+    this.settlementStatsAvailable = true,
     required this.completedAndCollected,
     required this.completedButNotCollected,
     required this.cancelledOrExpired,
@@ -88,6 +89,10 @@ class FinanceCompanySnapshot {
   final int pendingSettlementCount;
   final int outstandingSettlementMinor;
 
+  /// False when settlement KPI rollup failed or country scope blocked the load.
+  /// When false, settlement money counters are not authoritative zeros.
+  final bool settlementStatsAvailable;
+
   final int completedAndCollected;
   final int completedButNotCollected;
   final int cancelledOrExpired;
@@ -100,6 +105,7 @@ class FinanceCompanySnapshot {
     int settledCount = 0,
     int pendingSettlementCount = 0,
     int outstandingSettlementMinor = 0,
+    bool settlementStatsAvailable = true,
   }) {
     final code = result.byCurrency.containsKey(currency)
         ? currency
@@ -159,6 +165,7 @@ class FinanceCompanySnapshot {
       settledCount: settledCount,
       pendingSettlementCount: pendingSettlementCount,
       outstandingSettlementMinor: outstandingSettlementMinor,
+      settlementStatsAvailable: settlementStatsAvailable,
       completedAndCollected: t.completedAndCollected,
       completedButNotCollected: t.completedButNotCollected,
       cancelledOrExpired: t.cancelledOrExpired,

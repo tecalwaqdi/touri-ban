@@ -1,4 +1,5 @@
 import '/core/finance/financial_accounting_engine.dart';
+import '/core/finance/platform_commission_policy.dart';
 
 /// FIN-6 exception codes — client-side classification from canonical lines.
 enum FinanceExceptionCode {
@@ -8,6 +9,7 @@ enum FinanceExceptionCode {
   onlinePaidNotCompleted,
   driverNetMissing,
   platformFeeMissing,
+  platformCommissionRateMismatch,
   vatInvalid,
   moneyMismatch,
   unknownPaymentMethod,
@@ -77,6 +79,19 @@ abstract final class FinanceExceptionClassifier {
       hits.add(FinanceExceptionHit(
         code: FinanceExceptionCode.platformFeeMissing,
         orderId: line.orderId,
+      ));
+    }
+
+    // Flag only — never overwrite historical total_app.
+    if (PlatformCommissionPolicy.hasCurrentPolicyMismatch(line)) {
+      final expected =
+          PlatformCommissionPolicy.expectedPlatformFeeMinor(line.grossBase);
+      hits.add(FinanceExceptionHit(
+        code: FinanceExceptionCode.platformCommissionRateMismatch,
+        orderId: line.orderId,
+        detail:
+            'expected_${PlatformCommissionPolicy.currentRatePercent}%_minor=$expected '
+            'persisted_minor=${line.platformFee?.minorUnits}',
       ));
     }
 

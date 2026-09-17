@@ -4,6 +4,50 @@ import '/backend/admin_country_scope.dart';
 import '/backend/admin_role_service.dart';
 import '/core/admin_qa_fixture.dart';
 
+/// Result of a settlement KPI rollup from [financial_settlements].
+///
+/// When [available] is false, money counters must be treated as unknown — never
+/// displayed as authoritative zeros (missing ≠ 0).
+class FinanceSotSettlementStatsResult {
+  const FinanceSotSettlementStatsResult({
+    required this.available,
+    required this.settled,
+    required this.pending,
+    required this.outstandingMinor,
+    required this.paidConfirmedMinor,
+    required this.fixturesExcluded,
+    required this.docsRead,
+    this.unavailableReason,
+  });
+
+  const FinanceSotSettlementStatsResult.unavailable({
+    String reason = 'unavailable',
+  }) : this(
+          available: false,
+          settled: 0,
+          pending: 0,
+          outstandingMinor: 0,
+          paidConfirmedMinor: 0,
+          fixturesExcluded: 0,
+          docsRead: 0,
+          unavailableReason: reason,
+        );
+
+  final bool available;
+  final int settled;
+  final int pending;
+
+  /// Sum of settlement `outstandingMinor` (expected − confirmed payments).
+  final int outstandingMinor;
+
+  /// Sum of settlement `paidConfirmedMinor` (confirmed valid payments).
+  final int paidConfirmedMinor;
+
+  final int fixturesExcluded;
+  final int docsRead;
+  final String? unavailableReason;
+}
+
 /// Canonical settlement KPI counters from [financial_settlements] (SoT).
 ///
 /// Country-scoped when the session uses country finance scope or has an active
@@ -26,25 +70,19 @@ abstract final class FinanceSotSettlementStats {
   static bool get requiresCountryScope =>
       AdminRoleService.usesCountryFinanceScope;
 
-  static Future<({
-    int settled,
-    int pending,
-    int outstandingMinor,
-    int fixturesExcluded,
-    int docsRead,
-  })> load({
+  /// Settlement KPI rollup from [financial_settlements].
+  ///
+  /// [available] is false when the load fails or country scope is required but
+  /// missing — callers must treat money fields as unavailable, not zero.
+  static Future<FinanceSotSettlementStatsResult> load({
     DocumentReference? countryOverride,
     int limit = 500,
   }) async {
     try {
       final country = effectiveCountryRef(countryOverride: countryOverride);
       if (requiresCountryScope && country == null) {
-        return (
-          settled: 0,
-          pending: 0,
-          outstandingMinor: 0,
-          fixturesExcluded: 0,
-          docsRead: 0,
+        return FinanceSotSettlementStatsResult.unavailable(
+          reason: 'country_scope_required',
         );
       }
 
@@ -60,6 +98,7 @@ abstract final class FinanceSotSettlementStats {
       var settled = 0;
       var pending = 0;
       var outstanding = 0;
+      var paidConfirmed = 0;
       var fixturesExcluded = 0;
 
       for (final doc in snap.docs) {
@@ -87,23 +126,26 @@ abstract final class FinanceSotSettlementStats {
             st == 'pending') {
           pending++;
         }
-        outstanding += (d['outstandingMinor'] as num?)?.toInt() ?? 0;
+        final docOutstanding = (d['outstandingMinor'] as num?)?.toInt();
+        final docPaid = (d['paidConfirmedMinor'] as num?)?.toInt();
+        // Missing fields stay out of the sum (do not coerce null → 0 addend
+        // beyond Firestore absences that mean "no confirmed payment yet").
+        if (docOutstanding != null) outstanding += docOutstanding;
+        if (docPaid != null) paidConfirmed += docPaid;
       }
 
-      return (
+      return FinanceSotSettlementStatsResult(
+        available: true,
         settled: settled,
         pending: pending,
         outstandingMinor: outstanding,
+        paidConfirmedMinor: paidConfirmed,
         fixturesExcluded: fixturesExcluded,
         docsRead: snap.docs.length,
       );
     } catch (_) {
-      return (
-        settled: 0,
-        pending: 0,
-        outstandingMinor: 0,
-        fixturesExcluded: 0,
-        docsRead: 0,
+      return FinanceSotSettlementStatsResult.unavailable(
+        reason: 'load_failed',
       );
     }
   }

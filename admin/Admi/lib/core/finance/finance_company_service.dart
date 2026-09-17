@@ -32,13 +32,19 @@ abstract final class FinanceCompanyService {
       result.totalsSource != 'client_full',
     );
 
-    final settlementStats = await _loadSettlementReadOnlyStats();
+    final settlementStats = await FinanceSotSettlementStats.load();
     return FinanceCompanySnapshot.fromReport(
       result,
       periodLabel: periodLabel,
-      settledCount: settlementStats.settled,
-      pendingSettlementCount: settlementStats.pending,
-      outstandingSettlementMinor: settlementStats.outstandingMinor,
+      settledCount: settlementStats.available ? settlementStats.settled : 0,
+      pendingSettlementCount:
+          settlementStats.available ? settlementStats.pending : 0,
+      // Keep outstanding only when the SoT rollup succeeded; otherwise 0 is
+      // a counter placeholder and UI must check [settlementStatsAvailable].
+      outstandingSettlementMinor: settlementStats.available
+          ? settlementStats.outstandingMinor
+          : 0,
+      settlementStatsAvailable: settlementStats.available,
     );
   }
 
@@ -46,6 +52,7 @@ abstract final class FinanceCompanyService {
     FinanceCompanySnapshot company,
     FinanceCashOnlineSummary channels,
     Map<FinanceExceptionCode, int> exceptions,
+    bool settlementStatsAvailable,
   })> loadFull({
     required AdminDatePreset datePreset,
     String periodLabel = '',
@@ -62,34 +69,37 @@ abstract final class FinanceCompanyService {
             : result.byCurrency.keys.first);
     final t = result.byCurrency[code] ??
         FinancialCurrencyTotals(currency: code);
-    final settlementStats = await _loadSettlementReadOnlyStats();
+    final settlementStats = await FinanceSotSettlementStats.load();
+
+    // settledCompanyDueMinor = confirmed payments toward company due,
+    // NEVER outstanding (expected − paid). Confusing the two understates
+    // remaining cash liability.
+    final settledCompanyDueMinor = settlementStats.available
+        ? settlementStats.paidConfirmedMinor
+        : 0;
 
     return (
       company: FinanceCompanySnapshot.fromReport(
         result,
         periodLabel: periodLabel,
-        settledCount: settlementStats.settled,
-        pendingSettlementCount: settlementStats.pending,
-        outstandingSettlementMinor: settlementStats.outstandingMinor,
+        settledCount: settlementStats.available ? settlementStats.settled : 0,
+        pendingSettlementCount:
+            settlementStats.available ? settlementStats.pending : 0,
+        outstandingSettlementMinor: settlementStats.available
+            ? settlementStats.outstandingMinor
+            : 0,
+        settlementStatsAvailable: settlementStats.available,
       ),
       channels: FinanceCashOnlineSummary.fromTotals(
         t,
         lines: result.allMatchingLines,
-        settledCompanyDueMinor: settlementStats.outstandingMinor,
+        settledCompanyDueMinor: settledCompanyDueMinor,
+        settlementStatsAvailable: settlementStats.available,
       ),
       exceptions: FinanceExceptionClassifier.countByCode(
         result.allMatchingLines,
       ),
-    );
-  }
-
-  static Future<({int settled, int pending, int outstandingMinor})>
-      _loadSettlementReadOnlyStats() async {
-    final s = await FinanceSotSettlementStats.load();
-    return (
-      settled: s.settled,
-      pending: s.pending,
-      outstandingMinor: s.outstandingMinor,
+      settlementStatsAvailable: settlementStats.available,
     );
   }
 }

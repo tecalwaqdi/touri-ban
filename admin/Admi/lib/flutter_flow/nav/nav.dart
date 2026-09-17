@@ -811,6 +811,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
           builder: (context, params) => const AdminFinanceReportsWidget(),
         ),
         FFRoute(
+          name: AdminFinanceDataQualityWidget.routeName,
+          path: AdminFinanceDataQualityWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminFinanceDataQualityWidget(),
+        ),
+        FFRoute(
           name: AdminFinanceAuditWidget.routeName,
           path: AdminFinanceAuditWidget.routePath,
           requireAuth: true,

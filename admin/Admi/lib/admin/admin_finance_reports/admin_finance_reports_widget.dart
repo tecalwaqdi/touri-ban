@@ -15,13 +15,15 @@ import '/core/finance/accountant_finance_loader.dart';
 import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/core/finance/admin_finance_date_range.dart';
+import '/core/finance/csv_export.dart';
 import '/core/finance/finance_company_service.dart';
 import '/core/finance/finance_company_snapshot.dart';
+import '/core/finance/finance_report_csv_builder.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 /// On-screen accountant reports — same V2 KPIs + trip lines as Finance Hub.
-/// Legacy CSV/PDF exporters remain deferred.
+/// CSV/print use the same canonical snapshot + trip rows (no independent math).
 class AdminFinanceReportsWidget extends StatefulWidget {
   const AdminFinanceReportsWidget({super.key});
 
@@ -140,6 +142,66 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
                 },
                 onRefresh: () => _reload(forceRefresh: true),
               ),
+              if (bundle != null) ...[
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: () async {
+                        final canonical = _canonicalKpi;
+                        if (canonical == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                uiTr(context, 'انتظر اكتمال مؤشرات التقرير'),
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+                        final csv = FinanceReportCsvBuilder.build(
+                          snapshot: canonical,
+                          trips: bundle.trips,
+                          preparedBy: AdminRoleService.currentRole.name,
+                          filters:
+                              '${_presetLabels[_preset] ?? _preset.name}; $countryLabel',
+                        );
+                        await copyFinanceCsv(csv);
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              uiTr(context, 'تم نسخ CSV إلى الحافظة'),
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.table_view_outlined, size: 18),
+                      label: Text(uiTr(context, 'تصدير CSV')),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        // Browser print of the current report view — values are
+                        // the same on-screen canonical widgets (no separate PDF calc).
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              uiTr(
+                                context,
+                                'استخدم طباعة المتصفح (Ctrl/Cmd+P). القيم هي نفسها المعروضة على الشاشة.',
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.print_outlined, size: 18),
+                      label: Text(uiTr(context, 'طباعة')),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 12),
               Text(
                 '${uiTr(context, 'نطاق التقرير')}: $countryLabel',

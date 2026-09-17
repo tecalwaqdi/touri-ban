@@ -9,6 +9,10 @@ class AdminBookingGeography {
     required this.tripRegion,
     required this.tripCity,
     required this.tripCityKnown,
+    this.driverCountry = '',
+    this.driverCity = '',
+    this.hasCountryMismatch = false,
+    this.hasCityMismatch = false,
   });
 
   static const unknownLabel = 'غير معروف';
@@ -17,6 +21,14 @@ class AdminBookingGeography {
   final String tripRegion;
   final String tripCity;
   final bool tripCityKnown;
+
+  /// Driver scope labels when present on the order snapshot (for mismatch highlight).
+  final String driverCountry;
+  final String driverCity;
+  final bool hasCountryMismatch;
+  final bool hasCityMismatch;
+
+  bool get hasScopeMismatch => hasCountryMismatch || hasCityMismatch;
 
   factory AdminBookingGeography.fromOrder(OrderRecord order) {
     final data = order.snapshotData;
@@ -33,12 +45,52 @@ class AdminBookingGeography {
       _labelFromRef(order.citiesUserNow),
     ]);
 
+    final driverCountry = _firstNonEmpty([
+      _str(data, [
+        'driver_country_text',
+        'mndob_country_text',
+        'driver_dolh_text',
+      ]),
+      _labelFromRef(
+        data['driver_country_ref'] is DocumentReference
+            ? data['driver_country_ref'] as DocumentReference
+            : null,
+      ),
+    ]);
+    final driverCity = _firstNonEmpty([
+      _str(data, [
+        'driver_city_text',
+        'mndob_vill_text',
+        'mndob_villText',
+        'driver_vill_text',
+      ]),
+    ]);
+
+    final countryMismatch = country.isNotEmpty &&
+        driverCountry.isNotEmpty &&
+        !_sameGeoLabel(country, driverCountry);
+    final cityMismatch = city.isNotEmpty &&
+        driverCity.isNotEmpty &&
+        !_sameGeoLabel(city, driverCity);
+
     return AdminBookingGeography(
       tripCountry: country.isNotEmpty ? country : unknownLabel,
       tripRegion: region.isNotEmpty ? region : unknownLabel,
       tripCity: city.isNotEmpty ? city : unknownLabel,
       tripCityKnown: city.isNotEmpty,
+      driverCountry: driverCountry,
+      driverCity: driverCity,
+      hasCountryMismatch: countryMismatch,
+      hasCityMismatch: cityMismatch,
     );
+  }
+
+  static bool _sameGeoLabel(String a, String b) {
+    final na = a.trim().toLowerCase();
+    final nb = b.trim().toLowerCase();
+    if (na == nb) return true;
+    if (na.contains(nb) || nb.contains(na)) return true;
+    return false;
   }
 
   static String _str(Map<String, dynamic> data, List<String> keys) {

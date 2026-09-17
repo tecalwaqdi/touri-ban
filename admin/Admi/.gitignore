@@ -80,3 +80,6 @@ visual_qa_*/
 **/storage.json
 *.bak-before-*
 firestore.rules.bak*
+
+# Local safety snapshots (do not commit)
+.safety-snapshots/

@@ -157,6 +157,7 @@ class FinancialOrderLine {
     this.agentRateType,
     this.agentAmount,
     this.agentAttributionStatus,
+    this.orderedAt,
   });
 
   final String orderId;
@@ -202,6 +203,9 @@ class FinancialOrderLine {
   final String? agentRateType;
   final MoneyAmount? agentAmount;
   final String? agentAttributionStatus;
+
+  /// Order date used for current-vs-historical commission policy checks.
+  final DateTime? orderedAt;
 
   bool get hasProvableAgentSnapshot =>
       agentAttributionStatus == 'attributed' &&
@@ -827,6 +831,7 @@ abstract final class FinancialAccountingEngine {
           ? MoneyAmount(currency: currency, minorUnits: o.agentAmountMinor!)
           : null,
       agentAttributionStatus: o.agentAttributionStatus,
+      orderedAt: o.orderedAt,
     );
   }
 
