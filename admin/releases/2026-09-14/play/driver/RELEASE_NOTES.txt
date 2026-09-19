@@ -1,0 +1,15 @@
+Touri Taxi Driver — Google Play
+versionName: 11.1.16
+versionCode: 45
+package: com.mycompany.mndob2
+
+What's new:
+- Password reset via 6-digit email OTP (Resend), same reliable path as registration verification
+- Fixes Forgot Password on login when Firebase default reset email does not arrive
+
+Backend already live:
+- requestPasswordResetOtp
+- confirmPasswordResetOtp
+
+Upload:
+Play Console → Touri Taxi Driver → Production (or testing) → Create release → upload this AAB

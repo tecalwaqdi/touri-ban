@@ -1067,5 +1067,19 @@
   "payment_back_to_booking": "العودة إلى تفاصيل الحجز",
   "payment_waiting_title": "الدفع قيد الانتظار",
   "payment_waiting_body": "تم فتح صفحة الدفع. يمكنك التحقق من الحالة أو العودة للحجز.",
-  "profile_phone_required": "أضف رقم هاتف صالح للمتابعة."
+  "profile_phone_required": "أضف رقم هاتف صالح للمتابعة.",
+  "extra_hours_current": "موجودہ گھنٹے",
+  "extra_hours_cost": "اضافی لاگت",
+  "extra_hours_new_total": "نئی کل رقم",
+  "extra_hours_new_duration": "نئے کل گھنٹے",
+  "extra_hours_confirm_title": "اضافی گھنٹوں کی تصدیق",
+  "extra_hours_continue_payment": "ادائیگی جاری رکھیں",
+  "extra_hours_cash_notice": "اضافی لاگت اسی سفر کی واجب الادا نقد رقم میں شامل ہوگی۔",
+  "extra_hours_online_notice": "اضافی ادائیگی کی تصدیق کے بعد ہی گھنٹے شامل ہوں گے۔",
+  "extra_hours_quote_changed": "سفر یا قیمت بدل گئی ہے۔ نئی تفصیل دیکھ کر دوبارہ تصدیق کریں۔",
+  "extra_hours_payment_pending": "اضافی گھنٹوں کی ادائیگی پہلے سے جاری ہے۔ نئی کوشش کے بجائے اسے جاری رکھیں۔",
+  "extra_hours_ineligible": "فی الحال اس سفر میں اضافی گھنٹے شامل نہیں کیے جا سکتے۔",
+  "extra_hours_price_unavailable": "اضافی گھنٹوں کی قیمت کی تصدیق نہیں ہو سکی۔ بعد میں کوشش کریں۔",
+  "extra_hours_paid_not_applied": "ادائیگی کی تصدیق ہو گئی لیکن سفر بڑھایا نہیں جا سکا۔ مدد سے رابطہ کریں اور دوبارہ ادائیگی نہ کریں۔",
+  "map_coordinates": "کوآرڈینیٹس"
 }

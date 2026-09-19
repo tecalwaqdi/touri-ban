@@ -122,10 +122,24 @@ abstract final class DriverDailyStatsService {
     }
 
     var availableCount = 0;
-    if (carTypeRef != null) {
-      availableCount = await queryOrderRecordCount(
-        queryBuilder: DriverOrderMatch.queryBuilder(typeCarRef: carTypeRef),
-      );
+    final car = carTypeRef ?? DriverOrderMatch.driverTypeCarRef();
+    if (car != null || DriverOrderMatch.driverTypeCarRef() != null) {
+      try {
+        await DriverOrderMatch.ensureDriverCountry();
+        final cityRef = await DriverOrderMatch.ensureDriverCity();
+        final pool = await queryOrderRecordOnce(
+          queryBuilder: DriverOrderMatch.queryBuilder(typeCarRef: car),
+        );
+        final ranked = DriverOrderMatch.rankForDriver(
+          pool,
+          driverCityOrVillage: villRef ?? DriverOrderMatch.driverVillageRef(),
+          driverCityRef: cityRef,
+          driverPosition: DriverOrderMatch.driverLivePosition(),
+        );
+        availableCount = ranked.length;
+      } catch (_) {
+        availableCount = 0;
+      }
     }
 
     return DriverDailyStats(

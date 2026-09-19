@@ -1067,5 +1067,19 @@
   "payment_back_to_booking": "Back to booking details",
   "payment_waiting_title": "Payment pending",
   "payment_waiting_body": "The payment page was opened. You can check status or return to the booking.",
-  "profile_phone_required": "Add a valid phone number to continue."
+  "profile_phone_required": "Add a valid phone number to continue.",
+  "extra_hours_current": "Horas atuais",
+  "extra_hours_cost": "Custo adicional",
+  "extra_hours_new_total": "Novo total",
+  "extra_hours_new_duration": "Novo total de horas",
+  "extra_hours_confirm_title": "Confirmar horas adicionais",
+  "extra_hours_continue_payment": "Continuar para o pagamento",
+  "extra_hours_cash_notice": "O custo adicional será somado ao valor em dinheiro devido por esta mesma viagem.",
+  "extra_hours_online_notice": "As horas só serão adicionadas após a confirmação do pagamento adicional.",
+  "extra_hours_quote_changed": "A viagem ou o preço mudou. Confira o novo resumo e confirme novamente.",
+  "extra_hours_payment_pending": "Já existe um pagamento de horas adicionais em andamento. Retome-o sem criar outra tentativa.",
+  "extra_hours_ineligible": "Esta viagem não permite adicionar horas no momento.",
+  "extra_hours_price_unavailable": "Não foi possível verificar o preço da extensão. Tente mais tarde.",
+  "extra_hours_paid_not_applied": "O pagamento foi confirmado, mas a extensão não foi aplicada. Contate o suporte e não pague novamente.",
+  "map_coordinates": "Coordenadas"
 }

@@ -10,7 +10,7 @@ import '/core/toury_directions_service.dart';
 import '/core/toury_maps_config.dart';
 import '/core/toury_navigation_service.dart';
 import '/core/toury_order_meta.dart';
-import '/design_system/colors/ds_color_scales.dart';
+import '/core/toury_trip_progress.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -35,6 +35,17 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap>
     with SingleTickerProviderStateMixin {
   static const _markerAnimDuration = Duration(milliseconds: 1400);
 
+  /// Active route line — clear blue (not brand teal/green).
+  static const _routeBlue = Color(0xFF2563EB);
+  static const _routeBlueDark = Color(0xFF60A5FA);
+  /// Secondary / casing under the active line.
+  static const _routeCasing = Color(0xFF94A3B8);
+  static const _routeCasingDark = Color(0xFF334155);
+
+  /// Tracking car body — slate/navy, not brand primary green.
+  static const _carBody = Color(0xFF1E3A5F);
+  static const _carGlass = Color(0xFF0F172A);
+
   final _controller = Completer<gmaps.GoogleMapController>();
 
   List<LatLng>? _roadPoints;
@@ -45,6 +56,7 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap>
   int? _routeDistanceMeters;
   String? _routeKey;
   String? _destinationKey;
+  TouryTripStage? _routePhase;
   LatLng? _lastRouteOrigin;
   DateTime? _lastRouteFetchAt;
 
@@ -109,16 +121,15 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap>
     if (_carIcon != null || _loadingIcons) return;
     _loadingIcons = true;
     final ratio = MediaQuery.maybeDevicePixelRatioOf(context) ?? 3.0;
-    final scheme = Theme.of(context).colorScheme;
 
     final results = await Future.wait<gmaps.BitmapDescriptor>([
       TouryMapMarkers.car(
-        body: scheme.primary,
-        glass: const Color(0xFF10243B),
+        body: _carBody,
+        glass: _carGlass,
         pixelRatio: ratio,
       ),
       TouryMapMarkers.dot(
-        color: const Color(0xFF16A34A),
+        color: TouryMapMarkers.trackingAccent,
         icon: Icons.my_location_rounded,
         pixelRatio: ratio,
       ),
@@ -239,6 +250,25 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap>
 
   Future<void> _syncRoute() async {
     final waypoints = widget.order.trackingRouteWaypoints();
+    final stage = touryResolveTripStage(
+      statusCode: widget.order.statusCode,
+      halhText: widget.order.halhText,
+    );
+    if (_routePhase != null && _routePhase != stage) {
+      // Phase changed: drop the old pickup/trip polyline before rebuilding.
+      _routeKey = null;
+      _destinationKey = null;
+      _lastRouteOrigin = null;
+      _lastRouteFetchAt = null;
+      if (mounted) {
+        setState(() {
+          _roadPoints = null;
+          _polylines = const <gmaps.Polyline>{};
+        });
+      }
+    }
+    _routePhase = stage;
+
     if (waypoints.length < 2) {
       if (_roadPoints != null && mounted) {
         setState(() {
@@ -307,20 +337,21 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final coords = points.map((p) => p.toGoogleMaps()).toList(growable: false);
     return {
-      // Casing underneath gives the route a premium, readable edge.
+      // Secondary / casing — soft slate (lighter than active blue).
       gmaps.Polyline(
         polylineId: const gmaps.PolylineId('trip_route_casing'),
         points: coords,
-        color: isDark ? const Color(0xCC0B1220) : Colors.white,
-        width: 11,
+        color: isDark ? _routeCasingDark : _routeCasing,
+        width: 12,
         zIndex: 0,
         startCap: gmaps.Cap.roundCap,
         endCap: gmaps.Cap.roundCap,
       ),
+      // Active route — clear blue.
       gmaps.Polyline(
         polylineId: const gmaps.PolylineId('trip_route'),
         points: coords,
-        color: isDark ? DsPrimaryScale.shade400 : DsPrimaryScale.shade600,
+        color: isDark ? _routeBlueDark : _routeBlue,
         width: 6,
         zIndex: 1,
         startCap: gmaps.Cap.roundCap,

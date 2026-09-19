@@ -85,20 +85,24 @@ class _ListViWidgetState extends State<ListViWidget>
     safeSetState(() {});
 
     void applySearch() {
-      _model.simpleSearchResults = TextSearch(
-        _mkanPage.items
-            .map(
-              (record) => TextSearchItem.fromTerms(
-                record,
-                touryMkanSearchTerms(record),
-              ),
-            )
-            .toList(),
-      )
-          .search(trimmed)
-          .map((r) => r.object)
-          .toList()
-          .cast<MkanRecord>();
+      final locale = touryContentLocaleFromContext(context);
+      _model.simpleSearchResults = touryFilterLandmarksForUi(
+        TextSearch(
+          _mkanPage.items
+              .map(
+                (record) => TextSearchItem.fromTerms(
+                  record,
+                  touryMkanSearchTerms(record),
+                ),
+              )
+              .toList(),
+        )
+            .search(trimmed)
+            .map((r) => r.object)
+            .cast<MkanRecord>(),
+        locale,
+        enforceActiveCity: false,
+      );
     }
 
     applySearch();
@@ -514,6 +518,8 @@ class _ListViWidgetState extends State<ListViWidget>
         final listViMkanRecordList = touryFilterLandmarksForUi(
           _mkanPage.items,
           touryContentLocaleFromContext(context),
+          // Query is already scoped by id_vill — do not drop by GPS bbox.
+          enforceActiveCity: false,
         );
         final showLandmarkSkeleton = listViMkanRecordList.isEmpty &&
             (_mkanPage.isLoading ||
@@ -1890,6 +1896,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                       r.asAds),
                                                               touryContentLocaleFromContext(
                                                                   context),
+                                                              enforceActiveCity:
+                                                                  false,
                                                             );
                                                             // إن لم تُعلَّم معالم كإعلانات، اعرض أول عناصر القرية أعلى الشاشة.
                                                             final listViewMkanRecordList =
@@ -1901,6 +1909,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                             .take(8),
                                                                         touryContentLocaleFromContext(
                                                                             context),
+                                                                        enforceActiveCity:
+                                                                            false,
                                                                       );
                                                             if (listViewMkanRecordList
                                                                 .isEmpty) {
@@ -2644,6 +2654,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                               listViMkanRecordList,
                                                               touryContentLocaleFromContext(
                                                                   context),
+                                                              enforceActiveCity:
+                                                                  false,
                                                             );
 
                                                             if (showLandmarkSkeleton) {
@@ -2890,6 +2902,8 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                     category,
                                                                   )),
                                                               touryContentLocaleFromContext(context),
+                                                              enforceActiveCity:
+                                                                  false,
                                                             );
 
                                                             return ListView

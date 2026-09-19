@@ -8,8 +8,10 @@ import '/core/toury_route_metrics.dart';
 import '/core/toury_distance_format.dart';
 import '/core/toury_directions_service.dart';
 import '/core/toury_checkout_state.dart';
+import '/core/toury_landmark_cart.dart';
+import '/core/toury_navigation_service.dart';
+import '/backend/schema/structs/amakn_costm_struct.dart';
 import '/design_system/design_system.dart';
-import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -50,6 +52,9 @@ class _MmaappWidgetState extends State<MmaappWidget> {
     _model = createModel(context, () => MmaappModel());
 
     () async {
+      // Pull fresh Admin pins before drawing the route.
+      await touryRefreshCartLandmarkLocations();
+      if (!mounted) return;
       LatLng? origin = touryResolveTripRouteOrigin();
       origin ??= await TouryLocationService.getUserPositionOrNull();
       if (!mounted) return;
@@ -240,35 +245,78 @@ class _MmaappWidgetState extends State<MmaappWidget> {
   void _createMarkers(List<LatLng> destinations) {
     markers.clear();
 
-    // Add start marker
     markers.add(
       maps.Marker(
-        markerId: maps.MarkerId('start'),
+        markerId: const maps.MarkerId('start'),
         position: maps.LatLng(
           routeOrigin!.latitude,
           routeOrigin!.longitude,
         ),
         icon: maps.BitmapDescriptor.defaultMarkerWithHue(
             maps.BitmapDescriptor.hueGreen),
-        infoWindow: maps.InfoWindow(title: 'map_your_location'.tr()),
+        infoWindow: maps.InfoWindow(title: 'pickup_location_label'.tr()),
       ),
     );
 
-    // Add destination markers
+    final cart = FFAppState().cartmkss;
     for (int i = 0; i < destinations.length; i++) {
       final dest = destinations[i];
+      final cartItem = _cartItemForPoint(dest, cart);
+      final title = (cartItem?.displayLabel.isNotEmpty ?? false)
+          ? cartItem!.displayLabel
+          : 'map_destination_n'.tr(namedArgs: {'n': '${i + 1}'});
+      final snippet = cartItem?.address.trim().isNotEmpty == true
+          ? cartItem!.address.trim()
+          : '${dest.latitude.toStringAsFixed(5)}, ${dest.longitude.toStringAsFixed(5)}';
       markers.add(
         maps.Marker(
           markerId: maps.MarkerId('dest_$i'),
           position: maps.LatLng(dest.latitude, dest.longitude),
           icon: maps.BitmapDescriptor.defaultMarkerWithHue(
               maps.BitmapDescriptor.hueRed),
-          infoWindow: maps.InfoWindow(
-            title: 'map_destination_n'.tr(namedArgs: {'n': '${i + 1}'}),
-          ),
+          infoWindow: maps.InfoWindow(title: title, snippet: snippet),
         ),
       );
     }
+  }
+
+  AmaknCostmStruct? _cartItemForPoint(
+    LatLng point,
+    List<AmaknCostmStruct> cart,
+  ) {
+    for (final item in cart) {
+      final loc = item.loceshn;
+      if (loc == null) continue;
+      if ((loc.latitude - point.latitude).abs() < 1e-5 &&
+          (loc.longitude - point.longitude).abs() < 1e-5) {
+        return item;
+      }
+    }
+    if (cart.length == 1 && cart.first.loceshn != null) {
+      return cart.first;
+    }
+    return null;
+  }
+
+  Future<void> _openInGoogleMaps() async {
+    final stops = FFAppState()
+        .cartmkss
+        .map((e) => e.loceshn)
+        .whereType<LatLng>()
+        .toList(growable: false);
+    if (stops.isEmpty) return;
+    final destination = stops.last;
+    final waypoints = stops.length > 1 ? stops.sublist(0, stops.length - 1) : const <LatLng>[];
+    final title = FFAppState().cartmkss.isNotEmpty
+        ? FFAppState().cartmkss.last.displayLabel
+        : 'map_trip_destination'.tr();
+    await TouryNavigationService.openGoogleMapsNavigation(
+      origin: routeOrigin,
+      destination: destination,
+      waypoints: waypoints,
+      localeKey: TouryNavigationService.localeForContext(context),
+      destinationTitle: title,
+    );
   }
 
   /// 🛣️ Create polyline for the route
@@ -360,6 +408,8 @@ class _MmaappWidgetState extends State<MmaappWidget> {
       isLoading = true;
       errorMessage = null;
     });
+    await touryRefreshCartLandmarkLocations();
+    if (!mounted) return;
     LatLng? origin = touryResolveTripRouteOrigin();
     origin ??= await TouryLocationService.getUserPositionOrNull();
     if (!mounted) return;
@@ -406,7 +456,15 @@ class _MmaappWidgetState extends State<MmaappWidget> {
       );
     }
 
-    return Column(
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+      ),
+      decoration: BoxDecoration(
+        color: colors.scaffold,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
       children: [
         /// رأس الورقة: عنوان + إغلاق
         Padding(
@@ -451,17 +509,14 @@ class _MmaappWidgetState extends State<MmaappWidget> {
 
         /// 🗺️ الخريطة مع المسار
         Container(
-          height: 400,
+          height: 280,
           decoration: BoxDecoration(
             color: colors.surface,
           ),
           child: Stack(
             children: [
-              // Using GoogleMap directly instead of FlutterFlowGoogleMap
-              // since we need custom markers and polylines
               _buildGoogleMap(),
 
-              // Loading overlay
               if (isLoading)
                 Container(
                   color: colors.scrim,
@@ -490,7 +545,47 @@ class _MmaappWidgetState extends State<MmaappWidget> {
                   ),
                 ),
 
-              // Floating close over the map (easy to tap on full-bleed map)
+              PositionedDirectional(
+                start: DsSpacing.sm,
+                end: DsSpacing.sm,
+                bottom: DsSpacing.sm,
+                child: Material(
+                  color: colors.primary,
+                  borderRadius: DsRadius.medium,
+                  elevation: 3,
+                  child: InkWell(
+                    borderRadius: DsRadius.medium,
+                    onTap: isLoading ? null : _openInGoogleMaps,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: DsSpacing.md,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.map_rounded,
+                            color: colors.onPrimary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: DsSpacing.xs),
+                          Flexible(
+                            child: Text(
+                              'map_open_google_maps'.tr(),
+                              style: typography.titleSmall.copyWith(
+                                color: colors.onPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
               PositionedDirectional(
                 top: DsSpacing.sm,
                 end: DsSpacing.sm,
@@ -514,187 +609,240 @@ class _MmaappWidgetState extends State<MmaappWidget> {
           ),
         ),
 
-        /// 📊 معلومات المسافة والوقت
-        Padding(
-          padding: const EdgeInsets.all(DsSpacing.md),
-          child: DsCard(
-            elevated: true,
-            bordered: false,
-            padding: const EdgeInsets.all(DsSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Error message if any
-                if (errorMessage != null)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(DsSpacing.sm),
-                    margin: const EdgeInsets.only(bottom: DsSpacing.sm),
-                    decoration: BoxDecoration(
-                      color: colors.warningContainer,
-                      borderRadius: DsRadius.small,
-                      border: Border.all(
-                        color: colors.warning,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.warning_amber_rounded,
-                            size: 20, color: colors.warning),
-                        const SizedBox(width: DsSpacing.xs),
-                        Expanded(
-                          child: Text(
-                            errorMessage!,
-                            style: typography.bodySmall.copyWith(
-                              color: DsWarningScale.shade700,
-                            ),
-                          ),
-                        ),
-                        DsIconButton(
-                          icon: Icons.refresh,
-                          foreground: colors.warning,
-                          size: 18,
-                          onPressed: _retryCalculation,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.landscape,
-                                  size: 20, color: colors.info),
-                              const SizedBox(width: DsSpacing.xs),
-                              Text(
-                                'map_distance_label'.tr(),
-                                style: typography.bodyMedium.copyWith(
-                                  color: colors.textPrimary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: DsSpacing.xxs),
-                          Text(
-                            isLoading
-                                ? '…'
-                                : (totalDistanceKm <= 0
-                                    ? 'ux_not_available'.tr()
-                                    : '${_formatNumber(totalDistanceKm, digits: 1)} ${'unit_km'.tr()}'),
-                            style: typography.headlineSmall.copyWith(
-                              color: DsInfoScale.shade700,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          if (!isLoading && totalDistanceKm > 0)
-                          Text(
-                            '(${_formatNumber((totalDistanceKm * 1000).round())} ${'unit_meter'.tr()})',
-                            style: typography.bodySmall.copyWith(
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 60,
-                      color: colors.divider,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.access_time,
-                                  size: 20, color: colors.success),
-                              const SizedBox(width: DsSpacing.xs),
-                              Text(
-                                'map_estimated_time'.tr(),
-                                style: typography.bodyMedium.copyWith(
-                                  color: colors.textPrimary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: DsSpacing.xxs),
-                          Text(
-                            isLoading
-                                ? '…'
-                                : (totalTimeMinutes <= 0
-                                    ? 'ux_not_available'.tr()
-                                    : _formatDuration(totalTimeMinutes)),
-                            style: typography.headlineSmall.copyWith(
-                              color: DsSuccessScale.shade700,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          if (!isLoading && totalTimeMinutes > 0)
-                          Text(
-                            '(${_formatNumber(totalTimeMinutes.round())} ${'unit_minute'.tr()})',
-                            style: typography.bodySmall.copyWith(
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: DsSpacing.md),
-
-                // Route statistics
+        /// 📊 الوجهات + المسافة/الوقت
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              DsSpacing.md,
+              DsSpacing.sm,
+              DsSpacing.md,
+              DsSpacing.md,
+            ),
+            children: [
+              if (errorMessage != null)
                 Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.all(DsSpacing.sm),
+                  margin: const EdgeInsets.only(bottom: DsSpacing.sm),
                   decoration: BoxDecoration(
-                    color: colors.background,
+                    color: colors.warningContainer,
                     borderRadius: DsRadius.small,
+                    border: Border.all(color: colors.warning),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildStatItem(
-                        icon: Icons.location_pin,
+                      Icon(Icons.warning_amber_rounded,
+                          size: 20, color: colors.warning),
+                      const SizedBox(width: DsSpacing.xs),
+                      Expanded(
+                        child: Text(
+                          errorMessage!,
+                          style: typography.bodySmall.copyWith(
+                            color: DsWarningScale.shade700,
+                          ),
+                        ),
+                      ),
+                      DsIconButton(
+                        icon: Icons.refresh,
+                        foreground: colors.warning,
+                        size: 18,
+                        onPressed: _retryCalculation,
+                      ),
+                    ],
+                  ),
+                ),
+
+              Text(
+                'map_destination'.tr(),
+                style: typography.titleSmall.copyWith(
+                  color: colors.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: DsSpacing.sm),
+              ..._buildDestinationCards(colors, typography),
+              const SizedBox(height: DsSpacing.md),
+              DsCard(
+                elevated: true,
+                bordered: false,
+                padding: const EdgeInsets.all(DsSpacing.md),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildCompactMetric(
+                        icon: Icons.route_rounded,
+                        label: 'map_distance_label'.tr(),
+                        value: isLoading
+                            ? '…'
+                            : (totalDistanceKm <= 0
+                                ? 'ux_not_available'.tr()
+                                : '${_formatNumber(totalDistanceKm, digits: 1)} ${'unit_km'.tr()}'),
+                        color: DsInfoScale.shade700,
+                      ),
+                    ),
+                    Container(width: 1, height: 44, color: colors.divider),
+                    Expanded(
+                      child: _buildCompactMetric(
+                        icon: Icons.schedule_rounded,
+                        label: 'map_estimated_time'.tr(),
+                        value: isLoading
+                            ? '…'
+                            : (totalTimeMinutes <= 0
+                                ? 'ux_not_available'.tr()
+                                : _formatDuration(totalTimeMinutes)),
+                        color: DsSuccessScale.shade700,
+                      ),
+                    ),
+                    Container(width: 1, height: 44, color: colors.divider),
+                    Expanded(
+                      child: _buildCompactMetric(
+                        icon: Icons.place_rounded,
                         label: 'map_stops_count'.tr(),
                         value: FFAppState().cartmkss.length.toString(),
                         color: colors.primary,
                       ),
-                      _buildStatItem(
-                        icon: Icons.speed,
-                        label: 'map_avg_speed'.tr(),
-                        value: totalTimeMinutes > 0
-                            ? '${_formatNumber((totalDistanceKm / (totalTimeMinutes / 60)).round())} ${'unit_kmh'.tr()}'
-                            : '--',
-                        color: colors.warning,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+      ),
+    );
+  }
+
+  List<Widget> _buildDestinationCards(
+    DsColors colors,
+    DsTypography typography,
+  ) {
+    final items = FFAppState().cartmkss;
+    if (items.isEmpty) {
+      return [
+        Text(
+          'map_no_valid_destinations'.tr(),
+          style: typography.bodyMedium.copyWith(color: colors.textSecondary),
+        ),
+      ];
+    }
+    return [
+      for (var i = 0; i < items.length; i++)
+        Padding(
+          padding: EdgeInsets.only(bottom: i == items.length - 1 ? 0 : DsSpacing.sm),
+          child: DsCard(
+            elevated: false,
+            bordered: true,
+            padding: const EdgeInsets.all(DsSpacing.md),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: colors.primarySoft,
+                    borderRadius: DsRadius.medium,
+                  ),
+                  child: Text(
+                    '${i + 1}',
+                    style: typography.titleSmall.copyWith(
+                      color: colors.primary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: DsSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        items[i].displayLabel.isNotEmpty
+                            ? items[i].displayLabel
+                            : 'map_destination_n'.tr(namedArgs: {'n': '${i + 1}'}),
+                        style: typography.titleSmall.copyWith(
+                          color: colors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                      _buildStatItem(
-                        icon: Icons.timeline,
-                        label: 'map_calc_type'.tr(),
-                        value: errorMessage == null
-                            ? 'map_calc_accurate'.tr()
-                            : 'map_calc_approximate'.tr(),
-                        color: errorMessage == null
-                            ? colors.success
-                            : colors.warning,
+                      if (items[i].textivill.trim().isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          items[i].textivill.trim(),
+                          style: typography.bodySmall.copyWith(
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 4),
+                      Text(
+                        items[i].loceshn == null
+                            ? 'map_location_unavailable'.tr()
+                            : '${'map_coordinates'.tr()}: ${items[i].loceshn!.latitude.toStringAsFixed(6)}, ${items[i].loceshn!.longitude.toStringAsFixed(6)}',
+                        style: typography.labelSmall.copyWith(
+                          color: colors.textSecondary,
+                          fontFamily: 'monospace',
+                        ),
                       ),
                     ],
                   ),
+                ),
+                IconButton(
+                  tooltip: 'map_open_google_maps'.tr(),
+                  onPressed: items[i].loceshn == null
+                      ? null
+                      : () => TouryNavigationService.openGoogleMapsNavigation(
+                            origin: routeOrigin,
+                            destination: items[i].loceshn!,
+                            localeKey:
+                                TouryNavigationService.localeForContext(context),
+                            destinationTitle: items[i].displayLabel,
+                          ),
+                  icon: Icon(Icons.directions_rounded, color: colors.primary),
                 ),
               ],
             ),
           ),
         ),
-      ],
+    ];
+  }
+
+  Widget _buildCompactMetric({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: DsSpacing.xs),
+      child: Column(
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: typography.labelSmall.copyWith(color: colors.textSecondary),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: typography.titleSmall.copyWith(
+              color: color,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -801,36 +949,5 @@ class _MmaappWidgetState extends State<MmaappWidget> {
       formatter.maximumFractionDigits = digits;
     }
     return formatter.format(value);
-  }
-
-  /// 📊 Build stat item widget
-  Widget _buildStatItem({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    final colors = context.dsColors;
-    final typography = context.dsTypography;
-
-    return Column(
-      children: [
-        Icon(icon, size: 18, color: color),
-        const SizedBox(height: DsSpacing.xxs),
-        Text(
-          label,
-          style: typography.labelSmall.copyWith(
-            color: colors.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: typography.titleSmall.copyWith(
-            color: color,
-          ),
-        ),
-      ],
-    );
   }
 }

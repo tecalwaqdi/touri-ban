@@ -10,6 +10,8 @@ exports.createNGeniusPayment = ngeniusPayments.createNGeniusPayment;
 exports.getNGeniusPayment = ngeniusPayments.getNGeniusPayment;
 exports.finalizeNGeniusBooking = ngeniusPayments.finalizeNGeniusBooking;
 exports.createCashBooking = ngeniusPayments.createCashBooking;
+exports.getExtraHoursQuote = ngeniusPayments.getExtraHoursQuote;
+exports.addCashExtraHours = ngeniusPayments.addCashExtraHours;
 const cashBookingCompatibility = require("./cash_booking_compatibility.js");
 exports.normalizeCashBookingCompatibility =
   cashBookingCompatibility.normalizeCashBookingCompatibility;
@@ -256,14 +258,19 @@ async function sendPushNotifications(snapshot) {
         parameterData,
       },
       android: {
+        priority: "high",
         notification: {
           ...(sound && { sound: sound }),
         },
       },
       apns: {
+        headers: {
+          "apns-priority": "10",
+        },
         payload: {
           aps: {
-            ...(sound && { sound: sound }),
+            sound: sound || "default",
+            contentAvailable: true,
           },
         },
       },

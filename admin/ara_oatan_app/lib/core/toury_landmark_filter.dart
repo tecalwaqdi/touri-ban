@@ -1,6 +1,7 @@
 import '/app_state.dart';
 import '/backend/backend.dart';
 import '/core/saudi_city_registry.dart';
+import '/core/toury_geo_aliases.dart';
 import '/core/toury_i18n_text.dart';
 import '/core/toury_landmark_display_order.dart';
 import '/flutter_flow/lat_lng.dart';
@@ -23,18 +24,17 @@ bool touryIsBannedLandmarkName(String name) {
   return touryBannedLandmarkPattern.hasMatch(n);
 }
 
-/// Removes banned / out-of-city landmarks already sitting in the trip cart
-/// and keeps [FFAppState.mkan] in sync (fixes "already added" with empty cart).
+/// Removes banned landmarks from the trip cart.
+///
+/// Do **not** drop stops by GPS city bbox — that hid real admin pins that sit
+/// just outside the rectangle while `id_vill` is correct. City scoping belongs
+/// to list queries / [touryLandmarkMatchesActiveCity], not cart mutation.
 int touryPurgeBannedCartItems([FFAppState? state]) {
   final app = state ?? FFAppState();
   final before = app.cartmkss.length;
-  final expected = touryResolveActiveSaudiCity(app);
   final kept = app.cartmkss.where((e) {
     if (touryIsBannedLandmarkName(e.naim)) return false;
-    if (expected == null) return true;
-    final loc = e.loceshn;
-    if (loc == null) return true;
-    return touryLatLngInSaudiCity(loc, expected);
+    return true;
   }).toList(growable: false);
   final changed = kept.length != before;
   if (changed) {
@@ -116,13 +116,28 @@ bool touryLatLngInSaudiCity(LatLng point, SaudiCityDefinition city) {
   return km <= 12;
 }
 
-/// True when landmark coords belong to the user's active city.
-/// Mis-tagged OSM docs (Jeddah under Makkah village id) are dropped here.
+/// True when landmark belongs to the user's active city.
+///
+/// Prefer Firestore `id_vill` (canonicalized) over GPS bbox so landmarks
+/// newly added from Admin are not hidden when the pin is slightly outside
+/// the city rectangle. Coordinate checks remain for mis-tagged OSM docs
+/// whose `id_vill` does not match the active village.
 bool touryLandmarkMatchesActiveCity(
   MkanRecord record, [
   FFAppState? state,
 ]) {
-  final expected = touryResolveActiveSaudiCity(state);
+  final app = state ?? FFAppState();
+  final activeVillage = app.villnow ?? app.villa ?? app.vil;
+  final recordVillage = record.idVill;
+  if (activeVillage != null && recordVillage != null) {
+    final activeCanon = touryCanonicalVillageRef(activeVillage);
+    final recordCanon = touryCanonicalVillageRef(recordVillage);
+    if (activeCanon.path == recordCanon.path) {
+      return true;
+    }
+  }
+
+  final expected = touryResolveActiveSaudiCity(app);
   if (expected == null) return true;
   final loc = record.location;
   if (loc == null) return true;
@@ -154,15 +169,23 @@ String touryLandmarkCartSubtitle(
 }
 
 /// Filter for display: locale-visible + not banned + same city as user.
+///
+/// Pass [enforceActiveCity]=false for village-scoped Firestore queries
+/// (already `.where('id_vill' == village)`). GPS bbox filtering there hid
+/// admin-created landmarks whose pin was outside the city rectangle, while
+/// search still found them because it scanned raw [_mkanPage.items].
 List<MkanRecord> touryFilterLandmarksForUi(
   Iterable<MkanRecord> items,
   String userLocaleKey, {
   FFAppState? state,
+  bool enforceActiveCity = true,
 }) {
   final app = state ?? FFAppState();
   final out = items.where((m) {
     if (touryMkanLooksLikeJunk(m)) return false;
-    if (!touryLandmarkMatchesActiveCity(m, app)) return false;
+    if (enforceActiveCity && !touryLandmarkMatchesActiveCity(m, app)) {
+      return false;
+    }
     // Prefer locale → en; never drop a real landmark just because Arabic
     // legacy has no ky/ru string yet (display layer applies fallbacks).
     final name = touryLocalizedText(

@@ -1067,5 +1067,19 @@
   "payment_back_to_booking": "Back to booking details",
   "payment_waiting_title": "Payment pending",
   "payment_waiting_body": "The payment page was opened. You can check status or return to the booking.",
-  "profile_phone_required": "Add a valid phone number to continue."
+  "profile_phone_required": "Add a valid phone number to continue.",
+  "extra_hours_current": "Heures actuelles",
+  "extra_hours_cost": "Coût supplémentaire",
+  "extra_hours_new_total": "Nouveau total",
+  "extra_hours_new_duration": "Nouveau total des heures",
+  "extra_hours_confirm_title": "Confirmer les heures supplémentaires",
+  "extra_hours_continue_payment": "Continuer vers le paiement",
+  "extra_hours_cash_notice": "Le supplément sera ajouté au montant en espèces dû pour ce même trajet.",
+  "extra_hours_online_notice": "Les heures sont ajoutées après vérification du paiement supplémentaire.",
+  "extra_hours_quote_changed": "Le trajet ou le prix a changé. Vérifiez le nouveau récapitulatif et confirmez à nouveau.",
+  "extra_hours_payment_pending": "Un paiement pour des heures supplémentaires est déjà en cours. Reprenez-le sans nouvelle tentative.",
+  "extra_hours_ineligible": "Ce trajet ne permet pas actuellement d’ajouter des heures.",
+  "extra_hours_price_unavailable": "Le prix de la prolongation n’a pas pu être vérifié. Réessayez plus tard.",
+  "extra_hours_paid_not_applied": "Le paiement est confirmé, mais la prolongation n’a pas été appliquée. Contactez l’assistance sans payer à nouveau.",
+  "map_coordinates": "Coordonnées"
 }

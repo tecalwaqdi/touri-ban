@@ -27,6 +27,7 @@ export function Footer({ locale, dict }: Props) {
     { href: localePath(locale, "/privacy"), label: dict.footer.privacy },
     { href: localePath(locale, "/terms"), label: dict.footer.terms },
     { href: localePath(locale, "/support"), label: dict.footer.support },
+    { href: localePath(locale, "/delete-account"), label: dict.footer.deleteAccount },
   ];
 
   const phone = siteConfig.contact.phone.trim();

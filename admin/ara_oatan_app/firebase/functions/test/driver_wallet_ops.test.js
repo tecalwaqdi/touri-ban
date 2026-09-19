@@ -10,7 +10,7 @@ test("driver_wallet_ops exports accept + pay company", () => {
   );
   assert.match(src, /exports\.acceptDriverOrder/);
   assert.match(src, /exports\.payCompanyFromWallet/);
-  assert.match(src, /MIN_CASH_WALLET = 200/);
+  assert.match(src, /MIN_CASH_WALLET = 50/);
   assert.match(src, /company_payment/);
   assert.match(src, /balanceBefore/);
   assert.match(src, /balanceAfter/);

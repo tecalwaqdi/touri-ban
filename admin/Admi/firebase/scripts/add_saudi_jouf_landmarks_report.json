@@ -1,0 +1,81 @@
+{
+  "AL_JOUF": "5/5 under cities/region_sa_jouf + villages/city_sa_jouf: Zaabal Castle; Al-Rajajil Columns; Sisra Well; Kaf Historical Palace; Omar Ibn Al-Khattab Mosque (Dumat Al-Jandal)",
+  "ZAABAL_CASTLE": "Zaabal Castle (lm_sa_jouf_zaabal-castle)",
+  "AL_RAJAAJIL_COLUMNS": "Al-Rajajil Columns (lm_sa_jouf_rajajil-columns)",
+  "SISRA_WELL": "Sisra Well (lm_sa_jouf_sisra-well)",
+  "KAF_PALACE": "Kaf Historical Palace (lm_sa_jouf_kaf-palace)",
+  "OMAR_IBN_AL_KHATTAB_MOSQUE": "Omar Ibn Al-Khattab Mosque (Dumat Al-Jandal) (lm_sa_jouf_omar-mosque-dumat)",
+  "CREATED": 5,
+  "ALREADY_EXISTED": 0,
+  "DUPLICATES_CREATED": 0,
+  "IMAGES": "PASS",
+  "DESCRIPTIONS": "PASS",
+  "COORDINATES": "PASS",
+  "TRANSLATIONS": "PASS",
+  "GEO_REFERENCES": "PASS",
+  "ADMIN_RUNTIME": "PASS",
+  "CUSTOMER_RUNTIME": "PASS",
+  "EXISTING_DATA_CHANGED": 0,
+  "FINAL_STATUS": "PASS",
+  "detail": {
+    "mode": "APPLY",
+    "created": [
+      "lm_sa_jouf_zaabal-castle",
+      "lm_sa_jouf_rajajil-columns",
+      "lm_sa_jouf_sisra-well",
+      "lm_sa_jouf_kaf-palace",
+      "lm_sa_jouf_omar-mosque-dumat"
+    ],
+    "already": [],
+    "duplicatesCreated": 0,
+    "images": [
+      {
+        "id": "lm_sa_jouf_zaabal-castle",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_jouf_zaabal-castle_1789366489703.jpg?alt=media&token=955d14b4-40d9-4a87-9fb1-6c995797cd08"
+      },
+      {
+        "id": "lm_sa_jouf_rajajil-columns",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_jouf_rajajil-columns_1789366495030.jpg?alt=media&token=7138f580-db24-4474-a6d6-0e4b9d087c11"
+      },
+      {
+        "id": "lm_sa_jouf_sisra-well",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_jouf_sisra-well_1789366498703.jpg?alt=media&token=d7313a4d-eab4-4d07-b200-d1de63d556e3"
+      },
+      {
+        "id": "lm_sa_jouf_kaf-palace",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_jouf_kaf-palace_1789366502289.jpg?alt=media&token=6216122e-ee4a-4511-a11a-d411d76aedca"
+      },
+      {
+        "id": "lm_sa_jouf_omar-mosque-dumat",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_jouf_omar-mosque-dumat_1789366505956.jpg?alt=media&token=97fc4d10-2247-4469-aac0-a682677f4e3e"
+      }
+    ],
+    "perLandmark": {
+      "zaabal": {
+        "id": "lm_sa_jouf_zaabal-castle",
+        "status": "CREATED",
+        "name": "Zaabal Castle"
+      },
+      "rajajil": {
+        "id": "lm_sa_jouf_rajajil-columns",
+        "status": "CREATED",
+        "name": "Al-Rajajil Columns"
+      },
+      "sisra": {
+        "id": "lm_sa_jouf_sisra-well",
+        "status": "CREATED",
+        "name": "Sisra Well"
+      },
+      "kaf": {
+        "id": "lm_sa_jouf_kaf-palace",
+        "status": "CREATED",
+        "name": "Kaf Historical Palace"
+      },
+      "omar": {
+        "id": "lm_sa_jouf_omar-mosque-dumat",
+        "status": "CREATED",
+        "name": "Omar Ibn Al-Khattab Mosque (Dumat Al-Jandal)"
+      }
+    }
+  }
+}

@@ -7,6 +7,23 @@
 
 const RESEND_API_URL = 'https://api.resend.com/emails';
 
+const PASSWORD_RESET_TEMPLATES = {
+  en: {
+    subject: 'Password reset code — Touri Taxi Driver',
+    heading: 'Reset your password',
+    body: 'Use this code in the Touri Taxi Driver app to set a new password:',
+    expiry: 'This code expires in 10 minutes.',
+    security: 'If you did not request a password reset, ignore this email.',
+  },
+  ar: {
+    subject: 'رمز إعادة تعيين كلمة المرور — Touri Taxi Driver',
+    heading: 'إعادة تعيين كلمة المرور',
+    body: 'استخدم هذا الرمز في تطبيق Touri Taxi Driver لتعيين كلمة مرور جديدة:',
+    expiry: 'تنتهي صلاحية الرمز خلال 10 دقائق.',
+    security: 'إذا لم تطلب إعادة تعيين كلمة المرور، تجاهل هذه الرسالة.',
+  },
+};
+
 const TEMPLATES = {
   en: {
     subject: 'Your email verification code — Touri Taxi',
@@ -62,6 +79,11 @@ const TEMPLATES = {
 function resolveLocale(locale) {
   const code = String(locale || 'en').slice(0, 2).toLowerCase();
   return TEMPLATES[code] ? code : 'en';
+}
+
+function resolvePasswordResetLocale(locale) {
+  const code = String(locale || 'en').slice(0, 2).toLowerCase();
+  return PASSWORD_RESET_TEMPLATES[code] ? code : 'en';
 }
 
 function getResendApiKey() {
@@ -147,6 +169,51 @@ async function sendVerificationOtpEmail({toEmail, otp, locale}) {
   return {ok: true, id: parsed.id ? String(parsed.id) : undefined};
 }
 
+/**
+ * @param {{toEmail:string, otp:string, locale?:string}} params
+ */
+async function sendPasswordResetOtpEmail({toEmail, otp, locale}) {
+  const apiKey = getResendApiKey();
+  if (!apiKey) {
+    const err = new Error('RESEND_PROVIDER_ERROR');
+    err.code = 'RESEND_PROVIDER_ERROR';
+    throw err;
+  }
+  const from = getFromAddress();
+  const loc = resolvePasswordResetLocale(locale);
+  const tpl = PASSWORD_RESET_TEMPLATES[loc];
+
+  const res = await fetch(RESEND_API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: `${from.name} <${from.email}>`,
+      to: [toEmail],
+      subject: tpl.subject,
+      html: buildHtml(tpl, otp),
+      text: buildText(tpl, otp),
+      tags: [{name: 'purpose', value: 'password_reset_otp'}],
+    }),
+  });
+
+  const rawText = await res.text().catch(() => '');
+  if (!res.ok) {
+    console.error('resend_pwd_reset_failed', res.status, rawText.slice(0, 200));
+    const err = new Error('RESEND_PROVIDER_ERROR');
+    err.code = 'RESEND_PROVIDER_ERROR';
+    throw err;
+  }
+
+  console.info(
+    'resend_pwd_reset_ok',
+    JSON.stringify({toMasked: maskEmail(toEmail)}),
+  );
+  return {ok: true};
+}
+
 function maskEmail(email) {
   const e = String(email || '')
     .trim()
@@ -161,6 +228,7 @@ function maskEmail(email) {
 
 module.exports = {
   sendVerificationOtpEmail,
+  sendPasswordResetOtpEmail,
   resolveLocale,
   maskEmail,
   TEMPLATES,

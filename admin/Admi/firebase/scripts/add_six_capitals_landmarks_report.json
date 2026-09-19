@@ -1,0 +1,391 @@
+{
+  "MOSCOW_CAPITAL": "Moscow / موسكو (cities/region_ru_moscow + villages/city_ru_moscow)",
+  "MOSCOW_LANDMARKS": "7/7: Red Square; Saint Basil's Cathedral; Moscow Kremlin; Bolshoi Theatre; Cathedral of Christ the Saviour; Tretyakov Gallery; VDNKh Exhibition Center",
+  "TASHKENT_CAPITAL": "Tashkent / طشقند (cities/region_uz_tashkent + villages/city_uz_tashkent)",
+  "TASHKENT_LANDMARKS": "7/7: Chorsu Bazaar; Hazrati Imam Complex; Amir Timur Square; Independence Square; Tashkent Tower; Kukeldash Madrasah; State Museum of History of Uzbekistan",
+  "ASHGABAT_CAPITAL": "Ashgabat / عشق آباد (cities/region_tm_ashgabat + villages/city_tm_ashgabat)",
+  "ASHGABAT_LANDMARKS": "7/7: Neutrality Monument; Independence Monument; Ertuğrul Gazi Mosque; Alem Cultural Center; Ashgabat Flagpole; Wedding Palace; Halk Hakydasy Memorial Complex",
+  "ASTANA_CAPITAL": "Astana / أستانا (cities/region_kz_astana + villages/city_kz_astana)",
+  "ASTANA_LANDMARKS": "7/7: Baiterek Tower; Khan Shatyr; Palace of Peace and Reconciliation; Hazrat Sultan Mosque; Nur-Astana Mosque; Astana Opera; National Museum of Kazakhstan",
+  "TBILISI_CAPITAL": "Tbilisi / تبليسي (cities/region_ge_tbilisi + villages/city_ge_tbilisi)",
+  "TBILISI_LANDMARKS": "7/7: Narikala Fortress; Holy Trinity Cathedral (Sameba); Bridge of Peace; Metekhi Church; Abanotubani Sulfur Baths; Mtatsminda Pantheon; Kartlis Deda (Mother of Georgia)",
+  "CAIRO_CAPITAL": "Cairo / القاهرة (cities/region_eg_cairo + villages/city_eg_cairo)",
+  "CAIRO_LANDMARKS": "7/7: Khan el-Khalili; Mosque of Muhammad Ali; Egyptian Museum; Al-Azhar Mosque; Cairo Tower; Mosque-Madrasa of Sultan Hassan; Hanging Church",
+  "CAPITALS_CREATED": 6,
+  "CAPITALS_REUSED": 0,
+  "LANDMARKS_CREATED": 42,
+  "LANDMARKS_REUSED": 0,
+  "TOTAL_VALID_LANDMARKS": 42,
+  "DUPLICATES_CREATED": 0,
+  "TRANSLATIONS": "PASS",
+  "IMAGES": "PASS",
+  "COORDINATES": "PASS",
+  "GEO_REFERENCES": "PASS",
+  "ADMIN_RUNTIME": "PASS",
+  "CUSTOMER_RUNTIME": "PASS",
+  "EXISTING_DATA_CHANGED": "NO",
+  "FINAL_STATUS": "PASS",
+  "detail": {
+    "mode": "APPLY",
+    "capitalsCreated": [
+      "cities/region_ru_moscow",
+      "villages/city_ru_moscow",
+      "cities/region_uz_tashkent",
+      "villages/city_uz_tashkent",
+      "cities/region_tm_ashgabat",
+      "villages/city_tm_ashgabat",
+      "cities/region_kz_astana",
+      "villages/city_kz_astana",
+      "cities/region_ge_tbilisi",
+      "villages/city_ge_tbilisi",
+      "cities/region_eg_cairo",
+      "villages/city_eg_cairo"
+    ],
+    "capitalsReused": [],
+    "landmarksCreated": [
+      "lm_ru_moscow_red-square",
+      "lm_ru_moscow_saint-basil",
+      "lm_ru_moscow_kremlin",
+      "lm_ru_moscow_bolshoi",
+      "lm_ru_moscow_christ-saviour",
+      "lm_ru_moscow_tretyakov",
+      "lm_ru_moscow_vdnkh",
+      "lm_uz_tashkent_chorsu-bazaar",
+      "lm_uz_tashkent_hazrati-imam",
+      "lm_uz_tashkent_amir-timur-square",
+      "lm_uz_tashkent_independence-square",
+      "lm_uz_tashkent_tv-tower",
+      "lm_uz_tashkent_kukeldash",
+      "lm_uz_tashkent_history-museum",
+      "lm_tm_ashgabat_neutrality-monument",
+      "lm_tm_ashgabat_independence-monument",
+      "lm_tm_ashgabat_ertugrul-mosque",
+      "lm_tm_ashgabat_alem-center",
+      "lm_tm_ashgabat_flagpole",
+      "lm_tm_ashgabat_wedding-palace",
+      "lm_tm_ashgabat_halk-hakydasy",
+      "lm_kz_astana_baiterek",
+      "lm_kz_astana_khan-shatyr",
+      "lm_kz_astana_palace-of-peace",
+      "lm_kz_astana_hazrat-sultan",
+      "lm_kz_astana_nur-astana",
+      "lm_kz_astana_opera",
+      "lm_kz_astana_national-museum",
+      "lm_ge_tbilisi_narikala",
+      "lm_ge_tbilisi_sameba",
+      "lm_ge_tbilisi_bridge-of-peace",
+      "lm_ge_tbilisi_metekhi",
+      "lm_ge_tbilisi_abanotubani",
+      "lm_ge_tbilisi_mtatsminda",
+      "lm_ge_tbilisi_kartlis-deda",
+      "lm_eg_cairo_khan-el-khalili",
+      "lm_eg_cairo_muhammad-ali-mosque",
+      "lm_eg_cairo_egyptian-museum",
+      "lm_eg_cairo_al-azhar",
+      "lm_eg_cairo_cairo-tower",
+      "lm_eg_cairo_sultan-hassan",
+      "lm_eg_cairo_hanging-church"
+    ],
+    "landmarksReused": [],
+    "duplicatesCreated": 0,
+    "images": [
+      {
+        "id": "region_ru_moscow",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/regions%2Fuploads%2Fregion_ru_moscow_1789353957926.jpg?alt=media&token=acf67301-bb13-4995-9610-caca20756c35"
+      },
+      {
+        "id": "city_ru_moscow",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/cities%2Fuploads%2Fcity_ru_moscow_1789353963840.jpg?alt=media&token=2d793b68-c0f8-45a5-8dc6-4d72897cf804"
+      },
+      {
+        "id": "region_uz_tashkent",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/regions%2Fuploads%2Fregion_uz_tashkent_1789353968532.jpg?alt=media&token=4294a1b1-46d5-41d4-87c0-2e441892059e"
+      },
+      {
+        "id": "city_uz_tashkent",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/cities%2Fuploads%2Fcity_uz_tashkent_1789353972574.jpg?alt=media&token=cc61f162-073b-489a-b3c8-8ad9e0f6571a"
+      },
+      {
+        "id": "region_tm_ashgabat",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/regions%2Fuploads%2Fregion_tm_ashgabat_1789353981032.jpg?alt=media&token=911ab911-8eca-47c3-8b80-609f8d8f4a78"
+      },
+      {
+        "id": "city_tm_ashgabat",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/cities%2Fuploads%2Fcity_tm_ashgabat_1789353987355.jpg?alt=media&token=ef0f5e9e-b201-4e1a-b609-3d1d304c7509"
+      },
+      {
+        "id": "region_kz_astana",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/regions%2Fuploads%2Fregion_kz_astana_1789353995797.jpg?alt=media&token=6304ad8c-0467-443b-9470-7efdff0134f7"
+      },
+      {
+        "id": "city_kz_astana",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/cities%2Fuploads%2Fcity_kz_astana_1789354001389.jpg?alt=media&token=f7637306-d49b-488b-b218-229a36ae2bbc"
+      },
+      {
+        "id": "region_ge_tbilisi",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/regions%2Fuploads%2Fregion_ge_tbilisi_1789354006793.jpg?alt=media&token=d0063881-cf71-4ffe-917f-971c08bef759"
+      },
+      {
+        "id": "city_ge_tbilisi",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/cities%2Fuploads%2Fcity_ge_tbilisi_1789354010911.jpg?alt=media&token=471ef0a6-fcfc-438f-83d1-efabd5a8a7d7"
+      },
+      {
+        "id": "region_eg_cairo",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/regions%2Fuploads%2Fregion_eg_cairo_1789354015761.jpg?alt=media&token=6980065e-0ee2-454d-9abe-8ba0e293ed9a"
+      },
+      {
+        "id": "city_eg_cairo",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/cities%2Fuploads%2Fcity_eg_cairo_1789354019684.jpg?alt=media&token=3fea2845-9f54-4526-95e9-fa80f8c12e9a"
+      },
+      {
+        "id": "lm_ru_moscow_red-square",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ru_moscow_red-square_1789354032018.jpg?alt=media&token=95c4d0fb-2f65-4d76-8eb0-9551978c6fa0"
+      },
+      {
+        "id": "lm_ru_moscow_saint-basil",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ru_moscow_saint-basil_1789354036530.jpg?alt=media&token=a2d5ea0e-0bea-4fd5-a015-f413c61d82fe"
+      },
+      {
+        "id": "lm_ru_moscow_kremlin",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ru_moscow_kremlin_1789354041981.jpg?alt=media&token=9f9f7151-5bd5-4b89-888e-3286f8f1b517"
+      },
+      {
+        "id": "lm_ru_moscow_bolshoi",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ru_moscow_bolshoi_1789354049187.jpg?alt=media&token=4044eb73-d3c2-420a-a9f9-48189a976694"
+      },
+      {
+        "id": "lm_ru_moscow_christ-saviour",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ru_moscow_christ-saviour_1789354057126.jpg?alt=media&token=a1edf041-45ef-48eb-81aa-3c675abdf170"
+      },
+      {
+        "id": "lm_ru_moscow_tretyakov",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ru_moscow_tretyakov_1789354062363.jpg?alt=media&token=da0e652b-2d35-48df-9f9d-1979f597d2bd"
+      },
+      {
+        "id": "lm_ru_moscow_vdnkh",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ru_moscow_vdnkh_1789354066978.jpg?alt=media&token=446a8065-95fc-48c7-b187-7cadb3b6dc2f"
+      },
+      {
+        "id": "lm_uz_tashkent_chorsu-bazaar",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_uz_tashkent_chorsu-bazaar_1789354072856.jpg?alt=media&token=b04ef78e-f3aa-4212-b795-bdc9cd3345dd"
+      },
+      {
+        "id": "lm_uz_tashkent_hazrati-imam",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_uz_tashkent_hazrati-imam_1789354078442.jpg?alt=media&token=091c2e95-c64e-48f9-8df3-8dd53e6cc876"
+      },
+      {
+        "id": "lm_uz_tashkent_amir-timur-square",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_uz_tashkent_amir-timur-square_1789354083013.jpg?alt=media&token=7e694441-0232-4c03-ae7c-27cc10f3356e"
+      },
+      {
+        "id": "lm_uz_tashkent_independence-square",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_uz_tashkent_independence-square_1789354088965.jpg?alt=media&token=e550bb03-fd65-4fe2-b5ba-c2b065475361"
+      },
+      {
+        "id": "lm_uz_tashkent_tv-tower",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_uz_tashkent_tv-tower_1789354093703.jpg?alt=media&token=f35b3f0c-a353-4f29-8e41-849af811453e"
+      },
+      {
+        "id": "lm_uz_tashkent_kukeldash",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_uz_tashkent_kukeldash_1789354098552.jpg?alt=media&token=a54c51e4-a097-4050-9089-6b7a74e36868"
+      },
+      {
+        "id": "lm_uz_tashkent_history-museum",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_uz_tashkent_history-museum_1789354102974.jpg?alt=media&token=a27d1427-47d3-4f9b-843f-c4f38fc2ff78"
+      },
+      {
+        "id": "lm_tm_ashgabat_neutrality-monument",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_tm_ashgabat_neutrality-monument_1789354107853.jpg?alt=media&token=067362c8-5181-4635-b358-4829708cd0b6"
+      },
+      {
+        "id": "lm_tm_ashgabat_independence-monument",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_tm_ashgabat_independence-monument_1789354112670.jpg?alt=media&token=0b0f400d-31b7-4d15-a6b6-6439a98f83a0"
+      },
+      {
+        "id": "lm_tm_ashgabat_ertugrul-mosque",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_tm_ashgabat_ertugrul-mosque_1789354115395.jpg?alt=media&token=f207ba9a-90b8-4699-92d3-3f1c84174480"
+      },
+      {
+        "id": "lm_tm_ashgabat_alem-center",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_tm_ashgabat_alem-center_1789354118929.jpg?alt=media&token=53830b98-b81c-4684-a40c-c95677e8be5f"
+      },
+      {
+        "id": "lm_tm_ashgabat_flagpole",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_tm_ashgabat_flagpole_1789354123561.jpg?alt=media&token=a29b3015-1c17-4944-a855-e88e238b7f41"
+      },
+      {
+        "id": "lm_tm_ashgabat_wedding-palace",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_tm_ashgabat_wedding-palace_1789354128497.jpg?alt=media&token=de63de59-2d8c-4ebb-bfa6-8bf6c1438fd5"
+      },
+      {
+        "id": "lm_tm_ashgabat_halk-hakydasy",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_tm_ashgabat_halk-hakydasy_1789354133332.jpg?alt=media&token=a4f565de-3644-4e72-957d-cba90a4d7006"
+      },
+      {
+        "id": "lm_kz_astana_baiterek",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_kz_astana_baiterek_1789354136883.jpg?alt=media&token=18059410-9bca-495a-b29d-a436775b63de"
+      },
+      {
+        "id": "lm_kz_astana_khan-shatyr",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_kz_astana_khan-shatyr_1789354141467.jpg?alt=media&token=9385b6b8-085f-4093-b372-c36318904377"
+      },
+      {
+        "id": "lm_kz_astana_palace-of-peace",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_kz_astana_palace-of-peace_1789354145686.jpg?alt=media&token=0b68c36a-db03-43e3-8608-8304184190d0"
+      },
+      {
+        "id": "lm_kz_astana_hazrat-sultan",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_kz_astana_hazrat-sultan_1789354149845.jpg?alt=media&token=befd33d1-dd30-4a44-a28a-95d0cd900b30"
+      },
+      {
+        "id": "lm_kz_astana_nur-astana",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_kz_astana_nur-astana_1789354154192.jpg?alt=media&token=82790957-e927-4381-87e9-025aa762e5c2"
+      },
+      {
+        "id": "lm_kz_astana_opera",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_kz_astana_opera_1789354160074.jpg?alt=media&token=9e74c7c0-245d-473a-98b1-996a293e2cc1"
+      },
+      {
+        "id": "lm_kz_astana_national-museum",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_kz_astana_national-museum_1789354166004.jpg?alt=media&token=cbeb372b-cf4d-40f1-8e5c-b1bcb98706b4"
+      },
+      {
+        "id": "lm_ge_tbilisi_narikala",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ge_tbilisi_narikala_1789354170173.jpg?alt=media&token=d5311097-c980-45b8-80e7-3d7e08380456"
+      },
+      {
+        "id": "lm_ge_tbilisi_sameba",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ge_tbilisi_sameba_1789354175164.jpg?alt=media&token=206759b7-0153-4ea8-8e9d-1abe5a74d1a2"
+      },
+      {
+        "id": "lm_ge_tbilisi_bridge-of-peace",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ge_tbilisi_bridge-of-peace_1789354180171.jpg?alt=media&token=e7aff549-9500-4f40-8eaa-83f673938eb0"
+      },
+      {
+        "id": "lm_ge_tbilisi_metekhi",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ge_tbilisi_metekhi_1789354189077.jpg?alt=media&token=73785294-650c-4644-9c59-80ca8d59b1a2"
+      },
+      {
+        "id": "lm_ge_tbilisi_abanotubani",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ge_tbilisi_abanotubani_1789354199672.jpg?alt=media&token=eee31457-8dbb-4482-bd12-3dbd25dd2d1d"
+      },
+      {
+        "id": "lm_ge_tbilisi_mtatsminda",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ge_tbilisi_mtatsminda_1789354205890.jpg?alt=media&token=33f9f6b8-ca89-419d-8a05-aab4c03c673d"
+      },
+      {
+        "id": "lm_ge_tbilisi_kartlis-deda",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_ge_tbilisi_kartlis-deda_1789354211056.jpg?alt=media&token=f45aaea2-d25e-4665-93ce-f10add7147bc"
+      },
+      {
+        "id": "lm_eg_cairo_khan-el-khalili",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_eg_cairo_khan-el-khalili_1789354214940.jpg?alt=media&token=a2545f18-59e8-4bc6-9a59-7898e12e7ee9"
+      },
+      {
+        "id": "lm_eg_cairo_muhammad-ali-mosque",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_eg_cairo_muhammad-ali-mosque_1789354218948.jpg?alt=media&token=4fd78432-fde5-4d9f-8f3c-47b69cff1144"
+      },
+      {
+        "id": "lm_eg_cairo_egyptian-museum",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_eg_cairo_egyptian-museum_1789354222990.jpg?alt=media&token=dc3a83b7-11a0-4fed-a366-4d3e145b5556"
+      },
+      {
+        "id": "lm_eg_cairo_al-azhar",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_eg_cairo_al-azhar_1789354227830.jpg?alt=media&token=2a16dea5-7af2-4e39-a613-aeae9189b2a8"
+      },
+      {
+        "id": "lm_eg_cairo_cairo-tower",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_eg_cairo_cairo-tower_1789354230954.jpg?alt=media&token=0da85053-23dc-4af2-b87a-f4be597cb305"
+      },
+      {
+        "id": "lm_eg_cairo_sultan-hassan",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_eg_cairo_sultan-hassan_1789354234345.jpg?alt=media&token=532b1edc-25ac-4564-8bbb-8d3061fe6b92"
+      },
+      {
+        "id": "lm_eg_cairo_hanging-church",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_eg_cairo_hanging-church_1789354238437.jpg?alt=media&token=fc6a0a59-76b3-498a-ae0e-c2f1b67b919a"
+      }
+    ],
+    "errors": [],
+    "perCountry": {
+      "russia": {
+        "regionId": "region_ru_moscow",
+        "villageId": "city_ru_moscow",
+        "landmarks": [
+          "lm_ru_moscow_red-square",
+          "lm_ru_moscow_saint-basil",
+          "lm_ru_moscow_kremlin",
+          "lm_ru_moscow_bolshoi",
+          "lm_ru_moscow_christ-saviour",
+          "lm_ru_moscow_tretyakov",
+          "lm_ru_moscow_vdnkh"
+        ]
+      },
+      "uzbekistan": {
+        "regionId": "region_uz_tashkent",
+        "villageId": "city_uz_tashkent",
+        "landmarks": [
+          "lm_uz_tashkent_chorsu-bazaar",
+          "lm_uz_tashkent_hazrati-imam",
+          "lm_uz_tashkent_amir-timur-square",
+          "lm_uz_tashkent_independence-square",
+          "lm_uz_tashkent_tv-tower",
+          "lm_uz_tashkent_kukeldash",
+          "lm_uz_tashkent_history-museum"
+        ]
+      },
+      "turkmenistan": {
+        "regionId": "region_tm_ashgabat",
+        "villageId": "city_tm_ashgabat",
+        "landmarks": [
+          "lm_tm_ashgabat_neutrality-monument",
+          "lm_tm_ashgabat_independence-monument",
+          "lm_tm_ashgabat_ertugrul-mosque",
+          "lm_tm_ashgabat_alem-center",
+          "lm_tm_ashgabat_flagpole",
+          "lm_tm_ashgabat_wedding-palace",
+          "lm_tm_ashgabat_halk-hakydasy"
+        ]
+      },
+      "kazakhstan": {
+        "regionId": "region_kz_astana",
+        "villageId": "city_kz_astana",
+        "landmarks": [
+          "lm_kz_astana_baiterek",
+          "lm_kz_astana_khan-shatyr",
+          "lm_kz_astana_palace-of-peace",
+          "lm_kz_astana_hazrat-sultan",
+          "lm_kz_astana_nur-astana",
+          "lm_kz_astana_opera",
+          "lm_kz_astana_national-museum"
+        ]
+      },
+      "georgia": {
+        "regionId": "region_ge_tbilisi",
+        "villageId": "city_ge_tbilisi",
+        "landmarks": [
+          "lm_ge_tbilisi_narikala",
+          "lm_ge_tbilisi_sameba",
+          "lm_ge_tbilisi_bridge-of-peace",
+          "lm_ge_tbilisi_metekhi",
+          "lm_ge_tbilisi_abanotubani",
+          "lm_ge_tbilisi_mtatsminda",
+          "lm_ge_tbilisi_kartlis-deda"
+        ]
+      },
+      "egypt": {
+        "regionId": "region_eg_cairo",
+        "villageId": "city_eg_cairo",
+        "landmarks": [
+          "lm_eg_cairo_khan-el-khalili",
+          "lm_eg_cairo_muhammad-ali-mosque",
+          "lm_eg_cairo_egyptian-museum",
+          "lm_eg_cairo_al-azhar",
+          "lm_eg_cairo_cairo-tower",
+          "lm_eg_cairo_sultan-hassan",
+          "lm_eg_cairo_hanging-church"
+        ]
+      }
+    }
+  }
+}

@@ -1067,5 +1067,19 @@
   "payment_back_to_booking": "Back to booking details",
   "payment_waiting_title": "Payment pending",
   "payment_waiting_body": "The payment page was opened. You can check status or return to the booking.",
-  "profile_phone_required": "Add a valid phone number to continue."
+  "profile_phone_required": "Add a valid phone number to continue.",
+  "extra_hours_current": "Текущие часы",
+  "extra_hours_cost": "Дополнительная стоимость",
+  "extra_hours_new_total": "Новая сумма",
+  "extra_hours_new_duration": "Новое количество часов",
+  "extra_hours_confirm_title": "Подтвердить дополнительные часы",
+  "extra_hours_continue_payment": "Перейти к оплате",
+  "extra_hours_cash_notice": "Доплата будет добавлена к наличной оплате этой же поездки.",
+  "extra_hours_online_notice": "Часы добавляются только после подтверждения доплаты.",
+  "extra_hours_quote_changed": "Поездка или цена изменились. Проверьте новые данные и подтвердите снова.",
+  "extra_hours_payment_pending": "Доплата за часы уже начата. Продолжите её без создания новой попытки.",
+  "extra_hours_ineligible": "Сейчас к этой поездке нельзя добавить часы.",
+  "extra_hours_price_unavailable": "Не удалось проверить цену продления. Попробуйте позже.",
+  "extra_hours_paid_not_applied": "Оплата подтверждена, но продление не применено. Обратитесь в поддержку и не платите повторно.",
+  "map_coordinates": "Координаты"
 }

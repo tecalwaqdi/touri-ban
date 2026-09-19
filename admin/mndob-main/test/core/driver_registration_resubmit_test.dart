@@ -37,7 +37,7 @@ void main() {
     });
 
     test('buildResubmitProfilePayload excludes review metadata keys', () {
-      const model = DriverRegistrationReviewModel(
+      final model = DriverRegistrationReviewModel(
         uid: 'u1',
         displayName: 'Ali',
         email: 'a@b.com',
@@ -59,7 +59,8 @@ void main() {
         photoUrl: 'https://example.com/p.jpg',
         idImageUrl: 'https://example.com/id.jpg',
         carImageUrl: 'https://example.com/car.jpg',
-        licenseImageUrl: 'https://example.com/lic.jpg',
+        licenseFrontUrl: 'https://example.com/lic-front.jpg',
+        licenseBackUrl: 'https://example.com/lic-back.jpg',
         location: null,
         isResubmit: true,
         uploadInFlight: false,

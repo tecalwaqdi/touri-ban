@@ -1,0 +1,11 @@
+Touri Taxi — Google Play
+versionName: 9.1.36
+versionCode: 55
+package: com.mycompany.araoatanapp
+
+What's new:
+- Notify online drivers by matching vehicle class (e.g. luxury)
+
+Upload:
+Play Console → Touri Taxi → Create release → upload:
+admin/releases/2026-09-16/play/customer/TouriTaxi-customer-9.1.36-55.aab

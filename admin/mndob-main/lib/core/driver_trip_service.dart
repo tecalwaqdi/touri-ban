@@ -10,6 +10,7 @@ import '/backend/push_notifications/push_notifications_util.dart';
 import '/backend/schema/enums/enums.dart';
 import '/core/driver_app_lifecycle_coordinator.dart';
 import '/core/driver_directions_service.dart';
+import '/core/driver_lifecycle_state.dart';
 import '/core/driver_offline_queue.dart';
 import '/core/driver_order_availability.dart';
 import '/core/driver_order_meta.dart';
@@ -39,6 +40,7 @@ abstract final class DriverTripService {
 
   static const double arrivalRadiusMeters = 80.0;
   static const double dropoffRadiusMeters = 150.0;
+
   /// Minimum seconds after start before complete is allowed without dropoff proximity.
   static const int minTripSecondsBeforeComplete = 60;
 
@@ -297,17 +299,14 @@ abstract final class DriverTripService {
               : 'BOOKING_ASSIGNMENT_FAILED');
       final mappedCode = code == 'insufficient-wallet'
           ? 'DRIVER_WALLET_INSUFFICIENT'
-          : (code == 'INTERNAL' || code == 'internal'
-              ? 'INTERNAL'
-              : code);
+          : (code == 'INTERNAL' || code == 'internal' ? 'INTERNAL' : code);
       _acceptLog('accept_failed', sw, mappedCode);
       return DriverWalletGateResult(
         ok: false,
         code: mappedCode,
         message: mappedCode == 'DRIVER_WALLET_INSUFFICIENT'
             ? _messageForCode('DRIVER_WALLET_INSUFFICIENT')
-            : (errText.isNotEmpty &&
-                    !_looksTechnicalError(errText)
+            : (errText.isNotEmpty && !_looksTechnicalError(errText)
                 ? errText
                 : _messageForCode(mappedCode)),
       );
@@ -504,8 +503,7 @@ abstract final class DriverTripService {
     if (order.mndobUser?.path != currentUserReference?.path) {
       throw StateError('PERMISSION_DENIED');
     }
-    final code =
-        (order.snapshotData['status_code'] ?? '').toString().trim();
+    final code = (order.snapshotData['status_code'] ?? '').toString().trim();
     final allowed = code == TourySystemStatusCodes.driverArrived ||
         order.halhText == DriverTripHalh.driverArrived;
     if (!allowed) {
@@ -513,21 +511,33 @@ abstract final class DriverTripService {
     }
 
     final startAt = getCurrentTimestamp;
-    final hours = order.totalTaim;
-    final endAt = hours > 0 ? startAt.add(Duration(hours: hours)) : null;
     final safeLoc = usableDriverLocation(driverLocation);
-
-    await order.reference.update({
-      ...createOrderRecordData(
-        halhText: DriverTripHalh.inProgress,
-        mapuser: safeLoc,
-        timestamp: startAt,
-        start: startAt,
-        endTime: endAt,
-        activeOrder: true,
-      ),
-      'status_code': TourySystemStatusCodes.tripInProgress,
-      'trip_started_at': FieldValue.serverTimestamp(),
+    final endAt =
+        await FirebaseFirestore.instance.runTransaction<DateTime?>((tx) async {
+      final snap = await tx.get(order.reference);
+      if (!snap.exists) throw StateError('BOOKING_INVALID_STATE');
+      final fresh = OrderRecord.fromSnapshot(snap);
+      if (fresh.mndobUser?.path != currentUserReference?.path ||
+          (fresh.snapshotData['status_code'] !=
+                  TourySystemStatusCodes.driverArrived &&
+              fresh.halhText != DriverTripHalh.driverArrived)) {
+        throw StateError('BOOKING_INVALID_STATE');
+      }
+      final hours = fresh.totalTaim;
+      final ends = hours > 0 ? startAt.add(Duration(hours: hours)) : null;
+      tx.update(order.reference, {
+        ...createOrderRecordData(
+          halhText: DriverTripHalh.inProgress,
+          mapuser: safeLoc,
+          timestamp: startAt,
+          start: startAt,
+          endTime: ends,
+          activeOrder: true,
+        ),
+        'status_code': TourySystemStatusCodes.tripInProgress,
+        'trip_started_at': FieldValue.serverTimestamp(),
+      });
+      return ends;
     });
 
     FFAppState().startTime = startAt;
@@ -539,15 +549,14 @@ abstract final class DriverTripService {
 
   /// Whether the driver may complete:
   /// 1) trip in progress
-  /// 2) booked duration fully elapsed
-  /// 3) near dropoff (نقطة التسليم) when destination + GPS are known
+  /// 2) booked duration / endTime fully elapsed
+  /// Dropoff proximity is not required when a real booked end exists.
   static bool canCompleteTrip({
     required OrderRecord order,
     LatLng? driverLocation,
     bool allowRemoteOverride = false,
   }) {
-    final code =
-        (order.snapshotData['status_code'] ?? '').toString().trim();
+    final code = (order.snapshotData['status_code'] ?? '').toString().trim();
     final canByStatus = code == TourySystemStatusCodes.tripInProgress ||
         code == TourySystemStatusCodes.tripStarted ||
         order.halhText == DriverTripHalh.inProgress;
@@ -556,30 +565,11 @@ abstract final class DriverTripService {
     final started = tripStartedAt(order);
     if (started == null) return false;
 
-    final elapsed = DateTime.now().difference(started);
-    final required = bookedTripDuration(order);
-    if (elapsed < required) return false;
+    final ends = tripEndsAt(order);
+    if (ends == null || DateTime.now().isBefore(ends)) return false;
 
-    if (allowRemoteOverride) return true;
-
-    final dropoff = order.tripDestination;
-    final driver = usableDriverLocation(driverLocation) ??
-        usableDriverLocation(order.mapuser) ??
-        usableDriverLocation(currentUserDocument?.loceshnMndobNow);
-
-    // No known dropoff → time gate only (cannot prove proximity).
-    if (dropoff == null) return true;
-
-    // Dropoff known but GPS missing/invalid → block complete.
-    if (driver == null) return false;
-
-    final meters = haversineMeters(
-      driver.latitude,
-      driver.longitude,
-      dropoff.latitude,
-      dropoff.longitude,
-    );
-    return meters <= dropoffRadiusMeters;
+    // Booked end elapsed (or remote override) → complete allowed once.
+    return true;
   }
 
   /// Why complete is blocked (for UI). Null when allowed.
@@ -591,22 +581,6 @@ abstract final class DriverTripService {
     final left = remainingBeforeComplete(order);
     if (left == null) return 'BOOKING_INVALID_STATE';
     if (left > Duration.zero) return 'BOOKING_TOO_FAR_OR_TOO_EARLY';
-
-    final dropoff = order.tripDestination;
-    if (dropoff == null) return null;
-
-    final driver = usableDriverLocation(driverLocation) ??
-        usableDriverLocation(order.mapuser) ??
-        usableDriverLocation(currentUserDocument?.loceshnMndobNow);
-    if (driver == null) return 'LOCATION_REQUIRED';
-
-    final meters = haversineMeters(
-      driver.latitude,
-      driver.longitude,
-      dropoff.latitude,
-      dropoff.longitude,
-    );
-    if (meters > dropoffRadiusMeters) return 'TOO_FAR_FROM_DROPOFF';
     return null;
   }
 
@@ -618,21 +592,21 @@ abstract final class DriverTripService {
   }
 
   static DateTime? tripStartedAt(OrderRecord order) {
-    return order.start ??
-        _asDateTime(order.snapshotData['trip_started_at']);
+    return order.start ?? _asDateTime(order.snapshotData['trip_started_at']);
   }
 
   /// Booked trip end: prefer Firestore `endTime`, else start + total_taim.
   static DateTime? tripEndsAt(OrderRecord order) {
-    if (order.endTime != null) return order.endTime;
     final started = tripStartedAt(order);
-    if (started == null) return null;
-    return started.add(bookedTripDuration(order));
+    final durationEnd = started?.add(bookedTripDuration(order));
+    final storedEnd = order.endTime;
+    if (storedEnd == null) return durationEnd;
+    if (durationEnd == null) return storedEnd;
+    return storedEnd.isAfter(durationEnd) ? storedEnd : durationEnd;
   }
 
   static bool isTripInProgress(OrderRecord order) {
-    final code =
-        (order.snapshotData['status_code'] ?? '').toString().trim();
+    final code = (order.snapshotData['status_code'] ?? '').toString().trim();
     return code == TourySystemStatusCodes.tripInProgress ||
         code == TourySystemStatusCodes.tripStarted ||
         order.halhText == DriverTripHalh.inProgress;
@@ -665,10 +639,9 @@ abstract final class DriverTripService {
     OrderRecord order, {
     DateTime? now,
   }) {
-    final started = tripStartedAt(order);
-    if (started == null) return null;
-    final left =
-        bookedTripDuration(order) - (now ?? DateTime.now()).difference(started);
+    final ends = tripEndsAt(order);
+    if (ends == null) return null;
+    final left = ends.difference(now ?? DateTime.now());
     return left.isNegative ? Duration.zero : left;
   }
 
@@ -718,22 +691,34 @@ abstract final class DriverTripService {
     // Cash is NOT auto-collected on complete — driver must confirm separately.
     // Electronic payment_status is never written by the driver app.
     // Preserve booked endTime; completion instant lives in completedAt/dateend.
-    await order.reference.update({
-      ...createOrderRecordData(
-        halhText: DriverTripHalh.completed,
-        mndobUser: currentUserReference,
-        dateend: getCurrentTimestamp,
-        activeOrder: false,
-        halhOrderMndob: HalhOrder.Completed,
-        mapuser: safeLoc,
-      ),
-      'status_code': TourySystemStatusCodes.completed,
-      'halh_text_completed_alias': DriverTripHalh.completedAlias,
-      'completedAt': FieldValue.serverTimestamp(),
-      if (isCash && !DriverPaymentStatusMapper.isCashCollected(order)) ...{
-        'payment_status': TourySystemStatusCodes.pendingCash,
-        'cash_collection_status': 'pending',
-      },
+    await FirebaseFirestore.instance.runTransaction((tx) async {
+      final snap = await tx.get(order.reference);
+      if (!snap.exists) throw StateError('BOOKING_INVALID_STATE');
+      final fresh = OrderRecord.fromSnapshot(snap);
+      if (fresh.mndobUser?.path != currentUserReference?.path ||
+          !canCompleteTrip(
+              order: fresh,
+              driverLocation: driverLocation,
+              allowRemoteOverride: allowRemoteOverride)) {
+        throw StateError('BOOKING_TOO_FAR_OR_TOO_EARLY');
+      }
+      tx.update(order.reference, {
+        ...createOrderRecordData(
+          halhText: DriverTripHalh.completed,
+          mndobUser: currentUserReference,
+          dateend: getCurrentTimestamp,
+          activeOrder: false,
+          halhOrderMndob: HalhOrder.Completed,
+          mapuser: safeLoc,
+        ),
+        'status_code': TourySystemStatusCodes.completed,
+        'halh_text_completed_alias': DriverTripHalh.completedAlias,
+        'completedAt': FieldValue.serverTimestamp(),
+        if (isCash && !DriverPaymentStatusMapper.isCashCollected(order)) ...{
+          'payment_status': TourySystemStatusCodes.pendingCash,
+          'cash_collection_status': 'pending',
+        },
+      });
     });
 
     FFAppState().EndDate = null;
@@ -792,7 +777,8 @@ abstract final class DriverTripService {
       return const DriverWalletGateResult(
         ok: false,
         code: 'ELECTRONIC_PAYMENT',
-        message: 'Electronic payment status comes from the payment backend only.',
+        message:
+            'Electronic payment status comes from the payment backend only.',
       );
     }
 
@@ -820,8 +806,7 @@ abstract final class DriverTripService {
       );
     }
 
-    final code =
-        (fresh.snapshotData['status_code'] ?? '').toString().trim();
+    final code = (fresh.snapshotData['status_code'] ?? '').toString().trim();
     if (code != TourySystemStatusCodes.completed &&
         fresh.halhText != DriverTripHalh.completed) {
       return const DriverWalletGateResult(
@@ -866,8 +851,26 @@ abstract final class DriverTripService {
       );
     }
 
-    final code =
-        (order.snapshotData['status_code'] ?? '').toString().trim();
+    final code = (order.snapshotData['status_code'] ?? '').toString().trim();
+    // Once the trip has started, drivers cannot cancel (complete only).
+    if (DriverTripActionGates.isTripStarted(code, order.halhText) ||
+        order.start != null ||
+        order.snapshotData['trip_started_at'] != null) {
+      return DriverWalletGateResult(
+        ok: false,
+        code: 'TRIP_ALREADY_STARTED',
+        message: _messageForCode('TRIP_ALREADY_STARTED'),
+      );
+    }
+    // Product rule: no driver cancel after accept (UI also hides the button).
+    if (!DriverTripActionGates.canCancel(code, order.halhText)) {
+      return DriverWalletGateResult(
+        ok: false,
+        code: 'DRIVER_CANCEL_NOT_ALLOWED',
+        message: _messageForCode('DRIVER_CANCEL_NOT_ALLOWED'),
+      );
+    }
+
     final active = TourySystemStatusCodes.isActiveTripCode(code) ||
         DriverTripHalh.isActiveTrip(order.halhText);
     if (!active) {
@@ -1052,8 +1055,7 @@ abstract final class DriverTripService {
     required OrderRecord order,
     required LatLng driverPosition,
   }) async {
-    final code =
-        (order.snapshotData['status_code'] ?? '').toString().trim();
+    final code = (order.snapshotData['status_code'] ?? '').toString().trim();
     final headingToPickup = code == TourySystemStatusCodes.driverAssigned ||
         code == TourySystemStatusCodes.driverArriving ||
         order.halhText == DriverTripHalh.accepted;
@@ -1121,8 +1123,7 @@ abstract final class DriverTripService {
     double? speed,
   }) async {
     final orderUpdates = <String, dynamic>{
-      'mapuser':
-          GeoPoint(driverPosition.latitude, driverPosition.longitude),
+      'mapuser': GeoPoint(driverPosition.latitude, driverPosition.longitude),
       'timestamp': FieldValue.serverTimestamp(),
     };
     if (heading != null && heading.isFinite) {
@@ -1363,8 +1364,7 @@ abstract final class DriverTripService {
 
   static bool isActiveTripForCurrentDriver(OrderRecord order) {
     if (order.mndobUser?.path != currentUserReference?.path) return false;
-    final code =
-        (order.snapshotData['status_code'] ?? '').toString().trim();
+    final code = (order.snapshotData['status_code'] ?? '').toString().trim();
     return TourySystemStatusCodes.isActiveTripCode(code) ||
         DriverTripHalh.isActiveTrip(order.halhText);
   }
@@ -1440,6 +1440,10 @@ abstract final class DriverTripService {
         return 'Could not determine your location. Enable GPS and try again.';
       case 'PERMISSION_DENIED':
         return 'You do not have permission to perform this action.';
+      case 'TRIP_ALREADY_STARTED':
+        return 'Cannot cancel after the trip has started.';
+      case 'DRIVER_CANCEL_NOT_ALLOWED':
+        return 'Drivers cannot cancel this trip. Ask the customer or support.';
       case 'OFFLINE':
         return 'No internet connection. Check your network and try again.';
       case 'ACCEPT_IN_PROGRESS':

@@ -638,7 +638,7 @@ class _HomeMapLayerState extends State<_HomeMapLayer> {
 
     return AuthUserStreamWidget(
       builder: (context) {
-        final car = currentUserDocument?.mndobTypeCar;
+        final car = DriverOrderMatch.driverTypeCarRef();
         if (car == null) {
           return _buildMap(null);
         }

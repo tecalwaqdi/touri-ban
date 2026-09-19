@@ -464,7 +464,7 @@ async function detectOrphans({db, auth, data}) {
 
 async function closeFinancialPeriod({db, auth, data, now}) {
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', ledger.fail);
+  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', ledger.fail, {auth});
   const checklist = await buildPeriodCloseChecklist({db, auth, data});
   return periods.closeFinancialPeriod({db, auth, data, now, checklist});
 }
@@ -472,7 +472,7 @@ async function closeFinancialPeriod({db, auth, data, now}) {
 async function createAdjustmentDraft({db, auth, data, now}) {
   ledger.requireWriter(auth);
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', ledger.fail);
+  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', ledger.fail, {auth});
   const driverId = String(data.driverId || '').trim();
   const countryRef = String(data.countryRef || data.countryId || '').trim();
   const currency = v2.normalizeCode(data.currency);

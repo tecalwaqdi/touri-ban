@@ -18,6 +18,7 @@ import '/index.dart';
 import '/components/driver_new_order_listener.dart';
 import '/components/driver_location_wake_scope.dart';
 import '/core/driver_splash_screen.dart';
+import '/core/driver_registration_update_payload.dart';
 
 export 'package:go_router/go_router.dart';
 export 'serialization_util.dart';
@@ -209,7 +210,19 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: RegdreverWidget.routeName,
           path: RegdreverWidget.routePath,
-          builder: (context, params) => const RegdreverWidget(),
+          builder: (context, params) {
+            final modeParam =
+                (params.getParam('mode', ParamType.String) as String?) ?? '';
+            final update = DriverRegistrationNavMode.isUpdateMode(
+              queryMode: modeParam,
+              extra: params.state.extra,
+            );
+            return RegdreverWidget(
+              mode: update
+                  ? RegdreverMode.updateExisting
+                  : RegdreverMode.register,
+            );
+          },
         ),
         FFRoute(
           name: ListvillWidget.routeName,

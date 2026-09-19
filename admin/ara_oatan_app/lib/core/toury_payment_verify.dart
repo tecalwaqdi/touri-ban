@@ -26,8 +26,9 @@ class TouryPaymentVerification {
 
 /// يتحقق من حالة الدفع مع N-Genius قبل اعتماد الطلب أو شحن المحفظة.
 Future<TouryPaymentVerification> touryVerifyGatewayPayment(
-  String orderId,
-) async {
+  String orderId, {
+  bool extraHours = false,
+}) async {
   final trimmed = orderId.trim();
   if (trimmed.isEmpty) {
     return const TouryPaymentVerification(
@@ -35,9 +36,12 @@ Future<TouryPaymentVerification> touryVerifyGatewayPayment(
     );
   }
 
-  if (TouryPaymentFlags.useExternalPaymentApi) {
+  if (!extraHours && TouryPaymentFlags.useExternalPaymentApi) {
     try {
       final body = await PaymentApiClient().getStatus(trimmed);
+      if (body['purpose'] == 'extra_hours') {
+        return touryVerifyGatewayPayment(trimmed, extraHours: true);
+      }
       final status = body['status']?.toString() ?? '';
       final response = ApiCallResponse(body, const {}, 200);
       if (status == 'paid' || status == 'captured') {
@@ -48,9 +52,7 @@ Future<TouryPaymentVerification> touryVerifyGatewayPayment(
           status: status,
         );
       }
-      if (status == 'failed' ||
-          status == 'cancelled' ||
-          status == 'expired') {
+      if (status == 'failed' || status == 'cancelled' || status == 'expired') {
         return TouryPaymentVerification(
           result: TouryPaymentVerifyResult.failed,
           response: response,
@@ -91,7 +93,8 @@ Future<TouryPaymentVerification> touryVerifyGatewayPayment(
       status: status,
     );
   }
-  if (TouryNGeniusService.isFailed(body)) {
+  if (TouryNGeniusService.isFailed(body) ||
+      (extraHours && const {'cancelled', 'expired'}.contains(status))) {
     return TouryPaymentVerification(
       result: TouryPaymentVerifyResult.failed,
       response: response,

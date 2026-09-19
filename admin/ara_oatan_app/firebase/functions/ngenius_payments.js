@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 const axios = require("axios");
+const extraHours = require("./extra_hours.js");
 const {
   assertAndClaimActiveOrderSlot,
 } = require("./active_order_lock.js");
@@ -296,45 +297,33 @@ function requireBookingFinancialMajors(quote, contextLabel) {
   return majors;
 }
 
-async function verifiedExtraHoursAmount(data, uid) {
-  const orderPath = documentPath(data.orderPath, "order");
-  const extraHours = safeInteger(data.extraHours, 1, 24 * 7, "extra hours");
-  const firestore = admin.firestore();
-  const orderSnapshot = await firestore.doc(orderPath).get();
-  if (!orderSnapshot.exists) {
-    throw new functions.https.HttpsError("not-found", "Booking not found.");
-  }
-  const order = orderSnapshot.data() || {};
-  const expectedUser = firestore.collection("user").doc(uid);
-  if (!order.USER || order.USER.path !== expectedUser.path) {
-    throw new functions.https.HttpsError("permission-denied", "Access denied.");
-  }
-  if (!order.carRev || !order.carRev.path) {
+// Keep extension errors structured for the existing customer sheet.
+async function extensionOperation(action) {
+  try { return await action(); } catch (error) {
+    if (!error.extensionCode) throw error;
     throw new functions.https.HttpsError(
-      "failed-precondition",
-      "The booking has no active vehicle price.",
+      error.extensionCode === "EXTRA_HOURS_NOT_OWNER" ? "permission-denied" : "failed-precondition",
+      error.extensionCode, {code: error.extensionCode, ...error.details},
     );
   }
-  const carSnapshot = await order.carRev.get();
-  if (!carSnapshot.exists || carSnapshot.data().acctev === false) {
-    throw new functions.https.HttpsError(
-      "failed-precondition",
-      "The booking vehicle is no longer available.",
-    );
-  }
-  const hourlyRateSar = safeInteger(
-    carSnapshot.data().sr,
-    1,
-    1000000,
-    "car hourly rate",
-  );
-  return {
-    amountHalalas: hourlyRateSar * 100 * extraHours,
-    orderPath,
-    extraHours,
-    hourlyRateSar,
-  };
 }
+
+exports.getExtraHoursQuote = functions.region("us-central1")
+  .runWith(cashRuntime).https.onCall(async (data, context) => {
+    requireAuth(context);
+    requireAppCheck(context);
+    return extensionOperation(() => extraHours.getQuote(admin.firestore(), context.auth.uid, data));
+  });
+
+exports.addCashExtraHours = functions.region("us-central1")
+  .runWith(cashRuntime).https.onCall(async (data, context) => {
+    requireAuth(context);
+    requireAppCheck(context);
+    return extensionOperation(() => extraHours.applyExtension({
+      db: admin.firestore(), FieldValue: admin.firestore.FieldValue,
+      Timestamp: admin.firestore.Timestamp, uid: context.auth.uid, data,
+    }));
+  });
 
 async function getAccessToken() {
   const { apiKey, production, realm } = ngeniusConfig();
@@ -559,6 +548,8 @@ function sessionResponse(sessionId, data) {
     state: data.gateway_state || "",
     source: { transaction_url: data.payment_url || null },
     provider: "ngenius",
+    purpose: data.purpose || null,
+    orderId: data.orderPath ? data.orderPath.split("/").pop() : null,
     chargedAmount: data.amount_halalas,
     amount_halalas: data.amount_halalas,
     currency: data.currency || "SAR",
@@ -630,11 +621,13 @@ async function syncSessionFromGateway(sessionRef, session, orderData) {
   const outletMatches = !orderData.outletId ||
     orderData.outletId === ngeniusConfig().outletRef;
 
-  if (!amountMatches || !outletMatches) {
+  const currencyMatches = session.purpose !== "extra_hours" ||
+    String(orderData.amount && orderData.amount.currencyCode || "").toUpperCase() === session.currency;
+  if (!amountMatches || !outletMatches || !currencyMatches) {
     await sessionRef.set({
       status: "security_review",
       gateway_state: normalized.state,
-      security_error: !amountMatches ? "amount_mismatch" : "outlet_mismatch",
+      security_error: !amountMatches ? "amount_mismatch" : !outletMatches ? "outlet_mismatch" : "currency_mismatch",
       updated_at: admin.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
     throw new functions.https.HttpsError(
@@ -650,7 +643,21 @@ async function syncSessionFromGateway(sessionRef, session, orderData) {
     verified_at: admin.firestore.FieldValue.serverTimestamp(),
     updated_at: admin.firestore.FieldValue.serverTimestamp(),
   }, { merge: true });
-  return normalized;
+  if (session.purpose === "extra_hours" && normalized.status === "paid") {
+    try {
+      await extraHours.applyExtension({db: admin.firestore(),
+        FieldValue: admin.firestore.FieldValue, Timestamp: admin.firestore.Timestamp,
+        uid: session.user_id, sessionId: sessionRef.id});
+    } catch (error) {
+      // A trip may finish while 3DS is open. Keep the real paid amount and
+      // flag the unapplied extension; never reopen or extend a terminal trip.
+      if (!error.extensionCode) throw error;
+      await sessionRef.set({extra_hours_application_error: error.extensionCode,
+        extra_hours_requires_review: true}, {merge: true});
+    }
+  }
+  return {...normalized, purpose: session.purpose,
+    orderId: session.orderPath ? session.orderPath.split("/").pop() : null};
 }
 
 exports.createNGeniusPayment = functions
@@ -672,43 +679,43 @@ exports.createNGeniusPayment = functions
     }
 
     let verifiedQuote = null;
-    if (purpose === "booking") {
-      verifiedQuote = await verifiedBookingAmount(data);
-    } else if (purpose === "extra_hours") {
-      verifiedQuote = await verifiedExtraHoursAmount(data, uid);
-    } else if (purpose === "wallet") {
-      verifiedQuote = await verifiedWalletTopUpAmount(data);
-    } else {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        "Unsupported payment purpose.",
-      );
-    }
-    // Never charge using Flutter-supplied amount.
-    const amount = verifiedQuote.amountHalalas;
-    const sessionId = sessionIdFor(uid, idempotencyKey);
-    const sessionRef = admin.firestore().collection(PAYMENT_SESSIONS).doc(sessionId);
     let existingData = null;
-
-    await admin.firestore().runTransaction(async (transaction) => {
-      const existing = await transaction.get(sessionRef);
-      if (existing.exists) {
-        existingData = existing.data();
-        return;
+    let sessionId = sessionIdFor(uid, idempotencyKey);
+    let sessionRef = admin.firestore().collection(PAYMENT_SESSIONS).doc(sessionId);
+    if (purpose === "extra_hours") {
+      const reserved = await extensionOperation(() => extraHours.reservePayment(
+        admin.firestore(), admin.firestore.FieldValue, uid, data,
+      ));
+      verifiedQuote = reserved.quote;
+      sessionRef = reserved.ref;
+      sessionId = sessionRef.id;
+      existingData = reserved.existingData;
+    } else {
+      if (purpose === "booking") {
+        verifiedQuote = await verifiedBookingAmount(data);
+      } else if (purpose === "wallet") {
+        verifiedQuote = await verifiedWalletTopUpAmount(data);
+      } else {
+        throw new functions.https.HttpsError("invalid-argument", "Unsupported payment purpose.");
       }
-      transaction.create(sessionRef, {
-        user_id: uid,
-        purpose,
-        provider: "ngenius",
-        idempotency_key_hash: sessionId,
-        amount_halalas: amount,
-        currency: verifiedQuote.currency || "SAR",
-        status: "creating",
-        ...(verifiedQuote || {}),
-        created_at: admin.firestore.FieldValue.serverTimestamp(),
-        updated_at: admin.firestore.FieldValue.serverTimestamp(),
+      await admin.firestore().runTransaction(async (transaction) => {
+        const existing = await transaction.get(sessionRef);
+        if (existing.exists) {
+          existingData = existing.data();
+          return;
+        }
+        transaction.create(sessionRef, {
+          user_id: uid, purpose, provider: "ngenius", idempotency_key_hash: sessionId,
+          amount_halalas: verifiedQuote.amountHalalas,
+          currency: verifiedQuote.currency || "SAR", status: "creating",
+          ...verifiedQuote,
+          created_at: admin.firestore.FieldValue.serverTimestamp(),
+          updated_at: admin.firestore.FieldValue.serverTimestamp(),
+        });
       });
-    });
+    }
+    // Never charge using Flutter-supplied amount; use the server quote.
+    const amount = verifiedQuote.amountHalalas;
 
     if (existingData) {
       if (existingData.user_id !== uid) {
@@ -717,6 +724,7 @@ exports.createNGeniusPayment = functions
       return sessionResponse(sessionId, existingData);
     }
 
+    let gatewayCreateStarted = false;
     try {
       const token = await getAccessToken();
       const { redirectUrl, cancelUrl } = ngeniusConfig();
@@ -732,6 +740,7 @@ exports.createNGeniusPayment = functions
           data.description || `Toury-${sessionId.slice(0, 16)}`,
         ),
       };
+      gatewayCreateStarted = true;
       const response = await axios.post(
         `${gatewayOutletBase()}/orders`,
         payload,
@@ -759,7 +768,7 @@ exports.createNGeniusPayment = functions
       };
       await sessionRef.set(update, { merge: true });
       return sessionResponse(sessionId, {
-        ...update,
+        ...update, purpose, orderPath: verifiedQuote.orderPath,
         amount_halalas: amount,
         currency: verifiedQuote.currency || "SAR",
       });
@@ -767,6 +776,7 @@ exports.createNGeniusPayment = functions
       const errorCode = gatewayErrorCode(error);
       await sessionRef.set({
         status: "failed",
+        ...(purpose === "extra_hours" ? {extra_hours_retry_safe: !gatewayCreateStarted} : {}),
         error_code: errorCode,
         updated_at: admin.firestore.FieldValue.serverTimestamp(),
       }, { merge: true });
@@ -1456,88 +1466,18 @@ exports.createWalletWithdrawalRequest = functions
     };
   });
 
-exports.finalizeNGeniusExtraHours = functions
-  .region("us-central1")
-  .runWith(paymentRuntime)
-  .https.onCall(async (data, context) => {
+exports.finalizeNGeniusExtraHours = functions.region("us-central1")
+  .runWith(paymentRuntime).https.onCall(async (data, context) => {
     requireAuth(context);
     requireAppCheck(context);
     assertNGeniusEnvironmentSafe();
     const uid = context.auth.uid;
     const sessionId = sanitizeString(data.id, 64);
-    const { sessionRef, session } = await ownedPaidSession(sessionId, uid);
-    if (session.purpose !== "extra_hours") {
-      throw new functions.https.HttpsError(
-        "failed-precondition",
-        "This payment session is not an extra-hours payment.",
-      );
-    }
-    const firestore = admin.firestore();
-    const orderRef = firestore.doc(session.orderPath);
-    const extraHoursRef = firestore.collection("ExtraHours").doc(sessionId);
-    const historyRef = firestore.collection("Paymenthistory").doc(sessionId);
-    let alreadyApplied = false;
-
-    await firestore.runTransaction(async (transaction) => {
-      const [freshSession, order, existing] = await Promise.all([
-        transaction.get(sessionRef),
-        transaction.get(orderRef),
-        transaction.get(extraHoursRef),
-      ]);
-      if (existing.exists ||
-          (freshSession.exists && freshSession.data().extra_hours_applied === true)) {
-        alreadyApplied = true;
-        return;
-      }
-      if (!freshSession.exists || freshSession.data().status !== "paid") {
-        throw new functions.https.HttpsError(
-          "failed-precondition",
-          "Payment verification expired before applying extra hours.",
-        );
-      }
-      if (!order.exists || !order.data().USER ||
-          order.data().USER.id !== uid) {
-        throw new functions.https.HttpsError("permission-denied", "Access denied.");
-      }
-      const currentHours = Number(order.data().total_taim || 0);
-      const amountSar = session.amount_halalas / 100;
-      transaction.update(orderRef, {
-        total_taim: currentHours + Number(session.extraHours),
-        updated_at: admin.firestore.FieldValue.serverTimestamp(),
-      });
-      transaction.create(extraHoursRef, {
-        revUser: firestore.collection("user").doc(uid),
-        RevOrder: orderRef,
-        RevMndob: order.data().mndob_user || null,
-        addSaat: Number(session.extraHours),
-        Total: amountSar,
-        dateAdd: admin.firestore.FieldValue.serverTimestamp(),
-        halh: "Completed",
-        paymentGatewayOrderId: sessionId,
-        idOrder: sanitizeString(order.data().IDorder, 80),
-        payment_status: "paid",
-      });
-      transaction.create(historyRef, {
-        revOrder: orderRef,
-        RevUser: firestore.collection("user").doc(uid),
-        Osf: "extra_hours",
-        DateAdd: admin.firestore.FieldValue.serverTimestamp(),
-        total: amountSar,
-        ngeniusSessionId: sessionId,
-      });
-      transaction.set(sessionRef, {
-        extra_hours_applied: true,
-        extra_hours_applied_at: admin.firestore.FieldValue.serverTimestamp(),
-        updated_at: admin.firestore.FieldValue.serverTimestamp(),
-      }, { merge: true });
-    });
-    return {
-      id: sessionId,
-      orderId: orderRef.id,
-      status: "paid",
-      applied: true,
-      alreadyApplied,
-    };
+    await ownedPaidSession(sessionId, uid);
+    return extensionOperation(() => extraHours.applyExtension({
+      db: admin.firestore(), FieldValue: admin.firestore.FieldValue,
+      Timestamp: admin.firestore.Timestamp, uid, sessionId,
+    }));
   });
 
 async function requireFinanceRole(context) {
@@ -1780,6 +1720,7 @@ exports.ngeniusWebhook = functions
 
 exports.__test = {
   extractPaymentUrl,
+  syncSessionFromGateway,
   normalizeStatus,
   sanitizeMerchantOrderReference,
   sessionIdFor,

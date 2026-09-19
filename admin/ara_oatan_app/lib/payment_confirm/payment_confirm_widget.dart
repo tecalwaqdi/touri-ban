@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/core/toury_dialogs.dart';
-import '/core/toury_firestore_cache.dart';
 import '/core/toury_payment_flags.dart';
 import '/core/toury_payment_flow.dart';
 import '/core/toury_payment_notifications.dart';
@@ -66,6 +65,10 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
   _PaymentConfirmPhase _phase = _PaymentConfirmPhase.verifying;
   int _verifyGeneration = 0;
   bool _finalizeBusy = false;
+  String? _extraHoursOrderId;
+  bool get _isExtraHours =>
+      _extraHoursOrderId != null ||
+      FFAppState().paymentFlowKind == TypeHgz.Saat;
   static const int _maxPollAttempts = 10;
   static const Duration _pollInterval = Duration(seconds: 2);
 
@@ -93,7 +96,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
       FFAppState().paymentInProgress = false;
       safeSetState(() {});
 
-      if (widget.fromWebView == true) {
+      if (widget.fromWebView == true && !_isExtraHours) {
         FFAppState().DonePay = false;
         if (mounted) {
           safeSetState(() => _phase = _PaymentConfirmPhase.failed);
@@ -216,6 +219,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
     try {
       var verify = await touryVerifyGatewayPayment(
         FFAppState().paymentOrderId,
+        extraHours: _isExtraHours,
       );
       if (!mounted || gen != _verifyGeneration) return;
       _model.verifyResponse = verify.response;
@@ -230,6 +234,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
           if (!mounted || gen != _verifyGeneration) return;
           verify = await touryVerifyGatewayPayment(
             FFAppState().paymentOrderId,
+            extraHours: _isExtraHours,
           );
           _model.verifyResponse = verify.response;
           if (verify.isPaid || verify.isFailed) break;
@@ -237,6 +242,40 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
       }
 
       if (!mounted || gen != _verifyGeneration) return;
+
+      final body = verify.response?.jsonBody;
+      if (_isExtraHours || (body is Map && body['purpose'] == 'extra_hours')) {
+        _extraHoursOrderId = body is Map
+            ? body['orderId']?.toString()
+            : FFAppState().revOrderSaatExtr?.id;
+        FFAppState().paymentFlowKind = TypeHgz.Saat;
+        if (!verify.isPaid) {
+          FFAppState().DonePay = false;
+          safeSetState(() => _phase = verify.isFailed
+              ? _PaymentConfirmPhase.failed
+              : _PaymentConfirmPhase.pending);
+          return;
+        }
+        _finalizeBusy = true;
+        final result = await TouryNGeniusService.finalizeExtraHours(
+          sessionId: verify.orderId ?? FFAppState().paymentOrderId,
+        );
+        if (!mounted || gen != _verifyGeneration) return;
+        if (!TouryNGeniusService.httpOk(result) ||
+            result.jsonBody['applied'] != true) {
+          FFAppState().DonePay = false;
+          safeSetState(() => _phase = _PaymentConfirmPhase.failed);
+          TouryDialogs.showSnackBar(
+              context, 'extra_hours_paid_not_applied'.tr(),
+              type: TouryMessageType.error);
+          return;
+        }
+        _extraHoursOrderId = result.jsonBody['orderId']?.toString();
+        FFAppState().paymentInProgress = false;
+        FFAppState().DonePay = true;
+        await _goToBooking();
+        return;
+      }
 
       if (verify.isPending) {
         FFAppState().DonePay = false;
@@ -269,9 +308,8 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
             interval: const Duration(seconds: 2),
           );
           finalized = {
-            'orderId': statusBody['bookingId'] ??
-                statusBody['orderId'] ??
-                gatewayId,
+            'orderId':
+                statusBody['bookingId'] ?? statusBody['orderId'] ?? gatewayId,
             'id': statusBody['id'] ?? gatewayId,
             'bookingCreated': statusBody['bookingCreated'],
           };
@@ -296,17 +334,12 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
           throw StateError('Server booking finalization failed.');
         }
 
-        final settingsRows = await TouryFirestoreCache.settingsOnce(
-          singleRecord: true,
-        );
-        final nglValue =
-            settingsRows.isNotEmpty ? settingsRows.first.ngl : null;
-
+        // Online drivers only (`ngl == true`). Settings.ngl is unrelated.
         unawaited(
           touryNotifyAfterSuccessfulOrderPayment(
             villnow: FFAppState().villnow,
             typecarRev: FFAppState().typecarRev,
-            nglValue: nglValue,
+            nglValue: true,
             totalsaat: FFAppState().totalsaat,
             totalmndob3: FFAppState().totalmndob3,
             currency: FFAppState().RMZCurrency,
@@ -358,9 +391,11 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
   }
 
   Future<void> _goToBooking() async {
-    final id = FFAppState().pendingPaymentOrderId.isNotEmpty
-        ? FFAppState().pendingPaymentOrderId
-        : FFAppState().paymentOrderId;
+    final id = _isExtraHours
+        ? (_extraHoursOrderId ?? FFAppState().revOrderSaatExtr?.id ?? '')
+        : (FFAppState().pendingPaymentOrderId.isNotEmpty
+            ? FFAppState().pendingPaymentOrderId
+            : FFAppState().paymentOrderId);
     if (id.trim().isEmpty) {
       await _goToOrders();
       return;
@@ -383,6 +418,10 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
   }
 
   Future<void> _cancelAttempt() async {
+    if (_isExtraHours) {
+      await _goToBooking();
+      return;
+    }
     final ok = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
@@ -420,9 +459,15 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
   }
 
   Future<void> _retryPayment() async {
-    final id = FFAppState().pendingPaymentOrderId.isNotEmpty
-        ? FFAppState().pendingPaymentOrderId
-        : FFAppState().paymentOrderId;
+    if (_isExtraHours) {
+      await _goToBooking();
+      return;
+    }
+    final id = _isExtraHours
+        ? (_extraHoursOrderId ?? FFAppState().revOrderSaatExtr?.id ?? '')
+        : (FFAppState().pendingPaymentOrderId.isNotEmpty
+            ? FFAppState().pendingPaymentOrderId
+            : FFAppState().paymentOrderId);
     if (id.trim().isEmpty) {
       await _goToOrders();
       return;
@@ -432,7 +477,8 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
         OrderRecord.collection.doc(id),
       );
       if (!mounted) return;
-      final result = await touryRetryUnpaidOrderPayment(context: context, order: snap);
+      final result =
+          await touryRetryUnpaidOrderPayment(context: context, order: snap);
       if (!mounted) return;
       await touryNavigateAfterCardPayment(
         context,
@@ -557,7 +603,10 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
             ),
             const SizedBox(height: DsSpacing.sm),
             DsButton.text(
-              label: 'checkout_cancel_payment_attempt'.tr(),
+              label: (_isExtraHours
+                      ? 'payment_back_to_booking'
+                      : 'checkout_cancel_payment_attempt')
+                  .tr(),
               size: DsButtonSize.lg,
               onPressed: _cancelAttempt,
             ),
@@ -613,7 +662,10 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
           ),
           const SizedBox(height: DsSpacing.sm),
           DsButton.outlined(
-            label: 'checkout_cancel_payment_attempt'.tr(),
+            label: (_isExtraHours
+                    ? 'payment_back_to_booking'
+                    : 'checkout_cancel_payment_attempt')
+                .tr(),
             icon: Icons.close_rounded,
             size: DsButtonSize.lg,
             expanded: true,
@@ -654,8 +706,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
                   DsIcons.success,
                   color: colors.onPrimary,
                   size: DsConstants.avatarLg,
-                ).animateOnPageLoad(
-                    animationsMap['iconOnPageLoadAnimation1']!),
+                ).animateOnPageLoad(animationsMap['iconOnPageLoadAnimation1']!),
               ),
             ),
           ),
@@ -712,8 +763,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
                 DsIcons.error,
                 color: colors.error,
                 size: DsIcons.xl,
-              ).animateOnPageLoad(
-                  animationsMap['iconOnPageLoadAnimation2']!),
+              ).animateOnPageLoad(animationsMap['iconOnPageLoadAnimation2']!),
             ),
           ),
           const SizedBox(height: DsSpacing.xl),

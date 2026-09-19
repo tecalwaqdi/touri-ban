@@ -266,6 +266,20 @@ abstract final class DriverRecoveryService {
           message: 'already_terminal',
         );
       }
+      if (DriverTripActionGates.isTripStarted(code, order.halhText) ||
+          order.start != null ||
+          order.snapshotData['trip_started_at'] != null) {
+        return const DriverOfflineReconcileResult(
+          applied: true,
+          message: 'TRIP_ALREADY_STARTED',
+        );
+      }
+      if (!DriverTripActionGates.canCancel(code, order.halhText)) {
+        return const DriverOfflineReconcileResult(
+          applied: true,
+          message: 'DRIVER_CANCEL_NOT_ALLOWED',
+        );
+      }
       return const DriverOfflineReconcileResult(
         requiresOnlineUi: true,
         message: 'Connection required to cancel trip.',

@@ -262,7 +262,7 @@ async function readIdempotency(db, tx, id) {
 async function createSettlementDraft({db, auth, data, now}) {
   requireWriter(auth);
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', fail);
+  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', fail, {auth});
   const driverId = String(data.driverId || '').trim();
   const countryId = String(data.countryId || data.countryPath || '').trim();
   const currency = v2.normalizeCode(data.currency);
@@ -401,7 +401,7 @@ async function createSettlementDraft({db, auth, data, now}) {
 async function refreshSettlementDraft({db, auth, data, now}) {
   requireWriter(auth);
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', fail);
+  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', fail, {auth});
   const settlementId = String(data.settlementId || '').trim();
   if (!settlementId) fail('invalid-argument', 'settlementId required');
   const settlementRef = db.collection('financial_settlements').doc(settlementId);
@@ -458,7 +458,7 @@ async function refreshSettlementDraft({db, auth, data, now}) {
 async function lockSettlement({db, auth, data, now}) {
   requireWriter(auth);
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', fail);
+  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', fail, {auth});
   const settlementId = String(data.settlementId || '').trim();
   const idempotencyKey = String(data.idempotencyKey || '').trim();
   if (!settlementId) fail('invalid-argument', 'settlementId required');
@@ -675,8 +675,8 @@ async function lockSettlement({db, auth, data, now}) {
 async function markSettlementSettled({db, auth, data, now}) {
   requireWriter(auth);
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', fail);
-  assertFlag(flags, 'FINANCIAL_PAYMENT_CONFIRM_ENABLED', fail);
+  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', fail, {auth});
+  assertFlag(flags, 'FINANCIAL_PAYMENT_CONFIRM_ENABLED', fail, {auth});
   const settlementId = String(data.settlementId || '').trim();
   const idempotencyKey = String(data.idempotencyKey || '').trim();
   const method = String(data.settlementMethod || '').trim();
@@ -778,7 +778,7 @@ async function markSettlementSettled({db, auth, data, now}) {
 async function voidSettlement({db, auth, data, now}) {
   requireWriter(auth);
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', fail);
+  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', fail, {auth});
   const settlementId = String(data.settlementId || '').trim();
   const reason = String(data.reason || '').trim();
   const idempotencyKey = String(data.idempotencyKey || '').trim();

@@ -51,7 +51,9 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
   }
 
   bool get _canCancel =>
-      _assigned && DriverTripActionGates.canCancel(_code, order.halhText);
+      _assigned &&
+      !_tripInProgress &&
+      DriverTripActionGates.canCancel(_code, order.halhText);
 
   bool get _canArrive {
     if (!_assigned) return false;
@@ -186,7 +188,11 @@ class _DriverTripActionsCardState extends State<DriverTripActionsCard> {
                         : driverTr(
                             context,
                             'Your wallet balance must be at least {amount} to accept cash orders.',
-                          ).replaceAll('{amount}', '200'),
+                          ).replaceAll(
+                            '{amount}',
+                            DriverWalletRules.minCashWalletBalance
+                                .toStringAsFixed(0),
+                          ),
                   ),
                   actions: [
                     TextButton(

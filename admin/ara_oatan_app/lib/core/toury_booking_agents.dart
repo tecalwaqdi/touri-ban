@@ -9,7 +9,9 @@ import '/backend/backend.dart';
 import '/backend/push_notifications/push_notifications_util.dart';
 import '/core/tour_guide_status.dart';
 import '/core/toury_notification_localizer.dart';
+import '/core/toury_vehicle_catalog.dart';
 
+/// Notify online drivers that match the booking vehicle class.
 Future<void> touryNotifyAgentsForNewOrder({
   required DocumentReference? villnow,
   required dynamic typecarRev,
@@ -20,6 +22,7 @@ Future<void> touryNotifyAgentsForNewOrder({
   DocumentReference? countryRef,
   DocumentReference? cityRef,
   bool driverGuideOnly = false,
+  String? orderCarLabel,
 }) async {
   try {
     final country = countryRef ?? FFAppState().dolh;
@@ -27,18 +30,68 @@ Future<void> touryNotifyAgentsForNewOrder({
     final typeCar = typecarRev is DocumentReference ? typecarRev : null;
     if (typeCar == null) return;
 
+    // Only drivers currently online (`ngl == true`) should get a new-order push.
+    // Do not use Settings.ngl — that is unrelated and was dropping all notifies.
+    const onlineFlag = true;
+
     final requireApprovedGuide =
         driverGuideOnly || FFAppState().DriverGuideState == true;
+
+    String? orderCode;
+    String orderLabel = (orderCarLabel ?? FFAppState().tebycar).trim();
+    try {
+      final snap = await typeCar.get();
+      final data = snap.data();
+      if (data is Map) {
+        orderCode = (data['codeCar'] ?? data['code_car'] ?? '').toString();
+        if (orderLabel.isEmpty) {
+          orderLabel = (data['naim'] ?? '').toString().trim();
+        }
+      }
+    } catch (_) {}
+
+    final orderCategory = touryVehicleCategoryFor(
+      codeCar: orderCode,
+      documentId: typeCar.id,
+      displayName: orderLabel,
+    );
+
+    bool driverMatchesVehicle(UserRecord agent) {
+      final data = agent.snapshotData;
+      final driverCar = agent.mndobTypeCar ??
+          (data['carRev_mndob'] is DocumentReference
+              ? data['carRev_mndob'] as DocumentReference
+              : null) ??
+          (data['car_rev_mndob'] is DocumentReference
+              ? data['car_rev_mndob'] as DocumentReference
+              : null);
+      if (driverCar == null) return false;
+      if (driverCar.path == typeCar.path) return true;
+
+      final driverLabel = (
+        (data['text_type_car_mndob'] ?? data['mdenh_aml'] ?? '').toString()
+      ).trim();
+      final driverCategory = touryVehicleCategoryFor(
+        documentId: driverCar.id,
+        displayName: driverLabel,
+      );
+      if (orderCategory != null && driverCategory != null) {
+        return orderCategory == driverCategory;
+      }
+      if (driverLabel.isNotEmpty &&
+          orderLabel.isNotEmpty &&
+          driverLabel.toLowerCase() == orderLabel.toLowerCase()) {
+        return true;
+      }
+      return false;
+    }
 
     Query baseDrivers(Query query) {
       var q = query
           .where('actev_mndob', isEqualTo: true)
           .where('ismndom', isEqualTo: true)
           .where('ismndob', isEqualTo: true)
-          .where('mndob_type_car', isEqualTo: typeCar);
-      if (nglValue != null) {
-        q = q.where('ngl', isEqualTo: nglValue);
-      }
+          .where('ngl', isEqualTo: onlineFlag);
       if (requireApprovedGuide) {
         q = q
             .where(TourGuideStatus.fieldIsTourGuide, isEqualTo: true)
@@ -95,20 +148,13 @@ Future<void> touryNotifyAgentsForNewOrder({
       try {
         return await queryUserRecordOnce(queryBuilder: builder);
       } catch (e) {
-        // Composite index missing for guide filters — fall back + filter.
         debugPrint('touryNotifyAgentsForNewOrder query fallback: $e');
         final all = await queryUserRecordOnce(
-          queryBuilder: (q) {
-            var base = q
-                .where('actev_mndob', isEqualTo: true)
-                .where('ismndom', isEqualTo: true)
-                .where('ismndob', isEqualTo: true)
-                .where('mndob_type_car', isEqualTo: typeCar);
-            if (nglValue != null) {
-              base = base.where('ngl', isEqualTo: nglValue);
-            }
-            return base;
-          },
+          queryBuilder: (q) => q
+              .where('actev_mndob', isEqualTo: true)
+              .where('ismndom', isEqualTo: true)
+              .where('ismndob', isEqualTo: true)
+              .where('ngl', isEqualTo: onlineFlag),
         );
         if (!requireApprovedGuide) return all;
         return all
@@ -117,36 +163,56 @@ Future<void> touryNotifyAgentsForNewOrder({
       }
     }
 
+    Future<List<UserRecord>> withVehicle(List<UserRecord> pool) async {
+      // Prefer exact type_car ref first (cheap path).
+      final exact = pool.where((u) {
+        final data = u.snapshotData;
+        final legacy = data['carRev_mndob'] is DocumentReference
+            ? data['carRev_mndob'] as DocumentReference
+            : (data['car_rev_mndob'] is DocumentReference
+                ? data['car_rev_mndob'] as DocumentReference
+                : null);
+        return u.mndobTypeCar?.path == typeCar.path ||
+            legacy?.path == typeCar.path;
+      }).toList();
+      if (exact.isNotEmpty) return exact;
+      return pool.where(driverMatchesVehicle).toList();
+    }
+
     // 1) Same village first.
     List<UserRecord> agents = [];
     if (villnow != null) {
-      agents = await queryDrivers(
+      final villagePool = await queryDrivers(
         (q) => baseDrivers(q).where('mndob_vill', isEqualTo: villnow),
       );
+      agents = await withVehicle(villagePool);
     }
 
     // 2) Same city (village.cities ↔ booking city).
     if (agents.isEmpty && city != null) {
-      final allForType = await queryDrivers(baseDrivers);
-      agents = await filterByVillageCountryOrCity(
-        pool: allForType,
+      final allOnline = await queryDrivers(baseDrivers);
+      final cityPool = await filterByVillageCountryOrCity(
+        pool: allOnline,
         matchCity: true,
         matchCountry: false,
       );
+      agents = await withVehicle(cityPool);
     }
 
     // 3) Broaden to same country when city/village pool is empty.
     if (agents.isEmpty) {
-      final allForType = await queryDrivers(baseDrivers);
+      final allOnline = await queryDrivers(baseDrivers);
+      List<UserRecord> countryPool;
       if (country == null) {
-        agents = allForType;
+        countryPool = allOnline;
       } else {
-        agents = await filterByVillageCountryOrCity(
-          pool: allForType,
+        countryPool = await filterByVillageCountryOrCity(
+          pool: allOnline,
           matchCity: false,
           matchCountry: true,
         );
       }
+      agents = await withVehicle(countryPool);
     }
 
     if (requireApprovedGuide) {
@@ -154,6 +220,10 @@ Future<void> touryNotifyAgentsForNewOrder({
           .where((u) => TourGuideStatus.isApproved(u.snapshotData))
           .toList();
     }
+
+    // De-dupe by uid.
+    final seen = <String>{};
+    agents = agents.where((a) => seen.add(a.reference.id)).toList();
 
     for (final agent in agents) {
       final locale = TouryNotificationLocalizer.localeForUser(agent);

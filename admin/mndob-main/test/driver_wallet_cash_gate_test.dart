@@ -5,14 +5,14 @@ import 'package:mndob/backend/schema/enums/enums.dart';
 
 void main() {
   group('DriverWalletRules', () {
-    test('cash eligibility threshold is 200', () {
-      expect(DriverWalletRules.minCashWalletBalance, 200.0);
+    test('cash eligibility threshold is 50', () {
+      expect(DriverWalletRules.minCashWalletBalance, 50.0);
     });
 
-    test('CASH + 199 blocked, 200 allowed (eligibility math)', () {
+    test('CASH + 49 blocked, 50 allowed (eligibility math)', () {
       const min = DriverWalletRules.minCashWalletBalance;
-      expect(199 < min, isTrue);
-      expect(200 >= min, isTrue);
+      expect(49 < min, isTrue);
+      expect(50 >= min, isTrue);
     });
   });
 

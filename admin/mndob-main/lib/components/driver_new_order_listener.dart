@@ -74,7 +74,7 @@ class _DriverNewOrderListenerState extends State<DriverNewOrderListener> {
 
   void _attach() {
     if (!loggedIn || currentUserReference == null) return;
-    final car = currentUserDocument?.mndobTypeCar;
+    final car = DriverOrderMatch.driverTypeCarRef();
     if (car == null) return;
 
     _attachInFlight = true;

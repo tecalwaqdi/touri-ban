@@ -1067,5 +1067,19 @@
   "payment_back_to_booking": "العودة إلى تفاصيل الحجز",
   "payment_waiting_title": "الدفع قيد الانتظار",
   "payment_waiting_body": "تم فتح صفحة الدفع. يمكنك التحقق من الحالة أو العودة للحجز.",
-  "profile_phone_required": "أضف رقم هاتف صالح للمتابعة."
+  "profile_phone_required": "أضف رقم هاتف صالح للمتابعة.",
+  "extra_hours_current": "الساعات الحالية",
+  "extra_hours_cost": "التكلفة الإضافية",
+  "extra_hours_new_total": "الإجمالي الجديد",
+  "extra_hours_new_duration": "إجمالي الساعات الجديد",
+  "extra_hours_confirm_title": "تأكيد إضافة الساعات",
+  "extra_hours_continue_payment": "المتابعة للدفع",
+  "extra_hours_cash_notice": "تُضاف التكلفة إلى المبلغ النقدي المستحق لنفس الرحلة.",
+  "extra_hours_online_notice": "تُضاف الساعات بعد تأكيد دفع الزيادة.",
+  "extra_hours_quote_changed": "تغيّرت بيانات الرحلة أو السعر. راجع الملخص الجديد ثم أكّد مجددًا.",
+  "extra_hours_payment_pending": "توجد محاولة دفع لزيادة الساعات. يمكنك استكمالها دون إنشاء محاولة أخرى.",
+  "extra_hours_ineligible": "إضافة الساعات غير متاحة لهذه الرحلة حاليًا.",
+  "extra_hours_price_unavailable": "تعذّر التحقق من سعر التمديد لهذه الرحلة. حاول لاحقًا.",
+  "extra_hours_paid_not_applied": "تم تأكيد الدفع، لكن تعذّر تطبيق التمديد. تواصل مع الدعم ولا تدفع مرة أخرى.",
+  "map_coordinates": "الإحداثيات"
 }

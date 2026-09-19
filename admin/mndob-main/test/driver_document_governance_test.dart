@@ -404,7 +404,8 @@ void main() {
         },
         'nationalId': {'enabled': false},
       });
-      expect(list.any((e) => e.type == 'driverLicense'), isTrue);
+      expect(list.any((e) => e.type == 'driverLicenseFront'), isTrue);
+      expect(list.any((e) => e.type == 'driverLicenseBack'), isTrue);
       expect(list.any((e) => e.type == 'nationalId'), isFalse);
     });
   });

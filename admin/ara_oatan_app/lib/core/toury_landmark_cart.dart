@@ -124,6 +124,11 @@ TouryLandmarkCartResult touryAddLandmarkToCart({
   app.addToCartmkss(
     AmaknCostmStruct(
       naim: name,
+      address: record.address.trim().isNotEmpty
+          ? record.address.trim()
+          : (record.hasLocation()
+              ? '${record.location!.latitude.toStringAsFixed(6)}, ${record.location!.longitude.toStringAsFixed(6)}'
+              : ''),
       textivill: touryLandmarkCartSubtitle(record, app),
       loceshn: record.location,
       revmkan: record.reference,
@@ -146,6 +151,64 @@ TouryLandmarkCartResult touryAddLandmarkToCart({
     _showLandmarkOutcomeSnack(context, result, offerCheckout: offerCheckout);
   }
   return result;
+}
+
+/// Reloads each cart stop's pin from live Firestore `Location` so the route
+/// map matches Admin (fixes stale / previously clamped coords in the cart).
+Future<int> touryRefreshCartLandmarkLocations([FFAppState? state]) async {
+  final app = state ?? FFAppState();
+  if (app.cartmkss.isEmpty) return 0;
+
+  var updated = 0;
+  final next = <AmaknCostmStruct>[];
+  for (final item in app.cartmkss) {
+    final ref = item.revmkan;
+    if (ref == null) {
+      next.add(item);
+      continue;
+    }
+    try {
+      final record = await MkanRecord.getDocumentOnce(ref);
+      final fresh = record.location;
+      if (fresh == null) {
+        next.add(item);
+        continue;
+      }
+      final same = item.loceshn != null &&
+          (item.loceshn!.latitude - fresh.latitude).abs() < 1e-7 &&
+          (item.loceshn!.longitude - fresh.longitude).abs() < 1e-7;
+      final address = record.address.trim().isNotEmpty
+          ? record.address.trim()
+          : '${fresh.latitude.toStringAsFixed(6)}, ${fresh.longitude.toStringAsFixed(6)}';
+      if (!same || item.address.trim() != address) {
+        updated++;
+      }
+      next.add(
+        AmaknCostmStruct(
+          naim: item.naim.trim().isNotEmpty ? item.naim : record.naim,
+          address: address,
+          sr: item.sr,
+          user: item.user,
+          loceshn: fresh,
+          textivill: item.textivill,
+          mkanRev: item.mkanRev,
+          dolh: item.dolh,
+          revmkan: item.revmkan,
+        ),
+      );
+    } catch (_) {
+      next.add(item);
+    }
+  }
+
+  if (updated > 0) {
+    app.update(() {
+      app.cartmkss = next;
+      app.addcart = next.length;
+    });
+    tourySyncCartMkanRefs(app);
+  }
+  return updated;
 }
 
 /// Removes a cart item (and its [revmkan] ref) with immediate snack feedback.

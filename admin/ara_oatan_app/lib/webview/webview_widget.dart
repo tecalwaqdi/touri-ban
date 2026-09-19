@@ -39,6 +39,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
   bool _finalizingPayment = false;
   bool _handledProviderErrorPage = false;
   int _pollAttempts = 0;
+  bool get _isExtraHours => FFAppState().paymentFlowKind == TypeHgz.Saat;
 
   /// Cap polling so a stuck 3DS session cannot run forever (~3 minutes).
   static const int _maxPollAttempts = 60;
@@ -69,8 +70,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
     }());
 
     // Provider return page — keep polling; do not treat as paid.
-    final isPaymentReturnPath =
-        lower.contains('payment-return') ||
+    final isPaymentReturnPath = lower.contains('payment-return') ||
         (uri?.path.toLowerCase().contains('payment-return') ?? false);
     final isKnownReturnHost = host.contains('web.app') ||
         host.contains('onrender.com') ||
@@ -122,6 +122,10 @@ class _WebviewWidgetState extends State<WebviewWidget> {
           message: 'payment_pending_message'.tr(),
           tone: DsSnackTone.warning,
         );
+        if (_isExtraHours) {
+          Navigator.pop(context);
+          return;
+        }
         context.pushReplacementNamed(
           PaymentConfirmWidget.routeName,
           queryParameters: {
@@ -134,7 +138,8 @@ class _WebviewWidgetState extends State<WebviewWidget> {
       final orderId = FFAppState().paymentOrderId.trim();
       if (orderId.isEmpty) return;
 
-      final verify = await touryVerifyGatewayPayment(orderId);
+      final verify =
+          await touryVerifyGatewayPayment(orderId, extraHours: _isExtraHours);
       if (verify.isFailed) {
         _verifyTimer?.cancel();
         if (!mounted) return;
@@ -142,6 +147,10 @@ class _WebviewWidgetState extends State<WebviewWidget> {
           FFAppState().DonePay = false;
           FFAppState().paymentInProgress = false;
         });
+        if (_isExtraHours) {
+          Navigator.pop(context);
+          return;
+        }
         context.pushReplacementNamed(
           PaymentConfirmWidget.routeName,
           queryParameters: {
@@ -172,11 +181,17 @@ class _WebviewWidgetState extends State<WebviewWidget> {
           sessionId: verify.orderId ?? orderId,
         );
         FFAppState().update(() {
-          FFAppState().DonePay = TouryNGeniusService.httpOk(finalized);
+          FFAppState().DonePay = TouryNGeniusService.httpOk(finalized) &&
+              finalized.jsonBody['applied'] == true;
           FFAppState().paymentInProgress = false;
         });
         if (!mounted) return;
-        context.goNamed(List22TaskOverviewResponsiveWidget.routeName);
+        if (!FFAppState().DonePay) {
+          DsSnackBar.show(context,
+              message: 'extra_hours_paid_not_applied'.tr(),
+              tone: DsSnackTone.error);
+        }
+        Navigator.pop(context);
         return;
       }
 
@@ -194,8 +209,14 @@ class _WebviewWidgetState extends State<WebviewWidget> {
   Future<void> _closePage(BuildContext context) async {
     final verify = await touryVerifyGatewayPayment(
       FFAppState().paymentOrderId,
+      extraHours: _isExtraHours,
     );
     if (!context.mounted) return;
+    if (_isExtraHours && !verify.isPaid) {
+      FFAppState().paymentInProgress = false;
+      Navigator.pop(context);
+      return;
+    }
     if (verify.isPending) {
       DsSnackBar.show(
         context,
@@ -234,16 +255,20 @@ class _WebviewWidgetState extends State<WebviewWidget> {
       final finalized = await TouryNGeniusService.finalizeExtraHours(
         sessionId: verify.orderId ?? FFAppState().paymentOrderId,
       );
-      if (!TouryNGeniusService.httpOk(finalized)) {
+      if (!TouryNGeniusService.httpOk(finalized) ||
+          finalized.jsonBody['applied'] != true) {
+        if (context.mounted) {
+          DsSnackBar.show(context,
+              message: 'extra_hours_paid_not_applied'.tr(),
+              tone: DsSnackTone.error);
+        }
         return;
       }
       FFAppState().DonePay = true;
       FFAppState().paymentInProgress = false;
       FFAppState().clearSensitivePaymentSession();
       if (!context.mounted) return;
-      context.goNamed(
-        List22TaskOverviewResponsiveWidget.routeName,
-      );
+      Navigator.pop(context);
       return;
     }
 
@@ -284,94 +309,94 @@ class _WebviewWidgetState extends State<WebviewWidget> {
               _closePage(context);
             },
             child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-              FocusManager.instance.primaryFocus?.unfocus();
-            },
-            child: Scaffold(
-              key: scaffoldKey,
-              backgroundColor: colors.scaffold,
-              appBar: DsAppBar(
-                automaticallyImplyLeading: false,
-                title: FFLocalizations.of(context).getText(
-                  'xnttfo6b' /* Pay the reservation fee */,
+              onTap: () {
+                FocusScope.of(context).unfocus();
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
+              child: Scaffold(
+                key: scaffoldKey,
+                backgroundColor: colors.scaffold,
+                appBar: DsAppBar(
+                  automaticallyImplyLeading: false,
+                  title: FFLocalizations.of(context).getText(
+                    'xnttfo6b' /* Pay the reservation fee */,
+                  ),
+                  leading: DsIconButton(
+                    icon: DsIcons.back,
+                    onPressed: () => _closePage(context),
+                  ),
                 ),
-                leading: DsIconButton(
-                  icon: DsIcons.back,
-                  onPressed: () => _closePage(context),
-                ),
-              ),
-              body: SafeArea(
-                top: true,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        DsSpacing.md,
-                        DsSpacing.sm,
-                        DsSpacing.md,
-                        DsSpacing.sm,
-                      ),
-                      child: DsCard(
-                        color: colors.warningContainer,
-                        bordered: false,
-                        elevated: true,
-                        padding: const EdgeInsets.all(DsSpacing.sm),
-                        child: Row(
-                          children: [
-                            Icon(
-                              DsIcons.warning,
-                              size: DsIcons.sm,
-                              color: colors.warning,
-                            ),
-                            const SizedBox(width: DsSpacing.xs),
-                            Expanded(
-                              child: Text(
-                                FFLocalizations.of(context).getText(
-                                  'b9sdhl84' /* Please do not close the page u... */,
-                                ),
-                                style: typography.bodySmall.copyWith(
-                                  color: colors.textPrimary,
+                body: SafeArea(
+                  top: true,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          DsSpacing.md,
+                          DsSpacing.sm,
+                          DsSpacing.md,
+                          DsSpacing.sm,
+                        ),
+                        child: DsCard(
+                          color: colors.warningContainer,
+                          bordered: false,
+                          elevated: true,
+                          padding: const EdgeInsets.all(DsSpacing.sm),
+                          child: Row(
+                            children: [
+                              Icon(
+                                DsIcons.warning,
+                                size: DsIcons.sm,
+                                color: colors.warning,
+                              ),
+                              const SizedBox(width: DsSpacing.xs),
+                              Expanded(
+                                child: Text(
+                                  FFLocalizations.of(context).getText(
+                                    'b9sdhl84' /* Please do not close the page u... */,
+                                  ),
+                                  style: typography.bodySmall.copyWith(
+                                    color: colors.textPrimary,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: DsSpacing.xs),
-                            DsButton.danger(
-                              label: FFLocalizations.of(context).getText(
-                                'mu3vm7cj' /* Close Page */,
+                              const SizedBox(width: DsSpacing.xs),
+                              DsButton.danger(
+                                label: FFLocalizations.of(context).getText(
+                                  'mu3vm7cj' /* Close Page */,
+                                ),
+                                icon: DsIcons.close,
+                                size: DsButtonSize.sm,
+                                onPressed: () => _closePage(context),
                               ),
-                              icon: DsIcons.close,
-                              size: DsButtonSize.sm,
-                              onPressed: () => _closePage(context),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                          top: DsRadius.lgRadius,
-                        ),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            return FlutterFlowWebView(
-                              content: widget.url!,
-                              bypass: false,
-                              height: constraints.maxHeight,
-                              verticalScroll: false,
-                              horizontalScroll: false,
-                              onPageFinished: _onPaymentPageFinished,
-                            );
-                          },
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: DsRadius.lgRadius,
+                          ),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return FlutterFlowWebView(
+                                content: widget.url!,
+                                bypass: false,
+                                height: constraints.maxHeight,
+                                verticalScroll: false,
+                                horizontalScroll: false,
+                                onPageFinished: _onPaymentPageFinished,
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
           );
         },
       ),

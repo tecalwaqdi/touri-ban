@@ -1,4 +1,5 @@
 import '/backend/admin_country_scope.dart';
+import '/backend/admin_geo_aliases.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_cache_picker.dart';
@@ -206,7 +207,10 @@ class AdminRegionPickerSheet extends StatelessWidget {
                         trailing: const Icon(Icons.chevron_left_rounded),
                         onTap: () async {
                           clearCitySelection();
-                          FFAppState().Revreg = region.reference;
+                          FFAppState().Revreg =
+                              AdminGeoAliases.canonicalRegionRef(
+                            region.reference,
+                          );
                           FFAppState().RevRegTEXT = region.naim;
                           if (region.dolh != null) {
                             FFAppState().RevDolh = region.dolh;
@@ -344,10 +348,12 @@ class AdminCityPickerSheet extends StatelessWidget {
                       : null,
                   trailing: const Icon(Icons.chevron_left_rounded),
                   onTap: () {
-                    FFAppState().REvCITE = city.reference;
+                    FFAppState().REvCITE =
+                        AdminGeoAliases.canonicalVillageRef(city.reference);
                     FFAppState().RevciteTEXT = city.naim;
                     if (city.cities != null) {
-                      FFAppState().Revreg = city.cities;
+                      FFAppState().Revreg =
+                          AdminGeoAliases.canonicalRegionRef(city.cities);
                     }
                     if (city.dolh != null) {
                       FFAppState().RevDolh = city.dolh;

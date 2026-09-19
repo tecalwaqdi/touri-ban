@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/core/driver_legacy_field_compat.dart';
 import '/core/driver_lifecycle_state.dart';
+import '/core/driver_order_match.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 enum DriverEligibilityReason {
@@ -113,7 +114,7 @@ abstract final class DriverEligibilityService {
         messageKey: 'Please select a city',
       );
     }
-    if (doc.mndobTypeCar == null) {
+    if (DriverOrderMatch.driverTypeCarRef(doc) == null) {
       return const DriverEligibilityResult(
         reason: DriverEligibilityReason.vehicleIncomplete,
         messageKey: 'Please select vehicle type',

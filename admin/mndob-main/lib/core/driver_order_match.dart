@@ -5,6 +5,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/core/driver_country_service.dart';
 import '/core/driver_order_availability.dart';
+import '/core/driver_vehicle_category.dart';
 import '/core/tour_guide_status.dart';
 import '/core/toury_country_registry.dart';
 import '/core/toury_maps_config.dart';
@@ -42,8 +43,44 @@ abstract final class DriverOrderMatch {
   /// City/region selected at registration (`FFAppState.mdenh` / village.cities).
   static DocumentReference? driverCityRef() => FFAppState().mdenh;
 
-  static DocumentReference? driverTypeCarRef() =>
-      currentUserDocument?.mndobTypeCar;
+  /// Prefer `mndob_type_car`, fall back to legacy `carRev_mndob`.
+  static DocumentReference? driverTypeCarRef([UserRecord? doc]) {
+    final d = doc ?? currentUserDocument;
+    return d?.mndobTypeCar ?? d?.carRevMndob;
+  }
+
+  static String driverTypeCarLabel([UserRecord? doc]) {
+    final d = doc ?? currentUserDocument;
+    return (d?.textTypeCarMndob ?? d?.mdenhAml ?? '').trim();
+  }
+
+  /// Order vehicle type label (`cartext` / legacy fields).
+  static String orderTypeCarLabel(OrderRecord order) {
+    final data = order.snapshotData;
+    for (final key in const ['cartext', 'tebycar', 'car_text', 'type_car_text']) {
+      final v = (data[key] ?? '').toString().trim();
+      if (v.isNotEmpty) return v;
+    }
+    return '';
+  }
+
+  /// Same vehicle class (exact ref or shared category like luxury).
+  static bool matchesDriverCarType({
+    required OrderRecord order,
+    DocumentReference? driverCarRef,
+    String? driverCarLabel,
+  }) {
+    final car = driverCarRef ?? driverTypeCarRef();
+    final orderCar = order.carRev;
+    if (car == null && orderCar == null) return true;
+    if (car == null || orderCar == null) return false;
+    return DriverVehicleCategoryMatch.matches(
+      driverTypePath: car.path,
+      orderTypePath: orderCar.path,
+      driverLabel: driverCarLabel ?? driverTypeCarLabel(),
+      orderLabel: orderTypeCarLabel(order),
+    );
+  }
 
   /// Load city from village.cities when AppState city is empty.
   static Future<DocumentReference?> ensureDriverCity() async {
@@ -218,6 +255,7 @@ abstract final class DriverOrderMatch {
     final scored = <({OrderRecord order, int cityBoost, double km})>[];
 
     final car = driverTypeCarRef();
+    final carLabel = driverTypeCarLabel();
     final country = driverCountryRef();
 
     final driverData = currentUserDocument?.snapshotData;
@@ -235,9 +273,12 @@ abstract final class DriverOrderMatch {
       // Guide-help orders only for approved tour guides.
       final isGuideOrder = order.snapshotData['DriverGuide'] == true;
       if (isGuideOrder && !isApprovedGuide) continue;
-      if (car != null &&
-          order.carRev != null &&
-          order.carRev!.path != car.path) {
+      // Strict vehicle-class match: luxury orders → luxury drivers only.
+      if (!matchesDriverCarType(
+        order: order,
+        driverCarRef: car,
+        driverCarLabel: carLabel,
+      )) {
         continue;
       }
       final orderCountry = order.snapshotData['Rev_dolh'];

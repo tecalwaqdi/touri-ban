@@ -10,7 +10,7 @@ void main() {
     expect(DriverPaymentFlags.useExternalWalletTopUp, isTrue);
   });
 
-  test('cash eligibility threshold remains 200 SAR', () {
-    expect(DriverWalletRules.minCashWalletBalance, 200.0);
+  test('cash eligibility threshold remains 50 SAR', () {
+    expect(DriverWalletRules.minCashWalletBalance, 50.0);
   });
 }

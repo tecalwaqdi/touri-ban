@@ -32,6 +32,13 @@ abstract final class DriverAuthErrors {
     'captcha-check-failed': 'Security check failed. Try again.',
     'weak-password': 'Password must be at least 6 characters',
     'requires-recent-login': 'Please sign in again to continue.',
+    'OTP_INVALID': 'Invalid verification code.',
+    'OTP_EXPIRED': 'Verification code expired. Request a new one.',
+    'OTP_TOO_MANY_ATTEMPTS': 'Too many attempts. Please try again later.',
+    'SEND_RATE_LIMITED': 'Too many attempts. Please try again later.',
+    'WEAK_PASSWORD': 'Password must be at least 6 characters',
+    'OTP_SEND_FAILED': 'Something went wrong. Please try again.',
+    'RESEND_PROVIDER_ERROR': 'Something went wrong. Please try again.',
   };
 
   static String messageKeyForCode(String code) {

@@ -1,6 +1,7 @@
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/core/toury_landmark_cart.dart';
+import '/core/toury_navigation_service.dart';
 import '/index.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -91,16 +92,58 @@ class _ListamakWidgetState extends State<ListamakWidget> {
                       ),
                       const SizedBox(width: DsSpacing.sm),
                       Expanded(
-                        child: Text(
-                          mkssItem.naim,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: typography.titleSmall.copyWith(
-                            color: colors.textPrimary,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              mkssItem.naim,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: typography.titleSmall.copyWith(
+                                color: colors.textPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            if (mkssItem.textivill.trim().isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                mkssItem.textivill.trim(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: typography.bodySmall.copyWith(
+                                  color: colors.textSecondary,
+                                ),
+                              ),
+                            ],
+                            if (mkssItem.loceshn != null) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                '${mkssItem.loceshn!.latitude.toStringAsFixed(5)}, ${mkssItem.loceshn!.longitude.toStringAsFixed(5)}',
+                                style: typography.labelSmall.copyWith(
+                                  color: colors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
+                      if (mkssItem.loceshn != null) ...[
+                        const SizedBox(width: DsSpacing.xs),
+                        IconButton(
+                          tooltip: 'map_open_google_maps'.tr(),
+                          onPressed: () =>
+                              TouryNavigationService.openGoogleMapsNavigation(
+                            destination: mkssItem.loceshn!,
+                            localeKey:
+                                TouryNavigationService.localeForContext(context),
+                            destinationTitle: mkssItem.displayLabel,
+                          ),
+                          icon: Icon(
+                            Icons.directions_rounded,
+                            color: colors.primary,
+                          ),
+                        ),
+                      ],
                       const SizedBox(width: DsSpacing.xs),
                       Material(
                         color: colors.error.withValues(alpha: 0.10),

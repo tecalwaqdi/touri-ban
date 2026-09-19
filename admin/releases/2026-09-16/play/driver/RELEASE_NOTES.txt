@@ -1,0 +1,13 @@
+Touri Taxi Driver — Google Play
+versionName: 11.1.18
+versionCode: 47
+package: com.mycompany.mndob2
+
+What's new:
+- Match nearby orders by vehicle class (e.g. luxury)
+- Fix nearby/available order counters
+- Background push notifications when online
+
+Upload:
+Play Console → Touri Taxi Driver → Create release → upload:
+admin/releases/2026-09-16/play/driver/TouriTaxi-driver-11.1.18-47.aab

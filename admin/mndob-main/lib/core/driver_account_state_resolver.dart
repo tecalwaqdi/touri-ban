@@ -61,7 +61,7 @@ abstract final class DriverAccountStateResolver {
       mndonNewacc: valueOrDefault<bool>(doc.mndonNewacc, false),
       registrationStatus: doc.registrationStatus,
       displayName: doc.displayName,
-      hasCar: doc.mndobTypeCar != null,
+      hasCar: doc.mndobTypeCar != null || doc.carRevMndob != null,
       hasActiveTrip: hasActiveTrip,
     );
     _log(debugLog, life.name, reason: 'legacyMapped');

@@ -528,7 +528,7 @@ service cloud.firestore {
             ])
           || (resource.data.status_code in ['trip_started', 'trip_in_progress']
             && request.resource.data.status_code in [
-              'trip_in_progress', 'completed', 'cancelled_by_driver'
+              'trip_in_progress', 'completed'
             ])
         );
     }
@@ -1116,6 +1116,29 @@ service cloud.firestore {
     // Order create is CF-only (createCashBooking Admin SDK). Client create disabled.
     // rules-rev: order-create-cf-only-2026-08-09
 
+    // ExtraHours is server-owned. Older/stale driver clients must also honor
+    // an extended deadline and cannot shorten it through a location update.
+    function extendedOrderWriteIsValid() {
+      let prev = resource.data;
+      let next = request.resource.data;
+      let changed = next.diff(prev).affectedKeys();
+      let extended = prev.get('extra_hours_updated_at', null) != null;
+      let starting = prev.get('status_code', '') in ['driver_assigned', 'driver_arriving', 'driver_arrived']
+        && next.get('status_code', '') in ['trip_started', 'trip_in_progress'];
+      return !changed.hasAny(['extra_hours_updated_at', 'extra_hours_pending_session'])
+        && (!extended || (
+          next.total_taim == prev.total_taim
+          && (starting
+            ? (next.START is timestamp && next.endTime is timestamp
+              && next.endTime >= next.START + duration.value(prev.total_taim * 3600, 's'))
+            : (!changed.hasAny(['START', 'trip_started_at', 'endTime'])))
+          && (next.get('status_code', '') != 'completed'
+            || (prev.START is timestamp && prev.endTime is timestamp
+              && request.time >= prev.endTime
+              && request.time >= prev.START + duration.value(prev.total_taim * 3600, 's')))
+        ));
+    }
+
     match /order/{document} {
       // Prefer createCashBooking CF; when CF Admin IAM fails, constrained client
       // cash create is allowed (isValidClientCashOrderCreate + fallback flag).
@@ -1144,17 +1167,18 @@ service cloud.firestore {
       // Card→Cash FIRST — narrow installed-app patch; keep off heavy OR-chains
       // so expression budget is not burned by driver/panel helpers.
       // rules-rev: consumer-card-to-cash-2026-08-27
-      allow update: if consumerCanSwitchUnpaidElectronicOrderToCash();
+      // Keep active-trip transitions outside profile-heavy OR chains.
+      allow update: if driverCanAdvanceTrip() && extendedOrderWriteIsValid();
+      allow update: if consumerCanSwitchUnpaidElectronicOrderToCash() && extendedOrderWriteIsValid();
       // Consumer cancel as its own statement — must not share an OR-chain
       // with driver/panel helpers that call get(user) (missing profile → deny all).
       // rules-rev: consumer-cancel-standalone-2026-08-21
-      allow update: if consumerCanCancelOrder();
-      allow update: if consumerOrderFieldsOnly();
-      allow update: if request.auth != null && (
+      allow update: if consumerCanCancelOrder() && extendedOrderWriteIsValid();
+      allow update: if consumerOrderFieldsOnly() && extendedOrderWriteIsValid();
+      allow update: if extendedOrderWriteIsValid() && request.auth != null && (
         driverCanClaimOrder()
         || driverAssignedCanPatchOrder()
         || driverCanUpdateLiveLocation()
-        || driverCanAdvanceTrip()
         || driverCanCompleteCashCollection()
         || panelCanWriteOrder(resource.data)
       );

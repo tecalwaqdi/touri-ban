@@ -31,7 +31,8 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap>
   final Completer<gmaps.GoogleMapController> _controller = Completer();
   bool _loading = true;
   bool _locateInFlight = false;
-  String? _error;
+  /// Soft tip only (never the Next-step validation alert on open).
+  String? _softTip;
   LatLng? _lastIdleCenter;
 
   @override
@@ -54,7 +55,6 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _refreshGpsDiagnostics();
       if (!TouryMapsConfig.isUsableCoordinate(widget.location)) {
         _flushIdleCenter();
       }
@@ -65,6 +65,9 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap>
     if (!TouryMapsConfig.isUsableCoordinate(latLng)) return;
     _lastIdleCenter = latLng;
     widget.onLocationChanged(latLng);
+    if (_softTip != null && mounted) {
+      setState(() => _softTip = null);
+    }
   }
 
   void _flushIdleCenter() {
@@ -118,24 +121,12 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap>
     );
   }
 
-  Future<void> _refreshGpsDiagnostics() async {
-    if (!mounted) return;
-    if (TouryMapsConfig.isUsableCoordinate(widget.location)) {
-      if (_error != null) setState(() => _error = null);
-      return;
-    }
-    final message = await _gpsFailureMessage();
-    if (mounted && _error != message) {
-      setState(() => _error = message);
-    }
-  }
-
   Future<void> _locate({bool force = false}) async {
     if (!mounted || _locateInFlight) return;
     _locateInFlight = true;
     setState(() {
       _loading = true;
-      _error = null;
+      _softTip = null;
     });
     try {
       final loc = await getCurrentUserLocation(
@@ -156,16 +147,23 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap>
       }
     } catch (_) {
       if (!mounted) return;
-      final message = await _gpsFailureMessage();
-      if (!mounted) return;
-      setState(() => _error = message);
-      if (force && mounted) {
+      // Manual pin remains available. Do not surface the Next-step alert here.
+      if (force) {
+        final message = await _gpsFailureMessage();
+        if (!mounted) return;
         await DriverDialogs.showAlert(
           context,
           title: driverTr(context, 'Location'),
           message: message,
           type: DriverMessageType.warning,
         );
+      } else if (!TouryMapsConfig.isUsableCoordinate(widget.location)) {
+        setState(() {
+          _softTip = driverTr(
+            context,
+            'You can adjust the pin manually if GPS is unavailable.',
+          );
+        });
       }
     } finally {
       _locateInFlight = false;
@@ -227,23 +225,21 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap>
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              DsSpacing.sm,
-              0,
-              DsSpacing.sm,
-              DsSpacing.xs,
-            ),
-            child: Text(
-              driverTr(
-                context,
-                'Move the map to set your position. You can place the pin manually if GPS is unavailable.',
+          if (_softTip != null && !hasSelected)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                DsSpacing.sm,
+                0,
+                DsSpacing.sm,
+                DsSpacing.xs,
               ),
-              style: typography.bodySmall.copyWith(
-                color: colors.textSecondary,
+              child: Text(
+                _softTip!,
+                style: typography.bodySmall.copyWith(
+                  color: colors.textSecondary,
+                ),
               ),
             ),
-          ),
           SizedBox(
             height: 220,
             child: Stack(
@@ -282,26 +278,6 @@ class _DriverRegLocationMapState extends State<DriverRegLocationMap>
                     ),
                   ),
                 ),
-                if (_error != null && !hasSelected)
-                  Positioned(
-                    left: DsSpacing.xs,
-                    right: DsSpacing.xs,
-                    bottom: DsSpacing.xs,
-                    child: Material(
-                      color: colors.error.withValues(alpha: 0.92),
-                      borderRadius: DsRadius.small,
-                      child: Padding(
-                        padding: DsSpacing.cardPadding,
-                        child: Text(
-                          _error!,
-                          textAlign: TextAlign.center,
-                          style: typography.labelSmall.copyWith(
-                            color: colors.onError,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),

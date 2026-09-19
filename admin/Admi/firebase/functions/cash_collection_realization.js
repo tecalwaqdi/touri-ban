@@ -134,7 +134,7 @@ async function confirmCashCollectionV2({db, auth, data, admin, now}) {
   if (!operationId) fail('invalid-argument', 'operationId required');
 
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_CASH_REALIZATION_V2_ENABLED', fail);
+  assertFlag(flags, 'FINANCIAL_CASH_REALIZATION_V2_ENABLED', fail, {auth});
 
   return runCashRealizationTx({
     db,
@@ -172,7 +172,7 @@ async function adminConfirmCashCollectionV2({db, auth, data, admin, now}) {
   ).trim();
 
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_CASH_REALIZATION_V2_ENABLED', fail);
+  assertFlag(flags, 'FINANCIAL_CASH_REALIZATION_V2_ENABLED', fail, {auth});
 
   return runCashRealizationTx({
     db,

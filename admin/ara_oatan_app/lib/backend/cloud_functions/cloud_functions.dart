@@ -22,6 +22,7 @@ Future<Map<String, dynamic>> makeCloudCall(
     return {
       'error': e.message ?? 'cloud_call_failed',
       'code': e.code,
+      'details': e.details,
       // Surface mapped user text via callers — never leak raw NOT_FOUND alone.
     };
   } catch (e) {

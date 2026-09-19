@@ -35,13 +35,22 @@ abstract final class DriverDocumentRequirementsRepository {
       localizedTitleKey: 'Vehicle registration',
     ),
     DriverDocumentRequirement(
-      type: 'driverLicense',
-      firestoreField: 'doc_driver_license',
+      type: 'driverLicenseFront',
+      firestoreField: 'doc_driver_license_front',
       required: true,
       expiryRequired: true,
       operationalBlockingOnExpiry: true,
       expiryWarningDays: 30,
-      localizedTitleKey: 'Driver license',
+      localizedTitleKey: 'Driver license (front)',
+    ),
+    DriverDocumentRequirement(
+      type: 'driverLicenseBack',
+      firestoreField: 'doc_driver_license_back',
+      required: true,
+      expiryRequired: false,
+      operationalBlockingOnExpiry: false,
+      expiryWarningDays: 30,
+      localizedTitleKey: 'Driver license (back)',
     ),
   ];
 
@@ -121,7 +130,12 @@ abstract final class DriverDocumentRequirementsRepository {
       case 'vehicle_registration':
         return 'vehicleRegistration';
       case 'driver_license':
-        return 'driverLicense';
+      case 'driver_license_front':
+        return 'driverLicenseFront';
+      case 'driver_license_back':
+        return 'driverLicenseBack';
+      case 'driverLicense':
+        return 'driverLicenseFront';
       case 'profile_photo':
         return 'profilePhoto';
       case 'vehicle_insurance':
@@ -140,7 +154,10 @@ abstract final class DriverDocumentRequirementsRepository {
       case 'vehicleRegistration':
         return 'doc_vehicle_registration';
       case 'driverLicense':
-        return 'doc_driver_license';
+      case 'driverLicenseFront':
+        return 'doc_driver_license_front';
+      case 'driverLicenseBack':
+        return 'doc_driver_license_back';
       case 'vehicleInsurance':
         return 'doc_vehicle_insurance';
       default:

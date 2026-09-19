@@ -6,7 +6,7 @@
 const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 
-const MIN_CASH_WALLET = 200;
+const MIN_CASH_WALLET = 50;
 
 function requireAuth(context) {
   if (!context.auth || !context.auth.uid) {

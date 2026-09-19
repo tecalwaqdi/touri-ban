@@ -94,9 +94,25 @@ abstract final class DriverRegistrationDocumentStatus {
         legacy = 'img_id_car';
         break;
       case 'driver_license':
-        v2 = 'doc_driver_license';
-        legacy = '';
-        break;
+        // Front + back required. Legacy single slot counts as front only.
+        for (final key in const [
+          'doc_driver_license_front',
+          'doc_driver_license_back',
+          'doc_driver_license',
+        ]) {
+          final raw = _slotStatusRaw(data, key);
+          if (raw == 'rejected') return DriverRegistrationDocStatus.rejected;
+          if (raw == 'needs_reupload') {
+            return DriverRegistrationDocStatus.needsReupload;
+          }
+        }
+        final frontOk = _hasPresentAsset(data, 'doc_driver_license_front', '') ||
+            _hasPresentAsset(data, 'doc_driver_license', '');
+        final backOk = _hasPresentAsset(data, 'doc_driver_license_back', '');
+        if (frontOk && backOk) {
+          return DriverRegistrationDocStatus.complete;
+        }
+        return DriverRegistrationDocStatus.missing;
       default:
         return DriverRegistrationDocStatus.missing;
     }

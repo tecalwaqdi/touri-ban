@@ -159,7 +159,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                         future: DriverDailyStatsService.fetch(
                           driverRef: currentUserReference,
                           villRef: currentUserDocument?.mndobVill,
-                          carTypeRef: currentUserDocument?.mndobTypeCar,
+                          carTypeRef: DriverOrderMatch.driverTypeCarRef(),
                         ),
                         builder: (context, snapshot) => DriverDailyStatsCard(
                           stats: snapshot.data ?? DriverDailyStats.empty,
@@ -428,10 +428,32 @@ class _HomeWidgetState extends State<HomeWidget> {
                                   Expanded(
                                     child: AuthUserStreamWidget(
                                       builder: (context) => FutureBuilder<int>(
-                                        future: queryOrderRecordCount(
-                                          queryBuilder:
-                                              DriverOrderMatch.queryBuilder(),
-                                        ),
+                                        future: () async {
+                                          if (!DriverOnlineState.isApproved) {
+                                            return 0;
+                                          }
+                                          await DriverOrderMatch
+                                              .ensureDriverCountry();
+                                          final cityRef =
+                                              await DriverOrderMatch
+                                                  .ensureDriverCity();
+                                          final pool =
+                                              await queryOrderRecordOnce(
+                                            queryBuilder:
+                                                DriverOrderMatch.queryBuilder(
+                                              typeCarRef: DriverOrderMatch
+                                                  .driverTypeCarRef(),
+                                            ),
+                                          );
+                                          return DriverOrderMatch.rankForDriver(
+                                            pool,
+                                            driverCityOrVillage:
+                                                currentUserDocument?.mndobVill,
+                                            driverCityRef: cityRef,
+                                            driverPosition: DriverOrderMatch
+                                                .driverLivePosition(),
+                                          ).length;
+                                        }(),
                                         builder: (context, snapshot) {
                                           // Customize what your widget looks like when it's loading.
                                           if (!snapshot.hasData) {
@@ -446,9 +468,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                           int containerCount = snapshot.data!;
 
                                           return DriverOrderStatCard(
-                                            count: DriverOnlineState.isApproved
-                                                ? containerCount.toString()
-                                                : '0',
+                                            count: containerCount.toString(),
                                             label: FFLocalizations.of(context)
                                                 .getText(
                                               'tf28iy1f' /* Available */,

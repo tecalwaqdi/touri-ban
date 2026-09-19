@@ -680,10 +680,96 @@ exports.recordAuditLog = functions.https.onCall(async (data, context) => {
   return {ok: true};
 });
 
-// ── Auth cleanup ────────────────────────────────────────────────────────────
+// ── Account deletion (Play policy) ──────────────────────────────────────────
 
+const accountDeletion = require('./account_deletion.js');
+
+function mapAccountDeletionError(e) {
+  if (e instanceof accountDeletion.AccountDeletionError) {
+    const httpsCode =
+      e.code === 'unauthenticated'
+        ? 'unauthenticated'
+        : e.code === 'permission-denied'
+          ? 'permission-denied'
+          : e.code === 'invalid-argument'
+            ? 'invalid-argument'
+            : 'failed-precondition';
+    throw new functions.https.HttpsError(httpsCode, e.message || e.code, {
+      code: e.code,
+      ...(e.details || {}),
+    });
+  }
+  throw e;
+}
+
+exports.requestAccountDeletion = functions
+  .region('us-central1')
+  .runWith({timeoutSeconds: 120, memory: '512MB'})
+  .https.onCall(async (data, context) => {
+    try {
+      return await accountDeletion.requestAccountDeletion(data || {}, context, {
+        db,
+        auth: admin.auth(),
+        storage: admin.storage(),
+        FieldValue: admin.firestore.FieldValue,
+        logger: functions.logger,
+      });
+    } catch (e) {
+      mapAccountDeletionError(e);
+      throw new functions.https.HttpsError(
+        'internal',
+        e.message || 'ACCOUNT_DELETION_FAILED',
+      );
+    }
+  });
+
+// Public web form creates a verified-support request only (no Auth delete).
+exports.createAccountDeletionRequest = functions
+  .region('us-central1')
+  .runWith({timeoutSeconds: 30, memory: '256MB'})
+  .https.onCall(async (data, context) => {
+    try {
+      return await accountDeletion.createAccountDeletionRequest(
+        data || {},
+        context || {},
+        {
+          db,
+          FieldValue: admin.firestore.FieldValue,
+        },
+      );
+    } catch (e) {
+      mapAccountDeletionError(e);
+      throw new functions.https.HttpsError(
+        'internal',
+        e.message || 'ACCOUNT_DELETION_REQUEST_FAILED',
+      );
+    }
+  });
+
+// Safety-net only — primary path is requestAccountDeletion (cleanup before Auth).
 exports.onUserDeleted = functions.auth.user().onDelete(async (user) => {
-  await db.doc("user/" + user.uid).delete();
+  try {
+    await accountDeletion.runAccountDeletionCleanup({
+      db,
+      auth: admin.auth(),
+      storage: admin.storage(),
+      uid: user.uid,
+      FieldValue: admin.firestore.FieldValue,
+      deleteAuthUser: false,
+      skipDriverGates: true,
+    });
+  } catch (e) {
+    functions.logger.error('onUserDeleted cleanup failed', {
+      uid: user.uid,
+      message: e.message,
+    });
+    // Last resort: remove profile doc if still present.
+    try {
+      await db.doc('user/' + user.uid).delete();
+    } catch (_) {
+      /* ignore */
+    }
+  }
 });
 
 // ── Booking notifications ───────────────────────────────────────────────────
@@ -1305,3 +1391,42 @@ exports.verifyEmailVerificationOtp = functions
   .https.onCall((data, context) =>
     emailVerificationOtp.verifyEmailVerificationOtp(data || {}, context),
   );
+
+const passwordResetOtp = require('./password_reset_otp.js');
+
+exports.requestPasswordResetOtp = functions
+  .region('us-central1')
+  .runWith({timeoutSeconds: 30, memory: '256MB', secrets: emailOtpSecrets})
+  .https.onCall((data, context) =>
+    passwordResetOtp.requestPasswordResetOtp(data || {}, context),
+  );
+
+exports.confirmPasswordResetOtp = functions
+  .region('us-central1')
+  .runWith({timeoutSeconds: 30, memory: '256MB', secrets: emailOtpSecrets})
+  .https.onCall((data, context) =>
+    passwordResetOtp.confirmPasswordResetOtp(data || {}, context),
+  );
+
+// Keep missing mkan.tsnef filled. Do NOT rewrite Location — clamping broke
+// real pins (Admin showed correct coords, Firestore/app map showed wrong).
+const mkanListVisibility = require('./mkan_list_visibility.js');
+
+exports.ensureMkanListVisibilityOnWrite = functions
+  .region('us-central1')
+  .firestore.document('mkan/{mkanId}')
+  .onWrite(async (change, context) => {
+    if (!change.after.exists) return null;
+    const data = change.after.data() || {};
+    const result = mkanListVisibility.computeVisibilityPatch(
+      data,
+      admin.firestore.GeoPoint,
+    );
+    if (!result || !result.changed) return null;
+    await change.after.ref.update(result.patch);
+    functions.logger.info('ensureMkanListVisibilityOnWrite', {
+      mkanId: context.params.mkanId,
+      fields: Object.keys(result.patch),
+    });
+    return null;
+  });

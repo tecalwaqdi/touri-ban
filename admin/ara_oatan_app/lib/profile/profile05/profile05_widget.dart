@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,7 +9,7 @@ import '/auth/firebase_auth/google_auth.dart';
 import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
 import '/backend/profile_photo_service.dart';
-import '/backend/schema/enums/enums.dart';
+import '/core/toury_account_deletion_service.dart';
 import '/core/toury_dialogs.dart';
 import '/core/toury_image.dart';
 import '/core/toury_notification_settings.dart';
@@ -219,61 +220,142 @@ class _Profile05WidgetState extends State<Profile05Widget> {
     }
   }
 
+  Future<String?> _askPasswordForReauth() async {
+    final controller = TextEditingController();
+    final arabic = Localizations.localeOf(context).languageCode == 'ar';
+    final password = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(
+            arabic ? 'تأكيد الهوية' : 'Confirm identity',
+          ),
+          content: TextField(
+            controller: controller,
+            obscureText: true,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: arabic ? 'كلمة المرور' : 'Password',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(arabic ? 'إلغاء' : 'Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, controller.text),
+              child: Text(arabic ? 'متابعة' : 'Continue'),
+            ),
+          ],
+        );
+      },
+    );
+    controller.dispose();
+    return password;
+  }
+
   Future<void> _requestAccountDeletion() async {
-    final confirmDialogResponse = await TouryDialogs.showConfirm(
+    final arabic = Localizations.localeOf(context).languageCode == 'ar';
+
+    final first = await TouryDialogs.showConfirm(
       context,
-      title: 'dialog_delete_account_title'.tr(),
-      message: 'dialog_delete_account_msg'.tr(),
+      title: arabic ? 'حذف الحساب' : 'Delete account',
+      message: arabic
+          ? 'سيؤدي حذف حسابك إلى حذف بيانات الحساب الشخصية غير اللازمة (مثل بيانات الملف والعناوين المحفوظة ورموز الإشعارات). لا يعني ذلك حذف كل البيانات: قد يتم الاحتفاظ بسجلات الرحلات والمعاملات والتسويات والقيود المحاسبية المرتبطة بها لأغراض المحاسبة والامتثال ومنع الاحتيال والنزاعات والتدقيق. لا يمكن الحذف أثناء رحلة نشطة.'
+          : 'Deleting your account removes unnecessary personal account data (such as profile details, saved addresses, and notification tokens). This does not erase all data: trip, transaction, settlement, and accounting records may be retained for accounting, compliance, fraud prevention, disputes, and audit. Deletion is blocked while a trip is active.',
       type: TouryMessageType.warning,
       destructive: true,
+      confirmLabel: arabic ? 'متابعة حذف الحساب' : 'Continue deletion',
+      cancelLabel: arabic ? 'إلغاء' : 'Cancel',
     );
-    if (!confirmDialogResponse || !mounted) return;
+    if (!first || !mounted) return;
 
-    // Retain a support audit ticket for ops/legal, then delete Auth user.
-    // Auth onDelete CF cleans Firestore user/{uid}. Financial history retention
-    // is handled server-side — client must not remain half-logged-in.
-    try {
-      await SupportRecord.collection.doc().set(createSupportRecordData(
-            naim: currentUserDisplayName,
-            osf: 'طلب حذف حسابي من التطبيق',
-            tsnef: 'حذف حساب',
-            refUser: currentUserReference,
-            data: getCurrentTimestamp,
-            halh: Halhsupport.Open,
-          ));
-    } catch (_) {
-      // Ticket is best-effort; Auth deletion is the App Store requirement.
-    }
+    final second = await TouryDialogs.showConfirm(
+      context,
+      title: arabic ? 'تأكيد نهائي' : 'Final confirmation',
+      message: arabic
+          ? 'هل أنت متأكد أنك تريد حذف حسابك نهائيًا؟'
+          : 'Are you sure you want to permanently delete your account?',
+      type: TouryMessageType.warning,
+      destructive: true,
+      confirmLabel: arabic ? 'حذف نهائي' : 'Delete permanently',
+      cancelLabel: arabic ? 'إلغاء' : 'Cancel',
+    );
+    if (!second || !mounted) return;
 
-    try {
-      await authManager.deleteUser(context);
+    // Re-authenticate before server deletion (handles requires-recent-login).
+    final reauthed = await TouryAccountDeletionService.reauthenticate(
+      context,
+      askPassword: _askPasswordForReauth,
+    );
+    if (!reauthed) {
       if (!mounted) return;
-      if (loggedIn) {
-        // requires-recent-login left the session intact.
-        await TouryDialogs.showAlert(
-          context,
-          title: 'dialog_error_title'.tr(),
-          message: 'dialog_delete_account_reauth'.tr(),
-          type: TouryMessageType.warning,
-        );
-        return;
-      }
-      try {
-        FFAppState().clearSensitivePaymentSession();
-        FFAppState.reset();
-      } catch (_) {}
-      GoRouter.of(context).clearRedirectLocation();
-      if (!mounted) return;
-      context.goNamedAuth(HomePagWidget.routeName, context.mounted);
-    } catch (e) {
-      if (!mounted) return;
+      final provider = FirebaseAuth.instance.currentUser == null
+          ? null
+          : TouryAccountDeletionService.primaryProviderId(
+              FirebaseAuth.instance.currentUser!,
+            );
       await TouryDialogs.showAlert(
         context,
-        title: 'dialog_error_title'.tr(),
-        message: e.toString(),
+        title: arabic ? 'مطلوب تأكيد الهوية' : 'Identity confirmation required',
+        message: provider == 'phone'
+            ? (arabic
+                ? 'أعد تسجيل الدخول برقم الجوال ثم حاول حذف الحساب مرة أخرى.'
+                : 'Sign in again with your phone number, then retry account deletion.')
+            : (arabic
+                ? 'لم نتمكن من تأكيد هويتك. سجّل الدخول مجددًا ثم أعد المحاولة.'
+                : 'We could not confirm your identity. Sign in again and retry.'),
+        type: TouryMessageType.warning,
+      );
+      return;
+    }
+    if (!mounted) return;
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+    AccountDeletionResult result;
+    try {
+      result = await TouryAccountDeletionService.requestDeletion();
+    } finally {
+      if (mounted) Navigator.of(context, rootNavigator: true).pop();
+    }
+    if (!mounted) return;
+
+    if (!result.ok) {
+      await TouryDialogs.showAlert(
+        context,
+        title: arabic ? 'تعذر الحذف' : 'Deletion failed',
+        message: TouryAccountDeletionService.userFacingMessage(
+          result,
+          arabic: arabic,
+        ),
         type: TouryMessageType.error,
       );
+      return;
     }
+
+    try {
+      await FirebaseMessaging.instance.deleteToken();
+    } catch (_) {}
+    try {
+      FFAppState().clearSensitivePaymentSession();
+      FFAppState.reset();
+    } catch (_) {}
+    try {
+      await signOutWithGoogle();
+    } catch (_) {}
+    try {
+      await authManager.signOut();
+    } catch (_) {}
+
+    if (!mounted) return;
+    GoRouter.of(context).clearRedirectLocation();
+    context.goNamedAuth(HomePagWidget.routeName, context.mounted);
   }
 
   Future<void> _logout() async {

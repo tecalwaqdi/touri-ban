@@ -22,8 +22,15 @@ import '/core/driver_locale_loader.dart';
 import '/design_system/design_system.dart';
 import 'flutter_flow/internationalization.dart';
 import 'index.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 const _supportedDriverLocales = driverSupportedLocales;
+
+/// Keeps FCM delivery alive when the app is backgrounded/killed.
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // OS already shows the notification payload; handler keeps the isolate warm.
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +47,15 @@ void main() async {
   usePathUrlStrategy();
 
   await initFirebase();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  try {
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  } catch (_) {}
 
   // Never keep a registration guest session across app launches.
   await DriverBootstrap.clearAnonymousSession();

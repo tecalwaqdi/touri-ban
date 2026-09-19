@@ -171,14 +171,19 @@ async function sendPushNotifications(snapshot) {
         parameterData,
       },
       android: {
+        priority: "high",
         notification: {
           ...(sound && { sound: sound }),
         },
       },
       apns: {
+        headers: {
+          "apns-priority": "10",
+        },
         payload: {
           aps: {
-            ...(sound && { sound: sound }),
+            sound: sound || "default",
+            contentAvailable: true,
           },
         },
       },

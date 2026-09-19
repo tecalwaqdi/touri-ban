@@ -795,6 +795,46 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "registration_status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_time",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "user",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "Rev_dolh",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ismndob",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "registration_status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_time",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "user",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ismndob",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "registration_flow_version",
           "order": "ASCENDING"
         }

@@ -73,3 +73,8 @@ qa_master_audit/
 admin/Admi/tool/i18n/translate_cache.json
 admin/Admi/tool/i18n/*.log
 admin/Admi/tool/i18n/chunks/
+.vercel
+.env*
+
+# Local keystore notes (may contain passwords)
+**/keystore.properties.from-notes

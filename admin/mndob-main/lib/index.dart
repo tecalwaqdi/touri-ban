@@ -15,7 +15,7 @@ export '/sfdf/sfdf_widget.dart' show SfdfWidget;
 export '/now/now_widget.dart' show NowWidget;
 export '/accepted/accepted_widget.dart' show AcceptedWidget;
 export '/completed/completed_widget.dart' show CompletedWidget;
-export '/regdrever/regdrever_widget.dart' show RegdreverWidget;
+export '/regdrever/regdrever_widget.dart' show RegdreverWidget, RegdreverMode;
 export '/listvill/listvill_widget.dart' show ListvillWidget;
 export '/home/home_widget.dart' show HomeWidget;
 export '/suport/suport_widget.dart' show SuportWidget;

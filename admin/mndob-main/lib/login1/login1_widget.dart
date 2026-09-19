@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,9 @@ import '/core/driver_auth_errors.dart';
 import '/core/driver_auth_validation_service.dart';
 import '/core/driver_bootstrap.dart';
 import '/core/driver_dialogs.dart';
+import '/core/driver_password_reset_service.dart';
+import '/core/email_otp_verification_service.dart';
+import '/login1/driver_password_reset_dialog.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_language_selector.dart';
@@ -75,25 +79,66 @@ class _Login1WidgetState extends State<Login1Widget> {
       return;
     }
     safeSetState(() => _model.isResettingPassword = true);
+    Map<String, dynamic>? otpRes;
+    Object? otpError;
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (e) {
+      otpRes = await DriverPasswordResetService.requestOtp(
+        emailRaw: _model.emailAddressTextController.text,
+        locale: DriverPasswordResetService.localeFromLanguageCode(
+          FFLocalizations.of(context).languageCode,
+        ),
+      );
+    } on FirebaseFunctionsException catch (e) {
       DriverAuthErrors.logSafely(e);
+      otpError = e;
     } catch (e) {
       DriverAuthErrors.logSafely(e);
+      otpError = e;
     } finally {
       if (mounted) {
         safeSetState(() => _model.isResettingPassword = false);
       }
     }
     if (!mounted) return;
+
+    if (otpError != null) {
+      await DriverDialogs.showAlert(
+        context,
+        title: driverTr(context, 'Error'),
+        message: otpError is FirebaseFunctionsException
+            ? DriverAuthErrors.localized(context, otpError)
+            : driverTr(context, 'Something went wrong. Please try again.'),
+        type: DriverMessageType.warning,
+      );
+      return;
+    }
+
+    final challengeId = otpRes?['challengeId'] as String?;
+    final emailMasked =
+        (otpRes?['emailMasked'] as String?) ?? EmailOtpVerificationService.maskEmail(email);
+    if (challengeId == null || challengeId.isEmpty) {
+      await DriverDialogs.showAlert(
+        context,
+        title: driverTr(context, 'Success'),
+        message: driverTr(
+          context,
+          'If an account exists for this email, a reset link has been sent.',
+        ),
+        type: DriverMessageType.success,
+      );
+      return;
+    }
+
+    final resetOk = await showDriverPasswordResetDialog(
+      context: context,
+      email: email,
+      emailMasked: emailMasked,
+    );
+    if (!mounted || !resetOk) return;
     await DriverDialogs.showAlert(
       context,
       title: driverTr(context, 'Success'),
-      message: driverTr(
-        context,
-        'If an account exists for this email, a reset link has been sent.',
-      ),
+      message: driverTr(context, 'Password updated. You can sign in now.'),
       type: DriverMessageType.success,
     );
   }

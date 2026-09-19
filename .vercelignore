@@ -1,0 +1,31 @@
+# Keep Vercel upload under size limits — only website + lockfiles needed.
+# Project Root Directory is already admin/touri-website.
+
+admin/Admi
+admin/ara_oatan_app
+admin/mndob-main
+admin/mndob
+admin/scripts
+admin/**/build
+admin/**/.dart_tool
+admin/**/android
+admin/**/ios
+admin/**/linux
+admin/**/macos
+admin/**/windows
+admin/**/node_modules
+**/.git
+**/node_modules
+**/.next
+**/coverage
+**/dist
+**/*.aab
+**/*.apk
+**/*.ipa
+**/*.zip
+docs
+.cursor
+agent-transcripts
+**/Pods
+**/.gradle
+**/DerivedData

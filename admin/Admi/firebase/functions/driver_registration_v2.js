@@ -146,13 +146,34 @@ function approvalBlockingReasonsV2(driver, authUser) {
     blockers.push('driver_license_required');
   }
   if (!profilePhotoPresent(driver)) blockers.push('profile_photo_required');
-  try {
-    const docReview = require('./driver_document_review.js');
-    if (!docReview.allRequiredDocumentsApproved(driver)) {
-      blockers.push('REQUIRED_DOCUMENTS_NOT_APPROVED');
-    }
-  } catch (_) {}
+  // Application approve is the registration decision: require documents to be
+  // present (gates above). Do NOT require prior per-slot reviewStatus=approved
+  // — that blocked "اعتماد السائق" after docs were uploaded for review.
+  // Present slots are marked approved in the approve transaction patch.
   return blockers;
+}
+
+/** Mark uploaded registration document slots approved with the application. */
+function documentSlotsApprovedPatch(driver) {
+  const keys = [
+    'doc_national_id',
+    'doc_vehicle_registration',
+    'doc_driver_license_front',
+    'doc_driver_license_back',
+    'doc_driver_license',
+  ];
+  const out = {};
+  for (const key of keys) {
+    const slot = driver[key];
+    if (!slot || typeof slot !== 'object') continue;
+    if (!(slot.storagePath || slot.url)) continue;
+    out[key] = {
+      ...slot,
+      reviewStatus: 'approved',
+      status: 'approved',
+    };
+  }
+  return out;
 }
 
 function submitBlockingReasons(driver, authUser) {
@@ -680,6 +701,7 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
         fieldsToFix: [],
         requested_changes: [],
         auto_activated: false,
+        ...documentSlotsApprovedPatch(driver),
       });
       if (override) {
         Object.assign(patch, {
@@ -814,6 +836,7 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
 exports._testSubmitBlockingReasons = submitBlockingReasons;
 exports._testSubmitValidation = submitValidation;
 exports._testApprovalBlockingReasonsV2 = approvalBlockingReasonsV2;
+exports._testDocumentSlotsApprovedPatch = documentSlotsApprovedPatch;
 exports._testNormalizePlate = normalizePlate;
 exports._testPlateClaimDocPath = plateClaimDocPath;
 exports._testPlateClaimConflict = plateClaimConflict;

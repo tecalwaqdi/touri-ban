@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-import '/app_state.dart';
-import '/backend/api_requests/api_calls.dart';
 import '/backend/schema/enums/enums.dart';
+import '/core/toury_dialogs.dart';
+import '/core/toury_extra_hours_service.dart';
 import '/core/toury_ngenius_service.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -20,12 +20,15 @@ class AddExtraHours2Widget extends StatefulWidget {
     required this.srsaah,
     required this.idMndob,
     this.numperOrder,
+    this.service,
   });
 
   final DocumentReference? idorder;
+  // Retained for existing callers; the trusted quote comes from the order.
   final double? srsaah;
   final DocumentReference? idMndob;
   final String? numperOrder;
+  final TouryExtraHoursService? service;
 
   @override
   State<AddExtraHours2Widget> createState() => _AddExtraHours2WidgetState();
@@ -33,203 +36,286 @@ class AddExtraHours2Widget extends StatefulWidget {
 
 class _AddExtraHours2WidgetState extends State<AddExtraHours2Widget> {
   late AddExtraHours2Model _model;
+  late final TouryExtraHoursService _service;
   int _hours = 1;
+  int _quoteGeneration = 0;
+  bool _loading = true;
   bool _submitting = false;
-
-  double get _hourlyRate => widget.srsaah ?? 0;
-  double get _total => _hourlyRate * _hours;
+  String? _error;
+  TouryExtraHoursQuote? _quote;
+  String _requestKey = '';
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => AddExtraHours2Model());
+    _service = widget.service ?? TouryExtraHoursService();
+    _loadQuote();
   }
 
   @override
   void dispose() {
+    _quoteGeneration++;
     _model.maybeDispose();
     super.dispose();
   }
 
-  Future<void> _startPayment() async {
-    if (_submitting || widget.idorder == null || _hourlyRate <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('payment_verify_error'.tr())),
-      );
+  String _message(Object error) {
+    final code = error is TouryExtraHoursException ? error.code : '';
+    if (code == 'EXTRA_HOURS_NOT_APPLIED') {
+      return 'extra_hours_paid_not_applied'.tr();
+    }
+    if (code == 'EXTRA_HOURS_QUOTE_CHANGED') {
+      return 'extra_hours_quote_changed'.tr();
+    }
+    if (code == 'EXTRA_HOURS_PAYMENT_PENDING') {
+      return 'extra_hours_payment_pending'.tr();
+    }
+    if (code == 'EXTRA_HOURS_NOT_ACTIVE' ||
+        code == 'EXTRA_HOURS_NOT_OWNER' ||
+        code == 'EXTRA_HOURS_PAYMENT_NOT_ELIGIBLE') {
+      return 'extra_hours_ineligible'.tr();
+    }
+    if (code.startsWith('EXTRA_HOURS_FINANCE') ||
+        code == 'EXTRA_HOURS_PRICE_UNAVAILABLE' ||
+        code == 'EXTRA_HOURS_CURRENCY_UNSUPPORTED') {
+      return 'extra_hours_price_unavailable'.tr();
+    }
+    return 'payment_verify_error'.tr();
+  }
+
+  Future<void> _loadQuote() async {
+    final ref = widget.idorder;
+    if (ref == null) return;
+    final generation = ++_quoteGeneration;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final quote = await _service.quote(ref, _hours);
+      if (!mounted || generation != _quoteGeneration) return;
+      setState(() {
+        if (_quote?.token != quote.token) {
+          _requestKey =
+              'extra_${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}';
+        }
+        _quote = quote;
+        _hours = quote.hours;
+      });
+    } catch (error) {
+      if (mounted && generation == _quoteGeneration) {
+        setState(() => _error = _message(error));
+      }
+    } finally {
+      if (mounted && generation == _quoteGeneration) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
+  String _summary(TouryExtraHoursQuote quote) => [
+        '${'extra_hours_current'.tr()}: ${quote.currentHours}',
+        '${'Number of Extra Hours'.tr()}: ${quote.hours}',
+        '${'extra_hours_cost'.tr()}: ${quote.money('amountMinor')}',
+        '${'extra_hours_new_total'.tr()}: ${quote.money('newTotalMinor')}',
+        quote.isCash
+            ? 'extra_hours_cash_notice'.tr()
+            : 'extra_hours_online_notice'.tr(),
+      ].join('\n');
+
+  Future<void> _submit() async {
+    final quote = _quote;
+    final ref = widget.idorder;
+    if (_submitting ||
+        _loading ||
+        _error != null ||
+        quote == null ||
+        ref == null) {
       return;
     }
-
     setState(() => _submitting = true);
     try {
-      FFAppState().clearSensitivePaymentSession();
-      final response = await NGeniusPaymentCall.call(
-        description:
-            'Touri Taxi extra hours - ${widget.numperOrder ?? widget.idorder!.id}',
-        amount: (_total * 100).round(),
-        paymentPurpose: 'extra_hours',
-        orderPath: widget.idorder!.path,
-        extraHours: _hours,
+      final confirmed = await TouryDialogs.showConfirm(
+        context,
+        title: 'extra_hours_confirm_title'.tr(),
+        message: _summary(quote),
+        confirmLabel: quote.isCash
+            ? 'dialog_confirm'.tr()
+            : 'extra_hours_continue_payment'.tr(),
       );
-      if (!TouryNGeniusService.createReady(response)) {
-        throw StateError('payment_not_ready');
+      if (!confirmed || !mounted) return;
+      if (quote.isCash) {
+        final result = await _service.addCash(ref, quote, _requestKey);
+        if (result['applied'] != true) {
+          throw const TouryExtraHoursException('EXTRA_HOURS_NOT_APPLIED');
+        }
+        if (!mounted) return;
+        TouryDialogs.showSnackBar(
+            context, 'Extra hours have been added to the trip'.tr(),
+            type: TouryMessageType.success);
+        Navigator.pop(context, true);
+        return;
       }
 
-      final sessionId = NGeniusPaymentCall.id(response.jsonBody);
-      if (sessionId == null || sessionId.isEmpty) {
-        throw StateError('missing_payment_session');
+      final response = quote.resumeSessionId == null
+          ? await _service.createPayment(ref, quote, _requestKey)
+          : await TouryNGeniusService.getPayment(
+              orderId: quote.resumeSessionId!);
+      final sessionId = TouryNGeniusService.paymentId(response.jsonBody);
+      if (sessionId == null || !TouryNGeniusService.httpOk(response)) {
+        throw const TouryExtraHoursException('EXTRA_HOURS_PAYMENT_PENDING');
       }
       FFAppState().update(() {
-        FFAppState().NumberSaatExtra = _hours;
-        FFAppState().totalSaatEXTRA = _total;
+        FFAppState().NumberSaatExtra = quote.hours;
+        FFAppState().totalSaatEXTRA =
+            quote.number('amountMinor') / quote.number('factor');
         FFAppState().paymentOrderId = sessionId;
         FFAppState().paymentFlowKind = TypeHgz.Saat;
-        FFAppState().revOrderSaatExtr = widget.idorder;
+        FFAppState().revOrderSaatExtr = ref;
         FFAppState().RevMndonSaatExtra = widget.idMndob;
         FFAppState().idOrderSaatEXtra = widget.numperOrder ?? '';
         FFAppState().paymentInProgress = true;
         FFAppState().DonePay = false;
       });
-
-      final paymentUrl = NGeniusPaymentCall.url(response.jsonBody);
-      if (!mounted) return;
-      if (paymentUrl == null || paymentUrl.isEmpty) {
-        final finalized = await TouryNGeniusService.finalizeExtraHours(
-          sessionId: sessionId,
-        );
-        if (!TouryNGeniusService.httpOk(finalized)) {
-          throw StateError('payment_not_finalized');
+      if (TouryNGeniusService.isPaid(response.jsonBody)) {
+        final result =
+            await TouryNGeniusService.finalizeExtraHours(sessionId: sessionId);
+        if (!TouryNGeniusService.httpOk(result) ||
+            result.jsonBody['applied'] != true) {
+          throw const TouryExtraHoursException('EXTRA_HOURS_NOT_APPLIED');
         }
-        if (mounted) Navigator.pop(context);
+        FFAppState().paymentInProgress = false;
+        if (mounted) Navigator.pop(context, true);
         return;
       }
-
-      context.pushNamed(
-        WebviewWidget.routeName,
-        queryParameters: {
-          'url': serializeParam(paymentUrl, ParamType.String),
-        }.withoutNulls,
-      );
-    } catch (_) {
-      FFAppState().clearSensitivePaymentSession();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('payment_verify_error'.tr())),
-        );
+      final url = TouryNGeniusService.transactionUrl(response.jsonBody);
+      if (url == null || url.isEmpty) {
+        throw const TouryExtraHoursException('EXTRA_HOURS_PAYMENT_PENDING');
+      }
+      if (!mounted) return;
+      // Reuse the existing extra-hours HPP, verification and finalization flow.
+      await context.pushNamed(WebviewWidget.routeName,
+          queryParameters:
+              {'url': serializeParam(url, ParamType.String)}.withoutNulls);
+      if (mounted) Navigator.pop(context);
+    } catch (error) {
+      // Keep the request key on uncertain responses: retrying cannot charge or
+      // extend twice. Server pending sessions are recoverable on reopening.
+      if (!mounted) return;
+      TouryDialogs.showSnackBar(context, _message(error),
+          type: TouryMessageType.error);
+      if (error is TouryExtraHoursException &&
+          (error.code == 'EXTRA_HOURS_QUOTE_CHANGED' ||
+              error.code == 'EXTRA_HOURS_PAYMENT_PENDING')) {
+        await _loadQuote();
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
   }
 
+  Widget _row(String label, String value) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: DsSpacing.xs),
+        child: Row(children: [
+          Expanded(child: Text(label)),
+          const SizedBox(width: DsSpacing.sm),
+          Text(value)
+        ]),
+      );
+
   @override
   Widget build(BuildContext context) {
     final colors = context.dsColors;
-    final typography = context.dsTypography;
-
+    final quote = _quote;
+    final canChoose =
+        !_submitting && !_loading && quote?.resumeSessionId == null;
     return SafeArea(
-      top: false,
-      child: Material(
-        color: colors.surface,
-        borderRadius: const BorderRadius.vertical(top: DsRadius.xlRadius),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            DsSpacing.lg,
-            DsSpacing.sm,
-            DsSpacing.lg,
-            DsSpacing.xl,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
+        top: false,
+        child: Material(
+          color: colors.surface,
+          borderRadius: const BorderRadius.vertical(top: DsRadius.xlRadius),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(DsSpacing.lg),
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: Text(
-                      'Need extra hours?'.tr(),
-                      style: typography.titleLarge.copyWith(
-                        color: colors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  DsIconButton(
-                    icon: Icons.close_rounded,
-                    onPressed: () => Navigator.pop(context),
-                    tooltip:
-                        MaterialLocalizations.of(context).closeButtonTooltip,
-                  ),
-                ],
-              ),
-              const SizedBox(height: DsSpacing.md),
-              Text(
-                'Number of Extra Hours'.tr(),
-                style: typography.labelLarge.copyWith(
-                  color: colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: DsSpacing.xs),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  DsIconButton(
-                    icon: Icons.remove_rounded,
-                    filled: true,
-                    onPressed:
-                        _hours > 1 ? () => setState(() => _hours--) : null,
-                  ),
-                  SizedBox(
-                    width: 72,
-                    child: Text(
-                      '$_hours',
-                      textAlign: TextAlign.center,
-                      style: typography.headlineSmall.copyWith(
-                        color: colors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  DsIconButton(
-                    icon: Icons.add_rounded,
-                    filled: true,
-                    onPressed:
-                        _hours < 168 ? () => setState(() => _hours++) : null,
-                  ),
-                ],
-              ),
-              const SizedBox(height: DsSpacing.lg),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(
-                  Icons.verified_user_outlined,
-                  color: colors.primary,
-                ),
-                title: Text(
-                  'ux_card_payment_network'.tr(),
-                  style: typography.bodyMedium.copyWith(
-                    color: colors.textPrimary,
-                  ),
-                ),
-                subtitle: Text(
-                  '${'Total Amount:'.tr()} ${_total.toStringAsFixed(2)} SAR',
-                  style: typography.bodySmall.copyWith(
-                    color: colors.textSecondary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: DsSpacing.md),
-              DsButton.primary(
-                label: 'Add'.tr(),
-                icon: Icons.lock_outline_rounded,
-                expanded: true,
-                loading: _submitting,
-                enabled: !_submitting,
-                onPressed: _startPayment,
-              ),
-            ],
+                  Row(children: [
+                    Expanded(
+                        child: Text('Need extra hours?'.tr(),
+                            style: context.dsTypography.titleLarge)),
+                    DsIconButton(
+                        icon: Icons.close_rounded,
+                        onPressed:
+                            _submitting ? null : () => Navigator.pop(context),
+                        tooltip: MaterialLocalizations.of(context)
+                            .closeButtonTooltip),
+                  ]),
+                  const SizedBox(height: DsSpacing.md),
+                  Text('Number of Extra Hours'.tr()),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    DsIconButton(
+                        icon: Icons.remove_rounded,
+                        filled: true,
+                        onPressed: canChoose && _hours > 1
+                            ? () {
+                                _hours--;
+                                _loadQuote();
+                              }
+                            : null),
+                    SizedBox(
+                        width: 72,
+                        child: Text('$_hours',
+                            textAlign: TextAlign.center,
+                            style: context.dsTypography.headlineSmall)),
+                    DsIconButton(
+                        icon: Icons.add_rounded,
+                        filled: true,
+                        onPressed: canChoose && _hours < 168
+                            ? () {
+                                _hours++;
+                                _loadQuote();
+                              }
+                            : null),
+                  ]),
+                  if (_loading)
+                    const Padding(
+                        padding: EdgeInsets.all(DsSpacing.md),
+                        child: Center(child: CircularProgressIndicator())),
+                  if (_error != null) ...[
+                    Text(_error!, style: TextStyle(color: colors.error)),
+                    TextButton(
+                        onPressed: _submitting ? null : _loadQuote,
+                        child: Text('ux_retry'.tr())),
+                  ],
+                  if (quote != null && !_loading && _error == null) ...[
+                    _row('extra_hours_current'.tr(), '${quote.currentHours}'),
+                    _row('Number of Extra Hours'.tr(), '${quote.hours}'),
+                    _row('extra_hours_new_duration'.tr(), '${quote.newHours}'),
+                    _row('extra_hours_cost'.tr(), quote.money('amountMinor')),
+                    _row('extra_hours_new_total'.tr(),
+                        quote.money('newTotalMinor')),
+                    const SizedBox(height: DsSpacing.sm),
+                    Text(quote.isCash
+                        ? 'extra_hours_cash_notice'.tr()
+                        : 'extra_hours_online_notice'.tr()),
+                    if (quote.resumeSessionId != null)
+                      Text('extra_hours_payment_pending'.tr()),
+                  ],
+                  const SizedBox(height: DsSpacing.lg),
+                  DsButton.primary(
+                      label: 'Add'.tr(),
+                      icon: Icons.add_alarm_outlined,
+                      expanded: true,
+                      loading: _submitting,
+                      enabled: !_submitting &&
+                          !_loading &&
+                          _error == null &&
+                          quote != null,
+                      onPressed: _submit),
+                ]),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }

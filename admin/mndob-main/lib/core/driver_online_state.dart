@@ -7,6 +7,7 @@ import '/core/driver_legacy_field_compat.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_live_location_service.dart';
 import '/core/driver_offline_queue.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 /// Single definition of "driver is online and can receive work".
 abstract final class DriverOnlineState {
@@ -107,6 +108,21 @@ abstract final class DriverOnlineState {
             : 'Could not go online. Check GPS and try again.',
       );
     }
+
+    // Ensure FCM permission + token while going online (background push).
+    try {
+      final messaging = FirebaseMessaging.instance;
+      final settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+        provisional: true,
+      );
+      if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+          settings.authorizationStatus == AuthorizationStatus.provisional) {
+        await messaging.getToken();
+      }
+    } catch (_) {}
 
     try {
       currentUserDocument =

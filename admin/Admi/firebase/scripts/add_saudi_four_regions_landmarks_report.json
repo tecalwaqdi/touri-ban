@@ -1,0 +1,236 @@
+{
+  "JAZAN": "5/5: Farasan Islands Reserve; Wadi Lajab; Faifa Mountains; Jazan Heritage Village; Al-Dosariyah Historical Castle",
+  "NAJRAN": "5/5: Al-Ukhdud Archaeological Site; Hima Cultural Area; Al-Aan Historical Palace; Emirate Historical Palace; Najran Valley Dam",
+  "HAIL": "5/5: Jubbah and Jabal Umm Sinman; Shuwaymis Rock Art; Aarif Fort; Al-Qishlah Palace; Jabal Al-Samra",
+  "AL_BAHAH": "5/5: Thee Ain Heritage Village; Raghadan Forest; Jabal Shada al-A'la; Prince Hussam Park; Wadi Al-Janabeen Dam Park",
+  "CREATED": 20,
+  "ALREADY_EXISTED": 0,
+  "DUPLICATES_CREATED": 0,
+  "IMAGES": "PASS",
+  "DESCRIPTIONS": "PASS",
+  "COORDINATES": "PASS",
+  "TRANSLATIONS": "PASS",
+  "ADMIN_RUNTIME": "PASS",
+  "CUSTOMER_RUNTIME": "PASS",
+  "EXISTING_DATA_CHANGED": 0,
+  "FINAL_STATUS": "PASS",
+  "detail": {
+    "mode": "APPLY",
+    "created": [
+      "lm_sa_jazan_farasan-islands",
+      "lm_sa_jazan_wadi-lajab",
+      "lm_sa_jazan_faifa-mountains",
+      "lm_sa_jazan_heritage-village",
+      "lm_sa_jazan_dosariyah-castle",
+      "lm_sa_najran_ukhdud",
+      "lm_sa_najran_hima-cultural-area",
+      "lm_sa_najran_aan-palace",
+      "lm_sa_najran_emirate-palace",
+      "lm_sa_najran_valley-dam",
+      "lm_sa_hail_jubbah-umm-sinman",
+      "lm_sa_hail_shuwaymis",
+      "lm_sa_hail_aarif-fort",
+      "lm_sa_hail_qishlah-palace",
+      "lm_sa_hail_jabal-samra",
+      "lm_sa_baha_thee-ain",
+      "lm_sa_baha_raghadan-forest",
+      "lm_sa_baha_jabal-shada",
+      "lm_sa_baha_prince-hussam-park",
+      "lm_sa_baha_janabeen-dam-park"
+    ],
+    "already": [],
+    "duplicatesCreated": 0,
+    "images": [
+      {
+        "id": "lm_sa_jazan_farasan-islands",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_jazan_farasan-islands_1789355895210.jpg?alt=media&token=1f62cbee-1552-40db-a770-79f2952b751e"
+      },
+      {
+        "id": "lm_sa_jazan_wadi-lajab",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_jazan_wadi-lajab_1789355905021.jpg?alt=media&token=94bfe14a-cae1-45e4-b35d-13ef5ca84012"
+      },
+      {
+        "id": "lm_sa_jazan_faifa-mountains",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_jazan_faifa-mountains_1789355909338.jpg?alt=media&token=2a8af60f-247a-44ce-8cc8-9172f38e61d3"
+      },
+      {
+        "id": "lm_sa_jazan_heritage-village",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_jazan_heritage-village_1789355914055.jpg?alt=media&token=3a48e0a0-94d4-4b96-a627-14b83803eeb9"
+      },
+      {
+        "id": "lm_sa_jazan_dosariyah-castle",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_jazan_dosariyah-castle_1789355919079.jpg?alt=media&token=d8a2fe5b-2bbe-4d20-8cdc-db473ee1b555"
+      },
+      {
+        "id": "lm_sa_najran_ukhdud",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_najran_ukhdud_1789355924844.jpg?alt=media&token=6ef55248-26aa-4c27-82cf-c2ad09fe857b"
+      },
+      {
+        "id": "lm_sa_najran_hima-cultural-area",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_najran_hima-cultural-area_1789355929262.jpg?alt=media&token=997728a7-0b61-4070-994f-9ff2c838fe09"
+      },
+      {
+        "id": "lm_sa_najran_aan-palace",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_najran_aan-palace_1789355934443.jpg?alt=media&token=1a8474e0-56ba-47aa-bb07-adaea8adc64d"
+      },
+      {
+        "id": "lm_sa_najran_emirate-palace",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_najran_emirate-palace_1789355938066.jpg?alt=media&token=2fada4e3-a713-4d3f-9e99-aadb3caa33e5"
+      },
+      {
+        "id": "lm_sa_najran_valley-dam",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_najran_valley-dam_1789355943212.jpg?alt=media&token=57c950f8-9ba5-4fa1-9b1d-1d9aa2e783e4"
+      },
+      {
+        "id": "lm_sa_hail_jubbah-umm-sinman",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_hail_jubbah-umm-sinman_1789355947580.jpg?alt=media&token=1f0831c6-ecf3-497f-a85e-1e8d787aea47"
+      },
+      {
+        "id": "lm_sa_hail_shuwaymis",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_hail_shuwaymis_1789355952033.jpg?alt=media&token=5b86feba-f80b-457c-b792-4ba4a6ab5d42"
+      },
+      {
+        "id": "lm_sa_hail_aarif-fort",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_hail_aarif-fort_1789355956988.jpg?alt=media&token=11497971-6680-4ed8-a058-884e02830803"
+      },
+      {
+        "id": "lm_sa_hail_qishlah-palace",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_hail_qishlah-palace_1789355960689.jpg?alt=media&token=b613ed27-c3fa-4f3b-9251-8357b7da50e4"
+      },
+      {
+        "id": "lm_sa_hail_jabal-samra",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_hail_jabal-samra_1789355964615.jpg?alt=media&token=f479b887-b0ac-4b57-875b-05dbe4cb578f"
+      },
+      {
+        "id": "lm_sa_baha_thee-ain",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_baha_thee-ain_1789355971433.jpg?alt=media&token=9d5643f7-9400-4df8-b872-8b9425be9bac"
+      },
+      {
+        "id": "lm_sa_baha_raghadan-forest",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_baha_raghadan-forest_1789355975961.jpg?alt=media&token=5a370dce-517e-4268-b4ac-8f56eb5070c5"
+      },
+      {
+        "id": "lm_sa_baha_jabal-shada",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_baha_jabal-shada_1789355980026.jpg?alt=media&token=0880de15-ee3c-4e8a-af6d-b35f22059141"
+      },
+      {
+        "id": "lm_sa_baha_prince-hussam-park",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_baha_prince-hussam-park_1789355983781.jpg?alt=media&token=de612fe7-f0cf-42ec-88af-1a117f5809ed"
+      },
+      {
+        "id": "lm_sa_baha_janabeen-dam-park",
+        "url": "https://firebasestorage.googleapis.com/v0/b/tutorial-multi-language-70gx4j.firebasestorage.app/o/landmarks%2Fuploads%2Flm_sa_baha_janabeen-dam-park_1789355990012.jpg?alt=media&token=10e50b0b-5fff-4704-af39-45fdc763de83"
+      }
+    ],
+    "byRegion": {
+      "jazan": [
+        {
+          "id": "lm_sa_jazan_farasan-islands",
+          "name": "Farasan Islands Reserve",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_jazan_wadi-lajab",
+          "name": "Wadi Lajab",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_jazan_faifa-mountains",
+          "name": "Faifa Mountains",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_jazan_heritage-village",
+          "name": "Jazan Heritage Village",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_jazan_dosariyah-castle",
+          "name": "Al-Dosariyah Historical Castle",
+          "status": "CREATED"
+        }
+      ],
+      "najran": [
+        {
+          "id": "lm_sa_najran_ukhdud",
+          "name": "Al-Ukhdud Archaeological Site",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_najran_hima-cultural-area",
+          "name": "Hima Cultural Area",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_najran_aan-palace",
+          "name": "Al-Aan Historical Palace",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_najran_emirate-palace",
+          "name": "Emirate Historical Palace",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_najran_valley-dam",
+          "name": "Najran Valley Dam",
+          "status": "CREATED"
+        }
+      ],
+      "hail": [
+        {
+          "id": "lm_sa_hail_jubbah-umm-sinman",
+          "name": "Jubbah and Jabal Umm Sinman",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_hail_shuwaymis",
+          "name": "Shuwaymis Rock Art",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_hail_aarif-fort",
+          "name": "Aarif Fort",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_hail_qishlah-palace",
+          "name": "Al-Qishlah Palace",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_hail_jabal-samra",
+          "name": "Jabal Al-Samra",
+          "status": "CREATED"
+        }
+      ],
+      "baha": [
+        {
+          "id": "lm_sa_baha_thee-ain",
+          "name": "Thee Ain Heritage Village",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_baha_raghadan-forest",
+          "name": "Raghadan Forest",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_baha_jabal-shada",
+          "name": "Jabal Shada al-A'la",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_baha_prince-hussam-park",
+          "name": "Prince Hussam Park",
+          "status": "CREATED"
+        },
+        {
+          "id": "lm_sa_baha_janabeen-dam-park",
+          "name": "Wadi Al-Janabeen Dam Park",
+          "status": "CREATED"
+        }
+      ]
+    }
+  }
+}

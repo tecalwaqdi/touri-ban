@@ -36,6 +36,7 @@ Future<Map<String, dynamic>> makeCloudCall(
       'error': msg.isEmpty ? 'cloud_call_failed' : msg,
       'code': e.code,
       'errorCode': errorCode,
+      'details': e.details,
     };
   } catch (e) {
     debugPrint('Cloud call error:$callName $e');
@@ -66,12 +67,18 @@ String? _guessCallableErrorCode(String message, String cfCode) {
     'DRIVER_DISABLED',
     'insufficient-wallet',
     'driver-disabled',
+    'ACCOUNT_DELETION_BLOCKED_ACTIVE_TRIP',
+    'ACCOUNT_DELETION_BLOCKED_PENDING_SETTLEMENT',
+    'ACCOUNT_DELETION_BLOCKED_PENDING_WALLET_TX',
+    'ACCOUNT_DELETION_BLOCKED_WALLET_BALANCE',
+    'ACCOUNT_DELETION_AUTH_DELETE_FAILED',
   };
   if (known.contains(msg)) {
     if (msg == 'insufficient-wallet') return 'DRIVER_WALLET_INSUFFICIENT';
     if (msg == 'driver-disabled') return 'DRIVER_DISABLED';
     return msg;
   }
+  if (msg.startsWith('ACCOUNT_DELETION_')) return msg;
   final upper = msg.toUpperCase();
   if (upper == 'INTERNAL' || cfCode == 'internal') return 'INTERNAL';
   if (cfCode == 'already-exists') return 'BOOKING_ALREADY_ASSIGNED';

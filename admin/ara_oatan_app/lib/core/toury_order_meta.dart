@@ -3,6 +3,7 @@ import '/backend/schema/order_record.dart';
 import '/core/toury_booking_status_localizer.dart';
 import '/core/toury_customer_cancel_policy.dart';
 import '/core/toury_order_integration.dart';
+import '/core/toury_trip_progress.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -88,19 +89,41 @@ extension TouryOrderMeta on OrderRecord {
     final dest = tripDestination;
     final planned = plannedWaypoints();
     final stops = intermediateStops();
+    final stage = touryResolveTripStage(
+      statusCode: statusCode,
+      halhText: halhText,
+    );
 
-    // أثناء التتبع الحي: المندوب → الالتقاط → المحطات → الوجهة.
-    if (driver != null) {
-      final live = <LatLng>[
-        driver,
-        if (pickup != null && pickup != driver) pickup,
-        ...stops.where((p) => p != pickup && p != dest && p != driver),
-        if (dest != null && dest != pickup && dest != driver) dest,
-      ];
-      if (live.length >= 2) return live;
+    // قبل الوصول: المندوب → نقطة الانطلاق فقط.
+    if (stage == TouryTripStage.enRoute) {
+      if (driver != null && pickup != null && driver != pickup) {
+        return [driver, pickup];
+      }
+      if (driver != null && dest != null && driver != dest) {
+        return [driver, dest];
+      }
+      if (pickup != null && dest != null && pickup != dest) {
+        return [pickup, dest];
+      }
+      return const [];
     }
 
-    // للطلبات السابقة أو قبل قبول المندوب: استخدم snapshot المخطط.
+    // بعد الوصول / بدء الرحلة: موضع حي → محطات → الوجهة (بدون مسار الالتقاط).
+    if (stage == TouryTripStage.arrived || stage == TouryTripStage.started) {
+      final live = <LatLng>[
+        if (driver != null) driver,
+        if (driver == null && pickup != null) pickup,
+        ...stops.where((p) => p != pickup && p != dest && p != driver),
+        if (dest != null && dest != driver && dest != pickup) dest,
+      ];
+      final deduped = <LatLng>[];
+      for (final p in live) {
+        if (deduped.isEmpty || deduped.last != p) deduped.add(p);
+      }
+      if (deduped.length >= 2) return deduped;
+    }
+
+    // بحث / مكتمل: استخدم snapshot المخطط أو الالتقاط→الوجهة.
     if (planned.length >= 2) return planned;
 
     return [

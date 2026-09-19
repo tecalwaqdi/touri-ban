@@ -8,6 +8,7 @@ import '/backend/schema/enums/enums.dart';
 import '/components/add_extra_hours2_widget.dart';
 import '/core/toury_booking_status_localizer.dart';
 import '/core/toury_currency.dart';
+import '/core/toury_extra_hours_service.dart';
 import '/core/toury_customer_cancel_policy.dart';
 import '/core/toury_payment_flow.dart';
 import '/core/toury_payment_verify.dart';
@@ -85,10 +86,7 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
           order.halhText == 'تم البدء في الرحلة');
 
   bool get _canAddExtraHours =>
-      _isOwner &&
-      !_isTerminal &&
-      order.halhOrderMndob == HalhOrder.Accepted &&
-      !_isCompleted;
+      touryCanExtendOrder(order.snapshotData, currentUserUid);
 
   bool get _canRate => _isOwner && _isCompleted && order.revewSendClent != true;
 
@@ -124,7 +122,9 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
       );
 
   bool get _showCancelSection =>
-      _isOwner && !_alreadyCancelled && (_awaitingUnassigned || _driverAccepted);
+      _isOwner &&
+      !_alreadyCancelled &&
+      (_awaitingUnassigned || _driverAccepted);
 
   bool get _canCancelNow => order.canCancelByCustomer;
 
@@ -181,12 +181,14 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
   Future<void> _retryPayment() async {
     if (!_isAwaitingPayment || _busy) return;
     await _runGuarded('retry_pay', () async {
-      final result = await touryRetryUnpaidOrderPayment(context: context, order: order);
+      final result =
+          await touryRetryUnpaidOrderPayment(context: context, order: order);
       if (!mounted) return;
       if (!result.success) {
         TouryDialogs.showSnackBar(
           context,
-          result.errorMessage ?? 'checkout_payment_temporarily_unavailable'.tr(),
+          result.errorMessage ??
+              'checkout_payment_temporarily_unavailable'.tr(),
           type: TouryMessageType.error,
         );
         return;
@@ -210,10 +212,10 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
   Future<void> _checkPaymentStatus() async {
     if (!_isAwaitingPayment || _busy) return;
     await _runGuarded('check_pay', () async {
-      final sessionId = (order.snapshotData['payment_session_id'] ??
-              order.ngeniusOrderId)
-          .toString()
-          .trim();
+      final sessionId =
+          (order.snapshotData['payment_session_id'] ?? order.ngeniusOrderId)
+              .toString()
+              .trim();
       final id = sessionId.isNotEmpty ? sessionId : order.reference.id;
       final verify = await touryVerifyGatewayPayment(id);
       if (!mounted) return;
@@ -230,9 +232,7 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
         verify.isFailed
             ? 'checkout_payment_declined'.tr()
             : 'payment_pending_body'.tr(),
-        type: verify.isFailed
-            ? TouryMessageType.error
-            : TouryMessageType.info,
+        type: verify.isFailed ? TouryMessageType.error : TouryMessageType.info,
       );
     });
   }
@@ -299,7 +299,8 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
               shape: RoundedRectangleBorder(borderRadius: DsRadius.large),
               title: Text(
                 'order_cancel_confirm_title'.tr(),
-                style: typography.titleLarge.copyWith(color: colors.textPrimary),
+                style:
+                    typography.titleLarge.copyWith(color: colors.textPrimary),
               ),
               content: Text(
                 'order_cancel_confirm_body'.tr(),
@@ -451,34 +452,36 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
 
   Future<void> _openExtraHours() async {
     final mndob = order.mndobUser;
-    if (mndob == null) return;
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        final colors = ctx.dsColors;
-        return Padding(
-          padding: MediaQuery.viewInsetsOf(ctx),
-          child: Container(
-            height: MediaQuery.sizeOf(ctx).height * 0.9,
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(DsRadius.xl),
+    if (mndob == null || !_canAddExtraHours || _busy) return;
+    await _runGuarded('extra_hours', () async {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (ctx) {
+          final colors = ctx.dsColors;
+          return Padding(
+            padding: MediaQuery.viewInsetsOf(ctx),
+            child: Container(
+              height: MediaQuery.sizeOf(ctx).height * 0.9,
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(DsRadius.xl),
+                ),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: AddExtraHours2Widget(
+                idorder: order.reference,
+                srsaah: order.srSAAH,
+                idMndob: mndob,
+                numperOrder: order.iDorder,
               ),
             ),
-            clipBehavior: Clip.antiAlias,
-            child: AddExtraHours2Widget(
-              idorder: order.reference,
-              srsaah: order.srSAAH,
-              idMndob: mndob,
-              numperOrder: order.iDorder,
-            ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    });
   }
 
   Future<void> _rateTrip() async {
@@ -651,22 +654,21 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
                           loading: _busy && _busyAction == 'chat',
                         ),
                       ),
-                    if (_canChat && _canAddExtraHours)
-                      const SizedBox(width: DsSpacing.sm),
-                    if (_canAddExtraHours)
-                      Expanded(
-                        child: _actionButton(
-                          label: 'order_add_extra_hours'.tr(),
-                          icon: Icons.add_alarm_outlined,
-                          onPressed: _busy ? null : _openExtraHours,
-                          variant: DsButtonVariant.secondary,
-                        ),
-                      ),
                   ],
                 ),
               ],
             ),
           ),
+        ],
+        if (_canAddExtraHours) ...[
+          _actionButton(
+            label: 'order_add_extra_hours'.tr(),
+            icon: Icons.add_alarm_outlined,
+            onPressed: _busy ? null : _openExtraHours,
+            variant: DsButtonVariant.secondary,
+            loading: _busy && _busyAction == 'extra_hours',
+          ),
+          const SizedBox(height: DsSpacing.md),
         ],
         if (_isOwner)
           _sectionCard(

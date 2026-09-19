@@ -1067,5 +1067,19 @@
   "payment_back_to_booking": "Back to booking details",
   "payment_waiting_title": "Payment pending",
   "payment_waiting_body": "The payment page was opened. You can check status or return to the booking.",
-  "profile_phone_required": "Add a valid phone number to continue."
+  "profile_phone_required": "Add a valid phone number to continue.",
+  "extra_hours_current": "Учурдагы сааттар",
+  "extra_hours_cost": "Кошумча баа",
+  "extra_hours_new_total": "Жаңы жалпы сумма",
+  "extra_hours_new_duration": "Жаңы жалпы сааттар",
+  "extra_hours_confirm_title": "Кошумча сааттарды ырастоо",
+  "extra_hours_continue_payment": "Төлөмгө өтүү",
+  "extra_hours_cash_notice": "Кошумча баа ушул эле сапардын накталай төлөмүнө кошулат.",
+  "extra_hours_online_notice": "Сааттар кошумча төлөм ырасталгандан кийин гана кошулат.",
+  "extra_hours_quote_changed": "Сапар же баа өзгөрдү. Жаңы маалыматты карап, кайра ырастагыла.",
+  "extra_hours_payment_pending": "Кошумча сааттардын төлөмү башталган. Жаңы аракет түзбөй, аны улантыңыз.",
+  "extra_hours_ineligible": "Азыр бул сапарга саат кошууга болбойт.",
+  "extra_hours_price_unavailable": "Узартуунун баасын текшерүү мүмкүн болгон жок. Кийин аракет кылыңыз.",
+  "extra_hours_paid_not_applied": "Төлөм ырасталды, бирок узартуу колдонулган жок. Колдоо кызматына кайрылып, кайра төлөбөңүз.",
+  "map_coordinates": "Координаттар"
 }

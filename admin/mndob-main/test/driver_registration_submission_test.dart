@@ -56,7 +56,7 @@ void main() {
 
   group('DriverRegistrationCompletenessService', () {
     test('anonymous / empty uid blocked', () {
-      const model = DriverRegistrationReviewModel(
+      final model = DriverRegistrationReviewModel(
         uid: '',
         displayName: 'Ali',
         email: 'a@b.com',
@@ -78,7 +78,8 @@ void main() {
         photoUrl: '',
         idImageUrl: '',
         carImageUrl: '',
-        licenseImageUrl: '',
+        licenseFrontUrl: '',
+        licenseBackUrl: '',
         location: null,
         isResubmit: false,
         uploadInFlight: false,
@@ -90,7 +91,7 @@ void main() {
     });
 
     test('tour guide requires permit url', () {
-      const model = DriverRegistrationReviewModel(
+      final model = DriverRegistrationReviewModel(
         uid: '',
         displayName: 'Ali',
         email: 'a@b.com',
@@ -112,7 +113,8 @@ void main() {
         photoUrl: '',
         idImageUrl: '',
         carImageUrl: '',
-        licenseImageUrl: '',
+        licenseFrontUrl: '',
+        licenseBackUrl: '',
         location: null,
         isResubmit: false,
         uploadInFlight: false,
@@ -125,7 +127,7 @@ void main() {
     });
 
     test('company affiliation requires company path', () {
-      const model = DriverRegistrationReviewModel(
+      final model = DriverRegistrationReviewModel(
         uid: '',
         displayName: 'Ali',
         email: 'a@b.com',
@@ -147,7 +149,8 @@ void main() {
         photoUrl: '',
         idImageUrl: '',
         carImageUrl: '',
-        licenseImageUrl: '',
+        licenseFrontUrl: '',
+        licenseBackUrl: '',
         location: null,
         isResubmit: false,
         uploadInFlight: false,
@@ -157,6 +160,40 @@ void main() {
       final reasons =
           DriverRegistrationCompletenessService.blockingReasons(model);
       expect(reasons, contains('Transport company'));
+    });
+
+    test('requires both license front and back', () {
+      final model = DriverRegistrationReviewModel(
+        uid: '',
+        displayName: 'Ali',
+        email: 'a@b.com',
+        phoneE164: '+966512345678',
+        idNumber: '1234567890',
+        birthDate: null,
+        countryRef: null,
+        regionRef: null,
+        villageRef: null,
+        regionName: '',
+        villageName: '',
+        vehicleTypeRef: null,
+        vehicleTypeText: '',
+        vehicleName: '',
+        modelYear: '',
+        plate: '',
+        color: '',
+        seats: null,
+        photoUrl: 'https://example.com/p.jpg',
+        idImageUrl: 'https://example.com/id.jpg',
+        carImageUrl: 'https://example.com/car.jpg',
+        licenseFrontUrl: 'https://example.com/front.jpg',
+        licenseBackUrl: '',
+        location: null,
+        isResubmit: false,
+        uploadInFlight: false,
+      );
+      final reasons =
+          DriverRegistrationCompletenessService.blockingReasons(model);
+      expect(reasons, contains('Driver license (back)'));
     });
   });
 }

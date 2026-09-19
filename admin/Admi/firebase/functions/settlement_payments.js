@@ -98,8 +98,8 @@ function applySettlementPaymentSnapshot(tx, settlementRef, cur, paidMinor, nowIs
 async function createSettlementPayment({db, auth, data, now}) {
   ledger.requireWriter(auth);
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', ledger.fail);
-  assertFlag(flags, 'FINANCIAL_PAYMENT_CONFIRM_ENABLED', ledger.fail);
+  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', ledger.fail, {auth});
+  assertFlag(flags, 'FINANCIAL_PAYMENT_CONFIRM_ENABLED', ledger.fail, {auth});
   const settlementId = String(data.settlementId || '').trim();
   const idempotencyKey = String(data.idempotencyKey || '').trim();
   const method = String(data.method || '').trim();
@@ -216,7 +216,7 @@ async function createSettlementPayment({db, auth, data, now}) {
 async function confirmSettlementPayment({db, auth, data, now}) {
   ledger.requireWriter(auth);
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_PAYMENT_CONFIRM_ENABLED', ledger.fail);
+  assertFlag(flags, 'FINANCIAL_PAYMENT_CONFIRM_ENABLED', ledger.fail, {auth});
   const paymentId = String(data.paymentId || '').trim();
   const idempotencyKey = String(data.idempotencyKey || '').trim();
   if (!paymentId || !idempotencyKey) {
@@ -357,7 +357,7 @@ async function confirmSettlementPayment({db, auth, data, now}) {
 async function reverseSettlementPayment({db, auth, data, now}) {
   ledger.requireWriter(auth);
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_PAYMENT_CONFIRM_ENABLED', ledger.fail);
+  assertFlag(flags, 'FINANCIAL_PAYMENT_CONFIRM_ENABLED', ledger.fail, {auth});
   const paymentId = String(data.paymentId || '').trim();
   const reason = String(data.reason || '').trim();
   const idempotencyKey = String(data.idempotencyKey || '').trim();
@@ -479,8 +479,8 @@ async function reverseSettlementPayment({db, auth, data, now}) {
 async function allocateExistingPayment({db, auth, data, now}) {
   ledger.requireWriter(auth);
   const flags = await loadFinanceFeatureFlags(db);
-  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', ledger.fail);
-  assertFlag(flags, 'FINANCIAL_PAYMENT_CONFIRM_ENABLED', ledger.fail);
+  assertFlag(flags, 'FINANCIAL_SETTLEMENT_WRITES_ENABLED', ledger.fail, {auth});
+  assertFlag(flags, 'FINANCIAL_PAYMENT_CONFIRM_ENABLED', ledger.fail, {auth});
   const settlementId = String(data.settlementId || '').trim();
   const sourceId = String(data.sourceId || '').trim();
   const idempotencyKey = String(data.idempotencyKey || '').trim();

@@ -31,5 +31,5 @@ abstract final class DriverTripHalh {
 abstract final class DriverWalletRules {
   DriverWalletRules._();
 
-  static const double minCashWalletBalance = 200.0;
+  static const double minCashWalletBalance = 50.0;
 }

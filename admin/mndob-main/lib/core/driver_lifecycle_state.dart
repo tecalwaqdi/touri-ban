@@ -73,16 +73,18 @@ abstract final class DriverTripActionGates {
   static bool isAssignedToCurrentDriver(DocumentReference? mndobUser) =>
       mndobUser?.path == currentUserReference?.path;
 
-  static bool canCancel(String statusCode, String halhText) {
+  /// Driver app must not cancel after accept; customer/admin cancel unchanged.
+  /// [DriverTripService.cancelTrip] also rejects after Start (`TRIP_ALREADY_STARTED`).
+  static bool canCancel(String statusCode, String halhText) => false;
+
+  /// True once the driver has pressed Start (in progress / started).
+  static bool isTripStarted(String statusCode, String halhText) {
     final c = statusCode.trim().toLowerCase();
-    if (c == TourySystemStatusCodes.driverAssigned ||
-        c == TourySystemStatusCodes.driverArriving ||
-        c == TourySystemStatusCodes.driverArrived ||
-        c == TourySystemStatusCodes.tripStarted ||
+    if (c == TourySystemStatusCodes.tripStarted ||
         c == TourySystemStatusCodes.tripInProgress) {
       return true;
     }
-    return DriverTripHalh.isActiveTrip(halhText);
+    return halhText == DriverTripHalh.inProgress;
   }
 
   static bool canStart(String statusCode, String halhText) {

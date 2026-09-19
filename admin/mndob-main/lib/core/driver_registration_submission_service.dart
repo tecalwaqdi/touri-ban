@@ -6,7 +6,9 @@ import '/backend/cloud_functions/cloud_functions.dart';
 import '/core/driver_registration_submission_error_mapper.dart';
 import '/core/driver_country_resolver.dart';
 import '/core/driver_operational_eligibility_resolver.dart';
+import '/core/driver_registration_profile_loader.dart';
 import '/core/driver_registration_validators.dart';
+import '/core/driver_registration_update_payload.dart';
 import '/core/tour_guide_status.dart';
 import '/core/toury_country_registry.dart';
 import '/core/toury_maps_config.dart';
@@ -81,7 +83,7 @@ class DriverRequestedChange {
 
 /// Snapshot used for Review screen + submit gate.
 class DriverRegistrationReviewModel {
-  const DriverRegistrationReviewModel({
+  DriverRegistrationReviewModel({
     required this.uid,
     required this.displayName,
     required this.email,
@@ -103,7 +105,8 @@ class DriverRegistrationReviewModel {
     required this.photoUrl,
     required this.idImageUrl,
     required this.carImageUrl,
-    required this.licenseImageUrl,
+    required this.licenseFrontUrl,
+    required this.licenseBackUrl,
     required this.location,
     required this.isResubmit,
     required this.uploadInFlight,
@@ -112,7 +115,9 @@ class DriverRegistrationReviewModel {
     this.companyName = '',
     this.isTourGuide = false,
     this.guidePermitUrl = '',
-  });
+    String licenseImageUrl = '',
+  }) : licenseImageUrl =
+            licenseImageUrl.trim().isNotEmpty ? licenseImageUrl : licenseFrontUrl;
 
   final String uid;
   final String displayName;
@@ -135,6 +140,8 @@ class DriverRegistrationReviewModel {
   final String photoUrl;
   final String idImageUrl;
   final String carImageUrl;
+  final String licenseFrontUrl;
+  final String licenseBackUrl;
   final String licenseImageUrl;
   final LatLng? location;
   final bool isResubmit;
@@ -199,8 +206,13 @@ abstract final class DriverRegistrationCompletenessService {
         phoneIso2: iso,
       ),
     );
-    if (!_https(m.carImageUrl)) reasons.add('Vehicle registration');
-    if (!_https(m.licenseImageUrl)) reasons.add('Driver license');
+    if (!_docReady(m.carImageUrl)) reasons.add('Vehicle registration');
+    if (!_docReady(m.licenseFrontUrl) && !_docReady(m.licenseImageUrl)) {
+      reasons.add('Driver license (front)');
+    }
+    if (!_docReady(m.licenseBackUrl)) {
+      reasons.add('Driver license (back)');
+    }
     if (m.villageRef == null) {
       if (!reasons.contains('City')) reasons.add('City');
     }
@@ -213,9 +225,11 @@ abstract final class DriverRegistrationCompletenessService {
     return reasons.toSet().toList();
   }
 
-  static bool _https(String url) {
+  static bool _docReady(String url) {
     final t = url.trim();
-    return t.startsWith('https://');
+    if (t.startsWith('https://')) return true;
+    if (t == DriverRegistrationProfileLoader.existingAssetMarker) return true;
+    return false;
   }
 
   static bool isComplete(DriverRegistrationReviewModel m) =>
@@ -360,8 +374,9 @@ abstract final class DriverRegistrationSubmissionService {
     String? clientSubmissionId,
   }) async {
     if (_submitInFlight) {
+      // Concurrent duplicate tap — never surface as a post-success failure.
       return const DriverSubmissionResult.fail(
-        'Could not complete registration. Please try again.',
+        'Document is still uploading',
       );
     }
     _submitInFlight = true;
@@ -564,35 +579,67 @@ abstract final class DriverRegistrationSubmissionService {
       final server = await makeCloudCall('submitDriverApplicationV2', {
         'idempotencyKey': submissionId,
       });
-      if (server['ok'] != true) {
-        final details = DriverRegistrationSubmissionErrorMapper.detailsFrom(
-          server['details'],
+      if (server['ok'] == true) {
+        return DriverSubmissionResult.ok(
+          uid: model.uid,
+          submissionId: submissionId,
+          registrationVersion:
+              (server['reviewVersion'] as num?)?.toInt() ?? nextVersion,
+          idempotentReplay: server['idempotent'] == true ||
+              server['fromIdempotency'] == true,
         );
-        final messageKey = DriverRegistrationSubmissionErrorMapper.messageKey(
-          reasonCode: server['reasonCode']?.toString() ?? details['reasonCode']?.toString(),
-          fallbackMessage: server['error']?.toString(),
-          cfCode: server['code']?.toString(),
-          missingDocuments: DriverRegistrationSubmissionErrorMapper.stringList(
-            details['missingDocuments'],
-          ),
-          missingExpiryTypes: DriverRegistrationSubmissionErrorMapper.stringList(
-            details['missingExpiryTypes'],
-          ),
-        );
-        debugPrint(
-          'DriverRegistrationSubmissionService: submit V2 failed: '
-          '${server['reasonCode'] ?? details['reasonCode'] ?? server['code']}',
-        );
-        return DriverSubmissionResult.fail(messageKey);
       }
 
-      return DriverSubmissionResult.ok(
-        uid: model.uid,
-        submissionId: submissionId,
-        registrationVersion:
-            (server['reviewVersion'] as num?)?.toInt() ?? nextVersion,
-        idempotentReplay: server['idempotent'] == true,
+      // Recover when server already accepted the application (timeout / race).
+      try {
+        final after = await ref.get();
+        final afterData = after.data() as Map<String, dynamic>? ?? {};
+        final afterStatus =
+            (afterData['registration_status'] as String?)?.trim() ?? '';
+        if (afterStatus == 'pending_review' || afterStatus == 'submitted') {
+          return DriverSubmissionResult.ok(
+            uid: model.uid,
+            submissionId: (afterData['submission_id'] as String?)?.trim().isNotEmpty == true
+                ? (afterData['submission_id'] as String).trim()
+                : submissionId,
+            registrationVersion:
+                (afterData['registration_version'] as num?)?.toInt() ??
+                    (afterData['reviewVersion'] as num?)?.toInt() ??
+                    nextVersion,
+            idempotentReplay: true,
+          );
+        }
+      } catch (_) {}
+
+      final details = DriverRegistrationSubmissionErrorMapper.detailsFrom(
+        server['details'],
       );
+      final reasonCode =
+          server['reasonCode']?.toString() ?? details['reasonCode']?.toString();
+      if (reasonCode == 'APPLICATION_ALREADY_PENDING') {
+        return DriverSubmissionResult.ok(
+          uid: model.uid,
+          submissionId: submissionId,
+          registrationVersion: nextVersion,
+          idempotentReplay: true,
+        );
+      }
+      final messageKey = DriverRegistrationSubmissionErrorMapper.messageKey(
+        reasonCode: reasonCode,
+        fallbackMessage: server['error']?.toString(),
+        cfCode: server['code']?.toString(),
+        missingDocuments: DriverRegistrationSubmissionErrorMapper.stringList(
+          details['missingDocuments'],
+        ),
+        missingExpiryTypes: DriverRegistrationSubmissionErrorMapper.stringList(
+          details['missingExpiryTypes'],
+        ),
+      );
+      debugPrint(
+        'DriverRegistrationSubmissionService: submit V2 failed: '
+        '${reasonCode ?? server['code']}',
+      );
+      return DriverSubmissionResult.fail(messageKey);
     } on FirebaseException catch (e, st) {
       debugPrint(
         '[DriverRegistration][firestore] code=${e.code} message=${e.message}',
@@ -645,6 +692,127 @@ abstract final class DriverRegistrationSubmissionService {
     } catch (e) {
       debugPrint('[DriverRegistration][claim] $e');
       return false;
+    }
+  }
+
+  /// Merge document slot for profile update — keeps existing asset unless replaced.
+  static Map<String, dynamic> buildDocSlotUpdate({
+    required String documentType,
+    Map<String, dynamic>? existing,
+    String storagePath = '',
+    String url = '',
+    DateTime? expiryDate,
+  }) {
+    final out = <String, dynamic>{
+      'documentType': documentType,
+    };
+    if (existing != null) {
+      out.addAll(Map<String, dynamic>.from(existing));
+      out['documentType'] = documentType;
+    }
+
+    final path = storagePath.trim();
+    final trimmedUrl = url.trim();
+    final replaced = path.startsWith('users/') ||
+        (trimmedUrl.startsWith('https://') &&
+            trimmedUrl != 'existing://present');
+
+    if (path.startsWith('users/')) {
+      out['storagePath'] = path;
+      out['uploadedAt'] = FieldValue.serverTimestamp();
+      out['status'] = out['status'] ?? 'uploaded';
+    } else if (trimmedUrl.startsWith('https://')) {
+      out['url'] = trimmedUrl;
+      if (replaced || existing == null) {
+        out['uploadedAt'] = FieldValue.serverTimestamp();
+      }
+      out['status'] = out['status'] ?? 'uploaded';
+    } else if (!replaced && existing == null) {
+      // Nothing to keep.
+    }
+
+    if (expiryDate != null) {
+      out['expiryDate'] = Timestamp.fromDate(
+        DateTime(expiryDate.year, expiryDate.month, expiryDate.day),
+      );
+    }
+    return out;
+  }
+
+  /// Keys that must never change during an approved-driver profile update.
+  @visibleForTesting
+  static const protectedUpdateKeys = <String>{
+    'uid',
+    'ismndob',
+    'ismndom',
+    'actev_mndob',
+    'ngl',
+    'registration_status',
+    'submission_status',
+    'registration_flow_version',
+    'auto_activated',
+    'approved_at',
+    'approvedAt',
+    'approvedBy',
+    'rejectedAt',
+    'rejectedBy',
+    'rejectionReason',
+    'rejection_reason',
+    'requested_changes',
+    'account_status',
+    'operational_status',
+    'created_time',
+    'wallet',
+    'walletId',
+    'wallet_id',
+  };
+
+  /// Update editable fields on the same driver record (no new registration / no CF submit).
+  static Future<DriverSubmissionResult> updateExistingDriverProfile({
+    required String uid,
+    required Map<String, dynamic> profileFields,
+  }) async {
+    final auth = FirebaseAuth.instance.currentUser;
+    if (auth == null || auth.isAnonymous || auth.uid != uid) {
+      return const DriverSubmissionResult.fail(
+        'Please sign in again to continue.',
+      );
+    }
+
+    final ref = UserRecord.collection.doc(uid);
+    final snap = await ref.get();
+    if (!snap.exists) {
+      return const DriverSubmissionResult.fail(
+        'Could not update registration data. Please try again.',
+      );
+    }
+
+    final cleaned = Map<String, dynamic>.from(profileFields);
+    for (final k in DriverRegistrationUpdatePayload.protectedKeys) {
+      cleaned.remove(k);
+    }
+    cleaned.removeWhere((k, v) => v == null);
+    cleaned['uid'] = uid;
+    cleaned['profile_updated_at'] = FieldValue.serverTimestamp();
+    cleaned['profile_update_source'] = 'driver_app_edit_registration';
+
+    try {
+      await ref.set(cleaned, SetOptions(merge: true));
+      return DriverSubmissionResult.ok(
+        uid: uid,
+        submissionId: 'profile_update_$uid',
+        registrationVersion: 0,
+      );
+    } on FirebaseException catch (e) {
+      debugPrint('[DriverRegistration][updateExisting] ${e.code} ${e.message}');
+      return const DriverSubmissionResult.fail(
+        'Could not update registration data. Please try again.',
+      );
+    } catch (e) {
+      debugPrint('[DriverRegistration][updateExisting] $e');
+      return const DriverSubmissionResult.fail(
+        'Could not update registration data. Please try again.',
+      );
     }
   }
 }
