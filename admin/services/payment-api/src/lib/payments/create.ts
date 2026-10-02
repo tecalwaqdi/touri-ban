@@ -215,8 +215,10 @@ async function quoteWalletTopUp(data: z.infer<typeof createSchema>) {
 }
 
 /** N-Genius HPP access codes expire; reusing stale URLs shows
- * "unable to retrieve order details" on paypage.ksa.ngenius-payments.com. */
-export const HPP_REUSE_MAX_AGE_MS = 15 * 60 * 1000;
+ * "payment link does not exist" / "unable to retrieve order details"
+ * on paypage.ksa.ngenius-payments.com. Keep reuse short; retries use orderPath
+ * and always mint fresh (see forceRefresh below). */
+export const HPP_REUSE_MAX_AGE_MS = 3 * 60 * 1000;
 
 function sessionTimestampMs(value: unknown): number | null {
   if (value == null) return null;
@@ -463,8 +465,13 @@ export async function handleCreatePayment(req: Request) {
       };
     }
 
+    // Unpaid-order retry / resume always mints a fresh HPP — never reopen a
+    // dead paypage URL (old clients may omit forceRefreshHpp).
+    const forceRefresh =
+      Boolean(body.forceRefreshHpp) || Boolean(body.orderPath);
+
     if (
-      !body.forceRefreshHpp &&
+      !forceRefresh &&
       canReuseHostedPaymentSession(existingData, env.NGENIUS_ENV)
     ) {
       const url = String(existingData.payment_url || existingData.three_ds_url);

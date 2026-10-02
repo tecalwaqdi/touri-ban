@@ -48,6 +48,14 @@ export async function handleCancelPayment(req: Request) {
         status: toLegacyStatus(next),
         normalized_status: next,
         abandoned: true,
+        // Drop dead HPP / SDK links so the next create cannot reuse them.
+        payment_url: FieldValue.delete(),
+        three_ds_url: FieldValue.delete(),
+        sdk_auth_url: FieldValue.delete(),
+        sdk_pay_page_url: FieldValue.delete(),
+        sdk_payment_code: FieldValue.delete(),
+        sdk_order_json: FieldValue.delete(),
+        failure_code: FieldValue.delete(),
         updated_at: FieldValue.serverTimestamp(),
       },
       { merge: true },
@@ -65,6 +73,8 @@ export async function handleCancelPayment(req: Request) {
               payment_status: "unpaid",
               status_code: "payment_pending",
               last_payment_attempt_status: "cancelled",
+              // Clear session pointer so UI does not reopen a dead attempt.
+              payment_session_id: FieldValue.delete(),
               updated_at: FieldValue.serverTimestamp(),
             },
             { merge: true },

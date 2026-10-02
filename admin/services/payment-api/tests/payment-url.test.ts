@@ -135,8 +135,9 @@ describe("mobile SDK payload", () => {
 
 describe("session HPP reuse", () => {
   const now = Date.parse("2026-08-26T12:00:00.000Z");
-  const fresh = new Date(now - 5 * 60 * 1000);
-  const stale = new Date(now - 20 * 60 * 1000);
+  // Reuse TTL is 3 minutes — fresh = within window, stale = outside.
+  const fresh = new Date(now - 90 * 1000);
+  const stale = new Date(now - 5 * 60 * 1000);
 
   it("reuses only pending sessions with fresh HPP in same env", () => {
     expect(
