@@ -1,6 +1,7 @@
 import { FieldValue, GeoPoint, Timestamp } from "firebase-admin/firestore";
 import { ApiError, PaymentErrorCode } from "@/lib/errors/codes";
 import { COLLECTIONS, db } from "@/lib/firebase/admin";
+import { countryIdFromPath } from "@/lib/bookings/vehicle-snapshot";
 
 export type BookingDraft = {
   pickupLat: number;
@@ -13,6 +14,7 @@ export type BookingDraft = {
   scheduleLabel?: string | null;
   driverGuide?: boolean;
   tripType?: string | null;
+  returnToPickup?: boolean;
   luggageEstimate?: number;
   routeProvider?: string | null;
   plannedDistanceMeters?: number;
@@ -115,6 +117,7 @@ export function parseBookingDraft(raw: unknown): BookingDraft {
     scheduleLabel: sanitizeString(booking.scheduleLabel, 180) || null,
     driverGuide: booking.driverGuide === true,
     tripType: sanitizeString(booking.tripType, 32) || "one_way",
+    returnToPickup: booking.returnToPickup === true,
     luggageEstimate: Math.max(0, Number(booking.luggageEstimate) || 0),
     routeProvider: sanitizeString(booking.routeProvider, 32) || "waypoints",
     plannedDistanceMeters: Math.max(0, Number(booking.plannedDistanceMeters) || 0),
@@ -148,6 +151,12 @@ export type SessionQuote = {
   discountHalalas?: number;
   provider_order_ref?: string;
   booking_draft?: BookingDraft;
+  vehicleTypeId?: string;
+  vehicleTypeName?: string;
+  vehicleTypeCountryId?: string;
+  vehicleHourlyPrice?: number | null;
+  vehicleCurrency?: string;
+  vehicleSnapshotAt?: string;
 };
 
 /**
@@ -224,6 +233,16 @@ async function buildOnlineOrderCore(
     total_vat: vat / 100,
     ksm: discount / 100,
     SrSAAH: baseFare / hours / 100,
+    vehicleTypeId: session.vehicleTypeId || countryIdFromPath(session.carPath),
+    vehicleTypeName: session.vehicleTypeName || draft.carName || "",
+    vehicleTypeCountryId:
+      session.vehicleTypeCountryId || countryIdFromPath(session.countryPath),
+    vehicleHourlyPrice:
+      session.vehicleHourlyPrice != null
+        ? session.vehicleHourlyPrice
+        : baseFare / hours / 100,
+    vehicleCurrency: session.vehicleCurrency || session.currency || "SAR",
+    vehicleSnapshotAt: session.vehicleSnapshotAt || new Date().toISOString(),
     total_mndob2: baseFare / 100,
     total_mndob: driverNetMinor / 100,
     pricing_quote_halalas: amountMinor,
@@ -235,6 +254,7 @@ async function buildOnlineOrderCore(
     listAmakn: stops,
     plannedWaypoints: draft.plannedWaypoints || [],
     trip_type: draft.tripType || "one_way",
+    returnToPickup: draft.returnToPickup === true,
     luggage_estimate: draft.luggageEstimate || 0,
     routeProvider: draft.routeProvider || "waypoints",
     routeVersion: 1,

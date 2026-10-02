@@ -14,6 +14,11 @@ import { PaymentStatus, toLegacyStatus } from "@/lib/payments/status";
 import { logger } from "@/lib/logging/logger";
 import { parseBookingDraft } from "@/lib/bookings/build-order";
 import {
+  assertVehicleForBooking,
+  buildVehicleBookingSnapshot,
+  countryIdFromPath,
+} from "@/lib/bookings/vehicle-snapshot";
+import {
   ensureUnpaidBookingOrder,
   findResumableUnpaidOrderForUser,
   loadPayableUnpaidOrder,
@@ -139,9 +144,21 @@ async function quoteBooking(data: z.infer<typeof createSchema>) {
   }
   const car = carSnap.data() || {};
   const country = countrySnap.data() || {};
-  if (car.actev === false || car.acctev === false || country.acctev === false) {
-    throw new ApiError(PaymentErrorCode.BOOKING_NOT_PAYABLE, 400);
-  }
+
+  // Booking integrity: vehicle must belong to booking country.
+  // Authoritative price = type_car.sr; currency = country config.
+  // Old clients may omit snapshot fields — server derives them.
+  const countryIso = String(
+    country.iso_code || country.isoCode || country.country_iso2 || "",
+  )
+    .trim()
+    .toUpperCase();
+  assertVehicleForBooking({
+    car,
+    countryPath,
+    countryIso,
+    countryActive: country.acctev !== false,
+  });
 
   const currency = String(
     country.currency_code ||
@@ -164,6 +181,13 @@ async function quoteBooking(data: z.infer<typeof createSchema>) {
     currency,
   });
 
+  const vehicleSnapshot = buildVehicleBookingSnapshot({
+    carId: carSnap.id || countryIdFromPath(carPath),
+    car,
+    countryPath,
+    currency,
+  });
+
   return {
     ...quote,
     carPath,
@@ -174,6 +198,7 @@ async function quoteBooking(data: z.infer<typeof createSchema>) {
     appFeeHalalas: quote.platformFeeMinor,
     vatHalalas: quote.vatMinor,
     discountHalalas: quote.discountMinor,
+    ...vehicleSnapshot,
   };
 }
 
