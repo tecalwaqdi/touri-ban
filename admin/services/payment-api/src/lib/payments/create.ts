@@ -204,7 +204,7 @@ async function quoteBooking(data: z.infer<typeof createSchema>) {
 
 async function quoteWalletTopUp(data: z.infer<typeof createSchema>) {
   // Prefer curated packages from settings; allow amountMajor only for allow-listed values.
-  const allowedMajors = new Set([100, 200, 300, 500]);
+  const allowedMajors = new Set([50, 100, 200, 300, 500]);
   let amountMajor = 0;
   if (data.packageId) {
     const packSnap = await db().doc("settings/wallet_topup_packages").get();

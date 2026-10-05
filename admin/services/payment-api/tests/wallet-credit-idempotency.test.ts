@@ -34,8 +34,8 @@ describe("wallet credit idempotency contract", () => {
   });
 
   it("allow-lists wallet top-up majors", () => {
-    const allowed = new Set([100, 200, 300, 500]);
-    for (const n of [100, 200, 300, 500]) expect(allowed.has(n)).toBe(true);
-    for (const n of [50, 150, 1000, -1, 0]) expect(allowed.has(n)).toBe(false);
+    const allowed = new Set([50, 100, 200, 300, 500]);
+    for (const n of [50, 100, 200, 300, 500]) expect(allowed.has(n)).toBe(true);
+    for (const n of [25, 150, 1000, -1, 0]) expect(allowed.has(n)).toBe(false);
   });
 });

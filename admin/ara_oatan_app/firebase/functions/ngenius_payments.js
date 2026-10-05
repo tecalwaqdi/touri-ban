@@ -469,7 +469,7 @@ function resolveWalletPackageFromCatalog(catalog, packageId, options = {}) {
 
 async function verifiedWalletTopUpAmount(data) {
   // Intentionally ignore client amountMinor; allow curated packages or allow-listed majors.
-  const allowedMajors = new Set([100, 200, 300, 500]);
+  const allowedMajors = new Set([50, 100, 200, 300, 500]);
   const packageId = sanitizeString(data.packageId, 64);
   if (packageId) {
     const snapshot = await admin.firestore().doc(WALLET_TOPUP_PACKAGES_PATH).get();
