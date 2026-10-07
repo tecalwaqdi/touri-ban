@@ -14,6 +14,11 @@ import { PaymentStatus, toLegacyStatus } from "@/lib/payments/status";
 import { logger } from "@/lib/logging/logger";
 import { parseBookingDraft } from "@/lib/bookings/build-order";
 import {
+  assertVehicleForBooking,
+  buildVehicleBookingSnapshot,
+  countryIdFromPath,
+} from "@/lib/bookings/vehicle-snapshot";
+import {
   ensureUnpaidBookingOrder,
   findResumableUnpaidOrderForUser,
   loadPayableUnpaidOrder,
@@ -61,6 +66,9 @@ const createSchema = z.object({
   booking: z.unknown().optional(),
   /** Wallet top-up: package id or server-validated amountMajor (SAR). */
   amountMajor: z.number().positive().optional(),
+  /** Local-currency custom or quick top-up. Gateway amount is derived server-side. */
+  localAmount: z.number().positive().optional(),
+  countryId: z.string().min(1).max(80).optional(),
 });
 
 const REUSABLE_SESSION_STATUSES = new Set([
@@ -139,9 +147,21 @@ async function quoteBooking(data: z.infer<typeof createSchema>) {
   }
   const car = carSnap.data() || {};
   const country = countrySnap.data() || {};
-  if (car.actev === false || car.acctev === false || country.acctev === false) {
-    throw new ApiError(PaymentErrorCode.BOOKING_NOT_PAYABLE, 400);
-  }
+
+  // Booking integrity: vehicle must belong to booking country.
+  // Authoritative price = type_car.sr; currency = country config.
+  // Old clients may omit snapshot fields — server derives them.
+  const countryIso = String(
+    country.iso_code || country.isoCode || country.country_iso2 || "",
+  )
+    .trim()
+    .toUpperCase();
+  assertVehicleForBooking({
+    car,
+    countryPath,
+    countryIso,
+    countryActive: country.acctev !== false,
+  });
 
   const currency = String(
     country.currency_code ||
@@ -164,8 +184,28 @@ async function quoteBooking(data: z.infer<typeof createSchema>) {
     currency,
   });
 
+  const vehicleSnapshot = buildVehicleBookingSnapshot({
+    carId: carSnap.id || countryIdFromPath(carPath),
+    car,
+    countryPath,
+    currency,
+  });
+
+  const { createRequire } = await import("node:module");
+  const countryFinance = createRequire(import.meta.url)(
+    "../../../../../shared/country_finance.js",
+  );
+  const gateway = countryFinance.bookingGatewaySnapshot(quote.amountMinor / 100, {
+    ...country,
+    id: countrySnap.id,
+    iso_code: countryIso || country.iso_code,
+    currency_code: currency,
+    vat_percent: country.vat_percent != null ? country.vat_percent : country.vat,
+  });
+
   return {
     ...quote,
+    ...gateway,
     carPath,
     countryPath,
     // legacy field name for compatibility with existing Flutter/CF readers
@@ -174,12 +214,68 @@ async function quoteBooking(data: z.infer<typeof createSchema>) {
     appFeeHalalas: quote.platformFeeMinor,
     vatHalalas: quote.vatMinor,
     discountHalalas: quote.discountMinor,
+    ...vehicleSnapshot,
   };
 }
 
+function walletFxSnapshot(quote: object): Record<string, unknown> {
+  const q = quote as Record<string, unknown>;
+  if (q.gateway_minor_sar == null && typeof q.local_credit_amount !== "number") {
+    return {};
+  }
+  return {
+    local_credit_amount: q.local_credit_amount ?? null,
+    local_amount: q.local_amount ?? null,
+    local_amount_minor: q.local_amount_minor ?? null,
+    local_currency: q.local_currency ?? null,
+    gateway_amount_sar: q.gateway_amount_sar ?? null,
+    gateway_minor_sar: q.gateway_minor_sar ?? null,
+    gateway_currency: "SAR",
+    fx_local_per_sar: q.fx_local_per_sar ?? null,
+    fx_snapshot_at: q.fx_snapshot_at ?? null,
+    country_id: q.country_id ?? null,
+    country_iso2: q.country_iso2 ?? null,
+  };
+}
+
+/** SAR majors accepted when the request has no country FX quote. 50 matches the cash-order minimum. */
+export const WALLET_TOPUP_ALLOWED_MAJORS = new Set([50, 100, 200, 300, 500]);
+
 async function quoteWalletTopUp(data: z.infer<typeof createSchema>) {
+  if (data.localAmount != null && data.countryId) {
+    const countrySnap = await db().doc(`countries/${data.countryId}`).get();
+    if (!countrySnap.exists) {
+      throw new ApiError(PaymentErrorCode.INVALID_REQUEST, 400, "INVALID_COUNTRY");
+    }
+    const country = countrySnap.data() || {};
+    const { createRequire } = await import("node:module");
+    const countryFinance = createRequire(import.meta.url)(
+      "../../../../../shared/country_finance.js",
+    );
+    const checked = countryFinance.assertNewFinanceConfig(
+      { ...country, id: countrySnap.id },
+      { requireOnline: true },
+    );
+    const gateway = countryFinance.localToGatewaySar(
+      data.localAmount,
+      checked.fx,
+    );
+    return {
+      amountMinor: gateway.gatewayMinorSar,
+      currency: "SAR",
+      local_credit_amount: data.localAmount,
+      local_currency: checked.config.currency,
+      gateway_amount_sar: gateway.gatewayAmountSar,
+      gateway_minor_sar: gateway.gatewayMinorSar,
+      gateway_currency: "SAR",
+      fx_local_per_sar: checked.fx,
+      fx_snapshot_at: new Date().toISOString(),
+      country_id: countrySnap.id,
+      country_iso2: checked.config.iso2,
+    };
+  }
   // Prefer curated packages from settings; allow amountMajor only for allow-listed values.
-  const allowedMajors = new Set([100, 200, 300, 500]);
+  const allowedMajors = WALLET_TOPUP_ALLOWED_MAJORS;
   let amountMajor = 0;
   if (data.packageId) {
     const packSnap = await db().doc("settings/wallet_topup_packages").get();
@@ -215,8 +311,10 @@ async function quoteWalletTopUp(data: z.infer<typeof createSchema>) {
 }
 
 /** N-Genius HPP access codes expire; reusing stale URLs shows
- * "unable to retrieve order details" on paypage.ksa.ngenius-payments.com. */
-export const HPP_REUSE_MAX_AGE_MS = 15 * 60 * 1000;
+ * "payment link does not exist" / "unable to retrieve order details"
+ * on paypage.ksa.ngenius-payments.com. Keep reuse short; retries use orderPath
+ * and always mint fresh (see forceRefresh below). */
+export const HPP_REUSE_MAX_AGE_MS = 3 * 60 * 1000;
 
 function sessionTimestampMs(value: unknown): number | null {
   if (value == null) return null;
@@ -434,6 +532,7 @@ export async function handleCreatePayment(req: Request) {
       appFeeHalalas: verifiedQuote.appFeeHalalas,
       vatHalalas: verifiedQuote.vatHalalas,
       discountHalalas: verifiedQuote.discountHalalas,
+      ...walletFxSnapshot(verifiedQuote),
       created_at: FieldValue.serverTimestamp(),
       updated_at: FieldValue.serverTimestamp(),
     });
@@ -463,8 +562,13 @@ export async function handleCreatePayment(req: Request) {
       };
     }
 
+    // Unpaid-order retry / resume always mints a fresh HPP — never reopen a
+    // dead paypage URL (old clients may omit forceRefreshHpp).
+    const forceRefresh =
+      Boolean(body.forceRefreshHpp) || Boolean(body.orderPath);
+
     if (
-      !body.forceRefreshHpp &&
+      !forceRefresh &&
       canReuseHostedPaymentSession(existingData, env.NGENIUS_ENV)
     ) {
       const url = String(existingData.payment_url || existingData.three_ds_url);
@@ -539,9 +643,15 @@ export async function handleCreatePayment(req: Request) {
   }
 
   try {
+    const chargeMinor = Number(
+      verifiedQuote.gateway_minor_sar ?? verifiedQuote.amountMinor,
+    );
+    const chargeCurrency = verifiedQuote.gateway_minor_sar != null
+      ? "SAR"
+      : verifiedQuote.currency;
     const order = await createNGeniusOrder({
-      amountMinor: verifiedQuote.amountMinor,
-      currency: verifiedQuote.currency,
+      amountMinor: chargeMinor,
+      currency: chargeCurrency,
       email: body.email || user.email,
       merchantOrderReference: body.description || `Toury-${sessionId.slice(0, 16)}`,
     });

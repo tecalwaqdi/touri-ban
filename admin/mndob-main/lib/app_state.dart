@@ -130,6 +130,14 @@ class FFAppState extends ChangeNotifier {
   set naimmdenh(String value) {
     _naimmdenh = value;
   }
+
+  /// Ephemeral GPS work village (not registration `mndob_vill`).
+  DocumentReference? workVillageNow;
+
+  /// `gps` | `registration_fallback`
+  String workAreaSource = 'registration_fallback';
+
+  DateTime? workAreaUpdatedAt;
 }
 
 void _safeInit(Function() initializeField) {

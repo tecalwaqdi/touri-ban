@@ -170,6 +170,13 @@ class _MyAppState extends State<MyApp> {
 
   void setLocale(String language) {
     final locale = createLocale(language);
+    DriverCachedAssetLoader.clearCache();
+    unawaited(
+      DriverCachedAssetLoader.preloadAll(
+        'assets/langs',
+        FFLocalizations.languages().map(createLocale),
+      ),
+    );
     safeSetState(() => _locale = locale);
     FFLocalizations.storeLocale(language);
     unawaited(context.setLocale(locale));
@@ -290,12 +297,18 @@ class _NavBarPageState extends State<NavBarPage> {
                   showSelectedLabels: true,
                   showUnselectedLabels: true,
                   type: BottomNavigationBarType.fixed,
+                  selectedFontSize: 10,
+                  unselectedFontSize: 9,
                   selectedLabelStyle: typography.labelSmall.copyWith(
                     color: colors.navigationSelected,
                     fontWeight: FontWeight.w600,
+                    fontSize: 10,
+                    height: 1.05,
                   ),
                   unselectedLabelStyle: typography.labelSmall.copyWith(
                     color: colors.textSecondary,
+                    fontSize: 9,
+                    height: 1.05,
                   ),
                   items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
@@ -307,9 +320,7 @@ class _NavBarPageState extends State<NavBarPage> {
                         icon: Icons.home_rounded,
                         selected: true,
                       ),
-                      label: FFLocalizations.of(context).getText(
-                        '1dctcly1' /* Home */,
-                      ),
+                      label: driverTr(context, 'nav.home'),
                       tooltip: '',
                     ),
                     BottomNavigationBarItem(
@@ -321,9 +332,7 @@ class _NavBarPageState extends State<NavBarPage> {
                         icon: Icons.fiber_new_rounded,
                         selected: true,
                       ),
-                      label: FFLocalizations.of(context).getText(
-                        'hvigto5g' /* Available */,
-                      ),
+                      label: driverTr(context, 'nav.available'),
                       tooltip: '',
                     ),
                     BottomNavigationBarItem(
@@ -335,9 +344,7 @@ class _NavBarPageState extends State<NavBarPage> {
                         icon: Icons.access_time_filled,
                         selected: true,
                       ),
-                      label: FFLocalizations.of(context).getText(
-                        '1kqxsp9k' /* Accepted */,
-                      ),
+                      label: driverTr(context, 'nav.accepted'),
                       tooltip: '',
                     ),
                     BottomNavigationBarItem(
@@ -349,9 +356,7 @@ class _NavBarPageState extends State<NavBarPage> {
                         icon: Icons.task_alt_rounded,
                         selected: true,
                       ),
-                      label: FFLocalizations.of(context).getText(
-                        'cfe6acde' /* Completed */,
-                      ),
+                      label: driverTr(context, 'nav.completed'),
                       tooltip: '',
                     ),
                     BottomNavigationBarItem(
@@ -363,9 +368,7 @@ class _NavBarPageState extends State<NavBarPage> {
                         icon: Icons.cancel_rounded,
                         selected: true,
                       ),
-                      label: FFLocalizations.of(context).getText(
-                        '3dyv5lob' /* Cancelled */,
-                      ),
+                      label: driverTr(context, 'nav.cancelled'),
                       tooltip: '',
                     ),
                     BottomNavigationBarItem(
@@ -377,9 +380,7 @@ class _NavBarPageState extends State<NavBarPage> {
                         icon: Icons.account_circle,
                         selected: true,
                       ),
-                      label: FFLocalizations.of(context).getText(
-                        '8w8yyua6' /* My account */,
-                      ),
+                      label: driverTr(context, 'nav.account'),
                       tooltip: '',
                     ),
                   ],

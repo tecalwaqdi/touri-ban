@@ -11,6 +11,7 @@ import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_image_picker.dart';
+import '/components/admin_landmark_category_picker.dart';
 import '/components/admin_location_section.dart';
 import '/components/admin_location_service.dart';
 import '/components/admin_region_picker.dart';
@@ -63,6 +64,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
     // Ads carousel flag — must be explicit, not default-on.
     _model.switchValue = false;
     _model.switchACCTEVValue = true;
+    _model.selectedTsnef = AdminGeoAliases.defaultLandmarkCategory;
 
     AdminAgentCountryLock.applyToAppState();
     clearCitySelection();
@@ -474,6 +476,14 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                       legacyController: _model.textController2,
                       minLines: 2,
                       maxLines: 6,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 16),
+                    child: AdminLandmarkCategoryPicker(
+                      value: _model.selectedTsnef,
+                      onChanged: (v) =>
+                          safeSetState(() => _model.selectedTsnef = v),
                     ),
                   ),
                   Material(
@@ -1200,6 +1210,16 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                         );
                         return;
                       }
+                      if (_model.selectedTsnef.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              uiTr(context, 'يرجى اختيار نوع المعلم / التصنيف'),
+                            ),
+                          ),
+                        );
+                        return;
+                      }
                       if (FFAppState().REvCITE == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -1359,8 +1379,11 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                 img2: img2,
                                 img3: img3,
                                 acctev: _model.switchACCTEVValue ?? true,
-                                // Required for customer category chips / queries.
-                                tsnef: AdminGeoAliases.defaultLandmarkCategory,
+                                // Customer app filters landmarks by `tsnef`
+                                // matching landmark_categories.storage.
+                                tsnef: _model.selectedTsnef.trim().isNotEmpty
+                                    ? _model.selectedTsnef.trim()
+                                    : AdminGeoAliases.defaultLandmarkCategory,
                                 rate: _model.ratingValue,
                                 contentLocale: sourceLocale,
                               ),

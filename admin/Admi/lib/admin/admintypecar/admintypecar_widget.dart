@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '/admin/admintypecar/admin_vehicle_types_adapter.dart';
+import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_performance.dart';
+import '/backend/admin_resource_guard.dart';
+import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/components/admin_confirm_dialog.dart';
 import '/components/admin_crud_feedback.dart';
@@ -39,7 +42,21 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Future<List<TypeCarRecord>> _loadTypeCars() {
+  Future<List<TypeCarRecord>> _loadTypeCars() async {
+    if (AdminRoleService.isCountryAgent) {
+      await AdminAgentCountryLock.ensureCountryResolved();
+      final countryRef = AdminRoleService.scopedCountryRef ??
+          FFAppState().RevDolh ??
+          FFAppState().dolh;
+      if (countryRef != null) {
+        return queryListCacheFirst(
+          TypeCarRecord.collection,
+          TypeCarRecord.fromSnapshot,
+          queryBuilder: (q) => q.where('dolh', isEqualTo: countryRef),
+          limit: 200,
+        );
+      }
+    }
     return queryListCacheFirst(
       TypeCarRecord.collection,
       TypeCarRecord.fromSnapshot,
@@ -77,9 +94,34 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
   }
 
   Future<void> _seedVehicleCatalog() async {
+    DocumentReference? countryRef;
+    String countryIso = '';
+    if (AdminRoleService.isCountryAgent) {
+      countryRef = await AdminAgentCountryLock.ensureCountryResolved();
+      if (countryRef == null) {
+        throw StateError('agent_country_unresolved');
+      }
+      try {
+        final c = await CountriesRecord.getDocumentOnce(countryRef);
+        countryIso = c.isoCode.trim().toUpperCase();
+      } catch (_) {}
+    } else if (AdminRoleService.isSuperAdmin) {
+      final picked = await _pickCountryForSeed();
+      if (picked == null) return;
+      countryRef = picked.$1;
+      countryIso = picked.$2;
+    } else {
+      throw StateError('seed_not_allowed');
+    }
+    if (countryIso.isEmpty) {
+      throw StateError('seed_country_required');
+    }
+
     final batch = FirebaseFirestore.instance.batch();
     for (final preset in _vehicleTypePresets) {
-      final ref = TypeCarRecord.collection.doc(preset.code);
+      final ref = TypeCarRecord.collection.doc(
+        '${countryIso.toLowerCase()}_${preset.code}',
+      );
       batch.set(
         ref,
         createTypeCarRecordData(
@@ -90,6 +132,8 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
           ishafelh: preset.isBusLike,
           aglSaat: preset.minHours,
           codeCar: preset.code,
+          dolh: countryRef,
+          countryIso2: countryIso,
         ),
         SetOptions(merge: true),
       );
@@ -106,6 +150,33 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
     );
   }
 
+  Future<(DocumentReference, String)?> _pickCountryForSeed() async {
+    final countries = await queryCountriesRecordOnce(
+      queryBuilder: (q) => q.where('acctev', isEqualTo: true),
+      limit: 100,
+    );
+    if (!mounted) return null;
+    return showDialog<(DocumentReference, String)>(
+      context: context,
+      builder: (ctx) {
+        return SimpleDialog(
+          title: Text(uiTr(context, 'اختر الدولة للباقة')),
+          children: countries.map((c) {
+            final iso = c.isoCode.trim().toUpperCase();
+            final label =
+                c.naimEnglesh.isNotEmpty ? c.naimEnglesh : c.naim;
+            return SimpleDialogOption(
+              onPressed: iso.isEmpty
+                  ? null
+                  : () => Navigator.pop(ctx, (c.reference, iso)),
+              child: Text(iso.isEmpty ? label : '$label ($iso)'),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
   void _reloadTypeCars() {
     if (!mounted) return;
     setState(() {
@@ -119,10 +190,17 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
     super.initState();
     _model = createModel(context, () => AdmintypecarModel());
     _searchController = TextEditingController();
-    _typeCarsFuture = _loadTypeCars();
-    _driverUsageFuture = _loadDriverUsage();
     _listRefreshListener = _reloadTypeCars;
     AdminListRefresh.register(AdminListScope.typeCars, _listRefreshListener);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (AdminRoleService.isCountryAgent) {
+        await AdminAgentCountryLock.ensureCountryResolved();
+      }
+      if (!mounted) return;
+      _reloadTypeCars();
+    });
+    _typeCarsFuture = _loadTypeCars();
+    _driverUsageFuture = _loadDriverUsage();
   }
 
   @override
@@ -135,6 +213,14 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
   }
 
   Future<void> _softDeactivate(AdminVehicleTypeRow row) async {
+    if (!AdminResourceGuard.canEditTypeCar(row.record)) {
+      if (!mounted) return;
+      AdminCrudFeedback.error(
+        context,
+        uiTr(context, 'غير مسموح بتعديل مركبات دولة أخرى'),
+      );
+      return;
+    }
     final usage = await (_driverUsageFuture ?? Future.value(const <String, int>{}));
     final drivers = usage[row.record.reference.id] ?? 0;
     final confirmed = await showAdminConfirmDialog(
@@ -175,6 +261,14 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
   }
 
   Future<void> _toggleActive(AdminVehicleTypeRow row) async {
+    if (!AdminResourceGuard.canEditTypeCar(row.record)) {
+      if (!mounted) return;
+      AdminCrudFeedback.error(
+        context,
+        uiTr(context, 'غير مسموح بتعديل مركبات دولة أخرى'),
+      );
+      return;
+    }
     final next = !row.active;
     try {
       await row.record.reference.update(
@@ -223,6 +317,22 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (AdminRoleService.isCountryAgent)
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(bottom: 10),
+                  child: AdminContentCard(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      '${uiTr(context, 'الدولة')}: '
+                      '${AdminRoleService.scopedCountryName.trim().isNotEmpty ? AdminRoleService.scopedCountryName : (FFAppState().RevdolhTEXT.trim().isNotEmpty ? FFAppState().RevdolhTEXT : FFAppState().naimdolh)}',
+                      style: theme.titleSmall.override(
+                        fontFamily: theme.titleSmallFamily,
+                        letterSpacing: 0.0,
+                        useGoogleFonts: !theme.titleSmallIsCustom,
+                      ),
+                    ),
+                  ),
+                ),
               AdminContentCard(
                 padding: const EdgeInsets.all(14),
                 child: Column(
@@ -439,6 +549,17 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                         rows: filtered,
                                         usage: usage,
                                         onEdit: (row) async {
+                                          if (!AdminResourceGuard
+                                              .canEditTypeCar(row.record)) {
+                                            AdminCrudFeedback.error(
+                                              context,
+                                              uiTr(
+                                                context,
+                                                'غير مسموح بتعديل مركبات دولة أخرى',
+                                              ),
+                                            );
+                                            return;
+                                          }
                                           final ok =
                                               await AdminVehicleTypeEditor.open(
                                             context,
@@ -465,6 +586,17 @@ class _AdmintypecarWidgetState extends State<AdmintypecarWidget> {
                                                 usage[row.record.reference.id] ??
                                                     0,
                                             onEdit: () async {
+                                              if (!AdminResourceGuard
+                                                  .canEditTypeCar(row.record)) {
+                                                AdminCrudFeedback.error(
+                                                  context,
+                                                  uiTr(
+                                                    context,
+                                                    'غير مسموح بتعديل مركبات دولة أخرى',
+                                                  ),
+                                                );
+                                                return;
+                                              }
                                               final ok =
                                                   await AdminVehicleTypeEditor
                                                       .open(
@@ -747,7 +879,10 @@ class _TableRow extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(flex: 2, child: Text(row.classificationLabel)),
+          Expanded(
+            flex: 2,
+            child: Text(uiTr(context, row.classificationLabel)),
+          ),
           Expanded(
             flex: 2,
             child: Text(row.passengers > 0 ? '${row.passengers}' : '—'),
@@ -870,7 +1005,10 @@ class _VehicleTypeCard extends StatelessWidget {
                         useGoogleFonts: !theme.titleSmallIsCustom,
                       ),
                     ),
-                    Text(row.classificationLabel, style: theme.bodySmall),
+                    Text(
+                      uiTr(context, row.classificationLabel),
+                      style: theme.bodySmall,
+                    ),
                   ],
                 ),
               ),

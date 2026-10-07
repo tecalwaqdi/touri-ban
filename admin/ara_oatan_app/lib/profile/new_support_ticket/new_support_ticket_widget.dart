@@ -5,6 +5,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/backend/schema/enums/enums.dart';
 import '/core/toury_async_action_guard.dart';
+import '/core/toury_support_link.dart';
 import '/core/toury_error_localizer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '/design_system/design_system.dart';
@@ -260,8 +261,10 @@ class _NewSupportTicketWidgetState extends State<NewSupportTicketWidget> {
                                   icon: DsIcons.chat,
                                   size: DsButtonSize.sm,
                                   onPressed: () async {
-                                    await launchURL(
-                                      'https://wa.me/966533356126',
+                                    await TourySupportLink.open(
+                                      context,
+                                      countryPath: FFAppState().ShrekNCountry,
+                                      message: 'support.whatsapp_message'.tr(),
                                     );
                                   },
                                 ),

@@ -332,8 +332,14 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
                       periodReady
-                          ? 'ملخص الفترة (محدود) — الجدول صفحته الأولى مباشرة'
-                          : 'جاري ملخص الفترة… تظهر قائمة التسويات الآن.',
+                          ? uiTr(
+                              context,
+                              'ملخص الفترة (محدود) — الجدول صفحته الأولى مباشرة',
+                            )
+                          : uiTr(
+                              context,
+                              'جاري ملخص الفترة… تظهر قائمة التسويات الآن.',
+                            ),
                       style: AccountantFinanceText.label(theme),
                     ),
                   ),
@@ -381,7 +387,9 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                       child: OutlinedButton(
                         onPressed: _loadingMore ? null : _loadMoreOlder,
                         child: Text(
-                          _loadingMore ? 'جاري التحميل…' : 'تحميل المزيد',
+                          _loadingMore
+                              ? uiTr(context, 'جاري التحميل…')
+                              : uiTr(context, 'تحميل المزيد'),
                         ),
                       ),
                     ),

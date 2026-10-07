@@ -63,9 +63,7 @@ class _UpdetBankWidgetState extends State<UpdetBankWidget> {
             key: scaffoldKey,
             backgroundColor: colors.scaffold,
             appBar: DriverMainAppBar(
-              title: FFLocalizations.of(context).getText(
-                'wfk8nxwe' /* تحديث الحساب البنكي */,
-              ),
+              title: driverTr(context, 'bank.title'),
             ),
             body: SafeArea(
               top: true,
@@ -98,18 +96,14 @@ class _UpdetBankWidgetState extends State<UpdetBankWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    FFLocalizations.of(context).getText(
-                                      'fwdps3he' /* معلومات الحساب البنكي */,
-                                    ),
+                                    driverTr(context, 'bank.account_info'),
                                     style: typography.titleLarge.copyWith(
                                       color: colors.textPrimary,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                   Text(
-                                    FFLocalizations.of(context).getText(
-                                      'zlmd7q5u' /* يرجى تحديث بيانات حسابك البنكي */,
-                                    ),
+                                    driverTr(context, 'bank.update_prompt'),
                                     style: typography.bodyMedium.copyWith(
                                       color: colors.textSecondary,
                                     ),
@@ -123,24 +117,16 @@ class _UpdetBankWidgetState extends State<UpdetBankWidget> {
                         DsTextField(
                           controller: _model.textController1,
                           focusNode: _model.textFieldFocusNode1,
-                          label: FFLocalizations.of(context).getText(
-                            't433p4i5' /* اسم البنك */,
-                          ),
-                          hint: FFLocalizations.of(context).getText(
-                            '2vda5rrx' /* أدخل اسم البنك */,
-                          ),
+                          label: driverTr(context, 'bank.bank_name'),
+                          hint: driverTr(context, 'bank.bank_name_hint'),
                           prefixIcon: const Icon(Icons.account_balance_outlined),
                         ),
                         const SizedBox(height: DsSpacing.md),
                         DsTextField(
                           controller: _model.textController2,
                           focusNode: _model.textFieldFocusNode2,
-                          label: FFLocalizations.of(context).getText(
-                            'nsr23nzy' /* رقم الحساب */,
-                          ),
-                          hint: FFLocalizations.of(context).getText(
-                            'igm1tdp7' /* أدخل رقم الحساب */,
-                          ),
+                          label: driverTr(context, 'bank.account_number'),
+                          hint: driverTr(context, 'bank.account_number_hint'),
                           keyboardType: TextInputType.number,
                           prefixIcon: const Icon(Icons.numbers_outlined),
                         ),
@@ -148,12 +134,8 @@ class _UpdetBankWidgetState extends State<UpdetBankWidget> {
                         DsTextField(
                           controller: _model.textController3,
                           focusNode: _model.textFieldFocusNode3,
-                          label: FFLocalizations.of(context).getText(
-                            'fan7nqlm' /* رقم الآيبان (IBAN) */,
-                          ),
-                          hint: FFLocalizations.of(context).getText(
-                            '4kv32oxg' /* SA0000000000000000000000 */,
-                          ),
+                          label: driverTr(context, 'bank.iban'),
+                          hint: 'SA0000000000000000000000',
                           prefixIcon: const Icon(Icons.credit_card_outlined),
                         ),
                         const SizedBox(height: DsSpacing.md),
@@ -161,20 +143,14 @@ class _UpdetBankWidgetState extends State<UpdetBankWidget> {
                           builder: (context) => DsTextField(
                             controller: _model.textController4,
                             focusNode: _model.textFieldFocusNode4,
-                            label: FFLocalizations.of(context).getText(
-                              'w0603k8o' /* اسم صاحب الحساب */,
-                            ),
-                            hint: FFLocalizations.of(context).getText(
-                              '0an4b4gk' /* أدخل اسم صاحب الحساب */,
-                            ),
+                            label: driverTr(context, 'bank.account_holder'),
+                            hint: driverTr(context, 'bank.account_holder_hint'),
                             prefixIcon: const Icon(Icons.person_outline_rounded),
                           ),
                         ),
                         const SizedBox(height: DsSpacing.xl),
                         DsButton.primary(
-                          label: FFLocalizations.of(context).getText(
-                            'tm5jmdnl' /* تحديث الحساب البنكي */,
-                          ),
+                          label: driverTr(context, 'bank.update'),
                           expanded: true,
                           icon: Icons.save_outlined,
                           onPressed: () async {

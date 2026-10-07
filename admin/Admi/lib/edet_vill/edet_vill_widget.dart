@@ -1,4 +1,5 @@
 
+import '/core/i18n/admin_geo_names.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_cascade_delete.dart';
 import '/backend/admin_firestore_delete.dart';
@@ -145,6 +146,13 @@ class _EdetVillWidgetState extends State<EdetVillWidget> {
           dolh: FFAppState().RevDolh ?? record.dolh,
           naim: name,
           osf: _model.textController2!.text.trim(),
+          namesI18n: adminGeoNamesForSave(
+            existing: record.namesI18n,
+            editedByLocale: {
+              for (final lang in adminGeoLocales)
+                lang: _model.geoNameControllers[lang]?.text ?? '',
+            },
+          ),
           img: await resolveImageForFirestoreSave(
             pickedUrl: _model.uploadedFileUrl_uploadDataWt5,
             existingUrl: record.img,
@@ -331,6 +339,16 @@ class _EdetVillWidgetState extends State<EdetVillWidget> {
                     label: uiTr(context, 'اسم المدينة'),
                     icon: Icons.location_city_rounded,
                   ),
+                  const SizedBox(height: AdminUi.fieldGap),
+                  for (final lang in EdetVillModel.geoLocales)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AdminUi.fieldGap),
+                      child: AdminTextField(
+                        controller: _model.geoNameControllers[lang]!,
+                        label: 'names_i18n.$lang',
+                        icon: Icons.translate_rounded,
+                      ),
+                    ),
                   const SizedBox(height: AdminUi.fieldGap),
                   AdminTextField(
                     controller: _model.textController2!,

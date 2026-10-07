@@ -68,6 +68,17 @@ class _ListViWidgetState extends State<ListViWidget>
   late TouryMkanPaginationController _mkanPage;
   Future<int>? _chatCountFuture;
   String? _imagePrefetchVillagePath;
+  List<TouryLandmarkCategoryDef> _categoryCatalog =
+      TouryLandmarkCategories.builtInDefinitions;
+
+  String _landmarksAppBarTitle() {
+    final city = FFAppState().naimmdenh.trim();
+    final village = FFAppState().naimvillatext.trim();
+    if (city.isEmpty) return village;
+    if (village.isEmpty) return city;
+    if (city == village) return city;
+    return '$city - $village';
+  }
 
   Future<int> _chatCount() => _chatCountFuture ??= TouryFirestoreCache.chatTodayCount(
         currentUserRef: currentUserReference,
@@ -116,8 +127,23 @@ class _ListViWidgetState extends State<ListViWidget>
 
   void _bindVillage(DocumentReference village) {
     final canonical = touryCanonicalVillageRef(village);
-    if (FFAppState().villa?.path != canonical.path) {
-      FFAppState().villa = canonical;
+    final switched = FFAppState().villa?.path != canonical.path;
+    if (switched) {
+      FFAppState().update(() {
+        FFAppState().villa = canonical;
+        // Drop previous city's hero cache immediately (avoids Taif→Makkah bleed).
+        FFAppState().IMGVILL = '';
+      });
+      unawaited(() async {
+        try {
+          final record =
+              await TouryFirestoreCache.villageDocumentOnce(canonical);
+          final img = record.img.trim();
+          if (img.isEmpty) return;
+          if (FFAppState().villa?.path != canonical.path) return;
+          FFAppState().IMGVILL = img;
+        } catch (_) {}
+      }());
     }
     final next = TouryMkanPaginationHub.acquire(canonical);
     if (!identical(_mkanPage, next)) {
@@ -257,6 +283,7 @@ class _ListViWidgetState extends State<ListViWidget>
     SchedulerBinding.instance.addPostFrameCallback((_) {
       tourySyncBookingFlags();
       _model.sser = false;
+      unawaited(_loadLandmarkCategories());
     });
 
     _model.textController ??= TextEditingController();
@@ -265,6 +292,12 @@ class _ListViWidgetState extends State<ListViWidget>
     if (!TouryPerf.skipHeavyAnimations) {
       _initAnimations();
     }
+  }
+
+  Future<void> _loadLandmarkCategories() async {
+    final catalog = await TouryLandmarkCategories.loadCatalog();
+    if (!mounted) return;
+    safeSetState(() => _categoryCatalog = catalog);
   }
 
   void _initAnimations() {
@@ -1604,10 +1637,7 @@ class _ListViWidgetState extends State<ListViWidget>
                 onPressed: () => context.safePop(),
               ),
               title: Text(
-                [
-                  FFAppState().naimmdenh.trim(),
-                  FFAppState().naimvillatext.trim(),
-                ].where((e) => e.isNotEmpty).join(' - '),
+                _landmarksAppBarTitle(),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: FlutterFlowTheme.of(context).titleMedium.override(
@@ -2225,26 +2255,27 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                         11.0),
                                                                 child:
                                                                     FlutterFlowChoiceChips(
-                                                                  options: [
-                                                                    ChipData('landmark_cat_all'.tr(), Icons.density_small),
-                                                                    ChipData(
-                                                                   'landmark_cat_religious'.tr(),
-                                                                    Icons
-                                                                        .tour_outlined),
-                                                                             ChipData('landmark_cat_entertainment'.tr(), Icons.sentiment_satisfied_rounded),
-                                                                    ChipData('landmark_cat_tourism'.tr(), Icons.restaurant),
-                                                                    ChipData('landmark_cat_cafe'.tr(), Icons.coffee_outlined),
-                                                                            ChipData(
-                                                                       'landmark_cat_historical'.tr(),
-                                                                        Icons
-                                                                            .place_sharp),
-                                                                    ChipData('landmark_cat_tourist_places'.tr(), Icons.place_sharp),
-                                                                    ChipData('landmark_cat_markets'.tr(), Icons.shopping_cart_sharp),
-                                                                    ChipData('landmark_cat_desert'.tr(), Icons.forest_outlined),
-                                                                    ChipData('landmark_cat_sea'.tr(), Icons.support),
-                                                                    ChipData('landmark_cat_hotels'.tr(), Icons.hotel_sharp),
-                                                                    ChipData('landmark_cat_restaurants'.tr(), Icons.fastfood_rounded)
-                                                                  ],
+                                                                  options: () {
+                                                                    final chips =
+                                                                        TouryLandmarkCategories
+                                                                            .chipsForPresentCategories(
+                                                                      listViMkanRecordList
+                                                                          .map((r) =>
+                                                                              r.tsnef),
+                                                                      catalog:
+                                                                          _categoryCatalog,
+                                                                    );
+                                                                    return [
+                                                                      for (final c
+                                                                          in chips)
+                                                                        ChipData(
+                                                                          c.displayLabel(),
+                                                                          TouryLandmarkCategories
+                                                                              .materialIcon(
+                                                                                  c.icon),
+                                                                        ),
+                                                                    ];
+                                                                  }(),
                                                                   onChanged:
                                                                       (val) async {
                                                                     safeSetState(() =>
@@ -2649,9 +2680,32 @@ class _ListViWidgetState extends State<ListViWidget>
                                                                 0.0, 0.0, 33.0),
                                                         child: Builder(
                                                           builder: (context) {
+                                                            final featuredAds =
+                                                                touryFilterLandmarksForUi(
+                                                              listViMkanRecordList
+                                                                  .where((r) =>
+                                                                      r.asAds),
+                                                              touryContentLocaleFromContext(
+                                                                  context),
+                                                              enforceActiveCity:
+                                                                  false,
+                                                            );
+                                                            // Only drop carousel ads from the main list
+                                                            // (not the take(8) fallback).
+                                                            final excludeFromList =
+                                                                {
+                                                              for (final r
+                                                                  in featuredAds)
+                                                                r.reference.path,
+                                                            };
                                                             final listViewAllMkanRecordList =
                                                                 touryFilterLandmarksForUi(
-                                                              listViMkanRecordList,
+                                                              listViMkanRecordList
+                                                                  .where((r) =>
+                                                                      !excludeFromList
+                                                                          .contains(r
+                                                                              .reference
+                                                                              .path)),
                                                               touryContentLocaleFromContext(
                                                                   context),
                                                               enforceActiveCity:

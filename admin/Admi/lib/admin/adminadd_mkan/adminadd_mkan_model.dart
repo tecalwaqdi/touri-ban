@@ -48,6 +48,9 @@ class AdminaddMkanModel extends FlutterFlowModel<AdminaddMkanWidget> {
   // State field for the star rating.
   double ratingValue = 0.0;
 
+  /// Landmark category stored as `mkan.tsnef` (Arabic storage string).
+  String selectedTsnef = '';
+
   @override
   void initState(BuildContext context) {}
 

@@ -54,6 +54,99 @@ void main() {
     });
   });
 
+  group('Makkah geo name', () {
+    const makkah = {
+      'ar': 'مكة المكرمة',
+      'en': 'Makkah',
+      'ru': 'Мекка',
+    };
+    const cachedArabic = 'مكة المكرمة';
+
+    test('locale ru resolves to Мекка', () {
+      expect(
+        touryGeoNameLabel(
+          localeKey: 'ru',
+          namesI18n: makkah,
+          legacyNaim: cachedArabic,
+          cachedText: cachedArabic,
+        ),
+        'Мекка',
+      );
+    });
+
+    test('locale en resolves to Makkah', () {
+      expect(
+        touryGeoNameLabel(
+          localeKey: 'en',
+          namesI18n: makkah,
+          legacyNaim: cachedArabic,
+          cachedText: cachedArabic,
+        ),
+        'Makkah',
+      );
+    });
+
+    test('locale ar resolves to مكة المكرمة', () {
+      expect(
+        touryGeoNameLabel(
+          localeKey: 'ar',
+          namesI18n: makkah,
+          legacyNaim: cachedArabic,
+          cachedText: cachedArabic,
+        ),
+        'مكة المكرمة',
+      );
+    });
+
+    test('ru missing and en present uses English not Arabic', () {
+      expect(
+        touryGeoNameLabel(
+          localeKey: 'ru',
+          namesI18n: const {'ar': 'مكة المكرمة', 'en': 'Makkah'},
+          legacyNaim: cachedArabic,
+          cachedText: cachedArabic,
+        ),
+        'Makkah',
+      );
+    });
+
+    test('ky missing and en present uses English not Arabic', () {
+      expect(
+        touryGeoNameLabel(
+          localeKey: 'ky',
+          namesI18n: const {'ar': 'مكة المكرمة', 'en': 'Makkah'},
+          legacyNaim: cachedArabic,
+          cachedText: cachedArabic,
+        ),
+        'Makkah',
+      );
+    });
+
+    test('fr missing and en present uses English not Arabic', () {
+      expect(
+        touryGeoNameLabel(
+          localeKey: 'fr',
+          namesI18n: const {'ar': 'مكة المكرمة', 'en': 'Makkah'},
+          legacyNaim: cachedArabic,
+          cachedText: cachedArabic,
+        ),
+        'Makkah',
+      );
+    });
+
+    test('pt missing and en present uses English not Arabic', () {
+      expect(
+        touryGeoNameLabel(
+          localeKey: 'pt',
+          namesI18n: const {'ar': 'مكة المكرمة', 'en': 'Makkah'},
+          legacyNaim: cachedArabic,
+          cachedText: cachedArabic,
+        ),
+        'Makkah',
+      );
+    });
+  });
+
   group('landmark junk filter', () {
     test('bans aircraft names', () {
       expect(touryIsBannedLandmarkName('McDonnell Douglas F-15D Eagle'), isTrue);

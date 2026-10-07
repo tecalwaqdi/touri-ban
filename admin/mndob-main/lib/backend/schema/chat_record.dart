@@ -48,7 +48,9 @@ class ChatRecord extends FirestoreRecord {
   void _initializeFields() {
     _idorder = snapshotData['idorder'] as DocumentReference?;
     _user1 = snapshotData['user1'] as DocumentReference?;
-    _msg = snapshotData['msg'] as String?;
+    _msg = castToType<String>(snapshotData['msg']) ??
+        castToType<String>(snapshotData['message']) ??
+        castToType<String>(snapshotData['text']);
     _date = snapshotData['date'] as DateTime?;
     _naim = snapshotData['naim'] as String?;
     _participants = getDataList(snapshotData['participants']);

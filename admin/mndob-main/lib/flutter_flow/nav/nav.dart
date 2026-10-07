@@ -225,6 +225,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           },
         ),
         FFRoute(
+          name: DriverAccountSecurityWidget.routeName,
+          path: DriverAccountSecurityWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const DriverAccountSecurityWidget(),
+        ),
+        FFRoute(
           name: ListvillWidget.routeName,
           path: ListvillWidget.routePath,
           builder: (context, params) => const ListvillWidget(),

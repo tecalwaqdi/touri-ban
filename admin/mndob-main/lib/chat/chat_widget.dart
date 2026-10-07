@@ -77,20 +77,33 @@ class _ChatWidgetState extends State<ChatWidget> {
             participants: _participants(clientRef),
           ));
       try {
+        final ping = driverTr(context, 'chat_whatsapp_driver_ping');
         await WhatCall.call(
           to: widget.phoneClent?.toString(),
-          msg:
-              '📩 المندوب راسلك داخل التطبيق، ادخل تفاصيل الطلب لقراءة الرسالة.اطرح سؤالك على ',
+          msg: ping,
         );
       } catch (_) {}
       try {
+        final phoneDigits =
+            currentPhoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
         triggerPushNotification(
-          notificationTitle: 'رسالة خاصة - توري تاكسي',
-          notificationText: text,
+          notificationType: 'notification_private_message_title',
+          notificationPayload: {
+            'sender': currentUserDisplayName,
+            'message': text,
+          },
           notificationSound: 'default',
           userRefs: [clientRef],
-          initialPageName: 'Login1',
-          parameterData: {},
+          // Customer maps Chat → chat2; also accept Login1 alias.
+          initialPageName: 'Chat',
+          parameterData: {
+            'idorder': orderRef,
+            // chat2 params (customer app):
+            'naimMndob': currentUserDisplayName,
+            'phoneMndob': int.tryParse(phoneDigits),
+            'imgMndob': currentUserPhoto,
+            'idmndob': currentUserReference,
+          },
         );
       } catch (_) {}
       if (!mounted) return;
@@ -310,82 +323,147 @@ class _ChatWidgetState extends State<ChatWidget> {
                                           listViewChatRecordList[listViewIndex];
                                       final isMine = currentUserReference ==
                                           listViewChatRecord.user1;
+                                      final text =
+                                          listViewChatRecord.msg.trim();
+                                      if (text.isEmpty) {
+                                        return const SizedBox.shrink();
+                                      }
+                                      final bubbleColor = isMine
+                                          ? colors.primary
+                                          : (context.dsIsDark
+                                              ? colors.surfaceElevated
+                                              : const Color(0xFFEEF2F6));
+                                      final textColor = isMine
+                                          ? colors.onPrimary
+                                          : colors.textPrimary;
 
                                       return Padding(
                                         padding: const EdgeInsets.only(
-                                          top: DsSpacing.xs,
+                                          top: DsSpacing.sm,
+                                          left: DsSpacing.md,
+                                          right: DsSpacing.md,
                                         ),
                                         child: Column(
-                                          mainAxisSize: MainAxisSize.max,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment: isMine
+                                              ? CrossAxisAlignment.end
+                                              : CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              listViewChatRecord.naim,
-                                              style: typography.bodyMedium
-                                                  .copyWith(
-                                                color: colors.textSecondary,
+                                            if (!isMine &&
+                                                listViewChatRecord.naim
+                                                    .trim()
+                                                    .isNotEmpty)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                  bottom: 4,
+                                                  left: 4,
+                                                  right: 4,
+                                                ),
+                                                child: Text(
+                                                  listViewChatRecord.naim
+                                                      .trim(),
+                                                  style: typography.labelMedium
+                                                      .copyWith(
+                                                    color: colors.primary,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                            Row(
-                                              mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  constraints:
-                                                      const BoxConstraints(
-                                                    maxWidth: 280,
+                                            Align(
+                                              alignment: isMine
+                                                  ? AlignmentDirectional
+                                                      .centerEnd
+                                                  : AlignmentDirectional
+                                                      .centerStart,
+                                              child: Container(
+                                                constraints: BoxConstraints(
+                                                  maxWidth: MediaQuery.sizeOf(
+                                                              context)
+                                                          .width *
+                                                      0.78,
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                  14,
+                                                  10,
+                                                  14,
+                                                  8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: bubbleColor,
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        const Radius.circular(
+                                                            18),
+                                                    topRight:
+                                                        const Radius.circular(
+                                                            18),
+                                                    bottomLeft:
+                                                        Radius.circular(
+                                                            isMine ? 18 : 4),
+                                                    bottomRight:
+                                                        Radius.circular(
+                                                            isMine ? 4 : 18),
                                                   ),
-                                                  decoration: BoxDecoration(
-                                                    color: isMine
-                                                        ? colors.primary
-                                                        : colors.surface,
-                                                    borderRadius:
-                                                        DsRadius.large,
-                                                    border: Border.all(
-                                                      color: isMine
-                                                          ? colors.primary
-                                                          : colors.border,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withValues(
+                                                              alpha: 0.06),
+                                                      blurRadius: 8,
+                                                      offset:
+                                                          const Offset(0, 2),
                                                     ),
-                                                  ),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                      horizontal: DsSpacing.md,
-                                                      vertical: DsSpacing.sm,
-                                                    ),
-                                                    child: Text(
-                                                      listViewChatRecord.msg,
+                                                  ],
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      text,
                                                       style: typography
                                                           .bodyMedium
                                                           .copyWith(
-                                                        color: isMine
-                                                            ? colors.onPrimary
-                                                            : colors
-                                                                .textPrimary,
+                                                        color: textColor,
+                                                        height: 1.35,
                                                       ),
                                                     ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                top: DsSpacing.xxs,
-                                              ),
-                                              child: Text(
-                                                dateTimeFormat(
-                                                  'jm',
-                                                  listViewChatRecord.date!,
-                                                  locale: FFLocalizations.of(
-                                                    context,
-                                                  ).languageCode,
-                                                ),
-                                                style: typography.bodySmall
-                                                    .copyWith(
-                                                  color: colors.textSecondary,
-                                                  fontSize: 11,
+                                                    const SizedBox(height: 4),
+                                                    Align(
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .centerEnd,
+                                                      child: Text(
+                                                        listViewChatRecord
+                                                                    .date ==
+                                                                null
+                                                            ? ''
+                                                            : dateTimeFormat(
+                                                                'jm',
+                                                                listViewChatRecord
+                                                                    .date!,
+                                                                locale:
+                                                                    FFLocalizations.of(
+                                                                  context,
+                                                                ).languageCode,
+                                                              ),
+                                                        style: typography
+                                                            .labelSmall
+                                                            .copyWith(
+                                                          color: isMine
+                                                              ? colors
+                                                                  .onPrimary
+                                                                  .withValues(
+                                                                      alpha:
+                                                                          0.75)
+                                                              : colors
+                                                                  .textSecondary,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ),
@@ -393,6 +471,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                                         ),
                                       );
                                     },
+
                                   );
                                 },
                               ),

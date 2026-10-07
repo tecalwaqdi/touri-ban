@@ -191,7 +191,7 @@ class _DashboardHeroBanner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    uiTr(context, '$greeting، $name'),
+                    '$greeting, $name',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.titleSmall.override(

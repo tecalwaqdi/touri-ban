@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/schema/order_record.dart';
-import '/core/driver_country_service.dart';
 import '/core/driver_order_meta.dart';
 import '/core/driver_payment_labels.dart';
 import '/core/driver_payment_status_mapper.dart';
+import '/core/driver_relative_time.dart';
 import '/core/driver_trip_constants.dart';
 import '/core/driver_trip_service.dart';
-import '/core/toury_country_registry.dart';
+import '/core/toury_money_display.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/flutter_flow/flutter_flow_util.dart';
@@ -55,9 +55,8 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
     super.dispose();
   }
 
-  String get _currency {
-    final iso = DriverCountryService.currentIso2();
-    return TouryCountryRegistry.currencySymbol(iso);
+  String get _currencyCode {
+    return DriverTripFinance.fromOrder(widget.order).currency;
   }
 
   @override
@@ -73,9 +72,6 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
     final payStatus = driverTr(context, payStatusKey);
     final tripType = driverTr(context, order.tripTypeLabelKey());
     final fare = order.total;
-    final fareText = (fare.isNaN || fare.isInfinite)
-        ? '—'
-        : '${fare.toStringAsFixed(fare.truncateToDouble() == fare ? 0 : 2)} $_currency';
     final luggage = order.luggageEstimate.isEmpty
         ? ''
         : driverTr(context, order.luggageLabelKey());
@@ -162,10 +158,12 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
             driverTr(context, 'Destination'),
             order.destinationLabel(),
           ),
-          _row(
+          _moneyRow(
             context,
             driverTr(context, 'Estimated fare'),
-            fareText,
+            (fare.isNaN || fare.isInfinite)
+                ? null
+                : fare,
           ),
           _row(
             context,
@@ -173,6 +171,16 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
             payStatus,
           ),
           _row(context, driverTr(context, 'Trip type'), tripType),
+          _row(
+            context,
+            driverTr(context, 'return_to_customer_pickup_label'),
+            driverTr(
+              context,
+              order.returnToPickup
+                  ? 'return_to_pickup_yes'
+                  : 'return_to_pickup_no',
+            ),
+          ),
           if (luggage.isNotEmpty)
             _row(context, driverTr(context, 'Luggage'), luggage),
           _row(
@@ -198,15 +206,11 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
               driverTr(context, 'ETA'),
               () {
                 final approx = order.snapshotData['etaApproximate'] == true;
-                final base = driverTrNamed(
+                return DriverRelativeTime.etaMinutes(
                   context,
-                  '{min} min',
-                  {'min': '$etaMin'},
+                  etaMin,
+                  approximate: approx,
                 );
-                final suffix = approx
-                    ? ' (${driverTr(context, 'estimated')})'
-                    : ' (${driverTr(context, 'based on traffic')})';
-                return '$base$suffix';
               }(),
             ),
           ],
@@ -215,10 +219,10 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
             Divider(height: DsSpacing.md, color: colors.divider),
             _row(context, driverTr(context, 'Waiting time'), waitingText),
             if (order.waitingCharges > 0)
-              _row(
+              _moneyRow(
                 context,
                 driverTr(context, 'Waiting charges'),
-                '${order.waitingCharges.toStringAsFixed(2)} $_currency',
+                order.waitingCharges,
               ),
           ],
           if (widget.showArrivalButton &&
@@ -252,7 +256,12 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          DriverTripService.messageForCode('LOCATION_REQUIRED'),
+                          driverTr(
+                            context,
+                            DriverTripService.messageForCode(
+                              'LOCATION_REQUIRED',
+                            ),
+                          ),
                         ),
                       ),
                     );
@@ -273,7 +282,9 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
                           'BOOKING_ASSIGNMENT_FAILED',
                         );
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(msg)),
+                    SnackBar(
+                      content: Text(driverTrMessage(context, msg)),
+                    ),
                   );
                 }
               },
@@ -311,6 +322,46 @@ class _DriverTripDetailsBannerState extends State<DriverTripDetailsBanner> {
                 fontWeight: FontWeight.w600,
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _moneyRow(BuildContext context, String label, double? amount) {
+    final colors = context.dsColors;
+    final typography = context.dsTypography;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: DsSpacing.xxs),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 118,
+            child: Text(
+              label,
+              style: typography.labelMedium.copyWith(
+                color: colors.textSecondary,
+              ),
+            ),
+          ),
+          Expanded(
+            child: amount == null
+                ? Text(
+                    '—',
+                    style: typography.bodyMedium.copyWith(
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  )
+                : TouryMoneyAmount(
+                    amount: amount,
+                    currencyCode: _currencyCode,
+                    style: typography.bodyMedium.copyWith(
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
         ],
       ),

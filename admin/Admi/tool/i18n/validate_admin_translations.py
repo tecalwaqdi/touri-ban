@@ -110,7 +110,9 @@ def main() -> int:
             catalog[catalog.find("kArabicUiLookup") :],
         )
     )
-    uit_pat = re.compile(r"uiTr\(\s*context\s*,\s*'((?:\\'|[^'])*)'")
+    uit_pat = re.compile(
+        r"uiTr\(\s*[A-Za-z_][A-Za-z0-9_]*\s*,\s*'((?:\\'|[^'])*)'"
+    )
     missing_lookup = set()
     for p in LIB.rglob("*.dart"):
         if p.name == "ui_catalog.dart":

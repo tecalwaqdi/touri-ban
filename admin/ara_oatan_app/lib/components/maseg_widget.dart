@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +90,7 @@ class _MasegWidgetState extends State<MasegWidget> {
                 Text(
                   valueOrDefault<String>(
                     widget.naim,
-                    'رحلة',
+                    'trip.short'.tr(),
                   ),
                   style: typography.bodyMedium.copyWith(
                     color: colors.onSuccess,

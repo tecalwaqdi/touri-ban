@@ -17,6 +17,7 @@ import '/core/toury_geo_aliases.dart';
 import '/core/toury_geo_display.dart';
 import '/core/toury_google_map_panel.dart';
 import '/core/toury_location_service.dart';
+import '/core/toury_maps_config.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -53,13 +54,30 @@ class _DemoDWidgetState extends State<DemoDWidget>
   Timer? _mapGeocodeDebounce;
   LatLng? _lastGeocodedMapCenter;
 
+  /// True only after real GPS bind or an intentional user pan — never after
+  /// the map's initial shell invent (which used to lock الرياض).
+  bool _mapSelectionTrusted = false;
+
   /// UI-only flags driving the Design System loading affordances.
   bool _locating = false;
   bool _navigating = false;
 
-  // Reserved for future map-shell fallbacks (never Makkah).
-  // ignore: unused_field
   static const LatLng _neutralMapShell = LatLng(20.0, 0.0);
+
+  /// Legacy SA ISO map center that previously became a false "الرياض" selection.
+  static const LatLng _legacySaIsoCenter = LatLng(24.7136, 46.6753);
+
+  bool _isInventedMapCenter(LatLng latLng) {
+    bool near(LatLng a, LatLng b, {double eps = 0.05}) =>
+        (a.latitude - b.latitude).abs() < eps &&
+        (a.longitude - b.longitude).abs() < eps;
+    if (near(latLng, _neutralMapShell)) return true;
+    // Untrusted first paint must never lock the old SA capital fallback.
+    if (!_mapSelectionTrusted && near(latLng, _legacySaIsoCenter, eps: 0.02)) {
+      return true;
+    }
+    return false;
+  }
 
   void _applyOutsideCoverageState() {
     _outsideCoverage = true;
@@ -215,6 +233,12 @@ class _DemoDWidgetState extends State<DemoDWidget>
 
   void _onMapCameraIdle(LatLng latLng) {
     _model.googleMapsCenter = latLng;
+    // Ignore ocean shell / untrusted SA-capital invent — never auto-select الرياض.
+    if (_isInventedMapCenter(latLng)) {
+      return;
+    }
+    // Real GPS or a real pan away from invent centers unlocks binding.
+    _mapSelectionTrusted = true;
     _model.loceshn = LatLng(latLng.latitude, latLng.longitude);
     if (!_mapMovedEnough(latLng)) return;
     // While the user is picking a foreign country manually, don't let map
@@ -401,6 +425,7 @@ class _DemoDWidgetState extends State<DemoDWidget>
     FFAppState().typecarRev = null;
     FFAppState().tebycar = '';
     FFAppState().notcar = '';
+    TouryFirestoreCache.invalidateTypeCar();
     FFAppState().imgDolh = _model.dol!.img;
     FFAppState().msegAi = '';
     FFAppState().textallAlmdn = '';
@@ -480,6 +505,8 @@ class _DemoDWidgetState extends State<DemoDWidget>
     }
 
     currentUserLocationValue = loc;
+    _mapSelectionTrusted = true;
+    _lastGeocodedMapCenter = loc;
     await _syncCountryFromGps(redirectOnMismatch: false);
     return true;
   }
@@ -1186,14 +1213,13 @@ class _DemoDWidgetState extends State<DemoDWidget>
       child: TouryMapPanel(
         controller: _model.googleMapsController,
         onCameraIdle: _onMapCameraIdle,
+        // Never seed SA capital — wait for GPS or an intentional pan.
         initialLocation: _model.googleMapsCenter ?? _model.loceshn,
-        countryIso2: TouryCountryRegistry.normalizeIso(
-                _model.resolvedCountry?.isoCode) ??
-            TouryCountryRegistry.normalizeIso(
-                _model.resolvedCountry?.reference.id) ??
-            TouryCountryRegistry.normalizeIso(FFAppState().dolh?.id),
+        countryIso2: null,
         height: TouryLayout.mapPanelHeight(context),
-        initialZoom: 16,
+        initialZoom: (_model.googleMapsCenter ?? _model.loceshn) != null
+            ? 16
+            : TouryMapsConfig.defaultZoom,
         borderRadius: DsRadius.lg,
         showCenterPin: true,
         showMyLocation: true,

@@ -206,14 +206,14 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
   void _listenForegroundMessages() {
     if (isWeb) return;
     FirebaseMessaging.onMessage.listen((message) {
+      final ctx = appNavigatorKey.currentContext;
+      if (ctx == null || !ctx.mounted) return;
       final title = message.notification?.title ??
           message.data['notification_title'] as String? ??
-          'إشعار جديد';
+          driverTr(ctx, 'notification_default_title');
       final body = message.notification?.body ??
           message.data['notification_text'] as String? ??
           '';
-      final ctx = appNavigatorKey.currentContext;
-      if (ctx == null || !ctx.mounted) return;
       ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
       ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(

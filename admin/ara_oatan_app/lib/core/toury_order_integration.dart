@@ -53,10 +53,21 @@ abstract final class TouryOrderIntegration {
       'scheduleLabel': app.fulltextSchedule,
       'driverGuide': app.DriverGuideState,
       'tripType': resolveTripType(app),
+      'returnToPickup': app.returnToPickup == true,
       'luggageEstimate': app.luggageEstimate,
-      'routeProvider': app.osrmTotalDistance > 0 ? 'osrm' : 'waypoints',
-      'plannedDistanceMeters': app.osrmTotalDistance * 1000,
-      'plannedDurationSeconds': (app.osrmTotalTime * 60).round(),
+      'routeProvider': app.osrmTotalDistance > 0
+          ? (app.billingRouteIsGoogle ? 'google' : 'osrm')
+          : 'waypoints',
+      'plannedDistanceMeters': app.billingRouteIsGoogle
+          ? app.routeDistanceMeters
+          : app.osrmTotalDistance * 1000,
+      'plannedDurationSeconds': app.billingRouteIsGoogle
+          ? (app.routeDurationMinutes * 60).round()
+          : (app.osrmTotalTime * 60).round(),
+      if (app.billingRouteIsGoogle) ...{
+        'routeDurationMinutes': app.routeDurationMinutes.round(),
+        'routeDistanceMeters': app.routeDistanceMeters.round(),
+      },
       'plannedWaypoints': _plannedWaypoints(app),
       'stops': app.cartmkss
           .map((stop) => {
@@ -84,6 +95,7 @@ abstract final class TouryOrderIntegration {
 
     return {
       'trip_type': resolveTripType(app),
+      'returnToPickup': app.returnToPickup == true,
       'luggage_estimate': app.luggageEstimate,
       if (pickup != null) ...{
         'originLatitude': pickup.latitude,
@@ -95,13 +107,22 @@ abstract final class TouryOrderIntegration {
       },
       if (planned.length >= 2) ...{
         'plannedWaypoints': planned,
-        'routeProvider': app.osrmTotalDistance > 0 ? 'osrm' : 'waypoints',
+        'routeProvider': app.billingRouteIsGoogle
+            ? 'google'
+            : (app.osrmTotalDistance > 0 ? 'osrm' : 'waypoints'),
         'routeVersion': 1,
-          'routeCalculatedAt': FieldValue.serverTimestamp(),
-        if (app.osrmTotalDistance > 0)
+        'routeCalculatedAt': FieldValue.serverTimestamp(),
+        if (app.billingRouteIsGoogle) ...{
+          'routeDurationMinutes': app.routeDurationMinutes.round(),
+          'routeDistanceMeters': app.routeDistanceMeters.round(),
+          'plannedDistanceMeters': app.routeDistanceMeters,
+          'plannedDurationSeconds':
+              (app.routeDurationMinutes * 60).round(),
+        } else if (app.osrmTotalDistance > 0) ...{
           'plannedDistanceMeters': app.osrmTotalDistance * 1000,
-        if (app.osrmTotalTime > 0)
-          'plannedDurationSeconds': (app.osrmTotalTime * 60).round(),
+          if (app.osrmTotalTime > 0)
+            'plannedDurationSeconds': (app.osrmTotalTime * 60).round(),
+        },
       },
       ...touryOrderCountryExtras(),
     }.withoutNulls;

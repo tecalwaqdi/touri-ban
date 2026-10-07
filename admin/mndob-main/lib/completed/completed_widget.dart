@@ -376,7 +376,7 @@ class _CompletedWidgetState extends State<CompletedWidget> {
                                                         decimalType: DecimalType
                                                             .automatic,
                                                         currency:
-                                                            ' ${TouryCountryRegistry.currencySymbol(DriverCountryService.currentIso2())} ',
+                                                            ' ${TouryCountryRegistry.currencySymbol(DriverCountryService.currentIso2(), locale: Localizations.localeOf(context))} ',
                                                       ),
                                                       maxLines: 1,
                                                       overflow:

@@ -22,7 +22,7 @@ abstract final class DsConstants {
   static const double avatarXl = 72;
 
   static const double appBarHeight = 56;
-  static const double bottomNavHeight = 64;
+  static const double bottomNavHeight = 68;
   static const double maxContentWidth = 720;
   static const double maxFormWidth = 480;
 
@@ -35,7 +35,8 @@ abstract final class DsConstants {
   static const double authLogoWidth = 156;
   static const double authLogoHeight = 68;
   static const double vision2030Height = 42;
-  static const double languageSelectorWidth = 132;
+  /// Wide enough for native names (e.g. Português / Кыргызча) + icon.
+  static const double languageSelectorWidth = 156;
   static const double authTabBarHeight = 72;
   static const double carThumbWidth = 104;
   static const double carThumbHeight = 78;

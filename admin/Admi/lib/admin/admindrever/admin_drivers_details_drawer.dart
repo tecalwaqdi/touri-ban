@@ -6,6 +6,7 @@ import '/backend/backend.dart';
 import '/components/admin_driver_documents_panel.dart';
 import '/components/admin_driver_financial_panel.dart';
 import '/components/admin_driver_review_history_panel.dart';
+import '/components/admin_wasl_panel.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_driver_profile_view.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -166,6 +167,7 @@ class AdminDriversDetailsPanel extends StatelessWidget {
                 title: uiTr(context, 'الحالة التشغيلية'),
                 children: [AdminDriverOperationalStatus(row: row)],
               ),
+              AdminWaslDriverSection(user: user),
               AdminDriverSectionCard(
                 title: uiTr(context, 'النشاط والرحلات'),
                 children: [

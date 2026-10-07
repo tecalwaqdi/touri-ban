@@ -29,19 +29,39 @@ abstract final class DriverOrderMatch {
   }
 
 
-  /// Max distance (km) from driver GPS to order pickup.
-  static const maxOrderRadiusKm = 80.0;
+  /// Soft safety radius (km) when driver is **not** in the same current work
+  /// city as the pickup. Never the city-eligibility rule — same-city GPS
+  /// drivers keep offers even when pickup is farther than this.
+  static const softCrossCityRadiusKm = 120.0;
 
-  @Deprecated('Use maxOrderRadiusKm')
-  static const maxCrossCityKm = maxOrderRadiusKm;
+  /// @Deprecated — kept for tests; city eligibility is GPS work-city first.
+  static const maxOrderRadiusKm = softCrossCityRadiusKm;
+
+  /// Soft GPS freshness window for ranking. Stale fixes still allow
+  /// registration-city fallback rather than inventing a second matcher.
+  static const gpsFreshness = Duration(minutes: 5);
+
+  @Deprecated('Use softCrossCityRadiusKm')
+  static const maxCrossCityKm = softCrossCityRadiusKm;
 
   static DocumentReference? driverCountryRef() => FFAppState().dolh;
 
-  static DocumentReference? driverVillageRef() =>
-      currentUserDocument?.mndobVill;
+  /// City/region for matching: GPS work city first, registration only fallback.
+  static DocumentReference? driverCityRef() =>
+      FFAppState().mdenh ??
+      (currentUserDocument?.snapshotData['work_city_now'] is DocumentReference
+          ? currentUserDocument!.snapshotData['work_city_now']
+              as DocumentReference
+          : null);
 
-  /// City/region selected at registration (`FFAppState.mdenh` / village.cities).
-  static DocumentReference? driverCityRef() => FFAppState().mdenh;
+  static DocumentReference? driverVillageRef() =>
+      FFAppState().workVillageNow ??
+      (currentUserDocument?.snapshotData['work_village_now']
+              is DocumentReference
+          ? currentUserDocument!.snapshotData['work_village_now']
+              as DocumentReference
+          : null) ??
+      currentUserDocument?.mndobVill;
 
   /// Prefer `mndob_type_car`, fall back to legacy `carRev_mndob`.
   static DocumentReference? driverTypeCarRef([UserRecord? doc]) {
@@ -202,16 +222,21 @@ abstract final class DriverOrderMatch {
     return km.isFinite ? km : null;
   }
 
+  /// Max distance (km) from pickup even when driver is in the same city.
+  static const double sameCityProximityKm = 30.0;
+
   /// Pure ranking decision for tests (no Firestore).
   /// Returns null when the order should be dropped; otherwise (boost, km).
-  /// boost 0 = same village/city (preferred), 1 = out of area but nearby.
+  ///
+  /// Show only when driver is in the order city/village **and** near pickup
+  /// (when GPS is available). Cross-city offers are hidden.
   static ({int boost, double km})? scoreForMatch({
     String? orderVillPath,
     String? orderCityPath,
     String? driverVillPath,
     String? driverCityPath,
     double? distanceKm,
-    double maxRadiusKm = maxOrderRadiusKm,
+    double maxRadiusKm = sameCityProximityKm,
   }) {
     final sameVillage =
         driverVillPath != null &&
@@ -221,28 +246,28 @@ abstract final class DriverOrderMatch {
         driverCityPath != null &&
         orderCityPath != null &&
         orderCityPath == driverCityPath;
-    final hasArea = driverVillPath != null || driverCityPath != null;
+    final inArea = sameVillage || sameCity;
     final km = distanceKm;
     final finite = km != null && km.isFinite;
 
-    if (!hasArea) {
-      if (finite && km > maxRadiusKm) return null;
-      return (boost: 0, km: finite ? km : 99999);
+    // Must be in the order city/village when we know both sides.
+    final hasOrderArea = orderVillPath != null || orderCityPath != null;
+    final hasDriverArea = driverVillPath != null || driverCityPath != null;
+    if (hasOrderArea && hasDriverArea && !inArea) {
+      return null;
     }
 
-    final inArea = sameVillage || sameCity;
-    if (!inArea && finite && km > maxRadiusKm) return null;
-    if (!inArea && !finite) {
-      return (boost: 1, km: 99999);
-    }
-    return (
-      boost: inArea ? 0 : 1,
-      km: finite ? km : 99999,
-    );
+    // With GPS: require proximity to pickup.
+    if (finite && km > maxRadiusKm) return null;
+
+    // No GPS and no area match → hide.
+    if (!finite && !inArea) return null;
+
+    return (boost: inArea ? 0 : 1, km: finite ? km : 99999);
   }
 
   /// Rank by nearest pickup to driver GPS. Optional village/city boost.
-  /// Drops orders farther than [maxOrderRadiusKm] when GPS is known.
+  /// Same-city GPS drivers are never dropped by soft radius.
   static List<OrderRecord> rankForDriver(
     List<OrderRecord> orders, {
     DocumentReference? driverCityOrVillage,
@@ -288,45 +313,25 @@ abstract final class DriverOrderMatch {
         continue;
       }
 
-      final sameVillage = village != null &&
-          order.vill != null &&
-          order.vill!.path == village.path;
-      // Compare city↔city only (never village path vs cities_user_now).
-      final sameCity = order.citiesUserNow != null &&
-          city != null &&
-          order.citiesUserNow!.path == city.path;
-
       final pickup = pickupOf(order);
       var km = double.infinity;
       if (position != null && pickup != null) {
         km = _haversineKm(position, pickup);
       }
 
-      // GPS-first: without a work village/city, keep only nearby orders.
-      if (village == null && city == null) {
-        if (position != null) {
-          if (!km.isFinite || km > maxOrderRadiusKm) continue;
-        }
-        scored.add((
-          order: order,
-          cityBoost: 0,
-          km: km.isFinite ? km : 99999,
-        ));
-        continue;
-      }
-
-      final inArea = sameVillage || sameCity;
-      if (!inArea && km.isFinite && km > maxOrderRadiusKm) {
-        continue;
-      }
-      if (!inArea && !km.isFinite) {
-        km = 99999;
-      }
+      final decision = scoreForMatch(
+        orderVillPath: order.vill?.path,
+        orderCityPath: order.citiesUserNow?.path,
+        driverVillPath: village?.path,
+        driverCityPath: city?.path,
+        distanceKm: km.isFinite ? km : null,
+      );
+      if (decision == null) continue;
 
       scored.add((
         order: order,
-        cityBoost: inArea ? 0 : 1,
-        km: km.isFinite ? km : 99999,
+        cityBoost: decision.boost,
+        km: decision.km,
       ));
     }
 

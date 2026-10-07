@@ -1542,11 +1542,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ux_min_hours => 'Minimum';
 
   @override
-  String get ux_car_list_empty_title => 'No cars available';
+  String get ux_car_list_empty_title => 'No vehicle types available';
 
   @override
   String get ux_car_list_empty_msg =>
-      'No cars are available right now. Please try again later';
+      'No vehicle types are currently available for this country';
 
   @override
   String get ux_car_list_error_title => 'Could not load cars';
@@ -2569,4 +2569,11 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get ux_vehicle_select_country_title => 'Select a country';
+
+  @override
+  String get ux_vehicle_select_country_msg =>
+      'Select a country to view vehicle types';
 }

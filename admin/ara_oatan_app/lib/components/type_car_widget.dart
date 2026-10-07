@@ -1,13 +1,17 @@
 import '/backend/backend.dart';
-import '/core/app_ux_widgets.dart';
 import '/core/toury_car_i18n.dart';
+import '/core/toury_firestore_cache.dart';
+import '/core/toury_image.dart';
 import '/core/toury_vehicle_catalog.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'type_car_model.dart';
 export 'type_car_model.dart';
 
+/// Legacy vehicle list — routes through country-scoped cache (never global).
 class TypeCarWidget extends StatefulWidget {
   const TypeCarWidget({super.key});
 
@@ -41,24 +45,37 @@ class _TypeCarWidgetState extends State<TypeCarWidget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
     final colors = DsColors.of(context);
     final typography = DsTypography.of(context);
+    final bookingCountry = FFAppState().dolh;
+
+    if (bookingCountry == null) {
+      return DsEmptyState(
+        title: 'ux_vehicle_select_country_title'.tr(),
+        message: 'ux_vehicle_select_country_msg'.tr(),
+        icon: DsIcons.car,
+      );
+    }
 
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
         StreamBuilder<List<TypeCarRecord>>(
-          stream: queryTypeCarRecord(),
+          key: ValueKey('typecar:${bookingCountry.path}'),
+          stream: TouryFirestoreCache.typeCarStream(),
           builder: (context, snapshot) {
-            // Customize what your widget looks like when it's loading.
             if (!snapshot.hasData) {
               return const DsLoading();
             }
-            final cars = touryDeduplicateTypeCars(
-              snapshot.data!
-                  .where((car) => car.isAvailableForListing)
-                  .toList(),
-            );
+            final cars = touryDeduplicateTypeCars(snapshot.data!);
+            if (cars.isEmpty) {
+              return DsEmptyState(
+                title: 'ux_car_list_empty_title'.tr(),
+                message: 'ux_car_list_empty_msg'.tr(),
+                icon: DsIcons.car,
+              );
+            }
 
             return ListView.builder(
               padding: EdgeInsets.zero,

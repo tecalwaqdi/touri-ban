@@ -43,8 +43,8 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap>
   static const _routeCasingDark = Color(0xFF334155);
 
   /// Tracking car body — slate/navy, not brand primary green.
-  static const _carBody = Color(0xFF1E3A5F);
-  static const _carGlass = Color(0xFF0F172A);
+  static const _carBody = Color(0xFFF8FAFC);
+  static const _carGlass = Color(0xFF64748B);
 
   final _controller = Completer<gmaps.GoogleMapController>();
 
@@ -57,6 +57,7 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap>
   String? _routeKey;
   String? _destinationKey;
   TouryTripStage? _routePhase;
+  String? _trackingPhaseKey;
   LatLng? _lastRouteOrigin;
   DateTime? _lastRouteFetchAt;
 
@@ -254,7 +255,9 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap>
       statusCode: widget.order.statusCode,
       halhText: widget.order.halhText,
     );
-    if (_routePhase != null && _routePhase != stage) {
+    final trackingPhase = widget.order.trackingPhase;
+    if ((_routePhase != null && _routePhase != stage) ||
+        (_trackingPhaseKey != null && _trackingPhaseKey != trackingPhase)) {
       // Phase changed: drop the old pickup/trip polyline before rebuilding.
       _routeKey = null;
       _destinationKey = null;
@@ -268,6 +271,7 @@ class _TouryTripTrackingMapState extends State<TouryTripTrackingMap>
       }
     }
     _routePhase = stage;
+    _trackingPhaseKey = trackingPhase;
 
     if (waypoints.length < 2) {
       if (_roadPoints != null && mounted) {

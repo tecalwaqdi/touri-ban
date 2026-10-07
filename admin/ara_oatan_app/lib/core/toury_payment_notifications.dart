@@ -21,17 +21,9 @@ Future<void> touryNotifyAfterSuccessfulOrderPayment({
 }) async {
   try {
     if (currentUserReference != null) {
-      final locale = TouryNotificationLocalizer.currentLocale();
       triggerPushNotification(
-        notificationTitle: await TouryNotificationLocalizer.text(
-          locale,
-          'notification_payment_success_title',
-        ),
-        notificationText: await TouryNotificationLocalizer.text(
-          locale,
-          'notification_payment_success_body',
-          args: {'bookingId': orderIdLabel},
-        ),
+        notificationType: 'notification_payment_success_title',
+        notificationPayload: {'bookingId': orderIdLabel},
         userRefs: [currentUserReference!],
         initialPageName: 'Bookings',
         parameterData: const {},
@@ -64,20 +56,13 @@ Future<void> touryNotifyAfterSuccessfulOrderPayment({
 
     for (final entry in adminsByLocale.entries) {
       triggerPushNotification(
-        notificationTitle: await TouryNotificationLocalizer.text(
-          entry.key,
-          'notification_paid_order_admin_title',
-        ),
-        notificationText: await TouryNotificationLocalizer.text(
-          entry.key,
-          'notification_paid_order_admin_body',
-          args: {
-            'bookingId': orderIdLabel,
-            'hours': totalsaat.toString(),
-            'amount': totalmndob3.toStringAsFixed(2),
-            'currency': currency,
-          },
-        ),
+        notificationType: 'notification_paid_order_admin_title',
+        notificationPayload: {
+          'bookingId': orderIdLabel,
+          'hours': totalsaat.toString(),
+          'amount': totalmndob3.toStringAsFixed(2),
+          'currency': currency,
+        },
         userRefs: entry.value.map((user) => user.reference).toList(),
         initialPageName: 'dashbord',
         parameterData: const {},
@@ -93,17 +78,9 @@ Future<void> touryNotifyAfterSuccessfulOrderPayment({
 void touryNotifyWalletTopUpSuccess({required double amountSar}) {
   if (currentUserReference == null) return;
   unawaited(() async {
-    final locale = TouryNotificationLocalizer.currentLocale();
     triggerPushNotification(
-      notificationTitle: await TouryNotificationLocalizer.text(
-        locale,
-        'notification_wallet_topup_title',
-      ),
-      notificationText: await TouryNotificationLocalizer.text(
-        locale,
-        'notification_wallet_topup_body',
-        args: {'amount': amountSar.toStringAsFixed(2)},
-      ),
+      notificationType: 'notification_wallet_topup_title',
+      notificationPayload: {'amount': amountSar.toStringAsFixed(2)},
       userRefs: [currentUserReference!],
       initialPageName: 'List22TaskOverviewResponsive',
       parameterData: const {},

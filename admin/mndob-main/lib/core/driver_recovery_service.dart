@@ -73,7 +73,19 @@ abstract final class DriverRecoveryService {
 
   /// Backend-first active trip restore.
   static Future<DriverRecoveredTrip?> recoverActiveTrip() async {
-    final ref = await DriverTripService.restoreActiveTripRef();
+    // Also clears stale mndon_newacc when no live trip remains.
+    final stillBusy = await DriverTripService.reconcileBusyState();
+    if (!stillBusy) {
+      FFAppState().revOrder = null;
+      DriverRuntimeDiagnostics.currentOrderPath = null;
+      try {
+        await actions.stopTracking();
+      } catch (_) {}
+      return null;
+    }
+
+    final ref = FFAppState().revOrder ??
+        await DriverTripService.restoreActiveTripRef();
     if (ref == null) {
       FFAppState().revOrder = null;
       DriverRuntimeDiagnostics.currentOrderPath = null;

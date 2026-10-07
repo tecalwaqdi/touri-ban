@@ -77,6 +77,12 @@ class FFLocalizations {
 
     final en = _cleanLocalizedText(map['en'] ?? '');
     if (languageCode == 'en') {
+      if (RegExp(r'[\u0600-\u06FF]').hasMatch(en)) {
+        final bridged = TouryCachedAssetLoader.translate(en, locale);
+        if (bridged != null && bridged.isNotEmpty && bridged != en) {
+          return bridged;
+        }
+      }
       return en;
     }
 

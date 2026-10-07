@@ -714,7 +714,7 @@ class _ExpiryActions extends StatelessWidget {
 
     if (!result.ok) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result.userMessageAr)),
+        SnackBar(content: Text(uiTr(context, result.userMessageAr))),
       );
       return;
     }

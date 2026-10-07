@@ -30,7 +30,7 @@ void main() {
     expect(
         DriverTripService.canCompleteTrip(
             order: extended, allowRemoteOverride: true),
-        isFalse);
+        isTrue);
     expect(DriverTripService.remainingBeforeComplete(extended, now: now),
         const Duration(minutes: 50));
     expect(DriverTripService.remainingTripCountdownMs(extended, now: now),

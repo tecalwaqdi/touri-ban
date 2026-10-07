@@ -5,6 +5,7 @@ import '/core/driver_lifecycle_state.dart';
 import '/core/driver_online_state.dart';
 import '/core/driver_order_availability.dart';
 import '/core/driver_order_match.dart';
+import '/core/driver_trip_service.dart';
 import '/core/driver_ux_widgets.dart';
 import '/core/toury_country_registry.dart';
 import '/design_system/design_system.dart';
@@ -12,6 +13,7 @@ import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'accepted_model.dart';
@@ -77,7 +79,15 @@ class _AcceptedWidgetState extends State<AcceptedWidget>
       ),
     });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      final looksBusy = valueOrDefault<bool>(
+            currentUserDocument?.mndonNewacc, false) ==
+          true;
+      if (looksBusy && FFAppState().revOrder == null) {
+        await DriverTripService.reconcileBusyState();
+      }
+      if (mounted) safeSetState(() {});
+    });
   }
 
   @override
@@ -467,7 +477,7 @@ class _AcceptedWidgetState extends State<AcceptedWidget>
                                                       decimalType:
                                                           DecimalType.automatic,
                                                       currency:
-                                                          ' ${TouryCountryRegistry.currencySymbol(DriverCountryService.currentIso2())} ',
+                                                          ' ${TouryCountryRegistry.currencySymbol(DriverCountryService.currentIso2(), locale: Localizations.localeOf(context))} ',
                                                     ),
                                                     maxLines: 1,
                                                     overflow:

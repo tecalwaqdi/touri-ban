@@ -6,7 +6,10 @@
 const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 
-const MIN_CASH_WALLET = 50;
+const countryFinance = require("./vendor/country_finance.js");
+const companyDue = require("./vendor/company_due.js");
+const accounting = require("./vendor/financial_accounting_v2");
+const MIN_CASH_WALLET = countryFinance.MIN_CASH_WALLET_SAR;
 
 function requireAuth(context) {
   if (!context.auth || !context.auth.uid) {
@@ -37,6 +40,95 @@ function isAssignable(statusCode, halhText, halhOrder) {
   }
   return false;
 }
+
+const ACTIVE_DRIVER_TRIP_CODES = new Set([
+  "driver_assigned",
+  "driver_arriving",
+  "driver_arrived",
+  "trip_started",
+  "trip_in_progress",
+]);
+
+const TERMINAL_BOOKING_CODES = new Set([
+  "completed",
+  "trip_completed",
+  "cancelled",
+  "canceled",
+  "cancelled_by_customer",
+  "cancelled_by_driver",
+  "cancelled_by_admin",
+  "expired",
+]);
+
+const ACTIVE_DRIVER_HALH = new Set([
+  "مقبول",
+  "وصل المندوب",
+  "تم البدء في الرحلة",
+]);
+
+function refPath(ref) {
+  if (!ref) return "";
+  if (typeof ref.path === "string") return ref.path;
+  return String(ref);
+}
+
+/** Busy flags written by accept (camel + snake) or client schema. */
+function driverBusyFlagsSet(driver) {
+  const d = driver || {};
+  return (
+    d.mndonNewacc === true ||
+    d.mndon_newacc === true ||
+    d.mndob_busy === true ||
+    (typeof d.active_order_id === "string" && d.active_order_id.trim().length > 0)
+  );
+}
+
+/**
+ * True only when the held order is still an in-progress trip for this driver.
+ * Missing / terminal / unassigned / other-driver orders are treated as stale.
+ */
+function isTrulyActiveDriverTrip(orderData, driverPath) {
+  if (!orderData || !driverPath) return false;
+  const code = String(orderData.status_code || "").toLowerCase().trim();
+  if (TERMINAL_BOOKING_CODES.has(code)) return false;
+  const assigned = refPath(orderData.mndob_user);
+  if (!assigned || assigned !== driverPath) return false;
+  if (ACTIVE_DRIVER_TRIP_CODES.has(code)) return true;
+  if (!code) {
+    if (orderData.ActiveOrder === true || orderData.activeOrder === true) {
+      return true;
+    }
+    const h = String(orderData.halh_text || orderData.halhText || "").trim();
+    return ACTIVE_DRIVER_HALH.has(h);
+  }
+  return false;
+}
+
+function setDriverBusyPatch(orderId) {
+  return {
+    // Canonical Flutter schema field:
+    mndon_newacc: true,
+    // Legacy camelCase written by older accept paths — keep in sync:
+    mndonNewacc: true,
+    mndob_busy: true,
+    active_order_id: orderId,
+  };
+}
+
+function clearDriverBusyPatch() {
+  return {
+    mndon_newacc: false,
+    mndonNewacc: false,
+    mndob_busy: false,
+    active_order_id: admin.firestore.FieldValue.delete(),
+  };
+}
+
+exports._test = {
+  driverBusyFlagsSet,
+  isTrulyActiveDriverTrip,
+  setDriverBusyPatch,
+};
 
 function logStage(stage, t0, extra = {}) {
   const ms = Date.now() - t0;
@@ -138,6 +230,38 @@ exports.acceptDriverOrder = functions
             'driver-disabled',
           );
         }
+        // One active trip per driver — heal stale busy flags left by cancel /
+        // field-name mismatch (mndonNewacc vs mndon_newacc).
+        const heldId = String(driver.active_order_id || "").trim();
+        let heldSnap = null;
+        if (
+          driverBusyFlagsSet(driver) &&
+          heldId &&
+          heldId !== orderRef.id
+        ) {
+          heldSnap = await tx.get(firestore.collection("order").doc(heldId));
+        }
+        if (driverBusyFlagsSet(driver)) {
+          const heldActive =
+            heldId &&
+            heldId !== orderRef.id &&
+            isTrulyActiveDriverTrip(
+              heldSnap && heldSnap.exists ? heldSnap.data() : null,
+              userRef.path,
+            );
+          if (heldActive) {
+            throw new functions.https.HttpsError(
+              "failed-precondition",
+              "DRIVER_BUSY",
+            );
+          }
+          logStage("stale_busy_healed", t0, {
+            heldId: heldId || null,
+            mndonNewacc: driver.mndonNewacc === true,
+            mndon_newacc: driver.mndon_newacc === true,
+            mndob_busy: driver.mndob_busy === true,
+          });
+        }
 
         if (!orderSnap.exists) {
           throw new functions.https.HttpsError("not-found", "BOOKING_NOT_FOUND");
@@ -155,7 +279,8 @@ exports.acceptDriverOrder = functions
               "BOOKING_ALREADY_ASSIGNED",
             );
           }
-          // Idempotent re-accept by same driver.
+          // Idempotent re-accept by same driver — keep busy flags consistent.
+          tx.update(userRef, setDriverBusyPatch(orderRef.id));
           return;
         }
         if (
@@ -168,6 +293,15 @@ exports.acceptDriverOrder = functions
           throw new functions.https.HttpsError(
             "failed-precondition",
             "BOOKING_INVALID_STATE",
+          );
+        }
+
+        // Nearest-first offer waves: only current/prior wave UIDs may claim.
+        const { isUidInCurrentOfferWave } = require("./order_offer_waves.js");
+        if (!isUidInCurrentOfferWave(order, uid)) {
+          throw new functions.https.HttpsError(
+            "failed-precondition",
+            "BOOKING_NOT_IN_OFFER_WAVE",
           );
         }
 
@@ -198,7 +332,30 @@ exports.acceptDriverOrder = functions
           const bal = walletSnap.exists
             ? Number(walletSnap.data().currentBalance || 0)
             : 0;
-          if (bal < MIN_CASH_WALLET) {
+          const walletCurrency = String(
+            (walletSnap.data() || {}).currency ||
+              order.currency ||
+              order.currency_code ||
+              "",
+          ).toUpperCase();
+          if (!walletCurrency) {
+            throw new functions.https.HttpsError(
+              "failed-precondition",
+              "FX_CONFIG_MISSING",
+            );
+          }
+          const fx = Number(order.fx_local_per_sar);
+          let minimum = MIN_CASH_WALLET;
+          if (walletCurrency !== "SAR") {
+            if (!Number.isFinite(fx) || fx <= 0) {
+              throw new functions.https.HttpsError(
+                "failed-precondition",
+                "FX_CONFIG_MISSING",
+              );
+            }
+            minimum = countryFinance.minCashLocal(fx);
+          }
+          if (bal < minimum) {
             throw new functions.https.HttpsError(
               "failed-precondition",
               "insufficient-wallet",
@@ -229,6 +386,7 @@ exports.acceptDriverOrder = functions
           claim.driver_accept_location = new admin.firestore.GeoPoint(lat, lng);
         }
         tx.update(orderRef, claim);
+        tx.update(userRef, setDriverBusyPatch(orderRef.id));
       });
       logStage("transaction_committed", t0);
       logStage("accept_completed", t0);
@@ -258,6 +416,8 @@ exports.acceptDriverOrder = functions
                       ? "BOOKING_NOT_FOUND"
                       : msg === "BOOKING_SERVICE_UNAVAILABLE"
                         ? "BOOKING_SERVICE_UNAVAILABLE"
+                        : msg === "DRIVER_BUSY"
+                          ? "DRIVER_BUSY"
                         : msg;
         return {
           ok: false,
@@ -300,11 +460,24 @@ exports.payCompanyFromWallet = functions
       .doc(idempotencyKey);
 
     const result = await firestore.runTransaction(async (tx) => {
-      const [existing, walletSnap, userSnap] = await Promise.all([
-        tx.get(ledgerRef),
-        tx.get(walletRef),
-        tx.get(userRef),
-      ]);
+      const [existing, walletSnap, userSnap, ordersSnap, settlementSnap, paymentSnap] =
+        await Promise.all([
+          tx.get(ledgerRef),
+          tx.get(walletRef),
+          tx.get(userRef),
+          tx.get(
+            firestore.collection("order").where("mndob_user", "==", userRef).limit(300),
+          ),
+          tx.get(
+            firestore
+              .collection("financial_settlement_payments")
+              .where("driverId", "==", uid)
+              .limit(200),
+          ),
+          tx.get(
+            firestore.collection("transactions").where("driverId", "==", uid).limit(400),
+          ),
+        ]);
       if (existing.exists) {
         return { ok: true, alreadyProcessed: true, ...(existing.data() || {}) };
       }
@@ -312,14 +485,79 @@ exports.payCompanyFromWallet = functions
       const balanceBefore = walletSnap.exists
         ? Number(walletSnap.data().currentBalance || 0)
         : 0;
-      if (amount > balanceBefore) {
-        throw new functions.https.HttpsError(
-          "failed-precondition",
-          "INSUFFICIENT_BALANCE",
-        );
+      const walletCurrency = String((walletSnap.data() || {}).currency || "").toUpperCase();
+      let cashDueMinor = 0;
+      let foreignDue = false;
+      ordersSnap.forEach((doc) => {
+        const line = accounting.analyzeOrder(doc.id, doc.data() || {});
+        if (line.lifecycle !== "completed") return;
+        const collected =
+          line.payment === "paid" ||
+          line.payment === "cashCollected" ||
+          line.payment === "captured";
+        if (!collected || line.channel !== "cash") return;
+        const signed = Number(line.signedCashMinor || 0);
+        if (signed <= 0) return;
+        if (String(line.currency || "").toUpperCase() !== walletCurrency) {
+          foreignDue = true;
+          return;
+        }
+        cashDueMinor += signed;
+      });
+      let settlementPaidMinor = 0;
+      settlementSnap.forEach((doc) => {
+        const p = doc.data() || {};
+        if (String(p.currency || "").toUpperCase() !== walletCurrency) return;
+        if (p.status !== "confirmed") return;
+        if (p.direction === "COMPANY_TO_DRIVER") return;
+        settlementPaidMinor += Number(p.amountMinor || 0);
+      });
+      let walletPaidMinor = 0;
+      paymentSnap.forEach((doc) => {
+        const p = doc.data() || {};
+        if (p.type !== "company_due_payment") return;
+        if (String(p.currency || "").toUpperCase() !== walletCurrency) return;
+        walletPaidMinor += Math.round(Math.abs(Number(p.amountAbs || p.amount || 0)) * 100);
+      });
+      const serverDue = companyDue.outstandingCompanyDue({
+        cashDueMinor,
+        settlementPaidMinor,
+        walletPaidMinor,
+        currency: walletCurrency,
+      });
+      if (foreignDue && serverDue.major <= 0) {
+        throw new functions.https.HttpsError("failed-precondition", "CURRENCY_MISMATCH");
       }
+      const decision = companyDue.decideCompanyDuePayment({
+        requested: amount,
+        walletBalance: balanceBefore,
+        walletCurrency,
+        serverDue: serverDue.major,
+        serverCurrency: walletCurrency,
+      });
+      if (!decision.ok) {
+        throw new functions.https.HttpsError("failed-precondition", decision.code);
+      }
+      const due = decision.dueBefore;
       const balanceAfter = balanceBefore - amount;
-      if (balanceAfter < MIN_CASH_WALLET && !confirmBelowMin) {
+      let floor = MIN_CASH_WALLET;
+      if (walletCurrency !== "SAR") {
+        const rawCountry = userSnap.exists ? userSnap.data().Rev_dolh : null;
+        const countryRef = rawCountry && typeof rawCountry.path === "string"
+          ? rawCountry
+          : (typeof rawCountry === "string" && rawCountry.startsWith("countries/")
+            ? firestore.doc(rawCountry)
+            : null);
+        const countrySnap = countryRef ? await tx.get(countryRef) : null;
+        const fx = countrySnap && countrySnap.exists
+          ? countryFinance.resolvedFx(countryFinance.readCountry(countrySnap.data() || {}))
+          : null;
+        if (fx == null) {
+          throw new functions.https.HttpsError("failed-precondition", "FX_CONFIG_MISSING");
+        }
+        floor = countryFinance.minCashLocal(fx);
+      }
+      if (balanceAfter < floor && !confirmBelowMin) {
         throw new functions.https.HttpsError(
           "failed-precondition",
           "BELOW_MIN_REQUIRES_CONFIRM",
@@ -330,13 +568,19 @@ exports.payCompanyFromWallet = functions
         userRef,
         walletRef,
         driverId: uid,
-        type: "company_payment",
+        type: "company_due_payment",
         amount: -Math.abs(amount),
         amountAbs: amount,
         balanceBefore,
         balanceAfter,
-        currency: "SAR",
+        currency: (walletSnap.data() || {}).currency || "SAR",
         status: "completed",
+        wallet_before: balanceBefore,
+        wallet_after: balanceAfter,
+        due_before: Number.isFinite(due) ? due : null,
+        due_after: Number.isFinite(due) ? due - amount : null,
+        country: data.countryId || data.country || null,
+        driver: uid,
         reference: reference || idempotencyKey,
         idempotencyKey,
         description: "company_payment",

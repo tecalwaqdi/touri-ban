@@ -236,7 +236,10 @@ class _DriverRideRequestSheetState extends State<DriverRideRequestSheet> {
 
   String get _currency {
     final iso = DriverCountryService.currentIso2();
-    return TouryCountryRegistry.currencySymbol(iso);
+    return TouryCountryRegistry.currencySymbol(
+      iso,
+      locale: Localizations.localeOf(context),
+    );
   }
 
   String? get _tripDistanceLabel {

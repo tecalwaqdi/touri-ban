@@ -28,7 +28,7 @@ abstract final class TouryCountryRegistry {
     },
     'AE': {'country_ae', 'united-arab-emirates', 'uae'},
     'EG': {'country_eg', 'egypt'},
-    'TR': {'country_tr', 'turkey'},
+    'TR': {'country_tr', 'turkey', 'turkiye', 'türkiye'},
     'AZ': {'country_az', 'azerbaijan'},
     'BH': {'country_bh', 'bahrain'},
     'JO': {'country_jo', 'jordan'},
@@ -47,6 +47,8 @@ abstract final class TouryCountryRegistry {
     'CN': {'country_cn'},
     'FR': {'country_fr'},
     'GE': {'country_ge', 'georgia'},
+    'TM': {'country_tm', 'turkmenistan'},
+    'KZ': {'country_kz', 'kazakhstan'},
   };
 
   /// Preferred Firestore doc id used when writing new child refs.
@@ -62,6 +64,11 @@ abstract final class TouryCountryRegistry {
     'ID': 'indonesia',
     'MY': 'malaysia',
     'IN': 'india',
+    'EG': 'egypt',
+    'TR': 'turkey',
+    'GE': 'georgia',
+    'TM': 'turkmenistan',
+    'KZ': 'kazakhstan',
   };
 
   static const Map<String, LatLng> mapCenterByIso = {
@@ -190,6 +197,23 @@ abstract final class TouryCountryRegistry {
       'узбекистан': 'UZ',
       'أوزبكستان': 'UZ',
       'اوزبكستان': 'UZ',
+      'tm': 'TM',
+      'turkmenistan': 'TM',
+      'تركمانستان': 'TM',
+      'kz': 'KZ',
+      'kazakhstan': 'KZ',
+      'كازاخستان': 'KZ',
+      'ge': 'GE',
+      'georgia': 'GE',
+      'جورجيا': 'GE',
+      'eg': 'EG',
+      'egypt': 'EG',
+      'مصر': 'EG',
+      'tr': 'TR',
+      'turkey': 'TR',
+      'turkiye': 'TR',
+      'türkiye': 'TR',
+      'تركيا': 'TR',
     };
 
     if (aliases.containsKey(lower)) return aliases[lower];

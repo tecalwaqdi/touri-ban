@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 import '/backend/backend.dart';
 import '/backend/cloud_functions/cloud_functions.dart';
+import '/core/driver_approved_profile_policy.dart';
 import '/core/driver_registration_submission_error_mapper.dart';
 import '/core/driver_country_resolver.dart';
 import '/core/driver_operational_eligibility_resolver.dart';
@@ -787,14 +788,34 @@ abstract final class DriverRegistrationSubmissionService {
       );
     }
 
-    final cleaned = Map<String, dynamic>.from(profileFields);
+    final existing = UserRecord.fromSnapshot(snap);
+    final approved =
+        DriverApprovedProfilePolicy.isApprovedOrActive(existing);
+
+    var cleaned = Map<String, dynamic>.from(profileFields);
     for (final k in DriverRegistrationUpdatePayload.protectedKeys) {
       cleaned.remove(k);
     }
+    // Approved / active drivers may only update contact mirrors.
+    cleaned = DriverApprovedProfilePolicy.filterApprovedUpdate(
+      cleaned,
+      approved: approved,
+    );
     cleaned.removeWhere((k, v) => v == null);
     cleaned['uid'] = uid;
     cleaned['profile_updated_at'] = FieldValue.serverTimestamp();
-    cleaned['profile_update_source'] = 'driver_app_edit_registration';
+    cleaned['profile_update_source'] = approved
+        ? 'driver_app_contact_only'
+        : 'driver_app_edit_registration';
+
+    if (approved &&
+        cleaned.keys
+            .where((k) => k != 'uid' && k != 'profile_updated_at' && k != 'profile_update_source')
+            .isEmpty) {
+      return const DriverSubmissionResult.fail(
+        'Approved drivers cannot change identity or vehicle data directly. Use Request Data Change.',
+      );
+    }
 
     try {
       await ref.set(cleaned, SetOptions(merge: true));

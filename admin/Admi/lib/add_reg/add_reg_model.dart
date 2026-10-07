@@ -1,3 +1,4 @@
+import '/components/admin_geo_locale_fields.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'add_reg_widget.dart' show AddRegWidget;
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class AddRegModel extends FlutterFlowModel<AddRegWidget> {
   FFUploadedFile uploadedLocalFile_uploadDataO6sc =
       FFUploadedFile(bytes: Uint8List.fromList([]), originalFilename: '');
   String uploadedFileUrl_uploadDataO6sc = '';
+  final geoNameControllers = <String, TextEditingController>{};
 
   @override
   void initState(BuildContext context) {}
@@ -26,5 +28,6 @@ class AddRegModel extends FlutterFlowModel<AddRegWidget> {
     textFieldnaimTextController?.dispose();
     textFieldDescFocusNode?.dispose();
     textFieldDescTextController?.dispose();
+    disposeAdminGeoControllers(geoNameControllers);
   }
 }

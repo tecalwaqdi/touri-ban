@@ -502,8 +502,10 @@ class TouryMainAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize {
-  // يغطي الارتفاع الديناميكي على الشاشات الصغيرة والكبيرة
-    return Size.fromHeight(showLogo ? _logoContentHeight : _titleContentHeight);
+    // Content + generous status-bar inset (exact inset applied in build).
+    return Size.fromHeight(
+      (showLogo ? _logoContentHeight : _titleContentHeight) + 64,
+    );
   }
 
   @override
@@ -512,17 +514,13 @@ class TouryMainAppBar extends StatelessWidget implements PreferredSizeWidget {
     final compactHeader = screenH < 700;
     final logoW = compactHeader ? 112.0 : 128.0;
     final logoH = compactHeader ? 44.0 : 52.0;
-    final height = showLogo
-        ? (compactHeader ? 92.0 : _logoContentHeight)
-        : (compactHeader ? 56.0 : _titleContentHeight);
 
-    return SizedBox(
-      height: height,
-      child: Container(
-        decoration: BoxDecoration(
-          color: TouryBrand.teal,
-          boxShadow: DsShadows.soft(),
-        ),
+    return Material(
+      color: TouryBrand.teal,
+      elevation: 2,
+      shadowColor: Colors.black26,
+      child: SafeArea(
+        bottom: false,
         child: Padding(
           padding: EdgeInsets.fromLTRB(
             DsSpacing.md,
@@ -545,24 +543,27 @@ class TouryMainAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
                 SizedBox(height: compactHeader ? 4 : 6),
               ],
-              if (subtitle != null)
-                TouryText(
-                  subtitle!,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  fontSize: compactHeader ? 11 : 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white.withValues(alpha: 0.95),
-                  lineHeight: 1.2,
-                )
-              else if (title.isNotEmpty)
+              // Prefer short title in the app bar; long subtitles belong in body cards.
+              if (title.isNotEmpty)
                 TouryText(
                   title,
                   textAlign: TextAlign.center,
                   maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   fontWeight: FontWeight.w700,
                   fontSize: compactHeader ? 16 : 17,
                   color: Colors.white,
+                )
+              else if (subtitle != null)
+                TouryText(
+                  subtitle!,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  fontSize: compactHeader ? 11 : 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withValues(alpha: 0.95),
+                  lineHeight: 1.2,
                 ),
             ],
           ),
@@ -1017,13 +1018,15 @@ class TouryPriceSummaryRow extends StatelessWidget {
   const TouryPriceSummaryRow({
     super.key,
     required this.label,
-    required this.value,
+    this.value,
+    this.valueWidget,
     this.isTotal = false,
     this.isDeduction = false,
-  });
+  }) : assert(value != null || valueWidget != null);
 
   final String label;
-  final String value;
+  final String? value;
+  final Widget? valueWidget;
   final bool isTotal;
   final bool isDeduction;
 
@@ -1060,13 +1063,17 @@ class TouryPriceSummaryRow extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             flex: 2,
-            child: TouryText(
-              value,
-              textAlign: TextAlign.end,
-              fontSize: isTotal ? 17 : 13,
-              fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
-              color: valueColor,
-              maxLines: 1,
+            child: Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: valueWidget ??
+                  TouryText(
+                    value ?? '',
+                    textAlign: TextAlign.end,
+                    fontSize: isTotal ? 17 : 13,
+                    fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+                    color: valueColor,
+                    maxLines: 1,
+                  ),
             ),
           ),
         ],

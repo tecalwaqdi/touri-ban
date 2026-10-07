@@ -24,6 +24,40 @@ void main() {
     );
   });
 
+  test('pending codes are not temporary-unavailable', () {
+    expect(
+      touryPaymentApiErrorKey('PAYMENT_PENDING'),
+      TouryPaymentErrorKeys.paymentPending,
+    );
+    expect(
+      touryPaymentApiErrorKey('BOOKING_PENDING'),
+      TouryPaymentErrorKeys.paymentPending,
+    );
+  });
+
+  test('missing/expired HPP link text maps to link-expired', () {
+    expect(
+      touryIsMissingOrExpiredPaymentLinkText(
+        'Sorry, the payment link does not exist. For more information...',
+      ),
+      isTrue,
+    );
+    expect(
+      touryPaymentApiErrorKey(
+        'Sorry, the payment link does not exist. Contact the merchant.',
+      ),
+      TouryPaymentErrorKeys.linkExpired,
+    );
+    expect(
+      touryPaymentApiErrorKey('PAYMENT_EXPIRED'),
+      TouryPaymentErrorKeys.linkExpired,
+    );
+    expect(
+      touryPaymentApiErrorKey('HPP_EXPIRED'),
+      TouryPaymentErrorKeys.linkExpired,
+    );
+  });
+
   test('empty or unknown create-order failures are not card errors', () {
     expect(
       touryPaymentApiErrorKey(null),

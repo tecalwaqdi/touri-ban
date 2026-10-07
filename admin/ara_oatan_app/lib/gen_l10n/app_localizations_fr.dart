@@ -1545,11 +1545,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ux_min_hours => 'Minimum';
 
   @override
-  String get ux_car_list_empty_title => 'Aucune voiture disponible';
+  String get ux_car_list_empty_title => 'No vehicle types available';
 
   @override
   String get ux_car_list_empty_msg =>
-      'Aucune voiture n\'est disponible pour le moment. Veuillez réessayer plus tard';
+      'No vehicle types are currently available for this country';
 
   @override
   String get ux_car_list_error_title => 'Impossible de charger les voitures';
@@ -2574,4 +2574,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String minutes_count(num count) {
     return '$count minutes';
   }
+
+  @override
+  String get ux_vehicle_select_country_title => 'Select a country';
+
+  @override
+  String get ux_vehicle_select_country_msg =>
+      'Select a country to view vehicle types';
 }

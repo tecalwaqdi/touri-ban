@@ -22,6 +22,7 @@ class FlutterFlowWebView extends StatefulWidget {
     this.verticalScroll = false,
     this.html = false,
     this.onPageFinished,
+    this.onPageBodyText,
   });
 
   final String content;
@@ -33,12 +34,16 @@ class FlutterFlowWebView extends StatefulWidget {
   final bool html;
   /// Receives the finished page URL/host path (may be empty on some platforms).
   final void Function(String url)? onPageFinished;
+  /// Optional body text after load (N-Genius dead-link detection).
+  final void Function(String url, String bodyText)? onPageBodyText;
 
   @override
   _FlutterFlowWebViewState createState() => _FlutterFlowWebViewState();
 }
 
 class _FlutterFlowWebViewState extends State<FlutterFlowWebView> {
+  WebViewXController? _controller;
+
   @override
   Widget build(BuildContext context) => WebViewX(
         key: webviewKey,
@@ -54,10 +59,22 @@ class _FlutterFlowWebViewState extends State<FlutterFlowWebView> {
                 ? SourceType.urlBypass
                 : SourceType.url,
         javascriptMode: JavascriptMode.unrestricted,
-        onPageFinished: (src) {
+        onPageFinished: (src) async {
           widget.onPageFinished?.call(src);
+          final onBody = widget.onPageBodyText;
+          final controller = _controller;
+          if (onBody == null || controller == null) return;
+          try {
+            final raw = await controller.evalRawJavascript(
+              'document.body ? (document.body.innerText || "") : ""',
+            );
+            onBody(src, raw?.toString() ?? '');
+          } catch (_) {
+            // Best-effort only — URL heuristics still apply.
+          }
         },
         onWebViewCreated: (controller) async {
+          _controller = controller;
           if (controller.connector is WebViewController && isAndroid) {
             final androidController =
                 controller.connector.platform as AndroidWebViewController;

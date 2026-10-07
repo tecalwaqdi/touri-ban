@@ -182,9 +182,6 @@ class _FeaturedCountrySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.dsColors;
-    final typography = context.dsTypography;
-
     return StreamBuilder<List<CountriesRecord>>(
       stream: TouryFirestoreCache.countriesStream(
         cacheKey: 'saudi-single',
@@ -195,6 +192,8 @@ class _FeaturedCountrySection extends StatelessWidget {
         singleRecord: true,
       ),
       builder: (context, snapshot) {
+        final colors = context.dsColors;
+        final typography = context.dsTypography;
         if (!snapshot.hasData) {
           return const Padding(
             padding: EdgeInsets.all(DsSpacing.md),
@@ -211,6 +210,8 @@ class _FeaturedCountrySection extends StatelessWidget {
 
         final country = snapshot.data!.first;
 
+        // Brand panel: solid green + text in a clear band. Emblem stays as a
+        // low-opacity watermark at the bottom so nothing covers لفظ الجلالة.
         return Padding(
           padding: const EdgeInsets.fromLTRB(
             DsSpacing.md,
@@ -221,50 +222,39 @@ class _FeaturedCountrySection extends StatelessWidget {
           child: DsScaleFade(
             child: Container(
               width: double.infinity,
-              height: 220,
               decoration: BoxDecoration(
                 borderRadius: DsRadius.extraLarge,
+                color: colors.primaryStrong,
                 boxShadow: DsShadows.card(
                   dark: Theme.of(context).brightness == Brightness.dark,
                 ),
               ),
               clipBehavior: Clip.antiAlias,
               child: Stack(
-                fit: StackFit.expand,
                 children: [
-                  Hero(
-                    tag: 'country-hero-${country.reference.id}',
-                    child: TouryNetworkImage(
-                      url: country.img,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          colors.scrim.withValues(alpha: 0.15),
-                          colors.scrim.withValues(alpha: 0.72),
-                        ],
-                      ),
-                    ),
-                  ),
                   Padding(
                     padding: const EdgeInsets.all(DsSpacing.md),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          'first global saudi tourist taxi app'.tr(),
+                          touryCountryDisplayName(context, country),
                           textAlign: TextAlign.center,
-                          style: typography.titleMedium.copyWith(
+                          style: typography.titleLarge.copyWith(
                             color: colors.onPrimary,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
-                        const Spacer(),
+                        const SizedBox(height: DsSpacing.xs),
+                        Text(
+                          'first global saudi tourist taxi app'.tr(),
+                          textAlign: TextAlign.center,
+                          style: typography.bodyMedium.copyWith(
+                            color: colors.onPrimary.withValues(alpha: 0.92),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: DsSpacing.md),
                         DsButton.primary(
                           label: 'Browse cities/counties in'.tr(),
                           expanded: true,

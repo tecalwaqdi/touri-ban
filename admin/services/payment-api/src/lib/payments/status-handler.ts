@@ -80,9 +80,15 @@ export async function handlePaymentStatus(req: Request, sessionId: string) {
   const next = transitionStatus(current as PaymentStatus, mapped);
 
   const amount = extractGatewayAmount(orderData);
+  const expectedMinor = data.gateway_minor_sar != null
+    ? Number(data.gateway_minor_sar)
+    : Number(data.amount_minor ?? data.amount_halalas);
+  const expectedCurrency = data.gateway_minor_sar != null
+    ? "SAR"
+    : String(data.currency || "");
   if (
     amount.value != null &&
-    Number(data.amount_minor ?? data.amount_halalas) !== Number(amount.value)
+    expectedMinor !== Number(amount.value)
   ) {
     await ref.set(
       {
@@ -96,7 +102,7 @@ export async function handlePaymentStatus(req: Request, sessionId: string) {
   }
   if (
     amount.currency &&
-    String(data.currency).toUpperCase() !== String(amount.currency).toUpperCase()
+    expectedCurrency.toUpperCase() !== String(amount.currency).toUpperCase()
   ) {
     throw new ApiError(PaymentErrorCode.PAYMENT_CURRENCY_MISMATCH, 409);
   }

@@ -7,9 +7,20 @@ import '/flutter_flow/flutter_flow_util.dart';
 
 /// Maps Firebase / network exceptions to localized admin-panel messages.
 abstract final class AdminUserFacingErrors {
+/// Maps a stable Arabic operational message, including `{detail}` suffixes.
+  static String localizeMessage(BuildContext context, String raw) {
+    const prefix = 'تعذر إنشاء الحساب:';
+    if (raw.startsWith(prefix)) {
+      final detail = raw.substring(prefix.length).trim();
+      return uiTr(context, 'تعذر إنشاء الحساب: {detail}')
+          .replaceAll('{detail}', detail);
+    }
+    return uiTr(context, raw);
+  }
+
   static String from(BuildContext context, Object error) {
     if (error is StorageUploadException) {
-      return error.message;
+      return AdminUserFacingErrors.localizeMessage(context, error.message);
     }
     if (error is FirebaseAuthException) {
       return _auth(context, error.code);
@@ -50,7 +61,7 @@ abstract final class AdminUserFacingErrors {
         return appTr(context, 'adm_err_storage_quota');
       }
       if (inner.isNotEmpty && !_looksLikeStackOrType(inner)) {
-        return inner;
+        return AdminUserFacingErrors.localizeMessage(context, inner);
       }
     }
     if (_isRawFirebaseStorageNoise(raw)) {
@@ -63,7 +74,9 @@ abstract final class AdminUserFacingErrors {
         !raw.toLowerCase().contains('permission-denied') &&
         !_looksLikeStackOrType(raw)) {
       // Keep short Arabic/English operational messages.
-      if (raw.length < 280) return raw;
+      if (raw.length < 280) {
+        return AdminUserFacingErrors.localizeMessage(context, raw);
+      }
     }
     return appTr(context, 'adm_err_generic');
   }
@@ -166,7 +179,7 @@ abstract final class AdminUserFacingErrors {
         // Prefer human Storage message over generic when available.
         final mapped = uploadErrorMessage(error);
         if (mapped.isNotEmpty && !mapped.contains('(')) {
-          return mapped;
+          return AdminUserFacingErrors.localizeMessage(context, mapped);
         }
         return appTr(context, 'adm_err_generic');
     }

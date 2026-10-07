@@ -125,8 +125,27 @@ function isActiveTypeCar(data) {
   return true;
 }
 
+/** Operational listing eligibility (booking + new driver assignment). */
+function isOperationalTypeCar(data) {
+  if (!data || typeof data !== 'object') return false;
+  if (data.archived === true) return false;
+  if (data.exclude_from_operational_catalog === true) return false;
+  return isActiveTypeCar(data);
+}
+
+function countryIdFromPath(countryPath) {
+  if (!countryPath) return '';
+  const parts = String(countryPath).split('/').filter(Boolean);
+  return parts.length ? parts[parts.length - 1] : '';
+}
+
 function matchesCountryTypeCar(data, countryPath, iso2) {
   const iso = (iso2 || '').trim().toUpperCase();
+  const countryId = countryIdFromPath(countryPath);
+  const myCountryId = String(data.countryId || '').trim();
+  // Canonical SoT going forward — no SA/KG/global fallback.
+  if (myCountryId && countryId && myCountryId === countryId) return true;
+
   const myIso = String(data.country_iso2 || '')
     .trim()
     .toUpperCase();
@@ -139,8 +158,37 @@ function matchesCountryTypeCar(data, countryPath, iso2) {
     const dolhIso = countryResolver.normalizeIso(dolhId);
     if (dolhIso && dolhIso === iso) return true;
   }
-  if (!dolhPath && !myIso) return false;
+  if (!dolhPath && !myIso && !myCountryId) return false;
   return false;
+}
+
+/**
+ * Immutable booking vehicle evidence derived server-side from type_car + country.
+ * Never trust a client-supplied hourly price as authority.
+ */
+function buildVehicleBookingSnapshot({
+  carId,
+  car,
+  countryPath,
+  currency,
+  nowIso,
+}) {
+  const data = car && typeof car === 'object' ? car : {};
+  const resolvedCountryId =
+    String(data.countryId || '').trim() || countryIdFromPath(countryPath);
+  const name = String(
+    data.naim || data.name || data.codeCar || carId || '',
+  ).trim();
+  const hourly = Number(data.sr);
+  return {
+    vehicleTypeId: String(carId || '').trim(),
+    vehicleTypeName: name,
+    vehicleTypeCountryId: resolvedCountryId,
+    vehicleHourlyPrice: Number.isFinite(hourly) ? hourly : null,
+    vehicleCurrency:
+      String(currency || 'SAR').trim().toUpperCase() || 'SAR',
+    vehicleSnapshotAt: nowIso || new Date().toISOString(),
+  };
 }
 
 async function countActiveVehiclesForCountry(db, countryPath, iso2) {
@@ -334,13 +382,32 @@ async function ensureAllDriverCountryConfigurations(db, options = {}) {
 
 function validateTypeCarForMarket(typeCarData, countryPath, iso2) {
   if (!typeCarData) return {ok: false, reasonCode: 'VEHICLE_TYPE_UNAVAILABLE'};
-  if (!isActiveTypeCar(typeCarData)) {
+  if (!isOperationalTypeCar(typeCarData)) {
     return {ok: false, reasonCode: 'VEHICLE_TYPE_UNAVAILABLE'};
   }
   if (!matchesCountryTypeCar(typeCarData, countryPath, iso2)) {
     return {ok: false, reasonCode: 'VEHICLE_TYPE_MARKET_MISMATCH'};
   }
   return {ok: true, reasonCode: 'ok'};
+}
+
+/**
+ * Server guard for NEW driver vehicle-type assignments.
+ * Does not mutate existing empty/missing assignments — callers skip when no type ref.
+ */
+function validateDriverVehicleTypeAssignment({
+  typeCarData,
+  driverCountryPath,
+  driverCountryIso2,
+}) {
+  if (!driverCountryPath) {
+    return {ok: false, reasonCode: 'DRIVER_COUNTRY_REQUIRED'};
+  }
+  return validateTypeCarForMarket(
+    typeCarData,
+    driverCountryPath,
+    driverCountryIso2,
+  );
 }
 
 module.exports = {
@@ -363,8 +430,12 @@ module.exports = {
     return rows;
   },
   validateTypeCarForMarket,
+  validateDriverVehicleTypeAssignment,
+  buildVehicleBookingSnapshot,
+  countryIdFromPath,
   resolveCountryIso,
   evaluateMarketReadiness,
   isActiveTypeCar,
+  isOperationalTypeCar,
   matchesCountryTypeCar,
 };

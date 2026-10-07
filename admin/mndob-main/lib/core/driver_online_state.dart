@@ -1,13 +1,16 @@
 import '/app_state.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/backend/push_notifications/push_notifications_util.dart';
 import '/core/driver_app_lifecycle_coordinator.dart';
+import '/backend/cloud_functions/cloud_functions.dart';
+import '/core/driver_country_service.dart';
 import '/core/driver_eligibility_service.dart';
 import '/core/driver_legacy_field_compat.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_live_location_service.dart';
 import '/core/driver_offline_queue.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Single definition of "driver is online and can receive work".
 abstract final class DriverOnlineState {
@@ -76,6 +79,21 @@ abstract final class DriverOnlineState {
       );
     }
 
+    if ((DriverCountryService.currentIso2() ?? '').toUpperCase() == 'SA') {
+      final gate = await makeCloudCall('waslOnlineGate', const {});
+      final applied = gate['applied'] == true;
+      final allowed = gate['allowed'] == true;
+      final code = (gate['code'] ?? '').toString();
+      if (applied && !allowed) {
+        return DriverOnlineGateResult(
+          ok: false,
+          code: code.isEmpty ? 'WASL_NOT_ELIGIBLE' : code,
+          message:
+              'Wasl regulatory eligibility is required before going online in Saudi Arabia.',
+        );
+      }
+    }
+
     final loc = await DriverLiveLocationService.currentPosition();
     if (loc == null) {
       return const DriverOnlineGateResult(
@@ -111,17 +129,7 @@ abstract final class DriverOnlineState {
 
     // Ensure FCM permission + token while going online (background push).
     try {
-      final messaging = FirebaseMessaging.instance;
-      final settings = await messaging.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-        provisional: true,
-      );
-      if (settings.authorizationStatus == AuthorizationStatus.authorized ||
-          settings.authorizationStatus == AuthorizationStatus.provisional) {
-        await messaging.getToken();
-      }
+      await registerFcmTokenForCurrentUser();
     } catch (_) {}
 
     try {

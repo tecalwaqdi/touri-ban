@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:provider/provider.dart';
@@ -361,7 +362,7 @@ class _CityPickerTile extends StatelessWidget {
           const SizedBox(width: DsSpacing.xs),
           Expanded(
             child: Text(
-              valueOrDefault<String>(selected, 'حدد المدينة'),
+              valueOrDefault<String>(selected, 'geo.select_city'.tr()),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: typography.titleSmall.copyWith(

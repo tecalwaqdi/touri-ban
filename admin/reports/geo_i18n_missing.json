@@ -1,0 +1,4241 @@
+{
+  "generated": "read-only",
+  "COUNTRY_GEO_MISSING": 9,
+  "CITY_GEO_MISSING": 24,
+  "VILLAGE_GEO_MISSING": 24,
+  "LANDMARK_GEO_MISSING": 174,
+  "items": [
+    {
+      "collection": "countries",
+      "document_id": "india",
+      "country_iso": "IN",
+      "canonical_name": "الهند",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الهند",
+        "ru": "Индия",
+        "uz": "Hindiston",
+        "en": "India",
+        "ky": "Индия"
+      }
+    },
+    {
+      "collection": "countries",
+      "document_id": "indonesia",
+      "country_iso": "ID",
+      "canonical_name": "إندونيسيا",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "إندونيسيا",
+        "ru": "Индонезия",
+        "uz": "Indoneziya",
+        "en": "Indonesia",
+        "ky": "Индонезия"
+      }
+    },
+    {
+      "collection": "countries",
+      "document_id": "kyrgyzstan",
+      "country_iso": "KG",
+      "canonical_name": "قيرغيزستان",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "قيرغيزستان",
+        "en": "Kyrgyzstan",
+        "ru": "Кыргызстан",
+        "ky": "Кыргызстан"
+      }
+    },
+    {
+      "collection": "countries",
+      "document_id": "malaysia",
+      "country_iso": "MY",
+      "canonical_name": "ماليزيا",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "ماليزيا",
+        "ru": "Малайзия",
+        "uz": "Malayziya",
+        "en": "Malaysia",
+        "ky": "Малайзия"
+      }
+    },
+    {
+      "collection": "countries",
+      "document_id": "morocco",
+      "country_iso": "MA",
+      "canonical_name": "المغرب",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "المغرب",
+        "ru": "Марокко",
+        "uz": "Marokash",
+        "en": "Morocco",
+        "ky": "Марокко"
+      }
+    },
+    {
+      "collection": "countries",
+      "document_id": "portugal",
+      "country_iso": "PT",
+      "canonical_name": "البرتغال",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "البرتغال",
+        "ru": "Португалия",
+        "uz": "Portugaliya",
+        "en": "Portugal",
+        "ky": "Португалия"
+      }
+    },
+    {
+      "collection": "countries",
+      "document_id": "saudi_arabia",
+      "country_iso": "SA",
+      "canonical_name": "المملكة العربية السعودية",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "المملكة العربية السعودية",
+        "en": "Saudi Arabia",
+        "ru": "Саудовская Аравия",
+        "ky": "Саود Арабиясы"
+      }
+    },
+    {
+      "collection": "countries",
+      "document_id": "spain",
+      "country_iso": "ES",
+      "canonical_name": "إسبانيا",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "إسبانيا",
+        "ru": "Испания",
+        "uz": "Ispaniya",
+        "en": "Spain",
+        "ky": "Испания"
+      }
+    },
+    {
+      "collection": "countries",
+      "document_id": "tunisia",
+      "country_iso": "TN",
+      "canonical_name": "تونس",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "تونس",
+        "ru": "Тунис",
+        "uz": "Tunis",
+        "en": "Tunisia",
+        "ky": "Тунис"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_es_madrid",
+      "country_iso": "ES",
+      "parent_country_id": "spain",
+      "canonical_name": "مدريد",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مدريد",
+        "ru": "Мадрид",
+        "uz": "Madrid",
+        "en": "Madrid",
+        "ky": "Мадрид"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_id_jakarta",
+      "country_iso": "ID",
+      "parent_country_id": "indonesia",
+      "canonical_name": "Jakarta",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جاكرتا",
+        "ru": "Джakarta",
+        "uz": "Jakarta",
+        "en": "Jakarta",
+        "ky": "Jakarta"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_in_new_delhi",
+      "country_iso": "IN",
+      "parent_country_id": "india",
+      "canonical_name": "نيودلهي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "نيودلهي",
+        "ru": "Нью-Дели",
+        "uz": "New Delhi",
+        "en": "New Delhi",
+        "ky": "New Delhi"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_ma_rabat",
+      "country_iso": "MA",
+      "parent_country_id": "morocco",
+      "canonical_name": "الرباط",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الرباط",
+        "ru": "Рабат",
+        "uz": "Rabat",
+        "en": "Rabat",
+        "ky": "Рабат"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_my_kuala_lumpur",
+      "country_iso": "MY",
+      "parent_country_id": "malaysia",
+      "canonical_name": "Kuala Lumpur",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Kuala Lumpur",
+        "ru": "Kuala Lumpur",
+        "uz": "Kuala Lumpur",
+        "en": "Kuala Lumpur",
+        "ky": "Kuala Lumpur"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_pt_lisbon",
+      "country_iso": "PT",
+      "parent_country_id": "portugal",
+      "canonical_name": "لشبونة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "لشبونة",
+        "ru": "Лиссабон",
+        "uz": "Lissabon",
+        "en": "Lisbon",
+        "ky": "Лиссабон"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_abha",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "أبها",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "أبها",
+        "en": "Abha",
+        "ru": "Абха",
+        "ky": "Абха"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_asir",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "خميس مشيط",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "منطقة عسير",
+        "en": "Asir Region",
+        "ru": "Регион Асир",
+        "ky": "Асир аймагы"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_dammam",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "الدمام",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الدمام",
+        "en": "Dammam",
+        "ru": "Даммам",
+        "ky": "Даммам"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_es_madrid",
+      "country_iso": "ES",
+      "parent_country_id": "spain",
+      "canonical_name": "مدريد",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مدريد",
+        "ru": "Мадрид",
+        "uz": "Madrid",
+        "en": "Madrid",
+        "ky": "Мадрид"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_id_jakarta",
+      "country_iso": "ID",
+      "parent_country_id": "indonesia",
+      "canonical_name": "جاكرتا",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جاكرتا",
+        "ru": "Джakarta",
+        "uz": "Jakarta",
+        "en": "Jakarta",
+        "ky": "Jakarta"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_in_new_delhi",
+      "country_iso": "IN",
+      "parent_country_id": "india",
+      "canonical_name": "نيودلهي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "نيودلهي",
+        "ru": "Нью-Дели",
+        "uz": "New Delhi",
+        "en": "New Delhi",
+        "ky": "New Delhi"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_jeddah",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "جدة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جدة",
+        "en": "Jeddah",
+        "ru": "Джидда",
+        "ky": "Жидда"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_khobar",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "الخبر",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الخبر",
+        "en": "Al Khobar",
+        "ru": "Аль-Хубар",
+        "ky": "Аль-Хубар"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_ma_rabat",
+      "country_iso": "MA",
+      "parent_country_id": "morocco",
+      "canonical_name": "الرباط",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الرباط",
+        "ru": "Рабат",
+        "uz": "Rabat",
+        "en": "Rabat",
+        "ky": "Рабат"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_madinah",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "المدينة المنورة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "المدينة المنورة",
+        "en": "Madinah",
+        "ru": "Медина",
+        "ky": "Мадина"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_makkah",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "مكة المكرمة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مكة المكرمة",
+        "en": "Makkah",
+        "ru": "Мекка",
+        "ky": "Мекке"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_my_kuala_lumpur",
+      "country_iso": "MY",
+      "parent_country_id": "malaysia",
+      "canonical_name": "Kuala Lumpur",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Kuala Lumpur",
+        "ru": "Kuala Lumpur",
+        "uz": "Kuala Lumpur",
+        "en": "Kuala Lumpur",
+        "ky": "Kuala Lumpur"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_pt_lisbon",
+      "country_iso": "PT",
+      "parent_country_id": "portugal",
+      "canonical_name": "لشبونة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "لشبونة",
+        "ru": "Лиссабон",
+        "uz": "Lissabon",
+        "en": "Lisbon",
+        "ky": "Лиссабон"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_riyadh",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "الرياض",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الرياض",
+        "en": "Riyadh",
+        "ru": "Эр-Рияд",
+        "ky": "Эр-Рияд"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_tabuk",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "منطقة تبوك",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "منطقة تبوك",
+        "en": "Tabuk Region",
+        "ru": "Регион Табук",
+        "ky": "Табук аймагы"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_taif",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "الطائف",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الطائف",
+        "en": "Taif",
+        "ru": "Таиф",
+        "ky": "Таиф"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "region_sa_tn_tunis",
+      "country_iso": "TN",
+      "parent_country_id": "tunisia",
+      "canonical_name": "تونس",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "تونس",
+        "ru": "Тунис",
+        "uz": "Tunis",
+        "en": "Tunis",
+        "ky": "Тунис"
+      }
+    },
+    {
+      "collection": "cities",
+      "document_id": "test_adminnext_region_region_a",
+      "country_iso": "",
+      "parent_country_id": "",
+      "canonical_name": "",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_es_madrid",
+      "country_iso": "ES",
+      "parent_country_id": "spain",
+      "canonical_name": "مدريد",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مدريد",
+        "ru": "Мадрид",
+        "uz": "Madrid",
+        "en": "Madrid",
+        "ky": "Мадрид"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_id_jakarta",
+      "country_iso": "ID",
+      "parent_country_id": "indonesia",
+      "canonical_name": "جاكرتا",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جاكرتا",
+        "ru": "Джakarta",
+        "uz": "Jakarta",
+        "en": "Jakarta",
+        "ky": "Jakarta"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_in_new_delhi",
+      "country_iso": "IN",
+      "parent_country_id": "india",
+      "canonical_name": "نيودلهي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "نيودلهي",
+        "ru": "Нью-Дели",
+        "uz": "New Delhi",
+        "en": "New Delhi",
+        "ky": "New Delhi"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_ma_rabat",
+      "country_iso": "MA",
+      "parent_country_id": "morocco",
+      "canonical_name": "الرباط",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الرباط",
+        "ru": "Рабат",
+        "uz": "Rabat",
+        "en": "Rabat",
+        "ky": "Рабат"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_my_kuala_lumpur",
+      "country_iso": "MY",
+      "parent_country_id": "malaysia",
+      "canonical_name": "Kuala Lumpur",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Kuala Lumpur",
+        "ru": "Kuala Lumpur",
+        "uz": "Kuala Lumpur",
+        "en": "Kuala Lumpur",
+        "ky": "Kuala Lumpur"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_pt_lisbon",
+      "country_iso": "PT",
+      "parent_country_id": "portugal",
+      "canonical_name": "لشبونة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "لشبونة",
+        "ru": "Лиссабон",
+        "uz": "Lissabon",
+        "en": "Lisbon",
+        "ky": "Лиссабон"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_abha",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "أبها",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "أبها",
+        "en": "Abha",
+        "ru": "Абха",
+        "ky": "Абха"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_dammam",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "الدمام",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الدمام",
+        "en": "Dammam",
+        "ru": "Даммам",
+        "ky": "Даммам"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_es_madrid",
+      "country_iso": "ES",
+      "parent_country_id": "spain",
+      "canonical_name": "مدريد",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مدريد",
+        "ru": "Мадрид",
+        "uz": "Madrid",
+        "en": "Madrid",
+        "ky": "Мадрид"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_id_jakarta",
+      "country_iso": "ID",
+      "parent_country_id": "indonesia",
+      "canonical_name": "جاكرتا",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جاكرتا",
+        "ru": "Джakarta",
+        "uz": "Jakarta",
+        "en": "Jakarta",
+        "ky": "Jakarta"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_in_new_delhi",
+      "country_iso": "IN",
+      "parent_country_id": "india",
+      "canonical_name": "نيودلهي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "نيودلهي",
+        "ru": "Нью-Дели",
+        "uz": "New Delhi",
+        "en": "New Delhi",
+        "ky": "New Delhi"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_jeddah",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "جدة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جدة",
+        "en": "Jeddah",
+        "ru": "Джидда",
+        "ky": "Жидда"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_khobar",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "الخبر",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الخبر",
+        "en": "Al Khobar",
+        "ru": "Аль-Хубар",
+        "ky": "Аль-Хубар"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_ma_rabat",
+      "country_iso": "MA",
+      "parent_country_id": "morocco",
+      "canonical_name": "الرباط",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الرباط",
+        "ru": "Рабат",
+        "uz": "Rabat",
+        "en": "Rabat",
+        "ky": "Рабат"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_madinah",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "المدينة المنورة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "المدينة المنورة",
+        "en": "Madinah",
+        "ru": "Медина",
+        "ky": "Мадина"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_makkah",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "مكة المكرمة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مكة المكرمة",
+        "en": "Makkah",
+        "ru": "Мекка",
+        "ky": "Мекке"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_my_kuala_lumpur",
+      "country_iso": "MY",
+      "parent_country_id": "malaysia",
+      "canonical_name": "Kuala Lumpur",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Kuala Lumpur",
+        "ru": "Kuala Lumpur",
+        "uz": "Kuala Lumpur",
+        "en": "Kuala Lumpur",
+        "ky": "Kuala Lumpur"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_pt_lisbon",
+      "country_iso": "PT",
+      "parent_country_id": "portugal",
+      "canonical_name": "لشبونة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "لشبونة",
+        "ru": "Лиссабон",
+        "uz": "Lissabon",
+        "en": "Lisbon",
+        "ky": "Лиссабон"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_riyadh",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "الرياض",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الرياض",
+        "en": "Riyadh",
+        "ru": "Эр-Рияд",
+        "ky": "Эр-Рияд"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_tabuk",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "تبوك",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "تبوك",
+        "en": "Tabuk",
+        "ru": "Табук",
+        "ky": "Табук"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_taif",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "الطائف",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الطائف",
+        "en": "Taif",
+        "ru": "Таиф",
+        "ky": "Таиф"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "city_sa_tn_tunis",
+      "country_iso": "TN",
+      "parent_country_id": "tunisia",
+      "canonical_name": "تونس",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "تونس",
+        "ru": "Тунис",
+        "uz": "Tunis",
+        "en": "Tunis",
+        "ky": "Тунис"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "cp5_city_mut_1790029931545",
+      "country_iso": "SA",
+      "parent_country_id": "saudi_arabia",
+      "canonical_name": "مدينة اختبار",
+      "missing_locales": [
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مدينة اختبار",
+        "en": "QA City Mut"
+      }
+    },
+    {
+      "collection": "villages",
+      "document_id": "test_adminnext_city_city_a",
+      "country_iso": "",
+      "parent_country_id": "",
+      "canonical_name": "",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "mkan",
+      "document_id": "29pHuhVbvRHA3Nc183j2",
+      "country_iso": "جبل دكا",
+      "parent_country_id": "",
+      "canonical_name": "جبل دكا",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جبل دكا"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "2CmBYcejxFWSezhqcwTQ",
+      "country_iso": "حي حراء الثقافي",
+      "parent_country_id": "",
+      "canonical_name": "حي حراء الثقافي",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "حي حراء الثقافي"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "3lL3MTtWSD6cUGqrhvMY",
+      "country_iso": "متحف مكة للآثار والتراث",
+      "parent_country_id": "",
+      "canonical_name": "متحف مكة للآثار والتراث",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "متحف مكة للآثار والتراث"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "7kO8YfVN8HRNhzRSvBhz",
+      "country_iso": "منتزه الملك عبدالله",
+      "parent_country_id": "",
+      "canonical_name": "منتزه الملك عبدالله",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "منتزه الملك عبدالله"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "Qr1Mc1yTESYEALspzUvR",
+      "country_iso": "جبال تيبستي",
+      "parent_country_id": "",
+      "canonical_name": "جبال تيبستي",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جبال تيبستي"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "WC5kG3ORF8QmguwReN8B",
+      "country_iso": "معرض عمارة الحرمين الشريفين",
+      "parent_country_id": "",
+      "canonical_name": "معرض عمارة الحرمين الشريفين",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "معرض عمارة الحرمين الشريفين"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "YdxB248XffFY3Ajh2gLg",
+      "country_iso": "حديقة الحيوانات",
+      "parent_country_id": "",
+      "canonical_name": "حديقة الحيوانات",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "حديقة الحيوانات"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "aS6T3qF4q3jmm0cO7sY4",
+      "country_iso": "سينومي الجوري مول",
+      "parent_country_id": "",
+      "canonical_name": "سينومي الجوري مول",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "سينومي الجوري مول"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "alqbGstzPWsjRucrWvpe",
+      "country_iso": "منتزه جيريال لاند الترفيهي",
+      "parent_country_id": "",
+      "canonical_name": "منتزه جيريال لاند الترفيهي",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "منتزه جيريال لاند الترفيهي"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "caV8xeMybRSLwjX62Pw0",
+      "country_iso": "مدرجات الورد",
+      "parent_country_id": "",
+      "canonical_name": "مدرجات الورد",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مدرجات الورد"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "cp5_lm_mut_1790029931550",
+      "country_iso": "معلم",
+      "parent_country_id": "",
+      "canonical_name": "معلم",
+      "missing_locales": [
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "معلم",
+        "en": "QA LM"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "cp5_mkan_1787562918003",
+      "country_iso": "FUNCTIONAL TEST LANDMARK",
+      "parent_country_id": "",
+      "canonical_name": "FUNCTIONAL TEST LANDMARK",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_abha_abu_khayal",
+      "country_iso": "منتزه أبو خيال",
+      "parent_country_id": "",
+      "canonical_name": "منتزه أبو خيال",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "منتزه أبو خيال",
+        "en": "Abu Khayal Park",
+        "ru": "Парк Абу-Хаяль",
+        "ky": "Абу-Хаяль паркы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_abha_art_street",
+      "country_iso": "شارع الفن",
+      "parent_country_id": "",
+      "canonical_name": "شارع الفن",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "شارع الفن",
+        "en": "Art Street",
+        "ru": "Улица искусств",
+        "ky": "Искусство көчөсү"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_abha_dam",
+      "country_iso": "سد أبها",
+      "parent_country_id": "",
+      "canonical_name": "سد أبها",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "سد أبها",
+        "en": "Abha Dam",
+        "ru": "Плотина Абхи",
+        "ky": "Абха дамбасы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_abha_fog_walkway",
+      "country_iso": "ممشى الضباب",
+      "parent_country_id": "",
+      "canonical_name": "ممشى الضباب",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "ممشى الضباب",
+        "en": "Al-Dhabab Walkway (Fog Walkway)",
+        "ru": "Променад Ад-Дабаб (Туманный)",
+        "ky": "Ад-Дабаб сейилдөөсү (Тумандуу)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_abha_green_mountain",
+      "country_iso": "الجبل الأخضر",
+      "parent_country_id": "",
+      "canonical_name": "الجبل الأخضر",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الجبل الأخضر",
+        "en": "Green Mountain (Jabal al-Akhdar)",
+        "ru": "Зелёная гора (Джабаль аль-Ахдар)",
+        "ky": "Жашыл тоо (Жабал аль-Ахдар)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_abha_high_city",
+      "country_iso": "مدينة أبها العالية",
+      "parent_country_id": "",
+      "canonical_name": "مدينة أبها العالية",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مدينة أبها العالية",
+        "en": "Abha High City (Al-Madinah Al-Aliyah)",
+        "ru": "Высокий город Абхи (Аль-Мадина аль-Алия)",
+        "ky": "Абха Жогорку шаары (Аль-Мадина аль-Алия)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_dammam_coral_island",
+      "country_iso": "جزيرة المرجان",
+      "parent_country_id": "",
+      "canonical_name": "جزيرة المرجان",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جزيرة المرجان",
+        "en": "Coral Island (Jazirat al-Marjan)",
+        "ru": "Коралловый остров (Джазират аль-Марджан)",
+        "ky": "Корал аралы (Жазират аль-Маржан)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_dammam_corniche",
+      "country_iso": "كورنيش الدمام",
+      "parent_country_id": "",
+      "canonical_name": "كورنيش الدمام",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "كورنيش الدمام",
+        "en": "Dammam Corniche",
+        "ru": "Набережная Даммама",
+        "ky": "Даммам корниши"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_dammam_heritage_village",
+      "country_iso": "القرية الشعبية",
+      "parent_country_id": "",
+      "canonical_name": "القرية الشعبية",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "القرية الشعبية",
+        "en": "Heritage Village",
+        "ru": "Народная деревня (Heritage Village)",
+        "ky": "Элдик кыштак (Heritage Village)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_dammam_seafront",
+      "country_iso": "الواجهة البحرية",
+      "parent_country_id": "",
+      "canonical_name": "الواجهة البحرية",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الواجهة البحرية",
+        "en": "Dammam Seafront",
+        "ru": "Морской фасад Даммама",
+        "ky": "Даммам деңиз фасады"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_jeddah_albalad",
+      "country_iso": "جدة التاريخية (البلد)",
+      "parent_country_id": "",
+      "canonical_name": "جدة التاريخية (البلد)",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جدة التاريخية (البلد)",
+        "en": "Historic Jeddah (Al-Balad)",
+        "ru": "Историческая Джидда (Аль-Балад)",
+        "ky": "Тарыхый Жидда (Аль-Балад)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_jeddah_corniche",
+      "country_iso": "كورنيش جدة",
+      "parent_country_id": "",
+      "canonical_name": "كورنيش جدة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "كورنيش جدة",
+        "en": "Jeddah Corniche",
+        "ru": "Набережная Джидды",
+        "ky": "Жидда жээги"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_jeddah_fountain",
+      "country_iso": "نافورة الملك فهد",
+      "parent_country_id": "",
+      "canonical_name": "نافورة الملك فهد",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "نافورة الملك فهد",
+        "en": "King Fahd Fountain",
+        "ru": "Фонтан короля Фахда",
+        "ky": "Король Фахд фонтаны"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_jeddah_rahmah_mosque",
+      "country_iso": "مسجد الرحمة (المسجد العائم)",
+      "parent_country_id": "",
+      "canonical_name": "مسجد الرحمة (المسجد العائم)",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد الرحمة (المسجد العائم)",
+        "en": "Al-Rahmah Mosque (Floating Mosque)",
+        "ru": "Мечеть Ар-Рахма (плавучая мечеть)",
+        "ky": "Ар-Рахма мечити (сүзүүчү мечит)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_jeddah_souq_alawi",
+      "country_iso": "سوق العلوي",
+      "parent_country_id": "",
+      "canonical_name": "سوق العلوي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "سوق العلوي",
+        "en": "Souq Al-Alawi",
+        "ru": "Рынок Аль-Алави",
+        "ky": "Аль-Алави базары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_jeddah_tayebat_museum",
+      "country_iso": "متحف الطيبات للمدن العالمية والحضارات",
+      "parent_country_id": "",
+      "canonical_name": "متحف الطيبات للمدن العالمية والحضارات",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "متحف الطيبات للمدن العالمية والحضارات",
+        "en": "Al-Tayebat International City Museum",
+        "ru": "Музей Аль-Тайбат международных цивилизаций",
+        "ky": "Аль-Тайбат эл аралык цивилизациялар музейи"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_jeddah_yacht_club",
+      "country_iso": "نادي جدة لليخوت والمارينا",
+      "parent_country_id": "",
+      "canonical_name": "نادي جدة لليخوت والمارينا",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "نادي جدة لليخوت والمارينا",
+        "en": "Jeddah Yacht Club & Marina",
+        "ru": "Яхт-клуб и марина Джидды",
+        "ky": "Жидда яхта клубу жана маринасы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_khobar_corniche",
+      "country_iso": "كورنيش الخبر",
+      "parent_country_id": "",
+      "canonical_name": "كورنيش الخبر",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "كورنيش الخبر",
+        "en": "Al Khobar Corniche",
+        "ru": "Набережная Аль-Хубара",
+        "ky": "Аль-Хубар корниши"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_khobar_half_moon_bay",
+      "country_iso": "شاطئ نصف القمر",
+      "parent_country_id": "",
+      "canonical_name": "شاطئ نصف القمر",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "شاطئ نصف القمر",
+        "en": "Half Moon Bay",
+        "ru": "Бухта Полумесяца",
+        "ky": "Жарым Ай булуңу"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_khobar_king_fahd_causeway",
+      "country_iso": "جسر الملك فهد",
+      "parent_country_id": "",
+      "canonical_name": "جسر الملك فهد",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جسر الملك فهد",
+        "en": "King Fahd Causeway",
+        "ru": "Мост короля Фахда",
+        "ky": "Король Фахд көпүрөсү"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_khobar_water_tower",
+      "country_iso": "برج المياه",
+      "parent_country_id": "",
+      "canonical_name": "برج المياه",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "برج المياه",
+        "en": "Al Khobar Water Tower",
+        "ru": "Водонапорная башня Аль-Хубара",
+        "ky": "Аль-Хубар суу мунарасы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_makkah_clock_tower",
+      "country_iso": "أبراج البيت (ساعة مكة)",
+      "parent_country_id": "",
+      "canonical_name": "أبراج البيت (ساعة مكة)",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "أبراج البيت (ساعة مكة)",
+        "en": "Abraj Al Bait (Makkah Clock Tower)",
+        "ru": "Башни Абрадж Аль-Байт (часы Мекки)",
+        "ky": "Абраж Аль-Байт (Мекке сааты)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_makkah_clock_tower_museum",
+      "country_iso": "متحف برج الساعة",
+      "parent_country_id": "",
+      "canonical_name": "متحف برج الساعة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "متحف برج الساعة",
+        "en": "Makkah Clock Tower Museum",
+        "ru": "Музей Часовой башни Мекки",
+        "ky": "Мекке саат мунарасы музейи"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_makkah_jabal_nour",
+      "country_iso": "جبل النور — غار حراء",
+      "parent_country_id": "",
+      "canonical_name": "جبل النور — غار حراء",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جبل النور — غار حراء",
+        "en": "Jabal al-Nour — Cave of Hira",
+        "ru": "Джабаль ан-Нур — пещера Хира",
+        "ky": "Жабал ан-Нур — Хира үңкүрү"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_makkah_jabal_rahmah",
+      "country_iso": "جبل الرحمة",
+      "parent_country_id": "",
+      "canonical_name": "جبل الرحمة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جبل الرحمة",
+        "en": "Jabal al-Rahmah (Mount of Mercy)",
+        "ru": "Джабаль ар-Рахма (Гора Милосердия)",
+        "ky": "Жабал ар-Рахма (Ырайым тоосу)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_riyadh_boulevard",
+      "country_iso": "بوليفارد الرياض",
+      "parent_country_id": "",
+      "canonical_name": "بوليفارد الرياض",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "بوليفارد الرياض",
+        "en": "Boulevard Riyadh",
+        "ru": "Бульвар Эр-Рияд",
+        "ky": "Эр-Рияд бульвары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_riyadh_boulevard_world",
+      "country_iso": "بوليفارد وورلد",
+      "parent_country_id": "",
+      "canonical_name": "بوليفارد وورلد",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "بوليفارد وورلد",
+        "en": "Boulevard World",
+        "ru": "Boulevard World",
+        "ky": "Boulevard World"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_riyadh_diriyah_turaif",
+      "country_iso": "الدرعية التاريخية (حي الطريف)",
+      "parent_country_id": "",
+      "canonical_name": "الدرعية التاريخية (حي الطريف)",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الدرعية التاريخية (حي الطريف)",
+        "en": "Historic Diriyah (At-Turaif District)",
+        "ru": "Историческая Дирия (район Ат-Турайф)",
+        "ky": "Тарыхый Дирия (Ат-Турайф району)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_riyadh_edge_of_the_world",
+      "country_iso": "حافة العالم (جبل فيهرين)",
+      "parent_country_id": "",
+      "canonical_name": "حافة العالم (جبل فيهرين)",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "حافة العالم (جبل فيهرين)",
+        "en": "Edge of the World (Jebel Fihrayn)",
+        "ru": "Край света (Джебель Фихрайн)",
+        "ky": "Дүйнөнүн чети (Жебел Фихрайн)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_riyadh_king_abdullah_park",
+      "country_iso": "منتزه الملك عبدالله (الملز)",
+      "parent_country_id": "",
+      "canonical_name": "منتزه الملك عبدالله (الملز)",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "منتزه الملك عبدالله (الملز)",
+        "en": "King Abdullah Park (Al-Malaz)",
+        "ru": "Парк короля Абдаллы (Аль-Малаз)",
+        "ky": "Король Абдулла паркы (Аль-Малаз)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_riyadh_masmak",
+      "country_iso": "قصر المصمك",
+      "parent_country_id": "",
+      "canonical_name": "قصر المصمك",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "قصر المصمك",
+        "en": "Masmak Fortress",
+        "ru": "Крепость Масмак",
+        "ky": "Масмак чеби"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_riyadh_national_museum",
+      "country_iso": "المتحف الوطني السعودي",
+      "parent_country_id": "",
+      "canonical_name": "المتحف الوطني السعودي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "المتحف الوطني السعودي",
+        "en": "National Museum of Saudi Arabia",
+        "ru": "Национальный музей Саудовской Аравии",
+        "ky": "Сауд Арабиясынын Улуттук музейи"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_riyadh_wadi_hanifa",
+      "country_iso": "وادي حنيفة",
+      "parent_country_id": "",
+      "canonical_name": "وادي حنيفة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "وادي حنيفة",
+        "en": "Wadi Hanifa",
+        "ru": "Вади Ханифа",
+        "ky": "Вади Ханифа"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_tabuk_castle",
+      "country_iso": "قلعة تبوك",
+      "parent_country_id": "",
+      "canonical_name": "قلعة تبوك",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "قلعة تبوك",
+        "en": "Tabuk Castle",
+        "ru": "Крепость Табук",
+        "ky": "Табук чеби"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_tabuk_jabal_lawz",
+      "country_iso": "جبال اللوز",
+      "parent_country_id": "",
+      "canonical_name": "جبال اللوز",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جبال اللوز",
+        "en": "Jabal al-Lawz (Almond Mountains)",
+        "ru": "Джабаль аль-Лауз (Миндальные горы)",
+        "ky": "Жабал аль-Лауз (Бадам тоолору)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_tabuk_jabal_zaytah",
+      "country_iso": "جبال الزيتة",
+      "parent_country_id": "",
+      "canonical_name": "جبال الزيتة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جبال الزيتة",
+        "en": "Jibal al-Zaytah (Zaytah Mountains)",
+        "ru": "Горы аз-Зайта",
+        "ky": "Аз-Зайта тоолору"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_tabuk_tawbah_mosque",
+      "country_iso": "مسجد التوبة",
+      "parent_country_id": "",
+      "canonical_name": "مسجد التوبة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد التوبة",
+        "en": "Al-Tawbah Mosque (Mosque of Repentance)",
+        "ru": "Мечеть Ат-Тауба (Мечеть Покаяния)",
+        "ky": "Ат-Тауба мечити (Тообо мечити)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_taif_al_hada",
+      "country_iso": "جبل الهدا",
+      "parent_country_id": "",
+      "canonical_name": "جبل الهدا",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جبل الهدا",
+        "en": "Al-Hada (Jabal Hada)",
+        "ru": "Аль-Хада (Джабаль Хада)",
+        "ky": "Аль-Хада (Жабал Хада)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_taif_ash_shafa",
+      "country_iso": "الشفا",
+      "parent_country_id": "",
+      "canonical_name": "الشفا",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الشفا",
+        "en": "Ash-Shafa (Al-Shafa)",
+        "ru": "Аш-Шафа",
+        "ky": "Аш-Шафа"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "curated_taif_hada_teleferic",
+      "country_iso": "تلفريك الهدا",
+      "parent_country_id": "",
+      "canonical_name": "تلفريك الهدا",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "تلفريك الهدا",
+        "en": "Al-Hada Cable Car (Teleferic)",
+        "ru": "Канатная дорога Аль-Хада (Телеферик)",
+        "ky": "Аль-Хада канат жолу (Телеферик)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "dsoPXGypJREN90eo5P7z",
+      "country_iso": "قرية التوت",
+      "parent_country_id": "",
+      "canonical_name": "قرية التوت",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "قرية التوت"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "kRBLiwut99Enxu4aIJHX",
+      "country_iso": "متحف القرآن الكريم",
+      "parent_country_id": "",
+      "canonical_name": "متحف القرآن الكريم",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "متحف القرآن الكريم"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_es_madrid_plaza-mayor",
+      "country_iso": "Plaza Mayor",
+      "parent_country_id": "",
+      "canonical_name": "Plaza Mayor",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Plaza Mayor",
+        "ru": "Пласа-Майор",
+        "uz": "Plaza Mayor",
+        "en": "Plaza Mayor",
+        "ky": "Пласа-Майор"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_es_madrid_prado-museum",
+      "country_iso": "متحف برادو",
+      "parent_country_id": "",
+      "canonical_name": "متحف برادو",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "متحف برادو",
+        "ru": "Музей Прадо",
+        "uz": "Prado muzeyi",
+        "en": "Prado Museum",
+        "ky": "Прадо музейи"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_es_madrid_puerta-alcala",
+      "country_iso": "Puerta de Alcalá",
+      "parent_country_id": "",
+      "canonical_name": "Puerta de Alcalá",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Puerta de Alcalá",
+        "ru": "Пуэрта de Alcalá",
+        "uz": "Puerta de Alcalá",
+        "en": "Puerta de Alcalá",
+        "ky": "Пуэрта de Alcalá"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_es_madrid_retiro-park",
+      "country_iso": "حديقة El Retiro",
+      "parent_country_id": "",
+      "canonical_name": "حديقة El Retiro",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "حديقة El Retiro",
+        "ru": "Парк Ретиро",
+        "uz": "El Retiro bogʻi",
+        "en": "El Retiro Park",
+        "ky": "Ретиро парки"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_es_madrid_royal-palace",
+      "country_iso": "القصر الملكي",
+      "parent_country_id": "",
+      "canonical_name": "القصر الملكي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "القصر الملكي",
+        "ru": "Королевский дворец Мадрида",
+        "uz": "Madrid qirol saroyi",
+        "en": "Royal Palace of Madrid",
+        "ky": "Мадрид королдук сарайы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_id_jakarta_istiqlal-mosque",
+      "country_iso": "مسجد Istiqlal",
+      "parent_country_id": "",
+      "canonical_name": "مسجد Istiqlal",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد Istiqlal",
+        "ru": "Мечеть Istiqlal",
+        "uz": "Istiqlal masjidi",
+        "en": "Istiqlal Mosque",
+        "ky": "Istiqlal мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_id_jakarta_jakarta-cathedral",
+      "country_iso": "Jakarta Cathedral",
+      "parent_country_id": "",
+      "canonical_name": "Jakarta Cathedral",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Jakarta Cathedral",
+        "ru": "Собор Jakarta",
+        "uz": "Jakarta sobori",
+        "en": "Jakarta Cathedral",
+        "ky": "Jakarta собору"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_id_jakarta_kota-tua",
+      "country_iso": "Kota Tua",
+      "parent_country_id": "",
+      "canonical_name": "Kota Tua",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Kota Tua",
+        "ru": "Старый город Kota Tua",
+        "uz": "Kota Tua eski shahar",
+        "en": "Old Town (Kota Tua)",
+        "ky": "Kota Tua эski шаары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_id_jakarta_national-monument",
+      "country_iso": "Monas",
+      "parent_country_id": "",
+      "canonical_name": "Monas",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Monas",
+        "ru": "Национальный монумент Monas",
+        "uz": "Monas yodgorligi",
+        "en": "National Monument (Monas)",
+        "ky": "Monas эстлigi"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_id_jakarta_taman-mini",
+      "country_iso": "Taman Mini Indonesia Indah",
+      "parent_country_id": "",
+      "canonical_name": "Taman Mini Indonesia Indah",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Taman Mini Indonesia Indah",
+        "ru": "Taman Mini Indonesia Indah",
+        "uz": "Taman Mini",
+        "en": "Taman Mini Indonesia Indah",
+        "ky": "Taman Mini"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_in_new_delhi_humayuns-tomb",
+      "country_iso": "Humayun's Tomb",
+      "parent_country_id": "",
+      "canonical_name": "Humayun's Tomb",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Humayun's Tomb",
+        "ru": "Tomb Humayun",
+        "uz": "Humayun maqbarasi",
+        "en": "Humayun's Tomb",
+        "ky": "Humayun мавзолейи"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_in_new_delhi_india-gate",
+      "country_iso": "India Gate",
+      "parent_country_id": "",
+      "canonical_name": "India Gate",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "India Gate",
+        "ru": "Ворота India",
+        "uz": "India Gate",
+        "en": "India Gate",
+        "ky": "India Gate"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_in_new_delhi_lotus-temple",
+      "country_iso": "Lotus Temple",
+      "parent_country_id": "",
+      "canonical_name": "Lotus Temple",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Lotus Temple",
+        "ru": "Храм Лotus",
+        "uz": "Lotus ibodatxonasi",
+        "en": "Lotus Temple",
+        "ky": "Lotus храмы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_in_new_delhi_qutub-minar",
+      "country_iso": "Qutub Minar",
+      "parent_country_id": "",
+      "canonical_name": "Qutub Minar",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Qutub Minar",
+        "ru": "Qutub Minar",
+        "uz": "Qutub minorasi",
+        "en": "Qutub Minar",
+        "ky": "Qutub Minar"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_in_new_delhi_red-fort",
+      "country_iso": "Red Fort",
+      "parent_country_id": "",
+      "canonical_name": "Red Fort",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Red Fort",
+        "ru": "Красный форт",
+        "uz": "Qizil qalʼa",
+        "en": "Red Fort",
+        "ky": "Red Fort"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_ma_rabat_chellah",
+      "country_iso": "شالة",
+      "parent_country_id": "",
+      "canonical_name": "شالة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "شالة",
+        "ru": "Шелла",
+        "uz": "Chellah",
+        "en": "Chellah Necropolis",
+        "ky": "Шелла"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_ma_rabat_hassan-tower",
+      "country_iso": "صومعة حسان",
+      "parent_country_id": "",
+      "canonical_name": "صومعة حسان",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "صومعة حسان",
+        "ru": "Башня Хасана",
+        "uz": "Hasan minorasi",
+        "en": "Hassan Tower",
+        "ky": "Хасан мунары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_ma_rabat_kasbah-udayas",
+      "country_iso": "قصبة الأوداية",
+      "parent_country_id": "",
+      "canonical_name": "قصبة الأوداية",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "قصبة الأوداية",
+        "ru": "Кasbah des Oudayas",
+        "uz": "Udayas qalʼasi",
+        "en": "Kasbah of the Udayas",
+        "ky": "Уdayas кasbah"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_ma_rabat_royal-palace",
+      "country_iso": "القصر الملكي بالرباط",
+      "parent_country_id": "",
+      "canonical_name": "القصر الملكي بالرباط",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "القصر الملكي بالرباط",
+        "ru": "Королевский дворец Рабата",
+        "uz": "Rabat qirol saroyi",
+        "en": "Royal Palace of Rabat",
+        "ky": "Рабат королдук сарайы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_my_kuala_lumpur_batu-caves",
+      "country_iso": "Batu Caves",
+      "parent_country_id": "",
+      "canonical_name": "Batu Caves",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Batu Caves",
+        "ru": "Batu Caves",
+        "uz": "Batu Caves",
+        "en": "Batu Caves",
+        "ky": "Batu Caves"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_my_kuala_lumpur_kl-tower",
+      "country_iso": "KL Tower",
+      "parent_country_id": "",
+      "canonical_name": "KL Tower",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "KL Tower",
+        "ru": "Башня KL",
+        "uz": "KL minorasi",
+        "en": "KL Tower",
+        "ky": "KL башнясы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_my_kuala_lumpur_merdeka-square",
+      "country_iso": "Merdeka Square",
+      "parent_country_id": "",
+      "canonical_name": "Merdeka Square",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Merdeka Square",
+        "ru": "Площадь Merdeka",
+        "uz": "Merdeka maydoni",
+        "en": "Merdeka Square",
+        "ky": "Merdeka аянты"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_my_kuala_lumpur_petronas-towers",
+      "country_iso": "Petronas Twin Towers",
+      "parent_country_id": "",
+      "canonical_name": "Petronas Twin Towers",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Petronas Twin Towers",
+        "ru": "Башни Petronas",
+        "uz": "Petronas minoralari",
+        "en": "Petronas Twin Towers",
+        "ky": "Petronas башнялары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_my_kuala_lumpur_thean-hou-temple",
+      "country_iso": "Thean Hou Temple",
+      "parent_country_id": "",
+      "canonical_name": "Thean Hou Temple",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Thean Hou Temple",
+        "ru": "Храм Thean Hou",
+        "uz": "Thean Hou ibodatxonasi",
+        "en": "Thean Hou Temple",
+        "ky": "Thean Hou храмы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_pt_lisbon_belem-tower",
+      "country_iso": "برج Belém",
+      "parent_country_id": "",
+      "canonical_name": "برج Belém",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "برج Belém",
+        "ru": "Белémская башня",
+        "uz": "Belém minorasi",
+        "en": "Belém Tower",
+        "ky": "Belém башнясы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_pt_lisbon_jeronimos",
+      "country_iso": "دير Jerónimos",
+      "parent_country_id": "",
+      "canonical_name": "دير Jerónimos",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "دير Jerónimos",
+        "ru": "Монастырь Жеронимуш",
+        "uz": "Jerónimos monastiri",
+        "en": "Jerónimos Monastery",
+        "ky": "Jerónimos монастыри"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_pt_lisbon_monument-discoveries",
+      "country_iso": "Monumento aos Descobrimentos",
+      "parent_country_id": "",
+      "canonical_name": "Monumento aos Descobrimentos",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Monumento aos Descobrimentos",
+        "ru": "Памятник открытиям",
+        "uz": "Kashfiyotlar yodgorligi",
+        "en": "Monument to the Discoveries",
+        "ky": "Ачуулар эстлigi"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_pt_lisbon_praca-comercio",
+      "country_iso": "Praça do Comércio",
+      "parent_country_id": "",
+      "canonical_name": "Praça do Comércio",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Praça do Comércio",
+        "ru": "Площадь Комércio",
+        "uz": "Commerce maydoni",
+        "en": "Commerce Square",
+        "ky": "Commerce аянты"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_pt_lisbon_sao-jorge-castle",
+      "country_iso": "قلعة São Jorge",
+      "parent_country_id": "",
+      "canonical_name": "قلعة São Jorge",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "قلعة São Jorge",
+        "ru": "Замок São Jorge",
+        "uz": "São Jorge qalʼasi",
+        "en": "São Jorge Castle",
+        "ky": "São Jorge замогу"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_es_madrid_plaza-mayor",
+      "country_iso": "Plaza Mayor",
+      "parent_country_id": "",
+      "canonical_name": "Plaza Mayor",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Plaza Mayor",
+        "ru": "Пласа-Майор",
+        "uz": "Plaza Mayor",
+        "en": "Plaza Mayor",
+        "ky": "Пласа-Майор"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_es_madrid_prado-museum",
+      "country_iso": "متحف برادو",
+      "parent_country_id": "",
+      "canonical_name": "متحف برادو",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "متحف برادو",
+        "ru": "Музей Прадо",
+        "uz": "Prado muzeyi",
+        "en": "Prado Museum",
+        "ky": "Прадо музейи"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_es_madrid_puerta-alcala",
+      "country_iso": "Puerta de Alcalá",
+      "parent_country_id": "",
+      "canonical_name": "Puerta de Alcalá",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Puerta de Alcalá",
+        "ru": "Пуэрта de Alcalá",
+        "uz": "Puerta de Alcalá",
+        "en": "Puerta de Alcalá",
+        "ky": "Пуэрта de Alcalá"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_es_madrid_retiro-park",
+      "country_iso": "حديقة El Retiro",
+      "parent_country_id": "",
+      "canonical_name": "حديقة El Retiro",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "حديقة El Retiro",
+        "ru": "Парк Ретиро",
+        "uz": "El Retiro bogʻi",
+        "en": "El Retiro Park",
+        "ky": "Ретиро парки"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_es_madrid_royal-palace",
+      "country_iso": "القصر الملكي",
+      "parent_country_id": "",
+      "canonical_name": "القصر الملكي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "القصر الملكي",
+        "ru": "Королевский дворец Мадрида",
+        "uz": "Madrid qirol saroyi",
+        "en": "Royal Palace of Madrid",
+        "ky": "Мадрид королдук сарайы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_id_jakarta_istiqlal-mosque",
+      "country_iso": "مسجد Istiqlal",
+      "parent_country_id": "",
+      "canonical_name": "مسجد Istiqlal",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد Istiqlal",
+        "ru": "Мечеть Istiqlal",
+        "uz": "Istiqlal masjidi",
+        "en": "Istiqlal Mosque",
+        "ky": "Istiqlal мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_id_jakarta_jakarta-cathedral",
+      "country_iso": "Jakarta Cathedral",
+      "parent_country_id": "",
+      "canonical_name": "Jakarta Cathedral",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Jakarta Cathedral",
+        "ru": "Собор Jakarta",
+        "uz": "Jakarta sobori",
+        "en": "Jakarta Cathedral",
+        "ky": "Jakarta собору"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_id_jakarta_kota-tua",
+      "country_iso": "Kota Tua",
+      "parent_country_id": "",
+      "canonical_name": "Kota Tua",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Kota Tua",
+        "ru": "Старый город Kota Tua",
+        "uz": "Kota Tua eski shahar",
+        "en": "Old Town (Kota Tua)",
+        "ky": "Kota Tua эski шаары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_id_jakarta_national-monument",
+      "country_iso": "Monas",
+      "parent_country_id": "",
+      "canonical_name": "Monas",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Monas",
+        "ru": "Национальный монумент Monas",
+        "uz": "Monas yodgorligi",
+        "en": "National Monument (Monas)",
+        "ky": "Monas эстлigi"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_id_jakarta_taman-mini",
+      "country_iso": "Taman Mini Indonesia Indah",
+      "parent_country_id": "",
+      "canonical_name": "Taman Mini Indonesia Indah",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Taman Mini Indonesia Indah",
+        "ru": "Taman Mini Indonesia Indah",
+        "uz": "Taman Mini",
+        "en": "Taman Mini Indonesia Indah",
+        "ky": "Taman Mini"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_in_new_delhi_humayuns-tomb",
+      "country_iso": "Humayun's Tomb",
+      "parent_country_id": "",
+      "canonical_name": "Humayun's Tomb",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Humayun's Tomb",
+        "ru": "Tomb Humayun",
+        "uz": "Humayun maqbarasi",
+        "en": "Humayun's Tomb",
+        "ky": "Humayun мавзолейи"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_in_new_delhi_india-gate",
+      "country_iso": "India Gate",
+      "parent_country_id": "",
+      "canonical_name": "India Gate",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "India Gate",
+        "ru": "Ворота India",
+        "uz": "India Gate",
+        "en": "India Gate",
+        "ky": "India Gate"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_in_new_delhi_lotus-temple",
+      "country_iso": "Lotus Temple",
+      "parent_country_id": "",
+      "canonical_name": "Lotus Temple",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Lotus Temple",
+        "ru": "Храм Лotus",
+        "uz": "Lotus ibodatxonasi",
+        "en": "Lotus Temple",
+        "ky": "Lotus храмы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_in_new_delhi_qutub-minar",
+      "country_iso": "Qutub Minar",
+      "parent_country_id": "",
+      "canonical_name": "Qutub Minar",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Qutub Minar",
+        "ru": "Qutub Minar",
+        "uz": "Qutub minorasi",
+        "en": "Qutub Minar",
+        "ky": "Qutub Minar"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_in_new_delhi_red-fort",
+      "country_iso": "Red Fort",
+      "parent_country_id": "",
+      "canonical_name": "Red Fort",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Red Fort",
+        "ru": "Красный форт",
+        "uz": "Qizil qalʼa",
+        "en": "Red Fort",
+        "ky": "Red Fort"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_jeddah_haramain-jeddah-station",
+      "country_iso": "محطة قطار الحرمين بجدة",
+      "parent_country_id": "",
+      "canonical_name": "محطة قطار الحرمين بجدة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "محطة قطار الحرمين بجدة",
+        "en": "Jeddah Haramain Train Station",
+        "ru": "Станция Харамайн в Джидде",
+        "ky": "Жиддадагы Харамайн станциясы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_jeddah_horse-stables",
+      "country_iso": "إسطبل الخيول",
+      "parent_country_id": "",
+      "canonical_name": "إسطبل الخيول",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "إسطبل الخيول",
+        "en": "Horse Stables",
+        "ru": "Конюшни",
+        "ky": "Ат сарайы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_jeddah_jeddah-corniche-circuit",
+      "country_iso": "حلبة كورنيش جدة (فورمولا 1)",
+      "parent_country_id": "",
+      "canonical_name": "حلبة كورنيش جدة (فورمولا 1)",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "حلبة كورنيش جدة (فورمولا 1)",
+        "en": "Jeddah Corniche Circuit (Formula 1)",
+        "ru": "Трасса Корниш Джидды (Формула-1)",
+        "ky": "Жидда Корниш трассасы (Формула-1)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_jeddah_jeddah-new-corniche",
+      "country_iso": "كورنيش جدة الجديد",
+      "parent_country_id": "",
+      "canonical_name": "كورنيش جدة الجديد",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "كورنيش جدة الجديد",
+        "en": "Jeddah New Corniche",
+        "ru": "Новая набережная Джидды",
+        "ky": "Жидданын жаңы набережнаясы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_jeddah_kaia",
+      "country_iso": "مطار الملك عبدالعزيز الدولي",
+      "parent_country_id": "",
+      "canonical_name": "مطار الملك عبدالعزيز الدولي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مطار الملك عبدالعزيز الدولي",
+        "en": "King Abdulaziz International Airport",
+        "ru": "Международный аэропорт имени короля Абдул-Азиза",
+        "ky": "Король Абдулазиз эл аралык аэропорту"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_jeddah_north-obhur",
+      "country_iso": "أبحر الشمالية",
+      "parent_country_id": "",
+      "canonical_name": "أبحر الشمالية",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "أبحر الشمالية",
+        "en": "North Obhur",
+        "ru": "Северный Обхур",
+        "ky": "Түндүк Обхур"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_jeddah_red-sea-mall",
+      "country_iso": "رد سي مول",
+      "parent_country_id": "",
+      "canonical_name": "رد سي مول",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "رد سي مول",
+        "en": "Red Sea Mall",
+        "ru": "Red Sea Mall",
+        "ky": "Red Sea Mall"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_jeddah_salam-mall",
+      "country_iso": "السلام مول",
+      "parent_country_id": "",
+      "canonical_name": "السلام مول",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "السلام مول",
+        "en": "Al-Salam Mall",
+        "ru": "Al-Salam Mall",
+        "ky": "Al-Salam Mall"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_ma_rabat_chellah",
+      "country_iso": "شالة",
+      "parent_country_id": "",
+      "canonical_name": "شالة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "شالة",
+        "ru": "Шелла",
+        "uz": "Chellah",
+        "en": "Chellah Necropolis",
+        "ky": "Шелла"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_ma_rabat_hassan-tower",
+      "country_iso": "صومعة حسان",
+      "parent_country_id": "",
+      "canonical_name": "صومعة حسان",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "صومعة حسان",
+        "ru": "Башня Хасана",
+        "uz": "Hasan minorasi",
+        "en": "Hassan Tower",
+        "ky": "Хасан мунары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_ma_rabat_kasbah-udayas",
+      "country_iso": "قصبة الأوداية",
+      "parent_country_id": "",
+      "canonical_name": "قصبة الأوداية",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "قصبة الأوداية",
+        "ru": "Кasbah des Oudayas",
+        "uz": "Udayas qalʼasi",
+        "en": "Kasbah of the Udayas",
+        "ky": "Уdayas кasbah"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_madinah_masjid-an-nabawi",
+      "country_iso": "المسجد النبوي الشريف",
+      "parent_country_id": "",
+      "canonical_name": "المسجد النبوي الشريف",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "المسجد النبوي الشريف",
+        "en": "Al-Masjid an-Nabawi",
+        "ru": "Мечеть Пророка",
+        "ky": "Набави мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_madinah_masjid-hamza",
+      "country_iso": "مسجد سيدنا حمزة رضي الله عنه",
+      "parent_country_id": "",
+      "canonical_name": "مسجد سيدنا حمزة رضي الله عنه",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد سيدنا حمزة رضي الله عنه",
+        "en": "Mosque of Ḥamza ibn ʿAbd al-Muṭṭalib",
+        "ru": "Мечеть Хамзы ибн Абд аль-Мутталиба",
+        "ky": "Хамза ибн Абд аль-Мутталиб мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_madinah_mount-uhud",
+      "country_iso": "جبل أحد",
+      "parent_country_id": "",
+      "canonical_name": "جبل أحد",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جبل أحد",
+        "en": "Mount Uhud",
+        "ru": "Гора Ухуд",
+        "ky": "Ухуд тоосу"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_madinah_qatrah-cafe",
+      "country_iso": "مقهى عطرة",
+      "parent_country_id": "",
+      "canonical_name": "مقهى عطرة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مقهى عطرة",
+        "en": "Atrah Café",
+        "ru": "Кафе «Атра»",
+        "ky": "Атра кафеси"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_madinah_qiblatain-mosque",
+      "country_iso": "مسجد القبلتين",
+      "parent_country_id": "",
+      "canonical_name": "مسجد القبلتين",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد القبلتين",
+        "en": "Mosque of the Two Qiblas",
+        "ru": "Мечеть двух кибл",
+        "ky": "Эки кыбыт мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_madinah_quba-mosque",
+      "country_iso": "مسجد قباء",
+      "parent_country_id": "",
+      "canonical_name": "مسجد قباء",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد قباء",
+        "en": "Quba Mosque",
+        "ru": "Мечеть Куба",
+        "ky": "Куба мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_madinah_uthman-farm",
+      "country_iso": "مزرعة عثمان بن عفان رضي الله عنه",
+      "parent_country_id": "",
+      "canonical_name": "مزرعة عثمان بن عفان رضي الله عنه",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مزرعة عثمان بن عفان رضي الله عنه",
+        "en": "Farm of ʿUthmān ibn ʿAffān",
+        "ru": "Ферма Усмана ибн Аффана",
+        "ky": "Усман ибн Аффандын чарбасы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_makkah_jabal-al-nour",
+      "country_iso": "جبل النور",
+      "parent_country_id": "",
+      "canonical_name": "جبل النور",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جبل النور",
+        "en": "Jabal al-Nour",
+        "ru": "Джабаль ан-Нур",
+        "ky": "Жабал ан-Нур"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_makkah_jabal-thawr",
+      "country_iso": "جبل ثور",
+      "parent_country_id": "",
+      "canonical_name": "جبل ثور",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "جبل ثور",
+        "en": "Jabal Thawr",
+        "ru": "Джабаль Саур",
+        "ky": "Жабал Савр"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_makkah_makkah-mall",
+      "country_iso": "مكة مول",
+      "parent_country_id": "",
+      "canonical_name": "مكة مول",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مكة مول",
+        "en": "Makkah Mall",
+        "ru": "Makkah Mall",
+        "ky": "Makkah Mall"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_makkah_masjid-al-haram",
+      "country_iso": "المسجد الحرام",
+      "parent_country_id": "",
+      "canonical_name": "المسجد الحرام",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "المسجد الحرام",
+        "en": "Masjid al-Haram",
+        "ru": "Запретная мечеть",
+        "ky": "Аль-Харам мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_makkah_masjid-al-ijabah",
+      "country_iso": "مسجد الإجابة",
+      "parent_country_id": "",
+      "canonical_name": "مسجد الإجابة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد الإجابة",
+        "en": "Masjid al-Ijābah",
+        "ru": "Мечеть аль-Иджаба",
+        "ky": "Аль-Ижаба мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_makkah_masjid-al-tanim",
+      "country_iso": "مسجد التنعيم (مسجد السيدة عائشة رضي الله عنها)",
+      "parent_country_id": "",
+      "canonical_name": "مسجد التنعيم (مسجد السيدة عائشة رضي الله عنها)",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد التنعيم (مسجد السيدة عائشة رضي الله عنها)",
+        "en": "Masjid al-Tanʿīm (Mosque of Aisha)",
+        "ru": "Мечеть Тан‘им (мечеть Аиши)",
+        "ky": "Танъим мечити (Аиша мечити)"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_makkah_usaylah-inscriptions",
+      "country_iso": "نقوش العسيلة",
+      "parent_country_id": "",
+      "canonical_name": "نقوش العسيلة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "نقوش العسيلة",
+        "en": "Al-Usaylah Inscriptions",
+        "ru": "Надписи аль-‘Усайла",
+        "ky": "Аль-Усайла жазуулары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_my_kuala_lumpur_batu-caves",
+      "country_iso": "Batu Caves",
+      "parent_country_id": "",
+      "canonical_name": "Batu Caves",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Batu Caves",
+        "ru": "Batu Caves",
+        "uz": "Batu Caves",
+        "en": "Batu Caves",
+        "ky": "Batu Caves"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_my_kuala_lumpur_kl-tower",
+      "country_iso": "KL Tower",
+      "parent_country_id": "",
+      "canonical_name": "KL Tower",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "KL Tower",
+        "ru": "Башня KL",
+        "uz": "KL minorasi",
+        "en": "KL Tower",
+        "ky": "KL башнясы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_my_kuala_lumpur_merdeka-square",
+      "country_iso": "Merdeka Square",
+      "parent_country_id": "",
+      "canonical_name": "Merdeka Square",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Merdeka Square",
+        "ru": "Площадь Merdeka",
+        "uz": "Merdeka maydoni",
+        "en": "Merdeka Square",
+        "ky": "Merdeka аянты"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_my_kuala_lumpur_petronas-towers",
+      "country_iso": "Petronas Twin Towers",
+      "parent_country_id": "",
+      "canonical_name": "Petronas Twin Towers",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Petronas Twin Towers",
+        "ru": "Башни Petronas",
+        "uz": "Petronas minoralari",
+        "en": "Petronas Twin Towers",
+        "ky": "Petronas башнялары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_my_kuala_lumpur_thean-hou-temple",
+      "country_iso": "Thean Hou Temple",
+      "parent_country_id": "",
+      "canonical_name": "Thean Hou Temple",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Thean Hou Temple",
+        "ru": "Храм Thean Hou",
+        "uz": "Thean Hou ibodatxonasi",
+        "en": "Thean Hou Temple",
+        "ky": "Thean Hou храмы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_pt_lisbon_belem-tower",
+      "country_iso": "برج Belém",
+      "parent_country_id": "",
+      "canonical_name": "برج Belém",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "برج Belém",
+        "ru": "Белémская башня",
+        "uz": "Belém minorasi",
+        "en": "Belém Tower",
+        "ky": "Belém башнясы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_pt_lisbon_jeronimos",
+      "country_iso": "دير Jerónimos",
+      "parent_country_id": "",
+      "canonical_name": "دير Jerónimos",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "دير Jerónimos",
+        "ru": "Монастырь Жеронимуш",
+        "uz": "Jerónimos monastiri",
+        "en": "Jerónimos Monastery",
+        "ky": "Jerónimos монастыри"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_pt_lisbon_monument-discoveries",
+      "country_iso": "Monumento aos Descobrimentos",
+      "parent_country_id": "",
+      "canonical_name": "Monumento aos Descobrimentos",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Monumento aos Descobrimentos",
+        "ru": "Памятник открытиям",
+        "uz": "Kashfiyotlar yodgorligi",
+        "en": "Monument to the Discoveries",
+        "ky": "Ачуулар эстлigi"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_pt_lisbon_praca-comercio",
+      "country_iso": "Praça do Comércio",
+      "parent_country_id": "",
+      "canonical_name": "Praça do Comércio",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Praça do Comércio",
+        "ru": "Площадь Комércio",
+        "uz": "Commerce maydoni",
+        "en": "Commerce Square",
+        "ky": "Commerce аянты"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_pt_lisbon_sao-jorge-castle",
+      "country_iso": "قلعة São Jorge",
+      "parent_country_id": "",
+      "canonical_name": "قلعة São Jorge",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "قلعة São Jorge",
+        "ru": "Замок São Jorge",
+        "uz": "São Jorge qalʼasi",
+        "en": "São Jorge Castle",
+        "ky": "São Jorge замогу"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_riyadh_al-batha",
+      "country_iso": "البطحاء",
+      "parent_country_id": "",
+      "canonical_name": "البطحاء",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "البطحاء",
+        "en": "Al-Batha",
+        "ru": "Аль-Бата",
+        "ky": "Аль-Бата"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_riyadh_faisaliyah-tower",
+      "country_iso": "برج الفيصلية",
+      "parent_country_id": "",
+      "canonical_name": "برج الفيصلية",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "برج الفيصلية",
+        "en": "Al Faisaliyah Centre",
+        "ru": "Центр «Аль-Файсалия»",
+        "ky": "Аль-Файсалия борбору"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_riyadh_ibn-qasim-souq",
+      "country_iso": "سوق ابن قاسم",
+      "parent_country_id": "",
+      "canonical_name": "سوق ابن قاسم",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "سوق ابن قاسم",
+        "en": "Ibn Qasim Souq",
+        "ru": "Рынок Ибн Касим",
+        "ky": "Ибн Касим базары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_riyadh_king-fahd-stadium",
+      "country_iso": "استاد الملك فهد الدولي",
+      "parent_country_id": "",
+      "canonical_name": "استاد الملك فهد الدولي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "استاد الملك فهد الدولي",
+        "en": "King Fahd International Stadium",
+        "ru": "Международный стадион короля Фахда",
+        "ky": "Король Фахд эл аралык стадиону"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_riyadh_kingdom-centre",
+      "country_iso": "برج المملكة",
+      "parent_country_id": "",
+      "canonical_name": "برج المملكة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "برج المملكة",
+        "en": "Kingdom Centre",
+        "ru": "Башня Kingdom Centre",
+        "ky": "Kingdom Centre мунарасы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_riyadh_kkia",
+      "country_iso": "مطار الملك خالد الدولي",
+      "parent_country_id": "",
+      "canonical_name": "مطار الملك خالد الدولي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مطار الملك خالد الدولي",
+        "en": "King Khalid International Airport",
+        "ru": "Международный аэропорт имени короля Халида",
+        "ky": "Король Халид эл аралык аэропорту"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_riyadh_souq-al-zal",
+      "country_iso": "سوق الزل التاريخي",
+      "parent_country_id": "",
+      "canonical_name": "سوق الزل التاريخي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "سوق الزل التاريخي",
+        "en": "Historic Souq Al-Zal",
+        "ru": "Исторический рынок аз-Заль",
+        "ky": "Тарыхый Аз-Зал базары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_riyadh_suspension-bridge",
+      "country_iso": "الجسر المعلق",
+      "parent_country_id": "",
+      "canonical_name": "الجسر المعلق",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الجسر المعلق",
+        "en": "Suspension Bridge",
+        "ru": "Подвесной мост",
+        "ky": "Асылма көпүрө"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_riyadh_thumamah",
+      "country_iso": "الثمامة",
+      "parent_country_id": "",
+      "canonical_name": "الثمامة",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "الثمامة",
+        "en": "Thumamah",
+        "ru": "Тумама",
+        "ky": "Тумама"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_riyadh_wadi-laban",
+      "country_iso": "وادي لبن",
+      "parent_country_id": "",
+      "canonical_name": "وادي لبن",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "وادي لبن",
+        "en": "Wadi Laban",
+        "ru": "Вади Лабан",
+        "ky": "Вади Лабан"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_taif_historic-balad-souq",
+      "country_iso": "سوق البلد التاريخي",
+      "parent_country_id": "",
+      "canonical_name": "سوق البلد التاريخي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "سوق البلد التاريخي",
+        "en": "Historic Balad Souq",
+        "ru": "Исторический рынок аль-Балад",
+        "ky": "Тарыхый Балад базары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_taif_hotel-loreef",
+      "country_iso": "فندق لوريف",
+      "parent_country_id": "",
+      "canonical_name": "فندق لوريف",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "فندق لوريف",
+        "en": "Loreef Hotel",
+        "ru": "Отель Loreef",
+        "ky": "Loreef мейманканасы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_taif_masjid-addas",
+      "country_iso": "مسجد عداس",
+      "parent_country_id": "",
+      "canonical_name": "مسجد عداس",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد عداس",
+        "en": "Masjid ʿAddās",
+        "ru": "Мечеть Аддаса",
+        "ky": "Аддас мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_taif_masjid-al-abbas",
+      "country_iso": "مسجد عبدالله بن العباس",
+      "parent_country_id": "",
+      "canonical_name": "مسجد عبدالله بن العباس",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد عبدالله بن العباس",
+        "en": "Mosque of ʿAbdullāh ibn al-ʿAbbās",
+        "ru": "Мечеть Абдуллаха ибн Аббаса",
+        "ky": "Абдуллах ибн Аббас мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_taif_masjid-al-kaw",
+      "country_iso": "مسجد الكوع",
+      "parent_country_id": "",
+      "canonical_name": "مسجد الكوع",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد الكوع",
+        "en": "Masjid al-Kaw‘",
+        "ru": "Мечеть аль-Кау‘",
+        "ky": "Аль-Кау мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_taif_masjid-al-madhun",
+      "country_iso": "مسجد المدهون",
+      "parent_country_id": "",
+      "canonical_name": "مسجد المدهون",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مسجد المدهون",
+        "en": "Masjid al-Madhūn",
+        "ru": "Мечеть аль-Мадхун",
+        "ky": "Аль-Мадхун мечити"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_taif_othaim-mall-taif",
+      "country_iso": "العثيم هليز",
+      "parent_country_id": "",
+      "canonical_name": "العثيم هليز",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "العثيم هليز",
+        "en": "Othaim Hills",
+        "ru": "Отайм Хиллз",
+        "ky": "Отайм Хиллз"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_taif_shubra-palace",
+      "country_iso": "قصر شبرا التاريخي",
+      "parent_country_id": "",
+      "canonical_name": "قصر شبرا التاريخي",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "قصر شبرا التاريخي",
+        "en": "Shubra Historic Palace",
+        "ru": "Исторический дворец Шубра",
+        "ky": "Шубра тарыхый сарайы"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_taif_souk-okaz",
+      "country_iso": "سوق عكاظ",
+      "parent_country_id": "",
+      "canonical_name": "سوق عكاظ",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "سوق عكاظ",
+        "en": "Souk Okaz",
+        "ru": "Рынок Ока́з",
+        "ky": "Оказ базары"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_taif_tilal-resort",
+      "country_iso": "قرية وكوفي تنال",
+      "parent_country_id": "",
+      "canonical_name": "قرية وكوفي تنال",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ru": "Курорт Танал",
+        "ky": "Танал курорту",
+        "en": "Tanal Resort",
+        "ar": "قرية وكوفي تنال"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_tn_tunis_bardo-museum",
+      "country_iso": "متحف Bardo",
+      "parent_country_id": "",
+      "canonical_name": "متحف Bardo",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "متحف Bardo",
+        "ru": "Национальный музей Bardo",
+        "uz": "Bardo milliy muzeyi",
+        "en": "Bardo National Museum",
+        "ky": "Bardo музейи"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_tn_tunis_carthage",
+      "country_iso": "Carthage",
+      "parent_country_id": "",
+      "canonical_name": "Carthage",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Carthage",
+        "ru": "Карфаген",
+        "uz": "Karfagen",
+        "en": "Carthage Archaeological Site",
+        "ky": "Карфаген"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_tn_tunis_cathedral-st-vincent",
+      "country_iso": "Cathedral of St. Vincent de Paul",
+      "parent_country_id": "",
+      "canonical_name": "Cathedral of St. Vincent de Paul",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Cathedral of St. Vincent de Paul",
+        "ru": "Собор Saint-Vincent-de-Paul",
+        "uz": "Saint-Vincent sobori",
+        "en": "Cathedral of St. Vincent de Paul",
+        "ky": "Saint-Vincent собору"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_tn_tunis_habib-bourguiba-avenue",
+      "country_iso": "Avenue Habib Bourguiba",
+      "parent_country_id": "",
+      "canonical_name": "Avenue Habib Bourguiba",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Avenue Habib Bourguiba",
+        "ru": "Проспект Habib Bourguiba",
+        "uz": "Habib Bourguiba prospekti",
+        "en": "Habib Bourguiba Avenue",
+        "ky": "Habib Bourguiba проспекti"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "lm_sa_tn_tunis_medina-tunis",
+      "country_iso": "Medina of Tunis",
+      "parent_country_id": "",
+      "canonical_name": "Medina of Tunis",
+      "missing_locales": [
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "Medina of Tunis",
+        "ru": "Медина Тunisа",
+        "uz": "Tunis medinasi",
+        "en": "Medina of Tunis",
+        "ky": "Tunis medinasy"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "mKgf98dvgXuv7UBadAgC",
+      "country_iso": "مزرعة تين",
+      "parent_country_id": "",
+      "canonical_name": "مزرعة تين",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "مزرعة تين"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "mbTsZ8Xk6JqLT0nR5sM1",
+      "country_iso": "منتجع أرياف الشفا",
+      "parent_country_id": "",
+      "canonical_name": "منتجع أرياف الشفا",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "منتجع أرياف الشفا"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "nIuy81MzKWQ0VYQJDOgv",
+      "country_iso": "منتزه الردف",
+      "parent_country_id": "",
+      "canonical_name": "منتزه الردف",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "منتزه الردف"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "qa_makkah_test_hotel",
+      "country_iso": "اختبار فندق",
+      "parent_country_id": "",
+      "canonical_name": "اختبار فندق",
+      "missing_locales": [
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "اختبار فندق",
+        "en": "Test Hotel"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "qa_makkah_test_restaurant",
+      "country_iso": "اختبار مطعم",
+      "parent_country_id": "",
+      "canonical_name": "اختبار مطعم",
+      "missing_locales": [
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "اختبار مطعم",
+        "en": "Test Restaurant"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "test_adminnext_landmark_lm_a",
+      "country_iso": "",
+      "parent_country_id": "",
+      "canonical_name": "",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "mkan",
+      "document_id": "test_adminnext_landmark_pilot_14af52f4",
+      "country_iso": "",
+      "parent_country_id": "",
+      "canonical_name": "",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "mkan",
+      "document_id": "test_adminnext_landmark_pilot_14bd4cdf",
+      "country_iso": "",
+      "parent_country_id": "",
+      "canonical_name": "",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "mkan",
+      "document_id": "test_adminnext_landmark_pilot_276a9a89",
+      "country_iso": "",
+      "parent_country_id": "",
+      "canonical_name": "",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "mkan",
+      "document_id": "test_adminnext_landmark_pilot_9dad0474",
+      "country_iso": "",
+      "parent_country_id": "",
+      "canonical_name": "",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "mkan",
+      "document_id": "test_adminnext_landmark_pilot_a67ce9d4",
+      "country_iso": "",
+      "parent_country_id": "",
+      "canonical_name": "",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "mkan",
+      "document_id": "test_adminnext_landmark_pilot_ad699baf",
+      "country_iso": "",
+      "parent_country_id": "",
+      "canonical_name": "",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "mkan",
+      "document_id": "test_adminnext_landmark_pilot_e45acd5b",
+      "country_iso": "",
+      "parent_country_id": "",
+      "canonical_name": "",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "mkan",
+      "document_id": "test_adminnext_partner_pilot_partne",
+      "country_iso": "",
+      "parent_country_id": "",
+      "canonical_name": "",
+      "missing_locales": [
+        "ar",
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {}
+    },
+    {
+      "collection": "mkan",
+      "document_id": "wpuVBHdCpMcNgv5ZKUph",
+      "country_iso": "القصر الوطني التاريخي",
+      "parent_country_id": "",
+      "canonical_name": "القصر الوطني التاريخي",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "القصر الوطني التاريخي"
+      }
+    },
+    {
+      "collection": "mkan",
+      "document_id": "wvsOduxrS12McKDbOtn6",
+      "country_iso": "منتجع جسر اللوزية",
+      "parent_country_id": "",
+      "canonical_name": "منتجع جسر اللوزية",
+      "missing_locales": [
+        "en",
+        "ru",
+        "ky",
+        "fr",
+        "ur",
+        "pt"
+      ],
+      "names_i18n": {
+        "ar": "منتجع جسر اللوزية"
+      }
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+import '/backend/admin_agent_country_lock.dart';
+import '/backend/admin_role_service.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -35,6 +37,8 @@ class _CarTypeAdditionWidgetState extends State<CarTypeAdditionWidget> {
   late final TextEditingController _codeController;
   DocumentReference? _selectedCountryRef;
   String _selectedCountryIso = '';
+  bool _countryLocked = false;
+  String _lockedCountryLabel = '';
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -62,7 +66,32 @@ class _CarTypeAdditionWidgetState extends State<CarTypeAdditionWidget> {
     _model.switchValue1 = true;
     _model.switchValue2 = true;
     _model.switchValue3 = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _lockAgentCountryIfNeeded();
+      if (mounted) safeSetState(() {});
+    });
+  }
+
+  Future<void> _lockAgentCountryIfNeeded() async {
+    if (!AdminRoleService.isCountryAgent) return;
+    AdminAgentCountryLock.applyToAppState();
+    final ref = await AdminAgentCountryLock.ensureCountryResolved();
+    if (ref == null) return;
+    String iso = '';
+    try {
+      final country = await CountriesRecord.getDocumentOnce(ref);
+      iso = country.isoCode.trim().toUpperCase();
+      _lockedCountryLabel = country.naimEnglesh.isNotEmpty
+          ? country.naimEnglesh
+          : (country.naim.isNotEmpty
+              ? country.naim
+              : AdminRoleService.scopedCountryName);
+    } catch (_) {
+      _lockedCountryLabel = AdminRoleService.scopedCountryName;
+    }
+    _selectedCountryRef = ref;
+    _selectedCountryIso = iso;
+    _countryLocked = true;
   }
 
   @override
@@ -201,7 +230,24 @@ class _CarTypeAdditionWidgetState extends State<CarTypeAdditionWidget> {
                                     .headlineSmallIsCustom,
                               ),
                         ),
-                        StreamBuilder<List<CountriesRecord>>(
+                        if (_countryLocked)
+                          InputDecorator(
+                            decoration: InputDecoration(
+                              labelText: uiTr(context, 'الدولة'),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              _lockedCountryLabel.isNotEmpty
+                                  ? '${uiTr(context, 'الدولة')}: $_lockedCountryLabel'
+                                      '${_selectedCountryIso.isEmpty ? '' : ' ($_selectedCountryIso)'}'
+                                  : uiTr(context, 'الدولة: (من ملف الوكيل)'),
+                              style: FlutterFlowTheme.of(context).bodyMedium,
+                            ),
+                          )
+                        else
+                          StreamBuilder<List<CountriesRecord>>(
                           stream: queryCountriesRecord(
                             queryBuilder: (q) =>
                                 q.where('acctev', isEqualTo: true),
@@ -756,6 +802,31 @@ class _CarTypeAdditionWidgetState extends State<CarTypeAdditionWidget> {
               ),
               FFButtonWidget(
                 onPressed: () async {
+                  // Agent country is always taken from authenticated scope —
+                  // never from a client-editable dropdown.
+                  if (AdminRoleService.isCountryAgent) {
+                    final locked =
+                        await AdminAgentCountryLock.ensureCountryResolved();
+                    if (locked == null) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            uiTr(context, 'لا يمكن تحديد دولة الوكيل'),
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+                    _selectedCountryRef = locked;
+                    if (_selectedCountryIso.isEmpty) {
+                      try {
+                        final c = await CountriesRecord.getDocumentOnce(locked);
+                        _selectedCountryIso =
+                            c.isoCode.trim().toUpperCase();
+                      } catch (_) {}
+                    }
+                  }
                   if (_selectedCountryRef == null ||
                       _selectedCountryIso.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(

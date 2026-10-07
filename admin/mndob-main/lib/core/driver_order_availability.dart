@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/schema/order_record.dart';
 import '/core/toury_system_status_codes.dart';
 
@@ -76,6 +77,31 @@ abstract final class DriverOrderAvailability {
         now: now,
       );
 
+  /// Server offer-wave gate: current/prior notified UIDs, or open wave.
+  /// Legacy orders without wave fields remain visible (until CF seeds waves).
+  static bool isDriverInOfferWave(
+    Map<String, dynamic> data, {
+    String? driverUid,
+  }) {
+    final uid = (driverUid ?? currentUserUid).trim();
+    if (uid.isEmpty) return false;
+    if (data['offer_wave_open'] == true) return true;
+    final hasWave = data['offer_wave_index'] != null ||
+        data['offer_wave_uids'] is List ||
+        data['offer_ranked_uids'] is List;
+    if (!hasWave) return true; // legacy / pre-wave seed
+    final wave = data['offer_wave_uids'];
+    if (wave is List && wave.map((e) => e.toString()).contains(uid)) {
+      return true;
+    }
+    final notified = data['offer_notified_uids'];
+    if (notified is List &&
+        notified.map((e) => e.toString()).contains(uid)) {
+      return true;
+    }
+    return false;
+  }
+
   /// Still in the open offer pool for drivers.
   static bool isOpenOffer(OrderRecord order, {DateTime? now}) {
     final data = Map<String, dynamic>.from(order.snapshotData);
@@ -91,6 +117,7 @@ abstract final class DriverOrderAvailability {
     }
     if (TourySystemStatusCodes.isTerminalBooking(status)) return false;
     if (isAcceptanceExpired(data, now: now)) return false;
+    if (!isDriverInOfferWave(data)) return false;
     return true;
   }
 

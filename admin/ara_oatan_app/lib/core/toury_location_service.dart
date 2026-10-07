@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '/app_state.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
+import '/core/toury_account_country.dart';
 import '/core/toury_country_registry.dart';
 import '/core/toury_firestore_cache.dart';
 import '/core/toury_geo_display.dart';
@@ -240,7 +244,7 @@ abstract final class TouryLocationService {
           errorMessage: messageForFailure(TouryLocationFailure.timeout),
         );
       }
-      return resolveFromCoordinates(position);
+      return await resolveFromCoordinates(position);
     } catch (e) {
       final failure = classifyException(e);
       return TouryResolvedLocation(
@@ -787,6 +791,8 @@ abstract final class TouryLocationService {
       app.AllowBooking = false;
     });
     clearCache();
+    TouryFirestoreCache.invalidateTypeCar();
+    unawaited(persistAccountCountry(country.reference));
   }
 
   /// تحديث المدينة/الدولة المحفوظة من GPS.
@@ -795,9 +801,24 @@ abstract final class TouryLocationService {
 
     final localeKey = touryActiveContentLocaleKey();
     final app = FFAppState();
+    final prevCountryPath = app.dolh?.path;
+    var countryChanged = false;
     app.update(() {
       if (resolved.country != null) {
         final country = resolved.country!;
+        countryChanged = prevCountryPath != country.reference.path;
+        if (prevCountryPath != null &&
+            prevCountryPath != country.reference.path) {
+          app.typecarRev = null;
+          app.tebycar = '';
+          app.notcar = '';
+          app.srtypecar = 0;
+          app.saatcar = 0;
+          app.addhors = 0;
+          app.totalsaat = 0;
+          app.totalsaatandcar = 0;
+          app.AllowBooking = false;
+        }
         app.dolh = country.reference;
         app.naimdolh = touryLocalizedCountryLabel(country, localeKey);
         // GPS path previously skipped tax flags → checkout showed VAT 0%.
@@ -845,6 +866,12 @@ abstract final class TouryLocationService {
       app.IsLnstantAddress = true;
     });
 
+    if (countryChanged) {
+      TouryFirestoreCache.invalidateTypeCar();
+    }
+    if (resolved.country != null) {
+      unawaited(TouryLocationService.persistAccountCountry(resolved.country!.reference));
+    }
     if (resolved.village != null) {
       TouryFirestoreCache.prefetchMkanFirstPage(resolved.village!.reference);
     }
@@ -1029,6 +1056,30 @@ abstract final class TouryLocationService {
       queryBuilder: (q) => q.where('acctev', isEqualTo: true),
     );
     return _countriesCache!;
+  }
+
+  static String? _lastPersistedAccountCountryKey;
+
+  /// Saves the country document on the signed-in customer account.
+  /// Approved drivers cannot change this field; a denied write is ignored.
+  static Future<void> persistAccountCountry(DocumentReference countryRef) async {
+    if (!shouldPersistAccountCountry(
+      outsideCoverage: false,
+      countryPath: countryRef.path,
+    )) {
+      return;
+    }
+    final userRef = currentUserReference;
+    if (userRef == null) return;
+    final key = '${userRef.id}|${countryRef.path}';
+    if (_lastPersistedAccountCountryKey == key) return;
+    _lastPersistedAccountCountryKey = key;
+    try {
+      await userRef.update(<String, dynamic>{'Rev_dolh': countryRef});
+    } catch (error, stack) {
+      _lastPersistedAccountCountryKey = null;
+      debugPrint('persistAccountCountry failed: $error\n$stack');
+    }
   }
 
   static void clearCache() {

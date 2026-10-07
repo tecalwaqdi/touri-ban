@@ -10,6 +10,9 @@ class DriverCachedAssetLoader extends AssetLoader {
 
   static final Map<String, Map<String, dynamic>> _cache = {};
 
+  /// Drop in-memory maps so the next [load]/[preloadAll] re-reads assets.
+  static void clearCache() => _cache.clear();
+
   static String localeFileName(Locale locale) {
     if (locale.scriptCode != null && locale.scriptCode!.isNotEmpty) {
       return '${locale.languageCode}-${locale.scriptCode}';

@@ -1,0 +1,354 @@
+{
+  "countries": [
+    {
+      "id": "egypt",
+      "leaks": [
+        "ur"
+      ]
+    }
+  ],
+  "cities": [
+    {
+      "id": "region_sa_baha",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "region_sa_hail",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "region_sa_jazan",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "region_sa_jouf",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "region_sa_khobar",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "region_sa_najran",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "region_sa_tn_tunis",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "region_tm_ashgabat",
+      "leaks": [
+        "ur"
+      ]
+    }
+  ],
+  "villages": [
+    {
+      "id": "city_sa_alula",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "city_sa_baha",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "city_sa_hail",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "city_sa_jazan",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "city_sa_jouf",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "city_sa_khobar",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "city_sa_najran",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "city_sa_tn_tunis",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "city_tm_ashgabat",
+      "leaks": [
+        "ur"
+      ]
+    }
+  ],
+  "mkan": [
+    {
+      "id": "curated_tabuk_jabal_lawz",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "curated_taif_ash_shafa",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "lm_kz_astana_khan-shatyr",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "lm_sa_hail_jabal-samra",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "lm_sa_jouf_sisra-well",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "lm_sa_khamis_mushait_grandparents-heritage-museum",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "lm_sa_madinah_quba-mosque",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "lm_sa_makkah_jabal-al-nour",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "lm_sa_makkah_jabal-thawr",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "lm_sa_riyadh_al-batha",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "lm_sa_taif_masjid-addas",
+      "leaks": [
+        "ur"
+      ]
+    },
+    {
+      "id": "lm_sa_taif_masjid-al-madhun",
+      "leaks": [
+        "ur"
+      ]
+    }
+  ],
+  "makkah_presence": {
+    "region_makkah": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "region_sa_makkah": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "city_makkah": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "city_sa_makkah": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "curated_makkah_clock_tower": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "curated_makkah_clock_tower_museum": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "curated_makkah_jabal_nour": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "curated_makkah_jabal_rahmah": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "lm_sa_makkah_jabal-al-nour": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "lm_sa_makkah_jabal-thawr": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "lm_sa_makkah_makkah-mall": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "lm_sa_makkah_masjid-al-haram": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "lm_sa_makkah_masjid-al-ijabah": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "lm_sa_makkah_masjid-al-tanim": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "lm_sa_makkah_masjid-king-abdulaziz": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "lm_sa_makkah_usaylah-inscriptions": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "qa_makkah_test_hotel": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    },
+    "qa_makkah_test_restaurant": {
+      "ar": true,
+      "en": true,
+      "ru": true,
+      "ky": true,
+      "fr": true,
+      "ur": true,
+      "pt": true
+    }
+  }
+}

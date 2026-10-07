@@ -6,8 +6,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 /// Canvas-drawn map markers — no image assets, no extra package.
 ///
-/// The car is painted pointing **north** so `Marker.rotation` can be fed the
-/// raw compass bearing directly.
+/// The car is a top-down sedan silhouette pointing **north** so
+/// `Marker.rotation` can be fed the raw compass bearing directly.
 abstract final class TouryMapMarkers {
   static const double _canvasSize = 108;
 
@@ -21,7 +21,7 @@ abstract final class TouryMapMarkers {
   @visibleForTesting
   static int get debugCacheSize => _cache.length;
 
-  /// Small stylized car seen from above, ready to be rotated by heading.
+  /// Top-down sedan for live tracking — rotated by compass heading.
   static Future<gmaps.BitmapDescriptor> car({
     required Color body,
     required Color glass,
@@ -87,7 +87,7 @@ abstract final class TouryMapMarkers {
   }
 
   /// Live-tracking accent (blue) — independent of brand teal/green.
-  static const Color trackingAccent = Color(0xFF2563EB);
+  static const Color trackingAccent = Color(0xFF4285F4);
 
   static void _drawCar(
     Canvas canvas, {
@@ -95,186 +95,207 @@ abstract final class TouryMapMarkers {
     required Color glass,
   }) {
     const center = Offset(_canvasSize / 2, _canvasSize / 2);
-    // Slightly taller sedan silhouette — readable at mid zoom, not oversized.
-    const carWidth = 36.0;
-    const carHeight = 72.0;
+    // Top-down sedan proportions (north = hood) — readable like Maps tracking.
+    const carWidth = 40.0;
+    const carHeight = 78.0;
+    final bodyColor = Color.lerp(body, const Color(0xFFF8FAFC), 0.55) ?? body;
+    final darkBody = Color.lerp(bodyColor, Colors.black, 0.22) ?? bodyColor;
+    final lightBody = Color.lerp(bodyColor, Colors.white, 0.35) ?? bodyColor;
 
-    final rect = Rect.fromCenter(
-      center: center,
-      width: carWidth,
-      height: carHeight,
-    );
-
-    // Soft ground shadow for satellite / dark tiles.
+    // Soft ground shadow.
     canvas.drawOval(
       Rect.fromCenter(
-        center: center.translate(0, 5),
-        width: carWidth + 18,
-        height: carHeight + 10,
+        center: center.translate(1.5, 6),
+        width: carWidth + 16,
+        height: carHeight + 8,
       ),
       Paint()
-        ..color = const Color(0x40000000)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
+        ..color = const Color(0x55000000)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 7),
     );
 
-    // Blue live halo (not brand green).
+    // Subtle live halo (does not obscure the car shape).
     canvas.drawCircle(
       center,
-      carWidth * 1.05,
-      Paint()..color = trackingAccent.withValues(alpha: 0.18),
-    );
-    canvas.drawCircle(
-      center,
-      carWidth * 0.78,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.5
-        ..color = trackingAccent.withValues(alpha: 0.35),
+      carWidth * 0.95,
+      Paint()..color = trackingAccent.withValues(alpha: 0.12),
     );
 
-    // Side mirrors (before body so outline covers joints).
-    final mirrorPaint = Paint()..color = Color.lerp(body, Colors.black, 0.15)!;
+    // --- Tire wells (outside body edges) ---
+    final tirePaint = Paint()..color = const Color(0xFF0B1220);
+    final rimPaint = Paint()..color = const Color(0xFF94A3B8);
+    for (final dy in const [-0.30, 0.32]) {
+      for (final dx in const [-1.0, 1.0]) {
+        final tireCenter =
+            center.translate(dx * (carWidth * 0.54), carHeight * dy);
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromCenter(center: tireCenter, width: 8.5, height: 16),
+            const Radius.circular(2.5),
+          ),
+          tirePaint,
+        );
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromCenter(center: tireCenter, width: 3.2, height: 8),
+            const Radius.circular(1.2),
+          ),
+          rimPaint,
+        );
+      }
+    }
+
+    // --- Side mirrors ---
+    final mirrorPaint = Paint()..color = darkBody;
     for (final dx in const [-1.0, 1.0]) {
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromCenter(
-            center: center.translate(dx * (carWidth * 0.58), -carHeight * 0.12),
-            width: 7,
-            height: 11,
+            center: center.translate(dx * (carWidth * 0.58), -carHeight * 0.08),
+            width: 7.5,
+            height: 12,
           ),
-          const Radius.circular(3),
+          const Radius.circular(2.5),
         ),
         mirrorPaint,
       );
     }
 
-    // Wheel arches (top-down dark tires).
-    final tire = Paint()..color = const Color(0xFF0F172A);
-    for (final dy in const [-0.28, 0.30]) {
-      for (final dx in const [-1.0, 1.0]) {
-        canvas.drawRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromCenter(
-              center: center.translate(dx * (carWidth * 0.52), carHeight * dy),
-              width: 7,
-              height: 14,
-            ),
-            const Radius.circular(3),
-          ),
-          tire,
-        );
-      }
-    }
+    // --- Body path: tapered hood, wider cabin, rounded trunk (north-up) ---
+    final bodyPath = Path()
+      ..moveTo(center.dx - carWidth * 0.28, center.dy - carHeight * 0.48) // hood L
+      ..quadraticBezierTo(
+        center.dx,
+        center.dy - carHeight * 0.52,
+        center.dx + carWidth * 0.28,
+        center.dy - carHeight * 0.48,
+      )
+      ..lineTo(center.dx + carWidth * 0.46, center.dy - carHeight * 0.22)
+      ..lineTo(center.dx + carWidth * 0.48, center.dy + carHeight * 0.18)
+      ..quadraticBezierTo(
+        center.dx + carWidth * 0.46,
+        center.dy + carHeight * 0.48,
+        center.dx,
+        center.dy + carHeight * 0.49,
+      )
+      ..quadraticBezierTo(
+        center.dx - carWidth * 0.46,
+        center.dy + carHeight * 0.48,
+        center.dx - carWidth * 0.48,
+        center.dy + carHeight * 0.18,
+      )
+      ..lineTo(center.dx - carWidth * 0.46, center.dy - carHeight * 0.22)
+      ..close();
 
-    final bodyRRect = RRect.fromRectAndCorners(
-      rect,
-      topLeft: const Radius.circular(18),
-      topRight: const Radius.circular(18),
-      bottomLeft: const Radius.circular(11),
-      bottomRight: const Radius.circular(11),
-    );
-
-    canvas.drawRRect(
-      bodyRRect,
+    canvas.drawPath(
+      bodyPath,
       Paint()
         ..shader = ui.Gradient.linear(
-          rect.topCenter,
-          rect.bottomCenter,
-          [
-            Color.lerp(body, Colors.white, 0.28) ?? body,
-            body,
-            Color.lerp(body, Colors.black, 0.12) ?? body,
-          ],
-          const [0.0, 0.55, 1.0],
+          center.translate(-carWidth * 0.35, -carHeight * 0.2),
+          center.translate(carWidth * 0.4, carHeight * 0.25),
+          [lightBody, bodyColor, darkBody],
+          const [0.0, 0.45, 1.0],
         ),
     );
 
-    // White outline for contrast on any basemap.
-    canvas.drawRRect(
-      bodyRRect,
+    // Soft slate outline — Google Maps–like edge on light tiles.
+    canvas.drawPath(
+      bodyPath,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.8
-        ..color = Colors.white,
+        ..strokeWidth = 2.2
+        ..color = const Color(0xFF64748B).withValues(alpha: 0.65),
     );
 
-    // Thin blue accent edge (modern tracking look).
-    canvas.drawRRect(
-      bodyRRect.deflate(1.2),
+    // Hood panel crease.
+    canvas.drawLine(
+      center.translate(0, -carHeight * 0.46),
+      center.translate(0, -carHeight * 0.28),
       Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.2
-        ..color = trackingAccent.withValues(alpha: 0.55),
+        ..color = Colors.white.withValues(alpha: 0.28)
+        ..strokeWidth = 1.4
+        ..strokeCap = StrokeCap.round,
     );
 
-    // Windshield (front / north) + rear window.
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromCenter(
-          center: center.translate(0, -carHeight * 0.24),
-          width: carWidth - 10,
-          height: carHeight * 0.22,
-        ),
-        const Radius.circular(7),
-      ),
-      Paint()
-        ..shader = ui.Gradient.linear(
-          center.translate(0, -carHeight * 0.34),
-          center.translate(0, -carHeight * 0.12),
-          [
-            glass.withValues(alpha: 0.95),
-            Color.lerp(glass, trackingAccent, 0.25) ?? glass,
-          ],
-        ),
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromCenter(
-          center: center.translate(0, carHeight * 0.26),
-          width: carWidth - 12,
-          height: carHeight * 0.16,
-        ),
-        const Radius.circular(5),
-      ),
-      Paint()..color = glass.withValues(alpha: 0.8),
-    );
-
-    // Roof panel between windows.
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromCenter(
-          center: center.translate(0, carHeight * 0.02),
-          width: carWidth - 14,
-          height: carHeight * 0.16,
-        ),
-        const Radius.circular(5),
-      ),
-      Paint()..color = Color.lerp(body, Colors.white, 0.22) ?? body,
-    );
-
-    // Direction chevron on roof (north) — clarifies heading at a glance.
-    final chevron = Path()
-      ..moveTo(center.dx, center.dy - carHeight * 0.02)
-      ..lineTo(center.dx - 6, center.dy + 8)
-      ..lineTo(center.dx + 6, center.dy + 8)
+    // Windshield (trapezoid, front / north).
+    final windshield = Path()
+      ..moveTo(center.dx - carWidth * 0.28, center.dy - carHeight * 0.10)
+      ..lineTo(center.dx + carWidth * 0.28, center.dy - carHeight * 0.10)
+      ..lineTo(center.dx + carWidth * 0.34, center.dy - carHeight * 0.26)
+      ..lineTo(center.dx - carWidth * 0.34, center.dy - carHeight * 0.26)
       ..close();
     canvas.drawPath(
-      chevron,
-      Paint()..color = trackingAccent.withValues(alpha: 0.85),
+      windshield,
+      Paint()
+        ..shader = ui.Gradient.linear(
+          center.translate(0, -carHeight * 0.28),
+          center.translate(0, -carHeight * 0.08),
+          [
+            const Color(0xFF93C5FD).withValues(alpha: 0.95),
+            Color.lerp(glass, const Color(0xFF1E3A8A), 0.35) ?? glass,
+          ],
+        ),
+    );
+    canvas.drawPath(
+      windshield,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.1
+        ..color = Colors.white.withValues(alpha: 0.55),
     );
 
-    // Headlights.
-    final headlight = Paint()..color = const Color(0xFFFFF8E7);
+    // Roof.
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: center.translate(0, carHeight * 0.06),
+          width: carWidth * 0.62,
+          height: carHeight * 0.18,
+        ),
+        const Radius.circular(5),
+      ),
+      Paint()..color = Color.lerp(bodyColor, Colors.white, 0.18) ?? bodyColor,
+    );
+
+    // Rear window.
+    final rearGlass = Path()
+      ..moveTo(center.dx - carWidth * 0.30, center.dy + carHeight * 0.18)
+      ..lineTo(center.dx + carWidth * 0.30, center.dy + carHeight * 0.18)
+      ..lineTo(center.dx + carWidth * 0.26, center.dy + carHeight * 0.32)
+      ..lineTo(center.dx - carWidth * 0.26, center.dy + carHeight * 0.32)
+      ..close();
+    canvas.drawPath(
+      rearGlass,
+      Paint()..color = glass.withValues(alpha: 0.82),
+    );
+
+    // Door seam lines (subtle realism).
+    final seam = Paint()
+      ..color = Colors.black.withValues(alpha: 0.22)
+      ..strokeWidth = 1.1;
+    canvas.drawLine(
+      center.translate(-carWidth * 0.42, -carHeight * 0.02),
+      center.translate(-carWidth * 0.42, carHeight * 0.16),
+      seam,
+    );
+    canvas.drawLine(
+      center.translate(carWidth * 0.42, -carHeight * 0.02),
+      center.translate(carWidth * 0.42, carHeight * 0.16),
+      seam,
+    );
+
+    // Headlights (warm white).
+    final headlight = Paint()..color = const Color(0xFFFFFBEB);
     for (final dx in const [-1.0, 1.0]) {
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromCenter(
             center: center.translate(
-              dx * (carWidth * 0.26),
-              -carHeight * 0.46,
+              dx * (carWidth * 0.24),
+              -carHeight * 0.455,
             ),
-            width: 9,
-            height: 5,
+            width: 10,
+            height: 5.5,
           ),
           const Radius.circular(2.5),
         ),
@@ -282,24 +303,37 @@ abstract final class TouryMapMarkers {
       );
     }
 
-    // Taillights.
-    final taillight = Paint()..color = const Color(0xFFF87171);
+    // Taillights (red).
+    final taillight = Paint()..color = const Color(0xFFEF4444);
     for (final dx in const [-1.0, 1.0]) {
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromCenter(
             center: center.translate(
-              dx * (carWidth * 0.26),
-              carHeight * 0.46,
+              dx * (carWidth * 0.24),
+              carHeight * 0.455,
             ),
-            width: 8,
-            height: 4,
+            width: 9,
+            height: 4.5,
           ),
           const Radius.circular(2),
         ),
         taillight,
       );
     }
+
+    // Front grille hint.
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: center.translate(0, -carHeight * 0.485),
+          width: carWidth * 0.22,
+          height: 3.2,
+        ),
+        const Radius.circular(1.5),
+      ),
+      Paint()..color = const Color(0xFF334155),
+    );
   }
 
   static void _drawDot(

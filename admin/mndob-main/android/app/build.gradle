@@ -29,12 +29,14 @@ def keystorePropertiesFile = rootProject.file('key.properties')
 if (!keystorePropertiesFile.exists()) {
     keystorePropertiesFile = rootProject.file('keystore.properties')
 }
+def releaseKeystoreReady = false
 def releaseKeystoreFile = null
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
     def storePath = keystoreProperties['storeFile']
     if (storePath != null) {
         releaseKeystoreFile = rootProject.file(storePath)
+        releaseKeystoreReady = releaseKeystoreFile.exists()
     }
 }
 
@@ -74,7 +76,7 @@ android {
 
    signingConfigs {
        release {
-        if (releaseKeystoreFile != null && releaseKeystoreFile.exists()) {
+        if (releaseKeystoreReady) {
             storeFile releaseKeystoreFile
             storePassword keystoreProperties['storePassword']
             keyAlias keystoreProperties['keyAlias']
@@ -84,10 +86,33 @@ android {
    }
 
     buildTypes {
+        debug {
+            // Debug/dev builds always use the Android debug identity.
+            signingConfig signingConfigs.debug
+        }
         release {
-            signingConfig signingConfigs.release
+            // Never fall back to debug signing for release artifacts.
+            if (releaseKeystoreReady) {
+                signingConfig signingConfigs.release
+            }
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+}
+
+// Fail release assemble/bundle loudly when production keystore is absent.
+gradle.taskGraph.whenReady { graph ->
+    def wantsReleaseArtifact = graph.allTasks.any { task ->
+        def n = task.name
+        (n == 'assembleRelease' || n == 'bundleRelease' ||
+            n == 'signReleaseBundle' || n == 'packageRelease')
+    }
+    if (wantsReleaseArtifact && !releaseKeystoreReady) {
+        throw new GradleException(
+            "Driver release signing blocked: missing android/key.properties " +
+            "and/or the configured production keystore " +
+            "(see android/key.properties.example). Refusing debug-signed release."
+        )
     }
 }
 

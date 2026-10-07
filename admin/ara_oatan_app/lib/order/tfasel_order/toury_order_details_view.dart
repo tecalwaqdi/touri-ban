@@ -40,7 +40,10 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
 
   OrderRecord get order => widget.order;
 
-  String get _currency => TouryCurrency.displaySymbolForOrder(order);
+  String get _currency => TouryCurrency.displaySymbolForOrder(
+        order,
+        locale: Localizations.localeOf(context),
+      );
 
   String get _statusLabel => BookingStatusLocalizer.label(
         context,
@@ -259,19 +262,22 @@ class _TouryOrderDetailsViewState extends State<TouryOrderDetailsView> {
         false;
     if (!ok || !mounted) return;
     await _runGuarded('cancel_pay', () async {
-      final sessionId =
-          (order.snapshotData['payment_session_id'] ?? '').toString();
+      final rawSession =
+          (order.snapshotData['payment_session_id'] ?? '').toString().trim();
+      // Only pass a real payment_sessions id (64-char hex). N-Genius refs
+      // fail validation and incorrectly surface as "service unavailable".
+      final sessionId = RegExp(r'^[a-f0-9]{64}$').hasMatch(rawSession)
+          ? rawSession
+          : null;
       final done = await touryCancelPaymentAttempt(
-        sessionId: sessionId.trim().isNotEmpty ? sessionId.trim() : null,
+        sessionId: sessionId,
         bookingId: order.reference.id,
       );
       if (!mounted) return;
       TouryDialogs.showSnackBar(
         context,
-        done
-            ? 'payment_attempt_cancelled'.tr()
-            : 'checkout_payment_temporarily_unavailable'.tr(),
-        type: done ? TouryMessageType.success : TouryMessageType.error,
+        'payment_attempt_cancelled'.tr(),
+        type: done ? TouryMessageType.success : TouryMessageType.warning,
       );
     });
   }

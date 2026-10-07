@@ -1,4 +1,5 @@
 
+import '/core/i18n/admin_geo_names.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_cascade_delete.dart';
 import '/backend/admin_firestore_delete.dart';
@@ -119,6 +120,13 @@ class _EdetRegWidgetState extends State<EdetRegWidget> {
         createCitiesRecordData(
           naim: name,
           osf: _model.textFieldDescTextController!.text.trim(),
+          namesI18n: adminGeoNamesForSave(
+            existing: record.namesI18n,
+            editedByLocale: {
+              for (final lang in adminGeoLocales)
+                lang: _model.geoNameControllers[lang]?.text ?? '',
+            },
+          ),
           dolh: FFAppState().RevDolh ?? record.dolh,
           acctev: _model.switchValue ?? record.acctev,
           img: await resolveImageForFirestoreSave(
@@ -244,6 +252,16 @@ class _EdetRegWidgetState extends State<EdetRegWidget> {
                 label: uiTr(context, 'اسم المنطقة'),
                 icon: Icons.filter_hdr_rounded,
               ),
+              const SizedBox(height: AdminUi.fieldGap),
+              for (final lang in EdetRegModel.geoLocales)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AdminUi.fieldGap),
+                  child: AdminTextField(
+                    controller: _model.geoNameControllers[lang]!,
+                    label: 'names_i18n.$lang',
+                    icon: Icons.translate_rounded,
+                  ),
+                ),
               const SizedBox(height: AdminUi.fieldGap),
               AdminTextField(
                 controller: _model.textFieldDescTextController!,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '/components/admin_geo_locale_fields.dart';
 import '/core/i18n/admin_i18n_save_helper.dart';
 import '/backend/admin_country_geo_service.dart';
 import '/backend/admin_firestore_delete.dart';
@@ -52,6 +53,7 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
     _model.textControllerCurrencySymbol ??= TextEditingController();
     _model.textFieldFocusNodeCurrencySymbol ??= FocusNode();
     _model.switchValue = true;
+    ensureAdminGeoControllers(_model.geoNameControllers);
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
@@ -193,9 +195,11 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
         context: context,
         sourceText: name,
         fieldLabel: 'country name',
+        autoTranslate: false,
         existing: {
           if (geo.englishName != null && geo.englishName!.trim().isNotEmpty)
             'en': geo.englishName!.trim(),
+          ...adminGeoControllerValues(_model.geoNameControllers),
         },
       );
 
@@ -304,6 +308,7 @@ class _AddDolhWidgetState extends State<AddDolhWidget> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                AdminGeoLocaleFields(controllers: _model.geoNameControllers),
                 OutlinedButton.icon(
                   onPressed: _isResolvingGeo
                       ? null

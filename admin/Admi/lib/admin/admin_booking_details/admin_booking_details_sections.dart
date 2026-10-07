@@ -173,7 +173,7 @@ class AdminBookingDetailsKvRow extends StatelessWidget {
           SizedBox(
             width: 100,
             child: Text(
-              label,
+              uiTr(context, label),
               style: theme.labelSmall.override(
                 fontFamily: theme.labelSmallFamily,
                 color: theme.secondaryText,
@@ -377,13 +377,15 @@ class _AdminBookingDetailsHeaderState extends State<AdminBookingDetailsHeader> {
                   uiTr(context, 'تاريخ الإنشاء'), created),
               if (view.tripTypeLabel.isNotEmpty)
                 _metaChip(context, Icons.route_outlined,
-                    uiTr(context, 'نوع الرحلة'), view.tripTypeLabel),
+                    uiTr(context, 'نوع الرحلة'),
+                    uiTr(context, view.tripTypeLabel)),
               if (row.city.isNotEmpty)
                 _metaChip(context, Icons.location_city_outlined,
                     uiTr(context, 'المدينة'), row.city),
               if (row.paymentLabel.isNotEmpty)
                 _metaChip(context, Icons.payments_outlined,
-                    uiTr(context, 'طريقة الدفع'), row.paymentLabel),
+                    uiTr(context, 'طريقة الدفع'),
+                    uiTr(context, row.paymentLabel)),
             ],
           ),
         ],
@@ -687,7 +689,7 @@ class AdminBookingDetailsTripCard extends StatelessWidget {
         if (view.tripTypeLabel.isNotEmpty)
           AdminBookingDetailsKvRow(
             label: uiTr(context, 'نوع الرحلة'),
-            value: view.tripTypeLabel,
+            value: uiTr(context, view.tripTypeLabel),
           ),
         if (row.vehicleLabel.isNotEmpty)
           AdminBookingDetailsKvRow(

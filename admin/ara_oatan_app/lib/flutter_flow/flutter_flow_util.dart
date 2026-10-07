@@ -10,7 +10,6 @@ import 'dart:math' show pow, pi, sin;
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:json_path/json_path.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:map_launcher/map_launcher.dart';
 
@@ -19,6 +18,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../core/toury_dialogs.dart';
 import '../core/toury_location_service.dart';
+import '../core/toury_relative_time.dart';
 import '../main.dart';
 import 'internationalization.dart';
 
@@ -54,27 +54,12 @@ export '../core/app_ux_widgets.dart';
 T valueOrDefault<T>(T? value, T defaultValue) =>
     (value is String && value.isEmpty) || value == null ? defaultValue : value;
 
-void _setTimeagoLocales() {
-  timeago.setLocaleMessages('en', timeago.EnMessages());
-  timeago.setLocaleMessages('en_short', timeago.EnShortMessages());
-  timeago.setLocaleMessages('ar', timeago.ArMessages());
-  timeago.setLocaleMessages('ar_short', timeago.ArShortMessages());
-  timeago.setLocaleMessages('zh-Hans', timeago.ZhCnMessages());
-  timeago.setLocaleMessages('tr', timeago.TrMessages());
-  timeago.setLocaleMessages('ur', timeago.UrMessages());
-  timeago.setLocaleMessages('ru', timeago.RuMessages());
-  timeago.setLocaleMessages('ru_short', timeago.RuShortMessages());
-  timeago.setLocaleMessages('az', timeago.AzMessages());
-  timeago.setLocaleMessages('az_short', timeago.AzShortMessages());
-}
-
 String dateTimeFormat(String format, DateTime? dateTime, {String? locale}) {
   if (dateTime == null) {
     return '';
   }
   if (format == 'relative') {
-    _setTimeagoLocales();
-    return timeago.format(dateTime, locale: locale, allowFromNow: true);
+    return TouryRelativeTime.format(dateTime);
   }
   return DateFormat(format, locale).format(dateTime);
 }

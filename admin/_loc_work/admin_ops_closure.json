@@ -1,0 +1,884 @@
+{
+  "Close": {
+    "en": "Close",
+    "ar": "إغلاق",
+    "ru": "Закрыть",
+    "ky": "Жабуу",
+    "fr": "Fermer",
+    "ur": "بند کریں",
+    "pt": "Fechar"
+  },
+  "Direction": {
+    "en": "Direction",
+    "ar": "الاتجاه",
+    "ru": "Направление",
+    "ky": "Багыт",
+    "fr": "Sens",
+    "ur": "سمت",
+    "pt": "Direção"
+  },
+  "Finance details": {
+    "en": "Finance details",
+    "ar": "التفاصيل المالية",
+    "ru": "Финансовые детали",
+    "ky": "Каржылык маалымат",
+    "fr": "Détails financiers",
+    "ur": "مالی تفصیل",
+    "pt": "Detalhes financeiros"
+  },
+  "Partial amount (major, optional)": {
+    "en": "Partial amount (major units, optional)",
+    "ar": "مبلغ جزئي (الوحدة الرئيسية، اختياري)",
+    "ru": "Частичная сумма (основные единицы, необязательно)",
+    "ky": "Жарым-жартылай сумма (негизги бирдик, милдеттүү эмес)",
+    "fr": "Montant partiel (unité principale, facultatif)",
+    "ur": "جزوی رقم (بڑی اکائی، اختیاری)",
+    "pt": "Valor parcial (unidade principal, opcional)"
+  },
+  "Period Close Checklist": {
+    "en": "Period close checklist",
+    "ar": "قائمة إغلاق الفترة",
+    "ru": "Контрольный список закрытия периода",
+    "ky": "Мезгилди жабуу тизмеси",
+    "fr": "Liste de clôture de période",
+    "ur": "مدت بند کرنے کی فہرست",
+    "pt": "Lista de fechamento do período"
+  },
+  "Reverse": {
+    "en": "Reverse",
+    "ar": "عكس",
+    "ru": "Отменить проводку",
+    "ky": "Артка кайтаруу",
+    "fr": "Annuler l’écriture",
+    "ur": "واپس کریں",
+    "pt": "Estornar"
+  },
+  "This action is irreversible.": {
+    "en": "This action is irreversible.",
+    "ar": "هذا الإجراء لا يمكن التراجع عنه.",
+    "ru": "Это действие необратимо.",
+    "ky": "Бул аракетти артка кайтаруу мүмкүн эмес.",
+    "fr": "Cette action est irréversible.",
+    "ur": "یہ عمل واپس نہیں ہو سکتا۔",
+    "pt": "Esta ação é irreversível."
+  },
+  "{count} رحلة تحتاج مراجعة": {
+    "en": "{count} trips need review",
+    "ar": "{count} رحلة تحتاج مراجعة",
+    "ru": "{count} поездок требуют проверки",
+    "ky": "{count} сапар текшерүүнү талап кылат",
+    "fr": "{count} trajets à vérifier",
+    "ur": "{count} سفر جائزہ چاہتے ہیں",
+    "pt": "{count} viagens precisam de revisão"
+  },
+  "أسباب الاستبعاد": {
+    "en": "Exclusion reasons",
+    "ar": "أسباب الاستبعاد",
+    "ru": "Причины исключения",
+    "ky": "Чыгарып салуу себептери",
+    "fr": "Motifs d’exclusion",
+    "ur": "اخراج کی وجوہات",
+    "pt": "Motivos de exclusão"
+  },
+  "إنشاء": {
+    "en": "Create",
+    "ar": "إنشاء",
+    "ru": "Создать",
+    "ky": "Түзүү",
+    "fr": "Créer",
+    "ur": "بنائیں",
+    "pt": "Criar"
+  },
+  "الاتجاه": {
+    "en": "Direction",
+    "ar": "الاتجاه",
+    "ru": "Направление",
+    "ky": "Багыт",
+    "fr": "Sens",
+    "ur": "سمت",
+    "pt": "Direção"
+  },
+  "التأثير": {
+    "en": "Impact",
+    "ar": "التأثير",
+    "ru": "Влияние",
+    "ky": "Таасир",
+    "fr": "Impact",
+    "ur": "اثر",
+    "pt": "Impacto"
+  },
+  "الجديد": {
+    "en": "New",
+    "ar": "الجديد",
+    "ru": "Новое",
+    "ky": "Жаңы",
+    "fr": "Nouveau",
+    "ur": "نیا",
+    "pt": "Novo"
+  },
+  "السبب": {
+    "en": "Reason",
+    "ar": "السبب",
+    "ru": "Причина",
+    "ky": "Себеп",
+    "fr": "Motif",
+    "ur": "وجہ",
+    "pt": "Motivo"
+  },
+  "العنصر": {
+    "en": "Item",
+    "ar": "العنصر",
+    "ru": "Элемент",
+    "ky": "Элемент",
+    "fr": "Élément",
+    "ur": "عنصر",
+    "pt": "Item"
+  },
+  "القيم المقترحة": {
+    "en": "Suggested values",
+    "ar": "القيم المقترحة",
+    "ru": "Предлагаемые значения",
+    "ky": "Сунушталган маанилер",
+    "fr": "Valeurs suggérées",
+    "ur": "تجویز کردہ قدریں",
+    "pt": "Valores sugeridos"
+  },
+  "المبلغ (رئيسي)": {
+    "en": "Amount (major)",
+    "ar": "المبلغ (رئيسي)",
+    "ru": "Сумма (основная)",
+    "ky": "Сумма (негизги)",
+    "fr": "Montant (principal)",
+    "ur": "رقم (بڑی)",
+    "pt": "Valor (principal)"
+  },
+  "المبلغ (وحدات العملة)": {
+    "en": "Amount (currency units)",
+    "ar": "المبلغ (وحدات العملة)",
+    "ru": "Сумма (единицы валюты)",
+    "ky": "Сумма (валюта бирдиги)",
+    "fr": "Montant (unités de devise)",
+    "ur": "رقم (کرنسی اکائیاں)",
+    "pt": "Valor (unidades da moeda)"
+  },
+  "المسار الأساسي هو تأكيد السائق. استخدم هذا للإغلاق اليدوي للحالات العالقة فقط.": {
+    "en": "The primary path is driver confirmation. Use this only to close stuck cases manually.",
+    "ar": "المسار الأساسي هو تأكيد السائق. استخدم هذا للإغلاق اليدوي للحالات العالقة فقط.",
+    "ru": "Основной путь — подтверждение водителя. Используйте это только для ручного закрытия зависших случаев.",
+    "ky": "Негизги жол — айдоочунун ырастоосу. Муну токтоп калган учурларды кол менен жабуу үчүн гана колдонуңуз.",
+    "fr": "Le chemin principal est la confirmation du chauffeur. Utilisez ceci seulement pour clôturer manuellement les cas bloqués.",
+    "ur": "بنیادی راستہ ڈرائیور کی تصدیق ہے۔ اسے صرف پھنسے معاملات دستی بند کرنے کے لیے استعمال کریں۔",
+    "pt": "O caminho principal é a confirmação do motorista. Use isto apenas para fechar manualmente casos travados."
+  },
+  "المستلم": {
+    "en": "Recipient",
+    "ar": "المستلم",
+    "ru": "Получатель",
+    "ky": "Алуучу",
+    "fr": "Bénéficiaire",
+    "ur": "وصول کنندہ",
+    "pt": "Beneficiário"
+  },
+  "تأكيد تحصيل نقدي استثنائي": {
+    "en": "Exceptional cash collection confirmation",
+    "ar": "تأكيد تحصيل نقدي استثنائي",
+    "ru": "Исключительное подтверждение инкассации",
+    "ky": "Өзгөчө накталай чогултууну ырастоо",
+    "fr": "Confirmation exceptionnelle d’encaissement",
+    "ur": "غیر معمولی نقد وصولی کی تصدیق",
+    "pt": "Confirmação excepcional de cobrança em dinheiro"
+  },
+  "تسويات غير مسددة: {count}": {
+    "en": "Unsettled settlements: {count}",
+    "ar": "تسويات غير مسددة: {count}",
+    "ru": "Нерассчитанные взаиморасчёты: {count}",
+    "ky": "Эсептешилбеген эсептешүүлөр: {count}",
+    "fr": "Règlements non soldés : {count}",
+    "ur": "غیر تصفیہ شدہ تصفیے: {count}",
+    "pt": "Liquidações não quitadas: {count}"
+  },
+  "تعذر الحذف": {
+    "en": "Could not delete",
+    "ar": "تعذر الحذف",
+    "ru": "Не удалось удалить",
+    "ky": "Өчүрүү мүмкүн болгон жок",
+    "fr": "Suppression impossible",
+    "ur": "حذف نہیں ہو سکا",
+    "pt": "Não foi possível excluir"
+  },
+  "تفاصيل طلب التعديل": {
+    "en": "Change request details",
+    "ar": "تفاصيل طلب التعديل",
+    "ru": "Детали запроса на изменение",
+    "ky": "Өзгөртүү өтүнүчүнүн чоо-жайы",
+    "fr": "Détails de la demande de modification",
+    "ur": "تبدیلی کی درخواست کی تفصیل",
+    "pt": "Detalhes do pedido de alteração"
+  },
+  "تم استبعاد {count} سجل توافق legacy من العدد الإجمالي": {
+    "en": "{count} legacy compatibility records were excluded from the total",
+    "ar": "تم استبعاد {count} سجل توافق legacy من العدد الإجمالي",
+    "ru": "{count} записей устаревшей совместимости исключены из общего числа",
+    "ky": "{count} эски шайкештик жазуусу жалпы эсептен чыгарылды",
+    "fr": "{count} enregistrements de compatibilité hérités ont été exclus du total",
+    "ur": "{count} legacy مطابقت کے ریکارڈ کل تعداد سے خارج ہوئے",
+    "pt": "{count} registros de compatibilidade legada foram excluídos do total"
+  },
+  "تم استبعاد {count} معلم alias قديم من العدد الإجمالي": {
+    "en": "{count} old alias landmarks were excluded from the total",
+    "ar": "تم استبعاد {count} معلم alias قديم من العدد الإجمالي",
+    "ru": "{count} старых мест-алиасов исключены из общего числа",
+    "ky": "{count} эски alias көрүнүктүү жер жалпы эсептен чыгарылды",
+    "fr": "{count} anciens lieux alias ont été exclus du total",
+    "ur": "{count} پرانے alias نشانات کل تعداد سے خارج ہوئے",
+    "pt": "{count} pontos alias antigos foram excluídos do total"
+  },
+  "تم الحذف": {
+    "en": "Deleted",
+    "ar": "تم الحذف",
+    "ru": "Удалено",
+    "ky": "Өчүрүлдү",
+    "fr": "Supprimé",
+    "ur": "حذف ہو گیا",
+    "pt": "Excluído"
+  },
+  "تم فتح الوثيقة": {
+    "en": "Document opened",
+    "ar": "تم فتح الوثيقة",
+    "ru": "Документ открыт",
+    "ky": "Документ ачылды",
+    "fr": "Document ouvert",
+    "ur": "دستاویز کھل گئی",
+    "pt": "Documento aberto"
+  },
+  "تنبيه": {
+    "en": "Notice",
+    "ar": "تنبيه",
+    "ru": "Предупреждение",
+    "ky": "Эскертүү",
+    "fr": "Avis",
+    "ur": "اطلاع",
+    "pt": "Aviso"
+  },
+  "جاري ملخص الفترة… تظهر قائمة التسويات الآن.": {
+    "en": "The period summary is loading. The settlement list is shown now.",
+    "ar": "جاري ملخص الفترة… تظهر قائمة التسويات الآن.",
+    "ru": "Сводка периода загружается. Список взаиморасчётов уже показан.",
+    "ky": "Мезгилдин кыскача маалыматы жүктөлүүдө. Эсептешүү тизмеси азыр көрүнүп турат.",
+    "fr": "Le résumé de période se charge. La liste des règlements est déjà affichée.",
+    "ur": "مدت کا خلاصہ لوڈ ہو رہا ہے۔ تصفیوں کی فہرست اب دکھ رہی ہے۔",
+    "pt": "O resumo do período está carregando. A lista de liquidações já aparece."
+  },
+  "حفظ كقيد انتظار": {
+    "en": "Save as pending",
+    "ar": "حفظ كقيد انتظار",
+    "ru": "Сохранить как ожидающее",
+    "ky": "Күтүүдө катары сактоо",
+    "fr": "Enregistrer en attente",
+    "ur": "زیر التوا محفوظ کریں",
+    "pt": "Salvar como pendente"
+  },
+  "حفظ مسودة": {
+    "en": "Save draft",
+    "ar": "حفظ مسودة",
+    "ru": "Сохранить черновик",
+    "ky": "Долбоорду сактоо",
+    "fr": "Enregistrer le brouillon",
+    "ur": "مسودہ محفوظ کریں",
+    "pt": "Salvar rascunho"
+  },
+  "دفتر الرحلات المالية": {
+    "en": "Financial trip ledger",
+    "ar": "دفتر الرحلات المالية",
+    "ru": "Журнал финансовых поездок",
+    "ky": "Каржылык сапарлар журналы",
+    "fr": "Journal financier des trajets",
+    "ur": "مالی سفر کا کھاتہ",
+    "pt": "Livro financeiro de viagens"
+  },
+  "رحلات مكتملة (V2): {count} · مصدر: {source} · بيانات ناقصة في الجدول: {incomplete}": {
+    "en": "Completed trips (V2): {count} · source: {source} · incomplete rows: {incomplete}",
+    "ar": "رحلات مكتملة (V2): {count} · مصدر: {source} · بيانات ناقصة في الجدول: {incomplete}",
+    "ru": "Завершённые поездки (V2): {count} · источник: {source} · неполные строки: {incomplete}",
+    "ky": "Бүткөн сапарлар (V2): {count} · булак: {source} · толук эмес саптар: {incomplete}",
+    "fr": "Trajets terminés (V2) : {count} · source : {source} · lignes incomplètes : {incomplete}",
+    "ur": "مکمل سفر (V2): {count} · ماخذ: {source} · نامکمل قطاریں: {incomplete}",
+    "pt": "Viagens concluídas (V2): {count} · origem: {source} · linhas incompletas: {incomplete}"
+  },
+  "رحلات مكتملة: {count} · موثقة ماليًا: {documented} · بيانات ناقصة: {incomplete}": {
+    "en": "Completed trips: {count} · financially documented: {documented} · incomplete: {incomplete}",
+    "ar": "رحلات مكتملة: {count} · موثقة ماليًا: {documented} · بيانات ناقصة: {incomplete}",
+    "ru": "Завершённые поездки: {count} · с финансами: {documented} · неполные: {incomplete}",
+    "ky": "Бүткөн сапарлар: {count} · каржысы толук: {documented} · толук эмес: {incomplete}",
+    "fr": "Trajets terminés : {count} · documentés financièrement : {documented} · incomplets : {incomplete}",
+    "ur": "مکمل سفر: {count} · مالی دستاویز: {documented} · نامکمل: {incomplete}",
+    "pt": "Viagens concluídas: {count} · documentadas financeiramente: {documented} · incompletas: {incomplete}"
+  },
+  "سبب التعديل": {
+    "en": "Reason for the change",
+    "ar": "سبب التعديل",
+    "ru": "Причина изменения",
+    "ky": "Өзгөртүүнүн себеби",
+    "fr": "Motif de la modification",
+    "ur": "تبدیلی کی وجہ",
+    "pt": "Motivo da alteração"
+  },
+  "عكس التعديل": {
+    "en": "Reverse the adjustment",
+    "ar": "عكس التعديل",
+    "ru": "Отменить корректировку",
+    "ky": "Түзөтүүнү артка кайтаруу",
+    "fr": "Annuler l’ajustement",
+    "ur": "ترمیم واپس کریں",
+    "pt": "Estornar o ajuste"
+  },
+  "فتح الرابط": {
+    "en": "Open link",
+    "ar": "فتح الرابط",
+    "ru": "Открыть ссылку",
+    "ky": "Шилтемени ачуу",
+    "fr": "Ouvrir le lien",
+    "ur": "لنک کھولیں",
+    "pt": "Abrir link"
+  },
+  "فتح المرفق": {
+    "en": "Open attachment",
+    "ar": "فتح المرفق",
+    "ru": "Открыть вложение",
+    "ky": "Тиркемени ачуу",
+    "fr": "Ouvrir la pièce jointe",
+    "ur": "منسلکہ کھولیں",
+    "pt": "Abrir anexo"
+  },
+  "فترة مالية": {
+    "en": "Financial period",
+    "ar": "فترة مالية",
+    "ru": "Финансовый период",
+    "ky": "Каржылык мезгил",
+    "fr": "Période financière",
+    "ur": "مالی مدت",
+    "pt": "Período financeiro"
+  },
+  "قيمة التخزين": {
+    "en": "Storage value",
+    "ar": "قيمة التخزين",
+    "ru": "Значение хранения",
+    "ky": "Сактоо мааниси",
+    "fr": "Valeur stockée",
+    "ur": "ذخیرہ قدر",
+    "pt": "Valor armazenado"
+  },
+  "لوحة الفترة": {
+    "en": "Period board",
+    "ar": "لوحة الفترة",
+    "ru": "Панель периода",
+    "ky": "Мезгил тактасы",
+    "fr": "Tableau de période",
+    "ur": "مدت بورڈ",
+    "pt": "Painel do período"
+  },
+  "متبقي {days} يومًا": {
+    "en": "{days} days remaining",
+    "ar": "متبقي {days} يومًا",
+    "ru": "Осталось {days} дн.",
+    "ky": "{days} күн калды",
+    "fr": "{days} jours restants",
+    "ur": "{days} دن باقی",
+    "pt": "{days} dias restantes"
+  },
+  "متبقي {months} أشهر": {
+    "en": "{months} months remaining",
+    "ar": "متبقي {months} أشهر",
+    "ru": "Осталось {months} мес.",
+    "ky": "{months} ай калды",
+    "fr": "{months} mois restants",
+    "ur": "{months} مہینے باقی",
+    "pt": "{months} meses restantes"
+  },
+  "مستبعد من العرض العادي: {count} سجل اختبار/ذهبي": {
+    "en": "Excluded from the normal view: {count} test/golden records",
+    "ar": "مستبعد من العرض العادي: {count} سجل اختبار/ذهبي",
+    "ru": "Исключено из обычного вида: {count} тестовых записей",
+    "ky": "Кадимки көрүнүштөн чыгарылган: {count} сынак жазуусу",
+    "fr": "Exclu de la vue normale : {count} enregistrements de test",
+    "ur": "عام منظر سے خارج: {count} ٹیسٹ ریکارڈ",
+    "pt": "Excluído da visão normal: {count} registros de teste"
+  },
+  "مستبعد من العرض العادي: —": {
+    "en": "Excluded from the normal view: —",
+    "ar": "مستبعد من العرض العادي: —",
+    "ru": "Исключено из обычного вида: —",
+    "ky": "Кадимки көрүнүштөн чыгарылган: —",
+    "fr": "Exclu de la vue normale : —",
+    "ur": "عام منظر سے خارج: —",
+    "pt": "Excluído da visão normal: —"
+  },
+  "مشمول": {
+    "en": "Included",
+    "ar": "مشمول",
+    "ru": "Включено",
+    "ky": "Киргизилген",
+    "fr": "Inclus",
+    "ur": "شامل",
+    "pt": "Incluído"
+  },
+  "معاينة فقط — لن يتم تغيير أي أرصدة مالية": {
+    "en": "Preview only — no financial balances will be changed",
+    "ar": "معاينة فقط — لن يتم تغيير أي أرصدة مالية",
+    "ru": "Только просмотр — финансовые остатки не изменятся",
+    "ky": "Алдын ала көрүү гана — каржылык калдыктар өзгөрбөйт",
+    "fr": "Aperçu seulement — aucun solde financier ne sera modifié",
+    "ur": "صرف پیش منظر — کوئی مالی بیلنس نہیں بدلے گا",
+    "pt": "Somente prévia — nenhum saldo financeiro será alterado"
+  },
+  "معرّف المندوب (اختياري)": {
+    "en": "Driver id (optional)",
+    "ar": "معرّف المندوب (اختياري)",
+    "ru": "Идентификатор водителя (необязательно)",
+    "ky": "Айдоочунун идентификатору (милдеттүү эмес)",
+    "fr": "Identifiant chauffeur (facultatif)",
+    "ur": "ڈرائیور شناخت (اختیاری)",
+    "pt": "Identificador do motorista (opcional)"
+  },
+  "معطّل": {
+    "en": "Disabled",
+    "ar": "معطّل",
+    "ru": "Отключено",
+    "ky": "Өчүк",
+    "fr": "Désactivé",
+    "ur": "غیر فعال",
+    "pt": "Desativado"
+  },
+  "ملاحظات": {
+    "en": "Notes",
+    "ar": "ملاحظات",
+    "ru": "Заметки",
+    "ky": "Эскертүүлөр",
+    "fr": "Notes",
+    "ur": "نوٹس",
+    "pt": "Notas"
+  },
+  "ملاحظة (اختياري)": {
+    "en": "Note (optional)",
+    "ar": "ملاحظة (اختياري)",
+    "ru": "Заметка (необязательно)",
+    "ky": "Эскертүү (милдеттүү эмес)",
+    "fr": "Note (facultatif)",
+    "ur": "نوٹ (اختیاری)",
+    "pt": "Nota (opcional)"
+  },
+  "ملخص الفترة (محدود) — الجدول صفحته الأولى مباشرة": {
+    "en": "Period summary (limited) — the table shows its first page directly",
+    "ar": "ملخص الفترة (محدود) — الجدول صفحته الأولى مباشرة",
+    "ru": "Сводка периода (ограниченная) — таблица сразу показывает первую страницу",
+    "ky": "Мезгилдин кыскача маалыматы (чектүү) — таблица биринчи бетин дароо көрсөтөт",
+    "fr": "Résumé de période (limité) — le tableau affiche directement sa première page",
+    "ur": "مدت کا خلاصہ (محدود) — جدول براہ راست پہلا صفحہ دکھاتا ہے",
+    "pt": "Resumo do período (limitado) — a tabela mostra direto a primeira página"
+  },
+  "منتهية منذ {days} يومًا": {
+    "en": "Expired {days} days ago",
+    "ar": "منتهية منذ {days} يومًا",
+    "ru": "Истекло {days} дн. назад",
+    "ky": "{days} күн мурун бүттү",
+    "fr": "Expiré depuis {days} jours",
+    "ur": "{days} دن پہلے ختم",
+    "pt": "Expirou há {days} dias"
+  },
+  "موافقة وتطبيق": {
+    "en": "Approve and apply",
+    "ar": "موافقة وتطبيق",
+    "ru": "Одобрить и применить",
+    "ky": "Бекитүү жана колдонуу",
+    "fr": "Approuver et appliquer",
+    "ur": "منظور کریں اور لاگو کریں",
+    "pt": "Aprovar e aplicar"
+  },
+  "نسخ التفاصيل": {
+    "en": "Copy details",
+    "ar": "نسخ التفاصيل",
+    "ru": "Копировать детали",
+    "ky": "Чоо-жайын көчүрүү",
+    "fr": "Copier les détails",
+    "ur": "تفصیل کاپی کریں",
+    "pt": "Copiar detalhes"
+  },
+  "هذا التغيير قد يؤثر على المندوبين المعتمدين حاليًا. حدد تاريخ بدء التطبيق وفترة السماح قبل تفعيل المنع التشغيلي.": {
+    "en": "This change may affect currently approved drivers. Set the start date and grace period before enabling the operational block.",
+    "ar": "هذا التغيير قد يؤثر على المندوبين المعتمدين حاليًا. حدد تاريخ بدء التطبيق وفترة السماح قبل تفعيل المنع التشغيلي.",
+    "ru": "Это изменение может затронуть уже одобренных водителей. Укажите дату начала и льготный период до включения операционной блокировки.",
+    "ky": "Бул өзгөртүү учурда бекитилген айдоочуларга таасир этиши мүмкүн. Операциялык бөгөттү күйгүзүүдөн мурун башталыш күнүн жана жеңилдик мөөнөтүн коюңуз.",
+    "fr": "Ce changement peut affecter les chauffeurs déjà approuvés. Définissez la date de début et le délai de grâce avant d’activer le blocage opérationnel.",
+    "ur": "یہ تبدیلی موجودہ منظور ڈرائیوروں کو متاثر کر سکتی ہے۔ آپریشنل بلاک سے پہلے آغاز کی تاریخ اور مہلت مقرر کریں۔",
+    "pt": "Esta alteração pode afetar motoristas já aprovados. Defina a data de início e o período de tolerância antes de ativar o bloqueio operacional."
+  },
+  "يتيم: بدون دولة": {
+    "en": "Orphan: no country",
+    "ar": "يتيم: بدون دولة",
+    "ru": "Без страны",
+    "ky": "Өлкөсү жок",
+    "fr": "Orphelin : sans pays",
+    "ur": "یتیم: بغیر ملک",
+    "pt": "Órfão: sem país"
+  },
+  "يحفظ كـ Pending — لا يخفض Outstanding حتى التأكيد": {
+    "en": "Saved as Pending — it does not reduce Outstanding until confirmation",
+    "ar": "يحفظ كـ Pending — لا يخفض Outstanding حتى التأكيد",
+    "ru": "Сохраняется как Pending — Outstanding не уменьшается до подтверждения",
+    "ky": "Pending катары сакталат — ырастоого чейин Outstanding азайбайт",
+    "fr": "Enregistré comme Pending — Outstanding ne diminue pas avant confirmation",
+    "ur": "Pending کے طور پر محفوظ — تصدیق تک Outstanding نہیں گھٹتا",
+    "pt": "Salvo como Pending — Outstanding não diminui até a confirmação"
+  },
+  "حافلة": {
+    "en": "Bus",
+    "ar": "حافلة",
+    "ru": "Автобус",
+    "ky": "Автобус",
+    "fr": "Bus",
+    "ur": "بس",
+    "pt": "Ônibus"
+  },
+  "فارهة": {
+    "en": "Luxury",
+    "ar": "فارهة",
+    "ru": "Люкс",
+    "ky": "Люкс",
+    "fr": "Luxe",
+    "ur": "لگژری",
+    "pt": "Luxo"
+  },
+  "عائلية": {
+    "en": "Family",
+    "ar": "عائلية",
+    "ru": "Семейный",
+    "ky": "Үй-бүлөлүк",
+    "fr": "Familiale",
+    "ur": "خاندانی",
+    "pt": "Familiar"
+  },
+  "تصنيف مركبة": {
+    "en": "Vehicle class",
+    "ar": "تصنيف مركبة",
+    "ru": "Класс транспорта",
+    "ky": "Унаа классы",
+    "fr": "Catégorie de véhicule",
+    "ur": "گاڑی کی جماعت",
+    "pt": "Classe do veículo"
+  },
+  "الرحلات المكتملة": {
+    "en": "Completed trips",
+    "ar": "الرحلات المكتملة",
+    "ru": "Завершённые поездки",
+    "ky": "Бүткөн сапарлар",
+    "fr": "Trajets terminés",
+    "ur": "مکمل سفر",
+    "pt": "Viagens concluídas"
+  },
+  "القيمة المالية الموثقة": {
+    "en": "Documented financial value",
+    "ar": "القيمة المالية الموثقة",
+    "ru": "Задокументированная финансовая сумма",
+    "ky": "Документтелген каржылык сумма",
+    "fr": "Valeur financière documentée",
+    "ur": "دستاویزی مالی قدر",
+    "pt": "Valor financeiro documentado"
+  },
+  "غير المحصّل": {
+    "en": "Uncollected",
+    "ar": "غير المحصّل",
+    "ru": "Не собрано",
+    "ky": "Чогултулган эмес",
+    "fr": "Non encaissé",
+    "ur": "غیر وصول",
+    "pt": "Não cobrado"
+  },
+  "المستحق للسائقين": {
+    "en": "Due to drivers",
+    "ar": "المستحق للسائقين",
+    "ru": "К выплате водителям",
+    "ky": "Айдоочуларга төлөнүүчү",
+    "fr": "Dû aux chauffeurs",
+    "ur": "ڈرائیوروں کا واجب",
+    "pt": "Devido aos motoristas"
+  },
+  "المستحق للشركة": {
+    "en": "Due to the company",
+    "ar": "المستحق للشركة",
+    "ru": "К выплате компании",
+    "ky": "Компанияга төлөнүүчү",
+    "fr": "Dû à la société",
+    "ur": "کمپنی کا واجب",
+    "pt": "Devido à empresa"
+  },
+  "تسويات مسددة": {
+    "en": "Settled settlements",
+    "ar": "تسويات مسددة",
+    "ru": "Закрытые взаиморасчёты",
+    "ky": "Эсептешилген эсептешүүлөр",
+    "fr": "Règlements soldés",
+    "ur": "تصفیہ شدہ تصفیے",
+    "pt": "Liquidações quitadas"
+  },
+  "صافي السائقين": {
+    "en": "Drivers’ net",
+    "ar": "صافي السائقين",
+    "ru": "Нетто водителей",
+    "ky": "Айдоочулардын тазасы",
+    "fr": "Net des chauffeurs",
+    "ur": "ڈرائیوروں کا خالص",
+    "pt": "Líquido dos motoristas"
+  },
+  "متبقي التسويات": {
+    "en": "Settlement remainder",
+    "ar": "متبقي التسويات",
+    "ru": "Остаток взаиморасчётов",
+    "ky": "Эсептешүүнүн калдыгы",
+    "fr": "Reste des règlements",
+    "ur": "تصفیوں کا باقی",
+    "pt": "Restante das liquidações"
+  },
+  "إسناد الوكيل": {
+    "en": "Agent attribution",
+    "ar": "إسناد الوكيل",
+    "ru": "Привязка агента",
+    "ky": "Агентти байлоо",
+    "fr": "Attribution de l’agent",
+    "ur": "ایجنٹ کی نسبت",
+    "pt": "Atribuição do agente"
+  },
+  "التقسيم المالي": {
+    "en": "Financial split",
+    "ar": "التقسيم المالي",
+    "ru": "Финансовое разделение",
+    "ky": "Каржылык бөлүнүш",
+    "fr": "Répartition financière",
+    "ur": "مالی تقسیم",
+    "pt": "Divisão financeira"
+  },
+  "الحقول الناقصة": {
+    "en": "Missing fields",
+    "ar": "الحقول الناقصة",
+    "ru": "Недостающие поля",
+    "ky": "Жетишпеген талаалар",
+    "fr": "Champs manquants",
+    "ur": "غائب فیلڈز",
+    "pt": "Campos ausentes"
+  },
+  "القيمة (إجمالي الرحلة)": {
+    "en": "Value (trip total)",
+    "ar": "القيمة (إجمالي الرحلة)",
+    "ru": "Сумма (итог поездки)",
+    "ky": "Маани (сапардын жыйынтыгы)",
+    "fr": "Valeur (total du trajet)",
+    "ur": "قدر (سفر کا کل)",
+    "pt": "Valor (total da viagem)"
+  },
+  "درجة الثقة": {
+    "en": "Confidence",
+    "ar": "درجة الثقة",
+    "ru": "Достоверность",
+    "ky": "Ишеним даражасы",
+    "fr": "Niveau de confiance",
+    "ur": "اعتماد کی سطح",
+    "pt": "Grau de confiança"
+  },
+  "من يحتفظ بالمبلغ": {
+    "en": "Who holds the amount",
+    "ar": "من يحتفظ بالمبلغ",
+    "ru": "Кто удерживает сумму",
+    "ky": "Сумманы ким кармайт",
+    "fr": "Qui détient le montant",
+    "ur": "رقم کس کے پاس ہے",
+    "pt": "Quem retém o valor"
+  },
+  "بيانات مالية مكتملة": {
+    "en": "Complete financial data",
+    "ar": "بيانات مالية مكتملة",
+    "ru": "Полные финансовые данные",
+    "ky": "Толук каржылык маалымат",
+    "fr": "Données financières complètes",
+    "ur": "مکمل مالی ڈیٹا",
+    "pt": "Dados financeiros completos"
+  },
+  "نقد غير محصل": {
+    "en": "Uncollected cash",
+    "ar": "نقد غير محصل",
+    "ru": "Наличные не собраны",
+    "ky": "Накталай чогултулган эмес",
+    "fr": "Espèces non encaissées",
+    "ur": "غیر وصول نقد",
+    "pt": "Dinheiro não cobrado"
+  },
+  "نقد محصل": {
+    "en": "Collected cash",
+    "ar": "نقد محصل",
+    "ru": "Наличные собраны",
+    "ky": "Накتاлай чогултулган",
+    "fr": "Espèces encaissées",
+    "ur": "وصول شدہ نقد",
+    "pt": "Dinheiro cobrado"
+  },
+  "لا تسويات دائنة مفتوحة": {
+    "en": "No open payable settlements",
+    "ar": "لا تسويات دائنة مفتوحة",
+    "ru": "Нет открытых кредиторских взаиморасчётов",
+    "ky": "Ачык төлөнүүчү эсептешүү жок",
+    "fr": "Aucun règlement créditeur ouvert",
+    "ur": "کوئی کھلا ادائیگی تصفیہ نہیں",
+    "pt": "Nenhuma liquidação a pagar aberta"
+  },
+  "لا تسويات مدينة مفتوحة": {
+    "en": "No open receivable settlements",
+    "ar": "لا تسويات مدينة مفتوحة",
+    "ru": "Нет открытых дебиторских взаиморасчётов",
+    "ky": "Ачык алынуучу эсептешүү жок",
+    "fr": "Aucun règlement débiteur ouvert",
+    "ur": "کوئی کھلا وصولی تصفیہ نہیں",
+    "pt": "Nenhuma liquidação a receber aberta"
+  },
+  "لا ذمم دائنة على مستوى الرحلة": {
+    "en": "No trip-level payables",
+    "ar": "لا ذمم دائنة على مستوى الرحلة",
+    "ru": "Нет кредиторской задолженности на уровне поездки",
+    "ky": "Сапар деңгээлинде төлөнүүчү карыз жок",
+    "fr": "Aucune dette au niveau du trajet",
+    "ur": "سفر کی سطح پر کوئی ادائیگی نہیں",
+    "pt": "Nenhum valor a pagar no nível da viagem"
+  },
+  "لا ذمم مدينة على مستوى الرحلة": {
+    "en": "No trip-level receivables",
+    "ar": "لا ذمم مدينة على مستوى الرحلة",
+    "ru": "Нет дебиторской задолженности на уровне поездки",
+    "ky": "Сапар деңгээлинде алынуучу карыз жок",
+    "fr": "Aucune créance au niveau du trajet",
+    "ur": "سفر کی سطح پر کوئی وصولی نہیں",
+    "pt": "Nenhum valor a receber no nível da viagem"
+  },
+  "تسويات مفتوحة": {
+    "en": "Open settlements",
+    "ar": "تسويات مفتوحة",
+    "ru": "Открытые взаиморасчёты",
+    "ky": "Ачык эсептешүүлөр",
+    "fr": "Règlements ouverts",
+    "ur": "کھلے تصفیے",
+    "pt": "Liquidações abertas"
+  },
+  "متبقٍ": {
+    "en": "Remaining",
+    "ar": "متبقٍ",
+    "ru": "Остаток",
+    "ky": "Калдык",
+    "fr": "Restant",
+    "ur": "باقی",
+    "pt": "Restante"
+  },
+  "بالساعة": {
+    "en": "Hourly",
+    "ar": "بالساعة",
+    "ru": "Почасовая",
+    "ky": "Саатына",
+    "fr": "À l’heure",
+    "ur": "فی گھنٹہ",
+    "pt": "Por hora"
+  },
+  "الإدارة": {
+    "en": "Administration",
+    "ar": "الإدارة",
+    "ru": "Администрация",
+    "ky": "Администрация",
+    "fr": "Administration",
+    "ur": "انتظامیہ",
+    "pt": "Administração"
+  },
+  "لا توجد مراجع معروفة": {
+    "en": "No known references",
+    "ar": "لا توجد مراجع معروفة",
+    "ru": "Нет известных ссылок",
+    "ky": "Белгилүү шилтеме жок",
+    "fr": "Aucune référence connue",
+    "ur": "کوئی معلوم حوالہ نہیں",
+    "pt": "Nenhuma referência conhecida"
+  },
+  "القيمة": {
+    "en": "Value",
+    "ar": "القيمة",
+    "ru": "Сумма",
+    "ky": "Маани",
+    "fr": "Valeur",
+    "ur": "قدر",
+    "pt": "Valor"
+  },
+  "جاري التحديث…": {
+    "en": "Updating…",
+    "ar": "جاري التحديث…",
+    "ru": "Обновление…",
+    "ky": "Жаңыртылууда…",
+    "fr": "Mise à jour…",
+    "ur": "تازہ کاری جاری…",
+    "pt": "Atualizando…"
+  },
+  "اختلاف مدينة الرحلة عن السائق": {
+    "en": "The trip city differs from the driver city",
+    "ar": "اختلاف مدينة الرحلة عن السائق",
+    "ru": "Город поездки отличается от города водителя",
+    "ky": "Сапардын шаары айдоочунун шаарынан айырмаланат",
+    "fr": "La ville du trajet diffère de celle du chauffeur",
+    "ur": "سفر کا شہر ڈرائیور کے شہر سے مختلف ہے",
+    "pt": "A cidade da viagem difere da cidade do motorista"
+  },
+  "اختلاف دولة الرحلة عن السائق": {
+    "en": "The trip country differs from the driver country",
+    "ar": "اختلاف دولة الرحلة عن السائق",
+    "ru": "Страна поездки отличается от страны водителя",
+    "ky": "Сапардын өлкөсү айдоочунун өлкөсүнөн айырмаланат",
+    "fr": "Le pays du trajet diffère de celui du chauffeur",
+    "ur": "سفر کا ملک ڈرائیور کے ملک سے مختلف ہے",
+    "pt": "O país da viagem difere do país do motorista"
+  },
+  "اختلاف دولة/مدينة الرحلة عن السائق": {
+    "en": "The trip country and city differ from the driver",
+    "ar": "اختلاف دولة/مدينة الرحلة عن السائق",
+    "ru": "Страна и город поездки отличаются от данных водителя",
+    "ky": "Сапардын өлкөсү жана шаары айдоочудан айырмаланат",
+    "fr": "Le pays et la ville du trajet diffèrent de ceux du chauffeur",
+    "ur": "سفر کا ملک اور شہر ڈرائیور سے مختلف ہیں",
+    "pt": "O país e a cidade da viagem diferem dos do motorista"
+  },
+  "الدفع / التحصيل": {
+    "en": "Payment / collection",
+    "ar": "الدفع / التحصيل",
+    "ru": "Оплата / инкассация",
+    "ky": "Төлөм / чогултуу",
+    "fr": "Paiement / encaissement",
+    "ur": "ادائیگی / وصولی",
+    "pt": "Pagamento / cobrança"
+  },
+  "تعذر تحميل التصنيفات — تم استخدام القيم الافتراضية": {
+    "en": "Categories could not be loaded — default values were used",
+    "ar": "تعذر تحميل التصنيفات — تم استخدام القيم الافتراضية",
+    "ru": "Не удалось загрузить категории — использованы значения по умолчанию",
+    "ky": "Категориялар жүктөлгөн жок — демейки маанилер колдонулду",
+    "fr": "Impossible de charger les catégories — les valeurs par défaut ont été utilisées",
+    "ur": "زمرے لوڈ نہیں ہوئے — طے شدہ قدریں استعمال ہوئیں",
+    "pt": "Não foi possível carregar as categorias — os valores padrão foram usados"
+  },
+  "حافلة صغيرة": {
+    "en": "Minibus",
+    "ar": "حافلة صغيرة",
+    "ru": "Микроавтобус",
+    "ky": "Кичи автобус",
+    "fr": "Minibus",
+    "ur": "منی بس",
+    "pt": "Micro-ônibus"
+  },
+  "حافلة سياحية": {
+    "en": "Tour bus",
+    "ar": "حافلة سياحية",
+    "ru": "Туристический автобус",
+    "ky": "Туристтик автобус",
+    "fr": "Bus touristique",
+    "ur": "سیاحتی بس",
+    "pt": "Ônibus turístico"
+  }
+}

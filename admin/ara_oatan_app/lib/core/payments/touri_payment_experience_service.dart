@@ -26,6 +26,9 @@ class TouryPaymentExperienceService {
   final PaymentApiClient _api;
 
   /// Create order server-side, prefer native SDK, fall back to existing HPP.
+  ///
+  /// Set [forceRefreshSession] on resume/retry so an expired SDK/HPP session
+  /// is minted fresh instead of reusing a dead auth URL.
   Future<TouryCardPaymentResult> startCardCheckout({
     required BuildContext context,
     required String description,
@@ -35,8 +38,15 @@ class TouryPaymentExperienceService {
     required int bookingHours,
     required int additionalHours,
     String? orderPath,
+    bool forceRefreshSession = false,
   }) async {
     if (TouryPaymentFlags.forceHostedPaymentPage || kIsWeb) {
+      if (kDebugMode) {
+        debugPrint(
+          'PAYMENT_MODE=hpp SDK_PATH_SELECTED=false '
+          'reason=force_hpp_or_web mode=${TouryPaymentFlags.mobilePaymentMode}',
+        );
+      }
       return touryExecuteCardPayment(
         description: description,
         amountHalalas: amountHalalas,
@@ -45,6 +55,7 @@ class TouryPaymentExperienceService {
         bookingHours: bookingHours,
         additionalHours: additionalHours,
         orderPath: orderPath,
+        forceRefreshHpp: forceRefreshSession,
       );
     }
 
@@ -73,6 +84,7 @@ class TouryPaymentExperienceService {
         description: description,
         locale: context.locale.languageCode,
         orderPath: orderPath,
+        forceRefreshHpp: forceRefreshSession,
       );
     } on PaymentApiException catch (e) {
       return TouryCardPaymentResult(
@@ -126,15 +138,36 @@ class TouryPaymentExperienceService {
         ? null
         : (orderJsonRaw is String ? orderJsonRaw : jsonEncode(orderJsonRaw));
 
-    final sdkReady = TouryPaymentFlags.preferMobileSdk &&
-        authUrl.isNotEmpty &&
+    // iOS NISdk requires OrderResponse JSON; Android CardPaymentRequest needs
+    // auth URL + code only. Missing iOS orderJson → HPP fallback (in-app).
+    final iosNeedsOrderJson =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+    final sdkSessionReady = authUrl.isNotEmpty &&
         payPageUrl.isNotEmpty &&
         paymentCode.isNotEmpty &&
-        await _bridge.isAvailable();
+        (!iosNeedsOrderJson ||
+            (orderJson != null && orderJson.trim().isNotEmpty));
+
+    final orderJsonPresent =
+        orderJson != null && orderJson.trim().isNotEmpty;
+    final bridgeAvailable = await _bridge.isAvailable();
+    final sdkReady = TouryPaymentFlags.preferMobileSdk &&
+        sdkSessionReady &&
+        bridgeAvailable;
+
+    if (kDebugMode) {
+      debugPrint(
+        'PAYMENT_MODE=sdk SDK_PATH_SELECTED=${TouryPaymentFlags.preferMobileSdk} '
+        'SDK_ORDER_JSON_PRESENT=$orderJsonPresent '
+        'sdkSessionReady=$sdkSessionReady bridge=$bridgeAvailable',
+      );
+    }
 
     if (sdkReady) {
       if (kDebugMode) {
-        debugPrint('payment_experience native_primary host=${Uri.tryParse(authUrl)?.host}');
+        debugPrint(
+          'NATIVE_BRIDGE_CALLED=true host=${Uri.tryParse(authUrl)?.host}',
+        );
       }
       final lang = context.locale.languageCode.toLowerCase().startsWith('ar')
           ? 'ar'
@@ -176,16 +209,34 @@ class TouryPaymentExperienceService {
       }
       // Same order → HPP fallback (no second create).
       if (kDebugMode) {
+        final reason = native.errorCategory ?? native.outcome.name;
         debugPrint(
-          'payment_experience hpp_fallback reason=${native.errorCategory ?? native.outcome.name}',
+          'HPP_FALLBACK_TRIGGERED=true HPP_FALLBACK_REASON=$reason '
+          'EXTERNAL_BROWSER_OPENED=false',
         );
+        if (reason.toUpperCase().contains('SIMULATOR') ||
+            reason.toUpperCase().contains('UNAVAILABLE')) {
+          debugPrint('SIMULATOR_SDK_LIMITATION=true reason=$reason');
+        }
       }
     } else if (kDebugMode) {
       debugPrint(
-        'payment_experience skip_native prefer=${TouryPaymentFlags.preferMobileSdk} '
+        'NATIVE_BRIDGE_CALLED=false prefer=${TouryPaymentFlags.preferMobileSdk} '
         'auth=${authUrl.isNotEmpty} pay=${payPageUrl.isNotEmpty} '
-        'code=${paymentCode.isNotEmpty} bridge=${await _bridge.isAvailable()}',
+        'code=${paymentCode.isNotEmpty} orderJson=$orderJsonPresent '
+        'bridge=$bridgeAvailable',
       );
+      if (TouryPaymentFlags.preferMobileSdk && !sdkSessionReady) {
+        debugPrint(
+          'HPP_FALLBACK_TRIGGERED=true HPP_FALLBACK_REASON=sdk_session_incomplete '
+          'SDK_ORDER_JSON_PRESENT=$orderJsonPresent',
+        );
+      } else if (TouryPaymentFlags.preferMobileSdk && !bridgeAvailable) {
+        debugPrint(
+          'HPP_FALLBACK_TRIGGERED=true HPP_FALLBACK_REASON=bridge_unavailable '
+          'SIMULATOR_SDK_LIMITATION=possible',
+        );
+      }
     }
 
     if (hppUrl == null || hppUrl.isEmpty) {
@@ -193,7 +244,8 @@ class TouryPaymentExperienceService {
         success: false,
         paymentId: paymentId,
         bookingId: bookingId,
-        errorMessage: 'checkout_hosted_payment_unavailable'.tr(),
+        errorMessage: 'checkout_payment_link_expired'.tr(),
+        status: 'hpp_missing',
       );
     }
 

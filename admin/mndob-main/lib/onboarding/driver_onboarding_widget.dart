@@ -80,7 +80,7 @@ class _DriverOnboardingWidgetState extends State<DriverOnboardingWidget> {
                         children: [
                           Flexible(
                             child: FlutterFlowLanguageSelector(
-                              width: 140,
+                              width: DsConstants.languageSelectorWidth,
                               backgroundColor: colors.surface,
                               borderColor: colors.border,
                               dropdownIconColor: colors.primary,

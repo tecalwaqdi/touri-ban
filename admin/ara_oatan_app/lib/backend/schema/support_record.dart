@@ -120,6 +120,8 @@ Map<String, dynamic> createSupportRecordData({
       'osf': osf,
       'data': data,
       'RefUser': refUser,
+      // Mirror owner ref for rules that check USER (legacy admin queries).
+      'USER': refUser,
       'phone': phone,
       'tsnef': tsnef,
       'halh': halh,

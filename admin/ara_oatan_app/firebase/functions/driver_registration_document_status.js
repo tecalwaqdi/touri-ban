@@ -14,7 +14,7 @@ const REQUIRED_TYPES = [
 const TYPE_KEYS = {
   national_id: ['doc_national_id', 'img_id_rksh'],
   vehicle_registration: ['doc_vehicle_registration', 'img_id_car'],
-  driver_license: ['doc_driver_license', ''],
+  driver_license: ['doc_driver_license_front', 'doc_driver_license_back', 'doc_driver_license'],
 };
 
 function isStoragePath(raw) {
@@ -56,9 +56,56 @@ function slotStatusRaw(data, v2Key) {
   return '';
 }
 
+function sidePresent(data, v2Key, legacyKey) {
+  if (storagePathFrom(data, v2Key)) return true;
+  const url = urlFrom(data, v2Key, legacyKey);
+  return url && (isStoragePath(url) || isHttps(url));
+}
+
+function isApprovedLegacyLicenseOnly(data) {
+  const status = String(data.registration_status || '').trim();
+  const approved = status === 'approved' && data.actev_mndob === true;
+  const legacy = sidePresent(data, 'doc_driver_license', '');
+  const front = sidePresent(data, 'doc_driver_license_front', '');
+  const back = sidePresent(data, 'doc_driver_license_back', '');
+  return approved && legacy && !front && !back;
+}
+
+/** License back is optional globally (country cannot re-require it). */
+function isLicenseBackRequired(_countryRequirements) {
+  return false;
+}
+
+function satisfiesLicenseRequirement(data) {
+  const front = sidePresent(data, 'doc_driver_license_front', '');
+  if (front) return true;
+  const legacy = sidePresent(data, 'doc_driver_license', '');
+  return !!legacy;
+}
+
+function driverLicenseSubmitOk(data, countryRequirements) {
+  const backRequired = isLicenseBackRequired(countryRequirements);
+  const front = sidePresent(data, 'doc_driver_license_front', '');
+  const back = sidePresent(data, 'doc_driver_license_back', '');
+  const legacy = sidePresent(data, 'doc_driver_license', '');
+  if (front && (!backRequired || back)) return true;
+  if (!front && legacy) return true;
+  return false;
+}
+
 function statusForType(data, type) {
   const keys = TYPE_KEYS[type];
   if (!keys) return 'missing';
+  if (type === 'driver_license') {
+    for (const key of keys) {
+      const raw = slotStatusRaw(data, key);
+      if (raw === 'rejected') return 'rejected';
+      if (raw === 'needs_reupload') return 'needs_reupload';
+    }
+    if (satisfiesLicenseRequirement(data)) return 'complete';
+    if (isApprovedLegacyLicenseOnly(data)) return 'complete';
+    return 'missing';
+  }
   const [v2, legacy] = keys;
   const raw = slotStatusRaw(data, v2);
   if (raw === 'rejected') return 'rejected';
@@ -122,4 +169,9 @@ module.exports = {
   registrationDocumentsStatus,
   isCompleteForSubmit,
   phonePresent,
+  driverLicenseSubmitOk,
+  isLicenseBackRequired,
+  sidePresent,
+  isApprovedLegacyLicenseOnly,
+  satisfiesLicenseRequirement,
 };

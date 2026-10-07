@@ -15,7 +15,12 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 9.1.36+55
+version: 9.1.45+67
+#version: 9.1.43+64 previous (payment HPP refresh + city hero)
+#version: 9.1.41+62 previous (TestFlight QA SDK)
+#version: 9.1.40+61 previous
+#version: 9.1.39+59 previous
+#version: 9.1.38+58 previous
 #version: 9.1.35+54 previous
 #version: 9.1.34+53 previous (route UI not yet included)
 #version: 9.1.33+52 previous
@@ -91,6 +96,7 @@ dependencies:
   flutter_rating_bar: 4.0.1
   flutter_screenutil: ^5.9.3
   flutter_spinkit: 5.2.0
+  flutter_svg: 2.0.17
   flutter_web_plugins:
     sdk: flutter
   font_awesome_flutter: ^11.0.0
@@ -121,7 +127,7 @@ dependencies:
   image_picker_macos: 0.2.1+2
   image_picker_platform_interface: 2.10.1
   image_picker_windows: 0.2.1+1
-  intl: 0.20.2
+  intl: 0.20.3
   json_path: 0.7.2
   map_launcher: 3.5.0
   mime_type: 1.0.0
@@ -237,6 +243,7 @@ flutter:
     - assets/images/brand/
     - assets/images/vehicles/
     - assets/images/landmarks/
+    - assets/currency/
 
   fonts:
     - family: 'cairo'

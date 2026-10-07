@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '/backend/schema/enums/enums.dart';
 import '/core/toury_ngenius_service.dart';
+import '/core/toury_payment_error_messages.dart';
 import '/core/toury_payment_verify.dart';
 import '/core/toury_wallet_ngenius.dart';
 import '/design_system/design_system.dart';
@@ -38,11 +40,12 @@ class _WebviewWidgetState extends State<WebviewWidget> {
   Timer? _verifyTimer;
   bool _finalizingPayment = false;
   bool _handledProviderErrorPage = false;
+  bool _closing = false;
   int _pollAttempts = 0;
   bool get _isExtraHours => FFAppState().paymentFlowKind == TypeHgz.Saat;
 
-  /// Cap polling so a stuck 3DS session cannot run forever (~3 minutes).
-  static const int _maxPollAttempts = 60;
+  /// Cap polling so a stuck 3DS session cannot run forever (~90s).
+  static const int _maxPollAttempts = 30;
   static const Duration _pollInterval = Duration(seconds: 3);
 
   @override
@@ -54,22 +57,44 @@ class _WebviewWidgetState extends State<WebviewWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
-  void _onPaymentPageFinished(String rawUrl) {
+  bool _urlLooksLikeProviderError(String rawUrl) {
     final url = rawUrl.trim();
-    if (url.isEmpty || _finalizingPayment || _handledProviderErrorPage) return;
-
+    if (url.isEmpty) return false;
     final lower = url.toLowerCase();
     final uri = Uri.tryParse(url);
     final host = uri?.host.toLowerCase() ?? '';
+    final path = uri?.path.toLowerCase() ?? '';
 
-    // Safe debug only — never log query (may contain code).
+    final isPaypage = host.contains('paypage') ||
+        host.contains('ngenius-payments.com');
+    if (!isPaypage) return false;
+
+    final looksLikeProviderError = lower.contains('error') ||
+        path.contains('error') ||
+        lower.contains('not-found') ||
+        lower.contains('notfound');
+    final paypageWithoutCode = host.startsWith('paypage.') &&
+        uri != null &&
+        !uri.queryParameters.containsKey('code');
+    return looksLikeProviderError || paypageWithoutCode;
+  }
+
+  void _onPaymentPageFinished(String rawUrl) {
+    if (_finalizingPayment || _handledProviderErrorPage) return;
+
+    final url = rawUrl.trim();
+    if (url.isEmpty) return;
+
+    final uri = Uri.tryParse(url);
+    final host = uri?.host.toLowerCase() ?? '';
+
     assert(() {
       // ignore: avoid_print
       print('payment_webview_host=$host path=${uri?.path ?? ''}');
       return true;
     }());
 
-    // Provider return page — keep polling; do not treat as paid.
+    final lower = url.toLowerCase();
     final isPaymentReturnPath = lower.contains('payment-return') ||
         (uri?.path.toLowerCase().contains('payment-return') ?? false);
     final isKnownReturnHost = host.contains('web.app') ||
@@ -79,27 +104,61 @@ class _WebviewWidgetState extends State<WebviewWidget> {
       return;
     }
 
-    // N-Genius HPP error / lost code after submit (common on simulator 3DS).
-    final looksLikeProviderError = lower.contains('error') &&
-        (host.contains('paypage') || host.contains('ngenius-payments.com'));
-    final paypageWithoutCode = host.startsWith('paypage.') &&
-        uri != null &&
-        !uri.queryParameters.containsKey('code');
+    if (!_urlLooksLikeProviderError(url)) return;
+    unawaited(_recoverStaleHpp(reason: 'provider_error_url'));
+  }
 
-    if (!looksLikeProviderError && !paypageWithoutCode) return;
+  void _onPaymentPageBodyText(String rawUrl, String bodyText) {
+    if (_finalizingPayment || _handledProviderErrorPage) return;
+    final host = Uri.tryParse(rawUrl)?.host.toLowerCase() ?? '';
+    final onPaypage = host.contains('paypage') ||
+        host.contains('ngenius-payments.com');
+    if (!onPaypage && !_urlLooksLikeProviderError(rawUrl)) return;
+    if (!touryIsMissingOrExpiredPaymentLinkText(bodyText)) return;
+    unawaited(_recoverStaleHpp(reason: 'missing_payment_link_body'));
+  }
 
+  /// Dead / expired HPP must not leave the user on "still processing".
+  /// Keep booking id so resume can forceRefreshSession and mint a new link.
+  Future<void> _recoverStaleHpp({required String reason}) async {
+    if (_handledProviderErrorPage || _finalizingPayment) return;
     _handledProviderErrorPage = true;
     _verifyTimer?.cancel();
+    if (kDebugMode) {
+      debugPrint('payment_webview_stale_hpp reason=$reason');
+    }
+
     FFAppState().update(() {
       FFAppState().DonePay = false;
       FFAppState().paymentInProgress = false;
-      FFAppState().clearSensitivePaymentSession();
+      // Keep pendingPaymentOrderId + paymentOrderId for force-refresh resume.
+      // Do NOT clear ElectronicPayment — that breaks checkout resume flags.
     });
+
     if (!mounted) return;
+    if (_isExtraHours) {
+      DsSnackBar.show(
+        context,
+        message: TouryPaymentErrorKeys.linkExpired.tr(),
+        tone: DsSnackTone.warning,
+      );
+      Navigator.pop(context);
+      return;
+    }
+
     DsSnackBar.show(
       context,
-      message: 'checkout_hosted_payment_unavailable'.tr(),
-      tone: DsSnackTone.error,
+      message: TouryPaymentErrorKeys.linkExpired.tr(),
+      tone: DsSnackTone.warning,
+    );
+    if (!mounted) return;
+    context.pushReplacementNamed(
+      PaymentConfirmWidget.routeName,
+      queryParameters: {
+        'fromWebView': serializeParam(false, ParamType.bool),
+        'awaitingExternalHpp': serializeParam(false, ParamType.bool),
+        'autoResumeStaleHpp': serializeParam(true, ParamType.bool),
+      }.withoutNulls,
     );
   }
 
@@ -107,31 +166,14 @@ class _WebviewWidgetState extends State<WebviewWidget> {
     _verifyTimer?.cancel();
     _pollAttempts = 0;
     _verifyTimer = Timer.periodic(_pollInterval, (_) async {
-      if (_finalizingPayment || !mounted) return;
+      if (_finalizingPayment || !mounted || _handledProviderErrorPage) return;
 
       _pollAttempts += 1;
       if (_pollAttempts > _maxPollAttempts) {
         _verifyTimer?.cancel();
         if (!mounted) return;
-        FFAppState().update(() {
-          FFAppState().DonePay = false;
-          FFAppState().paymentInProgress = false;
-        });
-        DsSnackBar.show(
-          context,
-          message: 'payment_pending_message'.tr(),
-          tone: DsSnackTone.warning,
-        );
-        if (_isExtraHours) {
-          Navigator.pop(context);
-          return;
-        }
-        context.pushReplacementNamed(
-          PaymentConfirmWidget.routeName,
-          queryParameters: {
-            'fromWebView': serializeParam(true, ParamType.bool),
-          }.withoutNulls,
-        );
+        // Long pending on HPP without paid/failed → treat as stale session.
+        await _recoverStaleHpp(reason: 'poll_timeout');
         return;
       }
 
@@ -140,6 +182,8 @@ class _WebviewWidgetState extends State<WebviewWidget> {
 
       final verify =
           await touryVerifyGatewayPayment(orderId, extraHours: _isExtraHours);
+      if (_handledProviderErrorPage || !mounted) return;
+
       if (verify.isFailed) {
         _verifyTimer?.cancel();
         if (!mounted) return;
@@ -207,26 +251,50 @@ class _WebviewWidgetState extends State<WebviewWidget> {
   }
 
   Future<void> _closePage(BuildContext context) async {
-    final verify = await touryVerifyGatewayPayment(
-      FFAppState().paymentOrderId,
-      extraHours: _isExtraHours,
-    );
+    if (_closing) return;
+    _closing = true;
+    _verifyTimer?.cancel();
+
+    TouryPaymentVerification verify;
+    try {
+      verify = await touryVerifyGatewayPayment(
+        FFAppState().paymentOrderId,
+        extraHours: _isExtraHours,
+      ).timeout(
+        const Duration(seconds: 8),
+        onTimeout: () => const TouryPaymentVerification(
+          result: TouryPaymentVerifyResult.error,
+        ),
+      );
+    } catch (_) {
+      verify = const TouryPaymentVerification(
+        result: TouryPaymentVerifyResult.error,
+      );
+    }
+
     if (!context.mounted) return;
     if (_isExtraHours && !verify.isPaid) {
       FFAppState().paymentInProgress = false;
       Navigator.pop(context);
       return;
     }
-    if (verify.isPending) {
-      DsSnackBar.show(
-        context,
-        message: 'payment_pending_message'.tr(),
-        tone: DsSnackTone.warning,
+
+    // Never trap the user on WebView — route to PaymentConfirm recovery.
+    if (verify.isPending || verify.isError) {
+      FFAppState().paymentInProgress = false;
+      if (!context.mounted) return;
+      context.pushReplacementNamed(
+        PaymentConfirmWidget.routeName,
+        queryParameters: {
+          'fromWebView': serializeParam(false, ParamType.bool),
+          'awaitingExternalHpp': serializeParam(false, ParamType.bool),
+        }.withoutNulls,
       );
       return;
     }
     if (!verify.isPaid) {
       FFAppState().DonePay = false;
+      FFAppState().paymentInProgress = false;
       if (!context.mounted) return;
       context.pushReplacementNamed(
         PaymentConfirmWidget.routeName,
@@ -262,6 +330,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
               message: 'extra_hours_paid_not_applied'.tr(),
               tone: DsSnackTone.error);
         }
+        _closing = false;
         return;
       }
       FFAppState().DonePay = true;
@@ -306,7 +375,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
             canPop: false,
             onPopInvokedWithResult: (didPop, _) {
               if (didPop) return;
-              _closePage(context);
+              unawaited(_closePage(context));
             },
             child: GestureDetector(
               onTap: () {
@@ -323,7 +392,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
                   ),
                   leading: DsIconButton(
                     icon: DsIcons.back,
-                    onPressed: () => _closePage(context),
+                    onPressed: () => unawaited(_closePage(context)),
                   ),
                 ),
                 body: SafeArea(
@@ -367,7 +436,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
                                 ),
                                 icon: DsIcons.close,
                                 size: DsButtonSize.sm,
-                                onPressed: () => _closePage(context),
+                                onPressed: () => unawaited(_closePage(context)),
                               ),
                             ],
                           ),
@@ -387,6 +456,7 @@ class _WebviewWidgetState extends State<WebviewWidget> {
                                 verticalScroll: false,
                                 horizontalScroll: false,
                                 onPageFinished: _onPaymentPageFinished,
+                                onPageBodyText: _onPaymentPageBodyText,
                               );
                             },
                           ),

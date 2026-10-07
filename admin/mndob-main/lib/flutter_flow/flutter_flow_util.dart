@@ -10,7 +10,6 @@ import 'package:from_css_color/from_css_color.dart';
 import 'dart:math' show pow, pi, sin;
 import 'package:geolocator/geolocator.dart';
 import 'package:json_path/json_path.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -19,6 +18,8 @@ import '../main.dart';
 
 import 'lat_lng.dart';
 import 'internationalization.dart';
+import '../core/driver_locale_loader.dart';
+import '../core/driver_relative_time.dart';
 
 export 'lat_lng.dart';
 export 'place.dart';
@@ -40,20 +41,13 @@ export 'nav/nav.dart';
 T valueOrDefault<T>(T? value, T defaultValue) =>
     (value is String && value.isEmpty) || value == null ? defaultValue : value;
 
-void _setTimeagoLocales() {
-  timeago.setLocaleMessages('en', timeago.EnMessages());
-  timeago.setLocaleMessages('en_short', timeago.EnShortMessages());
-  timeago.setLocaleMessages('ar', timeago.ArMessages());
-  timeago.setLocaleMessages('ar_short', timeago.ArShortMessages());
-}
-
 String dateTimeFormat(String format, DateTime? dateTime, {String? locale}) {
   if (dateTime == null) {
     return '';
   }
   if (format == 'relative') {
-    _setTimeagoLocales();
-    return timeago.format(dateTime, locale: locale, allowFromNow: true);
+    // Locale-aware plural keys (ar/en/ru/ky/fr/ur/pt) — not timeago English grammar.
+    return DriverRelativeTime.format(null, dateTime);
   }
   return DateFormat(format, locale).format(dateTime);
 }
@@ -526,6 +520,11 @@ extension StringDocRef on String {
 
 void setAppLanguage(BuildContext context, String language) async {
   final locale = createLocale(language);
+  DriverCachedAssetLoader.clearCache();
+  await DriverCachedAssetLoader.preloadAll(
+    'assets/langs',
+    FFLocalizations.languages().map(createLocale),
+  );
   await context.setLocale(locale);
   await FFLocalizations.storeLocale(language);
   MyApp.of(context).setLocale(language);

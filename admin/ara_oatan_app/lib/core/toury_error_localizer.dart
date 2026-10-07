@@ -117,6 +117,9 @@ abstract final class ErrorLocalizer {
         return 'error_generic_user'.tr();
       case 'booking_price_inconsistent':
         return 'booking_save_failed'.tr();
+      case 'booking_vehicle_country_mismatch':
+      case 'booking-vehicle-country-mismatch':
+        return 'booking_vehicle_country_mismatch'.tr();
       case 'booking_active_exists':
       case 'active_booking_exists':
         return 'booking_active_exists'.tr();
@@ -140,10 +143,13 @@ abstract final class ErrorLocalizer {
   static String fromFirebaseAuth(String code) {
     switch (code) {
       case 'user-not-found':
+        return 'error_user_not_found'.tr();
       case 'wrong-password':
-      case 'invalid-credential':
+        return 'error_wrong_password'.tr();
       case 'invalid-email':
-        return 'error_generic_user'.tr();
+        return 'error_invalid_email'.tr();
+      case 'invalid-credential':
+        return 'error_invalid_email_or_password'.tr();
       case 'email-already-in-use':
         return 'error_email_already_in_use'.tr();
       case 'weak-password':
@@ -158,6 +164,8 @@ abstract final class ErrorLocalizer {
         return 'error_invalid_verification_code'.tr();
       case 'session-expired':
         return 'error_session_expired'.tr();
+      case 'requires-recent-login':
+        return 'error_requires_recent_login'.tr();
       case 'network-request-failed':
         return 'error_network_user'.tr();
       default:

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +74,7 @@ class FirebaseAuthManager extends AuthManager
       if (e.code == 'requires-recent-login') {
         showSnackbar(
           context,
-          'Too long since most recent sign in. Sign in again before deleting your account.',
+          'error_requires_recent_login'.tr(),
           type: TouryMessageType.warning,
         );
       }
@@ -96,7 +97,7 @@ class FirebaseAuthManager extends AuthManager
       if (e.code == 'requires-recent-login') {
         showSnackbar(
           context,
-          'Too long since most recent sign in. Sign in again before updating your email.',
+          'error_requires_recent_login'.tr(),
           type: TouryMessageType.warning,
         );
       }
@@ -115,7 +116,17 @@ class FirebaseAuthManager extends AuthManager
       await currentUser?.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
-        showSnackbar(context, 'Error: ${e.message!}', type: TouryMessageType.error);
+        showSnackbar(
+          context,
+          'error_requires_recent_login'.tr(),
+          type: TouryMessageType.error,
+        );
+      } else {
+        showSnackbar(
+          context,
+          _firebaseAuthErrorMessage(e),
+          type: TouryMessageType.error,
+        );
       }
     }
   }
@@ -128,12 +139,16 @@ class FirebaseAuthManager extends AuthManager
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (e) {
-      showSnackbar(context, 'Error: ${e.message!}', type: TouryMessageType.error);
+      showSnackbar(
+        context,
+        _firebaseAuthErrorMessage(e),
+        type: TouryMessageType.error,
+      );
       return null;
     }
     showSnackbar(
       context,
-      'Password reset email sent',
+      'password_reset_email_sent'.tr(),
       type: TouryMessageType.success,
     );
   }
@@ -199,7 +214,11 @@ class FirebaseAuthManager extends AuthManager
             .update(() => phoneAuthManager.triggerOnCodeSent = false);
       } else if (phoneAuthManager.phoneAuthError != null) {
         final e = phoneAuthManager.phoneAuthError!;
-        showSnackbar(context, 'Error: ${e.message!}', type: TouryMessageType.error);
+        showSnackbar(
+          context,
+          _firebaseAuthErrorMessage(e),
+          type: TouryMessageType.error,
+        );
         phoneAuthManager.update(() => phoneAuthManager.phoneAuthError = null);
       }
     });
@@ -321,7 +340,7 @@ class FirebaseAuthManager extends AuthManager
       if (context.mounted) {
         showSnackbar(
           context,
-          'Error: $e',
+          'error_generic_user'.tr(),
           type: TouryMessageType.error,
         );
       }
@@ -334,21 +353,21 @@ String _firebaseAuthErrorMessage(FirebaseAuthException e) {
   final code = e.code.toLowerCase();
   if (code.contains('keychain') ||
       (e.message ?? '').toLowerCase().contains('keychain')) {
-    return 'Error: Auth storage unavailable on this install. Reinstall via flutter run (not unsigned simctl).';
+    return 'error_auth_storage_unavailable'.tr();
   }
   return switch (e.code) {
-    'email-already-in-use' =>
-      'Error: The email is already in use by a different account',
-    'invalid-email' => 'Error: Invalid email address',
-    'user-not-found' => 'Error: No account found for this email',
-    'wrong-password' => 'Error: Incorrect password',
+    'email-already-in-use' => 'error_email_already_in_use'.tr(),
+    'invalid-email' => 'error_invalid_email'.tr(),
+    'user-not-found' => 'error_user_not_found'.tr(),
+    'wrong-password' => 'error_wrong_password'.tr(),
     'invalid-credential' || 'INVALID_LOGIN_CREDENTIALS' =>
-      'Error: Invalid email or password',
-    'weak-password' => 'Error: Password is too weak (use at least 6 characters)',
-    'operation-not-allowed' =>
-      'Error: This sign-in method is disabled in Firebase',
-    'network-request-failed' =>
-      'Error: Network error. Check your internet connection',
-    _ => 'Error: ${e.message ?? e.code}',
+      'error_invalid_email_or_password'.tr(),
+    'weak-password' => 'error_weak_password'.tr(),
+    'operation-not-allowed' => 'error_operation_not_allowed'.tr(),
+    'network-request-failed' => 'error_network_user'.tr(),
+    'requires-recent-login' => 'error_requires_recent_login'.tr(),
+    'too-many-requests' => 'error_too_many_requests'.tr(),
+    'user-disabled' => 'error_user_disabled'.tr(),
+    _ => 'error_generic_user'.tr(),
   };
 }

@@ -102,10 +102,11 @@ class AdminLayoutWidget extends StatelessWidget {
     final theme = FlutterFlowTheme.of(context);
     final inlineSidebar = showAdminInlineSidebar(context);
     final width = MediaQuery.sizeOf(context).width;
-    final pageTitle = title ??
+    final rawTitle = title ??
         FFLocalizations.of(context).getText(
           'hrrt489c' /* Admin */,
         );
+    final pageTitle = uiTr(context, rawTitle);
     final contentMax = AdminShellRules.contentMaxWidth(width);
 
     return Scaffold(

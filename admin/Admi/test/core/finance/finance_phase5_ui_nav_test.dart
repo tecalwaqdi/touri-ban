@@ -20,6 +20,7 @@ void main() {
   test('Accountant: finance workspace read, no writes, no wallets', () {
     AdminRoleService.bindClaims(AuthClaims.fromToken({'finance': true}));
     expect(AdminRoleService.canAccessRoute('AdminFinanceHub'), isTrue);
+    expect(AdminRoleService.canAccessRoute('AdminFinanceTripLedger'), isTrue);
     expect(AdminRoleService.canAccessRoute('AdminFinanceReconciliation'), isTrue);
     expect(AdminRoleService.canAccessRoute('AdminFinanceDataQuality'), isTrue);
     expect(AdminRoleService.canAccessRoute('AdminSettlements'), isTrue);
@@ -39,6 +40,7 @@ void main() {
     );
     expect(AdminRoleService.canAccessRoute('AdminAgentFinance'), isTrue);
     expect(AdminRoleService.canAccessRoute('AdminFinanceHub'), isFalse);
+    expect(AdminRoleService.canAccessRoute('AdminFinanceTripLedger'), isFalse);
     expect(AdminRoleService.canAccessRoute('AdminFinanceDataQuality'), isFalse);
     expect(AdminRoleService.canAccessRoute('AdminFinanceChannels'), isFalse);
     expect(AdminRoleService.canAccessRoute('AdminDriverWallets'), isFalse);
@@ -50,6 +52,7 @@ void main() {
       AuthClaims.fromToken({'super_admin': true}),
     );
     expect(AdminRoleService.canAccessRoute('AdminFinanceHub'), isTrue);
+    expect(AdminRoleService.canAccessRoute('AdminFinanceTripLedger'), isTrue);
     expect(AdminRoleService.canAccessRoute('AdminDriverWallets'), isTrue);
     expect(AdminRoleService.canWriteSettlements, isTrue);
   });

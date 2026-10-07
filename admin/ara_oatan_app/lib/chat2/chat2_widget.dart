@@ -87,11 +87,11 @@ class _Chat2WidgetState extends State<Chat2Widget> {
         final phoneDigits =
             currentPhoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
         triggerPushNotification(
-          notificationTitle: await TouryNotificationLocalizer.text(
-            recipientLocale,
-            'notification_private_message_title',
-          ),
-          notificationText: _model.textController.text,
+          notificationType: 'notification_private_message_title',
+          notificationPayload: {
+            'sender': currentUserDisplayName,
+            'message': _model.textController.text,
+          },
           userRefs: [widget.idmndob!],
           initialPageName: 'Chat',
           parameterData: {
@@ -311,63 +311,83 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.dsColors;
     final typography = context.dsTypography;
+    final text = record.msg.trim();
+    if (text.isEmpty) return const SizedBox.shrink();
 
-    final bubbleColor = isMine ? colors.primary : colors.surfaceElevated;
+    final bubbleColor = isMine
+        ? colors.primary
+        : (context.dsIsDark
+            ? colors.surfaceElevated
+            : const Color(0xFFEEF2F6));
     final textColor = isMine ? colors.onPrimary : colors.textPrimary;
     final metaColor = isMine
-        ? colors.onPrimary.withValues(alpha: 0.75)
+        ? colors.onPrimary.withValues(alpha: 0.78)
         : colors.textSecondary;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: DsSpacing.xs),
+      padding: const EdgeInsets.only(bottom: DsSpacing.sm),
       child: Row(
         mainAxisAlignment:
             isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Flexible(
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 280.0),
-              padding: const EdgeInsets.symmetric(
-                horizontal: DsSpacing.md,
-                vertical: DsSpacing.sm,
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.sizeOf(context).width * 0.78,
               ),
+              padding: const EdgeInsets.fromLTRB(14, 10, 14, 8),
               decoration: BoxDecoration(
                 color: bubbleColor,
                 borderRadius: BorderRadius.only(
-                  topLeft: DsRadius.lgRadius,
-                  topRight: DsRadius.lgRadius,
+                  topLeft: const Radius.circular(18),
+                  topRight: const Radius.circular(18),
                   bottomLeft:
-                      isMine ? DsRadius.lgRadius : DsRadius.xsRadius,
+                      Radius.circular(isMine ? 18 : 4),
                   bottomRight:
-                      isMine ? DsRadius.xsRadius : DsRadius.lgRadius,
+                      Radius.circular(isMine ? 4 : 18),
                 ),
-                border: isMine
-                    ? null
-                    : Border.all(color: colors.border.withValues(alpha: 0.9)),
-                boxShadow: DsShadows.soft(dark: context.dsIsDark),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (!isMine && record.naim.trim().isNotEmpty) ...[
+                    Text(
+                      record.naim.trim(),
+                      style: typography.labelMedium.copyWith(
+                        color: colors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                  ],
                   Text(
-                    record.naim,
-                    style: typography.labelMedium.copyWith(color: metaColor),
+                    text,
+                    style: typography.bodyMedium.copyWith(
+                      color: textColor,
+                      height: 1.35,
+                    ),
                   ),
-                  const SizedBox(height: DsSpacing.xxs),
-                  Text(
-                    record.msg,
-                    style: typography.bodyMedium.copyWith(color: textColor),
-                  ),
-                  const SizedBox(height: DsSpacing.xxs),
+                  const SizedBox(height: 4),
                   Align(
                     alignment: AlignmentDirectional.centerEnd,
                     child: Text(
-                      dateTimeFormat(
-                        "jm",
-                        record.date!,
-                        locale: FFLocalizations.of(context).languageCode,
-                      ),
+                      record.date == null
+                          ? ''
+                          : dateTimeFormat(
+                              'jm',
+                              record.date!,
+                              locale:
+                                  FFLocalizations.of(context).languageCode,
+                            ),
                       style: typography.labelSmall.copyWith(color: metaColor),
                     ),
                   ),

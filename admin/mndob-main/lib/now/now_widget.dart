@@ -1,13 +1,12 @@
-import '/core/driver_country_service.dart';
-import '/core/toury_country_registry.dart';
 import '/core/driver_online_state.dart';
 import '/core/driver_order_match.dart';
-import '/core/driver_order_meta.dart';
 import '/core/driver_dialogs.dart';
+import '/core/driver_geo_display.dart';
+import '/core/driver_i18n_text.dart';
 import '/core/driver_ux_widgets.dart';
-import '/core/driver_pickup_eta_cache.dart';
+import '/core/driver_work_area_resolver.dart';
 import '/design_system/design_system.dart';
-import '/core/toury_distance_format.dart';
+import '/components/driver_available_order_card.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
@@ -18,7 +17,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'now_model.dart';
@@ -72,6 +70,14 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await DriverOrderMatch.ensureDriverCountry();
+      // Soft-heal: busy banner with no live trip (or lost revOrder).
+      final looksBusy = valueOrDefault<bool>(
+            currentUserDocument?.mndonNewacc, false) ==
+          true;
+      if (looksBusy || FFAppState().revOrder != null) {
+        await DriverTripService.reconcileBusyState();
+        if (mounted) safeSetState(() {});
+      }
       try {
         currentUserLocationValue = await getCurrentUserLocation(
           defaultLocation: const LatLng(0.0, 0.0),
@@ -83,6 +89,14 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
         }
       } catch (_) {
         currentUserLocationValue = currentUserDocument?.loceshnMndobNow;
+      }
+      if (currentUserLocationValue != null) {
+        await DriverWorkAreaResolver.refreshFromGps(
+          position: currentUserLocationValue,
+          gpsUpdatedAt: DateTime.now(),
+        );
+      } else {
+        await DriverWorkAreaResolver.applyRegistrationFallback();
       }
       if (mounted) safeSetState(() {});
       _model.ngl = await querySettingsRecordOnce(
@@ -144,6 +158,40 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
     _model.dispose();
 
     super.dispose();
+  }
+
+  Widget _searchingPanel({
+    required bool isOnline,
+    VoidCallback? onGoOnline,
+  }) {
+    final cached = currentUserDocument?.mndobVillText ?? '';
+    final ref = DriverWorkAreaResolver.workVillageRef();
+    if (ref == null) {
+      return DriverSearchingOrdersPanel(
+        areaName: driverSearchingAreaLabel(
+          localeKey: driverActiveContentLocaleKey(),
+          cachedText: cached,
+        ),
+        isOnline: isOnline,
+        onGoOnline: onGoOnline,
+      );
+    }
+    return StreamBuilder<VillagesRecord>(
+      stream: VillagesRecord.getDocument(ref),
+      builder: (context, snap) {
+        final record = snap.data;
+        return DriverSearchingOrdersPanel(
+          areaName: driverSearchingAreaLabel(
+            localeKey: driverActiveContentLocaleKey(),
+            namesI18n: record?.namesI18n ?? const {},
+            legacyNaim: record?.naim ?? '',
+            cachedText: cached,
+          ),
+          isOnline: isOnline,
+          onGoOnline: onGoOnline,
+        );
+      },
+    );
   }
 
   @override
@@ -270,11 +318,7 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                         currentUserDocument?.mndonNewacc,
                                         false) ==
                                     false))
-                              DriverSearchingOrdersPanel(
-                                areaName: valueOrDefault(
-                                  currentUserDocument?.mndobVillText,
-                                  '',
-                                ),
+                              _searchingPanel(
                                 isOnline: false,
                                 onGoOnline: () async {
                                   final result =
@@ -311,13 +355,7 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                     );
                                   }
                                   if (!snapshot.hasData) {
-                                    return DriverSearchingOrdersPanel(
-                                      areaName: valueOrDefault(
-                                        currentUserDocument?.mndobVillText,
-                                        '',
-                                      ),
-                                      isOnline: true,
-                                    );
+                                    return _searchingPanel(isOnline: true);
                                   }
                                   List<OrderRecord> listViewOrderRecordList =
                                       DriverOrderMatch.rankForDriver(
@@ -329,13 +367,7 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                   );
 
                                   if (listViewOrderRecordList.isEmpty) {
-                                    return DriverSearchingOrdersPanel(
-                                      areaName: valueOrDefault(
-                                        currentUserDocument?.mndobVillText,
-                                        '',
-                                      ),
-                                      isOnline: true,
-                                    );
+                                    return _searchingPanel(isOnline: true);
                                   }
 
                                   return ListView.builder(
@@ -346,503 +378,29 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
                                     itemCount: listViewOrderRecordList.length,
                                     itemBuilder: (context, listViewIndex) {
                                       final listViewOrderRecord =
-                                          listViewOrderRecordList[
-                                              listViewIndex];
-                                      return Visibility(
-                                        visible: valueOrDefault<bool>(
-                                                currentUserDocument
-                                                    ?.mndonNewacc,
-                                                false) ==
-                                            false,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 0.0, 0.0, 8.0),
-                                          child: InkWell(
-                                            splashColor: Colors.transparent,
-                                            focusColor: Colors.transparent,
-                                            hoverColor: Colors.transparent,
-                                            highlightColor: Colors.transparent,
-                                            onTap: () async {
-                                              context.pushNamed(
-                                                TfaselOrserWidget.routeName,
-                                                queryParameters: {
-                                                  'id': serializeParam(
-                                                    listViewOrderRecord
-                                                        .reference,
-                                                    ParamType.DocumentReference,
-                                                  ),
-                                                }.withoutNulls,
-                                              );
-                                            },
-                                            child: DsFadeSlide(
-                                              child: DsCard(
-                                                elevated: true,
-                                                margin: EdgeInsets.zero,
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.max,
-                                                      children: [
-                                                        Container(
-                                                          width: 60.0,
-                                                          height: 60.0,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: context
-                                                                .dsColors
-                                                                .primarySoft,
-                                                            shape:
-                                                                BoxShape.circle,
-                                                          ),
-                                                          child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        30.0),
-                                                            child:
-                                                                DriverNetworkImage(
-                                                              url: listViewOrderRecord
-                                                                  .imgProfileClent,
-                                                              width: 60.0,
-                                                              height: 60.0,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Expanded(
-                                                          child: Column(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
-                                                                listViewOrderRecord
-                                                                    .naimUserText,
-                                                                maxLines: 1,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                style: context
-                                                                    .dsTypography
-                                                                    .bodyLarge
-                                                                    .copyWith(
-                                                                        fontWeight:
-                                                                            FontWeight.w600),
-                                                              ),
-                                                              Row(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .max,
-                                                                children: [
-                                                                  Flexible(
-                                                                    child: Row(
-                                                                      mainAxisSize:
-                                                                          MainAxisSize
-                                                                              .max,
-                                                                      children:
-                                                                          [
-                                                                        Icon(
-                                                                          Icons
-                                                                              .try_sms_star,
-                                                                          color: context
-                                                                              .dsColors
-                                                                              .textSecondary,
-                                                                          size:
-                                                                              16.0,
-                                                                        ),
-                                                                        Flexible(
-                                                                          child:
-                                                                              Text(
-                                                                            valueOrDefault<String>(
-                                                                              formatNumber(
-                                                                                listViewOrderRecord.retengUser,
-                                                                                formatType: FormatType.decimal,
-                                                                                decimalType: DecimalType.automatic,
-                                                                              ),
-                                                                              '0',
-                                                                            ),
-                                                                            maxLines:
-                                                                                1,
-                                                                            overflow:
-                                                                                TextOverflow.ellipsis,
-                                                                            style:
-                                                                                context.dsTypography.bodySmall.copyWith(color: context.dsColors.textSecondary),
-                                                                          ),
-                                                                        ),
-                                                                        RatingBarIndicator(
-                                                                          itemBuilder: (context, index) =>
-                                                                              Icon(
-                                                                            Icons.star_rounded,
-                                                                            color:
-                                                                                context.dsColors.primary,
-                                                                          ),
-                                                                          direction:
-                                                                              Axis.horizontal,
-                                                                          rating:
-                                                                              valueOrDefault<double>(
-                                                                            listViewOrderRecord.retengUser,
-                                                                            0.0,
-                                                                          ),
-                                                                          unratedColor: context
-                                                                              .dsColors
-                                                                              .border,
-                                                                          itemCount:
-                                                                              5,
-                                                                          itemSize:
-                                                                              14.0,
-                                                                        ),
-                                                                      ].divide(const SizedBox(
-                                                                              width: 4.0)),
-                                                                    ),
-                                                                  ),
-                                                                  Flexible(
-                                                                    child: Row(
-                                                                      mainAxisSize:
-                                                                          MainAxisSize
-                                                                              .max,
-                                                                      children:
-                                                                          [
-                                                                        Icon(
-                                                                          Icons
-                                                                              .near_me_rounded,
-                                                                          color: context
-                                                                              .dsColors
-                                                                              .textSecondary,
-                                                                          size:
-                                                                              16.0,
-                                                                        ),
-                                                                        Flexible(
-                                                                          child:
-                                                                              FutureBuilder<DriverPickupEta?>(
-                                                                            future: DriverPickupEtaCache.forPickup(
-                                                                              orderId: listViewOrderRecord.reference.id,
-                                                                              driver: currentUserLocationValue ?? currentUserDocument?.loceshnMndobNow,
-                                                                              pickup: listViewOrderRecord.customerPickup,
-                                                                            ),
-                                                                            builder: (context, snap) {
-                                                                              final eta = snap.data;
-                                                                              if (eta != null && eta.durationMinutes > 0) {
-                                                                                final dist = touryFormatDistanceKm(eta.distanceKm);
-                                                                                final trafficNote = eta.approximate
-                                                                                    ? driverTr(context, 'est.')
-                                                                                    : driverTr(context, 'traffic');
-                                                                                return Text(
-                                                                                  '$dist · ${eta.durationMinutes} ${driverTr(context, 'min')} ($trafficNote)',
-                                                                                  maxLines: 1,
-                                                                                  overflow: TextOverflow.ellipsis,
-                                                                                  style: context.dsTypography.bodySmall.copyWith(
-                                                                                    color: context.dsColors.textSecondary,
-                                                                                  ),
-                                                                                );
-                                                                              }
-                                                                              final km = DriverOrderMatch.distanceKm(
-                                                                                listViewOrderRecord,
-                                                                                currentUserLocationValue ?? currentUserDocument?.loceshnMndobNow,
-                                                                              );
-                                                                              final label = km == null
-                                                                                  ? driverTr(context, 'Distance unknown')
-                                                                                  : touryFormatDistanceKm(km);
-                                                                              return Text(
-                                                                                label,
-                                                                                maxLines: 1,
-                                                                                overflow: TextOverflow.ellipsis,
-                                                                                style: context.dsTypography.bodySmall.copyWith(
-                                                                                  color: context.dsColors.textSecondary,
-                                                                                ),
-                                                                              );
-                                                                            },
-                                                                          ),
-                                                                        ),
-                                                                      ].divide(const SizedBox(
-                                                                              width: 4.0)),
-                                                                    ),
-                                                                  ),
-                                                                ].divide(const SizedBox(
-                                                                    width:
-                                                                        16.0)),
-                                                              ),
-                                                              Row(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .max,
-                                                                children: [
-                                                                  Row(
-                                                                    mainAxisSize:
-                                                                        MainAxisSize
-                                                                            .max,
-                                                                    children: [
-                                                                      Icon(
-                                                                        Icons
-                                                                            .schedule,
-                                                                        color: context
-                                                                            .dsColors
-                                                                            .textSecondary,
-                                                                        size:
-                                                                            16.0,
-                                                                      ),
-                                                                      Text(
-                                                                        '${driverTr(context, 'Hours')}: ${listViewOrderRecord.totalTaim.toString()}',
-                                                                        style: context
-                                                                            .dsTypography
-                                                                            .bodySmall
-                                                                            .copyWith(color: context.dsColors.textSecondary),
-                                                                      ),
-                                                                    ].divide(const SizedBox(
-                                                                        width:
-                                                                            4.0)),
-                                                                  ),
-                                                                  Row(
-                                                                    mainAxisSize:
-                                                                        MainAxisSize
-                                                                            .max,
-                                                                    children: [
-                                                                      Icon(
-                                                                        Icons
-                                                                            .place,
-                                                                        color: context
-                                                                            .dsColors
-                                                                            .textSecondary,
-                                                                        size:
-                                                                            16.0,
-                                                                      ),
-                                                                      Text(
-                                                                        '${driverTr(context, 'Landmarks')}: ${listViewOrderRecord.addCartNumer.toString()}',
-                                                                        style: context
-                                                                            .dsTypography
-                                                                            .bodySmall
-                                                                            .copyWith(color: context.dsColors.textSecondary),
-                                                                      ),
-                                                                    ].divide(const SizedBox(
-                                                                        width:
-                                                                            4.0)),
-                                                                  ),
-                                                                ].divide(const SizedBox(
-                                                                    width:
-                                                                        16.0)),
-                                                              ),
-                                                            ].divide(const SizedBox(
-                                                                height: 4.0)),
-                                                          ),
-                                                        ),
-                                                      ].divide(const SizedBox(
-                                                          width: 12.0)),
-                                                    ),
-                                                    Divider(
-                                                      thickness: 1.0,
-                                                      color: context
-                                                          .dsColors.border,
-                                                    ),
-                                                    Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.max,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Flexible(
-                                                          child: Column(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
-                                                                FFLocalizations.of(
-                                                                        context)
-                                                                    .getText(
-                                                                  'cyk8dp1h' /* Total Earnings */,
-                                                                ),
-                                                                style: context
-                                                                    .dsTypography
-                                                                    .labelMedium,
-                                                              ),
-                                                              Text(
-                                                                formatNumber(
-                                                                  listViewOrderRecord
-                                                                      .totalMndob2,
-                                                                  formatType:
-                                                                      FormatType
-                                                                          .decimal,
-                                                                  decimalType:
-                                                                      DecimalType
-                                                                          .automatic,
-                                                                  currency:
-                                                                      ' ${TouryCountryRegistry.currencySymbol(DriverCountryService.currentIso2())} ',
-                                                                ),
-                                                                style: context
-                                                                    .dsTypography
-                                                                    .headlineSmall
-                                                                    .copyWith(
-                                                                  color: context
-                                                                      .dsColors
-                                                                      .primary,
-                                                                ),
-                                                              ),
-                                                            ].divide(
-                                                                const SizedBox(
-                                                                    height:
-                                                                        4.0)),
-                                                          ),
-                                                        ),
-                                                        DsButton.success(
-                                                          label: FFLocalizations
-                                                                  .of(context)
-                                                              .getText(
-                                                            '7om1oakw' /* Accept */,
-                                                          ),
-                                                          onPressed: () async {
-                                                            currentUserLocationValue =
-                                                                await getCurrentUserLocation(
-                                                                    defaultLocation:
-                                                                        const LatLng(
-                                                                            0.0,
-                                                                            0.0));
-                                                            var confirmDialogResponse =
-                                                                await DriverDialogs
-                                                                    .showConfirm(
-                                                              context,
-                                                              title: driverTr(
-                                                                  context,
-                                                                  'Confirm acceptance'),
-                                                              message: driverTr(
-                                                                  context,
-                                                                  'Are you sure you want to accept this order?'),
-                                                              confirmLabel:
-                                                                  driverTr(
-                                                                      context,
-                                                                      'Confirm acceptance'),
-                                                              cancelLabel:
-                                                                  driverTr(
-                                                                      context,
-                                                                      'No'),
-                                                            );
-                                                            if (confirmDialogResponse) {
-                                                              currentUserLocationValue =
-                                                                  await getCurrentUserLocation(
-                                                                      defaultLocation:
-                                                                          const LatLng(
-                                                                              0.0,
-                                                                              0.0));
-                                                              _model.soundPlayer ??=
-                                                                  AudioPlayer();
-                                                              if (_model
-                                                                  .soundPlayer!
-                                                                  .playing) {
-                                                                await _model
-                                                                    .soundPlayer!
-                                                                    .stop();
-                                                              }
-                                                              _model
-                                                                  .soundPlayer!
-                                                                  .setVolume(
-                                                                      1.0);
-                                                              _model
-                                                                  .soundPlayer!
-                                                                  .setAsset(
-                                                                      'assets/audios/835880__matustrm__completed.wav')
-                                                                  .then((_) => _model
-                                                                      .soundPlayer!
-                                                                      .play());
-
-                                                              final acceptResult =
-                                                                  await DriverTripService
-                                                                      .acceptOrder(
-                                                                order:
-                                                                    listViewOrderRecord,
-                                                                driverLocation:
-                                                                    currentUserLocationValue,
-                                                                onStateChanged: () =>
-                                                                    safeSetState(
-                                                                        () {}),
-                                                              );
-                                                              if (!acceptResult
-                                                                  .ok) {
-                                                                if (context
-                                                                    .mounted) {
-                                                                  await DriverDialogs
-                                                                      .showAlert(
-                                                                    context,
-                                                                    title: driverTr(
-                                                                        context,
-                                                                        'Unable to accept'),
-                                                                    message: acceptResult
-                                                                            .message ??
-                                                                        driverTr(
-                                                                          context,
-                                                                          'Could not update the booking. Please try again.',
-                                                                        ),
-                                                                    type: DriverMessageType
-                                                                        .error,
-                                                                  );
-                                                                }
-                                                                return;
-                                                              }
-
-                                                              // Stay in-app on trip details first.
-                                                              // Google Maps is opened from the details screen button
-                                                              // (auto-launch was causing the page to flash away).
-                                                              final orderRef =
-                                                                  listViewOrderRecord
-                                                                      .reference;
-                                                              if (!context
-                                                                  .mounted) {
-                                                                return;
-                                                              }
-                                                              await context
-                                                                  .pushNamed(
-                                                                TfaselOrserWidget
-                                                                    .routeName,
-                                                                queryParameters:
-                                                                    {
-                                                                  'id':
-                                                                      serializeParam(
-                                                                    orderRef,
-                                                                    ParamType
-                                                                        .DocumentReference,
-                                                                  ),
-                                                                }.withoutNulls,
-                                                              );
-                                                            }
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Text(
-                                                      dateTimeFormat(
-                                                        "relative",
-                                                        listViewOrderRecord
-                                                            .dataOrder!,
-                                                        locale:
-                                                            FFLocalizations.of(
-                                                                    context)
-                                                                .languageCode,
-                                                      ),
-                                                      style: context
-                                                          .dsTypography
-                                                          .labelSmall
-                                                          .copyWith(
-                                                        color: context.dsColors
-                                                            .textSecondary,
-                                                      ),
-                                                    ),
-                                                  ].divide(const SizedBox(
-                                                      height: 12.0)),
+                                          listViewOrderRecordList[listViewIndex];
+                                      return Padding(
+                                        padding: const EdgeInsets.only(bottom: 8),
+                                        child: DriverAvailableOrderCard(
+                                          order: listViewOrderRecord,
+                                          driverLocation:
+                                              currentUserLocationValue ??
+                                                  currentUserDocument
+                                                      ?.loceshnMndobNow,
+                                          onTap: () async {
+                                            context.pushNamed(
+                                              TfaselOrserWidget.routeName,
+                                              queryParameters: {
+                                                'id': serializeParam(
+                                                  listViewOrderRecord.reference,
+                                                  ParamType.DocumentReference,
                                                 ),
-                                              ),
-                                            ),
-                                          ).animateOnPageLoad(animationsMap[
-                                              'containerOnPageLoadAnimation']!),
+                                              }.withoutNulls,
+                                            );
+                                          },
+                                          onAccept: () => _acceptAvailableOrder(
+                                            listViewOrderRecord,
+                                          ),
                                         ),
                                       );
                                     },
@@ -860,6 +418,66 @@ class _NowWidgetState extends State<NowWidget> with TickerProviderStateMixin {
           ),
         );
       },
+    );
+  }
+
+  Future<void> _acceptAvailableOrder(OrderRecord order) async {
+    currentUserLocationValue = await getCurrentUserLocation(
+      defaultLocation: const LatLng(0.0, 0.0),
+    );
+    if (!mounted) return;
+    final confirmed = await DriverDialogs.showConfirm(
+      context,
+      title: driverTr(context, 'Confirm acceptance'),
+      message: driverTr(
+        context,
+        'Are you sure you want to accept this order?',
+      ),
+      confirmLabel: driverTr(context, 'Confirm acceptance'),
+      cancelLabel: driverTr(context, 'No'),
+    );
+    if (!confirmed || !mounted) return;
+
+    currentUserLocationValue = await getCurrentUserLocation(
+      defaultLocation: const LatLng(0.0, 0.0),
+    );
+    _model.soundPlayer ??= AudioPlayer();
+    if (_model.soundPlayer!.playing) {
+      await _model.soundPlayer!.stop();
+    }
+    _model.soundPlayer!.setVolume(1.0);
+    _model.soundPlayer!
+        .setAsset('assets/audios/835880__matustrm__completed.wav')
+        .then((_) => _model.soundPlayer!.play());
+
+    final acceptResult = await DriverTripService.acceptOrder(
+      order: order,
+      driverLocation: currentUserLocationValue,
+      onStateChanged: () => safeSetState(() {}),
+    );
+    if (!acceptResult.ok) {
+      if (!mounted) return;
+      await DriverDialogs.showAlert(
+        context,
+        title: driverTr(context, 'Unable to accept'),
+        message: acceptResult.message ??
+            driverTr(
+              context,
+              'Could not update the booking. Please try again.',
+            ),
+        type: DriverMessageType.error,
+      );
+      return;
+    }
+    if (!mounted) return;
+    await context.pushNamed(
+      TfaselOrserWidget.routeName,
+      queryParameters: {
+        'id': serializeParam(
+          order.reference,
+          ParamType.DocumentReference,
+        ),
+      }.withoutNulls,
     );
   }
 }

@@ -26,15 +26,20 @@ export async function creditWalletFromPaidSession(
     return { credited: false, alreadyCredited: false };
   }
 
+  const localCredit = Number(session.local_credit_amount);
   const amountMinor = Number(session.amount_minor ?? session.amount_halalas ?? 0);
-  if (!Number.isInteger(amountMinor) || amountMinor < 1) {
+  const creditMajor = Number.isFinite(localCredit) && localCredit > 0
+    ? localCredit
+    : amountMinor / 100;
+  if (!Number.isFinite(creditMajor) || creditMajor <= 0) {
     logger.error("wallet_credit_invalid_amount", {
       sessionIdPrefix: sessionId.slice(0, 8),
     });
     return { credited: false, alreadyCredited: false };
   }
-  const amountSar = amountMinor / 100;
-  const currency = String(session.currency || "SAR").toUpperCase();
+  const currency = String(
+    session.local_currency || session.currency || "SAR",
+  ).toUpperCase();
 
   const userRef = db().collection(COLLECTIONS.users).doc(uid);
   const wallets = await db()
@@ -67,7 +72,14 @@ export async function creditWalletFromPaidSession(
     const currentBalance = wallet.exists
       ? Number(wallet.data()?.currentBalance || 0)
       : 0;
-    const nextBalance = currentBalance + amountSar;
+    const existingCurrency = String(wallet.data()?.currency || "").toUpperCase();
+    if (existingCurrency && existingCurrency !== currency) {
+      logger.error("wallet_credit_currency_mismatch", {
+        sessionIdPrefix: sessionId.slice(0, 8),
+      });
+      return;
+    }
+    const nextBalance = currentBalance + creditMajor;
 
     tx.set(
       walletRef,
@@ -90,7 +102,9 @@ export async function creditWalletFromPaidSession(
       userRef,
       walletRef,
       type: "top_up",
-      amount: amountSar,
+      amount: creditMajor,
+      gateway_amount_sar: session.gateway_amount_sar ?? null,
+      fx_local_per_sar: session.fx_local_per_sar ?? null,
       amount_minor: amountMinor,
       currency,
       status: "completed",

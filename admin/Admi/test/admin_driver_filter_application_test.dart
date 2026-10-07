@@ -53,7 +53,7 @@ void main() {
       final c = AdminOpsQueryBuilder.describeDriverFilterPaths(
         driverReview: AdminDriverReviewFilter.pendingReview,
       );
-      expect(c, contains('registration_status==pending_review'));
+      expect(c, contains('registration_status in [pending_review,submitted]'));
       expect(c, isNot(equals(['ismndob==true'])));
     });
 
@@ -133,7 +133,7 @@ void main() {
         driverReview: AdminDriverReviewFilter.pendingReview,
       );
       expect(c, contains('Rev_dolh==countries/sa'));
-      expect(c, contains('registration_status==pending_review'));
+      expect(c, contains('registration_status in [pending_review,submitted]'));
     });
 
     test('Country + Vehicle combines constraints', () {
@@ -157,7 +157,7 @@ void main() {
         dateRange: range,
       );
       expect(c, contains('Rev_dolh==countries/sa'));
-      expect(c, contains('registration_status==pending_review'));
+      expect(c, contains('registration_status in [pending_review,submitted]'));
       expect(c, contains(startsWith('created_time>=')));
       final sig = AdminOpsFilterState.empty
           .copyWith(

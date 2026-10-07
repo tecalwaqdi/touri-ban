@@ -9,6 +9,13 @@ const {
 const {
   buildBookingAgentSnapshot,
 } = require("./agent_order_snapshot.js");
+const {
+  matchesCountryTypeCar,
+  isOperationalTypeCar,
+  buildVehicleBookingSnapshot,
+  countryIdFromPath,
+} = require("./driver_country_config.js");
+const countryFinance = require("./vendor/country_finance.js");
 
 const PROD_IDENTITY =
   "https://api-gateway.ngenius-payments.com/identity/auth/access-token";
@@ -202,13 +209,29 @@ async function verifiedBookingAmount(data) {
 
   const car = carSnapshot.data() || {};
   const country = countrySnapshot.data() || {};
-  if (car.actev === false || car.acctev === false || country.acctev === false) {
+  if (!isOperationalTypeCar(car) || country.acctev === false) {
     throw new functions.https.HttpsError(
       "failed-precondition",
       "The selected car or country is inactive.",
     );
   }
 
+  // Booking integrity: vehicle must belong to the canonical booking country.
+  // Does not alter pricing / VAT / commission — reject only on mismatch.
+  // No SA/KG/global fallback when catalog is empty for the booking country.
+  const countryIso = String(
+    country.iso_code || country.isoCode || country.country_iso2 || "",
+  )
+    .trim()
+    .toUpperCase();
+  if (!matchesCountryTypeCar(car, countryPath, countryIso)) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "booking_vehicle_country_mismatch",
+    );
+  }
+
+  // Authoritative hourly from type_car.sr — never trust client price.
   const hourlyRateSar = safeInteger(car.sr, 1, 1000000, "car hourly rate");
   const baseFareHalalas = hourlyRateSar * 100 * bookingHours;
   const rawDiscountHalalas = percentOf(
@@ -223,15 +246,34 @@ async function verifiedBookingAmount(data) {
     ? Math.min(rawDiscountHalalas, discountCapHalalas)
     : 0;
   const amountHalalas = baseFareHalalas - discountHalalas;
-  const appFeeHalalas = percentOf(baseFareHalalas, 15);
-  const vatHalalas = country.isvat === true
-    ? percentOf(baseFareHalalas, country.vat)
-    : 0;
+  const appFeeHalalas = percentOf(baseFareHalalas, countryFinance.PLATFORM_COMMISSION_PERCENT);
+  // Authoritative currency from country configuration.
   const currency = String(
     country.currency_code || country.currencyCode || country.Currency || "SAR",
   )
     .trim()
     .toUpperCase() || "SAR";
+  const financeCountry = {
+    ...country,
+    country_id: countryIdFromPath(countryPath),
+    iso_code: country.iso_code || country.iso2,
+    currency_code: currency,
+    vat_percent: country.vat_percent != null ? country.vat_percent : country.vat,
+  };
+  const finance = countryFinance.assertNewFinanceConfig(financeCountry, {
+    requireOnline: true,
+  });
+  const localMajor = amountHalalas / 100;
+  const gateway = countryFinance.localToGatewaySar(localMajor, finance.fx);
+  const financeSnapshot = countryFinance.buildFinanceSnapshot(financeCountry);
+  const vatHalalas = percentOf(baseFareHalalas, finance.config.vatPercent);
+
+  const vehicleSnapshot = buildVehicleBookingSnapshot({
+    carId: countryIdFromPath(carPath) || carSnapshot.id,
+    car,
+    countryPath,
+    currency,
+  });
 
   return {
     amountHalalas,
@@ -244,6 +286,15 @@ async function verifiedBookingAmount(data) {
     appFeeHalalas,
     vatHalalas,
     discountHalalas,
+    ...vehicleSnapshot,
+    local_amount: gateway.localAmount,
+    local_currency: currency,
+    gateway_amount_sar: gateway.gatewayAmountSar,
+    gateway_minor_sar: gateway.gatewayMinorSar,
+    gateway_currency: "SAR",
+    fx_local_per_sar: gateway.fxLocalPerSar,
+    fx_snapshot_at: financeSnapshot.finance_snapshot_at,
+    ...financeSnapshot,
   };
 }
 
@@ -469,7 +520,7 @@ function resolveWalletPackageFromCatalog(catalog, packageId, options = {}) {
 
 async function verifiedWalletTopUpAmount(data) {
   // Intentionally ignore client amountMinor; allow curated packages or allow-listed majors.
-  const allowedMajors = new Set([100, 200, 300, 500]);
+  const allowedMajors = new Set([50, 100, 200, 300, 500]);
   const packageId = sanitizeString(data.packageId, 64);
   if (packageId) {
     const snapshot = await admin.firestore().doc(WALLET_TOPUP_PACKAGES_PATH).get();
@@ -482,6 +533,38 @@ async function verifiedWalletTopUpAmount(data) {
         // Fall through to amountMajor allow-list.
       }
     }
+  }
+  const localAmount = Number(data.localAmount);
+  const countryId = sanitizeString(data.countryId, 80);
+  if (Number.isFinite(localAmount) && localAmount > 0 && countryId) {
+    const countrySnap = await admin.firestore().doc(`countries/${countryId}`).get();
+    if (!countrySnap.exists) {
+      throw new functions.https.HttpsError("failed-precondition", "FX_CONFIG_MISSING");
+    }
+    const raw = countrySnap.data() || {};
+    const finance = countryFinance.assertNewFinanceConfig({
+      ...raw,
+      country_id: countryId,
+      currency_code: raw.currency_code || raw.currency,
+      vat_percent: raw.vat_percent != null ? raw.vat_percent : raw.vat,
+    }, {requireOnline: true});
+    const gateway = countryFinance.localToGatewaySar(localAmount, finance.fx);
+    const snap = countryFinance.buildFinanceSnapshot({
+      ...raw,
+      country_id: countryId,
+    });
+    return {
+      amountHalalas: gateway.gatewayMinorSar,
+      currency: "SAR",
+      local_credit_amount: countryFinance.splitGross(localAmount, finance.config.vatPercent).gross,
+      local_currency: finance.config.currency,
+      gateway_minor_sar: gateway.gatewayMinorSar,
+      gateway_amount_sar: gateway.gatewayAmountSar,
+      gateway_currency: "SAR",
+      fx_local_per_sar: gateway.fxLocalPerSar,
+      fx_snapshot_at: snap.finance_snapshot_at,
+      packageId: packageId || "custom_local",
+    };
   }
   const major = Number(data.amountMajor);
   if (Number.isFinite(major) && allowedMajors.has(major)) {
@@ -615,7 +698,11 @@ async function syncSessionFromGateway(sessionRef, session, orderData) {
   const gatewayAmount = Number(
     orderData && orderData.amount && orderData.amount.value,
   );
-  const expectedAmount = Number(session.amount_halalas);
+  const expectedAmount = Number(
+    session.gateway_minor_sar != null
+      ? session.gateway_minor_sar
+      : session.amount_halalas,
+  );
   const amountMatches = Number.isInteger(gatewayAmount) &&
     gatewayAmount === expectedAmount;
   const outletMatches = !orderData.outletId ||
@@ -731,8 +818,12 @@ exports.createNGeniusPayment = functions
       const payload = {
         action: "PURCHASE",
         amount: {
-          currencyCode: verifiedQuote.currency || "SAR",
-          value: amount,
+          currencyCode: verifiedQuote.gateway_currency || "SAR",
+          value: Number(
+            verifiedQuote.gateway_minor_sar != null
+              ? verifiedQuote.gateway_minor_sar
+              : amount,
+          ),
         },
         emailAddress: sanitizeString(data.email, 128) || undefined,
         merchantAttributes: { redirectUrl, cancelUrl },
@@ -1038,12 +1129,26 @@ exports.finalizeNGeniusBooking = functions
         ksm: session.discountHalalas / 100,
         SrSAAH: session.baseFareHalalas /
           Math.max(1, session.bookingHours) / 100,
+        vehicleTypeId: session.vehicleTypeId || countryIdFromPath(session.carPath),
+        vehicleTypeName:
+          session.vehicleTypeName || sanitizeString(booking.carName, 160),
+        vehicleTypeCountryId:
+          session.vehicleTypeCountryId || countryIdFromPath(session.countryPath),
+        vehicleHourlyPrice:
+          session.vehicleHourlyPrice != null
+            ? session.vehicleHourlyPrice
+            : session.baseFareHalalas /
+              Math.max(1, session.bookingHours) / 100,
+        vehicleCurrency: session.vehicleCurrency || session.currency || "SAR",
+        vehicleSnapshotAt:
+          session.vehicleSnapshotAt || new Date().toISOString(),
         DriverGuide: booking.driverGuide === true,
         Schedule: schedule,
         fullSchedule: sanitizeString(booking.scheduleLabel, 180),
         listAmakn: stops,
         plannedWaypoints,
         trip_type: sanitizeString(booking.tripType, 32) || "one_way",
+        returnToPickup: booking.returnToPickup === true,
         luggage_estimate: Math.max(0, Number(booking.luggageEstimate) || 0),
         routeProvider: sanitizeString(booking.routeProvider, 32) || "waypoints",
         routeVersion: 1,
@@ -1244,12 +1349,26 @@ exports.createCashBooking = functions
           ksm: quote.discountHalalas / 100,
           SrSAAH: quote.baseFareHalalas /
             Math.max(1, quote.bookingHours) / 100,
+          vehicleTypeId: quote.vehicleTypeId || countryIdFromPath(quote.carPath),
+          vehicleTypeName:
+            quote.vehicleTypeName || sanitizeString(booking.carName, 160),
+          vehicleTypeCountryId:
+            quote.vehicleTypeCountryId || countryIdFromPath(quote.countryPath),
+          vehicleHourlyPrice:
+            quote.vehicleHourlyPrice != null
+              ? quote.vehicleHourlyPrice
+              : quote.baseFareHalalas /
+                Math.max(1, quote.bookingHours) / 100,
+          vehicleCurrency: quote.vehicleCurrency || quote.currency || "SAR",
+          vehicleSnapshotAt:
+            quote.vehicleSnapshotAt || new Date().toISOString(),
           DriverGuide: booking.driverGuide === true,
           Schedule: schedule,
           fullSchedule: sanitizeString(booking.scheduleLabel, 180),
           listAmakn: stops,
           plannedWaypoints,
           trip_type: sanitizeString(booking.tripType, 32) || "one_way",
+          returnToPickup: booking.returnToPickup === true,
           luggage_estimate: Math.max(0, Number(booking.luggageEstimate) || 0),
           routeProvider: sanitizeString(booking.routeProvider, 32) || "waypoints",
           routeVersion: 1,
@@ -1349,26 +1468,44 @@ exports.finalizeNGeniusWalletTopUp = functions
         );
       }
 
-      const amountSar = session.amount_halalas / 100;
+      const localCredit = Number(session.local_credit_amount);
+      const creditAmount = Number.isFinite(localCredit) && localCredit > 0
+        ? localCredit
+        : session.amount_halalas / 100;
+      const creditCurrency = String(
+        session.local_currency || session.currency || "SAR",
+      ).toUpperCase();
+      const existingCurrency = wallet.exists
+        ? String(wallet.data().currency || "").toUpperCase()
+        : "";
+      if (existingCurrency && existingCurrency !== creditCurrency) {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          "CURRENCY_MISMATCH",
+        );
+      }
       const currentBalance = wallet.exists
         ? Number(wallet.data().currentBalance || 0)
         : 0;
-      const nextBalance = currentBalance + amountSar;
+      const nextBalance = currentBalance + creditAmount;
       transaction.set(walletRef, {
         userRef,
         currentBalance: nextBalance,
         walletBalance: nextBalance,
         lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
-        currency: "SAR",
+        currency: creditCurrency,
         isActive: true,
       }, { merge: true });
       transaction.create(transactionRef, {
         userRef,
         walletRef,
         transactionId: `TXN-${sessionId.slice(0, 20).toUpperCase()}`,
-        amount: amountSar,
-        amount_halalas: session.amount_halalas,
-        currency: "SAR",
+        amount: creditAmount,
+        amount_halalas: session.gateway_minor_sar || session.amount_halalas,
+        currency: creditCurrency,
+        gateway_amount_sar: session.gateway_amount_sar || null,
+        gateway_currency: session.gateway_currency || "SAR",
+        fx_local_per_sar: session.fx_local_per_sar || null,
         type: "top_up",
         description_code: "wallet_top_up",
         status: "completed",
@@ -1732,4 +1869,6 @@ exports.__test = {
   bookingFinancialMajorsFromQuote,
   requireBookingFinancialMajors,
   buildBookingAgentSnapshot,
+  verifiedBookingAmount,
+  matchesCountryTypeCar,
 };

@@ -33,13 +33,14 @@ class DriverDailyStats {
 
   String get earningsTodayLabel => driverNetToday.toStringAsFixed(2);
 
-  String get hoursWorkedLabel {
-    if (hoursWorkedMinutes <= 0) return '0 د';
+  /// Localized work-hours label. Pass short unit strings (e.g. `m`/`h` or `د`/`س`).
+  String hoursWorkedLabel({String minUnit = 'm', String hrUnit = 'h'}) {
+    if (hoursWorkedMinutes <= 0) return '0 $minUnit';
     final h = hoursWorkedMinutes ~/ 60;
     final m = hoursWorkedMinutes % 60;
-    if (h == 0) return '$m د';
-    if (m == 0) return '$h س';
-    return '$h س $m د';
+    if (h == 0) return '$m $minUnit';
+    if (m == 0) return '$h $hrUnit';
+    return '$h $hrUnit $m $minUnit';
   }
 }
 

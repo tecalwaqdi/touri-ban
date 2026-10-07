@@ -33,6 +33,13 @@ function countryRefFromOrder(order) {
 function isActiveAgent(data) {
   if (data.Isagent !== true && data.isagent !== true) return false;
   if (data.actev_user === false) return false;
+  if (
+    data.is_demo_agent === true ||
+    data.demo_agent === true ||
+    data.exclude_from_agent_attribution === true
+  ) {
+    return false;
+  }
   const now = Date.now();
   const end = data.agent_date_end;
   if (end && end.toDate) {

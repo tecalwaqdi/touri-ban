@@ -61,25 +61,38 @@ class _AddExtraHours2WidgetState extends State<AddExtraHours2Widget> {
   }
 
   String _message(Object error) {
-    final code = error is TouryExtraHoursException ? error.code : '';
-    if (code == 'EXTRA_HOURS_NOT_APPLIED') {
+    final code = error is TouryExtraHoursException
+        ? error.code
+        : error.toString();
+    final normalized = code
+        .replaceFirst(RegExp(r'^\[.*?\]\s*'), '')
+        .replaceFirst(RegExp(r'^Exception:\s*'), '')
+        .trim();
+    if (normalized == 'EXTRA_HOURS_NOT_APPLIED') {
       return 'extra_hours_paid_not_applied'.tr();
     }
-    if (code == 'EXTRA_HOURS_QUOTE_CHANGED') {
+    if (normalized == 'EXTRA_HOURS_QUOTE_CHANGED') {
       return 'extra_hours_quote_changed'.tr();
     }
-    if (code == 'EXTRA_HOURS_PAYMENT_PENDING') {
+    if (normalized == 'EXTRA_HOURS_PAYMENT_PENDING') {
       return 'extra_hours_payment_pending'.tr();
     }
-    if (code == 'EXTRA_HOURS_NOT_ACTIVE' ||
-        code == 'EXTRA_HOURS_NOT_OWNER' ||
-        code == 'EXTRA_HOURS_PAYMENT_NOT_ELIGIBLE') {
+    if (normalized == 'EXTRA_HOURS_NOT_ACTIVE' ||
+        normalized == 'EXTRA_HOURS_NOT_OWNER' ||
+        normalized == 'EXTRA_HOURS_PAYMENT_NOT_ELIGIBLE') {
       return 'extra_hours_ineligible'.tr();
     }
-    if (code.startsWith('EXTRA_HOURS_FINANCE') ||
-        code == 'EXTRA_HOURS_PRICE_UNAVAILABLE' ||
-        code == 'EXTRA_HOURS_CURRENCY_UNSUPPORTED') {
+    if (normalized.startsWith('EXTRA_HOURS_FINANCE') ||
+        normalized == 'EXTRA_HOURS_PRICE_UNAVAILABLE' ||
+        normalized == 'EXTRA_HOURS_CURRENCY_UNSUPPORTED' ||
+        normalized == 'EXTRA_HOURS_INVALID_HOURS' ||
+        normalized == 'EXTRA_HOURS_DURATION_UNAVAILABLE') {
       return 'extra_hours_price_unavailable'.tr();
+    }
+    if (normalized.toLowerCase().contains('network') ||
+        normalized.toLowerCase().contains('unavailable') ||
+        normalized.toLowerCase().contains('timeout')) {
+      return 'ux_network_error'.tr();
     }
     return 'payment_verify_error'.tr();
   }

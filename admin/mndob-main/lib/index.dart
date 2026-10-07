@@ -28,6 +28,8 @@ export '/ttb3/ttb3_widget.dart' show Ttb3Widget;
 export '/cansel/cansel_widget.dart' show CanselWidget;
 export '/profile_update_page/profile_update_page_widget.dart'
     show ProfileUpdatePageWidget;
+export '/profile_account_security/driver_account_security_widget.dart'
+    show DriverAccountSecurityWidget;
 export '/driver_wallet/driver_wallet_widget.dart' show DriverWalletWidget;
 export '/driver_pending_approval/driver_pending_approval_widget.dart'
     show DriverPendingApprovalWidget;

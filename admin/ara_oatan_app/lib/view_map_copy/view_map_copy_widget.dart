@@ -235,7 +235,7 @@ class _ViewMapCopyWidgetState extends State<ViewMapCopyWidget> {
               const SizedBox(width: DsSpacing.xs),
               Flexible(
                 child: Text(
-                  valueOrDefault<String>(placeName, 'حدد مكان'),
+                  valueOrDefault<String>(placeName, 'geo.select_place'.tr()),
                   maxLines: 2,
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,

@@ -32,8 +32,12 @@ abstract final class TouryMapsConfig {
     return isUsableCoordinate(preferred) ? preferred : null;
   }
 
-  /// Prefer real coords, then country ISO center, then neutral shell.
-  /// Never fall back to Makkah for non-Saudi countries.
+  /// Prefer real coords, then neutral shell.
+  ///
+  /// Never invent a country capital (e.g. Riyadh for SA) as the selected
+  /// location when GPS/network fails — that caused false "you're in الرياض"
+  /// bindings on the DemoD picker. Country overview screens that need an
+  /// ISO map center must call [TouryCountryRegistry.mapCenterForIso] directly.
   static LatLng resolveLocation(
     LatLng? preferred, {
     LatLng? shell,
@@ -41,10 +45,7 @@ abstract final class TouryMapsConfig {
   }) {
     final preferredOk = resolveLocationOrNull(preferred);
     if (preferredOk != null) return preferredOk;
-
-    final isoCenter = TouryCountryRegistry.mapCenterForIso(countryIso2);
-    if (isoCenter != null) return isoCenter;
-
+    // countryIso2 intentionally ignored for coordinate invent — zoom only.
     return shell ?? mapShellCenter;
   }
 

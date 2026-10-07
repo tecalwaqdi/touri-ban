@@ -137,15 +137,20 @@ class _LanguagePickerItem extends StatelessWidget {
       scale: flagSize / 24.0,
       child: flagWidget,
     );
+    final name =
+        _languageMap(_toLocaleSet(languages.toSet()))[language]?.name ?? '';
     return Row(
       children: [
         if (!hideFlags) ...[
           flagWidget,
+          SizedBox(width: flagTextGap ?? 8.0),
         ],
         Expanded(
-          flex: 1,
           child: Text(
-            _languageMap(_toLocaleSet(languages.toSet()))[language]?.name ?? '',
+            name,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
             style: textStyle ??
                 const TextStyle(
                   color: Colors.white,
@@ -195,31 +200,40 @@ class _LanguagePickerDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<DropdownMenuItem<Locale>> items = languages.values
+    // Match by storage key / languageCode so Locale country/script mismatches
+    // do not fall through to the "Unset" hint (which also overflowed the chip).
+    final selectedKey = _resolveSelectedLanguageKey(
+      currentLanguage: currentLanguage,
+      contextLocale: context.locale,
+      languages: languages,
+    );
+    final items = languages.values
         .map(
-          (language) => DropdownMenuItem<Locale>(
-            value: language.locale,
+          (language) => DropdownMenuItem<String>(
+            value: language.isoCode,
             child: itemBuilder(language),
           ),
         )
         .toList();
     return Container(
-      height: 44.0,
+      height: 40.0,
       decoration: BoxDecoration(
         color: backgroundColor,
         border: Border.all(color: borderColor ?? Colors.transparent),
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Center(
-          child: DropdownButton<Locale>(
+          child: DropdownButton<String>(
             isExpanded: true,
+            isDense: true,
             underline: Container(),
             dropdownColor: dropdownColor ?? backgroundColor,
             focusColor: Colors.transparent,
             iconEnabledColor: dropdownIconColor,
             iconDisabledColor: dropdownIconColor,
+            iconSize: 18.0,
             icon: dropdownIcon != null
                 ? Icon(
                     dropdownIcon,
@@ -228,27 +242,51 @@ class _LanguagePickerDropdown extends StatelessWidget {
                   )
                 : null,
             hint: Text(
-              'ui_text_1431f68f35'.tr(),
-              style: TextStyle(
-                color: Colors.red,
-                fontFamily: 'Product Sans',
-                fontStyle: FontStyle.italic,
-                fontSize: 15,
+              languages[selectedKey]?.name ??
+                  (languages.values.isEmpty
+                      ? ''
+                      : languages.values.first.name),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            onChanged: (Locale? val) async {
-              if (val != null) {
-                await context.setLocale(val);
-                onChanged(touryLocaleStorageKey(val));
-              }
+            onChanged: (String? code) async {
+              if (code == null) return;
+              final language = languages[code];
+              if (language == null) return;
+              await context.setLocale(language.locale);
+              onChanged(language.isoCode);
             },
             items: items,
-            value: context.locale,
+            value: selectedKey,
           ),
         ),
       ),
     );
   }
+}
+
+String? _resolveSelectedLanguageKey({
+  required String currentLanguage,
+  required Locale contextLocale,
+  required Map<String, Language> languages,
+}) {
+  if (currentLanguage.isNotEmpty && languages.containsKey(currentLanguage)) {
+    return currentLanguage;
+  }
+  final fromContext = touryLocaleStorageKey(contextLocale);
+  if (languages.containsKey(fromContext)) {
+    return fromContext;
+  }
+  for (final entry in languages.entries) {
+    if (entry.value.locale.languageCode == contextLocale.languageCode) {
+      return entry.key;
+    }
+  }
+  return languages.keys.isEmpty ? null : languages.keys.first;
 }
 
 class Language {
@@ -312,6 +350,7 @@ const Map<String, String> _touryNativeLanguageNames = {
   'id': 'Bahasa Indonesia',
   'ka': 'ქართული',
   'ky': 'Кыргызча',
+  'pt': 'Português',
   'ru': 'Русский',
   'tr': 'Türkçe',
   'ur': 'اردو',

@@ -1,0 +1,28 @@
+{
+  "mark": "STALE_PRE_GEO_RUNTIME_FIX",
+  "note": "Do not resubmit these App Store versions. They predate the Available Orders names_i18n city resolver. Public READY_FOR_SALE versions were not expired.",
+  "customer": {
+    "version": "9.1.45",
+    "build": "66",
+    "version_id": "84f3315c-5b66-47aa-9a71-a2a75ca8c0ee",
+    "build_id": "3fdcb1da-6537-4a83-a036-e91c2410c1d5",
+    "app_store_state": "DEVELOPER_REJECTED",
+    "review_submission": "19ee2034-5ca6-4eb5-a937-6d1c654c61fb",
+    "review_item_state": "REMOVED",
+    "resubmit": false
+  },
+  "driver": {
+    "version": "11.1.25",
+    "build": "54",
+    "version_id": "1b3ade0f-8925-4deb-8b40-331103f097c1",
+    "build_id": "58ce02bc-1e3a-4158-ad16-e3d139327f14",
+    "app_store_state": "DEVELOPER_REJECTED",
+    "review_submission": "4efb309e-0dcc-4dab-9c63-c1a39a45e3dc",
+    "review_item_state": "REMOVED",
+    "resubmit": false
+  },
+  "still_for_sale": {
+    "customer": "9.1.44",
+    "driver": "11.1.24"
+  }
+}

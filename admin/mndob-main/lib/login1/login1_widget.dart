@@ -332,7 +332,7 @@ class _Login1WidgetState extends State<Login1Widget> {
                       borderRadius: DsRadius.small,
                     ),
                     child: FlutterFlowLanguageSelector(
-                      width: 140,
+                      width: DsConstants.languageSelectorWidth,
                       backgroundColor: colors.surface,
                       borderColor: Colors.transparent,
                       dropdownIconColor: colors.primary,

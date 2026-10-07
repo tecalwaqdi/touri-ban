@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '/components/admin_edit_shell.dart';
 import '/core/admin_content_locale.dart';
+import '/core/i18n/admin_geo_names.dart';
 import '/core/i18n/admin_i18n_translate_service.dart';
 import '/core/i18n/toury_i18n_locales.dart';
 import '/core/i18n/toury_i18n_text.dart';
@@ -180,7 +181,9 @@ class _AdminI18nFieldsSectionState extends State<AdminI18nFieldsSection> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: touryI18nLocaleKeys.map((key) {
+            children: touryI18nLocaleKeys
+                .where((key) => !adminGeoLocales.contains(key))
+                .map((key) {
               final selected = widget.controller.selectedLocale == key;
               return ChoiceChip(
                 label: Text(touryI18nLabel(key)),
@@ -192,7 +195,8 @@ class _AdminI18nFieldsSectionState extends State<AdminI18nFieldsSection> {
             }).toList(),
           ),
           const SizedBox(height: 12),
-          TextFormField(
+          if (!adminGeoLocales.contains(widget.controller.selectedLocale))
+            TextFormField(
             controller: widget.controller.activeController,
             minLines: widget.minLines,
             maxLines: widget.maxLines,
@@ -203,17 +207,28 @@ class _AdminI18nFieldsSectionState extends State<AdminI18nFieldsSection> {
             },
             decoration: InputDecoration(
               labelText:
-                  '${widget.hint} (${touryI18nLabel(widget.controller.selectedLocale)})',
+                  'names_i18n.${widget.controller.selectedLocale}',
               hintText: widget.hint,
             ),
           ),
-        ] else
+        ],
+        const SizedBox(height: 12),
+        for (final key in adminGeoLocales)
           Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              uiTr(context,
-                  uiTr(context, 'اضغط «ترجم تلقائياً» أو أيقونة اللغات لإدخال/مراجعة كل اللغات')),
-              style: Theme.of(context).textTheme.bodySmall,
+            padding: const EdgeInsets.only(bottom: 10),
+            child: TextFormField(
+              controller: widget.controller.controllers[key],
+              minLines: widget.minLines,
+              maxLines: widget.maxLines,
+              onChanged: (v) {
+                if (key == sourceLocale) {
+                  widget.legacyController?.text = v;
+                }
+              },
+              decoration: InputDecoration(
+                labelText: 'names_i18n.$key',
+                hintText: widget.hint,
+              ),
             ),
           ),
       ],

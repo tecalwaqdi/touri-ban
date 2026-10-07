@@ -84,4 +84,14 @@ class AdminResourceGuard {
     if (country == null) return false;
     return company.revDolh?.path == country.path;
   }
+
+  /// Agent may mutate type_car only when `dolh` matches assigned country.
+  static bool canEditTypeCar(TypeCarRecord car) {
+    if (AdminRoleService.isSuperAdmin) return true;
+    if (!AdminRoleService.isCountryAgent) return false;
+    final country = AdminCountryScope.activeCountryRef ??
+        AdminRoleService.scopedCountryRef;
+    if (country == null || car.dolh == null) return false;
+    return car.dolh!.path == country.path;
+  }
 }

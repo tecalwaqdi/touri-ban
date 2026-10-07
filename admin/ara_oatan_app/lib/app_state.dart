@@ -9,9 +9,31 @@ import 'flutter_flow/flutter_flow_util.dart';
 class FFAppState extends ChangeNotifier {
   static FFAppState _instance = FFAppState._internal();
 
+  /// Legacy field name kept for UI bindings; when [routeProvider]=='google'
+  /// this holds Google Routes duration in minutes (authoritative billing).
   double osrmTotalTime = 0;
   double osrmTotalDistance = 0;
   DateTime? osrmCalculationTime;
+
+  /// Authoritative customer billing route metadata.
+  /// `google` = financial quote OK; anything else blocks finalize.
+  String routeProvider = '';
+  double routeDurationMinutes = 0;
+  double routeDistanceMeters = 0;
+  DateTime? routeCalculatedAt;
+
+  bool get billingRouteIsGoogle =>
+      routeProvider == 'google' && routeDurationMinutes > 0;
+
+  /// True when a Google road quote is required before finalize.
+  bool get billingRouteRequired {
+    if (cartmkss.isNotEmpty) return true;
+    if (returnToPickup == true) return true;
+    return false;
+  }
+
+  bool get billingRouteReady =>
+      !billingRouteRequired || billingRouteIsGoogle;
 
   factory FFAppState() {
     return _instance;
@@ -146,6 +168,10 @@ class FFAppState extends ChangeNotifier {
     });
     _safeInit(() {
       _addhors = prefs.getInt('ff_addhors') ?? _addhors;
+    });
+    _safeInit(() {
+      _userRequestedExtraHours =
+          prefs.getInt('ff_userRequestedExtraHours') ?? _addhors;
     });
     _safeInit(() {
       _onsaahcar = prefs.getInt('ff_onsaahcar') ?? _onsaahcar;
@@ -297,6 +323,7 @@ class FFAppState extends ChangeNotifier {
       setRef('ff_villnow', _villnow);
       prefs.setString('ff_villtextnow', _villtextnow);
       prefs.setInt('ff_addhors', _addhors);
+      prefs.setInt('ff_userRequestedExtraHours', _userRequestedExtraHours);
       prefs.setInt('ff_onsaahcar', _onsaahcar);
       prefs.setInt('ff_totalsaat', _totalsaat);
       setRef('ff_adressSelection', _adressSelection);
@@ -671,6 +698,15 @@ class FFAppState extends ChangeNotifier {
     _schedulePersist();
   }
 
+  /// Hours the Customer explicitly chose above the vehicle package floor.
+  /// Never overwritten by route/auto minimum — see [touryApplyBillableHours].
+  int _userRequestedExtraHours = 0;
+  int get userRequestedExtraHours => _userRequestedExtraHours;
+  set userRequestedExtraHours(int value) {
+    _userRequestedExtraHours = value.clamp(0, 24 * 30);
+    _schedulePersist();
+  }
+
   int _onsaahcar = 0;
   int get onsaahcar => _onsaahcar;
   set onsaahcar(int value) {
@@ -962,6 +998,14 @@ class FFAppState extends ChangeNotifier {
   bool get DriverGuideState => _DriverGuideState;
   set DriverGuideState(bool value) {
     _DriverGuideState = value;
+  }
+
+  /// Optional: after landmarks, return to the original booking pickup.
+  /// Does not add hours or price by itself.
+  bool _returnToPickup = false;
+  bool get returnToPickup => _returnToPickup;
+  set returnToPickup(bool value) {
+    _returnToPickup = value;
   }
 
   String _luggageEstimate = 'none';

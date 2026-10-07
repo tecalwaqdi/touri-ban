@@ -40,12 +40,21 @@ class AdminaddMkanCopyModel extends FlutterFlowModel<AdminaddMkanCopyWidget> {
     if (!recordInitialized) {
       textController1 ??= TextEditingController(text: record.naim);
       textController2 ??= TextEditingController(text: record.osf);
+      for (final lang in geoLocales) {
+        geoNameControllers[lang] ??= TextEditingController(
+          text: record.namesI18n[lang] ?? (lang == 'ar' ? record.naim : ''),
+        );
+      }
       switchMosqueValue ??= record.ismsgd;
       switchRestroomValue ??= record.ishmam;
       switchrestaurantValue ??= record.isfood;
       switchValue ??= record.asAds;
       switchACCTEVValue ??= record.acctev;
       ratingValue = record.rate;
+      if (!tsnefInitialized) {
+        selectedTsnef = record.tsnef.trim();
+        tsnefInitialized = true;
+      }
       uploadedFileUrl_uploadDataCni = record.img1;
       uploadedFileUrl_uploadData8dq = record.img2;
       uploadedFileUrl_uploadDataImg3 = record.img3;
@@ -132,6 +141,12 @@ class AdminaddMkanCopyModel extends FlutterFlowModel<AdminaddMkanCopyWidget> {
   // State field for the star rating.
   double ratingValue = 0.0;
 
+  /// Landmark category stored as `mkan.tsnef` (Arabic storage string).
+  String selectedTsnef = '';
+  bool tsnefInitialized = false;
+  static const geoLocales = ['ar', 'en', 'ru', 'ky', 'fr', 'ur', 'pt'];
+  final geoNameControllers = <String, TextEditingController>{};
+
   @override
   void initState(BuildContext context) {}
 
@@ -142,5 +157,8 @@ class AdminaddMkanCopyModel extends FlutterFlowModel<AdminaddMkanCopyWidget> {
 
     textFieldFocusNode2?.dispose();
     textController2?.dispose();
+    for (final controller in geoNameControllers.values) {
+      controller.dispose();
+    }
   }
 }

@@ -6,6 +6,21 @@ abstract final class TouryPaymentErrorKeys {
   static const temporarilyUnavailable =
       'checkout_payment_temporarily_unavailable';
   static const cardError = 'checkout_payment_card_error';
+  static const linkExpired = 'checkout_payment_link_expired';
+  static const paymentPending = 'PAYMENT_PENDING';
+}
+
+/// N-Genius HPP / WebView copy when the access code is dead or missing.
+/// Must not be shown as "electronic payment service unavailable".
+bool touryIsMissingOrExpiredPaymentLinkText(String? raw) {
+  final t = (raw ?? '').toLowerCase();
+  if (t.isEmpty) return false;
+  return t.contains('payment link does not exist') ||
+      t.contains('link does not exist') ||
+      t.contains('unable to retrieve order') ||
+      t.contains('payment page is not available') ||
+      t.contains('order could not be found') ||
+      (t.contains('unable to retrieve') && t.contains('order'));
 }
 
 /// Maps raw API codes to localization keys (no UI / no .tr()).
@@ -18,6 +33,11 @@ String touryPaymentApiErrorKey(String? rawCode) {
     return TouryPaymentErrorKeys.temporarilyUnavailable;
   }
 
+  // Payment API sometimes surfaces provider HTML/message as the "code".
+  if (touryIsMissingOrExpiredPaymentLinkText(code)) {
+    return TouryPaymentErrorKeys.linkExpired;
+  }
+
   final upper = code.toUpperCase();
 
   const providerUnavailable = <String>{
@@ -26,11 +46,14 @@ String touryPaymentApiErrorKey(String? rawCode) {
     'CONFIG_ERROR',
     'NETWORK_ERROR',
     'UNKNOWN_ERROR',
-    'BOOKING_PENDING',
-    'PAYMENT_PENDING',
   };
   if (providerUnavailable.contains(upper)) {
     return TouryPaymentErrorKeys.temporarilyUnavailable;
+  }
+
+  // Still processing — never "service unavailable".
+  if (upper == 'BOOKING_PENDING' || upper == 'PAYMENT_PENDING') {
+    return TouryPaymentErrorKeys.paymentPending;
   }
 
   const cardOrAttempt = <String>{
@@ -45,12 +68,18 @@ String touryPaymentApiErrorKey(String? rawCode) {
   }
 
   if (upper == 'PAYMENT_CANCELLED') return 'PAYMENT_CANCELLED';
-  if (upper == 'PAYMENT_EXPIRED' || upper == 'PAYMENT_ATTEMPT_EXPIRED') {
-    return 'PAYMENT_EXPIRED';
+  if (upper == 'PAYMENT_EXPIRED' ||
+      upper == 'PAYMENT_ATTEMPT_EXPIRED' ||
+      upper == 'HPP_EXPIRED' ||
+      upper == 'PAYMENT_LINK_MISSING') {
+    return TouryPaymentErrorKeys.linkExpired;
   }
   if (upper == 'ACTIVE_BOOKING_EXISTS' ||
       upper == 'PAYMENT_ACTIVE_OTHER_BOOKING') {
     return 'booking_active_exists';
+  }
+  if (upper == 'BOOKING_VEHICLE_COUNTRY_MISMATCH') {
+    return 'booking_vehicle_country_mismatch';
   }
   if (upper == 'PAYMENT_NATIVE_UNAVAILABLE') {
     return 'payment_sdk_fallback_hpp';

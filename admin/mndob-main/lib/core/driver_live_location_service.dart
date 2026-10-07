@@ -6,8 +6,10 @@ import 'package:geolocator/geolocator.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/core/driver_order_meta.dart';
+import '/core/driver_tracking_phase.dart';
 import '/core/driver_trip_constants.dart';
 import '/core/driver_trip_service.dart';
+import '/core/driver_work_area_resolver.dart';
 import '/core/toury_system_status_codes.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -86,6 +88,15 @@ abstract final class DriverLiveLocationService {
       }
     }
 
+    try {
+      await DriverWorkAreaResolver.refreshFromGps(
+        position: loc,
+        gpsUpdatedAt: DateTime.now(),
+      );
+    } catch (e) {
+      debugPrint('DriverLiveLocationService.workArea: $e');
+    }
+
     final activeRef = FFAppState().revOrder;
     if (activeRef != null) {
       try {
@@ -94,13 +105,21 @@ abstract final class DriverLiveLocationService {
           FFAppState().revOrder = null;
           return;
         }
-        LatLng? target = order.customerPickup;
+        LatLng? target = order.originalPickupSnapshot ?? order.customerPickup;
         final code =
             (order.snapshotData['status_code'] ?? '').toString().trim();
-        if (code == TourySystemStatusCodes.tripInProgress ||
+        final phase = order.trackingPhase;
+        if (phase == DriverTrackingPhase.returningToPickup ||
+            phase == DriverTrackingPhase.returnedToPickup) {
+          target = order.originalPickupSnapshot ?? order.customerPickup;
+        } else if (code == TourySystemStatusCodes.tripInProgress ||
             code == TourySystemStatusCodes.tripStarted ||
             order.halhText == DriverTripHalh.inProgress) {
-          target = order.tripDestination ?? target;
+          if (phase == DriverTrackingPhase.atDestination) {
+            target = order.tripDestination ?? target;
+          } else {
+            target = order.tripDestination ?? target;
+          }
         }
         await DriverTripService.updateTrackingMetrics(
           orderRef: activeRef,
@@ -109,6 +128,12 @@ abstract final class DriverLiveLocationService {
         );
         try {
           await DriverTripService.maybeAutoMarkArrived(
+            order: order,
+            driverPosition: loc,
+          );
+        } catch (_) {}
+        try {
+          await DriverTripService.maybeAutoMarkReturnedToPickup(
             order: order,
             driverPosition: loc,
           );

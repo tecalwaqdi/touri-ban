@@ -32,6 +32,7 @@ import '/core/driver_registration_submission_service.dart';
 import '/core/driver_registration_update_payload.dart';
 import '/core/driver_registration_validators.dart';
 import '/core/driver_session_router.dart';
+import '/core/driver_transport_company_catalog.dart';
 import '/core/driver_verify_panels.dart';
 import '/core/toury_country_registry.dart';
 import '/core/toury_maps_config.dart';
@@ -68,7 +69,6 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
   late RegdreverModel _model;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
-  final _pageController = PageController();
   final List<int> allowedModels = [
     for (var y = 2010; y <= DateTime.now().year; y++) y,
   ];
@@ -99,7 +99,6 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
   String _licenseFrontStoragePath = '';
   String _licenseBackStoragePath = '';
   DateTime? _licenseExpiry;
-  DateTime? _vehicleRegExpiry;
   String _affiliationType = 'independent';
   String _companyPath = '';
   String _companyName = '';
@@ -132,6 +131,20 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
   late FocusNode modelFocusNode;
   late TextEditingController plateController;
   late FocusNode plateFocusNode;
+  late TextEditingController waslHijriController;
+  late FocusNode waslHijriFocusNode;
+  late TextEditingController waslSequenceController;
+  late FocusNode waslSequenceFocusNode;
+  late TextEditingController waslLetterRightController;
+  late FocusNode waslLetterRightFocusNode;
+  late TextEditingController waslLetterMiddleController;
+  late FocusNode waslLetterMiddleFocusNode;
+  late TextEditingController waslLetterLeftController;
+  late FocusNode waslLetterLeftFocusNode;
+  late TextEditingController waslPlateNumberController;
+  late FocusNode waslPlateNumberFocusNode;
+  late TextEditingController waslPlateTypeController;
+  late FocusNode waslPlateTypeFocusNode;
   late TextEditingController colorController;
   late FocusNode colorFocusNode;
   late TextEditingController seatsController;
@@ -163,6 +176,20 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     modelFocusNode = FocusNode();
     plateController = TextEditingController();
     plateFocusNode = FocusNode();
+    waslHijriController = TextEditingController();
+    waslHijriFocusNode = FocusNode();
+    waslSequenceController = TextEditingController();
+    waslSequenceFocusNode = FocusNode();
+    waslLetterRightController = TextEditingController();
+    waslLetterRightFocusNode = FocusNode();
+    waslLetterMiddleController = TextEditingController();
+    waslLetterMiddleFocusNode = FocusNode();
+    waslLetterLeftController = TextEditingController();
+    waslLetterLeftFocusNode = FocusNode();
+    waslPlateNumberController = TextEditingController();
+    waslPlateNumberFocusNode = FocusNode();
+    waslPlateTypeController = TextEditingController();
+    waslPlateTypeFocusNode = FocusNode();
     colorController = TextEditingController();
     colorFocusNode = FocusNode();
     seatsController = TextEditingController(text: '4');
@@ -352,15 +379,6 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     }
     _step = draft.step.clamp(0, _totalSteps - 1);
     _showContinueBanner = draft.hasContent || draft.step > 0;
-    if (_pageController.hasClients) {
-      _pageController.jumpToPage(_step);
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_pageController.hasClients) {
-          _pageController.jumpToPage(_step);
-        }
-      });
-    }
     if (mounted) setState(() {});
   }
 
@@ -381,7 +399,6 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     cityController.text = snap.cityDisplay;
     _birthDate = snap.birthDate;
     _licenseExpiry = snap.licenseExpiry;
-    _vehicleRegExpiry = snap.vehicleRegExpiry;
     _model.uploadedFileUrl_uploadDataLbm = snap.photoUrl;
     _model.uploadedFileUrl_uploadData1k33 = snap.nationalIdUrl;
     _carImageUrl = snap.vehicleRegUrl;
@@ -551,7 +568,6 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         debugPrint('Registration guest cleanup failed: $e');
       });
     }
-    _pageController.dispose();
     nameController.dispose();
     nameFocusNode.dispose();
     idNumberController.dispose();
@@ -572,6 +588,20 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     modelFocusNode.dispose();
     plateController.dispose();
     plateFocusNode.dispose();
+    waslHijriController.dispose();
+    waslHijriFocusNode.dispose();
+    waslSequenceController.dispose();
+    waslSequenceFocusNode.dispose();
+    waslLetterRightController.dispose();
+    waslLetterRightFocusNode.dispose();
+    waslLetterMiddleController.dispose();
+    waslLetterMiddleFocusNode.dispose();
+    waslLetterLeftController.dispose();
+    waslLetterLeftFocusNode.dispose();
+    waslPlateNumberController.dispose();
+    waslPlateNumberFocusNode.dispose();
+    waslPlateTypeController.dispose();
+    waslPlateTypeFocusNode.dispose();
     colorController.dispose();
     colorFocusNode.dispose();
     seatsController.dispose();
@@ -621,6 +651,39 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
     return null;
   }
 
+  bool get _saudiRegistration =>
+      (DriverCountryService.currentIso2() ?? '').toUpperCase() == 'SA';
+
+  String? _validateSaudiWaslFields() {
+    final hijri = waslHijriController.text.trim();
+    if (hijri.isNotEmpty && !RegExp(r'^\d{4}/\d{2}/\d{2}$').hasMatch(hijri)) {
+      return 'Enter the Hijri date of birth as YYYY/MM/DD';
+    }
+    if (!RegExp(r'^\d{9}$').hasMatch(waslSequenceController.text.trim())) {
+      return 'Enter the 9-digit vehicle sequence number';
+    }
+    for (final controller in [
+      waslLetterRightController,
+      waslLetterMiddleController,
+      waslLetterLeftController,
+    ]) {
+      const letters = [
+        'ا', 'ب', 'ح', 'د', 'ر', 'س', 'ص', 'ط', 'ع', 'ق', 'ك', 'ل', 'م', 'ن', 'هـ', 'و', 'ى',
+      ];
+      if (!letters.contains(controller.text.trim())) {
+        return 'Enter a valid Saudi plate letter';
+      }
+    }
+    if (!RegExp(r'^\d{1,4}$').hasMatch(waslPlateNumberController.text.trim())) {
+      return 'Enter the plate number';
+    }
+    final plateType = int.tryParse(waslPlateTypeController.text.trim());
+    if (plateType == null || plateType < 1 || plateType > 11) {
+      return 'Enter the plate type from 1 to 11';
+    }
+    return null;
+  }
+
   String? _validateIdNumber(String? value) {
     final iso = _regLocation == null
         ? ''
@@ -659,13 +722,243 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
   }
 
   Future<void> _goTo(int step) async {
-    setState(() => _step = step);
+    // Drive the body from `_step` only (no PageController). Remounting the
+    // form after email verify used to desync header vs content and surface the
+    // location alert while personal-info fields were still visible.
+    final clamped = step.clamp(0, _totalSteps - 1);
+    if (!mounted) return;
+    setState(() => _step = clamped);
     await _persistDraft();
-    await _pageController.animateToPage(
-      step,
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
-    );
+  }
+
+  Widget _buildRegistrationStep(String Function(String) t) {
+    switch (_step) {
+      case 0:
+        return _AccountStep(
+          t: t,
+          nameController: nameController,
+          nameFocusNode: nameFocusNode,
+          idNumberController: idNumberController,
+          idNumberFocusNode: idNumberFocusNode,
+          emailController: emailController,
+          emailFocusNode: emailFocusNode,
+          mobileController: mobileController,
+          mobileFocusNode: mobileFocusNode,
+          passwordController: passwordController,
+          passwordFocusNode: passwordFocusNode,
+          confirmPasswordController: confirmPasswordController,
+          confirmPasswordFocusNode: confirmPasswordFocusNode,
+          birthDate: _birthDate,
+          onPickBirthDate: _pickBirthDate,
+          validateName: _validateName,
+          validateEmail: _validateEmail,
+          validatePhone: _validatePhone,
+          validateId: _validateIdNumber,
+          validatePassword: _validatePassword,
+          validateConfirm: _validateConfirmPassword,
+          req: _req,
+        );
+      case 1:
+        return _LocationStep(
+          t: t,
+          location: _regLocation,
+          cityController: cityController,
+          cityFocusNode: cityFocusNode,
+          onCityChanged: (v) {
+            setState(() => cityController.text = v);
+            _persistDraft();
+          },
+          onCascadeChanged: () {
+            if (FFAppState().textvill.isNotEmpty) {
+              cityController.text = FFAppState().textvill;
+            }
+            _persistDraft();
+            if (mounted) setState(() {});
+          },
+          onLocationChanged: (loc) async {
+            final prevIso = _regLocation == null
+                ? null
+                : TouryCountryRegistry.isoFromCoordinates(
+                    _regLocation!,
+                  );
+            setState(() {
+              _regLocation = loc;
+              final iso = TouryCountryRegistry.isoFromCoordinates(loc);
+              if (iso != null && iso != prevIso) {
+                cityController.text = '';
+                FFAppState().mdenh = null;
+                FFAppState().naimmdenh = '';
+                FFAppState().villmndoBREV = null;
+                FFAppState().textvill = '';
+              }
+            });
+            unawaited(_persistDraft());
+            final iso = TouryCountryRegistry.isoFromCoordinates(loc);
+            if (iso == null || iso == prevIso) return;
+            final countries = await DriverCountryService.listActiveCountries();
+            final match = countries
+                .where(
+                  (c) => DriverCountryService.isoOfCountry(c) == iso,
+                )
+                .firstOrNull;
+            if (match != null) {
+              await DriverCountryService.applyCountry(
+                FFAppState(),
+                match,
+              );
+              FFAppState().textTypeCar = '';
+              FFAppState().MNDOBTYPECARrev = null;
+              FFAppState().mdenh = null;
+              FFAppState().naimmdenh = '';
+              FFAppState().villmndoBREV = null;
+              FFAppState().textvill = '';
+              _companyPath = '';
+              _companyName = '';
+              if (mounted) setState(() {});
+            }
+          },
+        );
+      case 2:
+        return _VehicleStep(
+          t: t,
+          vehicleNameController: vehicleNameController,
+          vehicleNameFocusNode: vehicleNameFocusNode,
+          makeController: makeController,
+          makeFocusNode: makeFocusNode,
+          modelController: modelController,
+          modelFocusNode: modelFocusNode,
+          plateController: plateController,
+          plateFocusNode: plateFocusNode,
+          colorController: colorController,
+          colorFocusNode: colorFocusNode,
+          seatsController: seatsController,
+          seatsFocusNode: seatsFocusNode,
+          selectedType: FFAppState().textTypeCar,
+          photoUrl: _model.uploadedFileUrl_uploadDataLbm,
+          idUrl: _model.uploadedFileUrl_uploadData1k33,
+          carUrl: _carImageUrl,
+          licenseFrontUrl: _licenseFrontUrl,
+          licenseBackUrl: _licenseBackUrl,
+          licenseExpiry: _licenseExpiry,
+          onPickLicenseExpiry: _pickExpiryDate,
+          uploadingPhoto: _uploadingPhoto,
+          uploadingId: _uploadingId,
+          uploadingCar: _uploadingCar,
+          uploadingLicenseFront: _uploadingLicenseFront,
+          uploadingLicenseBack: _uploadingLicenseBack,
+          onPickType: _pickVehicleType,
+          onUploadPhoto: () => _uploadDoc(kind: 'photo'),
+          onUploadId: () => _uploadDoc(kind: 'id'),
+          onUploadCar: () => _uploadDoc(kind: 'car'),
+          onUploadLicenseFront: () => _uploadDoc(kind: 'license_front'),
+          onUploadLicenseBack: () => _uploadDoc(kind: 'license_back'),
+          validateModel: _validateModel,
+          validatePlate: _validatePlate,
+          req: _req,
+          affiliationType: _affiliationType,
+          companyPath: _companyPath,
+          companyName: _companyName,
+          isTourGuide: _isTourGuide,
+          guidePermitUrl: _guidePermitUrl,
+          uploadingGuide: _uploadingGuide,
+          onAffiliationChanged: (type) {
+            setState(() {
+              _affiliationType = type;
+              if (type != 'company') {
+                _companyPath = '';
+                _companyName = '';
+              }
+            });
+            _persistDraft();
+          },
+          onCompanySelected: (path, name) {
+            setState(() {
+              _companyPath = path;
+              _companyName = name;
+            });
+            _persistDraft();
+          },
+          countryRef: FFAppState().dolh,
+          saudiWasl: _saudiRegistration,
+          waslHijriController: waslHijriController,
+          waslHijriFocusNode: waslHijriFocusNode,
+          waslSequenceController: waslSequenceController,
+          waslSequenceFocusNode: waslSequenceFocusNode,
+          waslLetterRightController: waslLetterRightController,
+          waslLetterRightFocusNode: waslLetterRightFocusNode,
+          waslLetterMiddleController: waslLetterMiddleController,
+          waslLetterMiddleFocusNode: waslLetterMiddleFocusNode,
+          waslLetterLeftController: waslLetterLeftController,
+          waslLetterLeftFocusNode: waslLetterLeftFocusNode,
+          waslPlateNumberController: waslPlateNumberController,
+          waslPlateNumberFocusNode: waslPlateNumberFocusNode,
+          waslPlateTypeController: waslPlateTypeController,
+          waslPlateTypeFocusNode: waslPlateTypeFocusNode,
+          onTourGuideChanged: (value) {
+            setState(() {
+              _isTourGuide = value;
+              if (!value) {
+                _guidePermitUrl = '';
+                _pendingGuidePermit = null;
+              }
+            });
+            _persistDraft();
+          },
+          onUploadGuidePermit: () => _uploadDoc(kind: 'guide'),
+        );
+      default:
+        return _ReviewStep(
+          t: t,
+          name: nameController.text,
+          email: emailController.text,
+          phone: mobileController.text,
+          idNumber: idNumberController.text,
+          birthDate: _birthDate,
+          country: FFAppState().naimdolh,
+          region: FFAppState().naimmdenh,
+          city: FFAppState().textvill.isNotEmpty
+              ? FFAppState().textvill
+              : (cityController.text.trim().isEmpty
+                  ? FFAppState().naimmdenh
+                  : cityController.text.trim()),
+          vehicleType: FFAppState().textTypeCar,
+          vehicleName: vehicleNameController.text,
+          year: modelController.text,
+          plate: plateController.text,
+          color: colorController.text,
+          seats: seatsController.text,
+          emailVerified:
+              FirebaseAuth.instance.currentUser?.emailVerified == true,
+          phonePresent: mobileController.text.trim().isNotEmpty,
+          photoOk: _model.uploadedFileUrl_uploadDataLbm.isNotEmpty ||
+              _pendingPhoto != null,
+          nationalIdOk: _model.uploadedFileUrl_uploadData1k33.isNotEmpty ||
+              _pendingIdDoc != null,
+          vehicleRegOk: _isUploadReady(
+            url: _carImageUrl,
+            pending: _pendingCarPhoto,
+            storagePath: _carStoragePath,
+          ),
+          licenseFrontOk: _isUploadReady(
+            url: _licenseFrontUrl,
+            pending: _pendingLicenseFront,
+            storagePath: _licenseFrontStoragePath,
+          ),
+          licenseBackOk: _isUploadReady(
+            url: _licenseBackUrl,
+            pending: _pendingLicenseBack,
+            storagePath: _licenseBackStoragePath,
+          ),
+          affiliationType: _affiliationType,
+          companyName: _companyName,
+          isTourGuide: _isTourGuide,
+          guidePermitOk:
+              _guidePermitUrl.isNotEmpty || _pendingGuidePermit != null,
+          onEditAccount: () => _goTo(0),
+          onEditLocation: () => _goTo(1),
+          onEditVehicle: () => _goTo(2),
+        );
+    }
   }
 
   Future<void> _next() async {
@@ -746,6 +1039,18 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         );
         return;
       }
+      if (_saudiRegistration) {
+        final waslError = _validateSaudiWaslFields();
+        if (waslError != null) {
+          await DriverDialogs.showAlert(
+            context,
+            title: t('Error'),
+            message: t(waslError),
+            type: DriverMessageType.warning,
+          );
+          return;
+        }
+      }
       if (_affiliationType == 'company' && _companyPath.trim().isEmpty) {
         await DriverDialogs.showAlert(
           context,
@@ -778,7 +1083,6 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       }
       final expiryBlockers = DriverRegistrationExpiryValidator.blockingKeys(
         licenseExpiry: _licenseExpiry,
-        vehicleRegExpiry: _vehicleRegExpiry,
       );
       if (expiryBlockers.isNotEmpty) {
         await DriverDialogs.showAlert(
@@ -860,11 +1164,10 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
         );
   }
 
-  Future<void> _pickExpiryDate({required bool license}) async {
+  Future<void> _pickExpiryDate() async {
     final now = DateTime.now();
-    final initial = license
-        ? (_licenseExpiry ?? DateTime(now.year + 1, now.month, now.day))
-        : (_vehicleRegExpiry ?? DateTime(now.year + 1, now.month, now.day));
+    final initial =
+        _licenseExpiry ?? DateTime(now.year + 1, now.month, now.day);
     final picked = await showDatePicker(
       context: context,
       initialDate: initial.isBefore(now) ? now : initial,
@@ -872,13 +1175,7 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
       lastDate: DateTime(now.year + 20),
     );
     if (picked == null || !mounted) return;
-    setState(() {
-      if (license) {
-        _licenseExpiry = picked;
-      } else {
-        _vehicleRegExpiry = picked;
-      }
-    });
+    setState(() => _licenseExpiry = picked);
     await _persistDraft();
   }
 
@@ -1222,7 +1519,6 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
           vehicleTypeText: FFAppState().textTypeCar,
           birthDate: _birthDate,
           licenseExpiry: _licenseExpiry,
-          vehicleRegExpiry: _vehicleRegExpiry,
           photoUrl: reviewModel.photoUrl,
           photoStoragePath: _photoStoragePath,
           nationalIdUrl: reviewModel.idImageUrl,
@@ -1352,6 +1648,16 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
                   _birthDate!.day,
                 ),
               ),
+        if (_saudiRegistration)
+          'wasl_input': {
+            'date_of_birth_hijri': waslHijriController.text.trim(),
+            'vehicle_sequence_number': waslSequenceController.text.trim(),
+            'plate_letter_right': waslLetterRightController.text.trim(),
+            'plate_letter_middle': waslLetterMiddleController.text.trim(),
+            'plate_letter_left': waslLetterLeftController.text.trim(),
+            'plate_number': waslPlateNumberController.text.trim(),
+            'plate_type': waslPlateTypeController.text.trim(),
+          },
         'normalized_plate':
             DriverPlateNormalizer.normalize(plateController.text),
         'doc_national_id': DriverRegistrationUpdatePayload.mergeDocSlot(
@@ -1366,7 +1672,6 @@ class _RegdreverWidgetState extends State<RegdreverWidget> {
           existing: _existingDocSlot('doc_vehicle_registration'),
           storagePath: _carStoragePath,
           url: _sanitizeAssetUrl(_carImageUrl),
-          expiryDate: _vehicleRegExpiry,
         ),
         DriverLicenseDocumentFields.front:
             DriverRegistrationUpdatePayload.mergeDocSlot(
@@ -1865,231 +2170,7 @@ ${t('Email')}: ${emailController.text.trim().toLowerCase()}
                 else ...[
                 _StepHeader(step: _step, total: _totalSteps, t: t),
                 Expanded(
-                  child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      _AccountStep(
-                        t: t,
-                        nameController: nameController,
-                        nameFocusNode: nameFocusNode,
-                        idNumberController: idNumberController,
-                        idNumberFocusNode: idNumberFocusNode,
-                        emailController: emailController,
-                        emailFocusNode: emailFocusNode,
-                        mobileController: mobileController,
-                        mobileFocusNode: mobileFocusNode,
-                        passwordController: passwordController,
-                        passwordFocusNode: passwordFocusNode,
-                        confirmPasswordController: confirmPasswordController,
-                        confirmPasswordFocusNode: confirmPasswordFocusNode,
-                        birthDate: _birthDate,
-                        onPickBirthDate: _pickBirthDate,
-                        validateName: _validateName,
-                        validateEmail: _validateEmail,
-                        validatePhone: _validatePhone,
-                        validateId: _validateIdNumber,
-                        validatePassword: _validatePassword,
-                        validateConfirm: _validateConfirmPassword,
-                        req: _req,
-                      ),
-                      _LocationStep(
-                        t: t,
-                        location: _regLocation,
-                        cityController: cityController,
-                        cityFocusNode: cityFocusNode,
-                        onCityChanged: (v) {
-                          setState(() => cityController.text = v);
-                          _persistDraft();
-                        },
-                        onCascadeChanged: () {
-                          if (FFAppState().textvill.isNotEmpty) {
-                            cityController.text = FFAppState().textvill;
-                          }
-                          _persistDraft();
-                          if (mounted) setState(() {});
-                        },
-                        onLocationChanged: (loc) async {
-                          final prevIso = _regLocation == null
-                              ? null
-                              : TouryCountryRegistry.isoFromCoordinates(
-                                  _regLocation!,
-                                );
-                          setState(() {
-                            _regLocation = loc;
-                            final iso =
-                                TouryCountryRegistry.isoFromCoordinates(loc);
-                            if (iso != null && iso != prevIso) {
-                              cityController.text = '';
-                              FFAppState().mdenh = null;
-                              FFAppState().naimmdenh = '';
-                              FFAppState().villmndoBREV = null;
-                              FFAppState().textvill = '';
-                            }
-                          });
-                          unawaited(_persistDraft());
-                          final iso =
-                              TouryCountryRegistry.isoFromCoordinates(loc);
-                          if (iso == null || iso == prevIso) return;
-                          final countries =
-                              await DriverCountryService.listActiveCountries();
-                          final match = countries
-                              .where(
-                                (c) =>
-                                    DriverCountryService.isoOfCountry(c) == iso,
-                              )
-                              .firstOrNull;
-                          if (match != null) {
-                            await DriverCountryService.applyCountry(
-                              FFAppState(),
-                              match,
-                            );
-                            FFAppState().textTypeCar = '';
-                            FFAppState().MNDOBTYPECARrev = null;
-                            FFAppState().mdenh = null;
-                            FFAppState().naimmdenh = '';
-                            FFAppState().villmndoBREV = null;
-                            FFAppState().textvill = '';
-                            _companyPath = '';
-                            _companyName = '';
-                            if (mounted) setState(() {});
-                          }
-                        },
-                      ),
-                      _VehicleStep(
-                        t: t,
-                        vehicleNameController: vehicleNameController,
-                        vehicleNameFocusNode: vehicleNameFocusNode,
-                        makeController: makeController,
-                        makeFocusNode: makeFocusNode,
-                        modelController: modelController,
-                        modelFocusNode: modelFocusNode,
-                        plateController: plateController,
-                        plateFocusNode: plateFocusNode,
-                        colorController: colorController,
-                        colorFocusNode: colorFocusNode,
-                        seatsController: seatsController,
-                        seatsFocusNode: seatsFocusNode,
-                        selectedType: FFAppState().textTypeCar,
-                        photoUrl: _model.uploadedFileUrl_uploadDataLbm,
-                        idUrl: _model.uploadedFileUrl_uploadData1k33,
-                        carUrl: _carImageUrl,
-                        licenseFrontUrl: _licenseFrontUrl,
-                        licenseBackUrl: _licenseBackUrl,
-                        licenseExpiry: _licenseExpiry,
-                        vehicleRegExpiry: _vehicleRegExpiry,
-                        onPickLicenseExpiry: () =>
-                            _pickExpiryDate(license: true),
-                        onPickVehicleRegExpiry: () =>
-                            _pickExpiryDate(license: false),
-                        uploadingPhoto: _uploadingPhoto,
-                        uploadingId: _uploadingId,
-                        uploadingCar: _uploadingCar,
-                        uploadingLicenseFront: _uploadingLicenseFront,
-                        uploadingLicenseBack: _uploadingLicenseBack,
-                        onPickType: _pickVehicleType,
-                        onUploadPhoto: () => _uploadDoc(kind: 'photo'),
-                        onUploadId: () => _uploadDoc(kind: 'id'),
-                        onUploadCar: () => _uploadDoc(kind: 'car'),
-                        onUploadLicenseFront: () =>
-                            _uploadDoc(kind: 'license_front'),
-                        onUploadLicenseBack: () =>
-                            _uploadDoc(kind: 'license_back'),
-                        validateModel: _validateModel,
-                        validatePlate: _validatePlate,
-                        req: _req,
-                        affiliationType: _affiliationType,
-                        companyPath: _companyPath,
-                        companyName: _companyName,
-                        isTourGuide: _isTourGuide,
-                        guidePermitUrl: _guidePermitUrl,
-                        uploadingGuide: _uploadingGuide,
-                        onAffiliationChanged: (type) {
-                          setState(() {
-                            _affiliationType = type;
-                            if (type != 'company') {
-                              _companyPath = '';
-                              _companyName = '';
-                            }
-                          });
-                          _persistDraft();
-                        },
-                        onCompanySelected: (path, name) {
-                          setState(() {
-                            _companyPath = path;
-                            _companyName = name;
-                          });
-                          _persistDraft();
-                        },
-                        countryRef: FFAppState().dolh,
-                        onTourGuideChanged: (value) {
-                          setState(() {
-                            _isTourGuide = value;
-                            if (!value) {
-                              _guidePermitUrl = '';
-                              _pendingGuidePermit = null;
-                            }
-                          });
-                          _persistDraft();
-                        },
-                        onUploadGuidePermit: () => _uploadDoc(kind: 'guide'),
-                      ),
-                      _ReviewStep(
-                        t: t,
-                        name: nameController.text,
-                        email: emailController.text,
-                        phone: mobileController.text,
-                        idNumber: idNumberController.text,
-                        birthDate: _birthDate,
-                        country: FFAppState().naimdolh,
-                        region: FFAppState().naimmdenh,
-                        city: FFAppState().textvill.isNotEmpty
-                            ? FFAppState().textvill
-                            : (cityController.text.trim().isEmpty
-                                ? FFAppState().naimmdenh
-                                : cityController.text.trim()),
-                        vehicleType: FFAppState().textTypeCar,
-                        vehicleName: vehicleNameController.text,
-                        year: modelController.text,
-                        plate: plateController.text,
-                        color: colorController.text,
-                        seats: seatsController.text,
-                        emailVerified:
-                            FirebaseAuth.instance.currentUser?.emailVerified ==
-                                true,
-                        phonePresent: mobileController.text.trim().isNotEmpty,
-                        photoOk:
-                            _model.uploadedFileUrl_uploadDataLbm.isNotEmpty ||
-                                _pendingPhoto != null,
-                        nationalIdOk:
-                            _model.uploadedFileUrl_uploadData1k33.isNotEmpty ||
-                                _pendingIdDoc != null,
-                        vehicleRegOk: _isUploadReady(
-                          url: _carImageUrl,
-                          pending: _pendingCarPhoto,
-                          storagePath: _carStoragePath,
-                        ),
-                        licenseFrontOk: _isUploadReady(
-                          url: _licenseFrontUrl,
-                          pending: _pendingLicenseFront,
-                          storagePath: _licenseFrontStoragePath,
-                        ),
-                        licenseBackOk: _isUploadReady(
-                          url: _licenseBackUrl,
-                          pending: _pendingLicenseBack,
-                          storagePath: _licenseBackStoragePath,
-                        ),
-                        affiliationType: _affiliationType,
-                        companyName: _companyName,
-                        isTourGuide: _isTourGuide,
-                        guidePermitOk: _guidePermitUrl.isNotEmpty ||
-                            _pendingGuidePermit != null,
-                        onEditAccount: () => _goTo(0),
-                        onEditLocation: () => _goTo(1),
-                        onEditVehicle: () => _goTo(2),
-                      ),
-                    ],
-                  ),
+                  child: _buildRegistrationStep(t),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
@@ -2463,7 +2544,7 @@ class _TransportCompanyDropdown extends StatefulWidget {
 }
 
 class _TransportCompanyDropdownState extends State<_TransportCompanyDropdown> {
-  late Future<List<_CompanyOption>> _future;
+  late Future<List<DriverTransportCompanyOption>> _future;
 
   @override
   void initState() {
@@ -2479,80 +2560,25 @@ class _TransportCompanyDropdownState extends State<_TransportCompanyDropdown> {
     }
   }
 
-  static String _companyDisplayName(Map<String, dynamic> data, String id) {
-    return driverLocalizedMapLabel(data, fallbackId: id);
-  }
-
-  /// Only companies explicitly marked active (schema: `actev`).
-  static bool _isActiveCompany(Map<String, dynamic> data) {
-    if (data.containsKey('actev')) {
-      return data['actev'] == true;
-    }
-    if (data.containsKey('is_active')) {
-      return data['is_active'] == true;
-    }
-    if (data.containsKey('active')) {
-      return data['active'] == true;
-    }
-    return false;
-  }
-
-  static bool _matchesCountry(
-    Map<String, dynamic> data,
-    DocumentReference? country,
-  ) {
-    if (country == null) return true;
-    final rev = data['Rev_dolh'];
-    if (rev is DocumentReference) {
-      return rev.path == country.path;
-    }
-    if (rev is String && rev.isNotEmpty) {
-      return rev == country.path || rev.endsWith('/${country.id}');
-    }
-    return false;
-  }
-
-  Future<List<_CompanyOption>> _loadCompanies() async {
+  Future<List<DriverTransportCompanyOption>> _loadCompanies() {
     final country = widget.countryRef ?? FFAppState().dolh;
-    QuerySnapshot<Map<String, dynamic>> snap;
-    try {
-      if (country != null) {
-        snap = await FirebaseFirestore.instance
-            .collection('transport_company')
-            .where('Rev_dolh', isEqualTo: country)
-            .get();
-      } else {
-        snap = await FirebaseFirestore.instance
-            .collection('transport_company')
-            .get();
-      }
-    } catch (_) {
-      snap = await FirebaseFirestore.instance
-          .collection('transport_company')
-          .get();
-    }
-
-    final options = <_CompanyOption>[];
-    for (final doc in snap.docs) {
-      final data = doc.data();
-      if (!_isActiveCompany(data)) continue;
-      if (!_matchesCountry(data, country)) continue;
-      options.add(
-        _CompanyOption(
-          path: doc.reference.path,
-          name: _companyDisplayName(data, doc.id),
-        ),
-      );
-    }
-    options.sort(
-      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-    );
-    return options;
+    return DriverTransportCompanyCatalog.loadActiveForCountry(country);
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<_CompanyOption>>(
+    final country = widget.countryRef ?? FFAppState().dolh;
+    if (country == null) {
+      return Text(
+        widget.t('Select your work country first'),
+        style: TextStyle(
+          fontFamily: 'cairo',
+          color: context.dsColors.textSecondary,
+        ),
+      );
+    }
+
+    return FutureBuilder<List<DriverTransportCompanyOption>>(
       future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -2568,15 +2594,33 @@ class _TransportCompanyDropdownState extends State<_TransportCompanyDropdown> {
           );
         }
         if (snapshot.hasError) {
-          return Text(
-            widget.t('Could not load transport companies'),
-            style: TextStyle(
-              fontFamily: 'cairo',
-              color: Colors.red.shade700,
-            ),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                widget.t('Could not load transport companies'),
+                style: TextStyle(
+                  fontFamily: 'cairo',
+                  color: Colors.red.shade700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _future = _loadCompanies();
+                    });
+                  },
+                  child: Text(widget.t('Retry')),
+                ),
+              ),
+            ],
           );
         }
-        final options = snapshot.data ?? const <_CompanyOption>[];
+        final options =
+            snapshot.data ?? const <DriverTransportCompanyOption>[];
         if (options.isEmpty) {
           return Text(
             widget.t('No active transport companies found'),
@@ -2625,13 +2669,6 @@ class _TransportCompanyDropdownState extends State<_TransportCompanyDropdown> {
       },
     );
   }
-}
-
-class _CompanyOption {
-  const _CompanyOption({required this.path, required this.name});
-
-  final String path;
-  final String name;
 }
 
 class _LocationStep extends StatelessWidget {
@@ -2712,9 +2749,7 @@ class _VehicleStep extends StatelessWidget {
     required this.licenseFrontUrl,
     required this.licenseBackUrl,
     required this.licenseExpiry,
-    required this.vehicleRegExpiry,
     required this.onPickLicenseExpiry,
-    required this.onPickVehicleRegExpiry,
     required this.uploadingPhoto,
     required this.uploadingId,
     required this.uploadingCar,
@@ -2740,6 +2775,21 @@ class _VehicleStep extends StatelessWidget {
     required this.onTourGuideChanged,
     required this.onUploadGuidePermit,
     this.countryRef,
+    this.saudiWasl = false,
+    this.waslHijriController,
+    this.waslHijriFocusNode,
+    this.waslSequenceController,
+    this.waslSequenceFocusNode,
+    this.waslLetterRightController,
+    this.waslLetterRightFocusNode,
+    this.waslLetterMiddleController,
+    this.waslLetterMiddleFocusNode,
+    this.waslLetterLeftController,
+    this.waslLetterLeftFocusNode,
+    this.waslPlateNumberController,
+    this.waslPlateNumberFocusNode,
+    this.waslPlateTypeController,
+    this.waslPlateTypeFocusNode,
   });
 
   final String Function(String) t;
@@ -2762,9 +2812,7 @@ class _VehicleStep extends StatelessWidget {
   final String licenseFrontUrl;
   final String licenseBackUrl;
   final DateTime? licenseExpiry;
-  final DateTime? vehicleRegExpiry;
   final VoidCallback onPickLicenseExpiry;
-  final VoidCallback onPickVehicleRegExpiry;
   final bool uploadingPhoto;
   final bool uploadingId;
   final bool uploadingCar;
@@ -2790,6 +2838,21 @@ class _VehicleStep extends StatelessWidget {
   final ValueChanged<bool> onTourGuideChanged;
   final VoidCallback onUploadGuidePermit;
   final DocumentReference? countryRef;
+  final bool saudiWasl;
+  final TextEditingController? waslHijriController;
+  final FocusNode? waslHijriFocusNode;
+  final TextEditingController? waslSequenceController;
+  final FocusNode? waslSequenceFocusNode;
+  final TextEditingController? waslLetterRightController;
+  final FocusNode? waslLetterRightFocusNode;
+  final TextEditingController? waslLetterMiddleController;
+  final FocusNode? waslLetterMiddleFocusNode;
+  final TextEditingController? waslLetterLeftController;
+  final FocusNode? waslLetterLeftFocusNode;
+  final TextEditingController? waslPlateNumberController;
+  final FocusNode? waslPlateNumberFocusNode;
+  final TextEditingController? waslPlateTypeController;
+  final FocusNode? waslPlateTypeFocusNode;
 
   Widget _docBtn(BuildContext context,
       {required String label,
@@ -2881,6 +2944,76 @@ class _VehicleStep extends StatelessWidget {
             icon: Icons.confirmation_number_outlined,
             hint: t('License plate number'),
             validator: validatePlate),
+        if (saudiWasl &&
+            waslHijriController != null &&
+            waslSequenceController != null &&
+            waslLetterRightController != null &&
+            waslLetterMiddleController != null &&
+            waslLetterLeftController != null &&
+            waslPlateNumberController != null &&
+            waslPlateTypeController != null) ...[
+          const SizedBox(height: 16),
+          Text(t('Saudi regulatory vehicle details'),
+              style: const TextStyle(
+                  fontFamily: 'cairo', fontWeight: FontWeight.w700)),
+          const SizedBox(height: 12),
+          _Field(
+            controller: waslHijriController!,
+            focusNode: waslHijriFocusNode!,
+            label: t('Hijri date of birth'),
+            icon: Icons.calendar_month_outlined,
+            hint: '1411/01/01',
+          ),
+          const SizedBox(height: 12),
+          _Field(
+            controller: waslSequenceController!,
+            focusNode: waslSequenceFocusNode!,
+            label: t('Vehicle sequence number'),
+            icon: Icons.pin_outlined,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          ),
+          const SizedBox(height: 12),
+          _Field(
+            controller: waslLetterRightController!,
+            focusNode: waslLetterRightFocusNode!,
+            label: t('Plate letter right'),
+            icon: Icons.text_fields,
+          ),
+          const SizedBox(height: 12),
+          _Field(
+            controller: waslLetterMiddleController!,
+            focusNode: waslLetterMiddleFocusNode!,
+            label: t('Plate letter middle'),
+            icon: Icons.text_fields,
+          ),
+          const SizedBox(height: 12),
+          _Field(
+            controller: waslLetterLeftController!,
+            focusNode: waslLetterLeftFocusNode!,
+            label: t('Plate letter left'),
+            icon: Icons.text_fields,
+          ),
+          const SizedBox(height: 12),
+          _Field(
+            controller: waslPlateNumberController!,
+            focusNode: waslPlateNumberFocusNode!,
+            label: t('Wasl plate number'),
+            icon: Icons.confirmation_number_outlined,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          ),
+          const SizedBox(height: 12),
+          _Field(
+            controller: waslPlateTypeController!,
+            focusNode: waslPlateTypeFocusNode!,
+            label: t('Plate type'),
+            icon: Icons.category_outlined,
+            hint: '1-11',
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          ),
+        ],
         const SizedBox(height: 12),
         _Field(
             controller: colorController,
@@ -3021,30 +3154,6 @@ class _VehicleStep extends StatelessWidget {
             url: carUrl,
             loading: uploadingCar,
             onTap: onUploadCar),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: InkWell(
-            onTap: onPickVehicleRegExpiry,
-            child: InputDecorator(
-              decoration: InputDecoration(
-                labelText: t('Vehicle registration expiry date'),
-                prefixIcon: Icon(Icons.event_outlined,
-                    color: context.dsColors.primaryStrong),
-                filled: true,
-                fillColor: context.dsColors.card,
-                border: OutlineInputBorder(borderRadius: DsRadius.medium),
-              ),
-              child: Text(
-                vehicleRegExpiry == null
-                    ? t('Select expiry date')
-                    : '${vehicleRegExpiry!.year.toString().padLeft(4, '0')}-'
-                        '${vehicleRegExpiry!.month.toString().padLeft(2, '0')}-'
-                        '${vehicleRegExpiry!.day.toString().padLeft(2, '0')}',
-                style: const TextStyle(fontFamily: 'cairo'),
-              ),
-            ),
-          ),
-        ),
         _docBtn(context,
             label: t('Driver license (front)'),
             url: licenseFrontUrl,

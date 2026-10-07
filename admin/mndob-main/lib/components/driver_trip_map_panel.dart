@@ -34,6 +34,7 @@ class _DriverTripMapPanelState extends State<DriverTripMapPanel> {
   final _controller = Completer<gmaps.GoogleMapController>();
   final _routeCtrl = DriverLiveRouteController();
   bool _didFitRoadRoute = false;
+  String? _lastTrackingPhase;
 
   @override
   void dispose() {
@@ -45,6 +46,13 @@ class _DriverTripMapPanelState extends State<DriverTripMapPanel> {
       widget.order.routeWaypoints(driverOverride: widget.driverLocation);
 
   void _syncRoute(List<LatLng> waypoints) {
+    final phase = widget.order.trackingPhase;
+    if (_lastTrackingPhase != null && _lastTrackingPhase != phase) {
+      _routeCtrl.reset();
+      _didFitRoadRoute = false;
+    }
+    _lastTrackingPhase = phase;
+
     if (waypoints.length < 2) {
       if (_routeCtrl.roadPoints != null || _routeCtrl.failed) {
         _routeCtrl.reset();

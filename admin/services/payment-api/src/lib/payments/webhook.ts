@@ -110,11 +110,14 @@ export async function handleNGeniusWebhook(req: Request) {
     const next = transitionStatus(current, mapped);
 
     const amount = extractGatewayAmount(orderData);
-    assertAmountMatch(
-      Number(session.amount_minor ?? session.amount_halalas),
-      amount.value,
-    );
-    assertCurrencyMatch(String(session.currency || ""), amount.currency);
+    const expectedMinor = session.gateway_minor_sar != null
+      ? Number(session.gateway_minor_sar)
+      : Number(session.amount_minor ?? session.amount_halalas);
+    const expectedCurrency = session.gateway_minor_sar != null
+      ? "SAR"
+      : String(session.currency || "");
+    assertAmountMatch(expectedMinor, amount.value);
+    assertCurrencyMatch(expectedCurrency, amount.currency);
     assertOutletMatch(
       session.outlet_reference as string | undefined,
       env.NGENIUS_OUTLET_REF,

@@ -202,6 +202,12 @@ Future<TouryCashBookingResult> _touryCreateCashBookingFromCurrentStateImpl() asy
         orderId: (data['activeOrderId'])?.toString(),
       );
     }
+    if (raw.contains('booking_vehicle_country_mismatch')) {
+      return const TouryCashBookingResult(
+        success: false,
+        error: 'booking_vehicle_country_mismatch',
+      );
+    }
     return TouryCashBookingResult(
       success: false,
       error: data['code']?.toString() ?? data['error']?.toString(),
@@ -240,16 +246,68 @@ Future<TouryCashBookingResult> touryCreateCashBookingViaFirestoreFallback({
     );
   }
 
-  // C-03: refuse inconsistent client quotes; CF remains authoritative when live.
-  if (!quote.isConsistent ||
-      quote.customerTotalHalalas <= 0 ||
-      quote.customerTotalHalalas >= 100000000 ||
-      quote.hourlyRateHalalas <= 0) {
+  // Authoritative vehicle validation — never trust client hourly as authority.
+  TypeCarRecord? carDoc;
+  try {
+    carDoc = await TypeCarRecord.getDocumentOnce(carRef);
+  } catch (_) {
+    carDoc = null;
+  }
+  if (carDoc == null || !carDoc.isAvailableForListing) {
+    return const TouryCashBookingResult(
+      success: false,
+      error: 'booking_vehicle_unavailable',
+      viaFallback: true,
+    );
+  }
+  CountriesRecord? countryDoc;
+  try {
+    countryDoc = await CountriesRecord.getDocumentOnce(countryRef);
+  } catch (_) {
+    countryDoc = null;
+  }
+  final countryIso = (countryDoc?.isoCode ?? '').trim().toUpperCase();
+  if (!carDoc.matchesCountry(
+    countryRef: countryRef,
+    iso2: countryIso.isEmpty ? null : countryIso,
+    allowLegacySaudiFallback: false,
+  )) {
+    return const TouryCashBookingResult(
+      success: false,
+      error: 'booking_vehicle_country_mismatch',
+      viaFallback: true,
+    );
+  }
+
+  // Rebuild quote from type_car.sr + country currency/VAT — ignore fake client rate.
+  final authoritativeHourly = carDoc.sr;
+  if (authoritativeHourly <= 0) {
     return const TouryCashBookingResult(
       success: false,
       error: 'booking_price_inconsistent',
+      viaFallback: true,
     );
   }
+  final authoritativeQuote = touryCalculatePriceQuote(
+    hourlyRateSar: authoritativeHourly,
+    bookingHours: quote.bookingHours,
+    additionalHours: app.addhors,
+    vatEnabled: countryDoc?.isvat == true,
+    vatPercent: (countryDoc?.vat ?? 0).toDouble(),
+    additionalHoursDiscountPercent: carDoc.nesbahkKsm,
+    additionalHoursDiscountCapSar: carDoc.totalKsmUb,
+  );
+  if (!authoritativeQuote.isConsistent ||
+      authoritativeQuote.customerTotalHalalas <= 0 ||
+      authoritativeQuote.customerTotalHalalas >= 100000000 ||
+      authoritativeQuote.hourlyRateHalalas <= 0) {
+    return const TouryCashBookingResult(
+      success: false,
+      error: 'booking_price_inconsistent',
+      viaFallback: true,
+    );
+  }
+  final sealedQuote = authoritativeQuote;
 
   final orderId = touryCashOrderDocId(
     currentUserUid,
@@ -259,14 +317,17 @@ Future<TouryCashBookingResult> touryCreateCashBookingViaFirestoreFallback({
   final user = currentUserDocument;
   final booking = TouryOrderIntegration.cloudBookingPayload();
   final now = FieldValue.serverTimestamp();
-  final totalMajor = quote.customerTotalHalalas / 100;
-  CountriesRecord? countryDoc;
-  try {
-    countryDoc = await CountriesRecord.getDocumentOnce(countryRef);
-  } catch (_) {
-    countryDoc = null;
-  }
+  final totalMajor = sealedQuote.customerTotalHalalas / 100;
   final currencyFields = TouryCurrency.fieldsForCreate(country: countryDoc);
+  final snapshotAt = DateTime.now().toUtc().toIso8601String();
+  final vehicleTypeName =
+      (carDoc.naim.trim().isNotEmpty ? carDoc.naim : app.tebycar).trim();
+  final vehicleCurrency = (currencyFields['currency'] ??
+          currencyFields['currency_code'] ??
+          'SAR')
+      .toString()
+      .trim()
+      .toUpperCase();
 
   // Refuse if any active booking exists (lock field OR recent order scan).
   final existingActive = await touryFindActiveBookingForCurrentUser();
@@ -318,7 +379,7 @@ Future<TouryCashBookingResult> touryCreateCashBookingViaFirestoreFallback({
         tx.set(orderRef, {
           'USER': userRef,
           'total': totalMajor,
-          'amount_halalas': quote.customerTotalHalalas,
+          'amount_halalas': sealedQuote.customerTotalHalalas,
           ...currencyFields,
           'data_order': now,
           'acceptanceDeadline': Timestamp.fromMillisecondsSinceEpoch(
@@ -340,27 +401,37 @@ Future<TouryCashBookingResult> touryCreateCashBookingViaFirestoreFallback({
           'phone_numper':
               num.tryParse(user?.phoneNumber ?? currentPhoneNumber) ?? 0,
           'imgProfileClent': user?.photoUrl ?? currentUserPhoto,
-          'total_taim': quote.bookingHours,
-          'total_app': quote.appFeeHalalas / 100,
-          'total_vat': quote.vatHalalas / 100,
-          'ksm': quote.discountHalalas / 100,
-          'SrSAAH': quote.hourlyRateHalalas / 100,
+          'total_taim': sealedQuote.bookingHours,
+          'total_app': sealedQuote.appFeeHalalas / 100,
+          'total_vat': sealedQuote.vatHalalas / 100,
+          'ksm': sealedQuote.discountHalalas / 100,
+          'SrSAAH': sealedQuote.hourlyRateHalalas / 100,
+          'vehicleTypeId': carRef.id,
+          'vehicleTypeName': vehicleTypeName,
+          'vehicleTypeCountryId':
+              carDoc!.countryId.trim().isNotEmpty
+                  ? carDoc.countryId.trim()
+                  : countryRef.id,
+          'vehicleHourlyPrice': authoritativeHourly.toDouble(),
+          'vehicleCurrency': vehicleCurrency.isEmpty ? 'SAR' : vehicleCurrency,
+          'vehicleSnapshotAt': snapshotAt,
           'DriverGuide': app.DriverGuideState,
           if (app.dataSchedule != null) 'Schedule': app.dataSchedule,
           'fullSchedule': app.fulltextSchedule,
           'listAmakn': stops,
           'plannedWaypoints': booking['plannedWaypoints'] ?? const [],
           'trip_type': TouryOrderIntegration.resolveTripType(app),
+          'returnToPickup': app.returnToPickup == true,
           'luggage_estimate': app.luggageEstimate,
           'routeProvider': booking['routeProvider'] ?? 'waypoints',
           'routeVersion': 1,
           'plannedDistanceMeters': booking['plannedDistanceMeters'] ?? 0,
           'plannedDurationSeconds': booking['plannedDurationSeconds'] ?? 0,
           // Mark explicitly as non-authoritative until createCashBooking is live.
-          'pricing_authority': 'client_fallback_pending_cf',
-          'pricing_quote_halalas': quote.customerTotalHalalas,
-          'pricing_hourly_halalas': quote.hourlyRateHalalas,
-          'pricing_hours': quote.bookingHours,
+          'pricing_authority': 'client_fallback_type_car_sr',
+          'pricing_quote_halalas': sealedQuote.customerTotalHalalas,
+          'pricing_hourly_halalas': sealedQuote.hourlyRateHalalas,
+          'pricing_hours': sealedQuote.bookingHours,
           'IDorder': 'CASH-${orderId.substring(0, 10).toUpperCase()}',
           'halh_order': 'Cash',
           'halh': 'pending_cash',

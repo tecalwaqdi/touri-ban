@@ -1,0 +1,117 @@
+{
+  "taken_at": "2026-10-04T10:08:56.835Z",
+  "agents": [
+    {
+      "id": "0QylPWfoCDffO7IwAdjHJ7mDgQj2",
+      "country_path": "countries/chad",
+      "country_iso": "TD",
+      "actev_user": true,
+      "phone_number": "+9902350000001"
+    },
+    {
+      "id": "7hn2MKoUEOOD6gnKf3Yr2W0pdG13",
+      "country_path": "countries/indonesia",
+      "country_iso": "ID",
+      "actev_user": true,
+      "phone_number": "+990101111111"
+    },
+    {
+      "id": "Ch97niALhkMWh0oQqqx15SWtuCp1",
+      "country_path": "countries/niger",
+      "country_iso": "NE",
+      "actev_user": true,
+      "phone_number": "+9902270000001"
+    },
+    {
+      "id": "EmEFpoKsTBVyNbX2cQrApjgwtsw1",
+      "country_path": "countries/ZniXQOQmAeF1qdMAtZqF",
+      "country_iso": "TR",
+      "actev_user": true,
+      "phone_number": "00966508114574"
+    },
+    {
+      "id": "JkYePqE6LkVVkHKbKmdqEmVqDqr1",
+      "country_path": "countries/saudi_arabia",
+      "country_iso": "SA",
+      "actev_user": true,
+      "phone_number": ""
+    },
+    {
+      "id": "Kq0OjniqdcXpHQA3tZOxS0GJHbK2",
+      "country_path": "countries/kyrgyzstan",
+      "country_iso": "KG",
+      "actev_user": true,
+      "phone_number": "+996555385076"
+    },
+    {
+      "id": "NwothIRFmKQgbPu4xc1v8LPWUVH2",
+      "country_path": "countries/portugal",
+      "country_iso": "PT",
+      "actev_user": true,
+      "phone_number": "+990091111111"
+    },
+    {
+      "id": "TRMD9yJZoeNLTAcuZckkAJ2pB833",
+      "country_path": "countries/tunisia",
+      "country_iso": "TN",
+      "actev_user": true,
+      "phone_number": "+990081111111"
+    },
+    {
+      "id": "TVv1btmeqheb5UDzkzW21ni7FvS2",
+      "country_path": "countries/malaysia",
+      "country_iso": "MY",
+      "actev_user": true,
+      "phone_number": "+990091111111"
+    },
+    {
+      "id": "TmENMz1dO8X7kTYBvJunSL3iX452",
+      "country_path": "countries/india",
+      "country_iso": "IN",
+      "actev_user": true,
+      "phone_number": "0577118808"
+    },
+    {
+      "id": "U878AYIvsJV3xlWKhLeXOfUFqqH2",
+      "country_path": "countries/spain",
+      "country_iso": "ES",
+      "actev_user": true,
+      "phone_number": "+990061111111"
+    },
+    {
+      "id": "jFsM5R5iQ4Z3PEte0cAbmhxKr7z2",
+      "country_path": "countries/morocco",
+      "country_iso": "MA",
+      "actev_user": true,
+      "phone_number": "+990081111111"
+    },
+    {
+      "id": "jKcdqbRSM4gjeyIGyNPRkWlyz3b2",
+      "country_path": "countries/nigeria",
+      "country_iso": "NG",
+      "actev_user": true,
+      "phone_number": "05"
+    },
+    {
+      "id": "test_adminnext_agent_a_fb509f15",
+      "country_path": "countries/saudi_arabia",
+      "country_iso": "SA",
+      "actev_user": false,
+      "phone_number": null
+    },
+    {
+      "id": "test_adminnext_agent_b_8465f888",
+      "country_path": "countries/saudi_arabia",
+      "country_iso": "SA",
+      "actev_user": false,
+      "phone_number": null
+    },
+    {
+      "id": "xboqOpI6ibch8gHLDRW377EKAao2",
+      "country_path": "countries/nigeria",
+      "country_iso": "NG",
+      "actev_user": true,
+      "phone_number": "+9902340000001"
+    }
+  ]
+}

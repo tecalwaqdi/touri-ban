@@ -37,13 +37,19 @@ bool touryCanExtendOrder(Map<String, dynamic> order, String uid) {
       )) {
     return false;
   }
-  final method = (order['PaymentMethod'] ?? '').toString().toLowerCase();
+  final method = (order['PaymentMethod'] ?? order['paymentMethod'] ?? '')
+      .toString()
+      .toLowerCase();
   final payment = (order['payment_status'] ?? '').toString().toLowerCase();
-  return (method == 'cash' &&
-          const {'pending_cash', 'cash_pending', 'cash_due'}
-              .contains(payment)) ||
-      (method == 'onlinepayment' &&
-          const {'paid', 'captured'}.contains(payment));
+  final isCash =
+      method == 'cash' || method.contains('cash') || method == 'نقدي';
+  final isOnline = method == 'onlinepayment' ||
+      method == 'online' ||
+      method == 'card' ||
+      method.contains('ngenius');
+  if (isCash) return true;
+  return isOnline &&
+      const {'paid', 'captured', 'success', 'completed'}.contains(payment);
 }
 
 class TouryExtraHoursQuote {

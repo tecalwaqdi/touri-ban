@@ -1,3 +1,4 @@
+import '/components/admin_geo_locale_fields.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import 'add_vill_widget.dart' show AddVillWidget;
@@ -21,6 +22,7 @@ class AddVillModel extends FlutterFlowModel<AddVillWidget> {
   String? Function(BuildContext, String?)? textController2Validator;
   // State field(s) for Switch widget.
   bool? switchValue;
+  final geoNameControllers = <String, TextEditingController>{};
 
   @override
   void initState(BuildContext context) {}
@@ -32,5 +34,6 @@ class AddVillModel extends FlutterFlowModel<AddVillWidget> {
 
     textFieldFocusNode2?.dispose();
     textController2?.dispose();
+    disposeAdminGeoControllers(geoNameControllers);
   }
 }

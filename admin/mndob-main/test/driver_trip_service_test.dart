@@ -48,14 +48,16 @@ void main() {
   });
 
   group('DriverTripService.formatRemainingTripTime', () {
-    test('formats hours and minutes', () {
+    test('formats hours and minutes with latin fallback', () {
       expect(
-        DriverTripService.formatRemainingTripTime(const Duration(hours: 2, minutes: 15)),
-        '2س 15د',
+        DriverTripService.formatRemainingTripTime(
+          const Duration(hours: 2, minutes: 15),
+        ),
+        '2h 15m',
       );
       expect(
         DriverTripService.formatRemainingTripTime(const Duration(minutes: 12)),
-        '12د',
+        '12m',
       );
     });
   });

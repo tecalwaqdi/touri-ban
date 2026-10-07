@@ -1,6 +1,11 @@
+import 'dart:convert';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'firebase_vertexai_agent.dart';
+
+import '/core/toury_error_localizer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'firebase_vertexai_agent.dart';
 
 /// Calls an AI agent and manages the conversation thread.
 ///
@@ -65,14 +70,14 @@ Future<dynamic> callAiAgent({
       default:
         showSnackbar(
           context,
-          'Unsupported AI provider: $provider}',
+          'error_generic_user'.tr(),
         );
         return null;
     }
   } catch (e) {
     showSnackbar(
       context,
-      'Error: ${e.toString()}',
+      ErrorLocalizer.fromObject(e),
     );
     return null;
   }

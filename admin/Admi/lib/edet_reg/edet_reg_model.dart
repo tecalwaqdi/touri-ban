@@ -23,6 +23,8 @@ class EdetRegModel extends FlutterFlowModel<EdetRegWidget> {
   String uploadedFileUrl_uploadDataO6s = '';
   bool recordInitialized = false;
   String? countryLabel;
+  static const geoLocales = ['ar', 'en', 'ru', 'ky', 'fr', 'ur', 'pt'];
+  final geoNameControllers = <String, TextEditingController>{};
 
   void bindCitiesRecord(CitiesRecord record) {
     if (recordInitialized) {
@@ -32,6 +34,10 @@ class EdetRegModel extends FlutterFlowModel<EdetRegWidget> {
         TextEditingController(text: record.naim);
     textFieldDescTextController ??=
         TextEditingController(text: record.osf);
+    for (final lang in geoLocales) {
+      geoNameControllers[lang] ??=
+          TextEditingController(text: record.namesI18n[lang] ?? '');
+    }
     switchValue ??= record.acctev;
     uploadedFileUrl_uploadDataO6s = record.img;
     recordInitialized = true;
@@ -46,5 +52,8 @@ class EdetRegModel extends FlutterFlowModel<EdetRegWidget> {
     textFieldnaimTextController?.dispose();
     textFieldDescFocusNode?.dispose();
     textFieldDescTextController?.dispose();
+    for (final controller in geoNameControllers.values) {
+      controller.dispose();
+    }
   }
 }

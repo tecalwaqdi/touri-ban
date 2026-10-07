@@ -233,7 +233,7 @@ void main() {
   });
 
   group('new-driver expiry validation → submit gate', () {
-    test('missing dates block with localized keys', () {
+    test('missing license date blocks; vehicle expiry is not required', () {
       expect(
         DriverRegistrationExpiryValidator.blockingKeys(
           licenseExpiry: null,
@@ -241,16 +241,19 @@ void main() {
         ),
         [
           'Please enter the driver license expiry date',
-          'Please enter the vehicle registration expiry date',
         ],
+      );
+      expect(
+        DriverRegistrationExpiryValidator.missingVehicleRegKey(null),
+        isNull,
       );
     });
 
-    test('both dates present allow continue', () {
+    test('license date present allows continue without vehicle expiry', () {
       expect(
         DriverRegistrationExpiryValidator.blockingKeys(
           licenseExpiry: DateTime(2028, 1, 1),
-          vehicleRegExpiry: DateTime(2027, 1, 1),
+          vehicleRegExpiry: null,
         ),
         isEmpty,
       );
@@ -271,6 +274,12 @@ void main() {
         license[DriverRegistrationUpdatePayload.expiryField],
       );
       expect(parsed?.year, 2029);
+
+      final vehicle = DriverRegistrationUpdatePayload.mergeDocSlot(
+        documentType: 'vehicle_registration',
+        storagePath: 'users/new/vehicle.jpg',
+      );
+      expect(vehicle.containsKey(DriverRegistrationUpdatePayload.expiryField), isFalse);
     });
   });
 }

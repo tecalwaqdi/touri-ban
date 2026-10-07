@@ -1,4 +1,5 @@
 import '/backend/schema/order_record.dart';
+import '/core/driver_tracking_phase.dart';
 import '/core/driver_trip_constants.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -9,6 +10,24 @@ extension DriverOrderMeta on OrderRecord {
     final text = castToType<String>(value)?.trim() ?? '';
     return text;
   }
+
+  bool get returnToPickup => snapshotData['returnToPickup'] == true;
+
+  String get trackingPhaseRaw =>
+      (snapshotData['tracking_phase'] ?? '').toString().trim();
+
+  String get trackingPhase => DriverTrackingPhase.resolve(
+        statusCode: (snapshotData['status_code'] ?? '').toString(),
+        returnToPickup: returnToPickup,
+        trackingPhase: trackingPhaseRaw,
+      );
+
+  /// Fixed pickup from booking — never live customer GPS.
+  LatLng? get originalPickupSnapshot => DriverTrackingPhase.originalPickup(
+        lokeshn: lokeshn,
+        originLatitude: hasOriginLatitude() ? originLatitude : null,
+        originLongitude: hasOriginLongitude() ? originLongitude : null,
+      );
 
   String get cartext => _asTrimmedString(snapshotData['cartext']);
 
@@ -46,12 +65,22 @@ extension DriverOrderMeta on OrderRecord {
       castToType<DateTime>(snapshotData['destinationUpdatedAt']);
 
   /// English phrase key for EasyLocalization (never Arabic UI literal).
+  ///
+  /// Customer "return to my pickup" (`returnToPickup`) is shown as round trip
+  /// on the driver offer sheet even when `trip_type` was left empty.
   String tripTypeLabelKey() {
+    if (returnToPickup) return 'Round trip';
     final raw = tripTypeRaw.toLowerCase();
-    if (raw.contains('round') || raw.contains('عودة')) {
+    if (raw.contains('round') ||
+        raw.contains('عودة') ||
+        raw.contains('go_and_return') ||
+        raw == 'round_trip') {
       return 'Round trip';
     }
-    if (raw.contains('one') || raw.contains('ذهاب')) {
+    if (raw.contains('one') ||
+        raw.contains('ذهاب') ||
+        raw == 'one_way' ||
+        raw == 'one-way') {
       return 'One way';
     }
     if (driverGuide) return 'Guided tour';
@@ -124,11 +153,11 @@ extension DriverOrderMeta on OrderRecord {
     return null;
   }
 
-  /// Route points: driver → pickup → stops → final destination.
+  /// Phase-aware route: same canonical phase as Customer tracking.
   List<LatLng> routeWaypoints({LatLng? driverOverride}) {
     final driver = driverOverride ??
         (DriverTripHalh.isActiveTrip(halhText) ? driverLivePosition : null);
-    final pickup = customerPickup;
+    final pickup = originalPickupSnapshot ?? customerPickup;
     final stops = <LatLng>[];
     for (final stop in listAmakn) {
       final loc = stop.hasLoceshn() ? stop.loceshn : null;
@@ -146,9 +175,33 @@ extension DriverOrderMeta on OrderRecord {
       stops.add(loc);
     }
     final dest = tripDestination;
+    final phase = trackingPhase;
+
+    if (phase == DriverTrackingPhase.toPickup) {
+      if (driver != null && pickup != null && driver != pickup) {
+        return [driver, pickup];
+      }
+      if (pickup != null) return [if (driver != null) driver, pickup];
+      return const [];
+    }
+
+    if (phase == DriverTrackingPhase.atDestination ||
+        phase == DriverTrackingPhase.returnedToPickup ||
+        phase == DriverTrackingPhase.completed) {
+      return const [];
+    }
+
+    if (phase == DriverTrackingPhase.returningToPickup && returnToPickup) {
+      final origin = driver ?? dest;
+      if (origin != null && pickup != null && origin != pickup) {
+        return [origin, pickup];
+      }
+      return const [];
+    }
+
+    // to_destination (default after Start): pickup leg cleared.
     final points = <LatLng>[
       if (driver != null) driver,
-      if (pickup != null && pickup != driver) pickup,
       ...stops.where((p) => p != pickup && p != driver),
       if (dest != null &&
           dest != pickup &&

@@ -183,7 +183,7 @@ class AdminStatusBadgeUnified extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        label ?? _defaultLabel(context),
+        label == null ? _defaultLabel(context) : uiTr(context, label!),
         style: TextStyle(
           color: fg,
           fontSize: 11,

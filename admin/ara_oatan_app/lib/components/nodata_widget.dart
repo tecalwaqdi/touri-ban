@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '/design_system/design_system.dart';
@@ -41,7 +42,7 @@ class _NodataWidgetState extends State<NodataWidget> {
       title: FFLocalizations.of(context).getText(
         'zk2cl9lt' /* لم يتم العثور على بيانات */,
       ),
-      message: 'لا توجد عناصر للعرض حالياً',
+      message: 'empty.no_items'.tr(),
       icon: Icons.inbox_outlined,
     );
   }

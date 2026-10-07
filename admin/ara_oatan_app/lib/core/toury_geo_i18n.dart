@@ -29,10 +29,14 @@ String touryVillageName(BuildContext context, VillagesRecord record) {
 }
 
 String touryCountryName(BuildContext context, CountriesRecord record) {
+  final localeKey = touryContentLocaleFromContext(context);
+  final lang = localeKey.split(RegExp(r'[_-]')).first.toLowerCase();
+  final english = record.naimEnglesh.trim();
+  final legacy = (lang == 'ar' || english.isEmpty) ? record.naim : english;
   return touryLocalizedText(
     record.namesI18n,
-    record.naim,
-    localeKey: touryContentLocaleFromContext(context),
+    legacy,
+    localeKey: localeKey,
   );
 }
 

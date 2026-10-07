@@ -30,7 +30,10 @@ class TypeCarRecord extends FirestoreRecord {
   bool get actev => _actev ?? false;
 
   /// نشط للعرض: actev=true، أو بدون حقل (بيانات قديمة).
+  /// Archived / excluded operational docs never list.
   bool get isAvailableForListing {
+    if (snapshotData['archived'] == true) return false;
+    if (snapshotData['exclude_from_operational_catalog'] == true) return false;
     if (snapshotData.containsKey('actev')) {
       return snapshotData['actev'] == true;
     }
@@ -42,6 +45,11 @@ class TypeCarRecord extends FirestoreRecord {
 
   String? _img;
   String get img => _img ?? '';
+
+  /// Canonical country document id (saudi_arabia, kyrgyzstan, …).
+  String? _countryId;
+  String get countryId => _countryId ?? '';
+  bool hasCountryId() => _countryId != null && _countryId!.trim().isNotEmpty;
 
   DocumentReference? _dolh;
   DocumentReference? get dolh => _dolh;
@@ -64,17 +72,26 @@ class TypeCarRecord extends FirestoreRecord {
     _sr = castToType<int>(snapshotData['sr']);
     _actev = snapshotData['actev'] as bool?;
     _img = snapshotData['img'] as String?;
+    _countryId = snapshotData['countryId'] as String?;
     _dolh = snapshotData['dolh'] as DocumentReference?;
     _countryIso2 = snapshotData['country_iso2'] as String?;
     _codeCar = snapshotData['codeCar'] as String?;
   }
 
-  /// Matches by ISO first, then exact/alias country refs.
+  /// Matches by countryId, ISO, then exact/alias country refs.
+  /// No Saudi legacy fallback by default.
   bool matchesCountry({
     DocumentReference? countryRef,
     String? iso2,
-    bool allowLegacySaudiFallback = true,
+    bool allowLegacySaudiFallback = false,
   }) {
+    final targetId = (countryRef?.id ?? '').trim();
+    final myCountryId = countryId.trim();
+    if (myCountryId.isNotEmpty &&
+        targetId.isNotEmpty &&
+        myCountryId == targetId) {
+      return true;
+    }
     final iso = (iso2 ?? TouryCountryRegistry.normalizeIso(countryRef?.id) ?? '')
         .trim()
         .toUpperCase();
@@ -87,7 +104,7 @@ class TypeCarRecord extends FirestoreRecord {
       if (dolhIso != null && iso.isNotEmpty && dolhIso == iso) return true;
     }
 
-    if (!hasDolh() && myIso.isEmpty) {
+    if (!hasCountryId() && !hasDolh() && myIso.isEmpty) {
       return allowLegacySaudiFallback && (iso == 'SA' || iso.isEmpty);
     }
     return false;

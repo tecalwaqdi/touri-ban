@@ -1,4 +1,5 @@
 
+import '/core/i18n/admin_geo_names.dart';
 import '/backend/admin_audit_log.dart';
 import '/backend/admin_cascade_delete.dart';
 import '/backend/admin_firestore_delete.dart';
@@ -82,6 +83,23 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
   }
 
   Future<void> _save(CountriesRecord record) async {
+    final vatText = _model.textController3!.text.trim();
+    final vat = double.tryParse(vatText);
+    final fxText = _model.textControllerFx!.text.trim();
+    final fx = double.tryParse(fxText);
+    if (vatText.isNotEmpty && (vat == null || vat < 0 || (15 + vat) >= 100)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(uiTr(context, 'INVALID'))),
+      );
+      return;
+    }
+    if (fxText.isNotEmpty && (fx == null || fx <= 0)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(uiTr(context, 'INVALID'))),
+      );
+      return;
+    }
+
     final name = _model.textController1!.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -103,16 +121,28 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
             localBytes: _model.uploadedLocalFile_uploadDataX8m.bytes,
           ),
           acctev: _model.switchValue ?? record.acctev,
-          vatPercent:
-              double.tryParse(_model.textController3!.text.trim()) ??
-                  record.vatPercent,
+          vatPercent: vat,
           appCommissionPercent:
               double.tryParse(_model.textController4!.text.trim()) ??
                   record.appCommissionPercent,
           currencyCode: _model.textControllerCurrencyCode!.text.trim().toUpperCase(),
           currencySymbol: _model.textControllerCurrencySymbol!.text.trim(),
+          localUnitsPerSar: double.tryParse(_model.textControllerFx!.text.trim()),
+          cashEnabled: _model.cashEnabled ?? true,
+          onlinePaymentEnabled: _model.onlinePaymentEnabled ?? true,
+          namesI18n: adminGeoNamesForSave(
+            existing: record.namesI18n,
+            editedByLocale: {
+              for (final lang in adminGeoLocales)
+                lang: _model.geoNameControllers[lang]?.text ?? '',
+            },
+          ),
         ),
       );
+      await widget.iddolhe!.update({
+        'finance_config_version': FieldValue.increment(1),
+        'finance_config_updated_at': FieldValue.serverTimestamp(),
+      });
       if (!mounted) return;
       await AdminCrudFeedback.success(
         context,
@@ -128,6 +158,36 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  String _financeStatusKey(CountriesRecord record) {
+    switch (_financeStatus(record)) {
+      case 'FX MISSING':
+        return 'finance_status_fx_missing';
+      case 'VAT MISSING':
+        return 'finance_status_vat_missing';
+      case 'INVALID':
+        return 'finance_status_invalid';
+      default:
+        return 'finance_status_configured';
+    }
+  }
+
+  String _financeStatus(CountriesRecord record) {
+    final vatText = _model.textController3?.text.trim() ?? '';
+    final vat = double.tryParse(vatText);
+    final fxText = _model.textControllerFx?.text.trim() ?? '';
+    final fx = double.tryParse(fxText);
+    final code = (_model.textControllerCurrencyCode?.text ?? '').trim().toUpperCase();
+    final iso = (record.snapshotData['iso_code'] ?? '').toString().toUpperCase();
+    final saudi = iso == 'SA' || code == 'SAR';
+    if (vatText.isNotEmpty && (vat == null || vat < 0 || (15 + vat) >= 100)) {
+      return 'INVALID';
+    }
+    if (fxText.isNotEmpty && (fx == null || fx <= 0)) return 'INVALID';
+    if (vatText.isEmpty) return 'VAT MISSING';
+    if (fxText.isEmpty && !saudi) return 'FX MISSING';
+    return 'CONFIGURED';
   }
 
   Future<void> _delete(CountriesRecord record) async {
@@ -257,6 +317,45 @@ class _EdetDolhWidgetState extends State<EdetDolhWidget> {
                 label: uiTr(context, 'رمز عرض العملة'),
                 icon: Icons.attach_money_rounded,
                 hint: uiTr(context, 'مثال: ر.س أو сом'),
+              ),
+              const SizedBox(height: AdminUi.fieldGap),
+              AdminTextField(
+                controller: _model.textControllerFx!,
+                focusNode: _model.textFieldFocusNodeFx,
+                label: uiTr(context, '1 SAR = local currency'),
+                icon: Icons.currency_exchange_rounded,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                hint: uiTr(context, 'local_units_per_sar'),
+              ),
+              const SizedBox(height: AdminUi.fieldGap),
+              Text(
+                appTr(context, _financeStatusKey(record)),
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              if (_financeStatus(record) != 'CONFIGURED')
+                Text(appTr(context, 'finance_status_not_ready')),
+              const SizedBox(height: AdminUi.fieldGap),
+              for (final lang in EdetDolhModel.geoLocales)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AdminUi.fieldGap),
+                  child: AdminTextField(
+                    controller: _model.geoNameControllers[lang]!,
+                    label: 'names_i18n.$lang',
+                    icon: Icons.translate_rounded,
+                  ),
+                ),
+              const SizedBox(height: AdminUi.fieldGap),
+              AdminEditSwitchRow(
+                label: uiTr(context, 'Cash enabled'),
+                subtitle: uiTr(context, 'cash_enabled'),
+                value: _model.cashEnabled ?? true,
+                onChanged: (v) => setState(() => _model.cashEnabled = v),
+              ),
+              AdminEditSwitchRow(
+                label: uiTr(context, 'Online payment enabled'),
+                subtitle: uiTr(context, 'online_payment_enabled'),
+                value: _model.onlinePaymentEnabled ?? true,
+                onChanged: (v) => setState(() => _model.onlinePaymentEnabled = v),
               ),
               const SizedBox(height: AdminUi.fieldGap),
               AdminEditSwitchRow(

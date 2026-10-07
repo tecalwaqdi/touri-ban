@@ -238,6 +238,133 @@ async function runTests() {
   }
 
   {
+    // LIVE cutover shape: read_only + cash flag true must allow Driver cash V2.
+    const db = new FakeFirestore();
+    await db.doc('financial_config/runtime').set({
+      FINANCIAL_CASH_REALIZATION_V2_ENABLED: true,
+      FINANCIAL_SETTLEMENT_WRITES_ENABLED: false,
+      FINANCIAL_PAYMENT_CONFIRM_ENABLED: false,
+      LEGACY_ADMIN_WRITE_MODE: 'read_only',
+      LEGACY_ADMIN_CUTOVER_RESTRICTED: true,
+    });
+    await seedOrder(db, 'oRo', pendingCashOrder());
+
+    const r1 = await cash.confirmCashCollectionV2({
+      db,
+      auth: driverAuth(),
+      data: {orderId: 'oRo', operationId: 'op-ro-1'},
+      admin: adminShim(db),
+    });
+    assert.strictEqual(r1.code, 'COLLECTED');
+    assert.strictEqual(r1.financialRealized, true);
+
+    const r2 = await cash.confirmCashCollectionV2({
+      db,
+      auth: driverAuth(),
+      data: {orderId: 'oRo', operationId: 'op-ro-1'},
+      admin: adminShim(db),
+    });
+    assert.strictEqual(r2.idempotent, true);
+    assert.strictEqual(r2.code, 'COLLECTED');
+
+    const after = await db.collection('order').doc('oRo').get();
+    assert.strictEqual(after.data().payment_status, 'cash_collected');
+    assert.strictEqual(after.data().total, 50);
+  }
+
+  {
+    // Cash flag false under read_only remains denied (domain flag, not LEGACY_ADMIN_READ_ONLY).
+    const db = new FakeFirestore();
+    await db.doc('financial_config/runtime').set({
+      FINANCIAL_CASH_REALIZATION_V2_ENABLED: false,
+      LEGACY_ADMIN_WRITE_MODE: 'read_only',
+      LEGACY_ADMIN_CUTOVER_RESTRICTED: true,
+    });
+    await seedOrder(db, 'oRoOff', pendingCashOrder());
+
+    await expectError(
+      () =>
+        cash.confirmCashCollectionV2({
+          db,
+          auth: driverAuth(),
+          data: {orderId: 'oRoOff', operationId: 'op-ro-off'},
+          admin: adminShim(db),
+        }),
+      'FEATURE_FLAG_DISABLED',
+    );
+  }
+
+  {
+    // Unauthorized driver (not assigned) denied under read_only + cash flag true.
+    const db = new FakeFirestore();
+    await db.doc('financial_config/runtime').set({
+      FINANCIAL_CASH_REALIZATION_V2_ENABLED: true,
+      LEGACY_ADMIN_WRITE_MODE: 'read_only',
+      LEGACY_ADMIN_CUTOVER_RESTRICTED: true,
+    });
+    await seedOrder(db, 'oAuth', pendingCashOrder());
+
+    await expectError(
+      () =>
+        cash.confirmCashCollectionV2({
+          db,
+          auth: driverAuth('other_drv'),
+          data: {orderId: 'oAuth', operationId: 'op-auth'},
+          admin: adminShim(db),
+        }),
+      'NOT_ASSIGNED_DRIVER',
+    );
+  }
+
+  {
+    // Admin path also allowed under read_only when cash flag true.
+    const db = new FakeFirestore();
+    await db.doc('financial_config/runtime').set({
+      FINANCIAL_CASH_REALIZATION_V2_ENABLED: true,
+      LEGACY_ADMIN_WRITE_MODE: 'read_only',
+      LEGACY_ADMIN_CUTOVER_RESTRICTED: true,
+    });
+    await seedOrder(db, 'oAdminRo', pendingCashOrder());
+
+    const r = await cash.adminConfirmCashCollectionV2({
+      db,
+      auth: {uid: 'fin1', token: {finance: true}},
+      data: {
+        orderId: 'oAdminRo',
+        operationId: 'op-admin-ro',
+        reason: 'Stage1 QA cash CF gate fix',
+      },
+      admin: adminShim(db),
+    });
+    assert.strictEqual(r.code, 'COLLECTED');
+  }
+
+  {
+    // Non-finance/non-super admin path denied.
+    const db = new FakeFirestore();
+    await db.doc('financial_config/runtime').set({
+      FINANCIAL_CASH_REALIZATION_V2_ENABLED: true,
+      LEGACY_ADMIN_WRITE_MODE: 'read_only',
+    });
+    await seedOrder(db, 'oAdminDeny', pendingCashOrder());
+
+    await expectError(
+      () =>
+        cash.adminConfirmCashCollectionV2({
+          db,
+          auth: {uid: 'agent1', token: {country_admin: true}},
+          data: {
+            orderId: 'oAdminDeny',
+            operationId: 'op-admin-deny',
+            reason: 'should fail role gate',
+          },
+          admin: adminShim(db),
+        }),
+      'ADMIN_OR_FINANCE_REQUIRED',
+    );
+  }
+
+  {
     const db = new FakeFirestore();
     await enableFlag(db);
     await seedOrder(

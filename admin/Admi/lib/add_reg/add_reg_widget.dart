@@ -1,3 +1,4 @@
+import '/components/admin_geo_locale_fields.dart';
 import '/core/i18n/admin_i18n_save_helper.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_country_geo_service.dart';
@@ -41,6 +42,7 @@ class _AddRegWidgetState extends State<AddRegWidget> {
     _model.textFieldDescTextController ??= TextEditingController();
     _model.textFieldDescFocusNode ??= FocusNode();
     _model.switchValue = true;
+    ensureAdminGeoControllers(_model.geoNameControllers);
 
     AdminAgentCountryLock.applyToAppState();
 
@@ -132,11 +134,14 @@ class _AddRegWidgetState extends State<AddRegWidget> {
         context: context,
         sourceText: name,
         fieldLabel: 'region name',
+        autoTranslate: false,
+        existing: adminGeoControllerValues(_model.geoNameControllers),
       );
       final osfMap = await adminEnsureI18nMap(
         context: context,
         sourceText: desc,
         fieldLabel: 'region description',
+        autoTranslate: false,
       );
 
       String? countryIso;
@@ -254,6 +259,7 @@ class _AddRegWidgetState extends State<AddRegWidget> {
                   ),
                 ),
                 const SizedBox(height: 14),
+                AdminGeoLocaleFields(controllers: _model.geoNameControllers),
                 TextFormField(
                   controller: _model.textFieldDescTextController,
                   focusNode: _model.textFieldDescFocusNode,

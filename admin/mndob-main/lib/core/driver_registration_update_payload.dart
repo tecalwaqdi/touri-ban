@@ -275,19 +275,18 @@ abstract final class DriverRegistrationExpiryValidator {
           : null;
 
   static String? missingVehicleRegKey(DateTime? vehicleRegExpiry) =>
-      vehicleRegExpiry == null
-          ? 'Please enter the vehicle registration expiry date'
-          : null;
+      null; // Vehicle registration expiry is no longer collected or required.
 
   static List<String> blockingKeys({
     required DateTime? licenseExpiry,
-    required DateTime? vehicleRegExpiry,
+    @Deprecated('Vehicle registration expiry is no longer required')
+    DateTime? vehicleRegExpiry,
   }) {
+    // License expiry only — vehicle registration has no expiry field in the
+    // driver registration form.
     return [
       if (missingLicenseKey(licenseExpiry) != null)
         missingLicenseKey(licenseExpiry)!,
-      if (missingVehicleRegKey(vehicleRegExpiry) != null)
-        missingVehicleRegKey(vehicleRegExpiry)!,
     ];
   }
 }

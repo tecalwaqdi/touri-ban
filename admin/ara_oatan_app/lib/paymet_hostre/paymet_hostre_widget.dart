@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '/auth/firebase_auth/auth_util.dart';
+import '/core/toury_support_link.dart';
 import '/backend/backend.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -166,7 +167,11 @@ class _SupportCard extends StatelessWidget {
             icon: DsIcons.chat,
             size: DsButtonSize.sm,
             onPressed: () async {
-              await launchURL('https://wa.me/966533356126');
+              await TourySupportLink.open(
+                context,
+                countryPath: FFAppState().ShrekNCountry,
+                message: 'support.whatsapp_message'.tr(),
+              );
             },
           ),
         ],

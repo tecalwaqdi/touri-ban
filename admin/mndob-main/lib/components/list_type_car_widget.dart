@@ -51,6 +51,7 @@ Widget _buildCarThumb(BuildContext context, String? url) {
 class _ListTypeCarWidgetState extends State<ListTypeCarWidget> {
   late ListTypeCarModel _model;
   Future<List<TypeCarRecord>>? _carsFuture;
+  String? _loadedCountryId;
 
   bool _canSeeSmallCar() => widget.idNumber.trim().startsWith('10');
 
@@ -73,8 +74,20 @@ class _ListTypeCarWidgetState extends State<ListTypeCarWidget> {
     super.dispose();
   }
 
+  /// Country-scoped catalog only — never fetch the global type_car collection.
   Future<List<TypeCarRecord>> _loadCars() async {
-    return queryTypeCarRecordOnce(limit: 120);
+    final countryRef = FFAppState().dolh;
+    final countryId = countryRef?.id.trim() ?? '';
+    _loadedCountryId = countryId.isEmpty ? null : countryId;
+    if (countryRef == null || countryId.isEmpty) {
+      return const <TypeCarRecord>[];
+    }
+    // Scope by canonical countryId. Do NOT orderBy sort_order — missing
+    // sort_order silently drops docs from Firestore ordered queries.
+    return queryTypeCarRecordOnce(
+      limit: 120,
+      queryBuilder: (q) => q.where('countryId', isEqualTo: countryId),
+    );
   }
 
   void _retry() {
@@ -88,28 +101,38 @@ class _ListTypeCarWidgetState extends State<ListTypeCarWidget> {
     final countryRef = FFAppState().dolh;
     final iso = TouryCountryRegistry.normalizeIso(countryRef?.id);
 
+    // Fail closed when driver country is unknown — never show unscoped catalog.
+    if (countryRef == null) {
+      return const <TypeCarRecord>[];
+    }
+
     var list = raw.where((item) {
       if (!item.isAvailableForListing) return false;
       if (item.naim.trim() == 'سيارة صغيره' && !allowSmallCar) return false;
-      return true;
+      return item.matchesCountry(
+        countryRef: countryRef,
+        iso2: iso,
+        allowLegacySaudiFallback: false,
+      );
     }).toList();
 
-    if (countryRef != null || (iso != null && iso.isNotEmpty)) {
-      final scoped = list
-          .where(
-            (item) => item.matchesCountry(
-              countryRef: countryRef,
-              iso2: iso,
-            ),
-          )
-          .toList();
-      if (scoped.isNotEmpty) {
-        list = scoped;
-      }
-    }
-
-    list.sort((a, b) => a.sr.compareTo(b.sr));
+    list.sort((a, b) {
+      final bySr = a.sr.compareTo(b.sr);
+      if (bySr != 0) return bySr;
+      return a.reference.id.compareTo(b.reference.id);
+    });
     return list;
+  }
+
+  bool _acceptSelection(TypeCarRecord car) {
+    final driverCountry = FFAppState().dolh;
+    final iso = TouryCountryRegistry.normalizeIso(driverCountry?.id);
+    if (driverCountry == null) return false;
+    return car.matchesCountry(
+      countryRef: driverCountry,
+      iso2: iso,
+      allowLegacySaudiFallback: false,
+    );
   }
 
   @override
@@ -118,6 +141,21 @@ class _ListTypeCarWidgetState extends State<ListTypeCarWidget> {
     final colors = context.dsColors;
     final typography = context.dsTypography;
     final lang = FFLocalizations.of(context).locale.languageCode;
+    final countryRef = FFAppState().dolh;
+    final countryId = countryRef?.id.trim() ?? '';
+
+    // Reload when driver country changes while the sheet is open.
+    if (countryId != (_loadedCountryId ?? '') &&
+        _carsFuture != null &&
+        countryId.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (countryId == (_loadedCountryId ?? '')) return;
+        setState(() {
+          _carsFuture = _loadCars();
+        });
+      });
+    }
 
     return SafeArea(
       child: Column(
@@ -148,105 +186,123 @@ class _ListTypeCarWidgetState extends State<ListTypeCarWidget> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<TypeCarRecord>>(
-              future: _carsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: DsLoading(size: 48));
-                }
-                if (snapshot.hasError) {
-                  return DriverEmptyState(
-                    title: driverTr(context, 'Error'),
+            child: countryRef == null
+                ? DriverEmptyState(
+                    title: driverTr(context, 'Driver country unavailable'),
                     message: driverTr(
                       context,
-                      'Something went wrong. Please try again.',
+                      'Could not determine the driver account country',
                     ),
-                    icon: Icons.error_outline,
-                    actionLabel: driverTr(context, 'Retry'),
-                    onAction: _retry,
-                  );
-                }
+                    icon: Icons.public_off_outlined,
+                  )
+                : FutureBuilder<List<TypeCarRecord>>(
+                    key: ValueKey('typecar:$countryId'),
+                    future: _carsFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: DsLoading(size: 48));
+                      }
+                      if (snapshot.hasError) {
+                        return DriverEmptyState(
+                          title: driverTr(context, 'Error'),
+                          message: driverTr(
+                            context,
+                            'Something went wrong. Please try again.',
+                          ),
+                          icon: Icons.error_outline,
+                          actionLabel: driverTr(context, 'Retry'),
+                          onAction: _retry,
+                        );
+                      }
 
-                final cars = _filterCars(snapshot.data ?? const []);
-                if (cars.isEmpty) {
-                  return DriverEmptyState(
-                    title: driverTr(context, 'No vehicle types available'),
-                    message: driverTr(
-                      context,
-                      'No vehicle types for your location yet. Try again after enabling GPS.',
-                    ),
-                    icon: Icons.directions_car_outlined,
-                    actionLabel: driverTr(context, 'Retry'),
-                    onAction: _retry,
-                  );
-                }
+                      final cars = _filterCars(snapshot.data ?? const []);
+                      if (cars.isEmpty) {
+                        return DriverEmptyState(
+                          title: driverTr(
+                            context,
+                            'No vehicle types available',
+                          ),
+                          message: driverTr(
+                            context,
+                            'No vehicle types are currently available for your country',
+                          ),
+                          icon: Icons.directions_car_outlined,
+                          actionLabel: driverTr(context, 'Retry'),
+                          onAction: _retry,
+                        );
+                      }
 
-                return ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(
-                    DsSpacing.sm,
-                    0,
-                    DsSpacing.sm,
-                    DsSpacing.xl,
-                  ),
-                  itemCount: cars.length,
-                  separatorBuilder: (_, __) => DsSpacing.gapXs,
-                  itemBuilder: (context, index) {
-                    final car = cars[index];
-                    final title = car.localizedName(lang);
-                    return DsCard(
-                      onTap: () {
-                        FFAppState().MNDOBTYPECARrev = car.reference;
-                        FFAppState().textTypeCar = title;
-                        Navigator.pop(context, car);
-                      },
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: DsSpacing.sm,
-                        vertical: DsSpacing.sm,
-                      ),
-                      child: Row(
-                        children: [
-                          _buildCarThumb(context, car.img),
-                          DsSpacing.gapSm,
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                      return ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(
+                          DsSpacing.sm,
+                          0,
+                          DsSpacing.sm,
+                          DsSpacing.xl,
+                        ),
+                        itemCount: cars.length,
+                        separatorBuilder: (_, __) => DsSpacing.gapXs,
+                        itemBuilder: (context, index) {
+                          final car = cars[index];
+                          final title = car.localizedName(lang);
+                          return DsCard(
+                            onTap: () {
+                              if (!_acceptSelection(car)) {
+                                return;
+                              }
+                              FFAppState().MNDOBTYPECARrev = car.reference;
+                              FFAppState().textTypeCar = title;
+                              Navigator.pop(context, car);
+                            },
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: DsSpacing.sm,
+                              vertical: DsSpacing.sm,
+                            ),
+                            child: Row(
                               children: [
-                                Text(
-                                  title,
-                                  style: typography.titleMedium.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: colors.textPrimary,
+                                _buildCarThumb(context, car.img),
+                                DsSpacing.gapSm,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        title,
+                                        style: typography.titleMedium.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          color: colors.textPrimary,
+                                        ),
+                                      ),
+                                      if (car.codeCar.isNotEmpty)
+                                        Text(
+                                          car.codeCar,
+                                          style:
+                                              typography.bodySmall.copyWith(
+                                            color: colors.textSecondary,
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                                if (car.codeCar.isNotEmpty)
-                                  Text(
-                                    car.codeCar,
-                                    style: typography.bodySmall.copyWith(
-                                      color: colors.textSecondary,
-                                    ),
+                                Text(
+                                  driverTr(context, 'Select'),
+                                  style: typography.labelLarge.copyWith(
+                                    color: colors.primaryStrong,
+                                    fontWeight: FontWeight.w600,
                                   ),
+                                ),
+                                DsSpacing.gapXxs,
+                                Icon(
+                                  Icons.chevron_left,
+                                  color: colors.primaryStrong,
+                                ),
                               ],
                             ),
-                          ),
-                          Text(
-                            driverTr(context, 'Select'),
-                            style: typography.labelLarge.copyWith(
-                              color: colors.primaryStrong,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          DsSpacing.gapXxs,
-                          Icon(
-                            Icons.chevron_left,
-                            color: colors.primaryStrong,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
           ),
         ],
       ),

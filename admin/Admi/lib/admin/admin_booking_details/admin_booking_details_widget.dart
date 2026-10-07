@@ -12,6 +12,7 @@ import '/core/admin_currency.dart';
 import '/core/finance/financial_engine.dart';
 import '/core/payments/admin_payment_api_client.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
+import '/components/admin_wasl_panel.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -326,6 +327,7 @@ class _AdminBookingDetailsWidgetState extends State<AdminBookingDetailsWidget> {
                       AdminBookingDetailsTripCard(view: view),
                       const SizedBox(height: 12),
                       AdminBookingJourneySection(order: order),
+                      AdminWaslTripSection(order: order),
                     ];
 
                     final bottom = <Widget>[

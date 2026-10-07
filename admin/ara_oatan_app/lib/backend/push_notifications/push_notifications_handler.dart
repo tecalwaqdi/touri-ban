@@ -24,6 +24,9 @@ String? _resolveCustomerPushPageName(String? raw) {
     case 'Chat':
       // Driver chat → customer chat2 with remapped params below.
       return 'chat2';
+    case 'Login1':
+      // Legacy driver→customer chat deep link; open chat when order present.
+      return 'chat2';
     default:
       return raw;
   }

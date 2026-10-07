@@ -78,14 +78,19 @@ describe('F07 country isolation', () => {
     );
   });
 
-  it('type_car is GLOBAL catalog — Super Admin write only', () => {
+  it('type_car is country-scoped — Agent/CountryAdmin own country; Super Admin global', () => {
     const rules = fs.readFileSync(rulesPath, 'utf8');
-    const start = rules.indexOf('// Public GLOBAL vehicle catalog');
-    assert.ok(start >= 0, 'GLOBAL policy comment missing');
-    const block = rules.slice(start, start + 450);
-    assert.ok(block.includes('GLOBAL CAR CATALOG'));
-    assert.ok(block.includes('allow create, update, delete: if isSuperAdmin()'));
-    assert.ok(!block.includes('isCountryAdmin()'));
+    const start = rules.indexOf('// Country-scoped vehicle catalog');
+    assert.ok(start >= 0, 'country-scoped type_car policy comment missing');
+    const block = rules.slice(start, start + 2500);
+    assert.ok(block.includes('typeCarScopedWriteCreate'));
+    assert.ok(block.includes('typeCarScopedWriteUpdate'));
+    assert.ok(block.includes('typeCarCountryUnchanged'));
+    assert.ok(block.includes('countriesMatchAdminScope(request.resource.data.dolh)'));
+    assert.ok(block.includes('typeCarScopedWriteCreate()'));
+    assert.ok(block.includes('typeCarScopedWriteUpdate()'));
+    assert.ok(block.includes('typeCarScopedWriteDelete()'));
+    assert.ok(/allow create:\s*if isSuperAdmin\(\)\s*\|\|\s*typeCarScopedWriteCreate\(\)/.test(block));
   });
 
   it('India country_admin DENY Spain driver financial summary', () => {

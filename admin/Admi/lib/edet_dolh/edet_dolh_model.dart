@@ -19,15 +19,28 @@ class EdetDolhModel extends FlutterFlowModel<EdetDolhWidget> {
     }
     textController1 ??= TextEditingController(text: record.naim);
     textController2 ??= TextEditingController(text: record.osf);
-    textController3 ??=
-        TextEditingController(text: record.vatPercent.toString());
+    textController3 ??= TextEditingController(
+      text: record.hasVatPercent() ? record.vatPercent.toString() : '',
+    );
     textController4 ??=
         TextEditingController(text: record.appCommissionPercent.toString());
     textControllerCurrencyCode ??=
         TextEditingController(text: record.currencyCode);
     textControllerCurrencySymbol ??=
         TextEditingController(text: record.currencySymbol);
+    final fx = record.snapshotData['local_units_per_sar'];
+    textControllerFx ??= TextEditingController(
+      text: fx == null ? '' : fx.toString(),
+    );
     switchValue ??= record.acctev;
+    for (final lang in geoLocales) {
+      geoNameControllers[lang] ??= TextEditingController(
+        text: record.namesI18n[lang] ?? '',
+      );
+    }
+    cashEnabled ??= record.snapshotData['cash_enabled'] != false;
+    onlinePaymentEnabled ??=
+        record.snapshotData['online_payment_enabled'] != false;
     uploadedFileUrl_uploadDataX8m = record.img;
     recordInitialized = true;
   }
@@ -52,6 +65,12 @@ class EdetDolhModel extends FlutterFlowModel<EdetDolhWidget> {
   TextEditingController? textControllerCurrencySymbol;
   // State field(s) for Switch widget.
   bool? switchValue;
+  bool? cashEnabled;
+  bool? onlinePaymentEnabled;
+  FocusNode? textFieldFocusNodeFx;
+  TextEditingController? textControllerFx;
+  static const geoLocales = ['ar', 'en', 'ru', 'ky', 'fr', 'ur', 'pt'];
+  final geoNameControllers = <String, TextEditingController>{};
 
   @override
   void initState(BuildContext context) {}
@@ -75,5 +94,10 @@ class EdetDolhModel extends FlutterFlowModel<EdetDolhWidget> {
 
     textFieldFocusNodeCurrencySymbol?.dispose();
     textControllerCurrencySymbol?.dispose();
+    textFieldFocusNodeFx?.dispose();
+    textControllerFx?.dispose();
+    for (final controller in geoNameControllers.values) {
+      controller.dispose();
+    }
   }
 }

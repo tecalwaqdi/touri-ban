@@ -56,10 +56,10 @@ export async function POST(req: Request) {
     const next = transitionStatus(current, mapped);
 
     const amount = extractGatewayAmount(orderData);
-    if (
-      amount.value != null &&
-      Number(session.amount_minor ?? session.amount_halalas) !== Number(amount.value)
-    ) {
+    const expectedMinor = session.gateway_minor_sar != null
+      ? Number(session.gateway_minor_sar)
+      : Number(session.amount_minor ?? session.amount_halalas);
+    if (amount.value != null && expectedMinor !== Number(amount.value)) {
       throw new ApiError(PaymentErrorCode.PAYMENT_AMOUNT_MISMATCH, 409);
     }
 

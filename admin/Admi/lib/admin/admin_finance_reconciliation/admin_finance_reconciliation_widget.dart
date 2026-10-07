@@ -310,7 +310,10 @@ class _WorkspaceBody extends StatelessWidget {
         if (summaryReady && s.moneyOmittedIncompleteCount > 0) ...[
           const SizedBox(height: 8),
           Text(
-            uiTr(context, 'تم استبعاد ${s.moneyOmittedIncompleteCount} رحلة من مجاميع الأموال لعدم اكتمال البيانات.'),
+            uiTr(
+              context,
+              'تم استبعاد {count} رحلة من مجاميع الأموال لعدم اكتمال البيانات.',
+            ).replaceAll('{count}', '${s.moneyOmittedIncompleteCount}'),
             style: AccountantFinanceText.label(theme),
           ),
         ],
@@ -397,8 +400,9 @@ class _WorkspaceBody extends StatelessWidget {
                                   FinanceReconciliationLabels.isExceptionWorthy,
                                 )
                                 .map(
-                                  (i) => FinanceReconciliationLabels.issueAr(
-                                    i.code,
+                                  (i) => uiTr(
+                                    context,
+                                    FinanceReconciliationLabels.issueAr(i.code),
                                   ),
                                 )
                                 .join(' · '),
@@ -415,8 +419,9 @@ class _WorkspaceBody extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           summaryReady
-              ? 'مستبعد من العرض العادي: ${result.summary.qaFixturesExcluded} سجل اختبار/ذهبي'
-              : 'مستبعد من العرض العادي: —',
+              ? uiTr(context, 'مستبعد من العرض العادي: {count} سجل اختبار/ذهبي')
+                  .replaceAll('{count}', '${result.summary.qaFixturesExcluded}')
+              : uiTr(context, 'مستبعد من العرض العادي: —'),
           style: AccountantFinanceText.label(theme),
         ),
       ],
@@ -501,7 +506,7 @@ class _MetricChip extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: AccountantFinanceText.label(theme)),
+          Text(uiTr(context, label), style: AccountantFinanceText.label(theme)),
           const SizedBox(height: 4),
           Text(value, style: AccountantFinanceText.money(theme)),
         ],
@@ -526,7 +531,7 @@ class _MoneyCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: AccountantFinanceText.label(theme)),
+          Text(uiTr(context, label), style: AccountantFinanceText.label(theme)),
           const SizedBox(height: 6),
           Text(value, style: AccountantFinanceText.money(theme)),
         ],

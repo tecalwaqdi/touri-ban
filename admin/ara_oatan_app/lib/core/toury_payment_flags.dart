@@ -4,22 +4,31 @@ import 'package:flutter/foundation.dart';
 ///
 /// Customer App → Render (`touri-ban.onrender.com`) → N-Genius.
 ///
-/// Production / store defaults (override only for explicit rollback):
+/// ## Production / store default (proven HPP in-app WebView)
 /// ```
-/// flutter run \
+/// flutter build … \
 ///   --dart-define=ENABLE_ONLINE_PAYMENT=true \
 ///   --dart-define=PAYMENT_BACKEND=external_api \
 ///   --dart-define=PAYMENT_API_BASE_URL=https://touri-ban.onrender.com \
-///   --dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=true \
+///   --dart-define=MOBILE_PAYMENT_MODE=hpp \
+///   --dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=false \
 ///   --dart-define=TOURY_CLIENT_CASH_FALLBACK=true
 /// ```
+/// HPP stays the production checkout path; open it in the in-app WebView so
+/// users do not leave for Safari. Native SDK remains QA-only until promoted.
 ///
-/// Firebase `paymentApi` / CF callables remain in-repo as **Future / Legacy /
-/// Rollback only**. They are never selected unless
-/// `PAYMENT_BACKEND=firebase_functions` is set explicitly.
+/// ## QA-only native SDK (TestFlight / local device — never store production)
+/// Use `admin/scripts/build_customer_*_qa_native_sdk.sh`:
+/// ```
+///   --dart-define=MOBILE_PAYMENT_MODE=sdk \
+///   --dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=false
+/// ```
+/// Promote SDK to production defaults only after SAFE_TO_PROMOTE_SDK=YES.
 ///
-/// N-Genius **production** is controlled by the backend `NGENIUS_ENV`
-/// (Render), not by Flutter. Do not change PURCHASE / HPP / webhook logic here.
+/// Native NISdk / Android PaymentClient remain in the app binary; production
+/// builds simply force HPP via [forceHostedPaymentPage] until promoted.
+///
+/// Firebase `paymentApi` / CF callables remain **opt-in rollback only**.
 abstract final class TouryPaymentFlags {
   /// Compile-time: `--dart-define=TOURY_CLIENT_CASH_FALLBACK=true`
   /// Default **true** — constrained client cash create when CF IAM is down.
@@ -54,20 +63,20 @@ abstract final class TouryPaymentFlags {
   );
 
   /// When true, open Hosted Payment Page in Safari / system browser.
-  /// Only used for **HPP fallback** after native is unavailable — never as
-  /// the iOS primary path. Rollback: `--dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=true`
+  /// Production / store default **false** — keep HPP inside the in-app WebView.
+  /// Set true only for deliberate external-browser experiments.
   static const bool openPaymentInExternalBrowser = bool.fromEnvironment(
     'OPEN_PAYMENT_IN_EXTERNAL_BROWSER',
-    defaultValue: true,
+    defaultValue: false,
   );
 
-  /// Mobile checkout experience: `sdk` (N-Genius native primary) | `hpp` (legacy).
+  /// Mobile checkout experience: `sdk` | `hpp`.
   ///
-  /// iOS release default is **sdk**. Safe rollback:
-  /// `--dart-define=MOBILE_PAYMENT_MODE=hpp`
+  /// Production / store default is **hpp** until native QA gate passes.
+  /// QA builds: `--dart-define=MOBILE_PAYMENT_MODE=sdk`
   static const String mobilePaymentMode = String.fromEnvironment(
     'MOBILE_PAYMENT_MODE',
-    defaultValue: 'sdk',
+    defaultValue: 'hpp',
   );
 
   /// Prefer in-app N-Genius Mobile SDK when available (iOS/Android).
@@ -77,7 +86,7 @@ abstract final class TouryPaymentFlags {
       !kIsWeb &&
       mobilePaymentMode.toLowerCase() != 'hpp';
 
-  /// Force Hosted Payment Page (safe rollback without native SDK).
+  /// Force Hosted Payment Page (production default until SDK promotion).
   static bool get forceHostedPaymentPage =>
       !preferMobileSdk || mobilePaymentMode.toLowerCase() == 'hpp';
 

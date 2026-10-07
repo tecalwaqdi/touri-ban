@@ -4,6 +4,7 @@ import '/backend/admin_performance.dart';
 import '/backend/admin_country_location_resolver.dart';
 import '/backend/admin_gps_location_service.dart';
 import '/backend/admin_user_creation.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_edit_shell.dart';
@@ -430,7 +431,10 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
     } catch (e) {
       if (!mounted) return;
       final msg = e is FirebaseFunctionsException
-          ? AdminUserCreation.authErrorMessage(e)
+          ? AdminUserFacingErrors.localizeMessage(
+              context,
+              AdminUserCreation.authErrorMessage(e),
+            )
           : AdminCrudFeedback.saveFailed(context, e);
       AdminCrudFeedback.error(context, msg);
     } finally {

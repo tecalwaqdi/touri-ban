@@ -404,7 +404,7 @@ class _CityPickerTile extends StatelessWidget {
           const SizedBox(width: DsSpacing.xs),
           Expanded(
             child: Text(
-              valueOrDefault<String>(selected, 'حدد المدينة'),
+              valueOrDefault<String>(selected, 'geo.select_city'.tr()),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: typography.titleSmall.copyWith(

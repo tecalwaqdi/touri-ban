@@ -82,7 +82,10 @@ class _StopTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
-    final label = AdminBookingJourneyView.stateLabelArabic(stop.state);
+    final label = uiTr(
+      context,
+      AdminBookingJourneyView.stateLabelArabic(stop.state),
+    );
     final color = _stateColor(stop.state, theme);
 
     return Padding(

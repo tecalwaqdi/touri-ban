@@ -445,7 +445,7 @@ class _NavBarPageState extends State<NavBarPage> {
                         icon: Icons.add_location_alt_rounded,
                         selected: true,
                       ),
-                      label: 'Initiate'.tr(),
+                      label: 'nav.home'.tr(),
                       tooltip: '',
                     ),
                     BottomNavigationBarItem(
@@ -457,7 +457,7 @@ class _NavBarPageState extends State<NavBarPage> {
                         icon: Icons.event_note_rounded,
                         selected: true,
                       ),
-                      label: 'Reservations'.tr(),
+                      label: 'nav.reservations'.tr(),
                       tooltip: '',
                     ),
                     BottomNavigationBarItem(
@@ -469,7 +469,7 @@ class _NavBarPageState extends State<NavBarPage> {
                         icon: Icons.person_rounded,
                         selected: true,
                       ),
-                      label: 'My account'.tr(),
+                      label: 'nav.account'.tr(),
                       tooltip: '',
                     ),
                   ],

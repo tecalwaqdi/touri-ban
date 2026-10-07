@@ -10,8 +10,8 @@ const kSaudiRiyalSymbolAsset = 'assets/currency/saudi_riyal_symbol.svg';
 
 /// Formats and renders money amounts for the driver app.
 ///
-/// For SAR: official vector symbol + amount (never prints `SAR`).
-/// For other currencies: text symbol from [TouryCountryRegistry].
+/// Currency *code* follows the driver's country. SAR *presentation* follows
+/// UI locale: official glyph in ar/ur, Latin "SAR" elsewhere (no script mix).
 class TouryMoneyAmount extends StatelessWidget {
   const TouryMoneyAmount({
     super.key,
@@ -36,11 +36,23 @@ class TouryMoneyAmount extends StatelessWidget {
   final bool compact;
   final int maxLines;
 
+  static const officialRiyalSign = '\u20C1';
+
+  static bool prefersOfficialRiyalGlyph(Locale locale) {
+    final lang = locale.languageCode.toLowerCase();
+    return lang == 'ar' || lang == 'ur';
+  }
+
   static String resolveCurrencyCode(String? raw) {
-    final code = (raw ?? '').trim().toUpperCase();
-    if (code == 'SAR' || code == 'ر.س' || code == 'RS' || code == 'SR') {
+    final trimmed = (raw ?? '').trim();
+    if (trimmed == officialRiyalSign ||
+        trimmed == 'ر.س' ||
+        trimmed.toUpperCase() == 'SAR' ||
+        trimmed.toUpperCase() == 'RS' ||
+        trimmed.toUpperCase() == 'SR') {
       return 'SAR';
     }
+    final code = trimmed.toUpperCase();
     if (code.length == 3 && RegExp(r'^[A-Z]{3}$').hasMatch(code)) {
       return code;
     }
@@ -54,10 +66,11 @@ class TouryMoneyAmount extends StatelessWidget {
     double amount, {
     int fractionDigits = 2,
     bool showPlusForPositive = false,
+    String? locale,
   }) {
     final abs = amount.abs();
     final fmt = NumberFormat.currency(
-      locale: 'en_US',
+      locale: (locale ?? 'en_US'),
       symbol: '',
       decimalDigits: fractionDigits,
     );
@@ -69,6 +82,7 @@ class TouryMoneyAmount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
     final code = resolveCurrencyCode(currencyCode);
     final effectiveStyle = (style ?? DefaultTextStyle.of(context).style)
         .copyWith(color: color ?? style?.color);
@@ -78,11 +92,12 @@ class TouryMoneyAmount extends StatelessWidget {
       amount,
       fractionDigits: fractionDigits,
       showPlusForPositive: showPlusForPositive,
+      locale: locale.toString(),
     );
     final numberColor = color ?? effectiveStyle.color ??
         Theme.of(context).colorScheme.onSurface;
 
-    if (code == 'SAR') {
+    if (code == 'SAR' && prefersOfficialRiyalGlyph(locale)) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -108,8 +123,19 @@ class TouryMoneyAmount extends StatelessWidget {
       );
     }
 
+    if (code == 'SAR') {
+      return Text(
+        'SAR $number',
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
+        softWrap: maxLines > 1,
+        style: effectiveStyle.copyWith(color: numberColor),
+      );
+    }
+
     final symbol = TouryCountryRegistry.currencySymbol(
       DriverCountryService.currentIso2(),
+      locale: locale,
     );
     // Prefer ISO-based symbol map when code is known and not SAR.
     final mapped = switch (code) {

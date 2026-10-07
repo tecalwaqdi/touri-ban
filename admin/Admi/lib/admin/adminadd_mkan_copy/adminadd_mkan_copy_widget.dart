@@ -1,3 +1,4 @@
+import '/core/i18n/admin_geo_names.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_geo_aliases.dart';
@@ -11,6 +12,7 @@ import '/components/admin_crud_feedback.dart';
 import '/backend/backend.dart';
 import '/components/admin_edit_shell.dart';
 import '/components/admin_image_picker.dart';
+import '/components/admin_landmark_category_picker.dart';
 import '/components/admin_location_section.dart';
 import '/components/admin_location_service.dart';
 import '/components/admin_region_picker.dart';
@@ -72,6 +74,14 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(uiTr(context, 'يرجى إدخال اسم المعلم'))),
+      );
+      return;
+    }
+    if (_model.selectedTsnef.trim().isEmpty && record.tsnef.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(uiTr(context, 'يرجى اختيار نوع المعلم / التصنيف')),
+        ),
       );
       return;
     }
@@ -170,9 +180,11 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
       final nextRegionRef = AdminGeoAliases.canonicalRegionRef(
         FFAppState().Revreg ?? record.idCit,
       );
-      final nextTsnef = record.tsnef.trim().isNotEmpty
-          ? record.tsnef.trim()
-          : AdminGeoAliases.defaultLandmarkCategory;
+      final nextTsnef = _model.selectedTsnef.trim().isNotEmpty
+          ? _model.selectedTsnef.trim()
+          : (record.tsnef.trim().isNotEmpty
+              ? record.tsnef.trim()
+              : AdminGeoAliases.defaultLandmarkCategory);
 
       // Keep the exact pin from search / paste / map — never clamp to city bbox.
       await AdminFirestoreDelete.updateDocument(
@@ -180,10 +192,19 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
         createMkanRecordData(
           naim: name,
           osf: _model.textController2?.text.trim(),
-          namesI18n: {
-            ...record.namesI18n,
-            'ar': name,
-          },
+          namesI18n: () {
+            final names = adminGeoNamesForSave(
+              existing: record.namesI18n,
+              editedByLocale: {
+                for (final lang in adminGeoLocales)
+                  lang: _model.geoNameControllers[lang]?.text ?? '',
+              },
+            );
+            if ((names['ar'] ?? '').isEmpty && name.isNotEmpty) {
+              names['ar'] = name;
+            }
+            return names.isEmpty ? null : names;
+          }(),
           osfI18n: {
             ...record.osfI18n,
             if ((_model.textController2?.text.trim() ?? '').isNotEmpty)
@@ -737,6 +758,15 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                                 .headlineSmallIsCustom,
                                       ),
                                 ),
+                                for (final lang in AdminaddMkanCopyModel.geoLocales)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: AdminTextField(
+                                      controller: _model.geoNameControllers[lang]!,
+                                      label: 'names_i18n.$lang',
+                                      icon: Icons.translate_rounded,
+                                    ),
+                                  ),
                                 TextFormField(
                                   controller: _model.textController1!,
                                   focusNode: _model.textFieldFocusNode1,
@@ -891,6 +921,11 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                                   minLines: 3,
                                   validator: _model.textController2Validator
                                       .asValidator(context),
+                                ),
+                                AdminLandmarkCategoryPicker(
+                                  value: _model.selectedTsnef,
+                                  onChanged: (v) =>
+                                      safeSetState(() => _model.selectedTsnef = v),
                                 ),
                               ].divide(SizedBox(height: 16.0)),
                             ),

@@ -1964,11 +1964,11 @@
   "@ux_min_hours": {
     "description": "UI string (source key: ux_min_hours)"
   },
-  "ux_car_list_empty_title": "لا توجد سيارات",
+  "ux_car_list_empty_title": "لا توجد أنواع مركبات متاحة",
   "@ux_car_list_empty_title": {
     "description": "UI string (source key: ux_car_list_empty_title)"
   },
-  "ux_car_list_empty_msg": "لا توجد سيارات متاحة حالياً، حاول لاحقاً",
+  "ux_car_list_empty_msg": "لا توجد أنواع مركبات متاحة لهذه الدولة حالياً",
   "@ux_car_list_empty_msg": {
     "description": "UI string (source key: ux_car_list_empty_msg)"
   },
@@ -3405,5 +3405,13 @@
         "example": "3"
       }
     }
+  },
+  "ux_vehicle_select_country_title": "حدد الدولة",
+  "@ux_vehicle_select_country_title": {
+    "description": "UI string (source key: ux_vehicle_select_country_title)"
+  },
+  "ux_vehicle_select_country_msg": "حدد الدولة أولاً لعرض أنواع المركبات",
+  "@ux_vehicle_select_country_msg": {
+    "description": "UI string (source key: ux_vehicle_select_country_msg)"
   }
 }

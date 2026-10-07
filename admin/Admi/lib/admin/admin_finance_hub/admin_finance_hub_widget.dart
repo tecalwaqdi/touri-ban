@@ -4,7 +4,6 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/admin_finance_route_trace.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
-import '/components/accountant_finance_summary.dart';
 import '/components/accountant_money_movement_table.dart';
 import '/components/accountant_trip_details_drawer.dart';
 import '/components/admin_enterprise_kit.dart';
@@ -16,15 +15,17 @@ import '/core/finance/accountant_finance_labels.dart';
 import '/core/finance/accountant_finance_loader.dart';
 import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
-import '/core/finance/finance_company_service.dart';
 import '/core/finance/finance_company_snapshot.dart';
+import '/core/finance/finance_control_facade.dart';
 import '/core/finance/financial_amount_resolution.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
 import '/l10n/ui_catalog.dart';
 
-/// Canonical accountant Finance entry — trip table stays F1; KPI strip uses V2.
+/// Canonical accountant Finance entry — bounded trip page + CF KPIs only.
+///
+/// Does **not** run full-history completed scans on the Hub critical path.
 class AdminFinanceHubWidget extends StatefulWidget {
   const AdminFinanceHubWidget({super.key});
 
@@ -39,8 +40,6 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late Menu2Model _menu2Model;
   AdminDatePreset _preset = AdminDatePreset.thisMonth;
-  Future<AccountantFinanceViewBundle>? _future;
-  AccountantFinanceViewBundle? _lastOk;
   Future<FinanceCompanySnapshot>? _canonicalKpiFuture;
   FinanceCompanySnapshot? _canonicalKpi;
   /// PERF-P4A: first modern page independent of period summary.
@@ -56,6 +55,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   String? _collectionStatus;
   String? _settlementStatus;
   FinancialDataQuality? _quality;
+  String _channel = 'all';
   String _search = '';
 
   static const _presetLabels = <AdminDatePreset, String>{
@@ -92,23 +92,19 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
       AdminFinanceRouteTrace.begin('finance_hub');
     }
     setState(() {
-      // Cache-first: keep prior rows until replacement arrives (no blank flash).
       if (forceRefresh) {
         _earlyRows = null;
-        _lastOk = null;
         _canonicalKpi = null;
       }
       _rowsLoading = true;
       _summaryLoading = true;
       _rowsError = null;
       _summaryError = null;
-      _future = null;
       _canonicalKpiFuture = null;
     });
 
-    // CRITICAL PATH then BACKGROUND — do not start settlement maps / full scan
-    // until modern first page has resolved (reduces contention before first rows).
-    AccountantFinanceLoader.loadFirstPage(
+    // CRITICAL PATH: bounded first page only — no full-history scan on Hub.
+    FinanceControlFacade.loadTripLedgerPage(
       datePreset: _preset,
       forceRefresh: forceRefresh,
     ).then((rows) {
@@ -118,41 +114,29 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
         _rowsLoading = false;
         AdminFinanceRouteTrace.markStateEmitAndSchedulePaint();
         AdminFinanceRouteTrace.mark('SUMMARY_START');
-        // Phase 2: KPI strip from aggregateFinancialAccountingV2 + settlements.
-        _canonicalKpiFuture = FinanceCompanyService.load(
+        _canonicalKpiFuture = FinanceControlFacade.loadCompanyKpis(
           datePreset: _preset,
           periodLabel: label,
         ).then((snap) {
           _canonicalKpi = snap;
-          if (mounted) setState(() {});
-          return snap;
-        });
-        _future = AccountantFinanceLoader.load(
-          datePreset: _preset,
-          periodLabel: label,
-          forceRefresh: forceRefresh,
-        ).then((b) {
-          _lastOk = b;
-          if (mounted) {
-            setState(() => _earlyRows = b.trips);
-          } else {
-            _earlyRows = b.trips;
-          }
           AdminFinanceRouteTrace.mark('SUMMARY_COMPLETE');
-          return b;
-        }).catchError((Object e) {
-          if (mounted) {
-            setState(() => _summaryError = e);
-          } else {
-            _summaryError = e;
-          }
-          throw e;
-        }).whenComplete(() {
           if (mounted) {
             setState(() => _summaryLoading = false);
           } else {
             _summaryLoading = false;
           }
+          return snap;
+        }).catchError((Object e) {
+          if (mounted) {
+            setState(() {
+              _summaryError = e;
+              _summaryLoading = false;
+            });
+          } else {
+            _summaryError = e;
+            _summaryLoading = false;
+          }
+          throw e;
         });
       });
     }).catchError((Object e) {
@@ -180,24 +164,29 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
       menu2Model: _menu2Model,
       updateCallback: () => safeSetState(() {}),
       title: uiTr(context, 'المالية'),
-      child: FutureBuilder<AccountantFinanceViewBundle>(
-        future: _future,
-        builder: (context, snapshot) {
-          final bundle = snapshot.data ??
-              (_summaryError == null ? _lastOk : null);
-          final rowsReady = _earlyRows != null || bundle != null;
-          final hasRows = (bundle?.trips.isNotEmpty ?? false) ||
-              (_earlyRows?.isNotEmpty ?? false);
+      child: Builder(
+        builder: (context) {
+          final rowsReady = _earlyRows != null;
+          final hasRows = _earlyRows?.isNotEmpty ?? false;
           final loading = _rowsLoading && !rowsReady && _rowsError == null;
           final errored = _rowsError != null && !rowsReady;
-          final tableRows = AccountantTripFilters.apply(
-            bundle?.trips ?? _earlyRows ?? const [],
+          var tableRows = AccountantTripFilters.apply(
+            _earlyRows ?? const [],
             paymentMethod: _paymentMethod,
             collectionStatus: _collectionStatus,
             settlementStatus: _settlementStatus,
             quality: _quality,
             search: _search,
           );
+          if (_channel == 'cash') {
+            tableRows = tableRows
+                .where((r) => r.paymentChannelLabel == 'نقدي')
+                .toList();
+          } else if (_channel == 'online') {
+            tableRows = tableRows
+                .where((r) => r.paymentChannelLabel == 'إلكتروني')
+                .toList();
+          }
 
           return SingleChildScrollView(
             padding: AdminUi.pagePadding(context),
@@ -224,7 +213,6 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                   onChanged: (preset) {
                     _preset = preset;
                     _earlyRows = null;
-                    _lastOk = null;
                     _reload();
                   },
                   onRefresh: () => _reload(forceRefresh: true),
@@ -331,7 +319,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                         ),
                       ),
                     ),
-                  if (_summaryError != null && bundle == null)
+                  if (_summaryError != null && _canonicalKpi == null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: AdminErrorState(
@@ -343,37 +331,53 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                         onRetry: _reload,
                       ),
                     )
-                  else if (bundle != null) ...[
-                    AccountantFinanceAlertsBanner(alerts: bundle.alerts),
-                    if (bundle.alerts.isNotEmpty) const SizedBox(height: 10),
+                  else
                     FutureBuilder<FinanceCompanySnapshot>(
                       future: _canonicalKpiFuture,
                       builder: (context, kpiSnap) {
-                        final canonical =
-                            kpiSnap.data ?? _canonicalKpi;
+                        final canonical = kpiSnap.data ?? _canonicalKpi;
+                        if (canonical == null) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: AdminLoadingState(
+                              label: uiTr(context, 'جاري حساب الملخص المحاسبي'),
+                            ),
+                          );
+                        }
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            AccountantFinanceSummaryStrip(
-                              bundle: bundle,
-                              canonical: canonical,
-                            ),
-                            if (canonical != null) ...[
-                              const SizedBox(height: 12),
-                              FinanceHomeOverviewCards(snapshot: canonical),
-                            ],
+                            FinanceHomeOverviewCards(snapshot: canonical),
+                            const SizedBox(height: 12),
                           ],
                         );
                       },
                     ),
-                    const SizedBox(height: 12),
-                  ] else
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: AdminLoadingState(
-                        label: uiTr(context, 'جاري حساب الملخص المحاسبي'),
-                      ),
+                  // Channel filter on bounded page (Cash / Online / All).
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Wrap(
+                      spacing: 8,
+                      children: [
+                        ChoiceChip(
+                          label: Text(uiTr(context, 'الكل')),
+                          selected: _channel == 'all',
+                          onSelected: (_) => setState(() => _channel = 'all'),
+                        ),
+                        ChoiceChip(
+                          label: Text(uiTr(context, 'نقدي')),
+                          selected: _channel == 'cash',
+                          onSelected: (_) => setState(() => _channel = 'cash'),
+                        ),
+                        ChoiceChip(
+                          label: Text(uiTr(context, 'إلكتروني')),
+                          selected: _channel == 'online',
+                          onSelected: (_) =>
+                              setState(() => _channel = 'online'),
+                        ),
+                      ],
                     ),
+                  ),
                   AccountantMoneyMovementTable(
                     rows: tableRows,
                     onOpenDetails: (row) =>

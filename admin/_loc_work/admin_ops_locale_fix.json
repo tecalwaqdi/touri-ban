@@ -1,0 +1,313 @@
+{
+  "ui_0b290281a8": {
+    "ru": "Несовпадение финансовых данных поездки",
+    "ky": "Сапардын каржы маалыматы дал келбейт",
+    "fr": "Les données financières du trajet ne correspondent pas",
+    "ur": "سفر کے مالی ڈیٹا میں فرق ہے",
+    "pt": "Há divergência nos dados financeiros da viagem"
+  },
+  "ui_25fa151c0f": {
+    "ky": "Компакт жол тандабас"
+  },
+  "ui_3458a008b1": {
+    "ky": "Каржы борбору"
+  },
+  "ui_3f3f811253": {
+    "ur": "غلط ٹیکس"
+  },
+  "ui_5ff1401e4c": {
+    "pt": "Período em bruto"
+  },
+  "ui_62d37deb4c": {
+    "ky": "Өкүлдөн компанияга карыз"
+  },
+  "ui_7d7ff835bb": {
+    "ky": "Люкс жол тандабас"
+  },
+  "ui_7dd32ebbed": {
+    "ru": "К загруженной странице применены расширенные фильтры",
+    "ky": "Жүктөлгөн бетке кеңейтилген чыпкалар колдонулду",
+    "fr": "Filtres avancés appliqués à la page chargée"
+  },
+  "ui_81bceec2d5": {
+    "ky": "Сервер катасы. Кийинчерээк кайра аракет кылыңыз.",
+    "ur": "سرور کی خرابی۔ براہ کرم بعد میں کوشش کریں۔"
+  },
+  "ui_8d1c8e095b": {
+    "ur": "مکمل اور مکمل شدہ",
+    "pt": "Concluir e concluído"
+  },
+  "ui_956f450be9": {
+    "ru": "Ошибка сервера. Повторите попытку позже.",
+    "ky": "Сервер катасы. Кийинчерээк кайра аракет кылыңыз.",
+    "ur": "سرور کی خرابی۔ براہ کرم بعد میں کوشش کریں۔"
+  },
+  "ui_c7c194593f": {
+    "ru": "Плательщик",
+    "pt": "Parte pagadora"
+  },
+  "ui_cb9f0e742a": {
+    "ru": "Компания должна представителю"
+  },
+  "ui_eb1aa3a7cd": {
+    "fr": "Dû à la société par l’agent"
+  },
+  "ui_p5_010aa2ce3d": {
+    "ru": "Принять водителя",
+    "ky": "Айдоочуну кабыл алуу",
+    "fr": "Accepter le chauffeur",
+    "pt": "Aceitar motorista"
+  },
+  "ui_p5_010c08c58e": {
+    "ru": "Эта финансовая запись сейчас отключена (флаги продакшена выключены). Интерфейс готов, включение будет позже.",
+    "ky": "Бул каржы жазуусу азыр өчүк (өндүрүш желектери өчүк). Интерфейс даяр, күйгүзүү кийин.",
+    "fr": "Cette écriture financière est désactivée (indicateurs de production coupés). L’interface est prête, l’activation viendra plus tard.",
+    "pt": "Este lançamento financeiro está desativado (sinais de produção desligados). A interface está pronta; a ativação vem depois."
+  },
+  "ui_p5_029b476773": {
+    "ru": "Ожидает принятия водителем",
+    "ky": "Айдоочунун кабыл алуусун күтүүдө",
+    "fr": "En attente d’acceptation du chauffeur",
+    "pt": "Aguardando aceitação do motorista"
+  },
+  "ui_p5_066017a118": {
+    "ru": "Сейчас не включено",
+    "ky": "Азыр күйгүзүлгөн эмес",
+    "fr": "Pas activé pour le moment",
+    "pt": "Não ativado no momento"
+  },
+  "ui_p5_10c5c140aa": {
+    "ru": "Нет видимых ожидающих вопросов",
+    "ky": "Көрүнүүчү күтүлгөн маселелер жок",
+    "fr": "Aucun problème en attente visible",
+    "pt": "Nenhuma pendência visível"
+  },
+  "ui_p5_12065fe870": {
+    "ru": "Изменить бухгалтера",
+    "ky": "Бухгалтерди өзгөртүү",
+    "fr": "Modifier le comptable",
+    "pt": "Editar contador"
+  },
+  "ui_p5_134ad3473d": {
+    "ru": "Бухгалтер обновлён",
+    "ky": "Бухгалтер жаңырды",
+    "fr": "Comptable mis à jour",
+    "pt": "Contador atualizado"
+  },
+  "ui_p5_3501894659": {
+    "ru": "Бухгалтер удалён",
+    "ky": "Бухгалтер өчүрүлдү",
+    "fr": "Comptable supprimé",
+    "pt": "Contador excluído"
+  },
+  "ui_p5_37f1c905cb": {
+    "ru": "Открытые взаиморасчёты",
+    "ky": "Ачык эсептешүүлөр",
+    "fr": "Règlements ouverts",
+    "pt": "Liquidações em aberto"
+  },
+  "ui_p5_3a97394251": {
+    "ru": "Создать учётную запись бухгалтера только для финансов (чтение и проверка — запись заморожена, пока флаги не включены)",
+    "ky": "Каржыга гана кирүүчү бухгалтер аккаунтун түзүү (окуу/текшерүү — желектер күйгүчө жазуу тоңдурулган)",
+    "fr": "Créer un compte comptable limité à la finance (lecture et revue — écriture gelée tant que les indicateurs ne sont pas activés)",
+    "pt": "Criar uma conta de contador só para finanças (leitura e revisão — gravação bloqueada até os sinais serem ativados)"
+  },
+  "ui_p5_3e94b4301b": {
+    "ru": "Бухгалтер успешно добавлен",
+    "ky": "Бухгалтер ийгиликтүү кошулду",
+    "fr": "Comptable ajouté",
+    "pt": "Contador adicionado"
+  },
+  "ui_p5_484dc5db9f": {
+    "ru": "Бухгалтер может входить и видеть финансовые экраны, когда это включено",
+    "ky": "Күйгүзүлгөндө бухгалтер кирип, каржы экрандарын көрө алат",
+    "fr": "Le comptable peut se connecter et voir les écrans financiers lorsque c’est activé",
+    "pt": "O contador pode entrar e ver as telas financeiras quando estiver ativado"
+  },
+  "ui_p5_48b812e71a": {
+    "ru": "Сохранить бухгалтера",
+    "ky": "Бухгалтерди сактоо",
+    "fr": "Enregistrer le comptable",
+    "pt": "Salvar contador"
+  },
+  "ui_p5_4dc348aead": {
+    "ru": "Начальный остаток",
+    "ky": "Баштапкы баланс",
+    "fr": "Solde d’ouverture",
+    "pt": "Saldo inicial"
+  },
+  "ui_p5_53c77c6512": {
+    "ru": "Открыть водителя",
+    "ky": "Айдоочуну көрүү",
+    "fr": "Voir le chauffeur",
+    "pt": "Ver motorista"
+  },
+  "ui_p5_55515505a3": {
+    "ru": "Поиск по водителю",
+    "ky": "Айдоочу боюнча издөө",
+    "fr": "Rechercher par chauffeur",
+    "pt": "Buscar por motorista"
+  },
+  "ui_p5_565cdcbe01": {
+    "ru": "Не удалось загрузить данные аккаунта",
+    "ky": "Аккаунт маалыматы жүктөлгөн жок",
+    "fr": "Impossible de charger les données du compte",
+    "pt": "Não foi possível carregar os dados da conta"
+  },
+  "ui_p5_698acbaf3c": {
+    "ru": "Удалить бухгалтера",
+    "ky": "Бухгалтерди өчүрүү",
+    "fr": "Supprimer le comptable",
+    "pt": "Excluir contador"
+  },
+  "ui_p5_74fb388f65": {
+    "ru": "Компания должна водителю",
+    "ky": "Компания айдоочуга карыз",
+    "fr": "La société doit au chauffeur",
+    "pt": "A empresa deve ao motorista"
+  },
+  "ui_p5_75ce461042": {
+    "ru": "Не удалось загрузить водителей",
+    "ky": "Айдоочулар жүктөлгөн жок",
+    "fr": "Impossible de charger les chauffeurs",
+    "pt": "Não foi possível carregar os motoristas"
+  },
+  "ui_p5_9e93124df2": {
+    "ru": "Черновик корректировки",
+    "ky": "Түзөтүү долбоору",
+    "fr": "Brouillon d’ajustement",
+    "pt": "Rascunho de ajuste"
+  },
+  "ui_p5_a03e43d7fd": {
+    "ru": "Нет водителей, ожидающих активации",
+    "ky": "Активацияны күткөн айдоочулар жок",
+    "fr": "Aucun chauffeur en attente d’activation",
+    "pt": "Nenhum motorista aguardando ativação"
+  },
+  "ui_p5_a79100520a": {
+    "ru": "Эта учётная запись не является суперадмином или бухгалтером",
+    "ky": "Бул аккаунт супер админ же бухгалтер эмес",
+    "fr": "Ce compte n’est ni super administrateur ni comptable",
+    "pt": "Esta conta não é superadministrador nem contador"
+  },
+  "ui_p5_a8631caa76": {
+    "ru": "Нужны сумма и страна",
+    "ky": "Сумма жана өлкө керек",
+    "fr": "Le montant et le pays sont requis",
+    "pt": "Valor e país são obrigatórios"
+  },
+  "ui_p5_a9d12cbdb6": {
+    "ru": "Автор не может одобрить своё действие. Нужен второй бухгалтер.",
+    "ky": "Түзгөн адам өз аракетин беките албайт. Экинчи бухгалтер керек.",
+    "fr": "L’auteur ne peut pas approuver sa propre action. Utilisez un second comptable.",
+    "pt": "O autor não pode aprovar a própria ação. Use um segundo contador."
+  },
+  "ui_p5_ae0e04d2fa": {
+    "ru": "Не удалось загрузить панель",
+    "ky": "Башкаруу тактасы жүктөлгөн жок",
+    "fr": "Impossible de charger le tableau de bord",
+    "pt": "Não foi possível carregar o painel"
+  },
+  "ui_p5_b1d80f8527": {
+    "ru": "Зависшая наличная оплата — исключительное подтверждение",
+    "ky": "Камалган накталай — өзгөчө ырастоо",
+    "fr": "Espèces bloquées — confirmation exceptionnelle",
+    "pt": "Dinheiro parado — confirmação excepcional"
+  },
+  "ui_p5_b4da6581ab": {
+    "ru": "Водители ожидают активации или проверки",
+    "ky": "Айдоочулар активацияны же текшерүүнү күтүүдө",
+    "fr": "Chauffeurs en attente d’activation ou de revue",
+    "pt": "Motoristas aguardando ativação ou revisão"
+  },
+  "ui_p5_ba50af9f00": {
+    "ru": "Создайте черновик корректировки или начальный остаток.",
+    "ky": "Түзөтүү долбоорун же баштапкы балансты түзүңүз.",
+    "fr": "Créez un brouillon d’ajustement ou un solde d’ouverture.",
+    "pt": "Crie um rascunho de ajuste ou um saldo inicial."
+  },
+  "ui_p5_bc264133d0": {
+    "ru": "Инкассация подтверждена",
+    "ky": "Чогултуу ырасталды",
+    "fr": "Encaissement confirmé",
+    "pt": "Cobrança confirmada"
+  },
+  "ui_p5_c1dc58f073": {
+    "ru": "Корректировки и начальный остаток",
+    "ky": "Түзөтүүлөр жана баштапкы баланс",
+    "fr": "Ajustements et solde d’ouverture",
+    "pt": "Ajustes e saldo inicial"
+  },
+  "ui_p5_c56c3733cd": {
+    "ru": "Срок документов водителя",
+    "ky": "Айдоочунун документтеринин мөөнөтү",
+    "fr": "Expiration des documents du chauffeur",
+    "pt": "Validade dos documentos do motorista"
+  },
+  "ui_p5_cdd74120a1": {
+    "ru": "Бухгалтер: просмотр финансов, отчётов и дебиторки; запись закрыта, пока не включены флаги продакшена.",
+    "ky": "Бухгалтер: каржы, отчеттор жана дебитордук карыз; өндүрүш желектери күйгүчө жазуу жабык.",
+    "fr": "Comptable : voir finances, rapports et créances ; l’écriture reste verrouillée tant que les indicateurs de production ne sont pas activés.",
+    "pt": "Contador: ver finanças, relatórios e recebíveis; a gravação fica bloqueada até os sinais de produção serem ativados."
+  },
+  "ui_p5_d8186d2827": {
+    "ru": "Чтобы показать наличную дебиторку, нужна страна",
+    "ky": "Накталай дебиторду көрсөтүү үчүн өлкө керек",
+    "fr": "Le périmètre pays est requis pour afficher les créances en espèces",
+    "pt": "O âmbito do país é necessário para mostrar recebíveis em dinheiro"
+  },
+  "ui_p5_dc1378ec55": {
+    "ru": "Проверка прав аккаунта…",
+    "ky": "Аккаунт укуктары текшерилүүдө…",
+    "fr": "Vérification des droits du compte…",
+    "pt": "Verificando permissões da conta…"
+  },
+  "ui_p5_e60f183f52": {
+    "ru": "Только бухгалтерские записи — без движения кошелька. Одобрение требует второго проверяющего, когда флаги включены.",
+    "ky": "Бухгалтердик жазуулар гана — капчык кыймылы жок. Желектер күйгөндө экинчи текшерүүчү керек.",
+    "fr": "Écritures comptables seulement — aucun mouvement de portefeuille. L’approbation exige un second contrôle lorsque les indicateurs sont activés.",
+    "pt": "Somente lançamentos contábeis — sem movimento de carteira. A aprovação exige um segundo conferente quando os sinais estão ativos."
+  },
+  "ui_p5_e7a39d232c": {
+    "ru": "Открытые взаиморасчёты: \\$openSettlements",
+    "ky": "Ачык эсептешүүлөр: \\$openSettlements",
+    "fr": "Règlements ouverts : \\$openSettlements",
+    "pt": "Liquidações em aberto: \\$openSettlements"
+  },
+  "ui_p5_eb44789127": {
+    "ru": "Финансовые корректировки",
+    "ky": "Каржы түзөтүүлөрү",
+    "fr": "Ajustements financiers",
+    "pt": "Ajustes financeiros"
+  },
+  "ui_p5_ee61baeda7": {
+    "ru": "Суперадмин: полное управление панелью и правами.",
+    "ky": "Супер админ: панельди жана укуктарды толук башкаруу.",
+    "fr": "Super administrateur : gestion complète du panneau et des droits.",
+    "pt": "Superadministrador: gestão completa do painel e das permissões."
+  },
+  "ui_p5_ef55685676": {
+    "ru": "Право аккаунта",
+    "ky": "Аккаунт укугу",
+    "fr": "Droit du compte",
+    "pt": "Permissão da conta"
+  },
+  "ui_p5_ef76aa70aa": {
+    "ru": "Нет зарегистрированного суперадмина или бухгалтера",
+    "ky": "Катталган супер админ же бухгалтер жок",
+    "fr": "Aucun super administrateur ou comptable enregistré",
+    "pt": "Nenhum superadministrador ou contador registrado"
+  },
+  "ui_p5_f102b6063f": {
+    "ru": "Завершённые поездки с pending_cash. Подтверждение в панели — исключение (нужен флаг инкассации V2).",
+    "ky": "pending_cash менен бүткөн сапарлар. Панелдеги ырастоо өзгөчө (V2 чогултуу желеги керек).",
+    "fr": "Trajets terminés avec pending_cash. La confirmation dans le panneau est exceptionnelle (indicateur d’encaissement V2 requis).",
+    "pt": "Viagens concluídas com pending_cash. A confirmação no painel é excepcional (exige o sinal de cobrança V2)."
+  },
+  "ui_p5_f448d4e122": {
+    "ru": "Роль определяет, какие страницы и действия доступны в панели.",
+    "ky": "Роль панелдеги барактарды жана аракеттерди аныктайт.",
+    "fr": "Votre rôle détermine les pages et actions disponibles dans le panneau.",
+    "pt": "Sua função define quais páginas e ações estão disponíveis no painel."
+  }
+}

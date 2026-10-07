@@ -251,6 +251,8 @@ service cloud.firestore {
     function isValidClientCashOrderCreate(orderId) {
       // Pass orderId explicitly — referencing match wildcard `document` from
       // nested helpers causes Null value evaluation errors.
+      // Country guard: even old cash-fallback clients cannot create cross-country
+      // bookings when CF is unavailable (rules-rev: cash-fallback-vehicle-country-2026-10-02).
       return signedIn()
         && request.resource.data.USER == currentUserRef()
         && request.resource.data.PaymentMethod == 'Cash'
@@ -260,8 +262,20 @@ service cloud.firestore {
         && request.resource.data.status_code == 'pending_driver'
         && request.resource.data.ActiveOrder == false
         && request.resource.data.created_by_client_cash_fallback == true
-        && request.resource.data.pricing_authority == 'client_fallback_pending_cf'
+        && request.resource.data.pricing_authority in [
+          'client_fallback_pending_cf',
+          'client_fallback_type_car_sr',
+        ]
         && customerActiveOrderAllowsCreate(orderId)
+        && request.resource.data.carRev != null
+        && request.resource.data.Rev_dolh != null
+        && get(/databases/$(database)/documents/$(request.resource.data.carRev.path)).exists
+        && (
+          get(/databases/$(database)/documents/$(request.resource.data.carRev.path)).data
+            .get('countryId', '') == request.resource.data.Rev_dolh.id
+          || get(/databases/$(database)/documents/$(request.resource.data.carRev.path)).data.dolh
+            == request.resource.data.Rev_dolh
+        )
         && request.resource.data.total is number
         && request.resource.data.total > 0
         && request.resource.data.total < 1000000
@@ -1123,8 +1137,10 @@ service cloud.firestore {
       // Driver Registration V2 pending claim FIRST — must not sit behind the panel
       // OR-chain (expression budget exhaustion denied ismndob claim updates).
       // rules-rev: driver-pending-claim-standalone-2026-08-28
-      allow update: if signedIn() && canSelfRegisterPendingDriverDraftWrite(document);
-      allow update: if signedIn() && canSelfRegisterAsPendingDriver(document);
+      allow update: if signedIn() && canSelfRegisterPendingDriverDraftWrite(document)
+        && driverVehicleAssignmentCountryOk();
+      allow update: if signedIn() && canSelfRegisterAsPendingDriver(document)
+        && driverVehicleAssignmentCountryOk();
       allow update: if request.auth != null && (
         (isSuperAdmin() && agentAssignmentFieldsUnchanged())
         || panelCanClearActiveOrderLock(document)
@@ -1132,7 +1148,7 @@ service cloud.firestore {
         || panelCanReviewDriver()
         || (countryAdminCanUpdateUser() && agentAssignmentFieldsUnchanged())
         || (panelCanProvisionUser() && privilegedUserFieldsUnchanged())
-      );
+      ) && driverVehicleAssignmentCountryOk();
       allow delete: if isSuperAdmin();
     }
 
@@ -1228,11 +1244,40 @@ service cloud.firestore {
         && countriesMatchAdminScope(resource.data.dolh);
     }
 
+    // NEW driver vehicle-type assignment must match driver country.
+    // Unchanged refs (including empty) pass — protects drivers with no type.
+    // Cross-country assignment fails even from old/bypassed clients.
+    // rules-rev: driver-vehicle-country-guard-2026-10-01
+    function driverVehicleAssignmentCountryOk() {
+      let d = request.resource.data;
+      let prev = resource.data;
+      let nextPrimary = d.get('mndob_type_car', null);
+      let nextType = nextPrimary != null ? nextPrimary : d.get('carRev_mndob', null);
+      let prevPrimary = prev.get('mndob_type_car', null);
+      let prevType = prevPrimary != null ? prevPrimary : prev.get('carRev_mndob', null);
+      let country = d.get('Rev_dolh', prev.get('Rev_dolh', null));
+      return nextType == prevType
+        || nextType == null
+        || (
+          country != null
+          && get(/databases/$(database)/documents/type_car/$(nextType.id)).exists
+          && (
+            get(/databases/$(database)/documents/type_car/$(nextType.id)).data.get('countryId', '')
+              == country.id
+            || get(/databases/$(database)/documents/type_car/$(nextType.id)).data.dolh
+              == country
+          )
+        );
+    }
+
     match /type_car/{document} {
       allow read: if true;
+      // ACTIVE (pre-cutover): Legacy Admi client SDK may still write type_car.
       allow create: if isSuperAdmin() || typeCarScopedWriteCreate();
       allow update: if isSuperAdmin() || typeCarScopedWriteUpdate();
       allow delete: if isSuperAdmin() || typeCarScopedWriteDelete();
+      // FINAL WRITER CUTOVER (DO NOT ACTIVATE YET):
+      //   allow create, update, delete: if false;
     }
 
     // Order create is CF-only (createCashBooking Admin SDK). Client create disabled.
@@ -1473,6 +1518,13 @@ service cloud.firestore {
       allow read: if signedIn()
         && resource.data.driverId == request.auth.uid;
       allow create, update, delete: if false;
+    }
+
+
+    // Landmark filter chips catalog (customer reads; admin writes).
+    match /landmark_categories/{document} {
+      allow read: if true;
+      allow create, update, delete: if isSuperAdmin() || isCountryAdmin();
     }
 
     match /Settings/{document} {

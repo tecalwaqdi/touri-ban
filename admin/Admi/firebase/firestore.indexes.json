@@ -319,6 +319,24 @@
       ]
     },
     {
+      "collectionGroup": "chat",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "participants",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "idorder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "PaymentMethods",
       "queryScope": "COLLECTION",
       "fields": [
@@ -429,208 +447,6 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "ismndob",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "actev_mndob",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ismndob",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "actev_mndob",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "is_tour_guide",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ismndob",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "transport_company",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "actev_mndob",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status_code",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ALLNOW",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ALLNOW",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ALLNOW",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "ALLNOW",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status_code",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status_code",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "support",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "halh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "support",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "halh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
           "fieldPath": "mndob_vill",
           "order": "ASCENDING"
         },
@@ -657,190 +473,6 @@
       ]
     },
     {
-      "collectionGroup": "financial_settlements",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "financial_settlements",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "countryId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "financial_settlements",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "driverId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "financial_settlement_payments",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "financial_settlement_payments",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "settlementId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "financial_audit_events",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "eventType",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "timestamp",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "financial_periods",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "startAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ismndob",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "registration_status",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ismndob",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "registration_status",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ismndob",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "registration_status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "created_time",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "ismndob",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "registration_status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "created_time",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ismndob",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "registration_flow_version",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "user",
       "queryScope": "COLLECTION",
       "fields": [
@@ -851,76 +483,6 @@
         {
           "fieldPath": "registration_documents_status",
           "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ismndob",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "mndob_type_car",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ismndob",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "created_time",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "user",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "created_time",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "admin_audit_log",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "driverId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "admin_panel_notifications",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "countryRef",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
         }
       ]
     },
@@ -944,124 +506,6 @@
       "fields": [
         {
           "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status_code",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status_code",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "ALLNOW",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "vill",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "Rev_dolh",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "vill",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ALLNOW",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "vill",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "data_order",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "order",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status_code",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "vill",
           "order": "ASCENDING"
         },
         {
@@ -1113,34 +557,48 @@
       ]
     },
     {
-      "collectionGroup": "order",
+      "collectionGroup": "driver_data_change_requests",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "halh",
+          "fieldPath": "status",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "data_order",
+          "fieldPath": "requestedAt",
           "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "order",
+      "collectionGroup": "type_car",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "Rev_dolh",
+          "fieldPath": "countryId",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "halh",
+          "fieldPath": "sort_order",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "type_car",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "countryId",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "data_order",
-          "order": "DESCENDING"
+          "fieldPath": "actev",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sort_order",
+          "order": "ASCENDING"
         }
       ]
     }

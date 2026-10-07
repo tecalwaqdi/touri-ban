@@ -535,7 +535,7 @@ class _AuthHeader extends StatelessWidget {
                 textStyle: typography.labelMedium.copyWith(
                   color: colors.textPrimary,
                 ),
-                hideFlags: false,
+                hideFlags: true,
                 flagSize: DsSpacing.sm,
                 flagTextGap: DsSpacing.xs,
                 currentLanguage: FFLocalizations.of(context).languageCode,

@@ -59,6 +59,12 @@ class FFLocalizations {
     }
 
     if (lang == 'en') {
+      if (RegExp(r'[\u0600-\u06FF]').hasMatch(en)) {
+        final bridged = DriverCachedAssetLoader.translate(en, locale);
+        if (bridged != null && bridged.isNotEmpty && bridged != en) {
+          return bridged;
+        }
+      }
       return en;
     }
     if (lang == 'ar') {

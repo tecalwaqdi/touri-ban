@@ -660,6 +660,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'sessionId',
               ParamType.String,
             ),
+            autoResumeStaleHpp: params.getParam(
+              'autoResumeStaleHpp',
+              ParamType.bool,
+            ),
           ),
         ),
         FFRoute(
@@ -678,6 +682,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
             sessionId: params.getParam(
               'sessionId',
               ParamType.String,
+            ),
+            autoResumeStaleHpp: params.getParam(
+              'autoResumeStaleHpp',
+              ParamType.bool,
             ),
           ),
         ),

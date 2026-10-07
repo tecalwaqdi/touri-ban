@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
 
 import '/flutter_flow/lat_lng.dart';
 
@@ -89,10 +90,13 @@ abstract final class TouryCountryRegistry {
     return currencyByIso[key] ?? 'USD';
   }
 
-  static String currencySymbol(String? iso) {
+  /// SAR presentation follows UI locale: glyph in ar/ur, Latin "SAR" elsewhere.
+  static String currencySymbol(String? iso, {Locale? locale}) {
     switch (currencyForIso(iso)) {
       case 'SAR':
-        return 'ر.س';
+        final lang = (locale?.languageCode ?? '').toLowerCase();
+        if (lang == 'ar' || lang == 'ur') return '\u20C1';
+        return 'SAR';
       case 'KGS':
         return 'с';
       case 'RUB':

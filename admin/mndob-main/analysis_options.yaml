@@ -17,6 +17,10 @@ analyzer:
     - ios/**
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   # The lint rules applied to this project can be customized in the

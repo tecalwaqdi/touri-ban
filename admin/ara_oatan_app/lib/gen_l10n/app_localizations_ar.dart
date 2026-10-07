@@ -1533,11 +1533,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ux_min_hours => 'الحد الأدنى';
 
   @override
-  String get ux_car_list_empty_title => 'لا توجد سيارات';
+  String get ux_car_list_empty_title => 'لا توجد أنواع مركبات متاحة';
 
   @override
   String get ux_car_list_empty_msg =>
-      'لا توجد سيارات متاحة حالياً، حاول لاحقاً';
+      'لا توجد أنواع مركبات متاحة لهذه الدولة حالياً';
 
   @override
   String get ux_car_list_error_title => 'تعذّر تحميل السيارات';
@@ -2552,4 +2552,11 @@ class AppLocalizationsAr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get ux_vehicle_select_country_title => 'حدد الدولة';
+
+  @override
+  String get ux_vehicle_select_country_msg =>
+      'حدد الدولة أولاً لعرض أنواع المركبات';
 }

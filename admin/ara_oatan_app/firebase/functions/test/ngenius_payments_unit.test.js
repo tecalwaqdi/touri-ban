@@ -262,6 +262,30 @@ assert.ok(
   (source.match(/\.\.\.agentFields/g) || []).length >= 2,
   "cash + online create must both write agent snapshot fields",
 );
+assert.ok(
+  source.includes("booking_vehicle_country_mismatch"),
+  "verifiedBookingAmount must reject cross-country vehicle",
+);
+assert.ok(
+  source.includes("matchesCountryTypeCar"),
+  "verifiedBookingAmount must use matchesCountryTypeCar",
+);
+assert.ok(
+  source.includes("buildVehicleBookingSnapshot"),
+  "verifiedBookingAmount must build immutable vehicle snapshot",
+);
+assert.ok(
+  source.includes("vehicleTypeId"),
+  "order create must persist vehicleTypeId snapshot",
+);
+assert.ok(
+  source.includes("vehicleHourlyPrice"),
+  "order create must persist vehicleHourlyPrice snapshot",
+);
+assert.ok(
+  source.includes("isOperationalTypeCar"),
+  "verifiedBookingAmount must reject archived/excluded types",
+);
 
 process.stdout.write("N-Genius unit checks passed.\n");
 process.exit(0);

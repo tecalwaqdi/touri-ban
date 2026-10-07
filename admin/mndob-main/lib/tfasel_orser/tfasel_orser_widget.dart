@@ -10,14 +10,16 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/core/driver_map_actions.dart';
 import '/components/driver_trip_actions_card.dart';
 import '/components/driver_trip_details_banner.dart';
-import '/core/toury_system_status_codes.dart';
+import '/components/driver_trip_section_cards.dart';
 import '/components/driver_trip_map_panel.dart';
 import '/components/driver_live_tracking_banner.dart';
 import '/components/driver_trip_plan_panel.dart';
+import '/components/driver_cash_collection_panel.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
 import '/core/driver_country_service.dart';
 import '/core/toury_country_registry.dart';
+import '/core/toury_support_link.dart';
 import '/core/driver_lifecycle_state.dart';
 import '/core/driver_navigation_service.dart';
 import '/core/driver_order_meta.dart';
@@ -321,19 +323,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                       ),
                     ),
                     Text(
-                      () {
-                        final statusKey =
-                            TourySystemStatusCodes.displayHalhKeyForCode(
-                          DriverTripActionGates.codeOf(
-                            tfaselOrserOrderRecord.snapshotData,
-                            tfaselOrserOrderRecord.halhText,
-                          ),
-                        );
-                        final statusLabel = statusKey.isEmpty
-                            ? tfaselOrserOrderRecord.halhText
-                            : driverTr(context, statusKey);
-                        return '# ${tfaselOrserOrderRecord.iDorder} · $statusLabel';
-                      }(),
+                      '# ${tfaselOrserOrderRecord.iDorder} · ${driverLocalizedBookingStatus(context, tfaselOrserOrderRecord)}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: context.dsTypography.bodySmall.copyWith(
@@ -365,14 +355,15 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
                             children: [
+                              // Header → status → customer → route → map → action → itinerary → finance → support
+                              DriverTripStatusChip(order: columnOrderRecord),
                               DriverTripDetailsBanner(
                                 order: columnOrderRecord,
                                 showArrivalButton: false,
                                 onArrived: () => safeSetState(() {}),
                               ),
-                              DriverTripActionsCard(
+                              DriverTripRouteSummaryCard(
                                 order: columnOrderRecord,
-                                onChanged: () => safeSetState(() {}),
                               ),
                               DriverLiveTrackingBanner(
                                 order: columnOrderRecord,
@@ -412,7 +403,19 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                   },
                                 ),
                               ),
+                              DriverTripActionsCard(
+                                order: columnOrderRecord,
+                                onChanged: () => safeSetState(() {}),
+                              ),
                               DriverTripPlanPanel(order: columnOrderRecord),
+                              DriverCashCollectionPanel(
+                                order: columnOrderRecord,
+                              ),
+                              DriverTripFinanceSummaryCard(
+                                order: columnOrderRecord,
+                              ),
+                              const DriverTripSupportCard(),
+                              // Legacy below: timer / review / chat (kept for flows)
                               Padding(
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     16.0, 0.0, 16.0, 0.0),
@@ -1405,37 +1408,10 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                               columnOrderRecord
                                                                   .reference
                                                                   .id;
-                                                          final customerRef =
-                                                              columnOrderRecord
-                                                                  .user;
-                                                          if (customerRef !=
-                                                              null) {
-                                                            triggerPushNotification(
-                                                              notificationTitle:
-                                                                  driverTr(
-                                                                      context,
-                                                                      'Start trip'),
-                                                              notificationText:
-                                                                  driverTrNamed(
-                                                                context,
-                                                                'Trip started with driver: {name}',
-                                                                {
-                                                                  'name':
-                                                                      currentUserDisplayName,
-                                                                },
-                                                              ),
-                                                              userRefs: [
-                                                                customerRef
-                                                              ],
-                                                              initialPageName:
-                                                                  'tfasel_order',
-                                                              parameterData: {
-                                                                'idorder':
-                                                                    columnOrderRecord
-                                                                        .reference,
-                                                              },
-                                                            );
-                                                          }
+                                                          // Trip-started push is
+                                                          // sent from
+                                                          // DriverTripService.startTrip
+                                                          // with customer locale.
                                                           _model.soundPlayer1 ??=
                                                               AudioPlayer();
                                                           if (_model
@@ -3338,7 +3314,10 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 ),
                                               ),
                                               Text(
-                                                columnOrderRecord.halhText,
+                                                driverLocalizedBookingStatus(
+                                                  context,
+                                                  columnOrderRecord,
+                                                ),
                                                 style: context
                                                     .dsTypography.bodyMedium
                                                     .copyWith(
@@ -3501,7 +3480,10 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                   currency: TouryCountryRegistry
                                                       .currencySymbol(
                                                           DriverCountryService
-                                                              .currentIso2()),
+                                                              .currentIso2(),
+                                                          locale: Localizations
+                                                              .localeOf(
+                                                                  context)),
                                                 ),
                                                 style: context
                                                     .dsTypography.bodyMedium
@@ -3545,7 +3527,10 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                   currency: TouryCountryRegistry
                                                       .currencySymbol(
                                                           DriverCountryService
-                                                              .currentIso2()),
+                                                              .currentIso2(),
+                                                          locale: Localizations
+                                                              .localeOf(
+                                                                  context)),
                                                 ),
                                                 style: context
                                                     .dsTypography.bodyMedium
@@ -3566,10 +3551,7 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                     .fromSTEB(
                                                         6.0, 0.0, 6.0, 0.0),
                                                 child: Text(
-                                                  FFLocalizations.of(context)
-                                                      .getText(
-                                                    '87c453o4' /* App Commission & Taxes: */,
-                                                  ),
+                                                  '${driverTr(context, 'finance.commission')} + ${driverTr(context, 'finance.tax')}',
                                                   style: context
                                                       .dsTypography.bodyMedium
                                                       .copyWith(
@@ -3579,19 +3561,17 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 ),
                                               ),
                                               Text(
-                                                formatNumber(
-                                                  columnOrderRecord.totalApp +
-                                                      columnOrderRecord
-                                                          .totalVat,
-                                                  formatType:
-                                                      FormatType.decimal,
-                                                  decimalType:
-                                                      DecimalType.automatic,
-                                                  currency: TouryCountryRegistry
-                                                      .currencySymbol(
-                                                          DriverCountryService
-                                                              .currentIso2()),
-                                                ),
+                                                '${formatNumber(
+                                                  columnOrderRecord.totalApp,
+                                                  formatType: FormatType.decimal,
+                                                  decimalType: DecimalType.automatic,
+                                                  currency: '',
+                                                )} / ${formatNumber(
+                                                  columnOrderRecord.totalVat,
+                                                  formatType: FormatType.decimal,
+                                                  decimalType: DecimalType.automatic,
+                                                  currency: '',
+                                                )}',
                                                 style: context
                                                     .dsTypography.bodyMedium
                                                     .copyWith(
@@ -3614,8 +3594,11 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                 highlightColor:
                                                     Colors.transparent,
                                                 onTap: () async {
-                                                  await launchURL(
-                                                      'https://wa.me/message/LHEPTGBXGS7UJ1');
+                                                  await TourySupportLink.open(
+                                                    context,
+                                                    countryPath: columnOrderRecord
+                                                        .snapshotData['Rev_dolh'],
+                                                  );
                                                 },
                                                 child: Container(
                                                   width: double.infinity,
@@ -3657,25 +3640,24 @@ class _TfaselOrserWidgetState extends State<TfaselOrserWidget>
                                                             size: 15.0,
                                                           ),
                                                         ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      11.0,
-                                                                      0.0,
-                                                                      11.0,
-                                                                      0.0),
-                                                          child: Text(
-                                                            FFLocalizations.of(
-                                                                    context)
-                                                                .getText(
-                                                              'zci7ub2x' /* Have a problem? Contact us dir... */,
-                                                            ),
-                                                            style: context
-                                                                .dsTypography
-                                                                .bodyMedium
-                                                                .copyWith(
-                                                              fontSize: 12.0,
+                                                        Expanded(
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsetsDirectional
+                                                                    .fromSTEB(
+                                                                        11.0,
+                                                                        8.0,
+                                                                        11.0,
+                                                                        8.0),
+                                                            child: Text(
+                                                              driverTr(
+                                                                context,
+                                                                'support.contact_directly',
+                                                              ),
+                                                              softWrap: true,
+                                                              style: context
+                                                                  .dsTypography
+                                                                  .bodyMedium,
                                                             ),
                                                           ),
                                                         ),

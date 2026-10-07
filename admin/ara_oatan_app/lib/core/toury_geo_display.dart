@@ -32,16 +32,15 @@ String touryLocalizedVillageLabel(VillagesRecord village, [String? localeKey]) {
 }
 
 String touryLocalizedCityCiteLabel(VillagesRecord village, [String? localeKey]) {
-  // Region/city cite text — fall back to village name.
   final key = localeKey ?? touryActiveContentLocaleKey();
+  final lang = key.split(RegExp(r'[_-]')).first.toLowerCase();
   final cite = village.naimciteText.trim();
-  if (cite.isEmpty) {
-    return touryLocalizedVillageLabel(village, key);
-  }
-  // Prefer names_i18n for the village; cite may be Arabic-only admin text.
   final localizedVillage = touryLocalizedVillageLabel(village, key);
-  if (key != 'ar' && _looksArabic(cite) && !_looksArabic(localizedVillage)) {
-    return localizedVillage;
+  if (cite.isEmpty) return localizedVillage;
+  // Arabic cite must not replace a resolved locale/English name.
+  if (lang != 'ar') {
+    if (localizedVillage.isNotEmpty) return localizedVillage;
+    if (lang != 'ur' && _looksArabic(cite)) return '';
   }
   return cite;
 }

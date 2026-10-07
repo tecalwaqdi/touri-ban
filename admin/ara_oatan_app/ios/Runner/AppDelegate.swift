@@ -35,6 +35,7 @@ import NISdk
   ) {
     switch call.method {
     case "isAvailable":
+      // NISdk UI can present on Simulator; full 3DS/card completion is not reliable.
       result(true)
     case "startCardPayment":
       guard pendingPaymentResult == nil else {
@@ -57,6 +58,10 @@ import NISdk
         )
         return
       }
+
+      #if targetEnvironment(simulator)
+      NSLog("SIMULATOR_SDK_LIMITATION=true NISdk_3DS_may_not_complete_on_simulator")
+      #endif
 
       let language = ((args["languageCode"] as? String) ?? "en").lowercased()
       NISdk.sharedInstance.setSDKLanguage(language: language.hasPrefix("ar") ? "ar" : "en")
@@ -81,6 +86,7 @@ import NISdk
       }
 
       pendingPaymentResult = result
+      NSLog("NATIVE_BRIDGE_CALLED=true NISdk_showCardPaymentView")
       NISdk.sharedInstance.showCardPaymentViewWith(
         cardPaymentDelegate: self,
         overParent: controller,

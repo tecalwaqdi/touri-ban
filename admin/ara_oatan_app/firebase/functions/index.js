@@ -6,6 +6,7 @@ const ngeniusPayments = require("./ngenius_payments.js");
 const secureIntegrations = require("./secure_integrations.js");
 const driverApproval = require("./driver_registration_approval.js");
 const driverRegistrationV2 = require("./driver_registration_v2.js");
+const driverProfileChangeRequest = require("./driver_profile_change_request.js");
 exports.createNGeniusPayment = ngeniusPayments.createNGeniusPayment;
 exports.getNGeniusPayment = ngeniusPayments.getNGeniusPayment;
 exports.finalizeNGeniusBooking = ngeniusPayments.finalizeNGeniusBooking;
@@ -27,6 +28,22 @@ exports.sendWhatsAppMessage = secureIntegrations.sendWhatsAppMessage;
 exports.reverseGeocode = secureIntegrations.reverseGeocode;
 exports.getRoadRoute = secureIntegrations.getRoadRoute;
 exports.waslRequest = secureIntegrations.waslRequest;
+const waslCallables = require("./wasl/callables.js");
+exports.waslOnlineGate = waslCallables.waslOnlineGate;
+exports.waslRefreshDriverEligibility = waslCallables.waslRefreshDriverEligibility;
+exports.waslRefreshEligibilityBulk = waslCallables.waslRefreshEligibilityBulk;
+exports.waslRegisterSaudiDriver = waslCallables.waslRegisterSaudiDriver;
+exports.waslSubmitLocationSample = waslCallables.waslSubmitLocationSample;
+exports.waslRetryTripSync = waslCallables.waslRetryTripSync;
+exports.waslOnOrderUpdated = functions.region("us-central1")
+  .firestore.document("order/{orderId}")
+  .onUpdate(waslCallables.onOrderUpdated);
+exports.waslOnUserUpdated = functions.region("us-central1")
+  .firestore.document("user/{userId}")
+  .onUpdate(waslCallables.onUserUpdated);
+exports.waslTripOutbox = functions.region("us-central1")
+  .pubsub.schedule("every 5 minutes")
+  .onRun(waslCallables.waslTripOutbox);
 exports.approveDriverRegistration = functions.region("us-central1")
   .https.onCall(driverApproval.approveDriverRegistration);
 exports.rejectDriverRegistration = functions.region("us-central1")
@@ -39,6 +56,10 @@ exports.submitDriverApplicationV2 = functions.region("us-central1")
   .https.onCall(driverRegistrationV2.submitDriverApplicationV2);
 exports.reviewDriverApplicationV2 = functions.region("us-central1")
   .https.onCall(driverRegistrationV2.reviewDriverApplicationV2);
+exports.submitDriverProfileChangeRequest = functions.region("us-central1")
+  .https.onCall(driverProfileChangeRequest.submitDriverProfileChangeRequest);
+exports.reviewDriverProfileChangeRequest = functions.region("us-central1")
+  .https.onCall(driverProfileChangeRequest.reviewDriverProfileChangeRequest);
 const driverDocumentReview = require('./driver_document_review.js');
 const driverCountryConfigAdmin = require('./driver_country_config_admin.js');
 exports.reviewDriverDocument = functions
@@ -85,6 +106,15 @@ exports.probeBrevoOtpDeliveryEvents = functions
 const driverWalletOps = require("./driver_wallet_ops.js");
 exports.acceptDriverOrder = driverWalletOps.acceptDriverOrder;
 exports.payCompanyFromWallet = driverWalletOps.payCompanyFromWallet;
+
+const orderOfferWaves = require("./order_offer_waves.js");
+exports.onOrderCreatedOfferWave = orderOfferWaves.onOrderCreatedOfferWave;
+exports.expandOrderOfferWaves = orderOfferWaves.expandOrderOfferWaves;
+exports.refreshOrderOfferWave = orderOfferWaves.refreshOrderOfferWave;
+
+const pushEnqueue = require("./push_enqueue.js");
+exports.enqueueUserPushNotification = pushEnqueue.enqueueUserPushNotification;
+
 const kFcmTokensCollection = "fcm_tokens";
 const kPushNotificationsCollection = "ff_push_notifications";
 const kUserPushNotificationsCollection = "ff_user_push_notifications";
@@ -99,7 +129,10 @@ exports.addFcmToken = functions
   .region("us-central1")
   .https.onCall(async (data, context) => {
     if (!context.auth) {
-      return "Failed: Unauthenticated calls are not allowed.";
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "Sign in required.",
+      );
     }
     const userDocPath = data.userDocPath;
     const fcmToken = data.fcmToken;
@@ -112,10 +145,16 @@ exports.addFcmToken = functions
       fcmToken.length === 0 ||
       deviceType.length === 0
     ) {
-      return "Invalid arguments encoutered when adding FCM token.";
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Invalid FCM token arguments.",
+      );
     }
     if (context.auth.uid != userDocPath.split("/")[1]) {
-      return "Failed: Authenticated user doesn't match user provided.";
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        "Authenticated user doesn't match user provided.",
+      );
     }
     const existingTokens = await firestore
       .collectionGroup(kFcmTokensCollection)
@@ -132,14 +171,14 @@ exports.addFcmToken = functions
       }
     }
     if (userAlreadyHasToken) {
-      return "FCM token already exists for this user. Ignoring...";
+      return { ok: true, alreadyExists: true };
     }
     await getUserFcmTokensCollection(userDocPath).doc().set({
       fcm_token: fcmToken,
       device_type: deviceType,
       created_at: admin.firestore.FieldValue.serverTimestamp(),
     });
-    return "Successfully added FCM token!";
+    return { ok: true };
   });
 
 exports.sendPushNotificationsTrigger = functions
@@ -174,8 +213,8 @@ exports.sendUserPushNotificationsTrigger = functions
       }
 
       // Don't let user-triggered notifications to be sent to all users.
-      const userRefsStr = snapshot.data().user_refs || "";
-      if (userRefsStr) {
+      const userRefs = normalizePushUserRefs(snapshot.data().user_refs);
+      if (userRefs.length) {
         await sendPushNotifications(snapshot);
       }
     } catch (e) {
@@ -184,16 +223,55 @@ exports.sendUserPushNotificationsTrigger = functions
     }
   });
 
+/** Normalize user_refs stored as comma-string or DocumentReference[]. */
+function normalizePushUserRefs(raw) {
+  if (Array.isArray(raw)) {
+    return raw
+      .map((v) => {
+        if (typeof v === "string") return v.trim();
+        if (v && typeof v.path === "string") return v.path.trim();
+        return "";
+      })
+      .filter((p) => p.length > 0);
+  }
+  if (typeof raw === "string") {
+    return raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+  }
+  return [];
+}
+
+/** FCM data payloads require string values. */
+function normalizePushParameterData(raw) {
+  if (raw == null || raw === "") return "";
+  if (typeof raw === "string") return raw;
+  try {
+    return JSON.stringify(raw);
+  } catch (_) {
+    return "";
+  }
+}
+
+function isValidFcmToken(token) {
+  return typeof token === "string" && token.trim().length > 0;
+}
+
 async function sendPushNotifications(snapshot) {
   const notificationData = snapshot.data();
   const title = notificationData.notification_title || "";
   const body = notificationData.notification_text || "";
   const imageUrl = notificationData.notification_image_url || "";
   const sound = notificationData.notification_sound || "";
-  const parameterData = notificationData.parameter_data || "";
+  const parameterData = normalizePushParameterData(
+    notificationData.parameter_data,
+  );
   const targetAudience = notificationData.target_audience || "";
-  const initialPageName = notificationData.initial_page_name || "";
-  const userRefsStr = notificationData.user_refs || "";
+  const initialPageName = String(
+    notificationData.initial_page_name || "",
+  );
+  const userRefs = normalizePushUserRefs(notificationData.user_refs);
   const batchIndex = notificationData.batch_index || 0;
   const numBatches = notificationData.num_batches || 0;
   const status = notificationData.status || "";
@@ -204,21 +282,21 @@ async function sendPushNotifications(snapshot) {
   }
 
   if (title === "" || body === "") {
-    await snapshot.ref.update({ status: "failed" });
+    await snapshot.ref.update({ status: "failed", error: "empty_title_or_body" });
     return;
   }
 
-  const userRefs = userRefsStr === "" ? [] : userRefsStr.trim().split(",");
   var tokens = new Set();
-  if (userRefsStr) {
+  if (userRefs.length) {
     for (var userRef of userRefs) {
       const userTokens = await firestore
         .doc(userRef)
         .collection(kFcmTokensCollection)
         .get();
       userTokens.docs.forEach((token) => {
-        if (typeof token.data().fcm_token !== undefined) {
-          tokens.add(token.data().fcm_token);
+        const fcm = token.data().fcm_token;
+        if (isValidFcmToken(fcm)) {
+          tokens.add(fcm.trim());
         }
       });
     }
@@ -237,13 +315,22 @@ async function sendPushNotifications(snapshot) {
       const data = token.data();
       const audienceMatches =
         targetAudience === "All" || data.device_type === targetAudience;
-      if (audienceMatches && typeof data.fcm_token !== undefined) {
-        tokens.add(data.fcm_token);
+      if (audienceMatches && isValidFcmToken(data.fcm_token)) {
+        tokens.add(data.fcm_token.trim());
       }
     });
   }
 
   const tokensArr = Array.from(tokens);
+  if (!tokensArr.length) {
+    await snapshot.ref.update({
+      status: "succeeded",
+      num_sent: 0,
+      note: "no_fcm_tokens",
+    });
+    return;
+  }
+
   var messageBatches = [];
   for (let i = 0; i < tokensArr.length; i += 500) {
     const tokensBatch = tokensArr.slice(i, Math.min(i + 500, tokensArr.length));
@@ -266,11 +353,13 @@ async function sendPushNotifications(snapshot) {
       apns: {
         headers: {
           "apns-priority": "10",
+          "apns-push-type": "alert",
         },
         payload: {
           aps: {
             sound: sound || "default",
-            contentAvailable: true,
+            // Do NOT set content-available for alert pushes — it can suppress
+            // banners on iOS when the app is backgrounded.
           },
         },
       },
@@ -280,14 +369,36 @@ async function sendPushNotifications(snapshot) {
   }
 
   var numSent = 0;
+  var numFail = 0;
+  const sampleErrors = [];
   await Promise.all(
     messageBatches.map(async (messages) => {
       const response = await admin.messaging().sendEachForMulticast(messages);
       numSent += response.successCount;
+      numFail += response.failureCount;
+      if (response.responses) {
+        for (const r of response.responses) {
+          if (!r.success && sampleErrors.length < 5) {
+            sampleErrors.push(String((r.error && r.error.code) || r.error || "unknown"));
+          }
+        }
+      }
     }),
   );
 
-  await snapshot.ref.update({ status: "succeeded", num_sent: numSent });
+  const patch = {
+    status: numSent > 0 || tokensArr.length === 0 ? "succeeded" : "failed",
+    num_sent: numSent,
+    num_fail: numFail,
+    token_count: tokensArr.length,
+  };
+  if (tokensArr.length && numSent === 0) {
+    patch.error = sampleErrors.join(",") || "all_fcm_sends_failed";
+  }
+  if (sampleErrors.length) {
+    patch.fcm_error_samples = sampleErrors;
+  }
+  await snapshot.ref.update(patch);
 }
 
 function getUserFcmTokensCollection(userDocPath) {

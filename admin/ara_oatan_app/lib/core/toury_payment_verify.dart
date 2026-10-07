@@ -22,6 +22,26 @@ class TouryPaymentVerification {
   bool get isPaid => result == TouryPaymentVerifyResult.paid;
   bool get isPending => result == TouryPaymentVerifyResult.pending;
   bool get isFailed => result == TouryPaymentVerifyResult.failed;
+  bool get isError => result == TouryPaymentVerifyResult.error;
+
+  /// Network / API blips must not be treated as a hard payment failure.
+  bool get isRecoverablePending => isPending || isError;
+}
+
+/// Whether PaymentConfirm should keep polling after an initial verify.
+///
+/// Includes native SDK (`MOBILE_PAYMENT_MODE=sdk`) — webhook lag is common
+/// after SDK success (`pending_backend_confirmation`).
+bool touryShouldPollPaymentStatus({
+  required bool isPending,
+  required bool awaitingExternalHpp,
+  required bool openPaymentInExternalBrowser,
+  required bool preferMobileSdk,
+}) {
+  if (!isPending) return false;
+  return awaitingExternalHpp ||
+      openPaymentInExternalBrowser ||
+      preferMobileSdk;
 }
 
 /// يتحقق من حالة الدفع مع N-Genius قبل اعتماد الطلب أو شحن المحفظة.
@@ -40,7 +60,7 @@ Future<TouryPaymentVerification> touryVerifyGatewayPayment(
     try {
       final body = await PaymentApiClient().getStatus(trimmed);
       if (body['purpose'] == 'extra_hours') {
-        return touryVerifyGatewayPayment(trimmed, extraHours: true);
+        return await touryVerifyGatewayPayment(trimmed, extraHours: true);
       }
       final status = body['status']?.toString() ?? '';
       final response = ApiCallResponse(body, const {}, 200);

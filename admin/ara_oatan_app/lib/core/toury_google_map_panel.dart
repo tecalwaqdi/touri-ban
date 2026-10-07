@@ -37,7 +37,8 @@ class TouryMapPanel extends StatefulWidget {
   final void Function(LatLng)? onCameraIdle;
   final double? height;
   final double initialZoom;
-  /// When [initialLocation] is missing, center on this ISO (never SA globally).
+  /// When [initialLocation] is missing, used for zoom only — never invents
+  /// an ISO capital (e.g. Riyadh) as the camera/selection center.
   final String? countryIso2;
   final Iterable<FlutterFlowMarker> markers;
   final GoogleMarkerColor markerColor;

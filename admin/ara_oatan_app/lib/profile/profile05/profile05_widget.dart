@@ -80,8 +80,7 @@ class _Profile05WidgetState extends State<Profile05Widget> {
         final openSettings = await TouryDialogs.showConfirm(
           context,
           title: 'dialog_error_title'.tr(),
-          message:
-              'Notifications are disabled in iOS Settings. Open Settings to enable them.',
+          message: 'profile.ios_notifications_disabled'.tr(),
           type: TouryMessageType.warning,
         );
         if (openSettings) {
@@ -97,8 +96,7 @@ class _Profile05WidgetState extends State<Profile05Widget> {
       title: FFLocalizations.of(context).getText(
         '0fsig7jr' /* Enable notifications */,
       ),
-      message:
-          'To turn off notifications, use iOS Settings for this app.',
+      message: 'profile.ios_notifications_settings'.tr(),
       type: TouryMessageType.info,
     );
     if (openSettings) {
@@ -123,7 +121,7 @@ class _Profile05WidgetState extends State<Profile05Widget> {
       await TouryDialogs.showAlert(
         context,
         title: 'dialog_error_title'.tr(),
-        message: 'يجب تسجيل الدخول قبل رفع الصورة.',
+        message: 'profile.photo_login_required'.tr(),
         type: TouryMessageType.error,
       );
       return;
@@ -151,7 +149,7 @@ class _Profile05WidgetState extends State<Profile05Widget> {
       await TouryDialogs.showAlert(
         context,
         title: 'dialog_error_title'.tr(),
-        message: 'لم يتم قراءة الصورة. جرّب صورة أخرى.',
+        message: 'profile.photo_unreadable'.tr(),
         type: TouryMessageType.error,
       );
       return;
@@ -160,7 +158,7 @@ class _Profile05WidgetState extends State<Profile05Widget> {
     safeSetState(() => _model.isDataUploading_uploadDataMcf = true);
     showUploadMessage(
       context,
-      'جاري رفع الصورة...',
+      'profile.photo_uploading'.tr(),
       showLoading: true,
     );
 
@@ -190,8 +188,8 @@ class _Profile05WidgetState extends State<Profile05Widget> {
       showUploadMessage(
         context,
         isProfilePhotoDataUrl(photoUrl)
-            ? 'تم حفظ الصورة محلياً (حصة Storage ممتلئة — راجع Firebase Console).'
-            : 'تم تحديث صورة الملف الشخصي بنجاح',
+            ? 'profile.photo_saved_local'.tr()
+            : 'profile.photo_updated'.tr(),
       );
     } on StorageUploadException catch (e) {
       if (!mounted) return;
@@ -222,31 +220,30 @@ class _Profile05WidgetState extends State<Profile05Widget> {
 
   Future<String?> _askPasswordForReauth() async {
     final controller = TextEditingController();
-    final arabic = Localizations.localeOf(context).languageCode == 'ar';
     final password = await showDialog<String>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
         return AlertDialog(
           title: Text(
-            arabic ? 'تأكيد الهوية' : 'Confirm identity',
+            'profile.confirm_identity'.tr(),
           ),
           content: TextField(
             controller: controller,
             obscureText: true,
             autofocus: true,
             decoration: InputDecoration(
-              labelText: arabic ? 'كلمة المرور' : 'Password',
+              labelText: 'profile.password'.tr(),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(arabic ? 'إلغاء' : 'Cancel'),
+              child: Text('common.cancel'.tr()),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, controller.text),
-              child: Text(arabic ? 'متابعة' : 'Continue'),
+              child: Text('common.continue'.tr()),
             ),
           ],
         );
@@ -257,31 +254,25 @@ class _Profile05WidgetState extends State<Profile05Widget> {
   }
 
   Future<void> _requestAccountDeletion() async {
-    final arabic = Localizations.localeOf(context).languageCode == 'ar';
-
     final first = await TouryDialogs.showConfirm(
       context,
-      title: arabic ? 'حذف الحساب' : 'Delete account',
-      message: arabic
-          ? 'سيؤدي حذف حسابك إلى حذف بيانات الحساب الشخصية غير اللازمة (مثل بيانات الملف والعناوين المحفوظة ورموز الإشعارات). لا يعني ذلك حذف كل البيانات: قد يتم الاحتفاظ بسجلات الرحلات والمعاملات والتسويات والقيود المحاسبية المرتبطة بها لأغراض المحاسبة والامتثال ومنع الاحتيال والنزاعات والتدقيق. لا يمكن الحذف أثناء رحلة نشطة.'
-          : 'Deleting your account removes unnecessary personal account data (such as profile details, saved addresses, and notification tokens). This does not erase all data: trip, transaction, settlement, and accounting records may be retained for accounting, compliance, fraud prevention, disputes, and audit. Deletion is blocked while a trip is active.',
+      title: 'account.delete_title'.tr(),
+      message: 'account.delete_body'.tr(),
       type: TouryMessageType.warning,
       destructive: true,
-      confirmLabel: arabic ? 'متابعة حذف الحساب' : 'Continue deletion',
-      cancelLabel: arabic ? 'إلغاء' : 'Cancel',
+      confirmLabel: 'account.delete_continue'.tr(),
+      cancelLabel: 'common.cancel'.tr(),
     );
     if (!first || !mounted) return;
 
     final second = await TouryDialogs.showConfirm(
       context,
-      title: arabic ? 'تأكيد نهائي' : 'Final confirmation',
-      message: arabic
-          ? 'هل أنت متأكد أنك تريد حذف حسابك نهائيًا؟'
-          : 'Are you sure you want to permanently delete your account?',
+      title: 'account.delete_final_title'.tr(),
+      message: 'account.delete_final_body'.tr(),
       type: TouryMessageType.warning,
       destructive: true,
-      confirmLabel: arabic ? 'حذف نهائي' : 'Delete permanently',
-      cancelLabel: arabic ? 'إلغاء' : 'Cancel',
+      confirmLabel: 'account.delete_permanent'.tr(),
+      cancelLabel: 'common.cancel'.tr(),
     );
     if (!second || !mounted) return;
 
@@ -299,14 +290,10 @@ class _Profile05WidgetState extends State<Profile05Widget> {
             );
       await TouryDialogs.showAlert(
         context,
-        title: arabic ? 'مطلوب تأكيد الهوية' : 'Identity confirmation required',
+        title: 'account.reauth_required_title'.tr(),
         message: provider == 'phone'
-            ? (arabic
-                ? 'أعد تسجيل الدخول برقم الجوال ثم حاول حذف الحساب مرة أخرى.'
-                : 'Sign in again with your phone number, then retry account deletion.')
-            : (arabic
-                ? 'لم نتمكن من تأكيد هويتك. سجّل الدخول مجددًا ثم أعد المحاولة.'
-                : 'We could not confirm your identity. Sign in again and retry.'),
+            ? 'account.reauth_phone'.tr()
+            : 'account.reauth_generic'.tr(),
         type: TouryMessageType.warning,
       );
       return;
@@ -329,11 +316,8 @@ class _Profile05WidgetState extends State<Profile05Widget> {
     if (!result.ok) {
       await TouryDialogs.showAlert(
         context,
-        title: arabic ? 'تعذر الحذف' : 'Deletion failed',
-        message: TouryAccountDeletionService.userFacingMessage(
-          result,
-          arabic: arabic,
-        ),
+        title: 'account.delete_failed_title'.tr(),
+        message: TouryAccountDeletionService.userFacingMessage(result).tr(),
         type: TouryMessageType.error,
       );
       return;

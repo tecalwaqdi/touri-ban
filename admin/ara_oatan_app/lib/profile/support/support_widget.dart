@@ -1,4 +1,5 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/core/toury_support_link.dart';
 import '/backend/backend.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -108,7 +109,25 @@ class _SupportWidgetState extends State<SupportWidget> {
                                   .orderBy('data', descending: true),
                             ),
                             builder: (context, snapshot) {
-                              // Customize what your widget looks like when it's loading.
+                              if (snapshot.hasError) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: DsSpacing.xl,
+                                  ),
+                                  child: DsEmptyState(
+                                    icon: DsIcons.support,
+                                    title: FFLocalizations.of(context).getText(
+                                      'isvgr34v' /* Support Tickets */,
+                                    ),
+                                    message:
+                                        'حدث خطأ. حاول مرة أخرى.'.tr(),
+                                    action: DsButton.primary(
+                                      label: 'ux_retry'.tr(),
+                                      onPressed: () => safeSetState(() {}),
+                                    ),
+                                  ),
+                                );
+                              }
                               if (!snapshot.hasData) {
                                 return const Padding(
                                   padding: EdgeInsets.symmetric(
@@ -167,7 +186,11 @@ class _SupportWidgetState extends State<SupportWidget> {
                             delay: DsDurations.fast,
                             child: _ContactDirectlyCard(
                               onWhatsApp: () async {
-                                await launchURL('https://wa.me/966533356126');
+                                await TourySupportLink.open(
+                                  context,
+                                  countryPath: FFAppState().ShrekNCountry,
+                                  message: 'support.whatsapp_message'.tr(),
+                                );
                               },
                             ),
                           ),

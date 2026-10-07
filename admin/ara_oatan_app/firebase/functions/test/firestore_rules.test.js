@@ -417,19 +417,41 @@ describe("Email OTP challenge client denial", () => {
 
 describe("type_car vehicle catalog authorization", () => {
   beforeEach(async () => {
-    await seed({
-      "type_car/economy_qa": {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      const sa = countryRef(db, "sa");
+      const kg = countryRef(db, "kg");
+      await setDoc(doc(db, "countries", "sa"), {naim: "Saudi", iso_code: "SA"});
+      await setDoc(doc(db, "countries", "kg"), {naim: "Kyrgyzstan", iso_code: "KG"});
+      await setDoc(doc(db, "type_car", "economy_qa"), {
         naim: "Economy QA",
         sr: 100,
         actev: true,
         codeCar: "economy_qa",
-      },
-      "user/super-1": {IsAdmin: true, isAdminRule: 1},
-      "user/admin-sa": {isAdminRule: 2, Rev_dloh_agent: "countries/sa"},
-      "user/customer-1": {isAdminRule: 0},
-      "user/driver-1": {ismndob: true},
-      "user/partner-1": {isAdminRule: 3, isPartner: true},
-      "user/company-1": {isAdminRule: 4},
+        dolh: sa,
+        country_iso2: "SA",
+      });
+      await setDoc(doc(db, "type_car", "economy_kg"), {
+        naim: "Economy KG",
+        sr: 80,
+        actev: true,
+        codeCar: "economy_kg",
+        dolh: kg,
+        country_iso2: "KG",
+      });
+      await setDoc(doc(db, "user", "super-1"), {IsAdmin: true, isAdminRule: 1});
+      await setDoc(doc(db, "user", "admin-sa"), {
+        isAdminRule: 2,
+        Isagent: true,
+        Rev_dloh_agent: sa,
+      });
+      await setDoc(doc(db, "user", "customer-1"), {isAdminRule: 0});
+      await setDoc(doc(db, "user", "driver-1"), {ismndob: true});
+      await setDoc(doc(db, "user", "partner-1"), {
+        isAdminRule: 3,
+        isPartner: true,
+      });
+      await setDoc(doc(db, "user", "company-1"), {isAdminRule: 4});
     });
   });
 
@@ -477,9 +499,7 @@ describe("type_car vehicle catalog authorization", () => {
     );
   });
 
-  it("country admin can update type_car per current rules", async () => {
-    // SECURITY_FINDING note: rules allow any country admin to edit any type_car
-    // (no dolh scope on type_car write). Documented, not silently changed.
+  it("country admin/agent can update OWN country type_car", async () => {
     const db = testEnv
       .authenticatedContext("admin-sa", {
         country_admin: true,
@@ -488,6 +508,72 @@ describe("type_car vehicle catalog authorization", () => {
       .firestore();
     await assertSucceeds(
       updateDoc(doc(db, "type_car", "economy_qa"), {sr: 110}),
+    );
+  });
+
+  it("country admin/agent DENY update OTHER country type_car", async () => {
+    const db = testEnv
+      .authenticatedContext("admin-sa", {
+        country_admin: true,
+        country_id: "countries/sa",
+      })
+      .firestore();
+    await assertFails(
+      updateDoc(doc(db, "type_car", "economy_kg"), {sr: 999}),
+    );
+  });
+
+  it("country admin/agent DENY create type_car for OTHER country", async () => {
+    const db = testEnv
+      .authenticatedContext("admin-sa", {
+        country_admin: true,
+        country_id: "countries/sa",
+      })
+      .firestore();
+    const kg = countryRef(db, "kg");
+    await assertFails(
+      setDoc(doc(db, "type_car", "hack_kg"), {
+        naim: "Hack",
+        sr: 1,
+        actev: true,
+        dolh: kg,
+        country_iso2: "KG",
+      }),
+    );
+  });
+
+  it("country admin/agent DENY tamper dolh to escape country", async () => {
+    const db = testEnv
+      .authenticatedContext("admin-sa", {
+        country_admin: true,
+        country_id: "countries/sa",
+      })
+      .firestore();
+    const kg = countryRef(db, "kg");
+    await assertFails(
+      updateDoc(doc(db, "type_car", "economy_qa"), {
+        dolh: kg,
+        country_iso2: "KG",
+      }),
+    );
+  });
+
+  it("country admin/agent can create type_car for OWN country", async () => {
+    const db = testEnv
+      .authenticatedContext("admin-sa", {
+        country_admin: true,
+        country_id: "countries/sa",
+      })
+      .firestore();
+    const sa = countryRef(db, "sa");
+    await assertSucceeds(
+      setDoc(doc(db, "type_car", "new_sa"), {
+        naim: "New SA",
+        sr: 90,
+        actev: true,
+        dolh: sa,
+        country_iso2: "SA",
+      }),
     );
   });
 });

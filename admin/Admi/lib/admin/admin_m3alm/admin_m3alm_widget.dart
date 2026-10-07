@@ -487,13 +487,13 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
     final hiddenAliasNote = aliasExcluded != null && aliasExcluded > 0
         ? uiTr(
             context,
-            'تم استبعاد $aliasExcluded سجل توافق legacy من العدد الإجمالي',
-          )
+            'تم استبعاد {count} سجل توافق legacy من العدد الإجمالي',
+          ).replaceAll('{count}', '$aliasExcluded')
         : (partnerTotal != null && catalog != null && partnerTotal > catalog
             ? uiTr(
                 context,
-                'تم استبعاد ${partnerTotal - catalog} معلم alias قديم من العدد الإجمالي',
-              )
+                'تم استبعاد {count} معلم alias قديم من العدد الإجمالي',
+              ).replaceAll('{count}', '${partnerTotal - catalog}')
             : null);
 
     return AdminContentCard(

@@ -543,6 +543,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
           builder: (context, params) => AdmintypecarWidget(),
         ),
         FFRoute(
+          name: AdminLandmarkCategoriesWidget.routeName,
+          path: AdminLandmarkCategoriesWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) =>
+              const AdminLandmarkCategoriesWidget(),
+        ),
+        FFRoute(
           name: AddDolhWidget.routeName,
           path: AddDolhWidget.routePath,
           requireAuth: true,
@@ -644,6 +651,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
           ),
         ),
         FFRoute(
+          name: AdminDriverDataChangeRequestsWidget.routeName,
+          path: AdminDriverDataChangeRequestsWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) =>
+              const AdminDriverDataChangeRequestsWidget(),
+        ),
+        FFRoute(
           name: AdminDriverReviewFixtureWidget.routeName,
           path: AdminDriverReviewFixtureWidget.routePath,
           requireAuth: true,
@@ -742,6 +756,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
           path: AdminFinanceHubWidget.routePath,
           requireAuth: true,
           builder: (context, params) => const AdminFinanceHubWidget(),
+        ),
+        FFRoute(
+          name: AdminFinanceTripLedgerWidget.routeName,
+          path: AdminFinanceTripLedgerWidget.routePath,
+          requireAuth: true,
+          builder: (context, params) => const AdminFinanceTripLedgerWidget(),
         ),
         FFRoute(
           name: AdminPerfP4bStaticWidget.routeName,

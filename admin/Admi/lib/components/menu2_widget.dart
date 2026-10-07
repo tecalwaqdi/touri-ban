@@ -114,8 +114,10 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     // Reviews
     'AdminNotifications': '/adminNotifications',
     'AdminDriverExpiryQueue': '/driverDocExpiry',
+    'AdminDriverDataChangeRequests': '/adminDriverDataChangeRequests',
     // Catalog
     'Admintypecar': '/admintypecar',
+    'AdminLandmarkCategories': '/adminLandmarkCategories',
     'AdminDol': '/adminDol',
     'Adminregion': '/adminregion',
     'Adminvill': '/adminvill',
@@ -129,15 +131,18 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     'PartnerBookings': '/partnerBookings',
     // Finance
     'AdminFinanceHub': '/adminFinanceHub',
+    'AdminFinanceTripLedger': '/adminFinanceTripLedger',
     'AdminFinanceReconciliation': '/adminFinanceReconciliation',
     'AdminFinanceDataQuality': '/adminFinanceDataQuality',
     'AdminFinanceChannels': '/adminFinanceChannels',
     'AdminFinanceAdjustments': '/adminFinanceAdjustments',
+    'AdminFinanceReceivables': '/adminFinanceReceivables',
     'AdminSettlements': '/adminSettlements',
     'AdminAgentFinance': '/adminFinanceAgents',
     'AdminFinanceReports': '/adminFinanceReports',
     'AdminFinanceAudit': '/adminFinanceAudit',
     'AdminReconciliation': '/adminReconciliation',
+    'AdminFinancialPeriods': '/adminFinancialPeriods',
     // Reports
     'AdminReportsHub': '/adminReportsHub',
     'AdminAuditLog': '/adminAuditLog',
@@ -159,6 +164,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
       'partners': 'ent_section_partners',
       'geography': 'ent_section_geography',
       'finance': 'ent_section_finance',
+      'finance_controls': 'ent_section_finance',
       'legacy': 'ent_section_legacy',
       'reports': 'ent_section_reports',
       'system': 'ent_section_system',
@@ -179,7 +185,11 @@ class _Menu2WidgetState extends State<Menu2Widget> {
       return AdminRoleService.isSuperAdmin;
     }
     if (route == AdminReportsHubWidget.routeName) {
-      return AdminRoleService.isSuperAdmin;
+      // LEGACY hub → canonical Finance Reports (no competing money SoT).
+      return AdminRoleService.canAccessRoute(
+            AdminFinanceReportsWidget.routeName,
+          ) ||
+          AdminRoleService.isSuperAdmin;
     }
     if (route == AdminSuperAdminsWidget.routeName) {
       return AdminRoleService.isSuperAdmin;
@@ -274,6 +284,10 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 route: AdminNotificationsWidget.routeName,
                 icon: Icons.notifications_rounded
               ),
+              (
+                route: AdminDriverDataChangeRequestsWidget.routeName,
+                icon: Icons.fact_check_rounded
+              ),
             ],
           ),
           (
@@ -282,6 +296,10 @@ class _Menu2WidgetState extends State<Menu2Widget> {
               (
                 route: AdmintypecarWidget.routeName,
                 icon: Icons.airport_shuttle_rounded
+              ),
+              (
+                route: AdminLandmarkCategoriesWidget.routeName,
+                icon: Icons.category_rounded
               ),
               (route: AdminDolWidget.routeName, icon: Icons.flag_rounded),
               (
@@ -332,28 +350,20 @@ class _Menu2WidgetState extends State<Menu2Widget> {
                 icon: Icons.account_balance_rounded
               ),
               (
-                route: AdminFinanceReconciliationWidget.routeName,
-                icon: Icons.fact_check_outlined
-              ),
-              (
-                route: AdminFinanceDataQualityWidget.routeName,
-                icon: Icons.rule_folder_outlined
-              ),
-              (
-                route: AdminSettlementsWidget.routeName,
-                icon: Icons.receipt_long_outlined
+                route: AdminFinanceTripLedgerWidget.routeName,
+                icon: Icons.view_list_outlined
               ),
               (
                 route: AdminFinanceReceivablesWidget.routeName,
                 icon: Icons.account_balance_wallet_outlined
               ),
               (
-                route: AdminFinanceAdjustmentsWidget.routeName,
-                icon: Icons.tune_rounded
+                route: AdminFinanceReconciliationWidget.routeName,
+                icon: Icons.fact_check_outlined
               ),
               (
-                route: AdminFinancialPeriodsWidget.routeName,
-                icon: Icons.date_range_outlined
+                route: AdminSettlementsWidget.routeName,
+                icon: Icons.receipt_long_outlined
               ),
               (
                 route: AdminAgentFinanceWidget.routeName,
@@ -370,6 +380,23 @@ class _Menu2WidgetState extends State<Menu2Widget> {
             ],
           ),
           (
+            key: 'finance_controls',
+            items: [
+              (
+                route: AdminFinanceAdjustmentsWidget.routeName,
+                icon: Icons.tune_rounded
+              ),
+              (
+                route: AdminFinancialPeriodsWidget.routeName,
+                icon: Icons.date_range_outlined
+              ),
+              (
+                route: AdminFinanceDataQualityWidget.routeName,
+                icon: Icons.rule_folder_outlined
+              ),
+            ],
+          ),
+          (
             key: 'legacy',
             items: [
               (
@@ -382,7 +409,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
             key: 'reports',
             items: [
               (
-                route: AdminReportsHubWidget.routeName,
+                route: AdminFinanceReportsWidget.routeName,
                 icon: Icons.assessment_rounded
               ),
               (

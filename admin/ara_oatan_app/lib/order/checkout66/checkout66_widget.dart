@@ -14,6 +14,9 @@ import '/core/toury_active_booking_guard.dart';
 import '/components/touri_checkout_payment_section.dart';
 import '/core/toury_async_action_guard.dart';
 import '/core/toury_checkout_state.dart';
+import '/core/toury_billable_hours.dart';
+import '/core/toury_currency.dart';
+import '/core/toury_money_format.dart';
 import '/core/toury_payment_labels.dart';
 import '/core/toury_landmark_filter.dart';
 import '/core/toury_landmark_cart.dart';
@@ -100,6 +103,8 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
   bool isCalculating = false;
   bool _isPaying = false;
   bool _isBookingCash = false;
+  /// Localization key when Google Routes failed (blocks financial finalize).
+  String? _routeErrorMessage;
   static const _payActionKey = 'payment:checkout_card';
   static const _cashActionKey = 'booking:create:cash';
 
@@ -140,6 +145,17 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
           'ux_choose_payment_method'.tr(),
           type: TouryMessageType.error,
         );
+        return;
+      }
+
+      if (!FFAppState().billingRouteReady) {
+        if (!mounted) return;
+        TouryDialogs.showSnackBar(
+          context,
+          'route_google_required'.tr(),
+          type: TouryMessageType.error,
+        );
+        unawaited(_refreshRouteMetrics());
         return;
       }
 
@@ -192,7 +208,10 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
         return;
       }
 
-      final quote = touryRecalculateCheckoutPrice();
+      final quote = () {
+        _syncBillableHoursAndPrice();
+        return touryRecalculateCheckoutPrice();
+      }();
       final payResult = await TouryPaymentExperienceService().startCardCheckout(
         context: context,
         description:
@@ -205,6 +224,8 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
         bookingHours: quote.bookingHours,
         additionalHours: FFAppState().addhors,
         orderPath: resumeId.isNotEmpty ? 'order/$resumeId' : null,
+        // Resume/retry must never reopen an expired paypage URL.
+        forceRefreshSession: resumeId.isNotEmpty,
       );
 
       if (!mounted) return;
@@ -283,6 +304,18 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
       }
       touryEnsureCashPaymentIfUnset();
       touryPrepareCheckoutState();
+      _syncBillableHoursAndPrice();
+      if (!FFAppState().billingRouteReady) {
+        if (mounted) {
+          TouryDialogs.showSnackBar(
+            context,
+            'route_google_required'.tr(),
+            type: TouryMessageType.error,
+          );
+        }
+        unawaited(_refreshRouteMetrics());
+        return;
+      }
       if (!touryCheckoutReadyForBooking()) {
         await TouryDialogs.showSelectAllOptions(context);
         return;
@@ -325,6 +358,7 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
       FFAppState().typeHgz = 0;
       FFAppState().AllowBooking = false;
       FFAppState().DriverGuideState = false;
+      FFAppState().returnToPickup = false;
       FFAppState().NsbhKsm = 0.0;
       FFAppState().totalKsm = 0;
       FFAppState().UbKsm = 0;
@@ -487,17 +521,23 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
   }
 
   String _formatMoney(num value) {
-    final amount = value.toDouble();
-    final digits = amount == amount.roundToDouble() ? 0 : 2;
-    try {
-      return NumberFormat.currency(
-        locale: context.locale.toString(),
-        symbol: FFAppState().RMZCurrency,
-        decimalDigits: digits,
-      ).format(amount);
-    } catch (_) {
-      return '${amount.toStringAsFixed(digits)} ${FFAppState().RMZCurrency}';
+    return TouryMoneyFormat.formatPlain(
+      value,
+      locale: context.locale,
+    );
+  }
+
+  /// Recalc billable hours from route ETA + selection, then price quote.
+  TouryBillableHoursApplyResult _syncBillableHoursAndPrice() {
+    final applied = touryApplyBillableHours();
+    if (mounted) {
+      // Stepper shows Customer-requested extras only (not auto-inflated).
+      final userExtra = FFAppState().userRequestedExtraHours.clamp(0, 300);
+      _model.countControllerValue = userExtra;
+      _model.textController?.text = FFAppState().saatcar.toString();
     }
+    touryRecalculateCheckoutPrice();
+    return applied;
   }
 
 // Function to calculate OSRM directly
@@ -533,10 +573,24 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
         return;
       }
 
-      // Prefer Google Routes (traffic-aware) when authenticated; OSRM as fallback.
+      // Append pickup as final stop when customer requests return-to-pickup so
+      // Google/OSRM duration matches the billed service window.
+      final routePoints = List<LatLng>.from(validation.points);
+      if (FFAppState().returnToPickup == true &&
+          touryIsValidCoordinate(origin)) {
+        final last = routePoints.isNotEmpty ? routePoints.last : null;
+        final alreadyEndsAtOrigin = last != null &&
+            (last.latitude - origin.latitude).abs() < 1e-5 &&
+            (last.longitude - origin.longitude).abs() < 1e-5;
+        if (!alreadyEndsAtOrigin) {
+          routePoints.add(origin);
+        }
+      }
+
+      // Prefer Google Routes (traffic-aware) — required for financial quote.
       if (loggedIn) {
         final googleRoute = await TouryDirectionsService.fetchRoadRouteResult(
-          validation.points,
+          routePoints,
           language: context.locale.toString(),
           region: 'sa',
           optimal: true,
@@ -549,90 +603,101 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
           if (touryRoadMetricsArePlausible(
             distanceKm: distanceKm,
             durationSeconds: googleRoute.durationSeconds.toDouble(),
-            points: validation.points,
+            points: routePoints,
           )) {
             setState(() {
               osrmTime = googleRoute.durationSeconds / 60;
               osrmDistance = distanceKm;
               _rejectedRoutePoints = validation.rejectedCount;
               isCalculating = false;
+              _routeErrorMessage = null;
             });
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!mounted || _routeCalcCancelled) return;
+              final now = DateTime.now();
               FFAppState().update(() {
+                FFAppState().routeProvider = 'google';
+                FFAppState().routeDurationMinutes = osrmTime;
+                FFAppState().routeDistanceMeters =
+                    googleRoute.distanceMeters.toDouble();
+                FFAppState().routeCalculatedAt = now;
                 FFAppState().osrmTotalTime = osrmTime;
                 FFAppState().osrmTotalDistance = distanceKm;
-                FFAppState().osrmCalculationTime = DateTime.now();
+                FFAppState().osrmCalculationTime = now;
               });
+              _syncBillableHoursAndPrice();
+              safeSetState(() {});
             });
             return;
           }
         }
       }
 
-      // Build coordinates from validated points (pickup → stops in cart order).
-      final coordinates = validation.points
-          .map((point) => '${point.longitude},${point.latitude}')
-          .join(';');
+      // OSRM is preview-only — never finalize billable hours from it.
+      try {
+        final coordinates = routePoints
+            .map((point) => '${point.longitude},${point.latitude}')
+            .join(';');
+        final url =
+            'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full&geometries=polyline&steps=false';
+        final response = await http.get(Uri.parse(url));
+        if (!mounted || _routeCalcCancelled) return;
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          if (data['code'] == 'Ok') {
+            final route = data['routes'][0];
+            final durationSeconds = TouryPolyline.asDouble(route['duration']);
+            final distanceKm =
+                touryMetersToKm(TouryPolyline.asDouble(route['distance']));
+            if (touryRoadMetricsArePlausible(
+              distanceKm: distanceKm,
+              durationSeconds: durationSeconds,
+              points: routePoints,
+            )) {
+              setState(() {
+                previewDistance = distanceKm;
+                previewTime = durationSeconds / 3600.0;
+                osrmTime = 0;
+                osrmDistance = 0;
+                isCalculating = false;
+                _rejectedRoutePoints = validation.rejectedCount;
+                _routeErrorMessage = 'route_google_required';
+              });
+              FFAppState().update(() {
+                FFAppState().routeProvider = '';
+                FFAppState().routeDurationMinutes = 0;
+                FFAppState().routeDistanceMeters = 0;
+                FFAppState().routeCalculatedAt = null;
+                FFAppState().osrmTotalTime = 0;
+                FFAppState().osrmTotalDistance = 0;
+              });
+              return;
+            }
+          }
+        }
+      } catch (e) {
+        if (kDebugMode) debugPrint('OSRM preview error: $e');
+      }
 
-      final url =
-          'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full&geometries=polyline&steps=false';
-
-      final response = await http.get(Uri.parse(url));
       if (!mounted || _routeCalcCancelled) return;
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['code'] == 'Ok') {
-          final route = data['routes'][0];
-          final durationSeconds = TouryPolyline.asDouble(route['duration']);
-          // OSRM distance is meters; store kilometers consistently in app state.
-          final distanceKm =
-              touryMetersToKm(TouryPolyline.asDouble(route['distance']));
-
-          if (!touryRoadMetricsArePlausible(
-            distanceKm: distanceKm,
-            durationSeconds: durationSeconds,
-            points: validation.points,
-          )) {
-            if (!mounted || _routeCalcCancelled) return;
-            final estimate = touryEstimateRoute(validation.points);
-            setState(() {
-              previewDistance = estimate.distanceKm;
-              previewTime = estimate.durationHours;
-              isCalculating = false;
-              _rejectedRoutePoints = validation.rejectedCount;
-            });
-            return;
-          }
-          if (!mounted || _routeCalcCancelled) return;
-          setState(() {
-            osrmTime = durationSeconds / 60;
-            osrmDistance = distanceKm;
-            _rejectedRoutePoints = validation.rejectedCount;
-            isCalculating = false;
-          });
-          // Defer app-state notify so it never runs synchronously during build.
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted || _routeCalcCancelled) return;
-            FFAppState().update(() {
-              FFAppState().osrmTotalTime = osrmTime;
-              FFAppState().osrmTotalDistance = distanceKm;
-              FFAppState().osrmCalculationTime = DateTime.now();
-            });
-          });
-        } else {
-          setState(() => isCalculating = false);
-        }
-      } else {
-        setState(() => isCalculating = false);
-      }
+      setState(() {
+        isCalculating = false;
+        _routeErrorMessage = 'route_google_required';
+      });
+      FFAppState().update(() {
+        FFAppState().routeProvider = '';
+        FFAppState().routeDurationMinutes = 0;
+        FFAppState().osrmTotalTime = 0;
+      });
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('OSRM error: $e');
+        debugPrint('Route calc error: $e');
       }
       if (!mounted || _routeCalcCancelled) return;
-      setState(() => isCalculating = false);
+      setState(() {
+        isCalculating = false;
+        _routeErrorMessage = 'route_google_required';
+      });
     }
   }
 
@@ -650,6 +715,7 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _routeCalcCancelled) return;
       FFAppState().addhors = 0;
+      FFAppState().userRequestedExtraHours = 0;
       if (FFAppState().saatcar > 0) {
         FFAppState().totalsaat = FFAppState().saatcar;
       }
@@ -816,10 +882,11 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
           final extra = count.clamp(0, 300);
           safeSetState(() => _model.countControllerValue = extra);
           FFAppState().update(() {
+            FFAppState().userRequestedExtraHours = extra;
             FFAppState().addhors = extra;
             FFAppState().totalsaat = FFAppState().saatcar + extra;
           });
-          touryRecalculateCheckoutPrice();
+          _syncBillableHoursAndPrice();
           safeSetState(() {});
         },
         stepSize: 1,
@@ -2111,6 +2178,75 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                       tone: TouryBannerTone.warning,
                     ),
                   ),
+                if (_routeErrorMessage != null ||
+                    (FFAppState().billingRouteRequired &&
+                        !FFAppState().billingRouteIsGoogle))
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(7, 8, 7, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TouryHelpBanner(
+                          message:
+                              (_routeErrorMessage ?? 'route_google_required')
+                                  .tr(),
+                          icon: Icons.alt_route,
+                          tone: TouryBannerTone.warning,
+                        ),
+                        Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: TextButton.icon(
+                            onPressed: () => unawaited(_refreshRouteMetrics()),
+                            icon: const Icon(Icons.refresh, size: 18),
+                            label: Text('retry'.tr()),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                Builder(
+                  builder: (context) {
+                    final routeMinutes = FFAppState().billingRouteIsGoogle
+                        ? FFAppState().routeDurationMinutes.round()
+                        : 0;
+                    if (routeMinutes <= 0) return const SizedBox.shrink();
+                    final selected =
+                        (FFAppState().saatcar + FFAppState().addhors)
+                            .clamp(0, 24 * 30)
+                            .toInt();
+                    final billable = TouryBillableHours.compute(
+                      userSelectedHours: selected,
+                      vehicleMinimumHours: FFAppState().saatcar,
+                      estimatedRouteDurationMinutes: routeMinutes,
+                    );
+                    final forced = TouryBillableHours.routeForcedIncrease(
+                      userSelectedHours: selected,
+                      vehicleMinimumHours: FFAppState().saatcar,
+                      estimatedRouteDurationMinutes: routeMinutes,
+                      billableHours: billable,
+                    );
+                    if (!forced && FFAppState().totalsaat == selected) {
+                      return const SizedBox.shrink();
+                    }
+                    if (!forced) return const SizedBox.shrink();
+                    return Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(7, 8, 7, 0),
+                      child: TouryHelpBanner(
+                        message: touryBillableHoursRouteExplanation(
+                          estimatedRouteDurationMinutes: routeMinutes,
+                          billableHours: FFAppState().totalsaat > 0
+                              ? FFAppState().totalsaat
+                              : billable,
+                          tr: (key, {namedArgs}) =>
+                              key.tr(namedArgs: namedArgs),
+                        ),
+                        icon: Icons.schedule_rounded,
+                        tone: TouryBannerTone.info,
+                      ),
+                    );
+                  },
+                ),
                 if ((FFAppState().villnow != null) &&
                     (FFAppState().typecarRev != null))
                   Padding(
@@ -2312,8 +2448,14 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                                   .toString(),
                                               'max':
                                                   FFAppState().UbKsm.toString(),
-                                              'currency':
-                                                  FFAppState().RMZCurrency,
+                                              'currency': TouryCurrency
+                                                  .symbolForCode(
+                                                TouryMoneyFormat
+                                                    .resolveCurrencyCode(),
+                                                override:
+                                                    FFAppState().RMZCurrency,
+                                                locale: context.locale,
+                                              ),
                                             },
                                           ),
                                           style: typography.bodySmall.copyWith(
@@ -2334,6 +2476,83 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                     ).animateOnPageLoad(
                         animationsMap['containerOnPageLoadAnimation1']!),
                   ),
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    DsSpacing.md,
+                    DsSpacing.sm,
+                    DsSpacing.md,
+                    DsSpacing.xs,
+                  ),
+                  child: Material(
+                    color: DsColors.of(context).surface,
+                    borderRadius: DsRadius.large,
+                    child: InkWell(
+                      borderRadius: DsRadius.large,
+                      onTap: () {
+                        FFAppState().update(() {
+                          FFAppState().returnToPickup =
+                              !FFAppState().returnToPickup;
+                        });
+                        safeSetState(() {});
+                        // Recalc Google/OSRM with/without return leg, then hours.
+                        unawaited(_calculateOsrm());
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(DsSpacing.md),
+                        decoration: BoxDecoration(
+                          borderRadius: DsRadius.large,
+                          border: Border.all(
+                            color: DsColors.of(context)
+                                .primary
+                                .withValues(alpha: 0.22),
+                          ),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              FFAppState().returnToPickup
+                                  ? Icons.check_box_rounded
+                                  : Icons.check_box_outline_blank_rounded,
+                              color: DsColors.of(context).primary,
+                              size: 26,
+                            ),
+                            const SizedBox(width: DsSpacing.sm),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'return_to_my_pickup'.tr(),
+                                    style: DsTypography.of(context)
+                                        .titleSmall
+                                        .copyWith(
+                                          fontWeight: FontWeight.w800,
+                                          color: DsColors.of(context)
+                                              .textPrimary,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'return_to_my_pickup_hint'.tr(),
+                                    style: DsTypography.of(context)
+                                        .bodySmall
+                                        .copyWith(
+                                          color: DsColors.of(context)
+                                              .textSecondary,
+                                          height: 1.35,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 if (FFAppState().addcart >= 1)
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(
@@ -2732,11 +2951,25 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                           ),
                           TouryPriceSummaryRow(
                             label: 'Driver Fee:'.tr(),
-                            value: _formatMoney(FFAppState().totalmndob3),
+                            valueWidget: TouryMoneyText(
+                              amount: FFAppState().totalmndob3,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: TouryBrand.textPrimaryFor(context),
+                              ),
+                            ),
                           ),
                           TouryPriceSummaryRow(
                             label: 'checkout_app_fee'.tr(),
-                            value: _formatMoney(FFAppState().totalapp2),
+                            valueWidget: TouryMoneyText(
+                              amount: FFAppState().totalapp2,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: TouryBrand.textPrimaryFor(context),
+                              ),
+                            ),
                           ),
                           if (FFAppState().isVat == true)
                             TouryPriceSummaryRow(
@@ -2745,7 +2978,14 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                                   'rate': FFAppState().VatDolh.toString(),
                                 },
                               ),
-                              value: _formatMoney(FFAppState().vat2),
+                              valueWidget: TouryMoneyText(
+                                amount: FFAppState().vat2,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: TouryBrand.textPrimaryFor(context),
+                                ),
+                              ),
                             ),
                           if ((FFAppState().addhors >= 1) &&
                               (FFAppState().NsbhKsm >= 1.0))
@@ -2753,7 +2993,14 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                               label: FFLocalizations.of(context).getText(
                                 'fy9yp6wj' /* Total Deductions: */,
                               ),
-                              value: _formatMoney(FFAppState().totalKsm2),
+                              valueWidget: TouryMoneyText(
+                                amount: FFAppState().totalKsm2,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: TouryBrand.error,
+                                ),
+                              ),
                               isDeduction: true,
                             ),
                           const Padding(
@@ -2767,7 +3014,14 @@ class _Checkout66WidgetState extends State<Checkout66Widget>
                             label: FFLocalizations.of(context).getText(
                               'jdq5i83p' /* Total Amount: */,
                             ),
-                            value: _formatMoney(FFAppState().totalAllnow3),
+                            valueWidget: TouryMoneyText(
+                              amount: FFAppState().totalAllnow3,
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800,
+                                color: TouryBrand.teal,
+                              ),
+                            ),
                             isTotal: true,
                           ),
                           Padding(

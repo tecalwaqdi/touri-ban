@@ -93,7 +93,8 @@ flutter build ios --release --no-codesign \
   --dart-define=ENABLE_ONLINE_PAYMENT=true \
   --dart-define=PAYMENT_BACKEND=external_api \
   --dart-define=PAYMENT_API_BASE_URL=https://touri-ban.onrender.com \
-  --dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=true \
+  --dart-define=MOBILE_PAYMENT_MODE=hpp \
+  --dart-define=OPEN_PAYMENT_IN_EXTERNAL_BROWSER=false \
   --dart-define=TOURY_CLIENT_CASH_FALLBACK=true
 
 archive_export "$CUSTOMER_APP" "$CUSTOMER_OUT" "v32"

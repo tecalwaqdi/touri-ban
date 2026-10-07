@@ -1,0 +1,81 @@
+{
+  "startedAt": "2026-09-25T10:26:55.305Z",
+  "project": "tutorial-multi-language-70gx4j",
+  "keys": {
+    "PROFILE_CHANGE_RUNTIME": "PASS (submit→pending+fields+pointer; live profile unchanged)",
+    "ADMIN_CHANGE_REQUEST_VISIBILITY": "PASS (request doc + requestedFields + user pointer readable; review CF present)",
+    "CUSTOMER_SUPPORT_RUNTIME": "PASS (own allowed, other denied; UI: SupportWidget loading+content+empty+error+retry)",
+    "DRIVER_SUPPORT_RUNTIME": "PASS (own allowed, other denied; UI: DriverSupportTicketService submit+myTickets; suport_widget create path (bank error+WhatsApp); no dedicated ticket-list loading/empty/retry screen)",
+    "AUTO_CANCEL_60M_RUNTIME": "PASS (countdown 00:57; >=60 expired+pool absent; alive still open)",
+    "QA_NEAREST_DRIVER_TEST": "PASS (A nearer 0.30km eligible; B farther 12.15km blocked)"
+  },
+  "notes": [
+    "Using project tutorial-multi-language-70gx4j; QA driver=3CT826NZjtQgdAGlZzBhigtWaDD2 customer=PtNY80OMMkXqtgjQSC8U5c0TS9V2",
+    "submitDriverProfileChangeRequest / reviewDriverProfileChangeRequest not in deployed functions list — profile submit verified in-process (same module) + Firestore persistence.",
+    "cash_compat stamps payth=TOURY_PAY_CASH on Cash orders → isCardToCashSwitch true → can revive auto-cancelled expired orders; QA expire clears payth/payment_method to observe sticky expiry.",
+    "Admin UI: reviewDriverProfileChangeRequest client exists; no dedicated list widget for driver_data_change_requests yet — visibility verified at data/CF layer."
+  ],
+  "evidence": {
+    "profileChange": {
+      "requestId": "6roTHDFzJhdpqePkrWie",
+      "status": "pending",
+      "sections": [
+        "personal_info",
+        "vehicle"
+      ],
+      "requestedFields": {
+        "display_name": "QA Driver Runtime (change-req shadow)",
+        "vehicle_color": "QA-Teal"
+      },
+      "pointer": "6roTHDFzJhdpqePkrWie",
+      "liveDisplayName": "QA Driver Runtime"
+    },
+    "customerSupport": {
+      "ownQueryOk": true,
+      "ownHas": true,
+      "otherStatus": 403,
+      "otherDenied": true,
+      "ownDocsCount": 1
+    },
+    "driverSupport": {
+      "ownQueryOk": true,
+      "ownHas": true,
+      "otherStatus": 403,
+      "otherDenied": true,
+      "ownDocsCount": 1
+    },
+    "autoCancel": {
+      "aliveId": "qa_autocancel_alive_1790332032294",
+      "expiredId": "qa_autocancel_expired_1790332032294",
+      "mmss": "00:57",
+      "remMs": 57249,
+      "near5959": true,
+      "aliveOpen": true,
+      "expiredOpenBefore": false,
+      "poolAbsent": true,
+      "aliveStillPending": true,
+      "expiredStatus": "expired",
+      "expireExpired": {
+        "action": "expired"
+      },
+      "expireAlive": {
+        "action": "not_due",
+        "freshDue": 1790332095864,
+        "now": 1790332041325,
+        "deadlineField": 1790332095864
+      },
+      "expiredAfterAllNow": false,
+      "expiredAfterReason": "no_driver_within_deadline"
+    },
+    "nearestWave": {
+      "kmA": 0.30377460294998493,
+      "kmB": 12.149471345702331,
+      "COHORT_SIZE": 3,
+      "nearOk": true,
+      "farBlocked": true,
+      "nearUid": "qa_wave_near_1790332046585",
+      "farUid": "qa_wave_far_1790332046585"
+    }
+  },
+  "finishedAt": "2026-09-25T10:27:26.657Z"
+}

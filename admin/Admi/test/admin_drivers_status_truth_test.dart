@@ -147,13 +147,14 @@ void main() {
       expect(blockers, contains('adm_drv_blocker_suspended'));
     });
 
-    test('operational activate does not rewrite registration_status', () {
+    test('operational activate aligns lagged registration_status to approved', () {
       final p = AdminDriverReviewActions.operationalActivatePatch(
         adminUid: 'admin1',
       );
       expect(p['actev_mndob'], isTrue);
       expect(p['account_status'], 'active');
-      expect(p.containsKey('registration_status'), isFalse);
+      // Online-toggle rules require registration_status=approved on this patch.
+      expect(p['registration_status'], 'approved');
     });
 
     test('operational deactivate keeps registration axis separate', () {

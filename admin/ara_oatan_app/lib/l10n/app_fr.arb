@@ -1964,11 +1964,11 @@
   "@ux_min_hours": {
     "description": "UI string (source key: ux_min_hours)"
   },
-  "ux_car_list_empty_title": "Aucune voiture disponible",
+  "ux_car_list_empty_title": "No vehicle types available",
   "@ux_car_list_empty_title": {
     "description": "UI string (source key: ux_car_list_empty_title)"
   },
-  "ux_car_list_empty_msg": "Aucune voiture n'est disponible pour le moment. Veuillez réessayer plus tard",
+  "ux_car_list_empty_msg": "No vehicle types are currently available for this country",
   "@ux_car_list_empty_msg": {
     "description": "UI string (source key: ux_car_list_empty_msg)"
   },
@@ -3405,5 +3405,13 @@
         "example": "3"
       }
     }
+  },
+  "ux_vehicle_select_country_title": "Select a country",
+  "@ux_vehicle_select_country_title": {
+    "description": "UI string (source key: ux_vehicle_select_country_title)"
+  },
+  "ux_vehicle_select_country_msg": "Select a country to view vehicle types",
+  "@ux_vehicle_select_country_msg": {
+    "description": "UI string (source key: ux_vehicle_select_country_msg)"
   }
 }

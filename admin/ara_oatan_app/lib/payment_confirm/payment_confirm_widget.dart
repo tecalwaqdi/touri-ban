@@ -9,6 +9,7 @@ import '/core/toury_payment_notifications.dart';
 import '/core/toury_payment_verify.dart';
 import '/core/toury_ngenius_service.dart';
 import '/core/toury_order_integration.dart';
+import '/core/toury_order_meta.dart';
 import '/core/toury_wallet_ngenius.dart';
 import '/core/payments/payment_api_client.dart';
 import 'dart:async';
@@ -37,6 +38,7 @@ class PaymentConfirmWidget extends StatefulWidget {
     this.fromWebView,
     this.awaitingExternalHpp,
     this.sessionId,
+    this.autoResumeStaleHpp,
   });
 
   /// true = closed/failed HPP without verified pay — keep unpaid order + retry CTA.
@@ -47,6 +49,9 @@ class PaymentConfirmWidget extends StatefulWidget {
 
   /// Optional payment session id from deep-link return (external HPP).
   final String? sessionId;
+
+  /// Dead N-Genius link detected — mint a fresh session via forceRefreshSession.
+  final bool? autoResumeStaleHpp;
 
   static String routeName = 'paymentConfirm';
   static String routePath = '/paymentConfirm';
@@ -72,6 +77,9 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
   static const int _maxPollAttempts = 10;
   static const Duration _pollInterval = Duration(seconds: 2);
 
+  /// Cap automatic stale-HPP force-refresh so a broken outlet cannot loop.
+  static int _staleHppAutoResumeAttempts = 0;
+
   bool get _awaitingHpp => widget.awaitingExternalHpp == true;
 
   @override
@@ -95,6 +103,32 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       FFAppState().paymentInProgress = false;
       safeSetState(() {});
+
+      if (widget.autoResumeStaleHpp == true && !_isExtraHours) {
+        if (mounted) {
+          safeSetState(() => _phase = _PaymentConfirmPhase.pending);
+        }
+        if (_staleHppAutoResumeAttempts >= 1) {
+          if (mounted) {
+            TouryDialogs.showSnackBar(
+              context,
+              'checkout_payment_link_expired'.tr(),
+              type: TouryMessageType.warning,
+            );
+          }
+          return;
+        }
+        _staleHppAutoResumeAttempts++;
+        if (mounted) {
+          TouryDialogs.showSnackBar(
+            context,
+            'checkout_payment_link_expired'.tr(),
+            type: TouryMessageType.warning,
+          );
+        }
+        await _retryPayment();
+        return;
+      }
 
       if (widget.fromWebView == true && !_isExtraHours) {
         FFAppState().DonePay = false;
@@ -224,9 +258,14 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
       if (!mounted || gen != _verifyGeneration) return;
       _model.verifyResponse = verify.response;
 
-      // Bounded poll — never indefinite spinner (HPP Safari loss / slow webhook).
-      final shouldPoll = verify.isPending &&
-          (_awaitingHpp || TouryPaymentFlags.openPaymentInExternalBrowser);
+      // Bounded poll — never indefinite spinner (HPP Safari / SDK webhook lag).
+      final shouldPoll = touryShouldPollPaymentStatus(
+        isPending: verify.isPending || verify.isError,
+        awaitingExternalHpp: _awaitingHpp,
+        openPaymentInExternalBrowser:
+            TouryPaymentFlags.openPaymentInExternalBrowser,
+        preferMobileSdk: TouryPaymentFlags.preferMobileSdk,
+      );
       if (shouldPoll) {
         for (var i = 0; i < _maxPollAttempts && mounted; i++) {
           if (gen != _verifyGeneration) return;
@@ -277,7 +316,8 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
         return;
       }
 
-      if (verify.isPending) {
+      // Transient API/network errors → recoverable pending, not a dead-end.
+      if (verify.isRecoverablePending) {
         FFAppState().DonePay = false;
         safeSetState(() => _phase = _PaymentConfirmPhase.pending);
         return;
@@ -285,7 +325,8 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
 
       if (!verify.isPaid) {
         FFAppState().DonePay = false;
-        FFAppState().clearSensitivePaymentSession();
+        // Keep pendingPaymentOrderId so retry/orders resume still works.
+        FFAppState().paymentInProgress = false;
         safeSetState(() => _phase = _PaymentConfirmPhase.failed);
         await touryShowPaymentIncompleteSheet(
           context,
@@ -350,6 +391,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
         FFAppState().totalmndob3 = 0.0;
         FFAppState().clearPendingPaymentOrder();
         FFAppState().clearSensitivePaymentSession();
+        _staleHppAutoResumeAttempts = 0;
         if (!mounted || gen != _verifyGeneration) return;
         safeSetState(() => _phase = _PaymentConfirmPhase.success);
       } on PaymentApiException catch (e) {
@@ -372,13 +414,14 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
     } catch (e, st) {
       debugPrint('PaymentConfirm verify($reason): $e\n$st');
       FFAppState().DonePay = false;
-      FFAppState().clearSensitivePaymentSession();
+      FFAppState().paymentInProgress = false;
+      // Keep session ids — user can verify/retry after a transient failure.
       if (mounted && gen == _verifyGeneration) {
-        safeSetState(() => _phase = _PaymentConfirmPhase.failed);
+        safeSetState(() => _phase = _PaymentConfirmPhase.pending);
         TouryDialogs.showSnackBar(
           context,
-          'payment_order_save_error'.tr(),
-          type: TouryMessageType.error,
+          'payment_pending_body'.tr(),
+          type: TouryMessageType.warning,
         );
       }
     } finally {
@@ -387,10 +430,21 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
   }
 
   Future<void> _goToOrders() async {
+    FFAppState().paymentInProgress = false;
+    if (!mounted) return;
     context.goNamed(List22TaskOverviewResponsiveWidget.routeName);
   }
 
+  /// Leave payment UI without cancelling gateway (safe while webhook may land).
+  Future<void> _leavePaymentSafely() async {
+    _verifyGeneration++;
+    FFAppState().paymentInProgress = false;
+    if (!mounted) return;
+    await _goToBooking();
+  }
+
   Future<void> _goToBooking() async {
+    FFAppState().paymentInProgress = false;
     final id = _isExtraHours
         ? (_extraHoursOrderId ?? FFAppState().revOrderSaatExtr?.id ?? '')
         : (FFAppState().pendingPaymentOrderId.isNotEmpty
@@ -419,7 +473,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
 
   Future<void> _cancelAttempt() async {
     if (_isExtraHours) {
-      await _goToBooking();
+      await _leavePaymentSafely();
       return;
     }
     final ok = await showDialog<bool>(
@@ -448,14 +502,16 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
       bookingId: bookingId.isNotEmpty ? bookingId : null,
     );
     if (!mounted) return;
+    FFAppState().paymentInProgress = false;
     TouryDialogs.showSnackBar(
       context,
       done
           ? 'payment_attempt_cancelled'.tr()
-          : 'checkout_payment_temporarily_unavailable'.tr(),
-      type: done ? TouryMessageType.success : TouryMessageType.error,
+          : 'payment_back_to_booking'.tr(),
+      type: done ? TouryMessageType.success : TouryMessageType.info,
     );
-    if (done) await _goToBooking();
+    // Always leave — never trap the user if cancel API is down.
+    await _goToBooking();
   }
 
   Future<void> _retryPayment() async {
@@ -463,12 +519,15 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
       await _goToBooking();
       return;
     }
-    final id = _isExtraHours
-        ? (_extraHoursOrderId ?? FFAppState().revOrderSaatExtr?.id ?? '')
-        : (FFAppState().pendingPaymentOrderId.isNotEmpty
-            ? FFAppState().pendingPaymentOrderId
-            : FFAppState().paymentOrderId);
-    if (id.trim().isEmpty) {
+    final bookingId = FFAppState().pendingPaymentOrderId.trim();
+    final sessionId = FFAppState().paymentOrderId.trim();
+    final id = bookingId.isNotEmpty ? bookingId : sessionId;
+    if (id.isEmpty) {
+      TouryDialogs.showSnackBar(
+        context,
+        'payment_incomplete_go_orders'.tr(),
+        type: TouryMessageType.info,
+      );
       await _goToOrders();
       return;
     }
@@ -477,9 +536,37 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
         OrderRecord.collection.doc(id),
       );
       if (!mounted) return;
+      if (!snap.isAwaitingPayment) {
+        // Already paid / no longer payable — verify instead of a dead retry.
+        await _runVerify(reason: 'retry_not_awaiting');
+        return;
+      }
       final result =
           await touryRetryUnpaidOrderPayment(context: context, order: snap);
       if (!mounted) return;
+      if (!result.success) {
+        final status = (result.status ?? '').toLowerCase();
+        final msg = result.errorMessage ??
+            'checkout_payment_temporarily_unavailable'.tr();
+        // Stale session / not payable: leave to booking with a clear message.
+        if (status == 'not_awaiting' || status == 'not_payable') {
+          TouryDialogs.showSnackBar(
+            context,
+            msg,
+            type: TouryMessageType.info,
+          );
+          await _leavePaymentSafely();
+          return;
+        }
+        TouryDialogs.showSnackBar(
+          context,
+          msg,
+          type: status == 'cancelled'
+              ? TouryMessageType.warning
+              : TouryMessageType.error,
+        );
+        return;
+      }
       await touryNavigateAfterCardPayment(
         context,
         result: result,
@@ -487,11 +574,13 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
       );
     } catch (_) {
       if (!mounted) return;
+      // Session id ≠ Firestore order id after cold resume — offer orders path.
       TouryDialogs.showSnackBar(
         context,
-        'checkout_payment_temporarily_unavailable'.tr(),
-        type: TouryMessageType.error,
+        'payment_incomplete_go_orders'.tr(),
+        type: TouryMessageType.warning,
       );
+      await _goToOrders();
     }
   }
 
@@ -508,11 +597,29 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
             canPop: false,
             onPopInvokedWithResult: (didPop, _) {
               if (didPop) return;
-              unawaited(_goToBooking());
+              unawaited(_leavePaymentSafely());
             },
             child: Scaffold(
               key: scaffoldKey,
               backgroundColor: colors.scaffold,
+              appBar: DsAppBar(
+                automaticallyImplyLeading: false,
+                title: _phase == _PaymentConfirmPhase.success
+                    ? FFLocalizations.of(context).getText('4z6c8kax')
+                    : (_phase == _PaymentConfirmPhase.failed
+                        ? FFLocalizations.of(context).getText('bcn7sdi9')
+                        : 'payment_pending_title'.tr()),
+                leading: DsIconButton(
+                  icon: DsIcons.back,
+                  onPressed: () {
+                    if (_phase == _PaymentConfirmPhase.success) {
+                      unawaited(_goToOrders());
+                    } else {
+                      unawaited(_leavePaymentSafely());
+                    }
+                  },
+                ),
+              ),
               body: SafeArea(
                 top: true,
                 child: Center(
@@ -585,28 +692,25 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
             textAlign: TextAlign.center,
             style: typography.bodyMedium.copyWith(color: colors.textSecondary),
           ),
-          if (_awaitingHpp) ...[
-            const SizedBox(height: DsSpacing.xxl),
-            DsButton.primary(
-              label: 'checkout_check_payment_status'.tr(),
-              icon: Icons.refresh_rounded,
-              size: DsButtonSize.lg,
-              expanded: true,
-              onPressed: () => _runVerify(reason: 'manual'),
-            ),
-            const SizedBox(height: DsSpacing.sm),
-            DsButton.outlined(
-              label: 'payment_back_to_booking'.tr(),
-              size: DsButtonSize.lg,
-              expanded: true,
-              onPressed: _goToBooking,
-            ),
+          const SizedBox(height: DsSpacing.xxl),
+          DsButton.primary(
+            label: 'checkout_check_payment_status'.tr(),
+            icon: Icons.refresh_rounded,
+            size: DsButtonSize.lg,
+            expanded: true,
+            onPressed: () => _runVerify(reason: 'manual'),
+          ),
+          const SizedBox(height: DsSpacing.sm),
+          DsButton.outlined(
+            label: 'payment_back_to_booking'.tr(),
+            size: DsButtonSize.lg,
+            expanded: true,
+            onPressed: _leavePaymentSafely,
+          ),
+          if (!_isExtraHours) ...[
             const SizedBox(height: DsSpacing.sm),
             DsButton.text(
-              label: (_isExtraHours
-                      ? 'payment_back_to_booking'
-                      : 'checkout_cancel_payment_attempt')
-                  .tr(),
+              label: 'checkout_cancel_payment_attempt'.tr(),
               size: DsButtonSize.lg,
               onPressed: _cancelAttempt,
             ),
@@ -675,7 +779,7 @@ class _PaymentConfirmWidgetState extends State<PaymentConfirmWidget>
           DsButton.text(
             label: 'payment_back_to_booking'.tr(),
             size: DsButtonSize.lg,
-            onPressed: _goToBooking,
+            onPressed: _leavePaymentSafely,
           ),
         ],
       ),

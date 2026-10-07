@@ -1,0 +1,92 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '/core/driver_i18n.dart';
+import '/core/toury_support_policy.dart';
+
+/// Support number comes from the country's active Agent, not a country field.
+class TourySupportLink {
+  static const saudiFallbackDigits = '966533356126';
+
+  static String normalizeDigits(String raw) {
+    var digits = raw.replaceAll(RegExp(r'\D'), '');
+    if (digits.startsWith('00')) digits = digits.substring(2);
+    return digits;
+  }
+
+  static String? countryPathOf(Object? ref) {
+    if (ref is DocumentReference) return ref.path;
+    final text = ref?.toString().trim() ?? '';
+    if (text.startsWith('countries/')) return text;
+    return null;
+  }
+
+  static Future<TourySupportResolution> resolveForCountryPath(
+    String? countryPath,
+  ) async {
+    final path = (countryPath ?? '').trim();
+    String? iso;
+    String? agentPhone;
+    if (path.isNotEmpty) {
+      try {
+        final country = await FirebaseFirestore.instance.doc(path).get();
+        final data = country.data();
+        iso = '${data?['iso_code'] ?? data?['iso2'] ?? ''}';
+      } catch (_) {}
+      agentPhone = await _lookupAgent(path);
+    }
+    return TourySupportPolicy.resolve(
+      iso2: iso,
+      countryPath: path,
+      agentPhone: agentPhone,
+    );
+  }
+
+  static Future<String?> _lookupAgent(String path) async {
+    try {
+      Query<Map<String, dynamic>> base(Object country) =>
+          FirebaseFirestore.instance
+              .collection('user')
+              .where('Isagent', isEqualTo: true)
+              .where('Rev_dloh_agent', isEqualTo: country)
+              .where('actev_user', isEqualTo: true)
+              .limit(1);
+      var q = await base(path).get();
+      if (q.docs.isEmpty) {
+        q = await base(FirebaseFirestore.instance.doc(path)).get();
+      }
+      if (q.docs.isEmpty) return null;
+      return '${q.docs.first.data()['phone_number'] ?? ''}';
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Uri href(String digits, String message) {
+    return Uri.parse(
+      'https://wa.me/$digits?text=${Uri.encodeComponent(message)}',
+    );
+  }
+
+  static Future<void> open(
+    BuildContext context, {
+    Object? countryPath,
+  }) async {
+    final message = driverTr(context, 'support.whatsapp_message');
+    final resolved = await resolveForCountryPath(
+      countryPathOf(countryPath) ??
+          (countryPath is String ? countryPath : null),
+    );
+    if (!resolved.ok || resolved.digits == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(driverTr(context, 'support.not_configured'))),
+        );
+      }
+      return;
+    }
+    final uri = href(resolved.digits!, message);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+}

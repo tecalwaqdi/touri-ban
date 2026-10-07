@@ -5,6 +5,12 @@ analyzer:
   exclude:
     - build/**
     - .dart_tool/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
   errors:
     invalid_annotation_target: ignore
     unused_import: ignore

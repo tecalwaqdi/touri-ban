@@ -20,36 +20,11 @@ class CreateInvoiceCall {
     String? yarsCARD = '',
     String? monthCard = '',
   }) async {
-    const ffApiRequestBody = '''
-{
-  "identityNumber": "7006309764",
-  "commercialRecordNumber": "4031224235",
-  "commercialRecordIssueDateHijri": "1440-07-07",
-  "phoneNumber": "+966506279585",
-  "extensionNumber": "1",
-  "emailAddress": "ahmdrr777@gmail.com",
-  "managerName": "محمد احمد امين عدنان جوير",
-  "managerPhoneNumber": "+966506279585",
-  "managerMobileNumber": "+966506279585",
-  "activity": "SPECIALITY_TRANSPORT"
-}''';
-    return ApiManager.instance.makeApiCall(
-      callName: 'Create Invoice',
-      apiUrl: 'https://wasl.tga.gov.sa/api/tracking/v1/operating-companies',
-      callType: ApiCallType.POST,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': '',
-      },
-      params: {},
-      body: ffApiRequestBody,
-      bodyType: BodyType.JSON,
-      returnBody: true,
-      encodeBodyUtf8: false,
-      decodeUtf8: false,
-      cache: false,
-      isStreamingApi: false,
-      alwaysAllowBody: false,
+    return const ApiCallResponse(
+      {'error': 'LEGACY_TRACKING_DIRECT_CALL_DISABLED'},
+      {},
+      410,
+      exception: 'LEGACY_TRACKING_DIRECT_CALL_DISABLED',
     );
   }
 
@@ -61,47 +36,11 @@ class CreateInvoiceCall {
 
 class ApiWasalCall {
   static Future<ApiCallResponse> call() async {
-    const ffApiRequestBody = '''
-{
-  "sequenceNumber": "609281120",
-  "driverId": "1098876947",
-  "tripId": "4",
-  "distanceInMeters": 5100,
-  "durationInSeconds": 3600,
-  "customerRating": 1,
-  "customerWaitingTimeInSeconds": 5,
-  "originCityNameInArabic": "حائل",
-  "destinationCityNameInArabic": "حائل",
-  "originLatitude": 27.499814978014555,
-  "originLongitude": 41.71623955619158,
-  "destinationLatitude": 27.49288666817404,
-  "destinationLongitude": 41.72284851910663,
-  "pickupTimestamp": "2024-11-21T12:35:00.000",
-  "dropoffTimestamp": "2024-11-21T13:35:00.000",  
-  "tripCost": 300,
-  "startedWhen": "2024-11-20T12:35:05.000"
-}
-''';
-    return ApiManager.instance.makeApiCall(
-      callName: 'api wasal',
-      apiUrl: 'https://wasl.api.elm.sa/api/dispatching/v2/trips',
-      callType: ApiCallType.POST,
-      headers: {
-        'Content-Type': 'application/json',
-        'client-id': '',
-        'app-id': '',
-        'app-key': '',
-        'Access-Control-Allow-Origin': '*',
-      },
-      params: {},
-      body: ffApiRequestBody,
-      bodyType: BodyType.JSON,
-      returnBody: true,
-      encodeBodyUtf8: false,
-      decodeUtf8: false,
-      cache: false,
-      isStreamingApi: false,
-      alwaysAllowBody: false,
+    return const ApiCallResponse(
+      {'error': 'DIRECT_WASL_DISPATCH_DISABLED'},
+      {},
+      410,
+      exception: 'DIRECT_WASL_DISPATCH_DISABLED',
     );
   }
 }

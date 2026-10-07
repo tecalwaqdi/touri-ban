@@ -320,7 +320,7 @@ class _DocRow extends StatelessWidget {
               if (result.errorDetail != null) ...[
                 const SizedBox(height: 8),
                 Text(
-                  result.userMessageAr,
+                  uiTr(context, result.userMessageAr),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
@@ -344,7 +344,7 @@ class _DocRow extends StatelessWidget {
 
     final url = result.url ?? '';
     if (url.isEmpty) {
-      return Center(child: Text(result.userMessageAr));
+      return Center(child: Text(uiTr(context, result.userMessageAr)));
     }
 
     // Prefer Auth SDK bytes over anonymous HTTPS (avoids CORS / 403 noise).
@@ -393,7 +393,7 @@ class _DocRow extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(result.userMessageAr),
+            Text(uiTr(ctx, result.userMessageAr)),
             if ((result.errorDetail ?? '').isNotEmpty) ...[
               const SizedBox(height: 12),
               SelectableText(
@@ -415,7 +415,7 @@ class _DocRow extends StatelessWidget {
               slot.storagePath.isNotEmpty)
             TextButton(
               onPressed: () async {
-                final buf = StringBuffer(result.userMessageAr);
+                final buf = StringBuffer(uiTr(ctx, result.userMessageAr));
                 if ((result.errorDetail ?? '').isNotEmpty) {
                   buf.writeln();
                   buf.write(result.errorDetail);

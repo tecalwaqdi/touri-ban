@@ -99,12 +99,24 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                uiTr(
-                  context,
-                  useCanonical
-                      ? 'رحلات مكتملة (V2): $tripCount · مصدر: $sourceLabel · بيانات ناقصة في الجدول: $incomplete'
-                      : 'رحلات مكتملة: ${m.completedTripCount} · موثقة ماليًا: ${m.completedTripsWithCompleteFinancialData} · بيانات ناقصة: $incomplete',
-                ),
+                useCanonical
+                    ? uiTr(
+                        context,
+                        'رحلات مكتملة (V2): {count} · مصدر: {source} · بيانات ناقصة في الجدول: {incomplete}',
+                      )
+                        .replaceAll('{count}', '$tripCount')
+                        .replaceAll('{source}', '$sourceLabel')
+                        .replaceAll('{incomplete}', '$incomplete')
+                    : uiTr(
+                        context,
+                        'رحلات مكتملة: {count} · موثقة ماليًا: {documented} · بيانات ناقصة: {incomplete}',
+                      )
+                        .replaceAll('{count}', '${m.completedTripCount}')
+                        .replaceAll(
+                          '{documented}',
+                          '${m.completedTripsWithCompleteFinancialData}',
+                        )
+                        .replaceAll('{incomplete}', '$incomplete'),
                 style: AccountantFinanceText.label(theme),
               ),
               if (openSettlements > 0) ...[
@@ -112,8 +124,8 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
                 Text(
                   uiTr(
                     context,
-                    'تسويات غير مسددة: $openSettlements',
-                  ),
+                    'تسويات غير مسددة: {count}',
+                  ).replaceAll('{count}', '$openSettlements'),
                   style: AccountantFinanceText.label(theme),
                 ),
               ],
@@ -307,7 +319,8 @@ class _IncompleteWarningBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  uiTr(context, '$count رحلة تحتاج مراجعة'),
+                  uiTr(context, '{count} رحلة تحتاج مراجعة')
+                      .replaceAll('{count}', '$count'),
                   style: AccountantFinanceText.label(theme).copyWith(
                     fontSize: 12,
                   ),

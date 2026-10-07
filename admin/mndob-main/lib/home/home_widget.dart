@@ -5,11 +5,13 @@ import '/core/driver_daily_stats_service.dart';
 import '/core/driver_design_system.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_financial_summary_service.dart';
+import '/core/driver_i18n.dart';
 import '/core/driver_legacy_field_compat.dart';
 import '/core/driver_order_match.dart';
 import '/core/driver_eligibility_service.dart';
 import '/core/driver_online_state.dart';
 import '/core/driver_trip_constants.dart';
+import '/core/driver_vehicle_category.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -20,6 +22,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'home_model.dart';
 export 'home_model.dart';
+
+String _driverLocalizedVehicleLabel(BuildContext context, String raw) {
+  final label = raw.trim();
+  if (label.isEmpty) return label;
+  final viaPhrase = driverTr(context, label);
+  if (viaPhrase != label) return viaPhrase;
+  final cat = DriverVehicleCategoryMatch.fromLabel(label);
+  if (cat == DriverVehicleCategory.economy) {
+    return driverTr(context, 'vehicle_economy');
+  }
+  return label;
+}
 
 /// Create a driver dashboard page for a mobile app.
 ///
@@ -190,7 +204,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                               if (DriverOnlineState.isApproved)
                                 AuthUserStreamWidget(
                                   builder: (context) => Text(
-                                    '${driverTr(context, 'Work location')}: ${driverTr(context, 'Your current location')} - ${valueOrDefault(currentUserDocument?.textTypeCarMndob, '')} - ${valueOrDefault(currentUserDocument?.numberLohhCar, '')}',
+                                    '${driverTr(context, 'Work location')}: ${driverTr(context, 'Your current location')} - ${_driverLocalizedVehicleLabel(context, valueOrDefault(currentUserDocument?.textTypeCarMndob, ''))} - ${valueOrDefault(currentUserDocument?.numberLohhCar, '')}',
                                     style: context.dsTypography.bodyMedium
                                         .copyWith(
                                       color: context.dsColors.success,
@@ -580,9 +594,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  FFLocalizations.of(context).getText(
-                                    'oadi4ucn' /* Finance / Wallet */,
-                                  ),
+                                  driverTr(context, 'wallet.title'),
                                   style: context.dsTypography.titleLarge
                                       .copyWith(
                                     color: context.dsColors.textPrimary,
@@ -628,9 +640,9 @@ class _HomeWidgetState extends State<HomeWidget> {
                                           CrossAxisAlignment.stretch,
                                       children: [
                                         _FinanceMetricTile(
-                                          label: FFLocalizations.of(context)
-                                              .getText(
-                                            '5w1bmqit' /* Total Earnings */,
+                                          label: driverTr(
+                                            context,
+                                            'wallet.total_earnings',
                                           ),
                                           value: s.lifetime.driverNet
                                               .toStringAsFixed(2),
@@ -642,7 +654,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                         _FinanceMetricTile(
                                           label: driverTr(
                                             context,
-                                            "Today's net earnings",
+                                            'wallet.today_net_earnings',
                                           ),
                                           value: s.today.driverNetLabel,
                                           valueColor:

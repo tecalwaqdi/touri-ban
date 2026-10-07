@@ -474,6 +474,12 @@ exports.waslRequest = functions
   .https.onCall(async (data, context) => {
     requireTrustedClient(context);
     const action = text(data.action, 40);
+    if (action === "register_driver" || action === "register_trip") {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "Client-supplied Wasl dispatch payloads are disabled.",
+      );
+    }
     const target = waslActions[action];
     if (!target || !data.payload || typeof data.payload !== "object" ||
         Array.isArray(data.payload)) {

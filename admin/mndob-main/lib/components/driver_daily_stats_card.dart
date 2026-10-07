@@ -90,7 +90,10 @@ class DriverDailyStatsCard extends StatelessWidget {
               Expanded(
                 child: _StatTile(
                   label: driverTr(context, 'Work hours'),
-                  value: stats.hoursWorkedLabel,
+                  value: stats.hoursWorkedLabel(
+                    minUnit: driverTr(context, 'min_unit'),
+                    hrUnit: driverTr(context, 'hr_unit'),
+                  ),
                   icon: Icons.schedule_rounded,
                   color: colors.warning,
                 ),

@@ -1,0 +1,668 @@
+{
+  "1 SAR = local currency": {
+    "en": "1 SAR = local currency",
+    "ar": "1 ر.س = العملة المحلية",
+    "ru": "1 SAR = местная валюта",
+    "ky": "1 SAR = жергиликтүү валюта",
+    "fr": "1 SAR = devise locale",
+    "ur": "1 SAR = مقامی کرنسی",
+    "pt": "1 SAR = moeda local"
+  },
+  "A) تعرض رحلات غير مسوّاة — COMPANY_RECEIVABLE": {
+    "en": "A) Unsettled trips — COMPANY_RECEIVABLE",
+    "ar": "A) تعرض رحلات غير مسوّاة — COMPANY_RECEIVABLE",
+    "ru": "A) Нерассчитанные поездки — COMPANY_RECEIVABLE",
+    "ky": "A) Эсептешилбеген сапарлар — COMPANY_RECEIVABLE",
+    "fr": "A) Trajets non réglés — COMPANY_RECEIVABLE",
+    "ur": "A) غیر تصفیہ شدہ سفر — COMPANY_RECEIVABLE",
+    "pt": "A) Viagens não liquidadas — COMPANY_RECEIVABLE"
+  },
+  "A) تعرض رحلات غير مسوّاة — DRIVER_PAYABLE": {
+    "en": "A) Unsettled trips — DRIVER_PAYABLE",
+    "ar": "A) تعرض رحلات غير مسوّاة — DRIVER_PAYABLE",
+    "ru": "A) Нерассчитанные поездки — DRIVER_PAYABLE",
+    "ky": "A) Эсептешилбеген сапарлар — DRIVER_PAYABLE",
+    "fr": "A) Trajets non réglés — DRIVER_PAYABLE",
+    "ur": "A) غیر تصفیہ شدہ سفر — DRIVER_PAYABLE",
+    "pt": "A) Viagens não liquidadas — DRIVER_PAYABLE"
+  },
+  "B) تسويات قائمة — COMPANY_RECEIVABLE": {
+    "en": "B) Open settlements — COMPANY_RECEIVABLE",
+    "ar": "B) تسويات قائمة — COMPANY_RECEIVABLE",
+    "ru": "B) Открытые взаиморасчёты — COMPANY_RECEIVABLE",
+    "ky": "B) Ачык эсептешүүлөр — COMPANY_RECEIVABLE",
+    "fr": "B) Règlements ouverts — COMPANY_RECEIVABLE",
+    "ur": "B) کھلے تصفیے — COMPANY_RECEIVABLE",
+    "pt": "B) Liquidações abertas — COMPANY_RECEIVABLE"
+  },
+  "B) تسويات قائمة — DRIVER_PAYABLE": {
+    "en": "B) Open settlements — DRIVER_PAYABLE",
+    "ar": "B) تسويات قائمة — DRIVER_PAYABLE",
+    "ru": "B) Открытые взаиморасчёты — DRIVER_PAYABLE",
+    "ky": "B) Ачык эсептешүүлөр — DRIVER_PAYABLE",
+    "fr": "B) Règlements ouverts — DRIVER_PAYABLE",
+    "ur": "B) کھلے تصفیے — DRIVER_PAYABLE",
+    "pt": "B) Liquidações abertas — DRIVER_PAYABLE"
+  },
+  "COMPANY_RECEIVABLE = نقد محصّل غير مسوّى · DRIVER_PAYABLE = إلكتروني مدفوع غير مسوّى. المحفظة ليست مصدر محاسبة. QA مستبعد.": {
+    "en": "COMPANY_RECEIVABLE = collected cash not yet settled · DRIVER_PAYABLE = electronic fare paid and not yet settled. The wallet is not the accounting source. QA is excluded.",
+    "ar": "COMPANY_RECEIVABLE = نقد محصّل غير مسوّى · DRIVER_PAYABLE = إلكتروني مدفوع غير مسوّى. المحفظة ليست مصدر محاسبة. QA مستبعد.",
+    "ru": "COMPANY_RECEIVABLE = собранные наличные ещё не рассчитаны · DRIVER_PAYABLE = электронная оплата ещё не рассчитана. Кошелёк не является источником учёта. QA исключён.",
+    "ky": "COMPANY_RECEIVABLE = чогултулган накталай али эсептешилген эмес · DRIVER_PAYABLE = электрондук төлөм али эсептешилген эмес. Капчык бухгалтерия булагы эмес. QA чыгарылган.",
+    "fr": "COMPANY_RECEIVABLE = espèces encaissées non réglées · DRIVER_PAYABLE = paiement électronique non réglé. Le portefeuille n’est pas la source comptable. QA est exclu.",
+    "ur": "COMPANY_RECEIVABLE = وصول شدہ نقد جو ابھی تصفیہ نہیں · DRIVER_PAYABLE = الیکٹرانک ادا شدہ جو ابھی تصفیہ نہیں۔ والیٹ حساب کا ماخذ نہیں۔ QA خارج ہے۔",
+    "pt": "COMPANY_RECEIVABLE = dinheiro cobrado ainda não liquidado · DRIVER_PAYABLE = pagamento eletrônico ainda não liquidado. A carteira não é a fonte contábil. QA está excluído."
+  },
+  "Cash enabled": {
+    "en": "Cash enabled",
+    "ar": "النقد مفعّل",
+    "ru": "Наличные включены",
+    "ky": "Накталай күйгүзүлгөн",
+    "fr": "Espèces activées",
+    "ur": "نقد فعال ہے",
+    "pt": "Dinheiro ativado"
+  },
+  "INVALID": {
+    "en": "Invalid",
+    "ar": "غير صالح",
+    "ru": "Недействительно",
+    "ky": "Жараксыз",
+    "fr": "Non valide",
+    "ur": "غلط",
+    "pt": "Inválido"
+  },
+  "Online payment enabled": {
+    "en": "Online payment enabled",
+    "ar": "الدفع الإلكتروني مفعّل",
+    "ru": "Онлайн-оплата включена",
+    "ky": "Онлайн төлөм күйгүзүлгөн",
+    "fr": "Paiement en ligne activé",
+    "ur": "آن لائن ادائیگی فعال ہے",
+    "pt": "Pagamento online ativado"
+  },
+  "cash_enabled": {
+    "en": "Cash enabled",
+    "ar": "النقد مفعّل",
+    "ru": "Наличные включены",
+    "ky": "Накталай күйгүзүлгөн",
+    "fr": "Espèces activées",
+    "ur": "نقد فعال ہے",
+    "pt": "Dinheiro ativado"
+  },
+  "local_units_per_sar": {
+    "en": "Local units per SAR",
+    "ar": "وحدات محلية لكل ريال",
+    "ru": "Местных единиц за 1 SAR",
+    "ky": "1 SAR үчүн жергиликтүү бирдик",
+    "fr": "Unités locales pour 1 SAR",
+    "ur": "فی SAR مقامی اکائیاں",
+    "pt": "Unidades locais por SAR"
+  },
+  "online_payment_enabled": {
+    "en": "Online payment enabled",
+    "ar": "الدفع الإلكتروني مفعّل",
+    "ru": "Онлайн-оплата включена",
+    "ky": "Онлайн төлөм күйгүзүлгөн",
+    "fr": "Paiement en ligne activé",
+    "ur": "آن لائن ادائیگی فعال ہے",
+    "pt": "Pagamento online ativado"
+  },
+  "إحداثيات أو رابط Maps (اختياري)": {
+    "en": "Coordinates or a Maps link (optional)",
+    "ar": "إحداثيات أو رابط Maps (اختياري)",
+    "ru": "Координаты или ссылка Maps (необязательно)",
+    "ky": "Координаттар же Maps шилтемеси (милдеттүү эмес)",
+    "fr": "Coordonnées ou lien Maps (facultatif)",
+    "ur": "کوآرڈینیٹس یا Maps لنک (اختیاری)",
+    "pt": "Coordenadas ou link do Maps (opcional)"
+  },
+  "ابحث باسم المعلم أو الصق رابط Google Maps": {
+    "en": "Search by landmark name or paste a Google Maps link",
+    "ar": "ابحث باسم المعلم أو الصق رابط Google Maps",
+    "ru": "Найдите по названию места или вставьте ссылку Google Maps",
+    "ky": "Көрүнүктүү жердин аты менен издеңиз же Google Maps шилтемесин чаптаңыз",
+    "fr": "Recherchez par nom du lieu ou collez un lien Google Maps",
+    "ur": "نشان کے نام سے تلاش کریں یا Google Maps لنک چسپاں کریں",
+    "pt": "Pesquise pelo nome do ponto ou cole um link do Google Maps"
+  },
+  "اختر التصنيف": {
+    "en": "Choose the category",
+    "ar": "اختر التصنيف",
+    "ru": "Выберите категорию",
+    "ky": "Категорияны тандаңыз",
+    "fr": "Choisissez la catégorie",
+    "ur": "زمرہ منتخب کریں",
+    "pt": "Escolha a categoria"
+  },
+  "اختر الدولة للباقة": {
+    "en": "Choose the country for the package",
+    "ar": "اختر الدولة للباقة",
+    "ru": "Выберите страну для пакета",
+    "ky": "Пакет үчүн өлкөнү тандаңыз",
+    "fr": "Choisissez le pays du forfait",
+    "ur": "پیکج کے لیے ملک منتخب کریں",
+    "pt": "Escolha o país do pacote"
+  },
+  "استخدم تصدير PDF المخصص بدل طباعة المتصفح.": {
+    "en": "Use the dedicated PDF export instead of the browser print dialog.",
+    "ar": "استخدم تصدير PDF المخصص بدل طباعة المتصفح.",
+    "ru": "Используйте отдельный экспорт PDF вместо печати браузера.",
+    "ky": "Браузердин басып чыгаруусунун ордуна өзүнчө PDF экспортун колдонуңуз.",
+    "fr": "Utilisez l’export PDF dédié plutôt que l’impression du navigateur.",
+    "ur": "براؤزر پرنٹ کے بجائے مخصوص PDF برآمد استعمال کریں۔",
+    "pt": "Use a exportação PDF dedicada em vez da impressão do navegador."
+  },
+  "اكتب اسم المعلم للبحث عن موقعه الحقيقي": {
+    "en": "Type the landmark name to find its real location",
+    "ar": "اكتب اسم المعلم للبحث عن موقعه الحقيقي",
+    "ru": "Введите название места, чтобы найти его реальное положение",
+    "ky": "Чыныгы ордун табуу үчүн көрүнүктүү жердин атын жазыңыз",
+    "fr": "Saisissez le nom du lieu pour trouver son emplacement réel",
+    "ur": "اصل مقام تلاش کرنے کے لیے نشان کا نام لکھیں",
+    "pt": "Digite o nome do ponto para encontrar a localização real"
+  },
+  "اكتشاف المشاكل فقط — لا يتم تعديل المبالغ التاريخية تلقائيًا.": {
+    "en": "Problem detection only — historical amounts are not changed automatically.",
+    "ar": "اكتشاف المشاكل فقط — لا يتم تعديل المبالغ التاريخية تلقائيًا.",
+    "ru": "Только поиск проблем — исторические суммы не меняются автоматически.",
+    "ky": "Көйгөйлөрдү гана табуу — тарыхый суммалар автоматтык өзгөрбөйт.",
+    "fr": "Détection des problèmes seulement — les montants historiques ne sont pas modifiés automatiquement.",
+    "ur": "صرف مسائل کی شناخت — تاریخی رقمیں خودکار تبدیل نہیں ہوتیں۔",
+    "pt": "Somente detecção de problemas — valores históricos não são alterados automaticamente."
+  },
+  "الأفضل: ابحث بالاسم أعلاه — الموقع الحقيقي يظهر على الخريطة وفي التطبيق": {
+    "en": "Best: search by name above — the real location appears on the map and in the app",
+    "ar": "الأفضل: ابحث بالاسم أعلاه — الموقع الحقيقي يظهر على الخريطة وفي التطبيق",
+    "ru": "Лучше: найдите по имени выше — реальное место появится на карте и в приложении",
+    "ky": "Жакшысы: жогорудан ат менен издеңиз — чыныгы орун картада жана колдонмодо көрүнөт",
+    "fr": "Mieux : recherchez par le nom ci-dessus — l’emplacement réel apparaît sur la carte et dans l’application",
+    "ur": "بہتر: اوپر نام سے تلاش کریں — اصل مقام نقشے اور ایپ میں نظر آتا ہے",
+    "pt": "Melhor: pesquise pelo nome acima — o local real aparece no mapa e no aplicativo"
+  },
+  "الاتصال": {
+    "en": "Contact",
+    "ar": "الاتصال",
+    "ru": "Контакт",
+    "ky": "Байланыш",
+    "fr": "Contact",
+    "ur": "رابطہ",
+    "pt": "Contato"
+  },
+  "الدولة: (من ملف الوكيل)": {
+    "en": "Country: (from the agent profile)",
+    "ar": "الدولة: (من ملف الوكيل)",
+    "ru": "Страна: (из профиля агента)",
+    "ky": "Өлкө: (агенттин профилинен)",
+    "fr": "Pays : (depuis le profil de l’agent)",
+    "ur": "ملک: (ایجنٹ پروفائل سے)",
+    "pt": "País: (do perfil do agente)"
+  },
+  "الذمم المدينة والدائنة": {
+    "en": "Receivables and payables",
+    "ar": "الذمم المدينة والدائنة",
+    "ru": "Дебиторская и кредиторская задолженность",
+    "ky": "Алынуучу жана төлөнүүчү карыздар",
+    "fr": "Créances et dettes",
+    "ur": "وصولیاں اور ادائیگیاں",
+    "pt": "Contas a receber e a pagar"
+  },
+  "السائقون": {
+    "en": "Drivers",
+    "ar": "السائقون",
+    "ru": "Водители",
+    "ky": "Айдоочулар",
+    "fr": "Chauffeurs",
+    "ur": "ڈرائیور",
+    "pt": "Motoristas"
+  },
+  "المسار": {
+    "en": "Route",
+    "ar": "المسار",
+    "ru": "Маршрут",
+    "ky": "Маршрут",
+    "fr": "Itinéraire",
+    "ur": "راستہ",
+    "pt": "Rota"
+  },
+  "النطاق": {
+    "en": "Range",
+    "ar": "النطاق",
+    "ru": "Диапазон",
+    "ky": "Аралык",
+    "fr": "Plage",
+    "ur": "حد",
+    "pt": "Intervalo"
+  },
+  "انتظر اكتمال مؤشرات التقرير": {
+    "en": "Wait until the report indicators finish",
+    "ar": "انتظر اكتمال مؤشرات التقرير",
+    "ru": "Дождитесь завершения показателей отчёта",
+    "ky": "Отчёт көрсөткүчтөрү бүткөнчө күтүңүз",
+    "fr": "Attendez la fin des indicateurs du rapport",
+    "ur": "رپورٹ کے اشاریے مکمل ہونے تک انتظار کریں",
+    "pt": "Aguarde a conclusão dos indicadores do relatório"
+  },
+  "بريد المندوب غير مُوثَّق بعد.": {
+    "en": "The driver email is not verified yet.",
+    "ar": "بريد المندوب غير مُوثَّق بعد.",
+    "ru": "Эл. почта водителя ещё не подтверждена.",
+    "ky": "Айдоочунун почтасы али ырастала элек.",
+    "fr": "L’e-mail du chauffeur n’est pas encore vérifié.",
+    "ur": "ڈرائیور کی ای میل ابھی تصدیق شدہ نہیں۔",
+    "pt": "O e-mail do motorista ainda não foi verificado."
+  },
+  "تحذير": {
+    "en": "Warning",
+    "ar": "تحذير",
+    "ru": "Предупреждение",
+    "ky": "Эскертүү",
+    "fr": "Avertissement",
+    "ur": "انتباہ",
+    "pt": "Aviso"
+  },
+  "تحذير النطاق": {
+    "en": "Range warning",
+    "ar": "تحذير النطاق",
+    "ru": "Предупреждение диапазона",
+    "ky": "Аралык эскертүүсү",
+    "fr": "Avertissement de plage",
+    "ur": "حد کا انتباہ",
+    "pt": "Aviso de intervalo"
+  },
+  "تصدير CSV": {
+    "en": "Export CSV",
+    "ar": "تصدير CSV",
+    "ru": "Экспорт CSV",
+    "ky": "CSV экспорт",
+    "fr": "Exporter CSV",
+    "ur": "CSV برآمد",
+    "pt": "Exportar CSV"
+  },
+  "تصدير Excel": {
+    "en": "Export Excel",
+    "ar": "تصدير Excel",
+    "ru": "Экспорт Excel",
+    "ky": "Excel экспорт",
+    "fr": "Exporter Excel",
+    "ur": "Excel برآمد",
+    "pt": "Exportar Excel"
+  },
+  "تصدير PDF": {
+    "en": "Export PDF",
+    "ar": "تصدير PDF",
+    "ru": "Экспорт PDF",
+    "ky": "PDF экспорт",
+    "fr": "Exporter PDF",
+    "ur": "PDF برآمد",
+    "pt": "Exportar PDF"
+  },
+  "تعذر إتمام المراجعة": {
+    "en": "The review could not be completed",
+    "ar": "تعذر إتمام المراجعة",
+    "ru": "Не удалось завершить проверку",
+    "ky": "Текшерүүнү бүтүрүү мүмкүн болгон жок",
+    "fr": "La révision n’a pas pu être terminée",
+    "ur": "جائزہ مکمل نہیں ہو سکا",
+    "pt": "Não foi possível concluir a revisão"
+  },
+  "تعذر تحميل الطلبات. قد تحتاج فهرس Firestore.": {
+    "en": "Orders could not be loaded. A Firestore index may be required.",
+    "ar": "تعذر تحميل الطلبات. قد تحتاج فهرس Firestore.",
+    "ru": "Не удалось загрузить заказы. Может потребоваться индекс Firestore.",
+    "ky": "Буйрутмалар жүктөлгөн жок. Firestore индекси керек болушу мүмкүн.",
+    "fr": "Impossible de charger les commandes. Un index Firestore peut être nécessaire.",
+    "ur": "آرڈر لوڈ نہیں ہو سکے۔ Firestore انڈیکس درکار ہو سکتا ہے۔",
+    "pt": "Não foi possível carregar os pedidos. Um índice do Firestore pode ser necessário."
+  },
+  "تعذر فحص الجودة": {
+    "en": "The quality check could not run",
+    "ar": "تعذر فحص الجودة",
+    "ru": "Не удалось выполнить проверку качества",
+    "ky": "Сапат текшерүүсү аткарылган жок",
+    "fr": "Le contrôle qualité n’a pas pu s’exécuter",
+    "ur": "معیار کی جانچ نہیں چل سکی",
+    "pt": "Não foi possível executar a verificação de qualidade"
+  },
+  "تم تنزيل Excel": {
+    "en": "Excel downloaded",
+    "ar": "تم تنزيل Excel",
+    "ru": "Excel загружен",
+    "ky": "Excel жүктөлдү",
+    "fr": "Excel téléchargé",
+    "ur": "Excel ڈاؤن لوڈ ہو گیا",
+    "pt": "Excel baixado"
+  },
+  "تم تنزيل PDF": {
+    "en": "PDF downloaded",
+    "ar": "تم تنزيل PDF",
+    "ru": "PDF загружен",
+    "ky": "PDF жүктөлдү",
+    "fr": "PDF téléchargé",
+    "ur": "PDF ڈاؤن لوڈ ہو گیا",
+    "pt": "PDF baixado"
+  },
+  "تم نسخ CSV إلى الحافظة": {
+    "en": "CSV copied to the clipboard",
+    "ar": "تم نسخ CSV إلى الحافظة",
+    "ru": "CSV скопирован в буфер",
+    "ky": "CSV алмашуу буферине көчүрүлдү",
+    "fr": "CSV copié dans le presse-papiers",
+    "ur": "CSV کلپ بورڈ پر کاپی ہو گیا",
+    "pt": "CSV copiado para a área de transferência"
+  },
+  "تم نقل التقارير المالية إلى مركز التقارير المالي (FIN V2)": {
+    "en": "Financial reports moved to the finance reports hub (FIN V2)",
+    "ar": "تم نقل التقارير المالية إلى مركز التقارير المالي (FIN V2)",
+    "ru": "Финансовые отчёты перенесены в центр отчётов (FIN V2)",
+    "ky": "Каржылык отчёттор каржы отчёттор борборуна жылдырылды (FIN V2)",
+    "fr": "Les rapports financiers ont été déplacés vers le centre des rapports (FIN V2)",
+    "ur": "مالی رپورٹس مالیاتی رپورٹ ہب میں منتقل ہو گئیں (FIN V2)",
+    "pt": "Os relatórios financeiros foram movidos para o hub de relatórios (FIN V2)"
+  },
+  "تم نقل تمويل الوكلاء إلى شاشة تمويل الوكلاء (FIN V2 / FIN-9)": {
+    "en": "Agent finance moved to the agent finance screen (FIN V2 / FIN-9)",
+    "ar": "تم نقل تمويل الوكلاء إلى شاشة تمويل الوكلاء (FIN V2 / FIN-9)",
+    "ru": "Финансы агентов перенесены на экран финансов агентов (FIN V2 / FIN-9)",
+    "ky": "Агенттердин каржысы агент каржы экранына жылдырылды (FIN V2 / FIN-9)",
+    "fr": "La finance des agents a été déplacée vers l’écran finance agents (FIN V2 / FIN-9)",
+    "ur": "ایجنٹ فنانس ایجنٹ فنانس اسکرین پر منتقل ہو گیا (FIN V2 / FIN-9)",
+    "pt": "O financeiro dos agentes foi movido para a tela de finanças dos agentes (FIN V2 / FIN-9)"
+  },
+  "جاري فحص جودة البيانات": {
+    "en": "Checking data quality",
+    "ar": "جاري فحص جودة البيانات",
+    "ru": "Проверка качества данных",
+    "ky": "Маалымат сапаты текшерилүүдө",
+    "fr": "Vérification de la qualité des données",
+    "ur": "ڈیٹا کے معیار کی جانچ جاری ہے",
+    "pt": "Verificando a qualidade dos dados"
+  },
+  "حالات التسوية": {
+    "en": "Settlement statuses",
+    "ar": "حالات التسوية",
+    "ru": "Статусы взаиморасчёта",
+    "ky": "Эсептешүү абалдары",
+    "fr": "Statuts de règlement",
+    "ur": "تصفیے کی حالتیں",
+    "pt": "Status de liquidação"
+  },
+  "حالة الرحلة": {
+    "en": "Trip status",
+    "ar": "حالة الرحلة",
+    "ru": "Статус поездки",
+    "ky": "Сапардын абалы",
+    "fr": "Statut du trajet",
+    "ur": "سفر کی حالت",
+    "pt": "Status da viagem"
+  },
+  "حالة الطلب تغيّرت. حدّث الصفحة ثم أعد المحاولة.": {
+    "en": "The order status changed. Refresh the page and try again.",
+    "ar": "حالة الطلب تغيّرت. حدّث الصفحة ثم أعد المحاولة.",
+    "ru": "Статус заказа изменился. Обновите страницу и повторите.",
+    "ky": "Буйрутманын абалы өзгөрдү. Баракты жаңыртып, кайра аракет кылыңыз.",
+    "fr": "Le statut de la commande a changé. Actualisez la page puis réessayez.",
+    "ur": "آرڈر کی حالت بدل گئی۔ صفحہ تازہ کریں اور دوبارہ کوشش کریں۔",
+    "pt": "O status do pedido mudou. Atualize a página e tente novamente."
+  },
+  "حرج": {
+    "en": "Critical",
+    "ar": "حرج",
+    "ru": "Критично",
+    "ky": "Олуттуу",
+    "fr": "Critique",
+    "ur": "سنگین",
+    "pt": "Crítico"
+  },
+  "حرّك الدبوس إلى موقع المعلم داخل المدينة المختارة (لا تترك الخريطة على الرياض الافتراضية)": {
+    "en": "Move the pin to the landmark inside the selected city (do not leave the map on the default Riyadh)",
+    "ar": "حرّك الدبوس إلى موقع المعلم داخل المدينة المختارة (لا تترك الخريطة على الرياض الافتراضية)",
+    "ru": "Переместите метку к месту в выбранном городе (не оставляйте карту на Эр-Рияде по умолчанию)",
+    "ky": "Белгини тандалган шаардагы көрүнүктүү жерге жылдырыңыз (картаны демейки Эр-Риядда калтырбаңыз)",
+    "fr": "Déplacez l’épingle vers le lieu dans la ville choisie (ne laissez pas la carte sur Riyad par défaut)",
+    "ur": "پن کو منتخب شہر کے نشان پر لے جائیں (نقشہ طے شدہ ریاض پر نہ چھوڑیں)",
+    "pt": "Mova o pino para o ponto dentro da cidade selecionada (não deixe o mapa em Riade padrão)"
+  },
+  "دولة السائق": {
+    "en": "Driver country",
+    "ar": "دولة السائق",
+    "ru": "Страна водителя",
+    "ky": "Айдоочунун өлкөсү",
+    "fr": "Pays du chauffeur",
+    "ur": "ڈرائیور کا ملک",
+    "pt": "País do motorista"
+  },
+  "سجل إلكتروني تاريخي — العمليات الحالية نقدًا فقط": {
+    "en": "Historical electronic record — current operations are cash only",
+    "ar": "سجل إلكتروني تاريخي — العمليات الحالية نقدًا فقط",
+    "ru": "Историческая электронная запись — текущие операции только наличными",
+    "ky": "Тарыхый электрондук жазуу — учурдагы операциялар накталай гана",
+    "fr": "Historique électronique — les opérations actuelles sont en espèces seulement",
+    "ur": "تاریخی الیکٹرانک ریکارڈ — موجودہ کارروائیاں صرف نقد ہیں",
+    "pt": "Registro eletrônico histórico — as operações atuais são somente em dinheiro"
+  },
+  "سياسة الدفع": {
+    "en": "Payment policy",
+    "ar": "سياسة الدفع",
+    "ru": "Политика оплаты",
+    "ky": "Төлөм саясаты",
+    "fr": "Politique de paiement",
+    "ur": "ادائیگی کی پالیسی",
+    "pt": "Política de pagamento"
+  },
+  "صافي السائق (مشتق)": {
+    "en": "Driver net (derived)",
+    "ar": "صافي السائق (مشتق)",
+    "ru": "Нетто водителя (расчётное)",
+    "ky": "Айдоочунун тазасы (эсептелген)",
+    "fr": "Net chauffeur (calculé)",
+    "ur": "ڈرائیور خالص (اخذ شدہ)",
+    "pt": "Líquido do motorista (derivado)"
+  },
+  "صيغة غير صحيحة — الصق إحداثيات أو رابط Google Maps، أو ابحث بالاسم أعلاه": {
+    "en": "Invalid format — paste coordinates or a Google Maps link, or search by name above",
+    "ar": "صيغة غير صحيحة — الصق إحداثيات أو رابط Google Maps، أو ابحث بالاسم أعلاه",
+    "ru": "Неверный формат — вставьте координаты или ссылку Google Maps, либо найдите по имени выше",
+    "ky": "Формат туура эмес — координат же Google Maps шилтемесин чаптаңыз, же жогорудан ат менен издеңиз",
+    "fr": "Format incorrect — collez des coordonnées ou un lien Google Maps, ou recherchez par le nom ci-dessus",
+    "ur": "فارمیٹ غلط ہے — کوآرڈینیٹس یا Google Maps لنک چسپاں کریں، یا اوپر نام سے تلاش کریں",
+    "pt": "Formato inválido — cole coordenadas ou um link do Google Maps, ou pesquise pelo nome acima"
+  },
+  "طباعة": {
+    "en": "Print",
+    "ar": "طباعة",
+    "ru": "Печать",
+    "ky": "Басып чыгаруу",
+    "fr": "Imprimer",
+    "ur": "پرنٹ",
+    "pt": "Imprimir"
+  },
+  "طلبات التعديل": {
+    "en": "Change requests",
+    "ar": "طلبات التعديل",
+    "ru": "Запросы на изменение",
+    "ky": "Өзгөртүү өтүнүчтөрү",
+    "fr": "Demandes de modification",
+    "ur": "تبدیلی کی درخواستیں",
+    "pt": "Pedidos de alteração"
+  },
+  "طلبات تعديل بيانات السائقين": {
+    "en": "Driver data change requests",
+    "ar": "طلبات تعديل بيانات السائقين",
+    "ru": "Запросы на изменение данных водителей",
+    "ky": "Айдоочулардын маалыматын өзгөртүү өтүнүчтөрү",
+    "fr": "Demandes de modification des données chauffeurs",
+    "ur": "ڈرائیور ڈیٹا کی تبدیلی کی درخواستیں",
+    "pt": "Pedidos de alteração de dados dos motoristas"
+  },
+  "طلبات مكتملة بـ pending_cash. التأكيد من اللوحة استثنائي.": {
+    "en": "Completed orders with pending_cash. Confirmation from the panel is exceptional.",
+    "ar": "طلبات مكتملة بـ pending_cash. التأكيد من اللوحة استثنائي.",
+    "ru": "Завершённые заказы с pending_cash. Подтверждение из панели — исключение.",
+    "ky": "pending_cash менен бүткөн буйрутмалар. Панелден ырастоо өзгөчө.",
+    "fr": "Commandes terminées avec pending_cash. La confirmation depuis le panneau est exceptionnelle.",
+    "ur": "pending_cash والے مکمل آرڈر۔ پینل سے تصدیق استثنائی ہے۔",
+    "pt": "Pedidos concluídos com pending_cash. A confirmação pelo painel é excepcional."
+  },
+  "عمولة توري": {
+    "en": "Touri commission",
+    "ar": "عمولة توري",
+    "ru": "Комиссия Touri",
+    "ky": "Touri комиссиясы",
+    "fr": "Commission Touri",
+    "ur": "Touri کمیشن",
+    "pt": "Comissão Touri"
+  },
+  "غير مسموح بتعديل مركبات دولة أخرى": {
+    "en": "Editing vehicles of another country is not allowed",
+    "ar": "غير مسموح بتعديل مركبات دولة أخرى",
+    "ru": "Изменение транспорта другой страны не разрешено",
+    "ky": "Башка өлкөнүн унааларын өзгөртүүгө уруксат жок",
+    "fr": "La modification des véhicules d’un autre pays n’est pas autorisée",
+    "ur": "دوسرے ملک کی گاڑیوں میں ترمیم کی اجازت نہیں",
+    "pt": "Não é permitido editar veículos de outro país"
+  },
+  "فتح التسويات": {
+    "en": "Open settlements",
+    "ar": "فتح التسويات",
+    "ru": "Открыть взаиморасчёты",
+    "ky": "Эсептешүүлөрдү ачуу",
+    "fr": "Ouvrir les règlements",
+    "ur": "تصفیے کھولیں",
+    "pt": "Abrir liquidações"
+  },
+  "فتح التقارير المالية": {
+    "en": "Open financial reports",
+    "ar": "فتح التقارير المالية",
+    "ru": "Открыть финансовые отчёты",
+    "ky": "Каржылык отчётторду ачуу",
+    "fr": "Ouvrir les rapports financiers",
+    "ur": "مالی رپورٹس کھولیں",
+    "pt": "Abrir relatórios financeiros"
+  },
+  "فتح تمويل الوكلاء": {
+    "en": "Open agent finance",
+    "ar": "فتح تمويل الوكلاء",
+    "ru": "Открыть финансы агентов",
+    "ky": "Агенттердин каржысын ачуу",
+    "fr": "Ouvrir la finance des agents",
+    "ur": "ایجنٹ فنانس کھولیں",
+    "pt": "Abrir finanças dos agentes"
+  },
+  "لا توجد طلبات تعديل معلّقة": {
+    "en": "No pending change requests",
+    "ar": "لا توجد طلبات تعديل معلّقة",
+    "ru": "Нет ожидающих запросов на изменение",
+    "ky": "Күтүүдөгү өзгөртүү өтүнүчтөрү жок",
+    "fr": "Aucune demande de modification en attente",
+    "ur": "کوئی زیر التوا تبدیلی کی درخواست نہیں",
+    "pt": "Não há pedidos de alteração pendentes"
+  },
+  "لا توجد مشاكل في هذا النطاق": {
+    "en": "No problems in this range",
+    "ar": "لا توجد مشاكل في هذا النطاق",
+    "ru": "В этом диапазоне нет проблем",
+    "ky": "Бул аралыкта көйгөй жок",
+    "fr": "Aucun problème dans cette plage",
+    "ur": "اس حد میں کوئی مسئلہ نہیں",
+    "pt": "Não há problemas neste intervalo"
+  },
+  "لا يمكن تحديد دولة الوكيل": {
+    "en": "The agent country cannot be determined",
+    "ar": "لا يمكن تحديد دولة الوكيل",
+    "ru": "Невозможно определить страну агента",
+    "ky": "Агенттин өлкөсүн аныктоо мүмкүн эмес",
+    "fr": "Impossible de déterminer le pays de l’agent",
+    "ur": "ایجنٹ کا ملک متعین نہیں ہو سکتا",
+    "pt": "Não é possível determinar o país do agente"
+  },
+  "ليس لديك صلاحية لعرض هذه الطلبات": {
+    "en": "You do not have permission to view these orders",
+    "ar": "ليس لديك صلاحية لعرض هذه الطلبات",
+    "ru": "У вас нет права просматривать эти заказы",
+    "ky": "Бул буйрутмаларды көрүүгө укугуңуз жок",
+    "fr": "Vous n’avez pas l’autorisation de voir ces commandes",
+    "ur": "آپ کو یہ آرڈر دیکھنے کی اجازت نہیں",
+    "pt": "Você não tem permissão para ver estes pedidos"
+  },
+  "مدينة السائق": {
+    "en": "Driver city",
+    "ar": "مدينة السائق",
+    "ru": "Город водителя",
+    "ky": "Айдоочунун шаары",
+    "fr": "Ville du chauffeur",
+    "ur": "ڈرائیور کا شہر",
+    "pt": "Cidade do motorista"
+  },
+  "مراجعة طلبات السائقين المعتمدين لتحديث الهوية أو المركبة أو الوثائق.": {
+    "en": "Review approved drivers’ requests to update identity, vehicle, or documents.",
+    "ar": "مراجعة طلبات السائقين المعتمدين لتحديث الهوية أو المركبة أو الوثائق.",
+    "ru": "Проверка запросов одобренных водителей на обновление личности, транспорта или документов.",
+    "ky": "Бекитилген айдоочулардын инсандык, унаа же документтерди жаңыртуу өтүнүчтөрүн текшерүү.",
+    "fr": "Examiner les demandes des chauffeurs approuvés pour mettre à jour l’identité, le véhicule ou les documents.",
+    "ur": "منظور شدہ ڈرائیوروں کی شناخت، گاڑی یا دستاویزات کی تازہ کاری کی درخواستوں کا جائزہ۔",
+    "pt": "Revise pedidos de motoristas aprovados para atualizar identidade, veículo ou documentos."
+  },
+  "مستبعد QA: رحلات {trips} · تسويات {settlements} · مفتوح {open}": {
+    "en": "QA excluded: trips {trips} · settlements {settlements} · open {open}",
+    "ar": "مستبعد QA: رحلات {trips} · تسويات {settlements} · مفتوح {open}",
+    "ru": "QA исключено: поездки {trips} · взаиморасчёты {settlements} · открыто {open}",
+    "ky": "QA чыгарылган: сапарлар {trips} · эсептешүүлөр {settlements} · ачык {open}",
+    "fr": "QA exclu : trajets {trips} · règlements {settlements} · ouverts {open}",
+    "ur": "QA خارج: سفر {trips} · تصفیے {settlements} · کھلے {open}",
+    "pt": "QA excluído: viagens {trips} · liquidações {settlements} · abertas {open}"
+  },
+  "معلومة": {
+    "en": "Information",
+    "ar": "معلومة",
+    "ru": "Информация",
+    "ky": "Маалымат",
+    "fr": "Information",
+    "ur": "معلومات",
+    "pt": "Informação"
+  },
+  "نوع المعلم / التصنيف": {
+    "en": "Landmark type / category",
+    "ar": "نوع المعلم / التصنيف",
+    "ru": "Тип места / категория",
+    "ky": "Көрүнүктүү жердин түрү / категория",
+    "fr": "Type de lieu / catégorie",
+    "ur": "نشان کی قسم / زمرہ",
+    "pt": "Tipo de ponto / categoria"
+  },
+  "يجب مراجعة واعتماد وثائق المندوب قبل الاعتماد النهائي.": {
+    "en": "The driver documents must be reviewed and approved before final approval.",
+    "ar": "يجب مراجعة واعتماد وثائق المندوب قبل الاعتماد النهائي.",
+    "ru": "Документы водителя нужно проверить и одобрить до окончательного одобрения.",
+    "ky": "Акыркы бекитүүдөн мурун айдоочунун документтерин текшерип, бекитүү керек.",
+    "fr": "Les documents du chauffeur doivent être examinés et approuvés avant l’approbation finale.",
+    "ur": "حتمی منظوری سے پہلے ڈرائیور کی دستاویزات کا جائزہ اور منظوری ضروری ہے۔",
+    "pt": "Os documentos do motorista devem ser revisados e aprovados antes da aprovação final."
+  },
+  "يرجى اختيار نوع المعلم": {
+    "en": "Please choose the landmark type",
+    "ar": "يرجى اختيار نوع المعلم",
+    "ru": "Выберите тип места",
+    "ky": "Көрүнүктүү жердин түрүн тандаңыз",
+    "fr": "Veuillez choisir le type de lieu",
+    "ur": "براہ کرم نشان کی قسم منتخب کریں",
+    "pt": "Escolha o tipo de ponto"
+  },
+  "يرجى اختيار نوع المعلم / التصنيف": {
+    "en": "Please choose the landmark type / category",
+    "ar": "يرجى اختيار نوع المعلم / التصنيف",
+    "ru": "Выберите тип места / категорию",
+    "ky": "Көрүнүктүү жердин түрүн / категориясын тандаңыз",
+    "fr": "Veuillez choisir le type de lieu / la catégorie",
+    "ur": "براہ کرم نشان کی قسم / زمرہ منتخب کریں",
+    "pt": "Escolha o tipo de ponto / a categoria"
+  },
+  "يُحفظ في حقل tsnef ويظهر في فلاتر تطبيق العميل": {
+    "en": "Saved in the tsnef field and shown in the customer app filters",
+    "ar": "يُحفظ في حقل tsnef ويظهر في فلاتر تطبيق العميل",
+    "ru": "Сохраняется в поле tsnef и показывается в фильтрах приложения клиента",
+    "ky": "tsnef талаасында сакталат жана кардар колдонмосунун чыпкаларында көрүнөт",
+    "fr": "Enregistré dans le champ tsnef et affiché dans les filtres de l’application client",
+    "ur": "tsnef فیلڈ میں محفوظ ہوتا ہے اور کسٹمر ایپ کے فلٹرز میں دکھتا ہے",
+    "pt": "Salvo no campo tsnef e exibido nos filtros do aplicativo do cliente"
+  }
+}

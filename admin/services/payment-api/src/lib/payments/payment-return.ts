@@ -281,12 +281,8 @@ export async function handlePaymentReturn(
     const hint = await hintVerifyFromGateway(providerOrderRef);
     if (hint.sessionId) sessionId = hint.sessionId;
     // Query cancel wins over gateway pending; gateway fail/cancel overrides pending.
+    // Browser landing is never success. Only a pending query adopts the gateway hint.
     if (outcome === "pending") {
-      outcome = hint.outcome;
-    } else if (
-      (hint.outcome === "failed" || hint.outcome === "cancel") &&
-      outcome === "success"
-    ) {
       outcome = hint.outcome;
     }
   }

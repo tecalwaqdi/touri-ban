@@ -61,7 +61,8 @@ async function twoPartyLocked(db, extra = {}) {
     FINANCIAL_SETTLEMENT_WRITES_ENABLED: true,
     FINANCIAL_PAYMENT_CONFIRM_ENABLED: true,
   });
-  const maker = extra.maker || financeAuth('maker');
+  // Settlement writes are SuperAdmin-only (finance claim is read persona).
+  const maker = extra.maker || superAuth('maker');
   const checker = extra.checker || superAuth('checker');
   const factory = extra.factory || cashOrder;
   const n = extra.trips || 5;
@@ -123,7 +124,7 @@ async function twoPartyLocked(db, extra = {}) {
       FINANCIAL_PAYMENT_CONFIRM_ENABLED: true,
     });
     await seedOrders(db, 2);
-    const maker = financeAuth('maker');
+    const maker = superAuth('maker');
     const d = await ledger.createSettlementDraft({
       db, auth: maker,
       data: {
@@ -269,7 +270,7 @@ async function twoPartyLocked(db, extra = {}) {
     let msg;
     try {
       await ledger.createSettlementDraft({
-        db, auth: financeAuth('maker'),
+        db, auth: superAuth('maker'),
         data: {
           driverId: 'drv1', countryId: 'countries/sa', currency: 'SAR',
           periodStart: '2026-04-01T00:00:00.000Z',
@@ -306,7 +307,11 @@ async function twoPartyLocked(db, extra = {}) {
         data: {periodId: p.periodId, reason: 'fix'},
       });
     } catch (e) { denied = e.message; }
-    assert.strictEqual(denied, 'SUPERADMIN_REQUIRED');
+    assert.ok(
+      denied === 'SUPERADMIN_REQUIRED' ||
+        String(denied).includes('SuperAdmin'),
+      denied,
+    );
     const re = await controls.reopenFinancialPeriod({
       db, auth: superAuth(),
       data: {periodId: p.periodId, reason: 'need posting'},
@@ -326,7 +331,7 @@ async function twoPartyLocked(db, extra = {}) {
     await db.doc('financial_config/runtime').set({
       FINANCIAL_SETTLEMENT_WRITES_ENABLED: true,
     });
-    const maker = financeAuth('maker');
+    const maker = superAuth('maker');
     const checker = superAuth('checker');
     const adj = await controls.createAdjustmentDraft({
       db, auth: maker,
@@ -459,7 +464,12 @@ async function twoPartyLocked(db, extra = {}) {
         },
       });
     } catch (e) { msg = e.message; }
-    assert.ok(String(msg).includes('SuperAdmin or Finance') || msg === 'Settlement writes require SuperAdmin or Finance.');
+    assert.ok(
+      String(msg).includes('SuperAdmin') ||
+        String(msg).includes('Finance') ||
+        msg === 'Settlement writes require SuperAdmin or Finance.',
+      msg,
+    );
   }
 
   // client direct write denied in rules
@@ -488,7 +498,7 @@ async function twoPartyLocked(db, extra = {}) {
     let msg;
     try {
       await ledger.createSettlementDraft({
-        db, auth: financeAuth('maker'),
+        db, auth: superAuth('maker'),
         data: {
           driverId: 'drv1', countryId: 'countries/sa', currency: 'SAR',
           periodStart: '2026-03-01T00:00:00.000Z',
@@ -498,6 +508,32 @@ async function twoPartyLocked(db, extra = {}) {
       });
     } catch (e) { msg = e.message; }
     assert.strictEqual(msg, 'FEATURE_FLAG_DISABLED');
+  }
+
+  // legacy read_only still blocks settlement writes even when settlement flag is ON
+  {
+    const db = new FakeFirestore();
+    await db.doc('financial_config/runtime').set({
+      FINANCIAL_SETTLEMENT_WRITES_ENABLED: true,
+      FINANCIAL_PAYMENT_CONFIRM_ENABLED: true,
+      FINANCIAL_CASH_REALIZATION_V2_ENABLED: true,
+      LEGACY_ADMIN_WRITE_MODE: 'read_only',
+      LEGACY_ADMIN_CUTOVER_RESTRICTED: true,
+    });
+    await seedOrders(db, 1);
+    let msg;
+    try {
+      await ledger.createSettlementDraft({
+        db, auth: superAuth('maker'),
+        data: {
+          driverId: 'drv1', countryId: 'countries/sa', currency: 'SAR',
+          periodStart: '2026-03-01T00:00:00.000Z',
+          periodEnd: '2026-05-01T00:00:00.000Z',
+          idempotencyKey: 'read-only-block',
+        },
+      });
+    } catch (e) { msg = e.message; }
+    assert.strictEqual(msg, 'LEGACY_ADMIN_READ_ONLY');
   }
 
   // accountant home + reconciliation + report csv

@@ -287,10 +287,11 @@ abstract final class AdminDriverReviewActions {
     'reviewed_by': adminUid,
   };
 
-  /// Operational account flag only — does **not** change registration_status.
+  /// Operational account flag — keeps activation SoT aligned with online rules.
   ///
-  /// Use after registration is already `approved`. Distinct from [approvePatch]
-  /// (registration review) and [suspendPatch] (registration suspension).
+  /// Also sets `registration_status=approved` when missing/lagged so Firestore
+  /// online-toggle rules (and older clients) accept the write without a
+  /// separate registration-approve step.
   static Map<String, dynamic> operationalActivatePatch({
     required String adminUid,
   }) => {
@@ -298,6 +299,8 @@ abstract final class AdminDriverReviewActions {
     'ismndob': true,
     'ismndom': true,
     'ngl': false,
+    'registration_status': 'approved',
+    'submission_status': 'approved',
     'account_status': 'active',
     'operational_status': 'offline',
     'actev_mndob_at': FieldValue.serverTimestamp(),

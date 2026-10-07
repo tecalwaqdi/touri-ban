@@ -1,6 +1,7 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/core/driver_ux_widgets.dart';
+import '/core/toury_support_link.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -129,6 +130,36 @@ class _SuportWidgetState extends State<SuportWidget> {
                             singleRecord: true,
                           ),
                           builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Padding(
+                                padding: const EdgeInsets.all(DsSpacing.md),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Text(
+                                      driverTr(
+                                        context,
+                                        'Could not load bank details. Contact support via WhatsApp.',
+                                      ),
+                                      style: typography.bodyMedium.copyWith(
+                                        color: colors.textSecondary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: DsSpacing.sm),
+                                    DsButton.primary(
+                                      label: driverTr(context, 'WhatsApp'),
+                                      icon: Icons.chat_rounded,
+                                      onPressed: () async {
+                                        await TourySupportLink.open(
+                                          context,
+                                          countryPath: currentUserDocument?.revDolh,
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
                             if (!snapshot.hasData) {
                               return const Padding(
                                 padding: EdgeInsets.all(DsSpacing.xl),

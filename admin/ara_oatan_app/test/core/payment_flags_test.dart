@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ara_oatan_app/core/toury_payment_flags.dart';
 
 void main() {
-  test('defaults target Render Payment Backend with online enabled', () {
+  test('defaults target Render Payment Backend with proven HPP production mode', () {
     expect(TouryPaymentFlags.enableOnlinePayment, isTrue);
     expect(TouryPaymentFlags.cashOnlyMode, isFalse);
     expect(TouryPaymentFlags.paymentBackend, 'external_api');
@@ -13,7 +13,11 @@ void main() {
       TouryPaymentFlags.paymentApiBaseUrl,
       'https://touri-ban.onrender.com',
     );
-    expect(TouryPaymentFlags.openPaymentInExternalBrowser, isTrue);
+    // Production safety: HPP in-app WebView until QA promotes SDK.
+    expect(TouryPaymentFlags.mobilePaymentMode, 'hpp');
+    expect(TouryPaymentFlags.openPaymentInExternalBrowser, isFalse);
+    expect(TouryPaymentFlags.preferMobileSdk, isFalse);
+    expect(TouryPaymentFlags.forceHostedPaymentPage, isTrue);
     expect(TouryPaymentFlags.allowClientCashFallback, isTrue);
   });
 

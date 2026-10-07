@@ -1,18 +1,43 @@
+import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ara_oatan_app/core/toury_currency.dart';
 import 'package:ara_oatan_app/core/toury_customer_order_actions.dart';
 
 void main() {
   group('TouryCurrency', () {
-    test('maps ISO symbols', () {
+    test('maps ISO symbols with locale-aware SAR', () {
       expect(TouryCurrency.symbolForCode('KGS'), 'сом');
-      expect(TouryCurrency.symbolForCode('SAR'), 'ر.س');
+      expect(TouryCurrency.symbolForCode('SAR'), 'SAR');
+      expect(
+        TouryCurrency.symbolForCode('SAR', locale: const Locale('ar')),
+        TouryCurrency.officialRiyalSign,
+      );
+      expect(
+        TouryCurrency.symbolForCode('SAR', locale: const Locale('ru')),
+        'SAR',
+      );
       expect(TouryCurrency.symbolForCode('RUB'), '₽');
       expect(TouryCurrency.symbolForCode('UZS'), "soʻm");
     });
 
-    test('override wins over catalog', () {
+    test('override wins over catalog for non-SAR', () {
       expect(TouryCurrency.symbolForCode('KGS', override: 'с'), 'с');
+    });
+
+    test('legacy ر.س override normalizes by locale', () {
+      expect(
+        TouryCurrency.symbolForCode('SAR', override: 'ر.س'),
+        'SAR',
+      );
+      expect(
+        TouryCurrency.symbolForCode(
+          'SAR',
+          override: 'ر.س',
+          locale: const Locale('ar'),
+        ),
+        TouryCurrency.officialRiyalSign,
+      );
     });
   });
 

@@ -3067,13 +3067,13 @@ abstract class AppLocalizations {
   /// UI string (source key: ux_car_list_empty_title)
   ///
   /// In en, this message translates to:
-  /// **'No cars available'**
+  /// **'No vehicle types available'**
   String get ux_car_list_empty_title;
 
   /// UI string (source key: ux_car_list_empty_msg)
   ///
   /// In en, this message translates to:
-  /// **'No cars are available right now. Please try again later'**
+  /// **'No vehicle types are currently available for this country'**
   String get ux_car_list_empty_msg;
 
   /// UI string (source key: ux_car_list_error_title)
@@ -4827,6 +4827,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =0{0 minutes} one{1 minute} other{{count} minutes}}'**
   String minutes_count(num count);
+
+  /// UI string (source key: ux_vehicle_select_country_title)
+  ///
+  /// In en, this message translates to:
+  /// **'Select a country'**
+  String get ux_vehicle_select_country_title;
+
+  /// UI string (source key: ux_vehicle_select_country_msg)
+  ///
+  /// In en, this message translates to:
+  /// **'Select a country to view vehicle types'**
+  String get ux_vehicle_select_country_msg;
 }
 
 class _AppLocalizationsDelegate

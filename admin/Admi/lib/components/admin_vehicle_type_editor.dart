@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '/backend/admin_audit_log.dart';
+import '/backend/admin_resource_guard.dart';
 import '/backend/backend.dart';
 import '/components/admin_crud_feedback.dart';
 import '/components/admin_image_picker.dart';
@@ -21,6 +22,15 @@ class AdminVehicleTypeEditor extends StatefulWidget {
   final TypeCarRecord record;
 
   static Future<bool?> open(BuildContext context, TypeCarRecord record) async {
+    if (!AdminResourceGuard.canEditTypeCar(record)) {
+      if (context.mounted) {
+        AdminCrudFeedback.error(
+          context,
+          uiTr(context, 'غير مسموح بتعديل مركبات دولة أخرى'),
+        );
+      }
+      return false;
+    }
     TypeCarRecord fresh = record;
     try {
       final snap = await record.reference.get(

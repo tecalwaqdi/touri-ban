@@ -83,7 +83,8 @@ class AdminPanelNotification {
     if (t.contains('driver') ||
         t.contains('registration') ||
         t.contains('document') ||
-        t.contains('resubmit')) {
+        t.contains('resubmit') ||
+        t.contains('data_change')) {
       return AdminNotificationCategory.drivers;
     }
     if (t.contains('support') || t.contains('ticket')) {
@@ -103,6 +104,9 @@ class AdminPanelNotification {
 
   static String _titleFor(String type, String Function(String key) tr) {
     final t = type.toLowerCase();
+    if (t.contains('data_change') || t.contains('datachange')) {
+      return tr('طلب تعديل بيانات سائق');
+    }
     if (t.contains('resubmit')) {
       return tr('أعاد المندوب إرسال طلبه للمراجعة');
     }

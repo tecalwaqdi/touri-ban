@@ -153,11 +153,12 @@ class AdminDriverExpiryRow {
     if (expiry == null) {
       if (row.daysField != null && row.bucket == 'expired') {
         final d = row.daysField!.abs().round();
-        return uiTr(context, 'منتهية منذ $d يومًا');
+        return uiTr(context, 'منتهية منذ {days} يومًا')
+            .replaceAll('{days}', '$d');
       }
       if (row.daysField != null && row.bucket == 'expiring_soon') {
         final d = row.daysField!.round();
-        return uiTr(context, 'متبقي $d يومًا');
+        return uiTr(context, 'متبقي {days} يومًا').replaceAll('{days}', '$d');
       }
       return uiTr(context, 'غير محدد');
     }
@@ -165,16 +166,19 @@ class AdminDriverExpiryRow {
     final now = DateTime.now();
     final diffDays = expiry.difference(now).inDays;
     if (diffDays < 0) {
-      return uiTr(context, 'منتهية منذ ${-diffDays} يومًا');
+      return uiTr(context, 'منتهية منذ {days} يومًا')
+          .replaceAll('{days}', '${-diffDays}');
     }
     if (diffDays == 0) {
       return uiTr(context, 'تنتهي اليوم');
     }
     if (diffDays <= 60) {
-      return uiTr(context, 'متبقي $diffDays يومًا');
+      return uiTr(context, 'متبقي {days} يومًا')
+          .replaceAll('{days}', '$diffDays');
     }
     final months = (diffDays / 30).round();
-    return uiTr(context, 'متبقي $months أشهر');
+    return uiTr(context, 'متبقي {months} أشهر')
+        .replaceAll('{months}', '$months');
   }
 
   bool matchesSearch(String q) {

@@ -118,6 +118,11 @@ class _MmaappWidgetState extends State<MmaappWidget> {
             points: validation.points,
           )) {
             FFAppState().update(() {
+              FFAppState().routeProvider = 'google';
+              FFAppState().routeDurationMinutes = totalTimeMinutes;
+              FFAppState().routeDistanceMeters =
+                  googleRoute.distanceMeters.toDouble();
+              FFAppState().routeCalculatedAt = DateTime.now();
               FFAppState().osrmTotalTime = totalTimeMinutes;
               FFAppState().osrmTotalDistance = totalDistanceKm;
               FFAppState().osrmCalculationTime = DateTime.now();

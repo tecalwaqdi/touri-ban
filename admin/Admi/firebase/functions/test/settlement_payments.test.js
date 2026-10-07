@@ -399,3 +399,35 @@ async function createPay(db, settlementId, amountMinor, extra = {}) {
   console.error(e);
   process.exit(1);
 });
+
+// QA exclusion for exposure (Finance Control rebuild)
+{
+  const payments = require('../settlement_payments.js');
+  assert.strictEqual(
+    payments.isFinanceQaSettlement({idempotencyKey: 'fin8_ctrl_x'}, 'stl1'),
+    true,
+  );
+  assert.strictEqual(
+    payments.isFinanceQaSettlement({}, 'fin7_ctrl_abc'),
+    true,
+  );
+  assert.strictEqual(
+    payments.isFinanceQaSettlement({}, 'live_settlement_1'),
+    false,
+  );
+  const by = payments.aggregateExposure(
+    [
+      {
+        currency: 'SAR',
+        status: 'locked',
+        direction: 'DRIVER_PAYS_COMPANY',
+        outstandingMinor: 100,
+        paidConfirmedMinor: 0,
+        absoluteSettlementAmountMinor: 100,
+      },
+    ],
+    new Date(),
+  );
+  assert.ok(by.SAR);
+  console.log('settlement_payments QA helpers OK');
+}

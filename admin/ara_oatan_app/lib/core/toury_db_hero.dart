@@ -49,6 +49,9 @@ Widget _heroImage({
 }
 
 /// بانر علوي لصورة القرية من Firestore مباشرة (يتحدّث عند تعديل الأدمن).
+///
+/// Never prefer a global [FFAppState.IMGVILL] cache over the live document for
+/// [villageRef] — that caused Makkah (empty img) to keep showing Taif's hero.
 class TouryVillageHeroBanner extends StatelessWidget {
   const TouryVillageHeroBanner({
     super.key,
@@ -74,30 +77,40 @@ class TouryVillageHeroBanner extends StatelessWidget {
       final cachedUrl = context.select<FFAppState, String>(
         (s) => s.IMGVILL,
       );
-
-      if (cachedUrl.trim().isNotEmpty) {
-        return _heroImage(
-          url: cachedUrl,
-          height: height,
-          width: width,
-          documentId: ref.id,
-        );
-      }
+      final cachedVillagePath = context.select<FFAppState, String>(
+        (s) => s.villa?.path ?? '',
+      );
+      // Optimistic flash only when cache belongs to THIS village.
+      final cacheMatchesVillage =
+          cachedUrl.trim().isNotEmpty && cachedVillagePath == ref.path;
 
       return FutureBuilder<VillagesRecord>(
         future: TouryFirestoreCache.villageDocumentOnce(ref),
         builder: (context, snapshot) {
           final record = snapshot.data;
+          final liveImg = (record?.img ?? '').trim();
           final url = touryResolveHeroImageUrl(
-            primary: record?.img,
-            secondary: imageUrl,
+            primary: liveImg.isNotEmpty ? liveImg : null,
+            secondary: cacheMatchesVillage ? cachedUrl : null,
+            tertiary: imageUrl,
           );
-          final liveImg = record?.img;
-          if (liveImg != null &&
-              liveImg.isNotEmpty &&
-              liveImg != FFAppState().IMGVILL) {
+          if (liveImg.isNotEmpty && liveImg != FFAppState().IMGVILL) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              FFAppState().IMGVILL = liveImg;
+              if (FFAppState().villa?.path == ref.path) {
+                FFAppState().IMGVILL = liveImg;
+              }
+            });
+          } else if (liveImg.isEmpty &&
+              cacheMatchesVillage &&
+              FFAppState().IMGVILL.isNotEmpty &&
+              snapshot.connectionState == ConnectionState.done) {
+            // Village has no image — clear stale cache so we don't keep a
+            // neighbor city's hero.
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (FFAppState().villa?.path == ref.path &&
+                  FFAppState().IMGVILL.isNotEmpty) {
+                FFAppState().IMGVILL = '';
+              }
             });
           }
           return _heroImage(

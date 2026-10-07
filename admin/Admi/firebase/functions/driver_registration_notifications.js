@@ -78,6 +78,96 @@ const COPY = {
       body: 'O motorista reenviou o registo após alterações.',
     },
   },
+  admin_data_change_request: {
+    ar: {
+      title: 'طلب تعديل بيانات سائق',
+      body: 'طلب سائق معتمد تعديل بياناته وينتظر موافقتك.',
+    },
+    en: {
+      title: 'Driver data change request',
+      body: 'An approved driver requested profile updates awaiting your review.',
+    },
+    ru: {
+      title: 'Запрос на изменение данных водителя',
+      body: 'Одобренный водитель запросил изменение профиля.',
+    },
+    ky: {
+      title: 'Айдоочу маалымат өзгөртүү сурамы',
+      body: 'Жактырылган айдоочу профилин өзгөртүүнү сурады.',
+    },
+    fr: {
+      title: 'Demande de modification chauffeur',
+      body: 'Un chauffeur approuvé demande une mise à jour de profil.',
+    },
+    ur: {
+      title: 'ڈرائیور ڈیٹا تبدیلی کی درخواست',
+      body: 'منظور شدہ ڈرائیور نے پروفائل اپ ڈیٹ کی درخواست بھیجی۔',
+    },
+    pt: {
+      title: 'Pedido de alteração de dados',
+      body: 'Um motorista aprovado pediu atualização do perfil.',
+    },
+  },
+  driver_data_change_approved: {
+    ar: {
+      title: 'تمت الموافقة على تعديل بياناتك',
+      body: 'تم اعتماد طلب تعديل بياناتك وتحديث ملفك.',
+    },
+    en: {
+      title: 'Data change approved',
+      body: 'Your profile change request was approved and applied.',
+    },
+    ru: {
+      title: 'Изменение данных одобрено',
+      body: 'Ваш запрос на изменение профиля одобрен и применён.',
+    },
+    ky: {
+      title: 'Маалымат өзгөртүү жактырылды',
+      body: 'Профиль өзгөртүү сурамыңыз жактырылып колдонулду.',
+    },
+    fr: {
+      title: 'Modification approuvée',
+      body: 'Votre demande de modification a été approuvée et appliquée.',
+    },
+    ur: {
+      title: 'ڈیٹا تبدیلی منظور',
+      body: 'آپ کی پروفائل تبدیلی کی درخواست منظور اور لاگو کر دی گئی۔',
+    },
+    pt: {
+      title: 'Alteração aprovada',
+      body: 'O seu pedido de alteração foi aprovado e aplicado.',
+    },
+  },
+  driver_data_change_rejected: {
+    ar: {
+      title: 'تم رفض طلب تعديل بياناتك',
+      body: 'تم رفض طلب تعديل بياناتك. السبب: {reason}',
+    },
+    en: {
+      title: 'Data change rejected',
+      body: 'Your profile change request was rejected. Reason: {reason}',
+    },
+    ru: {
+      title: 'Изменение данных отклонено',
+      body: 'Ваш запрос на изменение профиля отклонён. Причина: {reason}',
+    },
+    ky: {
+      title: 'Маалымат өзгөртүү четке кагылды',
+      body: 'Профиль өзгөртүү сурамыңыз четке кагылды. Себеп: {reason}',
+    },
+    fr: {
+      title: 'Modification refusée',
+      body: 'Votre demande de modification a été refusée. Motif : {reason}',
+    },
+    ur: {
+      title: 'ڈیٹا تبدیلی مسترد',
+      body: 'آپ کی پروفائل تبدیلی کی درخواست مسترد کر دی گئی۔ وجہ: {reason}',
+    },
+    pt: {
+      title: 'Alteração recusada',
+      body: 'O seu pedido de alteração foi recusado. Motivo: {reason}',
+    },
+  },
   driver_approved: {
     ar: {
       title: 'تم تفعيل حسابك',
@@ -169,124 +259,40 @@ const COPY = {
     },
   },
   driver_document_approved: {
-    ar: {
-      title: 'تم اعتماد وثيقتك',
-      body: 'تمت مراجعة الوثيقة واعتمادها.',
-    },
-    en: {
-      title: 'Document approved',
-      body: 'Your document was reviewed and approved.',
-    },
-    ru: {
-      title: 'Документ одобрен',
-      body: 'Ваш документ проверен и одобрен.',
-    },
-    ky: {
-      title: 'Документ жактырылды',
-      body: 'Документиңиз текшерилип, жактырылды.',
-    },
-    fr: {
-      title: 'Document approuvé',
-      body: 'Votre document a été examiné et approuvé.',
-    },
-    ur: {
-      title: 'دستاویز منظور ہو گئی',
-      body: 'آپ کی دستاویز کا جائزہ لے کر منظور کر دی گئی۔',
-    },
-    pt: {
-      title: 'Documento aprovado',
-      body: 'O seu documento foi revisto e aprovado.',
-    },
+    ar: {title: 'تمت الموافقة على الوثيقة', body: 'تمت مراجعة وثيقتك والموافقة عليها.'},
+    en: {title: 'Document approved', body: 'Your document was reviewed and approved.'},
+    ru: {title: 'Документ одобрен', body: 'Ваш документ проверен и одобрен.'},
+    ky: {title: 'Документ жактырылды', body: 'Документиңиз текшерилип жактырылды.'},
+    fr: {title: 'Document approuvé', body: 'Votre document a été vérifié et approuvé.'},
+    ur: {title: 'دستاویز منظور', body: 'آپ کی دستاویز کا جائزہ لے کر منظوری دے دی گئی۔'},
+    pt: {title: 'Documento aprovado', body: 'O seu documento foi revisto e aprovado.'},
   },
   driver_document_needs_changes: {
-    ar: {
-      title: 'وثيقتك تحتاج إلى تعديل',
-      body: 'حدّث الوثيقة: {reason}',
-    },
-    en: {
-      title: 'Document needs changes',
-      body: 'Update document: {reason}',
-    },
-    ru: {
-      title: 'Документ требует изменений',
-      body: 'Обновите документ: {reason}',
-    },
-    ky: {
-      title: 'Документ өзгөртүүнү талап кылат',
-      body: 'Документти жаңыртыңыз: {reason}',
-    },
-    fr: {
-      title: 'Document à modifier',
-      body: 'Mettez à jour le document : {reason}',
-    },
-    ur: {
-      title: 'دستاویز میں ترمیم درکار ہے',
-      body: 'دستاویز اپ ڈیٹ کریں: {reason}',
-    },
-    pt: {
-      title: 'Documento precisa de alterações',
-      body: 'Atualize o documento: {reason}',
-    },
+    ar: {title: 'الوثيقة تحتاج تعديلاً', body: 'يرجى تعديل الوثيقة. السبب: {reason}'},
+    en: {title: 'Document needs changes', body: 'Please update the document. Reason: {reason}'},
+    ru: {title: 'Документ нужно исправить', body: 'Обновите документ. Причина: {reason}'},
+    ky: {title: 'Документти оңдоо керек', body: 'Документти жаңыртыңыз. Себеп: {reason}'},
+    fr: {title: 'Le document doit être modifié', body: 'Veuillez mettre à jour le document. Motif : {reason}'},
+    ur: {title: 'دستاویز میں ترمیم چاہیے', body: 'دستاویز اپ ڈیٹ کریں۔ وجہ: {reason}'},
+    pt: {title: 'O documento precisa de alterações', body: 'Atualize o documento. Motivo: {reason}'},
   },
   driver_document_expired: {
-    ar: {
-      title: 'انتهت صلاحية إحدى وثائقك',
-      body: 'حدّث الوثيقة المطلوبة لاستعادة إمكانية استقبال الرحلات.',
-    },
-    en: {
-      title: 'A document has expired',
-      body: 'Update the required document to receive trips again.',
-    },
-    ru: {
-      title: 'Срок действия документа истёк',
-      body: 'Обновите документ, чтобы снова получать поездки.',
-    },
-    ky: {
-      title: 'Документтин мөөнөтү бүттү',
-      body: 'Сапарларды кабыл алуу үчүн талап кылынган документти жаңыртыңыз.',
-    },
-    fr: {
-      title: 'Un document a expiré',
-      body: 'Mettez à jour le document requis pour recevoir à nouveau des courses.',
-    },
-    ur: {
-      title: 'ایک دستاویز کی میعاد ختم ہو گئی',
-      body: 'سفر وصول کرنے کے لیے مطلوبہ دستاویز اپ ڈیٹ کریں۔',
-    },
-    pt: {
-      title: 'Um documento expirou',
-      body: 'Atualize o documento exigido para voltar a receber viagens.',
-    },
+    ar: {title: 'انتهت صلاحية الوثيقة', body: 'انتهت صلاحية وثيقتك. يرجى رفع وثيقة جديدة.'},
+    en: {title: 'Document expired', body: 'Your document has expired. Please upload a new one.'},
+    ru: {title: 'Срок документа истёк', body: 'Срок документа истёк. Загрузите новый.'},
+    ky: {title: 'Документтин мөөнөтү бүттү', body: 'Документтин мөөнөтү бүттү. Жаңысын жүктөңүз.'},
+    fr: {title: 'Document expiré', body: 'Votre document a expiré. Veuillez en envoyer un nouveau.'},
+    ur: {title: 'دستاویز کی میعاد ختم', body: 'آپ کی دستاویز کی میعاد ختم ہو گئی۔ نئی اپ لوڈ کریں۔'},
+    pt: {title: 'Documento expirado', body: 'O seu documento expirou. Envie um novo.'},
   },
   driver_document_expiring: {
-    ar: {
-      title: 'وثيقة ستنتهي قريبًا',
-      body: 'حدّث الوثيقة قبل انتهاء صلاحيتها لتجنب توقف استقبال الرحلات.',
-    },
-    en: {
-      title: 'Document expiring soon',
-      body: 'Update the document before it expires to keep receiving trips.',
-    },
-    ru: {
-      title: 'Срок действия документа скоро истечёт',
-      body: 'Обновите документ до истечения срока, чтобы продолжать получать поездки.',
-    },
-    ky: {
-      title: 'Документ жакында бүтөт',
-      body: 'Сапарларды кабыл алууну улантуу үчүн мөөнөт бүткөнчө документти жаңыртыңыз.',
-    },
-    fr: {
-      title: 'Document bientôt expiré',
-      body: 'Mettez à jour le document avant expiration pour continuer à recevoir des courses.',
-    },
-    ur: {
-      title: 'دستاویز جلد ختم ہو رہی ہے',
-      body: 'سفر وصول کرتے رہنے کے لیے میعاد ختم ہونے سے پہلے دستاویز اپ ڈیٹ کریں۔',
-    },
-    pt: {
-      title: 'Documento a expirar em breve',
-      body: 'Atualize o documento antes de expirar para continuar a receber viagens.',
-    },
+    ar: {title: 'الوثيقة قاربت على الانتهاء', body: 'صلاحية وثيقتك ستنتهي قريباً. يرجى التجديد.'},
+    en: {title: 'Document expiring soon', body: 'Your document will expire soon. Please renew it.'},
+    ru: {title: 'Срок документа скоро истечёт', body: 'Срок документа скоро истечёт. Продлите его.'},
+    ky: {title: 'Документтин мөөнөтү жакында бүтөт', body: 'Документтин мөөнөтү жакында бүтөт. Жаңыртыңыз.'},
+    fr: {title: 'Document bientôt expiré', body: 'Votre document expire bientôt. Veuillez le renouveler.'},
+    ur: {title: 'دستاویز جلد ختم ہو گی', body: 'آپ کی دستاویز جلد ختم ہو گی۔ براہ کرم تجدید کریں۔'},
+    pt: {title: 'Documento a expirar', body: 'O seu documento expira em breve. Renove-o.'},
   },
 };
 
@@ -777,8 +783,204 @@ function driverIsOperationallyApproved(driver) {
   );
 }
 
+/**
+ * Approved driver submitted a data-change request → notify admins.
+ */
+async function notifyAdminsDriverDataChangeRequest({
+  driverId,
+  requestId,
+  countryRef,
+  sections,
+  reason,
+}) {
+  const eventId = `drv_data_chg_${requestId}`;
+  const type = 'driver_data_change_requested';
+
+  let persist;
+  try {
+    persist = await writePersistentAdminNotification(eventId, {
+      type,
+      driverId,
+      requestId,
+      driverRef: db.doc(`user/${driverId}`),
+      countryRef: countryRef || null,
+      countryPath: countryRef && countryRef.path ? countryRef.path : null,
+      sections: Array.isArray(sections) ? sections : [],
+      reason: String(reason || '').slice(0, 300),
+      targetRoute: 'AdminDriverDataChangeRequests',
+      targetType: 'driver_data_change',
+    });
+  } catch (e) {
+    await auditNotification('NOTIFICATION_FAILED', {
+      eventId,
+      stage: 'persist',
+      error: String(e && e.message),
+    });
+    return {ok: false, stage: 'persist'};
+  }
+
+  if (!persist.created) {
+    return {ok: true, idempotent: true};
+  }
+
+  try {
+    const adminDocs = await findAdminDocs(countryRef);
+    const byLocale = new Map();
+    for (const doc of adminDocs) {
+      const u = doc.data() || {};
+      const locale = normalizeLocale(u.preferred_locale);
+      if (!byLocale.has(locale)) {
+        byLocale.set(locale, {tokens: new Set(), docs: []});
+      }
+      const bucket = byLocale.get(locale);
+      bucket.docs.push(doc);
+      collectAdminTokens(doc, bucket.tokens);
+    }
+
+    let sent = 0;
+    let failed = 0;
+    for (const [locale, bucket] of byLocale.entries()) {
+      const tokens = Array.from(bucket.tokens);
+      if (!tokens.length) continue;
+      const copy = localize('admin_data_change_request', locale);
+      const result = await sendMulticast({
+        tokens,
+        title: copy.title,
+        body: copy.body,
+        channelId: 'admin_driver_reviews',
+        data: {
+          type,
+          driverId,
+          requestId: String(requestId || ''),
+          target: 'driver_data_change',
+          initialPageName: 'AdminDriverDataChangeRequests',
+          click_action: 'FLUTTER_NOTIFICATION_CLICK',
+        },
+      });
+      sent += result.successCount;
+      failed += result.failureCount;
+      if (result.invalidTokens.length) {
+        await cleanupInvalidAdminTokens(bucket.docs, result.invalidTokens);
+      }
+    }
+
+    await persist.ref.set(
+      {
+        deliveryStatus: sent > 0 ? 'sent' : failed > 0 ? 'failed' : 'queued',
+        pushSentAt: admin.firestore.FieldValue.serverTimestamp(),
+        pushSuccessCount: sent,
+        pushFailureCount: failed,
+      },
+      {merge: true},
+    );
+    return {ok: true, sent, failed};
+  } catch (e) {
+    await persist.ref.set(
+      {
+        deliveryStatus: 'failed',
+        pushError: String(e && e.message).slice(0, 300),
+      },
+      {merge: true},
+    );
+    return {ok: false, stage: 'push'};
+  }
+}
+
+/**
+ * After admin approve/reject of a data-change request → notify driver.
+ */
+async function notifyDriverDataChangeResult({
+  driverId,
+  requestId,
+  decision,
+  reason,
+}) {
+  const decided = String(decision || '').toLowerCase() === 'approved'
+    ? 'approved'
+    : 'rejected';
+  const eventId = `drv_data_chg_res_${requestId}_${decided}`;
+  const notifRef = db.doc(`driver_registration_notifications/${eventId}`);
+  const existing = await notifRef.get();
+  if (existing.exists) {
+    return {ok: true, idempotent: true};
+  }
+
+  const copyKey =
+    decided === 'approved'
+      ? 'driver_data_change_approved'
+      : 'driver_data_change_rejected';
+  const type =
+    decided === 'approved'
+      ? 'driver_data_change_approved'
+      : 'driver_data_change_rejected';
+
+  await notifRef.set({
+    driverId,
+    requestId,
+    decision: decided,
+    type,
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    deliveryStatus: 'queued',
+  });
+
+  try {
+    const {tokens, userSnap} = await loadDriverTokens(driverId);
+    const preferred =
+      (userSnap.exists && userSnap.data().preferred_locale) || 'en';
+    const locale = normalizeLocale(preferred);
+    const copy = localize(copyKey, locale, {
+      reason: shortReason(reason) || '—',
+    });
+    if (!tokens.length) {
+      await notifRef.set(
+        {deliveryStatus: 'failed', pushError: 'NO_TOKENS'},
+        {merge: true},
+      );
+      return {ok: false, stage: 'no_tokens'};
+    }
+    const result = await sendMulticast({
+      tokens,
+      title: copy.title,
+      body: copy.body,
+      channelId: 'driver_registration',
+      data: {
+        type,
+        driverId,
+        requestId: String(requestId || ''),
+        target: 'driver_account_security',
+        initialPageName: 'DriverAccountSecurity',
+        click_action: 'FLUTTER_NOTIFICATION_CLICK',
+      },
+    });
+    if (result.invalidTokens.length) {
+      await cleanupInvalidDriverTokens(driverId, result.invalidTokens);
+    }
+    await notifRef.set(
+      {
+        deliveryStatus: result.successCount > 0 ? 'sent' : 'failed',
+        pushSentAt: admin.firestore.FieldValue.serverTimestamp(),
+        pushSuccessCount: result.successCount,
+        pushFailureCount: result.failureCount,
+      },
+      {merge: true},
+    );
+    return {ok: true, sent: result.successCount};
+  } catch (e) {
+    await notifRef.set(
+      {
+        deliveryStatus: 'failed',
+        pushError: String(e && e.message).slice(0, 300),
+      },
+      {merge: true},
+    );
+    return {ok: false, stage: 'push'};
+  }
+}
+
 exports.notifyAdminsDriverApplication = notifyAdminsDriverApplication;
 exports.notifyDriverReviewResult = notifyDriverReviewResult;
+exports.notifyAdminsDriverDataChangeRequest = notifyAdminsDriverDataChangeRequest;
+exports.notifyDriverDataChangeResult = notifyDriverDataChangeResult;
 exports.driverIsOperationallyApproved = driverIsOperationallyApproved;
 exports.localize = localize;
 exports.normalizeLocale = normalizeLocale;

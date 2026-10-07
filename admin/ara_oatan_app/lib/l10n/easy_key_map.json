@@ -782,5 +782,7 @@
   "error_outside_service_area": "error_outside_service_area",
   "kyrgyz_char_sample": "kyrgyz_char_sample",
   "booking_hours": "booking_hours",
-  "minutes_count": "minutes_count"
+  "minutes_count": "minutes_count",
+  "ux_vehicle_select_country_title": "ux_vehicle_select_country_title",
+  "ux_vehicle_select_country_msg": "ux_vehicle_select_country_msg"
 }

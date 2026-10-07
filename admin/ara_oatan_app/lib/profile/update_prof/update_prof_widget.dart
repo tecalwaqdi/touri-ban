@@ -111,7 +111,7 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
       await TouryDialogs.showAlert(
         context,
         title: 'dialog_error_title'.tr(),
-        message: 'يجب تسجيل الدخول قبل رفع الصورة.',
+        message: 'profile.photo_login_required'.tr(),
         type: TouryMessageType.error,
       );
       return;
@@ -148,7 +148,7 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
       await TouryDialogs.showAlert(
         context,
         title: 'dialog_error_title'.tr(),
-        message: 'لم يتم قراءة الصورة. جرّب صورة أخرى.',
+        message: 'profile.photo_unreadable'.tr(),
         type: TouryMessageType.error,
       );
       return;
@@ -199,11 +199,10 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
 
       await TouryDialogs.showAlert(
         context,
-        title: 'نجاح',
+        title: 'common.success'.tr(),
         message: isProfilePhotoDataUrl(photoUrl)
-            ? 'تم حفظ الصورة محلياً لأن حصة Firebase Storage ممتلئة. '
-                'راجع Console → Storage أو فعّل Blaze.'
-            : 'تم تحديث صورة الملف الشخصي بنجاح',
+            ? 'profile.photo_saved_local'.tr()
+            : 'profile.photo_updated'.tr(),
         type: TouryMessageType.success,
       );
     } on StorageUploadException catch (e) {
@@ -212,7 +211,7 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
         context,
         title: 'dialog_error_title'.tr(),
         message: e.message.contains('صلاحيات')
-            ? 'تعذر رفع الصورة بسبب صلاحيات التخزين.'
+            ? 'profile.photo_permission_denied'.tr()
             : e.message,
         type: TouryMessageType.error,
       );
@@ -271,7 +270,7 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
         await TouryDialogs.showAlert(
           context,
           title: 'dialog_error_title'.tr(),
-          message: 'يرجى إدخال الاسم.',
+          message: 'profile.name_required'.tr(),
           type: TouryMessageType.error,
         );
         return;
@@ -282,7 +281,7 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
         await TouryDialogs.showAlert(
           context,
           title: 'dialog_error_title'.tr(),
-          message: 'انتهت جلسة تسجيل الدخول. سجّل الدخول مرة أخرى.',
+          message: 'profile.session_expired'.tr(),
           type: TouryMessageType.error,
         );
         return;
@@ -308,8 +307,8 @@ class _UpdateProfWidgetState extends State<UpdateProfWidget> {
       if (!mounted) return;
       await TouryDialogs.showAlert(
         context,
-        title: 'نجاح',
-        message: 'تم حفظ الملف الشخصي بنجاح',
+        title: 'common.success'.tr(),
+        message: 'profile.saved'.tr(),
         type: TouryMessageType.success,
       );
       if (!mounted) return;

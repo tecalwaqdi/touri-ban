@@ -75,6 +75,11 @@ class TypeCarRecord extends FirestoreRecord {
   String get codeCar => _codeCar ?? '';
   bool hasCodeCar() => _codeCar != null;
 
+  // "countryId" — canonical country document id (saudi_arabia, kyrgyzstan, …).
+  String? _countryId;
+  String get countryId => _countryId ?? '';
+  bool hasCountryId() => _countryId != null && _countryId!.trim().isNotEmpty;
+
   // "dolh" — country DocumentReference.
   DocumentReference? _dolh;
   DocumentReference? get dolh => _dolh;
@@ -111,7 +116,10 @@ class TypeCarRecord extends FirestoreRecord {
   bool hasOsfI18n() => _osfI18n != null && _osfI18n!.isNotEmpty;
 
   /// نشط للعرض: actev/acctev = true، أو بدون حقل تفعيل (بيانات قديمة).
+  /// Archived / excluded operational docs never list.
   bool get isAvailableForListing {
+    if (snapshotData['archived'] == true) return false;
+    if (snapshotData['exclude_from_operational_catalog'] == true) return false;
     if (snapshotData.containsKey('actev')) {
       return snapshotData['actev'] == true;
     }
@@ -121,20 +129,26 @@ class TypeCarRecord extends FirestoreRecord {
     return true;
   }
 
-  /// Matches selected country by ref path or ISO (legacy SA-only when unset).
+  /// Matches selected country by countryId, ref path, or ISO.
+  /// No Saudi legacy fallback — unscoped docs never match operational lists.
   bool matchesCountry({
     DocumentReference? countryRef,
     String? iso2,
-    bool allowLegacySaudiFallback = true,
+    bool allowLegacySaudiFallback = false,
   }) {
+    final targetId = (countryRef?.id ?? '').trim();
+    final myCountryId = countryId.trim();
+    if (myCountryId.isNotEmpty && targetId.isNotEmpty && myCountryId == targetId) {
+      return true;
+    }
     final iso = (iso2 ?? '').trim().toUpperCase();
     final myIso = countryIso2.trim().toUpperCase();
     if (myIso.isNotEmpty && iso.isNotEmpty && myIso == iso) return true;
     if (dolh != null && countryRef != null && dolh!.path == countryRef.path) {
       return true;
     }
-    // Legacy rows without country: only for SA.
-    if (!hasDolh() && myIso.isEmpty) {
+    // Legacy rows without country: only when explicitly opted in (never default).
+    if (!hasCountryId() && !hasDolh() && myIso.isEmpty) {
       return allowLegacySaudiFallback && (iso == 'SA' || iso.isEmpty);
     }
     return false;
@@ -154,6 +168,7 @@ class TypeCarRecord extends FirestoreRecord {
     _nesbahkKsm = castToType<double>(snapshotData['NesbahkKsm']);
     _totalKsmUb = castToType<int>(snapshotData['TotalKsmUb']);
     _codeCar = snapshotData['codeCar'] as String?;
+    _countryId = snapshotData['countryId'] as String?;
     _dolh = castDocRef(snapshotData['dolh']);
     _countryIso2 = snapshotData['country_iso2'] as String?;
     _sortOrder = castToType<int>(snapshotData['sort_order']);

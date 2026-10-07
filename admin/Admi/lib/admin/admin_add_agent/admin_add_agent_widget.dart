@@ -6,6 +6,7 @@ import '/components/admin_crud_feedback.dart';
 import '/components/admin_location_service.dart';
 import '/backend/admin_role_service.dart';
 import '/backend/admin_user_creation.dart';
+import '/core/admin_user_facing_errors.dart';
 import '/backend/backend.dart';
 import '/components/admin_super_admin_gate.dart';
 import '/components/admin_ui.dart';
@@ -273,7 +274,10 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      final msg = AdminUserCreation.authErrorMessage(e);
+      final msg = AdminUserFacingErrors.localizeMessage(
+        context,
+        AdminUserCreation.authErrorMessage(e),
+      );
       AdminCrudFeedback.error(
         context,
         '${uiTr(context, 'تعذر إضافة الوكيل')}: $msg',

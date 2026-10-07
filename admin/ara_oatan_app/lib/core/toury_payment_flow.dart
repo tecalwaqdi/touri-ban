@@ -72,6 +72,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
   required int bookingHours,
   required int additionalHours,
   String? orderPath,
+  bool forceRefreshHpp = false,
 }) async {
   if (!TouryPaymentFlags.enableOnlinePayment || TouryPaymentFlags.cashOnlyMode) {
     return TouryCardPaymentResult(
@@ -103,6 +104,7 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
         booking: TouryOrderIntegration.cloudBookingPayload(),
         description: description,
         orderPath: orderPath,
+        forceRefreshHpp: forceRefreshHpp,
       );
       final paymentId = body['id']?.toString();
       final bookingId = body['bookingId']?.toString() ?? paymentId;
@@ -137,7 +139,8 @@ Future<TouryCardPaymentResult> touryExecuteCardPayment({
           success: false,
           paymentId: paymentId,
           bookingId: bookingId,
-          errorMessage: 'checkout_hosted_payment_unavailable'.tr(),
+          errorMessage: 'checkout_payment_link_expired'.tr(),
+          status: 'hpp_missing',
         );
       }
       return TouryCardPaymentResult(
@@ -231,8 +234,8 @@ Future<void> touryNavigateAfterCardPayment(
     if (!context.mounted) return;
     TouryDialogs.showSnackBar(
       context,
-      'checkout_hosted_payment_unavailable'.tr(),
-      type: TouryMessageType.error,
+      'checkout_payment_link_expired'.tr(),
+      type: TouryMessageType.warning,
     );
     return;
   }
@@ -243,6 +246,9 @@ Future<void> touryNavigateAfterCardPayment(
   if (TouryPaymentFlags.openPaymentInExternalBrowser) {
     final opened = await _openHostedPaymentInBrowser(context, threeDs);
     if (opened) {
+      if (kDebugMode) {
+        debugPrint('EXTERNAL_BROWSER_OPENED=true host=${Uri.tryParse(threeDs)?.host}');
+      }
       if (!context.mounted) return;
       TouryDialogs.showSnackBar(
         context,
@@ -514,7 +520,8 @@ Future<TouryCardPaymentResult> touryRetryUnpaidOrderPayment({
   if (!order.isAwaitingPayment) {
     return TouryCardPaymentResult(
       success: false,
-      errorMessage: 'checkout_payment_temporarily_unavailable'.tr(),
+      status: 'not_awaiting',
+      errorMessage: 'payment_incomplete_go_orders'.tr(),
     );
   }
   final carPath = order.carRev?.path ?? '';
@@ -524,7 +531,8 @@ Future<TouryCardPaymentResult> touryRetryUnpaidOrderPayment({
   if (carPath.isEmpty || countryPath.isEmpty) {
     return TouryCardPaymentResult(
       success: false,
-      errorMessage: 'checkout_payment_temporarily_unavailable'.tr(),
+      status: 'not_payable',
+      errorMessage: 'BOOKING_NOT_PAYABLE'.tr(),
     );
   }
 
@@ -535,6 +543,8 @@ Future<TouryCardPaymentResult> touryRetryUnpaidOrderPayment({
     app.paymentIdempotencyKey = stableKey;
   }
 
+  // Resume/retry must mint a fresh SDK/HPP session — reusing an expired
+  // auth URL after backgrounding the app is a common "service unavailable".
   return TouryPaymentExperienceService().startCardCheckout(
     context: context,
     description: 'Toury-retry-${order.reference.id.substring(0, 8)}',
@@ -544,6 +554,7 @@ Future<TouryCardPaymentResult> touryRetryUnpaidOrderPayment({
     bookingHours: order.totalTaim > 0 ? order.totalTaim : 1,
     additionalHours: 0,
     orderPath: order.reference.path,
+    forceRefreshSession: true,
   );
 }
 
@@ -556,8 +567,21 @@ Future<bool> touryCancelPaymentAttempt({
       sessionId: sessionId,
       bookingId: bookingId,
     );
+    FFAppState().update(() {
+      FFAppState().clearSensitivePaymentSession();
+      FFAppState().clearPendingPaymentOrder();
+      FFAppState().paymentInProgress = false;
+      FFAppState().paymentOrderId = '';
+    });
     return true;
   } catch (_) {
+    // Still clear client lock so retry can mint a fresh session.
+    FFAppState().update(() {
+      FFAppState().clearSensitivePaymentSession();
+      FFAppState().clearPendingPaymentOrder();
+      FFAppState().paymentInProgress = false;
+      FFAppState().paymentOrderId = '';
+    });
     return false;
   }
 }
@@ -599,6 +623,17 @@ Future<void> touryShowPaymentIncompleteSheet(
       );
       final result = await touryRetryUnpaidOrderPayment(context: context, order: snap);
       if (!context.mounted) return;
+      if (!result.success) {
+        TouryDialogs.showSnackBar(
+          context,
+          result.errorMessage ??
+              'checkout_payment_temporarily_unavailable'.tr(),
+          type: (result.status ?? '').toLowerCase() == 'cancelled'
+              ? TouryMessageType.warning
+              : TouryMessageType.error,
+        );
+        return;
+      }
       await touryNavigateAfterCardPayment(
         context,
         result: result,
@@ -608,9 +643,10 @@ Future<void> touryShowPaymentIncompleteSheet(
       if (!context.mounted) return;
       TouryDialogs.showSnackBar(
         context,
-        'checkout_payment_temporarily_unavailable'.tr(),
-        type: TouryMessageType.error,
+        'payment_incomplete_go_orders'.tr(),
+        type: TouryMessageType.warning,
       );
+      context.goNamed(List22TaskOverviewResponsiveWidget.routeName);
     }
   }
 }

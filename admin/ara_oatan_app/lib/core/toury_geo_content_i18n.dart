@@ -6,11 +6,12 @@ import '/core/toury_i18n_text.dart';
 
 String touryCountryName(BuildContext context, CountriesRecord record) {
   final localeKey = touryContentLocaleFromContext(context);
+  final lang = localeKey.split(RegExp(r'[_-]')).first.toLowerCase();
+  final english = record.naimEnglesh.trim();
+  final legacy = (lang == 'ar' || english.isEmpty) ? record.naim : english;
   return touryLocalizedText(
     record.namesI18n,
-    localeKey.startsWith('en') && record.naimEnglesh.trim().isNotEmpty
-        ? record.naimEnglesh
-        : record.naim,
+    legacy,
     localeKey: localeKey,
   );
 }

@@ -1543,11 +1543,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get ux_min_hours => 'کم از کم';
 
   @override
-  String get ux_car_list_empty_title => 'کوئی کاریں دستیاب نہیں ہیں۔';
+  String get ux_car_list_empty_title => 'No vehicle types available';
 
   @override
   String get ux_car_list_empty_msg =>
-      'ابھی کوئی کار دستیاب نہیں ہے۔ براہ کرم بعد میں دوبارہ کوشش کریں۔';
+      'No vehicle types are currently available for this country';
 
   @override
   String get ux_car_list_error_title => 'کاریں لوڈ نہیں کر سکے۔';
@@ -2555,4 +2555,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String minutes_count(num count) {
     return '$count minutes';
   }
+
+  @override
+  String get ux_vehicle_select_country_title => 'Select a country';
+
+  @override
+  String get ux_vehicle_select_country_msg =>
+      'Select a country to view vehicle types';
 }

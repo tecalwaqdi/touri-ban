@@ -74,9 +74,9 @@ class FirebaseAuthManager extends AuthManager
       if (e.code == 'requires-recent-login') {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text(
-                  'Too long since most recent sign in. Sign in again before deleting your account.')),
+          SnackBar(
+            content: Text(DriverAuthErrors.localized(context, e)),
+          ),
         );
       }
     }
@@ -98,9 +98,9 @@ class FirebaseAuthManager extends AuthManager
       if (e.code == 'requires-recent-login') {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text(
-                  'Too long since most recent sign in. Sign in again before updating your email.')),
+          SnackBar(
+            content: Text(DriverAuthErrors.localized(context, e)),
+          ),
         );
       }
     }
@@ -118,20 +118,12 @@ class FirebaseAuthManager extends AuthManager
       }
       await currentUser?.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'requires-recent-login') {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              driverTrNamed(
-                context,
-                'Error: {message}',
-                {'message': e.message!},
-              ),
-            ),
-          ),
-        );
-      }
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(DriverAuthErrors.localized(context, e)),
+        ),
+      );
     }
   }
 
@@ -146,13 +138,7 @@ class FirebaseAuthManager extends AuthManager
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            driverTrNamed(
-              context,
-              'Error: {message}',
-              {'message': e.message!},
-            ),
-          ),
+          content: Text(DriverAuthErrors.localized(context, e)),
         ),
       );
       return null;
@@ -226,13 +212,7 @@ class FirebaseAuthManager extends AuthManager
       } else if (phoneAuthManager.phoneAuthError != null) {
         final e = phoneAuthManager.phoneAuthError!;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            driverTrNamed(
-              context,
-              'Error: {message}',
-              {'message': e.message!},
-            ),
-          ),
+          content: Text(DriverAuthErrors.localized(context, e)),
         ));
         phoneAuthManager.update(() => phoneAuthManager.phoneAuthError = null);
       }

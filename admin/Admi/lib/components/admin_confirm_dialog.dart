@@ -31,18 +31,18 @@ Future<bool> showAdminConfirmDialog({
           (reference != null && reference.isNotEmpty);
 
       return AlertDialog(
-        title: Text(title),
+        title: Text(uiTr(ctx, title)),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(whatHappens),
+              Text(uiTr(ctx, whatHappens)),
               const SizedBox(height: 10),
               Text('${uiTr(ctx, 'العنصر')}: $subject'),
               if (impact != null && impact.isNotEmpty) ...[
                 const SizedBox(height: 8),
-                Text('${uiTr(ctx, 'التأثير')}: $impact'),
+                Text('${uiTr(ctx, 'التأثير')}: ${uiTr(ctx, impact)}'),
               ],
               if (irreversible) ...[
                 const SizedBox(height: 10),
@@ -77,7 +77,7 @@ Future<bool> showAdminConfirmDialog({
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
-              cancelLabel.isEmpty ? uiTr(ctx, 'إلغاء') : cancelLabel,
+              cancelLabel.isEmpty ? uiTr(ctx, 'إلغاء') : uiTr(ctx, cancelLabel),
             ),
           ),
           FilledButton(
@@ -88,7 +88,7 @@ Future<bool> showAdminConfirmDialog({
                 : null,
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              confirmLabel.isEmpty ? uiTr(ctx, 'تأكيد') : confirmLabel,
+              confirmLabel.isEmpty ? uiTr(ctx, 'تأكيد') : uiTr(ctx, confirmLabel),
             ),
           ),
         ],

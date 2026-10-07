@@ -29,9 +29,12 @@ String driverLocalizedCountryLabel(
     localeKey: key,
   );
   if (localized.isNotEmpty) return localized;
-  // Last resort: never leave the field blank in UI.
-  if (country.naimEnglesh.trim().isNotEmpty) return country.naimEnglesh.trim();
-  return country.naim.trim();
+  if (country.naimEnglesh.trim().isNotEmpty &&
+      (lang == 'ar' || lang == 'ur' || !driverLooksArabic(country.naimEnglesh))) {
+    return country.naimEnglesh.trim();
+  }
+  if (lang == 'ar' || lang == 'ur') return country.naim.trim();
+  return '';
 }
 
 String driverLocalizedRegionLabel(
@@ -49,10 +52,10 @@ String driverLocalizedCityLabel(
   VillagesRecord city, [
   String? localeKey,
 ]) {
-  return driverLocalizedText(
-    city.namesI18n,
-    city.naim,
+  return driverSearchingAreaLabel(
     localeKey: localeKey ?? driverActiveContentLocaleKey(),
+    namesI18n: city.namesI18n,
+    legacyNaim: city.naim,
   );
 }
 
@@ -76,9 +79,14 @@ String driverLocalizedMapLabel(
       : eng;
   final localized = driverLocalizedText(i18n, legacy, localeKey: key);
   if (localized.isNotEmpty) return localized;
-  if (eng.isNotEmpty) return eng;
-  if (naim.isNotEmpty) return naim;
-  if (name.isNotEmpty) return name;
-  if (companyName.isNotEmpty) return companyName;
+  if (eng.isNotEmpty &&
+      (lang == 'ar' || lang == 'ur' || !driverLooksArabic(eng))) {
+    return eng;
+  }
+  if (lang == 'ar' || lang == 'ur') {
+    if (naim.isNotEmpty) return naim;
+    if (name.isNotEmpty) return name;
+    if (companyName.isNotEmpty) return companyName;
+  }
   return fallbackId;
 }

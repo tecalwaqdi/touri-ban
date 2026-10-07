@@ -174,6 +174,50 @@ exports.createPanelUser = functions.https.onCall(async (data, context) => {
   const {applyCountryAdminCreateLock} = require("./panel_user_country_lock.js");
   applyCountryAdminCreateLock(userData, callerClaims, functions.https);
 
+  // Driver vehicle-type country guard (new assignments only).
+  // Existing drivers without type_car remain untouched by other paths.
+  if (userData.ismndob === true || userData.ismndom === true) {
+    const typePath =
+      (typeof userData.mndob_type_car === "string" && userData.mndob_type_car) ||
+      (userData.mndob_type_car && userData.mndob_type_car.path) ||
+      (typeof userData.carRev_mndob === "string" && userData.carRev_mndob) ||
+      (userData.carRev_mndob && userData.carRev_mndob.path) ||
+      "";
+    const countryPath =
+      (typeof userData.Rev_dolh === "string" && userData.Rev_dolh) ||
+      (userData.Rev_dolh && userData.Rev_dolh.path) ||
+      "";
+    if (typePath) {
+      if (!countryPath) {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          "DRIVER_COUNTRY_REQUIRED",
+        );
+      }
+      const countryConfig = require("./driver_country_config.js");
+      const [typeSnap, countrySnap] = await Promise.all([
+        db.doc(String(typePath)).get(),
+        db.doc(String(countryPath)).get(),
+      ]);
+      const countryData = countrySnap.exists ? countrySnap.data() || {} : {};
+      const iso2 = countryConfig.resolveCountryIso(
+        String(countryPath).split("/").pop(),
+        countryData,
+      );
+      const check = countryConfig.validateDriverVehicleTypeAssignment({
+        typeCarData: typeSnap.exists ? typeSnap.data() : null,
+        driverCountryPath: String(countryPath),
+        driverCountryIso2: iso2,
+      });
+      if (!check.ok) {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          check.reasonCode || "VEHICLE_TYPE_MARKET_MISMATCH",
+        );
+      }
+    }
+  }
+
   let userRecord;
   try {
     userRecord = await admin.auth().createUser({email, password});
@@ -311,53 +355,62 @@ exports.updateCountryAgentAssignment =
 
 // ── Gemini proxy (no client keys) ───────────────────────────────────────────
 
-exports.geminiGenerateText = functions.https.onCall(async (data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError("unauthenticated", "Sign in required.");
-  }
-  const token = context.auth.token || {};
-  if (!token.super_admin && !token.country_admin && !token.agent) {
-    throw new functions.https.HttpsError("permission-denied", "Not authorized.");
-  }
+exports.geminiGenerateText = functions
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "256MB",
+    secrets: ["GEMINI_API_KEY"],
+  })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError("unauthenticated", "Sign in required.");
+    }
+    const token = context.auth.token || {};
+    if (!token.super_admin && !token.country_admin && !token.agent) {
+      throw new functions.https.HttpsError("permission-denied", "Not authorized.");
+    }
 
-  const prompt = data.prompt || "";
-  if (!prompt) {
-    throw new functions.https.HttpsError("invalid-argument", "prompt required");
-  }
+    const prompt = data.prompt || "";
+    if (!prompt) {
+      throw new functions.https.HttpsError("invalid-argument", "prompt required");
+    }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new functions.https.HttpsError("failed-precondition", "GEMINI_API_KEY not set");
-  }
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "GEMINI_API_KEY not set",
+      );
+    }
 
-  const url =
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" +
-    apiKey;
+    const url =
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" +
+      apiKey;
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      contents: [{parts: [{text: prompt}]}],
-    }),
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        contents: [{parts: [{text: prompt}]}],
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new functions.https.HttpsError("internal", errText);
+    }
+
+    const json = await response.json();
+    const text =
+      json.candidates &&
+      json.candidates[0] &&
+      json.candidates[0].content &&
+      json.candidates[0].content.parts &&
+      json.candidates[0].content.parts[0] &&
+      json.candidates[0].content.parts[0].text;
+
+    return {text: text || ""};
   });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new functions.https.HttpsError("internal", errText);
-  }
-
-  const json = await response.json();
-  const text =
-    json.candidates &&
-    json.candidates[0] &&
-    json.candidates[0].content &&
-    json.candidates[0].content.parts &&
-    json.candidates[0].content.parts[0] &&
-    json.candidates[0].content.parts[0].text;
-
-  return {text: text || ""};
-});
 
 // ── Financial aggregation (server-side, paginated) ──────────────────────────
 
@@ -1294,12 +1347,19 @@ exports.requestExistingPaymentAllocationV2 = functions
 const driverRegistrationV2 = require('./driver_registration_v2.js');
 const driverFinancialSummaryV2 = require('./driver_financial_summary_v2.js');
 const cashCollectionRealization = require('./cash_collection_realization.js');
+const driverProfileChangeRequest = require('./driver_profile_change_request.js');
 exports.submitDriverApplicationV2 = functions
   .region('us-central1')
   .https.onCall(driverRegistrationV2.submitDriverApplicationV2);
 exports.reviewDriverApplicationV2 = functions
   .region('us-central1')
   .https.onCall(driverRegistrationV2.reviewDriverApplicationV2);
+exports.submitDriverProfileChangeRequest = functions
+  .region('us-central1')
+  .https.onCall(driverProfileChangeRequest.submitDriverProfileChangeRequest);
+exports.reviewDriverProfileChangeRequest = functions
+  .region('us-central1')
+  .https.onCall(driverProfileChangeRequest.reviewDriverProfileChangeRequest);
 
 // Driver app — read-only financial summary (completed trips only).
 exports.getDriverFinancialSummaryV2 = functions
@@ -1320,18 +1380,43 @@ exports.getDriverFinancialSummaryV2 = functions
     }
   });
 
+// Finance forward — Admin Next auto-finalize when order becomes completed+payment-final.
+// Fail-soft: never mutates order; failures audited for retry.
+const financeForwardAutoFinalize = require('./finance_forward_auto_finalize');
+exports.onOrderFinanceForwardEligible =
+  financeForwardAutoFinalize.createOnOrderFinanceForwardEligible({db, admin});
+
+async function maybeInvokeFinanceForwardAfterCash(result, source) {
+  if (!result || !result.orderId) return;
+  if (result.paymentStatus !== 'cash_collected') return;
+  // Outside cash TX — never rolls back collection on finance failure.
+  await financeForwardAutoFinalize.invokeAdminNextAutoFinalize({
+    db,
+    admin,
+    orderId: result.orderId,
+    source,
+    dryRun: false,
+    swallowErrors: true,
+  });
+}
+
 // Phase C — server-authoritative cash collection (future trips only; flag-gated).
 exports.confirmCashCollectionV2 = functions
   .region('us-central1')
   .runWith({timeoutSeconds: 60, memory: '256MB'})
   .https.onCall(async (data, context) => {
     try {
-      return await cashCollectionRealization.confirmCashCollectionV2({
+      const result = await cashCollectionRealization.confirmCashCollectionV2({
         db,
         auth: context.auth,
         data: data || {},
         admin,
       });
+      await maybeInvokeFinanceForwardAfterCash(
+        result,
+        'confirmCashCollectionV2',
+      );
+      return result;
     } catch (e) {
       const code =
         e.code === 'permission-denied' ||
@@ -1351,12 +1436,17 @@ exports.adminConfirmCashCollectionV2 = functions
   .runWith({timeoutSeconds: 60, memory: '256MB'})
   .https.onCall(async (data, context) => {
     try {
-      return await cashCollectionRealization.adminConfirmCashCollectionV2({
+      const result = await cashCollectionRealization.adminConfirmCashCollectionV2({
         db,
         auth: context.auth,
         data: data || {},
         admin,
       });
+      await maybeInvokeFinanceForwardAfterCash(
+        result,
+        'adminConfirmCashCollectionV2',
+      );
+      return result;
     } catch (e) {
       const code =
         e.code === 'permission-denied' ||

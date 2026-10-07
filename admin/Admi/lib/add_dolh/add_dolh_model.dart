@@ -1,6 +1,7 @@
 import '/flutter_flow/flutter_flow_util.dart';
 import 'add_dolh_widget.dart' show AddDolhWidget;
 import 'package:flutter/material.dart';
+import '/components/admin_geo_locale_fields.dart';
 
 class AddDolhModel extends FlutterFlowModel<AddDolhWidget> {
   ///  State fields for stateful widgets in this page.
@@ -33,12 +34,14 @@ class AddDolhModel extends FlutterFlowModel<AddDolhWidget> {
   TextEditingController? textControllerCurrencySymbol;
   // State field(s) for Switch widget.
   bool? switchValue;
+  final geoNameControllers = <String, TextEditingController>{};
 
   @override
   void initState(BuildContext context) {}
 
   @override
   void dispose() {
+    disposeAdminGeoControllers(geoNameControllers);
     textFieldFocusNode1?.dispose();
     textController1?.dispose();
 

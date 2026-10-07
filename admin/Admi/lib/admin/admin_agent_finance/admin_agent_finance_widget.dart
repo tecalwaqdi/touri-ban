@@ -277,7 +277,10 @@ class _AgentFinanceScopeStrip extends StatelessWidget {
 
     final agentValue = agents.length == 1
         ? agents.first
-        : (agents.isEmpty ? '—' : uiTr(context, '${agents.length} وكلاء'));
+        : (agents.isEmpty
+            ? '—'
+            : uiTr(context, '{count} وكلاء')
+                .replaceAll('{count}', '${agents.length}'));
 
     final platformCommission = () {
       final m = bundle.model;
@@ -341,9 +344,9 @@ class _AgentFinanceScopeStrip extends StatelessWidget {
     );
 
     final settlementValue = bundle.openSettlementsRemaining > 0
-        ? uiTr(
-            context,
-            'غير مسددة: ${bundle.openSettlementsRemaining}',
+        ? uiTr(context, 'غير مسددة: {count}').replaceAll(
+            '{count}',
+            '${bundle.openSettlementsRemaining}',
           )
         : uiTr(context, 'لا متبقٍ مفتوح');
 

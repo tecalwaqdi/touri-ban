@@ -304,6 +304,7 @@ class AdminRoleService {
 
   static const _accountantRoutes = {
     'AdminFinanceHub',
+    'AdminFinanceTripLedger',
     'AdminFinanceReceivables',
     'AdminFinanceAdjustments',
     'AdminAgentFinance',
@@ -329,6 +330,7 @@ class AdminRoleService {
   /// Global finance administration — country agents/agents must not open these.
   static const _globalFinanceAdminRoutes = {
     'AdminFinanceHub',
+    'AdminFinanceTripLedger',
     'AdminProfits',
     'AdminFinanceChannels',
     'AdminFinanceReceivables',
@@ -425,6 +427,7 @@ class AdminRoleService {
     'AdminDriversHub',
     'AdminDrivers',
     'AdminDriverExpiryQueue',
+    'AdminDriverDataChangeRequests',
     'DriverActivation',
     'AdminNotifications',
     'addDrev',

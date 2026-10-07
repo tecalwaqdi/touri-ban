@@ -178,11 +178,24 @@ class TouryFirestoreCache {
     Query Function(Query)? queryBuilder,
     int limit = _typeCarLimit,
   }) {
-    const streamKey = 'typecar:active-v3:all';
-    const onceKey = 'typecar-once:active-v3:all';
+    final countryRef = FFAppState().dolh;
+    if (countryRef == null) {
+      return Stream.value(const <TypeCarRecord>[]);
+    }
+    final countryId = countryRef.id.trim();
+    if (countryId.isEmpty) {
+      return Stream.value(const <TypeCarRecord>[]);
+    }
+    final streamKey = 'typecar:active-v4:$countryId';
+    final onceKey = 'typecar-once:active-v4:$countryId';
     return _broadcastStream(streamKey, () {
       final live = queryTypeCarRecord(
-        queryBuilder: queryBuilder,
+        queryBuilder: (q) {
+          // Scope by canonical countryId. Do NOT orderBy sort_order —
+          // missing sort_order silently drops docs from Firestore results.
+          Query scoped = q.where('countryId', isEqualTo: countryId);
+          return queryBuilder != null ? queryBuilder(scoped) : scoped;
+        },
         limit: limit,
       ).map(_filterActiveTypeCars);
       return _staleWhileRevalidate<List<TypeCarRecord>>(
@@ -196,33 +209,38 @@ class TouryFirestoreCache {
   static List<TypeCarRecord> _filterActiveTypeCars(List<TypeCarRecord> cars) {
     final countryRef = FFAppState().dolh;
     final iso = TouryCountryRegistry.normalizeIso(countryRef?.id);
+    // Fail closed: never list vehicles until a booking country is known.
+    if (countryRef == null && (iso == null || iso.isEmpty)) {
+      return const <TypeCarRecord>[];
+    }
     final filtered = cars.where((car) {
       if (!car.isAvailableForListing) return false;
-      if (countryRef == null && (iso == null || iso.isEmpty)) return true;
       return car.matchesCountry(
         countryRef: countryRef,
         iso2: iso,
+        allowLegacySaudiFallback: false,
       );
     }).toList();
     return tourySortTypeCars(filtered);
   }
 
   static void invalidateTypeCar() {
-    _streamCache.remove('typecar:active-v3:all');
-    _onceCache.remove('typecar-once:active-v3:all');
-    _streamLastValue.remove('typecar:active-v3:all');
     _streamCache.removeWhere((key, _) => key.startsWith('typecar:'));
     _onceCache.removeWhere((key, _) => key.startsWith('typecar-once:'));
     _streamLastValue.removeWhere((key, _) => key.startsWith('typecar:'));
   }
 
-  /// آخر قائمة سيارات محفوظة — لعرض فوري عند إعادة فتح الشاشة.
+  /// آخر قائمة سيارات محفوظة للدولة الحالية — لعرض فوري عند إعادة فتح الشاشة.
   static List<TypeCarRecord>? peekTypeCars() {
-    final cached = _onceCache['typecar-once:active-v3:all'];
+    final countryId = FFAppState().dolh?.id.trim() ?? '';
+    if (countryId.isEmpty) return null;
+    final onceKey = 'typecar-once:active-v4:$countryId';
+    final streamKey = 'typecar:active-v4:$countryId';
+    final cached = _onceCache[onceKey];
     if (cached != null && !cached.isExpired) {
       return List<TypeCarRecord>.from(cached.value as List<TypeCarRecord>);
     }
-    final last = _streamLastValue['typecar:active-v3:all'];
+    final last = _streamLastValue[streamKey];
     if (last is List<TypeCarRecord>) {
       return List<TypeCarRecord>.from(last);
     }
@@ -326,10 +344,16 @@ class TouryFirestoreCache {
   }
 
   static Future<void> _warmTypeCarsOnce() async {
+    final countryRef = FFAppState().dolh;
+    final countryId = countryRef?.id.trim() ?? '';
+    if (countryRef == null || countryId.isEmpty) return;
     await once(
-      'typecar-once:active-v3:all',
+      'typecar-once:active-v4:$countryId',
       () async => _filterActiveTypeCars(
-        await queryTypeCarRecordOnce(limit: _typeCarLimit),
+        await queryTypeCarRecordOnce(
+          limit: _typeCarLimit,
+          queryBuilder: (q) => q.where('countryId', isEqualTo: countryId),
+        ),
       ),
       ttl: _staticTtl,
     ).catchError((_) => <TypeCarRecord>[]);

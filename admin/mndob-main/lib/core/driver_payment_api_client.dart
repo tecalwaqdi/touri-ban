@@ -62,6 +62,8 @@ class DriverPaymentApiClient {
     String? email,
     String? description,
     String locale = 'ar',
+    double? localAmount,
+    String? countryId,
   }) async {
     unawaited(_warmUp());
 
@@ -87,6 +89,10 @@ class DriverPaymentApiClient {
                   'packageId': packageId,
                 if (email != null && email.isNotEmpty) 'email': email,
                 if (description != null) 'description': description,
+                if (localAmount != null && localAmount > 0)
+                  'localAmount': localAmount,
+                if (countryId != null && countryId.isNotEmpty)
+                  'countryId': countryId,
                 'locale': locale,
               }),
             )

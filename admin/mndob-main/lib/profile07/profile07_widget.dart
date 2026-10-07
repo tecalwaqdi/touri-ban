@@ -3,8 +3,10 @@ import '/backend/backend.dart';
 import '/backend/firebase_storage/storage.dart';
 import '/components/driver_theme_mode_card.dart';
 import '/core/driver_account_deletion_service.dart';
+import '/core/driver_approved_profile_policy.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_logout_service.dart';
+import '/core/toury_support_link.dart';
 import '/core/driver_online_state.dart';
 import '/core/driver_ux_widgets.dart';
 import '/design_system/design_system.dart';
@@ -115,29 +117,28 @@ class _Profile07WidgetState extends State<Profile07Widget>
 
   Future<String?> _askPasswordForReauth() async {
     final controller = TextEditingController();
-    final arabic = Localizations.localeOf(context).languageCode == 'ar';
     final password = await showDialog<String>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
         return AlertDialog(
-          title: Text(arabic ? 'تأكيد الهوية' : 'Confirm identity'),
+          title: Text(driverTr(context, 'confirm_identity')),
           content: TextField(
             controller: controller,
             obscureText: true,
             autofocus: true,
             decoration: InputDecoration(
-              labelText: arabic ? 'كلمة المرور' : 'Password',
+              labelText: driverTr(context, 'Password'),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(arabic ? 'إلغاء' : 'Cancel'),
+              child: Text(driverTr(context, 'Cancel')),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, controller.text),
-              child: Text(arabic ? 'متابعة' : 'Continue'),
+              child: Text(driverTr(context, 'Continue')),
             ),
           ],
         );
@@ -148,31 +149,25 @@ class _Profile07WidgetState extends State<Profile07Widget>
   }
 
   Future<void> _deleteAccount(BuildContext context) async {
-    final arabic = Localizations.localeOf(context).languageCode == 'ar';
-
     final first = await DriverDialogs.showConfirm(
       context,
-      title: arabic ? 'حذف الحساب' : 'Delete account',
-      message: arabic
-          ? 'سيؤدي حذف حسابك إلى حذف بيانات الحساب الشخصية غير اللازمة (مثل بيانات الملف ورموز الإشعارات). لا يعني ذلك حذف كل البيانات: قد يتم الاحتفاظ بسجلات الرحلات والمعاملات والتسويات والقيود المحاسبية لأغراض المحاسبة والامتثال ومنع الاحتيال والنزاعات والتدقيق. لا يمكن الحذف أثناء رحلة نشطة أو تسوية معلّقة أو رصيد محفظة غير مسوّى.'
-          : 'Deleting your account removes unnecessary personal account data (such as profile details and notification tokens). This does not erase all data: trip, transaction, settlement, and accounting records may be retained for accounting, compliance, fraud prevention, disputes, and audit. Deletion is blocked during an active trip, pending settlement, or unsettled wallet balance.',
+      title: driverTr(context, 'Delete account'),
+      message: driverTr(context, 'delete_account_warning_body'),
       type: DriverMessageType.warning,
       destructive: true,
-      confirmLabel: arabic ? 'متابعة حذف الحساب' : 'Continue deletion',
-      cancelLabel: arabic ? 'إلغاء' : 'Cancel',
+      confirmLabel: driverTr(context, 'continue_account_deletion'),
+      cancelLabel: driverTr(context, 'Cancel'),
     );
     if (!first || !mounted) return;
 
     final second = await DriverDialogs.showConfirm(
       context,
-      title: arabic ? 'تأكيد نهائي' : 'Final confirmation',
-      message: arabic
-          ? 'هل أنت متأكد أنك تريد حذف حسابك نهائيًا؟'
-          : 'Are you sure you want to permanently delete your account?',
+      title: driverTr(context, 'final_confirmation'),
+      message: driverTr(context, 'delete_account_final_body'),
       type: DriverMessageType.warning,
       destructive: true,
-      confirmLabel: arabic ? 'حذف نهائي' : 'Delete permanently',
-      cancelLabel: arabic ? 'إلغاء' : 'Cancel',
+      confirmLabel: driverTr(context, 'delete_permanently'),
+      cancelLabel: driverTr(context, 'Cancel'),
     );
     if (!second || !mounted) return;
 
@@ -184,10 +179,8 @@ class _Profile07WidgetState extends State<Profile07Widget>
       if (!mounted) return;
       await DriverDialogs.showAlert(
         context,
-        title: arabic ? 'مطلوب تأكيد الهوية' : 'Identity confirmation required',
-        message: arabic
-            ? 'لم نتمكن من تأكيد هويتك. سجّل الدخول مجددًا ثم أعد المحاولة.'
-            : 'We could not confirm your identity. Sign in again and retry.',
+        title: driverTr(context, 'identity_confirmation_required'),
+        message: driverTr(context, 'identity_confirmation_failed_body'),
         type: DriverMessageType.warning,
       );
       return;
@@ -210,10 +203,10 @@ class _Profile07WidgetState extends State<Profile07Widget>
     if (!result.ok) {
       await DriverDialogs.showAlert(
         context,
-        title: arabic ? 'تعذر الحذف' : 'Deletion failed',
+        title: driverTr(context, 'deletion_failed_title'),
         message: DriverAccountDeletionService.userFacingMessage(
           result,
-          arabic: arabic,
+          tr: (key) => driverTr(context, key),
         ),
         type: DriverMessageType.error,
       );
@@ -544,10 +537,8 @@ class _Profile07WidgetState extends State<Profile07Widget>
                                               }
                                             },
                                             title: Text(
-                                              FFLocalizations.of(context)
-                                                  .getText(
-                                                '11lqnn52' /* Receiving bookings */,
-                                              ),
+                                              driverTr(
+                                                  context, 'Receiving bookings'),
                                               style:
                                                   typography.bodyLarge.copyWith(
                                                 color: colors.textPrimary,
@@ -570,12 +561,14 @@ class _Profile07WidgetState extends State<Profile07Widget>
                               _menuRow(
                                 context: context,
                                 icon: Icons.contact_support_outlined,
-                                label: FFLocalizations.of(context).getText(
-                                  'g5iyasoo' /* Have a problem? Contact us dir... */,
+                                label: driverTr(
+                                  context,
+                                  'support.contact_directly',
                                 ),
                                 onTap: () async {
-                                  await launchURL(
-                                    'https://wa.me/message/LHEPTGBXGS7UJ1',
+                                  await TourySupportLink.open(
+                                    context,
+                                    countryPath: currentUserDocument?.revDolh,
                                   );
                                 },
                               ),
@@ -592,26 +585,54 @@ class _Profile07WidgetState extends State<Profile07Widget>
                               _menuRow(
                                 context: context,
                                 icon: Icons.account_balance_rounded,
-                                label: FFLocalizations.of(context).getText(
-                                  '4627kcfu' /* Bank account update */,
-                                ),
+                                label: driverTr(
+                                    context, 'Bank account update'),
                                 onTap: () => context
                                     .pushNamed(UpdetBankWidget.routeName),
                               ),
                               const SizedBox(height: DsSpacing.sm),
+                              // Single entry for approved drivers: contact +
+                              // change-request live on Account Security.
+                              // Non-approved keep one registration-update entry.
                               _menuRow(
                                 context: context,
-                                icon: Icons.edit_note_rounded,
-                                label: driverTr(
-                                    context, 'Edit Registration Data'),
-                                onTap: () => context.pushNamed(
-                                  RegdreverWidget.routeName,
-                                  queryParameters: const {'mode': 'update'},
-                                  extra: const <String, dynamic>{
-                                    'mode': 'update',
+                                icon: Icons.security_rounded,
+                                label: driverTr(context, 'Account security'),
+                                onTap: () {
+                                  final doc = currentUserDocument;
+                                  if (DriverApprovedProfilePolicy
+                                      .hasOpenCorrectionRequest(doc)) {
+                                    context.pushNamed(
+                                      DriverPendingApprovalWidget.routeName,
+                                    );
+                                    return;
+                                  }
+                                  context.pushNamed(
+                                    DriverAccountSecurityWidget.routeName,
+                                  );
+                                },
+                              ),
+                              if (!DriverApprovedProfilePolicy
+                                  .isApprovedOrActive(currentUserDocument)) ...[
+                                const SizedBox(height: DsSpacing.sm),
+                                _menuRow(
+                                  context: context,
+                                  icon: Icons.badge_outlined,
+                                  label: driverTr(
+                                      context, 'Edit Registration Data'),
+                                  onTap: () {
+                                    context.pushNamed(
+                                      RegdreverWidget.routeName,
+                                      queryParameters: const {
+                                        'mode': 'update'
+                                      },
+                                      extra: const <String, dynamic>{
+                                        'mode': 'update',
+                                      },
+                                    );
                                   },
                                 ),
-                              ),
+                              ],
                               const SizedBox(height: DsSpacing.sm),
                               const DriverThemeModeCard(),
                               const SizedBox(height: DsSpacing.sm),
@@ -662,9 +683,7 @@ class _Profile07WidgetState extends State<Profile07Widget>
                               ),
                               const SizedBox(height: DsSpacing.xl),
                               DsButton.outlined(
-                                label: FFLocalizations.of(context).getText(
-                                  'jso22q9p' /* Log Out */,
-                                ),
+                                label: driverTr(context, 'common.logout'),
                                 expanded: true,
                                 size: DsButtonSize.lg,
                                 icon: Icons.logout_rounded,

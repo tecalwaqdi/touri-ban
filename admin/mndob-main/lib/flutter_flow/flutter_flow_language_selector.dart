@@ -140,14 +140,19 @@ class _LanguagePickerItem extends StatelessWidget {
           flagWidget,
           SizedBox(width: flagTextGap),
         ],
-        Text(
-          _languageMap(languages.toSet())[language]?.name ?? '',
-          style: textStyle ??
-              const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.normal,
-              ),
+        Expanded(
+          child: Text(
+            _languageMap(languages.toSet())[language]?.name ?? '',
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+            style: textStyle ??
+                const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.normal,
+                ),
+          ),
         ),
       ],
     );
@@ -190,7 +195,10 @@ class _LanguagePickerDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<DropdownMenuItem<String>> items = languages.values
+    final selectedKey = languages.containsKey(currentLanguage)
+        ? currentLanguage
+        : (languages.keys.isEmpty ? null : languages.keys.first);
+    final items = languages.values
         .map(
           (language) => DropdownMenuItem<String>(
             value: language.isoCode,
@@ -199,22 +207,24 @@ class _LanguagePickerDropdown extends StatelessWidget {
         )
         .toList();
     return Container(
-      height: 44.0,
+      height: 40.0,
       decoration: BoxDecoration(
         color: backgroundColor,
         border: Border.all(color: borderColor ?? Colors.transparent),
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Center(
           child: DropdownButton<String>(
             isExpanded: true,
+            isDense: true,
             underline: Container(),
             dropdownColor: dropdownColor ?? backgroundColor,
             focusColor: Colors.transparent,
             iconEnabledColor: dropdownIconColor,
             iconDisabledColor: dropdownIconColor,
+            iconSize: 18.0,
             icon: dropdownIcon != null
                 ? Icon(
                     dropdownIcon,
@@ -222,13 +232,16 @@ class _LanguagePickerDropdown extends StatelessWidget {
                     color: dropdownIconColor,
                   )
                 : null,
-            hint: const Text(
-              'Unset',
-              style: TextStyle(
-                color: Colors.red,
-                fontFamily: 'Product Sans',
-                fontStyle: FontStyle.italic,
-                fontSize: 15,
+            hint: Text(
+              languages[selectedKey]?.name ??
+                  (languages.values.isEmpty
+                      ? ''
+                      : languages.values.first.name),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
               ),
             ),
             onChanged: (val) {
@@ -237,7 +250,7 @@ class _LanguagePickerDropdown extends StatelessWidget {
               }
             },
             items: items,
-            value: currentLanguage.isNotEmpty ? currentLanguage : null,
+            value: selectedKey,
           ),
         ),
       ),

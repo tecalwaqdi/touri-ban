@@ -1,0 +1,744 @@
+{
+  "Background location needs Always permission so the customer can follow you when the app is minimized.": {
+    "ru": "Для фонового отслеживания нужно разрешение «Всегда», чтобы клиент мог видеть вас, когда приложение свернуто.",
+    "ky": "Колдонмо кичирейтилгенде кардар сизди көрө алсын үчүн фондогу жайгашууга «Ар дайым» уруксаты керек.",
+    "fr": "La localisation en arrière-plan exige l’autorisation « Toujours » pour que le client puisse vous suivre lorsque l’application est réduite.",
+    "ur": "ایپ چھوٹی ہونے پر گاہک آپ کو دیکھ سکے، اس کے لیے پس منظر کے مقام کی «ہمیشہ» اجازت درکار ہے۔",
+    "pt": "A localização em segundo plano precisa da permissão «Sempre» para o cliente acompanhar você quando o aplicativo estiver minimizado."
+  },
+  "Complete payment in the browser, then confirm here. Balance updates only after server confirmation.": {
+    "ru": "Завершите оплату в браузере, затем подтвердите здесь. Баланс обновится только после подтверждения сервера.",
+    "ky": "Төлөмдү браузерде бүтүрүп, бул жерден ырастаңыз. Баланс сервер ырастагандан кийин гана жаңырат.",
+    "fr": "Terminez le paiement dans le navigateur, puis confirmez ici. Le solde se met à jour seulement après confirmation du serveur.",
+    "ur": "براؤزر میں ادائیگی مکمل کریں، پھر یہاں تصدیق کریں۔ بیلنس صرف سرور کی تصدیق کے بعد اپ ڈیٹ ہوتا ہے۔",
+    "pt": "Conclua o pagamento no navegador e confirme aqui. O saldo só é atualizado após a confirmação do servidor."
+  },
+  "Confirm your current location on the map": {
+    "ru": "Подтвердите текущее местоположение на карте",
+    "ky": "Учурдагы жайгашууңузду картадан ырастаңыз",
+    "fr": "Confirmez votre position actuelle sur la carte",
+    "ur": "نقشے پر اپنی موجودہ جگہ کی تصدیق کریں",
+    "pt": "Confirme sua localização atual no mapa"
+  },
+  "Could not complete registration. Please try again.": {
+    "ru": "Не удалось завершить регистрацию. Повторите попытку.",
+    "ky": "Каттоо аяктаган жок. Кайра аракет кылыңыз.",
+    "fr": "Impossible de terminer l’inscription. Veuillez réessayer.",
+    "ur": "رجسٹریشن مکمل نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+    "pt": "Não foi possível concluir o cadastro. Tente novamente."
+  },
+  "Could not load your driver profile. Please try again.": {
+    "ru": "Не удалось загрузить профиль водителя. Повторите попытку.",
+    "ky": "Айдоочунун профили жүктөлгөн жок. Кайра аракет кылыңыз.",
+    "fr": "Impossible de charger votre profil de conducteur. Veuillez réessayer.",
+    "ur": "ڈرائیور پروفائل لوڈ نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔",
+    "pt": "Não foi possível carregar seu perfil de motorista. Tente novamente."
+  },
+  "Could not update the booking. Please try again.": {
+    "ru": "Не удалось обновить бронирование. Повторите попытку.",
+    "ky": "Буйрутма жаңыланган жок. Кайра аракет кылыңыз.",
+    "fr": "Impossible de mettre à jour la réservation. Veuillez réessayer.",
+    "ur": "بکنگ اپ ڈیٹ نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+    "pt": "Não foi possível atualizar a reserva. Tente novamente."
+  },
+  "Could not upload the photo. Please try again.": {
+    "ru": "Не удалось загрузить фото. Повторите попытку.",
+    "ky": "Сүрөт жүктөлгөн жок. Кайرا аракет кылыңыз.",
+    "fr": "Impossible d’envoyer la photo. Veuillez réessayer.",
+    "ur": "تصویر اپ لوڈ نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+    "pt": "Não foi possível enviar a foto. Tente novamente."
+  },
+  "Failed to create account. Please try again.": {
+    "ru": "Не удалось создать аккаунт. Повторите попытку.",
+    "ky": "Аккаунт түзүлгөн жок. Кайра аракет кылыңыз.",
+    "fr": "Échec de la création du compte. Veuillez réessayer.",
+    "ur": "اکاؤنٹ نہیں بن سکا۔ براہ کرم دوبارہ کوشش کریں۔",
+    "pt": "Não foi possível criar a conta. Tente novamente."
+  },
+  "Move the map to adjust your position. Orders will match by this live location.": {
+    "ru": "Сдвиньте карту, чтобы уточнить позицию. Заказы будут подбираться по этой точке.",
+    "ky": "Жайгашууну тактоо үчүн картаны жылдырыңыз. Буйрутмалар ушул жандуу жер боюнча дал келет.",
+    "fr": "Déplacez la carte pour ajuster votre position. Les courses seront attribuées selon cette position en direct.",
+    "ur": "اپنی جگہ درست کرنے کے لیے نقشہ ہلائیں۔ آرڈر اسی لائیو مقام کے مطابق ملیں گے۔",
+    "pt": "Mova o mapa para ajustar sua posição. Os pedidos serão combinados por esta localização ao vivo."
+  },
+  "No location for this point": {
+    "ru": "Для этой точки нет координат",
+    "ky": "Бул чекиттин жайгашуусу жок",
+    "fr": "Aucune position pour ce point",
+    "ur": "اس نقطے کا مقام نہیں ہے",
+    "pt": "Não há localização para este ponto"
+  },
+  "Phone number is invalid for this country": {
+    "ru": "Номер телефона недействителен для этой страны",
+    "ky": "Бул өлкө үчүн телефон номери жараксыз",
+    "fr": "Le numéro de téléphone n’est pas valide pour ce pays",
+    "ur": "یہ فون نمبر اس ملک کے لیے درست نہیں",
+    "pt": "O número de telefone é inválido para este país"
+  },
+  "Phone verification is unavailable. Continue with email and password.": {
+    "ru": "Подтверждение телефона недоступно. Продолжите с почтой и паролем.",
+    "ky": "Телефонду ырастоо жеткиликсиз. Электрондук почта жана сырсөз менен улантыңыз.",
+    "fr": "La vérification par téléphone est indisponible. Continuez avec l’e-mail et le mot de passe.",
+    "ur": "فون تصدیق دستیاب نہیں۔ ای میل اور پاس ورڈ کے ساتھ جاری رکھیں۔",
+    "pt": "A verificação por telefone não está disponível. Continue com e-mail e senha."
+  },
+  "Please complete your profile.": {
+    "ru": "Заполните профиль.",
+    "ky": "Профилиңизди толуктаңыз.",
+    "fr": "Veuillez compléter votre profil.",
+    "ur": "براہ کرم اپنا پروفائل مکمل کریں۔",
+    "pt": "Complete seu perfil."
+  },
+  "Please confirm you have reached the customer before starting.": {
+    "ru": "Перед началом подтвердите, что вы доехали до клиента.",
+    "ky": "Баштоодон мурда кардарга жеткениңизди ырастаңыз.",
+    "fr": "Veuillez confirmer que vous avez rejoint le client avant de commencer.",
+    "ur": "شروع کرنے سے پہلے تصدیق کریں کہ آپ گاہک تک پہنچ گئے ہیں۔",
+    "pt": "Confirme que você chegou ao cliente antes de começar."
+  },
+  "SMS verification is not available right now. Continue registration with email and password?": {
+    "ru": "SMS-подтверждение сейчас недоступно. Продолжить регистрацию по почте и паролю?",
+    "ky": "SMS ырастоо азыр жеткиликсиз. Каттоону почта жана сырсөз менен улантасызбы?",
+    "fr": "La vérification par SMS n’est pas disponible pour le moment. Continuer l’inscription avec l’e-mail et le mot de passe ?",
+    "ur": "ایس ایم ایس تصدیق ابھی دستیاب نہیں۔ رجسٹریشن ای میل اور پاس ورڈ سے جاری رکھیں؟",
+    "pt": "A verificação por SMS não está disponível agora. Continuar o cadastro com e-mail e senha?"
+  },
+  "Something went wrong. Please try again.": {
+    "ru": "Что-то пошло не так. Повторите попытку.",
+    "ky": "Бир жерден ката кетти. Кайра аракет кылыңыз.",
+    "fr": "Une erreur s’est produite. Veuillez réessayer.",
+    "ur": "کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔",
+    "pt": "Algo deu errado. Tente novamente."
+  },
+  "Too many attempts. Please try again later.": {
+    "ru": "Слишком много попыток. Повторите позже.",
+    "ky": "Өтө көп аракет. Кийинчерээк кайра аракет кылыңыз.",
+    "fr": "Trop de tentatives. Veuillez réessayer plus tard.",
+    "ur": "بہت زیادہ کوششیں۔ براہ کرم بعد میں دوبارہ کوشش کریں۔",
+    "pt": "Muitas tentativas. Tente novamente mais tarde."
+  },
+  "Trip active — enable Always location for background updates": {
+    "ru": "Поездка активна — включите геолокацию «Всегда» для фоновых обновлений",
+    "ky": "Сапар активдүү — фондогу жаңыртуу үчүн «Ар дайым» жайгашууну күйгүзүңүз",
+    "fr": "Course en cours — activez la localisation « Toujours » pour les mises à jour en arrière-plan",
+    "ur": "سفر جاری ہے — پس منظر کی تازہ کاری کے لیے مقام «ہمیشہ» فعال کریں",
+    "pt": "Viagem ativa — ative a localização «Sempre» para atualizações em segundo plano"
+  },
+  "Trip started with driver: {name}": {
+    "ru": "Поездка началась. Водитель: {name}",
+    "ky": "Сапар башталды. Айдоочу: {name}",
+    "fr": "Course commencée avec le conducteur : {name}",
+    "ur": "سفر شروع ہو گیا۔ ڈرائیور: {name}",
+    "pt": "Viagem iniciada com o motorista: {name}"
+  },
+  "Update the rejected details and resubmit.": {
+    "ru": "Исправьте отклонённые данные и отправьте снова.",
+    "ky": "Четке кагылган маалыматты оңдоп، кайра жөнөтүңүз.",
+    "fr": "Mettez à jour les informations refusées et renvoyez-les.",
+    "ur": "مسترد تفصیلات درست کر کے دوبارہ جمع کروائیں۔",
+    "pt": "Atualize os dados recusados e envie novamente."
+  },
+  "Loading your account…": {
+    "ru": "Загрузка аккаунта…",
+    "ky": "Аккаунтуңуз жүктөлүүдө…",
+    "fr": "Chargement de votre compte…",
+    "ur": "آپ کا اکاؤنٹ لوڈ ہو رہا ہے…",
+    "pt": "Carregando sua conta…"
+  },
+  "Location permission is required to share your position with the customer during an active trip. Enable Always location for background updates.": {
+    "ru": "Чтобы делиться местоположением с клиентом во время поездки, нужно разрешение на геолокацию. Для фона включите «Всегда».",
+    "ky": "Активдүү сапарда кардарга жайгашууну бөлүшүү үчүн уруксат керек. Фон үчүн «Ар дайым» жайгашууну күйгүзүңүз.",
+    "fr": "L’autorisation de localisation est requise pour partager votre position avec le client pendant une course. Activez « Toujours » pour l’arrière-plan.",
+    "ur": "فعال سفر کے دوران گاہک کے ساتھ مقام شیئر کرنے کے لیے اجازت درکار ہے۔ پس منظر کے لیے «ہمیشہ» فعال کریں۔",
+    "pt": "A permissão de localização é necessária para compartilhar sua posição com o cliente durante a viagem. Ative «Sempre» para atualizações em segundo plano."
+  },
+  "Cash payment: wallet balance must be at least {amount}": {
+    "ru": "Оплата наличными: на кошельке должно быть не меньше {amount}",
+    "ky": "Накталай төлөм: капчыкта кеминде {amount} болушу керек",
+    "fr": "Paiement en espèces : le solde du portefeuille doit être d’au moins {amount}",
+    "ur": "نقد ادائیگی: والیٹ بیلنس کم از کم {amount} ہونا چاہیے",
+    "pt": "Pagamento em dinheiro: o saldo da carteira deve ser de pelo menos {amount}"
+  },
+  "You cannot cancel after a driver has accepted.": {
+    "ru": "Нельзя отменить после того, как водитель принял заказ.",
+    "ky": "Айдоочу кабыл алгандан кийин жокко чыгарууга болбойт.",
+    "fr": "Vous ne pouvez pas annuler après l’acceptation d’un chauffeur.",
+    "ur": "ڈرائیور قبول کرنے کے بعد منسوخ نہیں کر سکتے۔",
+    "pt": "Não é possível cancelar depois que um motorista aceitar."
+  },
+  "The cancellation window has ended.": {
+    "ru": "Время для отмены истекло.",
+    "ky": "Жокко чыгаруу мөөнөтү бүттү.",
+    "fr": "Le délai d’annulation est terminé.",
+    "ur": "منسوخی کا وقت ختم ہو گیا۔",
+    "pt": "O prazo de cancelamento terminou."
+  },
+  "This payment link expired or is invalid. Tap Continue payment to open a fresh secure link — no new booking will be created.": {
+    "ru": "Ссылка на оплату истекла или недействительна. Нажмите «Продолжить оплату», чтобы открыть новую защищённую ссылку. Новое бронирование не создаётся.",
+    "ky": "Бул төлөм шилтемесинин мөөнөтү бүттү же ал жараксыз. Жаңы корголгон шилтеме үчүн «Төлөмдү улантуу» басыңыз. Жаңы буйрутма түзүлбөйт.",
+    "fr": "Ce lien de paiement a expiré ou n’est pas valide. Appuyez sur Continuer le paiement pour ouvrir un nouveau lien sécurisé. Aucune nouvelle réservation ne sera créée.",
+    "ur": "یہ ادائیگی لنک ختم یا غلط ہے۔ نیا محفوظ لنک کھولنے کے لیے ادائیگی جاری رکھیں دبائیں۔ نئی بکنگ نہیں بنے گی۔",
+    "pt": "Este link de pagamento expirou ou é inválido. Toque em Continuar pagamento para abrir um novo link seguro. Nenhuma nova reserva será criada."
+  },
+  "Email not verified yet. Open the link, then try again.": {
+    "ru": "Почта ещё не подтверждена. Откройте ссылку и повторите попытку.",
+    "ky": "Почта али ырастала элек. Шилтемени ачып، кайра аракет кылыңыз.",
+    "fr": "L’e-mail n’est pas encore vérifié. Ouvrez le lien, puis réessayez.",
+    "ur": "ای میل ابھی تصدیق شدہ نہیں۔ لنک کھولیں، پھر دوبارہ کوشش کریں۔",
+    "pt": "O e-mail ainda não foi verificado. Abra o link e tente novamente."
+  },
+  "Enter the verification code sent to {email}": {
+    "ru": "Введите код, отправленный на {email}",
+    "ky": "{email} дарегине жөнөтүлгөн кодду киргизиңиз",
+    "fr": "Saisissez le code de vérification envoyé à {email}",
+    "ur": "{email} پر بھیجا گیا تصدیقی کوڈ درج کریں",
+    "pt": "Digite o código de verificação enviado para {email}"
+  },
+  "You can cancel within the first hour if no driver has accepted yet.": {
+    "ru": "Можно отменить в течение первого часа, если водитель ещё не принял заказ.",
+    "ky": "Айдоочу али кабыл ала элек болсо, биринчи сааттын ичинде жокко чыгарсаңыз болот.",
+    "fr": "Vous pouvez annuler dans la première heure si aucun chauffeur n’a encore accepté.",
+    "ur": "اگر ابھی کوئی ڈرائیور قبول نہیں کیا تو پہلی گھنٹے میں منسوخ کر سکتے ہیں۔",
+    "pt": "Você pode cancelar na primeira hora se nenhum motorista tiver aceitado."
+  },
+  "Booking {booking} is still waiting for payment.": {
+    "ru": "Бронирование {booking} всё ещё ожидает оплату.",
+    "ky": "{booking} буйрутмасы төлөмдү күтүүдө.",
+    "fr": "La réservation {booking} attend encore le paiement.",
+    "ur": "بکنگ {booking} اب بھی ادائیگی کا انتظار کر رہی ہے۔",
+    "pt": "A reserva {booking} ainda aguarda o pagamento."
+  },
+  "You can continue payment, check status, or cancel the attempt without cancelling the booking.": {
+    "ru": "Можно продолжить оплату, проверить статус или отменить попытку, не отменяя бронирование.",
+    "ky": "Төлөмдү улантып, абалын текшерип же буйрутманы жокко чыгарбай аракетти жокко чыгарсаңыз болот.",
+    "fr": "Vous pouvez continuer le paiement, vérifier le statut ou annuler la tentative sans annuler la réservation.",
+    "ur": "آپ ادائیگی جاری رکھ سکتے ہیں، حالت دیکھ سکتے ہیں، یا بکنگ منسوخ کیے بغیر کوشش منسوخ کر سکتے ہیں۔",
+    "pt": "Você pode continuar o pagamento, verificar o status ou cancelar a tentativa sem cancelar a reserva."
+  },
+  "You have an incomplete payment for this booking.": {
+    "ru": "По этому бронированию есть незавершённая оплата.",
+    "ky": "Бул буйрутма боюнча бүтпөгөн төлөм бар.",
+    "fr": "Vous avez un paiement incomplet pour cette réservation.",
+    "ur": "اس بکنگ کی ادائیگی نامکمل ہے۔",
+    "pt": "Você tem um pagamento incompleto para esta reserva."
+  },
+  "The payment page was opened. You can check status or return to the booking.": {
+    "ru": "Страница оплаты открыта. Можно проверить статус или вернуться к бронированию.",
+    "ky": "Төлөм барагы ачылды. Абалын текшерип же буйрутмага кайтсаңыз болот.",
+    "fr": "La page de paiement a été ouverte. Vous pouvez vérifier le statut ou revenir à la réservation.",
+    "ur": "ادائیگی کا صفحہ کھل گیا۔ آپ حالت دیکھ سکتے ہیں یا بکنگ پر واپس جا سکتے ہیں۔",
+    "pt": "A página de pagamento foi aberta. Você pode verificar o status ou voltar à reserva."
+  },
+  "Please sign in to continue payment.": {
+    "ru": "Войдите, чтобы продолжить оплату.",
+    "ky": "Төлөмдү улантуу үчүн кириңиз.",
+    "fr": "Veuillez vous connecter pour continuer le paiement.",
+    "ur": "ادائیگی جاری رکھنے کے لیے سائن ان کریں۔",
+    "pt": "Entre para continuar o pagamento."
+  },
+  "Payment amount did not match the booking quote.": {
+    "ru": "Сумма оплаты не совпала с расчётом бронирования.",
+    "ky": "Төлөм суммасы буйрутманын эсебине дал келген жок.",
+    "fr": "Le montant du paiement ne correspond pas au devis de la réservation.",
+    "ur": "ادائیگی کی رقم بکنگ کے تخمینے سے نہیں ملی۔",
+    "pt": "O valor do pagamento não correspondeu ao orçamento da reserva."
+  },
+  "Online payment is temporarily unavailable. Please try again later.": {
+    "ru": "Онлайн-оплата временно недоступна. Повторите позже.",
+    "ky": "Онлайн төлөм убактылуу жеткиликсиз. Кийинчерээк кайра аракет кылыңыз.",
+    "fr": "Le paiement en ligne est temporairement indisponible. Veuillez réessayer plus tard.",
+    "ur": "آن لائن ادائیگی عارضی طور پر دستیاب نہیں۔ براہ کرم بعد میں کوشش کریں۔",
+    "pt": "O pagamento online está temporariamente indisponível. Tente novamente mais tarde."
+  },
+  "Refund is not allowed for this payment.": {
+    "ru": "Возврат по этой оплате недоступен.",
+    "ky": "Бул төлөм боюнча кайтаруу мүмкүн эмес.",
+    "fr": "Le remboursement n’est pas autorisé pour ce paiement.",
+    "ur": "اس ادائیگی کی رقم واپس نہیں ہو سکتی۔",
+    "pt": "O reembolso não é permitido para este pagamento."
+  },
+  "Confirm refund of the paid amount?": {
+    "ru": "Подтвердить возврат оплаченной суммы?",
+    "ky": "Төлөنگөн сумманы кайтарууну ырастайсызбы?",
+    "fr": "Confirmer le remboursement du montant payé ?",
+    "ur": "ادا شدہ رقم کی واپسی کی تصدیق کریں؟",
+    "pt": "Confirmar o reembolso do valor pago?"
+  },
+  "Cancel failed because the order status changed. Refresh and try again.": {
+    "ru": "Отмена не выполнена: статус заказа изменился. Обновите и повторите.",
+    "ky": "Жокко чыгаруу болгон жок، буйрутманын абалы өзгөрдү. Жаңыртып кайра аракет кылыңыз.",
+    "fr": "L’annulation a échoué car le statut de la commande a changé. Actualisez et réessayez.",
+    "ur": "منسوخی ناکام ہوئی کیونکہ آرڈر کی حالت بدل گئی۔ ریفریش کر کے دوبارہ کوشش کریں۔",
+    "pt": "O cancelamento falhou porque o status do pedido mudou. Atualize e tente novamente."
+  },
+  "You do not have permission to complete this booking action.": {
+    "ru": "У вас нет права выполнить это действие с бронированием.",
+    "ky": "Бул буйрутма аракетин аткарууга укугуңуз жок.",
+    "fr": "Vous n’avez pas l’autorisation d’effectuer cette action sur la réservation.",
+    "ur": "اس بکنگ کا عمل مکمل کرنے کی اجازت نہیں۔",
+    "pt": "Você não tem permissão para concluir esta ação da reserva."
+  },
+  "Could not start the payment. Please try again.": {
+    "ru": "Не удалось начать оплату. Повторите попытку.",
+    "ky": "Төлөм башталган жок. Кайра аракет кылыңыз.",
+    "fr": "Impossible de démarrer le paiement. Veuillez réessayer.",
+    "ur": "ادائیگی شروع نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+    "pt": "Não foi possível iniciar o pagamento. Tente novamente."
+  },
+  "Online payment is temporarily unavailable. Please pay cash on delivery.": {
+    "ru": "Онлайн-оплата временно недоступна. Оплатите наличными при подаче.",
+    "ky": "Онлайн төлөм убактылуу жеткиликсиз. Жеткирүүдө накталай төлөңүз.",
+    "fr": "Le paiement en ligne est temporairement indisponible. Veuillez payer en espèces à la prise en charge.",
+    "ur": "آن لائن ادائیگی عارضی طور پر دستیاب نہیں۔ براہ کرم وصولی پر نقد ادا کریں۔",
+    "pt": "O pagamento online está temporariamente indisponível. Pague em dinheiro na retirada."
+  },
+  "Map center is not configured for this country.": {
+    "ru": "Центр карты не настроен для этой страны.",
+    "ky": "Бул өлкө үчүн картанын борбору орнотулган эмес.",
+    "fr": "Le centre de la carte n’est pas configuré pour ce pays.",
+    "ur": "اس ملک کے لیے نقشے کا مرکز ترتیب نہیں دیا گیا۔",
+    "pt": "O centro do mapa não está configurado para este país."
+  },
+  "Invalid verification code. Please try again.": {
+    "ru": "Неверный код подтверждения. Повторите попытку.",
+    "ky": "Ырастоо коду жараксыз. Кайра аракет кылыңыз.",
+    "fr": "Code de vérification invalide. Veuillez réessayer.",
+    "ur": "تصدیقی کوڈ غلط ہے۔ براہ کرم دوبارہ کوشش کریں۔",
+    "pt": "Código de verificação inválido. Tente novamente."
+  },
+  "Location permission is required.": {
+    "ru": "Нужно разрешение на геолокацию.",
+    "ky": "Жайгашуу уруксаты керек.",
+    "fr": "L’autorisation de localisation est requise.",
+    "ur": "مقام کی اجازت درکار ہے۔",
+    "pt": "A permissão de localização é necessária."
+  },
+  "Payment service is temporarily unavailable. Please try again shortly.": {
+    "ru": "Платёжный сервис временно недоступен. Повторите чуть позже.",
+    "ky": "Төлөм кызматы убактылуу жеткиликсиз. Бир аздан кийин кайра аракет кылыңыз.",
+    "fr": "Le service de paiement est temporairement indisponible. Veuillez réessayer sous peu.",
+    "ur": "ادائیگی کی سروس عارضی طور پر دستیاب نہیں۔ تھوڑی دیر بعد کوشش کریں۔",
+    "pt": "O serviço de pagamento está temporariamente indisponível. Tente novamente em instantes."
+  },
+  "Too many attempts. Please wait and try again.": {
+    "ru": "Слишком много попыток. Подождите и повторите.",
+    "ky": "Өтө көп аракет. Күтүп кайرا аракет кылыңыз.",
+    "fr": "Trop de tentatives. Veuillez patienter et réessayer.",
+    "ur": "بہت زیادہ کوششیں۔ انتظار کر کے دوبارہ کوشش کریں۔",
+    "pt": "Muitas tentativas. Aguarde e tente novamente."
+  },
+  "No internet connection. Check your connection and try again.": {
+    "ru": "Нет интернета. Проверьте соединение и повторите.",
+    "ky": "Интернет жок. Туташууну текшерип кайра аракет кылыңыз.",
+    "fr": "Pas de connexion Internet. Vérifiez votre connexion et réessayez.",
+    "ur": "انٹرنیٹ کنکشن نہیں۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔",
+    "pt": "Sem conexão com a internet. Verifique a conexão e tente novamente."
+  },
+  "Location permission is required to detect your current location.": {
+    "ru": "Чтобы определить текущее местоположение, нужно разрешение на геолокацию.",
+    "ky": "Учурдагы жайгашууну аныктоо үчүн уруксат керек.",
+    "fr": "L’autorisation de localisation est requise pour détecter votre position actuelle.",
+    "ur": "موجودہ مقام معلوم کرنے کے لیے اجازت درکار ہے۔",
+    "pt": "A permissão de localização é necessária para detectar sua posição atual."
+  },
+  "Location permission is permanently denied. Open settings to enable it.": {
+    "ru": "Доступ к геолокации запрещён навсегда. Откройте настройки и включите его.",
+    "ky": "Жайгашуу уруксаты биротоло четке кагылды. Күйгүзүү үчүн жөндөөлөрдү ачыңыз.",
+    "fr": "L’autorisation de localisation est refusée définitivement. Ouvrez les réglages pour l’activer.",
+    "ur": "مقام کی اجازت مستقل طور پر مسترد ہے۔ اسے فعال کرنے کے لیے سیٹنگز کھولیں۔",
+    "pt": "A permissão de localização foi negada permanentemente. Abra os ajustes para ativá-la."
+  },
+  "We couldn't determine your location in time. Please try again.": {
+    "ru": "Не удалось вовремя определить местоположение. Повторите попытку.",
+    "ky": "Жайгашуу өз убагында аныкталган жок. Кайра аракет кылыңыз.",
+    "fr": "Nous n’avons pas pu déterminer votre position à temps. Veuillez réessayer.",
+    "ur": "آپ کا مقام وقت پر معلوم نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔",
+    "pt": "Não foi possível determinar sua localização a tempo. Tente novamente."
+  },
+  "Payment could not be started. Please try again or choose another method.": {
+    "ru": "Не удалось начать оплату. Повторите или выберите другой способ.",
+    "ky": "Төлөм башталган жок. Кайра аракет кылыңыз же башка ыкманы тандаңыз.",
+    "fr": "Le paiement n’a pas pu démarrer. Réessayez ou choisissez un autre moyen.",
+    "ur": "ادائیگی شروع نہیں ہو سکی۔ دوبارہ کوشش کریں یا دوسرا طریقہ منتخب کریں۔",
+    "pt": "Não foi possível iniciar o pagamento. Tente novamente ou escolha outro método."
+  },
+  "Planning for a longer trip? Add more hours and enjoy the ride!": {
+    "ru": "Планируете более долгую поездку? Добавьте часы и наслаждайтесь маршрутом.",
+    "ky": "Узак сапар пландап жатасызбы? Саат кошуп، жолдон ырахат алыңыз.",
+    "fr": "Vous prévoyez un trajet plus long ? Ajoutez des heures et profitez du voyage.",
+    "ur": "لمبا سفر سوچ رہے ہیں؟ مزید گھنٹے شامل کریں اور سفر کا لطف اٹھائیں۔",
+    "pt": "Planejando uma viagem mais longa? Adicione mais horas e aproveite o passeio."
+  },
+  "Please do not close the page until the payment is completed": {
+    "ru": "Не закрывайте страницу, пока оплата не завершится",
+    "ky": "Төлөм бүткүчө баракты жаппаңыз",
+    "fr": "Veuillez ne pas fermer la page tant que le paiement n’est pas terminé",
+    "ur": "ادائیگی مکمل ہونے تک صفحہ بند نہ کریں",
+    "pt": "Não feche a página até o pagamento ser concluído"
+  },
+  "No active regions are available for this country.": {
+    "ru": "Для этой страны нет активных регионов.",
+    "ky": "Бул өлкө үчүн активдүү аймактар жок.",
+    "fr": "Aucune région active n’est disponible pour ce pays.",
+    "ur": "اس ملک کے لیے کوئی فعال علاقہ دستیاب نہیں۔",
+    "pt": "Não há regiões ativas disponíveis para este país."
+  },
+  "Add a place from the map.": {
+    "ru": "Добавьте место с карты.",
+    "ky": "Картадан жер кошуңуз.",
+    "fr": "Ajoutez un lieu depuis la carte.",
+    "ur": "نقشے سے جگہ شامل کریں۔",
+    "pt": "Adicione um local a partir do mapa."
+  },
+  "Add landmarks to customize your journey": {
+    "ru": "Добавьте ориентиры, чтобы настроить маршрут",
+    "ky": "Сапарыңызды ыңгайлаштыруу үчүн белгилерди кошуңуз",
+    "fr": "Ajoutez des lieux pour personnaliser votre trajet",
+    "ur": "سفر کو اپنی مرضی کا بنانے کے لیے نشانات شامل کریں",
+    "pt": "Adicione pontos de referência para personalizar sua viagem"
+  },
+  "Add the specific location.": {
+    "ru": "Укажите точное место.",
+    "ky": "Так жайгашууну кошуңуз.",
+    "fr": "Ajoutez l’emplacement précis.",
+    "ur": "مخصوص مقام شامل کریں۔",
+    "pt": "Adicione o local específico."
+  },
+  "Extra hours have been added to the trip": {
+    "ru": "К поездке добавлены дополнительные часы",
+    "ky": "Сапарга кошумча сааттар кошулду",
+    "fr": "Des heures supplémentaires ont été ajoutées au trajet",
+    "ur": "سفر میں اضافی گھنٹے شامل ہو گئے",
+    "pt": "Horas extras foram adicionadas à viagem"
+  },
+  "Map showing your current location": {
+    "ru": "Карта с вашим текущим местоположением",
+    "ky": "Учурдагы жайгашууңузду көрсөткөн карта",
+    "fr": "Carte affichant votre position actuelle",
+    "ur": "آپ کے موجودہ مقام کو دکھانے والا نقشہ",
+    "pt": "Mapa mostrando sua localização atual"
+  },
+  "Mark the Location on the Map": {
+    "ru": "Отметьте место на карте",
+    "ky": "Жайгашууну картадан белгилеңиз",
+    "fr": "Indiquez l’emplacement sur la carte",
+    "ur": "نقشے پر مقام نشان زد کریں",
+    "pt": "Marque o local no mapa"
+  },
+  "Our support team typically responds within 24-48 hours. For urgent matters, please contact us directly by phone.": {
+    "ru": "Поддержка обычно отвечает в течение 24–48 часов. По срочным вопросам свяжитесь с нами по телефону.",
+    "ky": "Колдоо көбүнчө 24–48 сааттын ичинде жооп берет. Шашылыш болсо, түздөн-түз телефон аркылуу кайрылыңыз.",
+    "fr": "Notre équipe répond généralement sous 24 à 48 heures. Pour les urgences, contactez-nous directement par téléphone.",
+    "ur": "سپورٹ ٹیم عموماً 24 سے 48 گھنٹوں میں جواب دیتی ہے۔ فوری معاملے کے لیے براہ راست فون پر رابطہ کریں۔",
+    "pt": "Nossa equipe de suporte costuma responder em 24 a 48 horas. Em casos urgentes, fale conosco diretamente por telefone."
+  },
+  "Payment details are incorrect. Please check with your bank": {
+    "ru": "Данные оплаты неверны. Уточните в банке",
+    "ky": "Төлөм маалыматы туура эмес. Банкыңыз менен текшериңиз",
+    "fr": "Les informations de paiement sont incorrectes. Vérifiez auprès de votre banque",
+    "ur": "ادائیگی کی تفصیلات غلط ہیں۔ براہ کرم اپنے بینک سے تصدیق کریں",
+    "pt": "Os dados de pagamento estão incorretos. Confira com seu banco"
+  },
+  "Please choose an option from the dropdown": {
+    "ru": "Выберите вариант из списка",
+    "ky": "Тизмеден вариант тандаңыз",
+    "fr": "Veuillez choisir une option dans la liste",
+    "ur": "براہ کرم فہرست سے ایک اختیار منتخب کریں",
+    "pt": "Escolha uma opção na lista"
+  },
+  "Please provide detailed information about your issue...": {
+    "ru": "Опишите проблему подробнее...",
+    "ky": "Көйгөйүңүз тууралуу кеңири жазыңыз...",
+    "fr": "Veuillez décrire votre problème en détail...",
+    "ur": "براہ کرم اپنے مسئلے کی تفصیل لکھیں...",
+    "pt": "Descreva seu problema com detalhes..."
+  },
+  "Please select the city you are currently in": {
+    "ru": "Выберите город, в котором вы сейчас находитесь",
+    "ky": "Азыр турган шаарыңызды тандаңыз",
+    "fr": "Veuillez sélectionner la ville où vous vous trouvez",
+    "ur": "براہ کرم وہ شہر منتخب کریں جہاں آپ اب ہیں",
+    "pt": "Selecione a cidade em que você está agora"
+  },
+  "Save this card for future payments": {
+    "ru": "Сохранить карту для следующих оплат",
+    "ky": "Бул картаны кийинки төлөмдөр үчүн сактаңыз",
+    "fr": "Enregistrer cette carte pour les prochains paiements",
+    "ur": "مستقبل کی ادائیگیوں کے لیے یہ کارڈ محفوظ کریں",
+    "pt": "Salvar este cartão para pagamentos futuros"
+  },
+  "Search by name or booking ID...": {
+    "ru": "Поиск по имени или номеру брони...",
+    "ky": "Аты же буйрутма номери боюнча издөө...",
+    "fr": "Rechercher par nom ou numéro de réservation...",
+    "ur": "نام یا بکنگ نمبر سے تلاش کریں...",
+    "pt": "Pesquisar por nome ou número da reserva..."
+  },
+  "You haven't added any addresses yet. Add a title to get started.": {
+    "ru": "Адресов пока нет. Добавьте название, чтобы начать.",
+    "ky": "Даректер али жок. Баштоо үчүн аталыш кошуңуз.",
+    "fr": "Vous n’avez encore ajouté aucune adresse. Ajoutez un titre pour commencer.",
+    "ur": "آپ نے ابھی کوئی پتہ شامل نہیں کیا۔ شروع کرنے کے لیے عنوان شامل کریں۔",
+    "pt": "Você ainda não adicionou endereços. Adicione um título para começar."
+  },
+  "Please sign in before completing your booking": {
+    "ru": "Войдите, прежде чем завершить бронирование",
+    "ky": "Буйрутманы бүтүрүүдөн мурда кириңиз",
+    "fr": "Veuillez vous connecter avant de terminer la réservation",
+    "ur": "بکنگ مکمل کرنے سے پہلے سائن ان کریں",
+    "pt": "Entre antes de concluir a reserva"
+  },
+  "Complete all options or add more hours to match your trip": {
+    "ru": "Заполните все параметры или добавьте часы, чтобы они совпали с поездкой",
+    "ky": "Сапарга дал келтирүү үчүн бардык варианттарды толтуруңуз же саат кошуңуз",
+    "fr": "Complétez toutes les options ou ajoutez des heures pour correspondre à votre trajet",
+    "ur": "سفر سے میل کھانے کے لیے تمام اختیارات مکمل کریں یا مزید گھنٹے شامل کریں",
+    "pt": "Complete todas as opções ou adicione mais horas para corresponder à viagem"
+  },
+  "The displayed country doesn't match your current location. Please select the correct country.": {
+    "ru": "Показанная страна не совпадает с вашим местоположением. Выберите правильную страну.",
+    "ky": "Көрсөтүлгөн өлкө учурдагы жайгашууңузга дал келбейт. Туура өлкөнү тандаңыз.",
+    "fr": "Le pays affiché ne correspond pas à votre position actuelle. Veuillez sélectionner le bon pays.",
+    "ur": "دکھایا گیا ملک آپ کے موجودہ مقام سے نہیں ملتا۔ براہ کرم درست ملک منتخب کریں۔",
+    "pt": "O país exibido não corresponde à sua localização atual. Selecione o país correto."
+  },
+  "Are you sure you want to request account deletion? Deletion may take 24 hours if there are no pending amounts or balance.": {
+    "ru": "Запросить удаление аккаунта? Если нет незакрытых сумм и баланса, удаление может занять 24 часа.",
+    "ky": "Аккаунтту өчүрүүнү сурайсызбы? Күтүлгөн сумма же баланс жок болсо, өчүрүү 24 саатка созулушу мүмкүн.",
+    "fr": "Voulez-vous vraiment demander la suppression du compte ? Sans montants en attente ni solde, cela peut prendre 24 heures.",
+    "ur": "کیا آپ واقعی اکاؤنٹ حذف کرنے کی درخواست کرنا چاہتے ہیں؟ اگر کوئی زیر التوا رقم یا بیلنس نہ ہو تو حذف ہونے میں 24 گھنٹے لگ سکتے ہیں۔",
+    "pt": "Tem certeza de que deseja solicitar a exclusão da conta? Sem valores pendentes ou saldo, a exclusão pode levar 24 horas."
+  },
+  "We couldn't find your current location. Please enable location services.": {
+    "ru": "Не удалось найти текущее местоположение. Включите службы геолокации.",
+    "ky": "Учурдагы жайгашуу табылган жок. Жайгашуу кызматын күйгүزүңүز.",
+    "fr": "Nous n’avons pas trouvé votre position actuelle. Veuillez activer les services de localisation.",
+    "ur": "آپ کا موجودہ مقام نہیں ملا۔ براہ کرم لوکیشن سروسز فعال کریں۔",
+    "pt": "Não encontramos sua localização atual. Ative os serviços de localização."
+  },
+  "Please set your current location.": {
+    "ru": "Укажите текущее местоположение.",
+    "ky": "Учурдагы жайгашууңузду белгилеңиз.",
+    "fr": "Veuillez définir votre position actuelle.",
+    "ur": "براہ کرم اپنا موجودہ مقام متعین کریں۔",
+    "pt": "Defina sua localização atual."
+  },
+  "Your current country is outside the system's service area. Booking is not available from your location.": {
+    "ru": "Ваша страна вне зоны обслуживания. Бронирование из этого места недоступно.",
+    "ky": "Сиздин өлкө тейлөө аймагынан тышкары. Бул жерден буйрутма жеткиликсиз.",
+    "fr": "Votre pays actuel est hors de la zone de service. La réservation n’est pas disponible depuis votre position.",
+    "ur": "آپ کا موجودہ ملک سروس کے علاقے سے باہر ہے۔ آپ کے مقام سے بکنگ دستیاب نہیں۔",
+    "pt": "Seu país atual está fora da área de atendimento. A reserva não está disponível a partir da sua localização."
+  },
+  "Can't find your place? Add a custom location on the map": {
+    "ru": "Не нашли место? Добавьте свою точку на карте",
+    "ky": "Жериңиз табылган жокпу? Картага өзүңүздүн чекитти кошуңуз",
+    "fr": "Vous ne trouvez pas le lieu ? Ajoutez un emplacement sur la carte",
+    "ur": "جگہ نہیں مل رہی؟ نقشے پر اپنی جگہ شامل کریں",
+    "pt": "Não encontrou o lugar? Adicione um local no mapa"
+  },
+  "No valid stops are available for this route.": {
+    "ru": "Для этого маршрута нет допустимых остановок.",
+    "ky": "Бул маршрут боюнча жарактуу токтоолор жок.",
+    "fr": "Aucun arrêt valide n’est disponible pour cet itinéraire.",
+    "ur": "اس راستے کے لیے کوئی درست اسٹاپ دستیاب نہیں۔",
+    "pt": "Não há paradas válidas para esta rota."
+  },
+  "Payment for booking #{bookingId} was confirmed. We are finding a driver for you.": {
+    "ru": "Оплата бронирования #{bookingId} подтверждена. Ищем для вас водителя.",
+    "ky": "#{bookingId} буйрутмасынын төлөмү ырасталды. Сиз үчүн айдоочу издеп жатабыз.",
+    "fr": "Le paiement de la réservation #{bookingId} est confirmé. Nous cherchons un chauffeur pour vous.",
+    "ur": "بکنگ #{bookingId} کی ادائیگی کی تصدیق ہو گئی۔ ہم آپ کے لیے ڈرائیور تلاش کر رہے ہیں۔",
+    "pt": "O pagamento da reserva #{bookingId} foi confirmado. Estamos procurando um motorista para você."
+  },
+  "Payment was not completed. Check your card and try again.": {
+    "ru": "Оплата не завершена. Проверьте карту и повторите.",
+    "ky": "Төлөм бүткөн жок. Картаңызды текшерип кайра аракет кылыңыз.",
+    "fr": "Le paiement n’a pas été terminé. Vérifiez votre carte et réessayez.",
+    "ur": "ادائیگی مکمل نہیں ہوئی۔ کارڈ چیک کر کے دوبارہ کوشش کریں۔",
+    "pt": "O pagamento não foi concluído. Verifique o cartão e tente novamente."
+  },
+  "Payment is still pending. Please wait or try again.": {
+    "ru": "Оплата ещё в обработке. Подождите или повторите.",
+    "ky": "Төлөм али күтүүдө. Күтүңүз же кайра аракет кылыңыз.",
+    "fr": "Le paiement est encore en attente. Veuillez patienter ou réessayer.",
+    "ur": "ادائیگی اب بھی زیر التوا ہے۔ انتظار کریں یا دوبارہ کوشش کریں۔",
+    "pt": "O pagamento ainda está pendente. Aguarde ou tente novamente."
+  },
+  "Payment could not be verified. Please try again.": {
+    "ru": "Не удалось проверить оплату. Повторите попытку.",
+    "ky": "Төлөм текшерилген жок. Кайра аракет кылыңыз.",
+    "fr": "Le paiement n’a pas pu être vérifié. Veuillez réessayer.",
+    "ur": "ادائیگی کی تصدیق نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+    "pt": "Não foi possível verificar o pagamento. Tente novamente."
+  },
+  "Dear partner, please fill out all the required fields so that you can submit the application successfully.": {
+    "ru": "Уважаемый партнёр, заполните все обязательные поля, чтобы заявка была отправлена.",
+    "ky": "Урматтуу өнөктөш, өтүнмө ийгиликтүү жөнөтүлүшү үчүн бардык милдеттүү талааларды толтуруңуз.",
+    "fr": "Cher partenaire, veuillez remplir tous les champs obligatoires pour envoyer la demande.",
+    "ur": "محترم پارٹنر، درخواست کامیابی سے جمع کرانے کے لیے تمام لازمی خانے پُر کریں۔",
+    "pt": "Prezado parceiro, preencha todos os campos obrigatórios para enviar a solicitação."
+  },
+  "You cannot cancel the order because the cancellation time has exceeded. Please contact the support team": {
+    "ru": "Заказ нельзя отменить: время отмены истекло. Свяжитесь с поддержкой",
+    "ky": "Буйрутманы жокко чыгарууга болбойт، мөөнөт өтүп кетти. Колдоо кызматына кайрылыңыз",
+    "fr": "Vous ne pouvez pas annuler la commande : le délai est dépassé. Contactez l’assistance",
+    "ur": "آرڈر منسوخ نہیں ہو سکتا کیونکہ منسوخی کا وقت گزر چکا ہے۔ سپورٹ ٹیم سے رابطہ کریں",
+    "pt": "Não é possível cancelar o pedido porque o prazo acabou. Fale com a equipe de suporte"
+  },
+  "Please check the date and time": {
+    "ru": "Проверьте дату и время",
+    "ky": "Күн менен убакытты текшериңиз",
+    "fr": "Veuillez vérifier la date et l’heure",
+    "ur": "براہ کرم تاریخ اور وقت چیک کریں",
+    "pt": "Verifique a data e a hora"
+  },
+  "Please restart the app or return to the home screen.": {
+    "ru": "Перезапустите приложение или вернитесь на главный экран.",
+    "ky": "Колдонмону кайра ачыңыз же башкы экранга кайтыңыз.",
+    "fr": "Veuillez redémarrer l’application ou revenir à l’accueil.",
+    "ur": "براہ کرم ایپ دوبارہ شروع کریں یا ہوم اسکرین پر واپس جائیں۔",
+    "pt": "Reinicie o aplicativo ou volte à tela inicial."
+  },
+  "Could not select this vehicle. Please try again.": {
+    "ru": "Не удалось выбрать этот автомобиль. Повторите попытку.",
+    "ky": "Бул унаа тандалган жок. Кайра аракет кылыңыз.",
+    "fr": "Impossible de sélectionner ce véhicule. Veuillez réessayer.",
+    "ur": "یہ گاڑی منتخب نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+    "pt": "Não foi possível selecionar este veículo. Tente novamente."
+  },
+  "Your driver will be your guide — set your location and tap Next": {
+    "ru": "Водитель будет вашим гидом — укажите место и нажмите «Далее»",
+    "ky": "Айдоочу сиздин гидиңиз болот — жайгашууну белгилеп، «Кийинки» басыңыз",
+    "fr": "Votre chauffeur sera votre guide — indiquez votre position et appuyez sur Suivant",
+    "ur": "آپ کا ڈرائیور آپ کا گائیڈ ہوگا — مقام متعین کریں اور اگلا دبائیں",
+    "pt": "Seu motorista será seu guia — defina sua localização e toque em Próximo"
+  },
+  "Set your location and tap Next to start your tour": {
+    "ru": "Укажите место и нажмите «Далее», чтобы начать тур",
+    "ky": "Туруңузду баштоо үчүн жайгашууну белгилеп، «Кийинки» басыңыз",
+    "fr": "Indiquez votre position et appuyez sur Suivant pour commencer la visite",
+    "ur": "دورہ شروع کرنے کے لیے مقام متعین کریں اور اگلا دبائیں",
+    "pt": "Defina sua localização e toque em Próximo para iniciar o passeio"
+  },
+  "Add new payment method": {
+    "ru": "Добавить способ оплаты",
+    "ky": "Жаңы төлөм ыкмасын кошуу",
+    "fr": "Ajouter un moyen de paiement",
+    "ur": "ادائیگی کا نیا طریقہ شامل کریں",
+    "pt": "Adicionar forma de pagamento"
+  },
+  "No payment methods available": {
+    "ru": "Нет доступных способов оплаты",
+    "ky": "Төлөм ыкмалары жок",
+    "fr": "Aucun moyen de paiement disponible",
+    "ur": "ادائیگی کا کوئی طریقہ دستیاب نہیں",
+    "pt": "Nenhuma forma de pagamento disponível"
+  },
+  "Please select a payment method": {
+    "ru": "Выберите способ оплаты",
+    "ky": "Төлөм ыкмасын тандаңыз",
+    "fr": "Veuillez sélectionner un moyen de paiement",
+    "ur": "براہ کرم ادائیگی کا طریقہ منتخب کریں",
+    "pt": "Selecione uma forma de pagamento"
+  },
+  "No card deposit covers this withdrawal amount": {
+    "ru": "Ни одно поступление на карту не покрывает эту сумму вывода",
+    "ky": "Бул чыгаруу суммасын жапкан карта толуктоосу жок",
+    "fr": "Aucun dépôt par carte ne couvre ce montant de retrait",
+    "ur": "کوئی کارڈ جمع اس نکاسی کی رقم کو پورا نہیں کرتا",
+    "pt": "Nenhum depósito no cartão cobre este valor de saque"
+  },
+  "Code sent": {
+    "ru": "Код отправлен",
+    "ky": "Код жөнөтүлдү",
+    "fr": "Code envoyé",
+    "ur": "کوڈ بھیج دیا گیا",
+    "pt": "Código enviado"
+  },
+  "Email verified successfully": {
+    "ru": "Электронная почта подтверждена",
+    "ky": "Электрондук почта ырасталды",
+    "fr": "E-mail vérifié avec succès",
+    "ur": "ای میل کامیابی سے تصدیق ہو گئی",
+    "pt": "E-mail verificado com sucesso"
+  },
+  "Expired code": {
+    "ru": "Срок кода истёк",
+    "ky": "Коддун мөөнөтү бүттү",
+    "fr": "Code expiré",
+    "ur": "کوڈ کی میعاد ختم",
+    "pt": "Código expirado"
+  },
+  "Invalid code": {
+    "ru": "Неверный код",
+    "ky": "Жараксыз код",
+    "fr": "Code invalide",
+    "ur": "غلط کوڈ",
+    "pt": "Código inválido"
+  },
+  "Network error": {
+    "ru": "Ошибка сети",
+    "ky": "Тармак катасы",
+    "fr": "Erreur réseau",
+    "ur": "نیٹ ورک کی خرابی",
+    "pt": "Erro de rede"
+  },
+  "Resend code": {
+    "ru": "Отправить код снова",
+    "ky": "Кодду кайра жөнөтүү",
+    "fr": "Renvoyer le code",
+    "ur": "کوڈ دوبارہ بھیجیں",
+    "pt": "Reenviar código"
+  },
+  "Resend in": {
+    "ru": "Повторить через",
+    "ky": "Кайра жөнөтүү",
+    "fr": "Renvoyer dans",
+    "ur": "دوبارہ بھیجیں",
+    "pt": "Reenviar em"
+  },
+  "Too many attempts": {
+    "ru": "Слишком много попыток",
+    "ky": "Өтө көп аракет",
+    "fr": "Trop de tentatives",
+    "ur": "بہت زیادہ کوششیں",
+    "pt": "Muitas tentativas"
+  },
+  "Verify": {
+    "ru": "Подтвердить",
+    "ky": "Ырастоо",
+    "fr": "Vérifier",
+    "ur": "تصدیق کریں",
+    "pt": "Verificar"
+  },
+  "Verify your email": {
+    "ru": "Подтвердите электронную почту",
+    "ky": "Электрондук почтаңызды ырастаңыз",
+    "fr": "Vérifiez votre e-mail",
+    "ur": "اپنی ای میل کی تصدیق کریں",
+    "pt": "Verifique seu e-mail"
+  },
+  "Too many requests. Try later.": {
+    "ru": "Слишком много запросов. Повторите позже.",
+    "ky": "Өтө көп сурам. Кийинчерээк кайра аракет кылыңыз.",
+    "fr": "Trop de demandes. Réessayez plus tard.",
+    "ur": "بہت زیادہ درخواستیں۔ بعد میں کوشش کریں۔",
+    "pt": "Muitas solicitações. Tente mais tarde."
+  },
+  "Payment pending": {
+    "ru": "Оплата ожидается",
+    "ky": "Төлөм күтүүдө",
+    "fr": "Paiement en attente",
+    "ur": "ادائیگی زیر التوا",
+    "pt": "Pagamento pendente"
+  },
+  "Time remaining to cancel: {time}": {
+    "ru": "Осталось времени на отмену: {time}",
+    "ky": "Жокко чыгарууга калган убакыт: {time}",
+    "fr": "Temps restant pour annuler : {time}",
+    "ur": "منسوخی کے لیے باقی وقت: {time}",
+    "pt": "Tempo restante para cancelar: {time}"
+  }
+}

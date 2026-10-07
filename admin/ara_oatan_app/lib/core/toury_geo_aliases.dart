@@ -1,32 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// ISO prefixes used by curated international-seven imports (region_es_madrid, etc.).
-const Set<String> _internationalRegionPrefixes = {
-  'region_es_',
-  'region_ma_',
-  'region_pt_',
-  'region_tn_',
-  'region_id_',
-  'region_my_',
-  'region_in_',
-};
-
-const Set<String> _internationalVillagePrefixes = {
-  'city_es_',
-  'city_ma_',
-  'city_pt_',
-  'city_tn_',
-  'city_id_',
-  'city_my_',
-  'city_in_',
-};
-
-bool _startsWithAny(String id, Set<String> prefixes) {
-  for (final p in prefixes) {
-    if (id.startsWith(p)) return true;
-  }
-  return false;
-}
+/// ISO-prefixed curated hubs: region_es_madrid, city_tm_ashgabat, etc.
+final RegExp _isoPrefixedRegionId = RegExp(
+  r'^region_[a-z]{2}_',
+  caseSensitive: false,
+);
+final RegExp _isoPrefixedVillageId = RegExp(
+  r'^city_[a-z]{2}_',
+  caseSensitive: false,
+);
 
 /// Never remap Kyrgyz/Uzbek/Russian hubs (e.g. city_bishkek) to Saudi.
 const Set<String> _saudiLegacyVillageSlugs = {
@@ -50,16 +32,36 @@ const Set<String> _saudiLegacyVillageSlugs = {
   'khamis',
 };
 
+/// Bare Saudi region ids that still need `region_sa_*` remapping.
+const Set<String> _saudiLegacyRegionSlugs = {
+  'makkah',
+  'mecca',
+  'jeddah',
+  'riyadh',
+  'madinah',
+  'medina',
+  'dammam',
+  'taif',
+  'abha',
+  'khobar',
+  'eastern',
+  'asir',
+  'tabuk',
+  'hail',
+  'najran',
+  'jazan',
+  'qassim',
+  'jouf',
+  'northern',
+};
+
 /// يحوّل مراجع القرى/المناطق القديمة في السعودية إلى المعرفات الـ canonical.
 /// مثال: villages/city_makkah → villages/city_sa_makkah
-/// لا يحوّل city_bishkek أو أي مدينة غير سعودية إلى city_sa_*.
+/// لا يحوّل city_tm_ashgabat / city_eg_cairo أو أي مدينة غير سعودية.
 DocumentReference touryCanonicalVillageRef(DocumentReference village) {
   final id = village.id;
-  if (id.startsWith('city_sa_') ||
-      id.startsWith('city_kg_') ||
-      id.startsWith('city_uz_') ||
-      id.startsWith('city_ru_') ||
-      _startsWithAny(id, _internationalVillagePrefixes)) {
+  // Any city_{ISO2}_* is already international/canonical.
+  if (_isoPrefixedVillageId.hasMatch(id)) {
     return village;
   }
   // Curated eastern hub uses city_alkhobar; canonical id is city_sa_khobar.
@@ -81,11 +83,9 @@ DocumentReference touryCanonicalVillageRef(DocumentReference village) {
 
 DocumentReference touryCanonicalRegionRef(DocumentReference region) {
   final id = region.id;
-  if (id.startsWith('region_sa_') ||
-      id.startsWith('region_kg_') ||
-      id.startsWith('region_uz_') ||
-      id.startsWith('region_ru_') ||
-      _startsWithAny(id, _internationalRegionPrefixes) ||
+  // region_tm_ashgabat / region_eg_cairo / region_tr_* must NEVER become
+  // region_sa_* — that emptied village queries and hid landmarks.
+  if (_isoPrefixedRegionId.hasMatch(id) ||
       id.startsWith('kg-') ||
       id.startsWith('uz-') ||
       id.startsWith('ru-')) {
@@ -94,17 +94,7 @@ DocumentReference touryCanonicalRegionRef(DocumentReference region) {
   final legacy = RegExp(r'^region_(.+)$').firstMatch(id);
   if (legacy != null) {
     final slug = legacy.group(1)!.toLowerCase();
-    if (slug.startsWith('kg_') ||
-        slug.startsWith('uz_') ||
-        slug.startsWith('ru_') ||
-        slug.startsWith('sa_') ||
-        slug.startsWith('es_') ||
-        slug.startsWith('ma_') ||
-        slug.startsWith('pt_') ||
-        slug.startsWith('tn_') ||
-        slug.startsWith('id_') ||
-        slug.startsWith('my_') ||
-        slug.startsWith('in_')) {
+    if (!_saudiLegacyRegionSlugs.contains(slug)) {
       return region;
     }
     return FirebaseFirestore.instance

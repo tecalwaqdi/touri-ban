@@ -1,9 +1,10 @@
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_performance.dart';
 import '/backend/backend.dart';
-import '/core/finance/financial_engine.dart';
+import '/core/finance/financial_engine.dart' show OrderStatusHelper;
 import '/core/finance/financial_order_adapter.dart';
 import '/core/finance/financial_accounting_engine.dart';
+import '/core/finance/financial_trip_semantics.dart';
 
 /// Booking metrics for an agent's country scope (from Firestore `order`).
 ///
@@ -97,7 +98,6 @@ Future<AgentReportStats> loadAgentReportStats(UserRecord agent) async {
   var commission = 0.0;
   var commissionHits = 0;
   final agentId = agent.reference.id;
-  final agentRate = agent.agentTotal;
 
   for (final order in orders) {
     if (order.allnow) activeBookings++;
@@ -105,7 +105,11 @@ Future<AgentReportStats> loadAgentReportStats(UserRecord agent) async {
       canceled++;
       continue;
     }
-    if (!OrderStatusHelper.isPaid(order)) continue;
+    // Accounting paid axis: confirmed cash collection OR authoritative online paid.
+    // Never OrderStatusHelper.isPaid as finance SoT.
+    final paid = FinancialTripSemantics.isPaymentPaid(order) ||
+        FinancialTripSemantics.isCashCollected(order);
+    if (!paid) continue;
     paidBookings++;
 
     final snap = FinancialOrderAdapter.fromOrder(order);
@@ -117,18 +121,11 @@ Future<AgentReportStats> loadAgentReportStats(UserRecord agent) async {
     }
 
     // Prefer FIN-9 snapshotted agent amount when this agent owns the snapshot.
+    // No live Agent_total fallback — MISSING stays missing for primary reporting.
     if (line.agentId == agentId &&
         line.hasProvableAgentSnapshot &&
         line.agentAmount != null) {
       commission += line.agentAmount!.majorUnits;
-      commissionHits++;
-      continue;
-    }
-
-    // Fallback: Agent_total % of persisted platform fee (not of gross).
-    final platform = line.platformFee?.majorUnits;
-    if (platform != null && agentRate > 0) {
-      commission += platform * agentRate / 100.0;
       commissionHits++;
     }
   }

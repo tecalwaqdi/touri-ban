@@ -345,34 +345,12 @@ class _Citie2WidgetState extends State<Citie2Widget> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              if (_activeCountryRef != null)
-                TouryCountryHeroBanner(
-                  countryRef: _activeCountryRef!,
-                  height: heroHeight,
-                )
-              else
-                TouryNetworkImage(
-                  url: _activeCountryImg ?? widget.imgDolh,
-                  width: double.infinity,
-                  height: heroHeight,
-                  fit: BoxFit.cover,
-                ),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      colors.scrim.withValues(alpha: 0.25),
-                      colors.scrim.withValues(alpha: 0.88),
-                    ],
-                  ),
-                ),
-              ),
+              // Solid brand fill — no emblem under text (Shahada/sword safe).
+              ColoredBox(color: colors.primaryStrong),
               Padding(
                 padding: const EdgeInsets.all(DsSpacing.md),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
@@ -385,6 +363,7 @@ class _Citie2WidgetState extends State<Citie2Widget> {
                       overflow: TextOverflow.ellipsis,
                       style: typography.headlineSmall.copyWith(
                         color: DsNeutralScale.shade0,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: DsSpacing.sm),

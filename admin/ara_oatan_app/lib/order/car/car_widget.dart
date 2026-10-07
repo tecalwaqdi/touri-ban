@@ -6,12 +6,15 @@ import 'package:flutter/material.dart';
 import '/backend/backend.dart';
 import '/backend/gemini/gemini.dart';
 import '/core/toury_car_i18n.dart';
+import '/core/toury_dialogs.dart';
 import '/core/toury_firestore_cache.dart';
 import '/core/toury_image.dart';
+import '/core/toury_money_format.dart';
 import '/core/toury_vehicle_catalog.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/flutter_flow/flutter_flow_util.dart';
+import 'package:provider/provider.dart';
 import 'car_model.dart';
 
 export 'car_model.dart';
@@ -54,6 +57,15 @@ class _CarWidgetState extends State<CarWidget> {
   }
 
   Future<void> _selectCar(TypeCarRecord record) async {
+    if (!record.hasSr() || record.sr <= 0) {
+      if (!mounted) return;
+      TouryDialogs.showSnackBar(
+        context,
+        'ux_car_price_unavailable'.tr(),
+        type: TouryMessageType.error,
+      );
+      return;
+    }
     final localizedName = touryVehicleCategoryDisplayName(record, context);
     if (record.ishafelh == true) {
       FFAppState().tebycar = localizedName;
@@ -128,6 +140,8 @@ class _CarWidgetState extends State<CarWidget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+    final bookingCountry = FFAppState().dolh;
     return DsScreenShell(
       child: Builder(
         builder: (context) {
@@ -150,7 +164,14 @@ class _CarWidgetState extends State<CarWidget> {
                 ),
               ),
               body: SafeArea(
-                child: StreamBuilder<List<TypeCarRecord>>(
+                child: bookingCountry == null
+                    ? DsEmptyState(
+                        title: 'ux_vehicle_select_country_title'.tr(),
+                        message: 'ux_vehicle_select_country_msg'.tr(),
+                        icon: DsIcons.car,
+                      )
+                    : StreamBuilder<List<TypeCarRecord>>(
+                  key: ValueKey('typecar:${bookingCountry.path}'),
                   stream: TouryFirestoreCache.typeCarStream(),
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
@@ -226,13 +247,6 @@ class _CarWidgetState extends State<CarWidget> {
                         }
 
                         final car = cars[index - 1];
-                        final price = formatNumber(
-                          car.sr,
-                          formatType: FormatType.decimal,
-                          decimalType: DecimalType.automatic,
-                          currency: '${FFAppState().RMZCurrency} ',
-                        );
-
                         return DsFadeSlide(
                           delay: Duration(
                             milliseconds: 40 * (index - 1).clamp(0, 8),
@@ -243,7 +257,13 @@ class _CarWidgetState extends State<CarWidget> {
                             localAsset: touryVehicleCategoryImage(car),
                             imageUrl: car.img,
                             documentId: car.reference.id,
-                            priceLabel: price,
+                            price: TouryMoneyText(
+                              amount: car.sr,
+                              style: context.dsTypography.labelLarge.copyWith(
+                                color: context.dsColors.primaryStrong,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                             perHourLabel: 'ux_per_hour'.tr(),
                             minHoursLabel:
                                 '${'ux_min_hours'.tr()}: ${_minHoursLabel(car.aglSaat)}',
@@ -269,7 +289,7 @@ class _CarOptionCard extends StatelessWidget {
     required this.localAsset,
     required this.imageUrl,
     required this.documentId,
-    required this.priceLabel,
+    required this.price,
     required this.perHourLabel,
     required this.minHoursLabel,
     required this.onTap,
@@ -279,7 +299,7 @@ class _CarOptionCard extends StatelessWidget {
   final String? localAsset;
   final String? imageUrl;
   final String documentId;
-  final String priceLabel;
+  final Widget price;
   final String perHourLabel;
   final String minHoursLabel;
   final VoidCallback onTap;
@@ -353,16 +373,7 @@ class _CarOptionCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Flexible(
-                          child: Text(
-                            priceLabel,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: typography.labelLarge.copyWith(
-                              color: colors.primaryStrong,
-                            ),
-                          ),
-                        ),
+                        Flexible(child: price),
                         const SizedBox(width: DsSpacing.xxs),
                         Flexible(
                           child: Text(

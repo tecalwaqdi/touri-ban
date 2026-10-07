@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/components/not_addresses_widget.dart';
+import '/core/toury_geo_display.dart';
+import '/core/toury_i18n_text.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -46,7 +48,10 @@ class _ListAdressSelectWidgetState extends State<ListAdressSelectWidget> {
     FFAppState().adressSelection = record.reference;
     FFAppState().adressNaim = record.tilet;
     FFAppState().mkanuserorder = record.map;
-    FFAppState().villtextnow = record.naimVill;
+    FFAppState().villtextnow = tourySafeCachedGeoLabel(
+      record.naimVill,
+      localeKey: touryActiveContentLocaleKey(),
+    );
     FFAppState().villnow = record.vill;
     FFAppState().update(() {});
 

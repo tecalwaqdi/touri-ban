@@ -7,8 +7,44 @@
 
 const crypto = require('crypto');
 const ledger = require('./settlement_ledger');
+const v2 = require('./financial_accounting_v2');
 const {loadFinancePolicy} = require('./finance_policy');
 const {loadFinanceFeatureFlags, assertFlag} = require('./finance_feature_flags');
+
+/** Mirror AdminQaFixture.isFinanceQaSettlement — keep in sync with Dart. */
+function isFinanceQaSettlement(data, settlementId) {
+  if (v2.isQaDemoFixture(settlementId || '', data || {})) return true;
+  const idemp = String((data && data.idempotencyKey) || '')
+    .trim()
+    .toLowerCase();
+  if (
+    idemp.startsWith('fin8_') ||
+    idemp.startsWith('fin7_') ||
+    idemp.startsWith('fin9_') ||
+    idemp.startsWith('demo_') ||
+    idemp.includes('fin7_ctrl_') ||
+    idemp.includes('fin9_ctrl_') ||
+    idemp.includes('fin_rt_') ||
+    idemp.includes('demo_fin_')
+  ) {
+    return true;
+  }
+  for (const key of ['eligibleOrderIds', 'orderIds', 'lineOrderIds']) {
+    const raw = data && data[key];
+    if (!Array.isArray(raw)) continue;
+    for (const id of raw) {
+      if (v2.isQaDemoFixture(String(id), {})) return true;
+    }
+  }
+  const excluded = data && data.excluded;
+  if (Array.isArray(excluded)) {
+    for (const e of excluded) {
+      const oid = e && typeof e === 'object' ? String(e.orderId || '') : String(e);
+      if (v2.isQaDemoFixture(oid, {})) return true;
+    }
+  }
+  return false;
+}
 
 function periods() {
   return require('./finance_periods');
@@ -713,8 +749,9 @@ async function aggregateSettlementExposure({db, auth}) {
   const snap = await db.collection('financial_settlements').get();
   const rows = [];
   snap.forEach((d) => {
-    const s = d.data();
+    const s = d.data() || {};
     if (s.status === 'draft' || s.status === 'voided') return;
+    if (isFinanceQaSettlement(s, d.id)) return;
     if (
       auth.token &&
       auth.token.country_admin &&
@@ -724,12 +761,13 @@ async function aggregateSettlementExposure({db, auth}) {
       const cid = auth.token.country_id;
       if (cid && s.countryId !== cid && s.countryRef !== cid) return;
     }
-    rows.push(s);
+    rows.push({...s, _id: d.id});
   });
   return {
     source: 'server_v2',
     byCurrency: aggregateExposure(rows, new Date()),
     settlementCount: rows.length,
+    qaFixturesExcluded: true,
   };
 }
 
@@ -740,6 +778,7 @@ module.exports = {
   statusFromPaid,
   agingBucket,
   aggregateExposure,
+  isFinanceQaSettlement,
   createSettlementPayment,
   confirmSettlementPayment,
   reverseSettlementPayment,

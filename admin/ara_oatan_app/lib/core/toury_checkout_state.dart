@@ -1,12 +1,113 @@
 import 'package:collection/collection.dart';
 
 import '/app_state.dart';
+import '/core/toury_billable_hours.dart';
 import '/core/toury_landmark_filter.dart';
 import '/core/toury_payment_flags.dart';
 import '/core/toury_payment_labels.dart';
 import '/core/toury_pricing.dart';
 import '/core/toury_route_metrics.dart';
 import '/flutter_flow/lat_lng.dart';
+
+/// Result of applying the canonical billable-hours rule to checkout state.
+class TouryBillableHoursApplyResult {
+  const TouryBillableHoursApplyResult({
+    required this.billableHours,
+    required this.userSelectedHours,
+    required this.vehicleMinimumHours,
+    required this.estimatedRouteDurationMinutes,
+    required this.routeForcedIncrease,
+    required this.changed,
+  });
+
+  final int billableHours;
+  final int userSelectedHours;
+  final int vehicleMinimumHours;
+  final int estimatedRouteDurationMinutes;
+  final bool routeForcedIncrease;
+  final bool changed;
+}
+
+/// Apply [TouryBillableHours.compute] to [FFAppState.totalsaat] / addhors.
+///
+/// Semantics:
+/// - [FFAppState.userRequestedExtraHours] = Customer-chosen extras (never
+///   overwritten by route/auto).
+/// - AUTO_REQUIRED = max(vehicleMin, ceil(serviceMinutes/60), landmark floor)
+/// - FINAL = max(AUTO_REQUIRED, vehicleMin + userRequestedExtraHours)
+///
+/// [FFAppState.addhors] mirrors FINAL − vehicleMin for price/booking display.
+TouryBillableHoursApplyResult touryApplyBillableHours([FFAppState? state]) {
+  final app = state ?? FFAppState();
+  final vehicleMin = app.saatcar.clamp(0, 24 * 30).toInt();
+  final userExtra = app.userRequestedExtraHours.clamp(0, 24 * 30).toInt();
+  final userRequested = (vehicleMin + userExtra).clamp(0, 24 * 30).toInt();
+  // Financial billable hours require Google Routes duration only.
+  final travelMinutes = app.billingRouteIsGoogle
+      ? app.routeDurationMinutes.round()
+      : 0;
+  final landmarkCount = app.cartmkss.length;
+  // Return travel is already inside travelMinutes when returnToPickup is on.
+  final serviceMins = TouryBillableHours.serviceMinutes(
+    outboundTravelMinutes: travelMinutes,
+    landmarkCount: landmarkCount,
+    returnTravelMinutes: 0,
+  );
+  var autoRequired = TouryBillableHours.compute(
+    userSelectedHours: vehicleMin,
+    vehicleMinimumHours: vehicleMin,
+    estimatedRouteDurationMinutes: serviceMins,
+  );
+  final landmarkMin = app.Minimumhours;
+  if (!app.DriverGuideState && landmarkMin >= 2 && autoRequired < landmarkMin) {
+    autoRequired = landmarkMin;
+  }
+  final billable =
+      userRequested > autoRequired ? userRequested : autoRequired;
+  final routeForced = TouryBillableHours.routeForcedIncrease(
+    userSelectedHours: userRequested,
+    vehicleMinimumHours: vehicleMin,
+    estimatedRouteDurationMinutes: serviceMins,
+    billableHours: billable,
+  );
+  final displayExtra = (billable - vehicleMin).clamp(0, 24 * 30).toInt();
+  final changed =
+      app.totalsaat != billable || app.addhors != displayExtra;
+  if (changed) {
+    app.update(() {
+      app.totalsaat = billable;
+      app.addhors = displayExtra;
+      // userRequestedExtraHours intentionally untouched.
+    });
+  }
+  return TouryBillableHoursApplyResult(
+    billableHours: billable,
+    userSelectedHours: userRequested,
+    vehicleMinimumHours: vehicleMin,
+    estimatedRouteDurationMinutes: serviceMins,
+    routeForcedIncrease: routeForced,
+    changed: changed,
+  );
+}
+
+/// Localized explanation when route ETA raised billable hours.
+String touryBillableHoursRouteExplanation({
+  required int estimatedRouteDurationMinutes,
+  required int billableHours,
+  required String Function(String key, {Map<String, String>? namedArgs}) tr,
+}) {
+  final (h, m) = TouryBillableHours.splitDurationMinutes(
+    estimatedRouteDurationMinutes,
+  );
+  return tr(
+    'checkout_route_hours_adjusted',
+    namedArgs: {
+      'eta_hours': '$h',
+      'eta_minutes': '$m',
+      'billable_hours': '$billableHours',
+    },
+  );
+}
 
 /// Origin for drive distance / ETA / polyline.
 /// Prefer booking pickup, then city center — not live GPS (GPS caused
@@ -222,7 +323,8 @@ void touryPrepareCheckoutState({bool resetExtraHours = false}) {
   touryPurgeBannedCartItems(app);
   touryApplyCashOnlyPaymentDefaults(app);
   tourySyncBookingFlags();
-  touryRecalculateCheckoutPrice();
+  touryApplyBillableHours(app);
+  touryRecalculateCheckoutPrice(app);
 }
 
 /// هل تُعرض خيارات الحجز (سيارة، عنوان، جدولة، دفع)؟

@@ -560,7 +560,9 @@ class _AdminGeoHubWidgetState extends State<AdminGeoHubWidget>
           return [
             _nameCell(
               row.displayName,
-              tip: row.orphanParent ? 'يتيم: بدون دولة' : row.id,
+              tip: row.orphanParent
+                  ? uiTr(context, 'يتيم: بدون دولة')
+                  : row.id,
               warn: row.orphanParent,
             ),
             Text(row.countryName),

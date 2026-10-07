@@ -20,6 +20,7 @@ enum AdminDriversHubTab {
   pending,
   documents,
   expiringSoon,
+  dataChanges,
 }
 
 class AdminDriversHubWidget extends StatefulWidget {
@@ -43,6 +44,10 @@ class AdminDriversHubWidget extends StatefulWidget {
       case 'expiring':
       case 'expiring_soon':
         return AdminDriversHubTab.expiringSoon;
+      case 'data_changes':
+      case 'datachanges':
+      case 'changes':
+        return AdminDriversHubTab.dataChanges;
       default:
         return AdminDriversHubTab.all;
     }
@@ -110,6 +115,8 @@ class _AdminDriversHubWidgetState extends State<AdminDriversHubWidget> {
         return _stats.docsMissing;
       case AdminDriversHubTab.expiringSoon:
         return _stats.expiringSoon;
+      case AdminDriversHubTab.dataChanges:
+        return -1; // live stream count shown as ·
     }
   }
 
@@ -174,7 +181,9 @@ class _AdminDriversHubWidgetState extends State<AdminDriversHubWidget> {
                   for (final t in AdminDriversHubTab.values)
                     _CountChip(
                       label: _tabLabel(context, t),
-                      value: _statsLoading ? '…' : '${_countFor(t)}',
+                      value: _statsLoading
+                          ? '…'
+                          : (_countFor(t) < 0 ? '·' : '${_countFor(t)}'),
                       selected: _tab == t,
                       onTap: () => setState(() => _tab = t),
                     ),
@@ -203,6 +212,8 @@ class _AdminDriversHubWidgetState extends State<AdminDriversHubWidget> {
         return uiTr(context, 'الوثائق');
       case AdminDriversHubTab.expiringSoon:
         return uiTr(context, 'تنتهي قريبًا');
+      case AdminDriversHubTab.dataChanges:
+        return uiTr(context, 'طلبات التعديل');
     }
   }
 
@@ -230,6 +241,8 @@ class _AdminDriversHubWidgetState extends State<AdminDriversHubWidget> {
           embedded: true,
           initialBucket: 'expiring_soon',
         );
+      case AdminDriversHubTab.dataChanges:
+        return const AdminDriverDataChangeRequestsWidget(embedded: true);
     }
   }
 }

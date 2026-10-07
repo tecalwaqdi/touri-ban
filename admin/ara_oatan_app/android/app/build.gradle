@@ -87,16 +87,32 @@ android {
 
     buildTypes {
         debug {
-            signingConfig releaseKeystoreReady
-                ? signingConfigs.release
-                : signingConfigs.debug
+            // Debug/dev builds always use the Android debug identity.
+            signingConfig signingConfigs.debug
         }
         release {
-            signingConfig releaseKeystoreReady
-                ? signingConfigs.release
-                : signingConfigs.debug
+            // Never fall back to debug signing for release artifacts.
+            if (releaseKeystoreReady) {
+                signingConfig signingConfigs.release
+            }
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+}
+
+// Fail release assemble/bundle loudly when production keystore is absent.
+gradle.taskGraph.whenReady { graph ->
+    def wantsReleaseArtifact = graph.allTasks.any { task ->
+        def n = task.name
+        (n == 'assembleRelease' || n == 'bundleRelease' ||
+            n == 'signReleaseBundle' || n == 'packageRelease')
+    }
+    if (wantsReleaseArtifact && !releaseKeystoreReady) {
+        throw new GradleException(
+            "Customer release signing blocked: missing android/key.properties " +
+            "and/or the configured production keystore " +
+            "(see android/key.properties.example). Refusing debug-signed release."
+        )
     }
 }
 

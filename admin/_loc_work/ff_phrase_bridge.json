@@ -1,0 +1,3944 @@
+{
+  "0": {
+    "en": "0",
+    "ar": "0",
+    "ru": "0",
+    "ky": "0",
+    "fr": "0",
+    "ur": "0",
+    "pt": "0"
+  },
+  "3": {
+    "en": "3",
+    "ar": "3",
+    "ru": "3",
+    "ky": "3",
+    "fr": "3",
+    "ur": "3",
+    "pt": "3"
+  },
+  "12": {
+    "en": "12",
+    "ar": "12",
+    "ru": "12",
+    "ky": "12",
+    "fr": "12",
+    "ur": "12",
+    "pt": "12"
+  },
+  "14": {
+    "en": "14",
+    "ar": "14",
+    "ru": "14",
+    "ky": "14",
+    "fr": "14",
+    "ur": "14",
+    "pt": "14"
+  },
+  "Welcome Back": {
+    "en": "Welcome Back",
+    "ar": "مرحبًا بعودتك",
+    "ru": "С возвращением",
+    "ky": "Кайра кош келиңиз",
+    "fr": "Bon retour",
+    "ur": "واپس خوش آمدید",
+    "pt": "Bem-vindo de volta"
+  },
+  "Let's get started by filling out the form below.": {
+    "en": "Let's get started by filling out the form below.",
+    "ar": "لنبدأ بملء النموذج أدناه.",
+    "ru": "Давайте начнем, заполнив форму ниже.",
+    "ky": "Төмөнкү форманы толтуруу менен баштайлы.",
+    "fr": "Commençons en remplissant le formulaire ci-dessous.",
+    "ur": "نیچے دیا گیا فارم بھر کر شروع کرتے ہیں۔",
+    "pt": "Vamos começar preenchendo o formulário abaixo."
+  },
+  "Sign In": {
+    "en": "Sign In",
+    "ar": "تسجيل الدخول",
+    "ru": "Войти",
+    "ky": "Кирүү",
+    "fr": "Se connecter",
+    "ur": "سائن ان",
+    "pt": "Entrar"
+  },
+  "Do you want to register?": {
+    "en": "Do you want to register?",
+    "ar": "هل تريد التسجيل؟",
+    "ru": "Хотите зарегистрироваться?",
+    "ky": "Катталууну каалайсызбы?",
+    "fr": "Voulez-vous vous inscrire ?",
+    "ur": "کیا آپ رجسٹر کرنا چاہتے ہیں؟",
+    "pt": "Deseja se cadastrar?"
+  },
+  "Register now": {
+    "en": "Register now",
+    "ar": "سجّل الآن",
+    "ru": "Зарегистрироваться сейчас",
+    "ky": "Азыр катталыңыз",
+    "fr": "Inscrivez-vous maintenant",
+    "ur": "ابھی رجسٹر کریں",
+    "pt": "Cadastre-se agora"
+  },
+  "Terms of Service and Privacy Policy": {
+    "en": "Terms of Service and Privacy Policy",
+    "ar": "شروط الخدمة وسياسة الخصوصية",
+    "ru": "Условия использования и политика конфиденциальности",
+    "ky": "Кызмат көрсөтүү шарттары жана купуялуулук саясаты",
+    "fr": "Conditions d'utilisation et politique de confidentialité",
+    "ur": "سروس کی شرائط اور رازداری کی پالیسی",
+    "pt": "Termos de Serviço e Política de Privacidade"
+  },
+  "Click here": {
+    "en": "Click here",
+    "ar": "اضغط هنا",
+    "ru": "Нажмите здесь",
+    "ky": "Бул жерди басыңыз",
+    "fr": "Cliquez ici",
+    "ur": "یہاں کلک کریں",
+    "pt": "Clique aqui"
+  },
+  "Accepted requests": {
+    "en": "Accepted requests",
+    "ar": "الطلبات المقبولة",
+    "ru": "Принятые заявки",
+    "ky": "Кабыл алынган өтүнмөлөр",
+    "fr": "Demandes acceptées",
+    "ur": "قبول شدہ درخواستیں",
+    "pt": "Solicitações aceitas"
+  },
+  "accepted": {
+    "en": "accepted",
+    "ar": "مقبول",
+    "ru": "принято",
+    "ky": "кабыл алынды",
+    "fr": "accepté",
+    "ur": "قبول شدہ",
+    "pt": "aceito"
+  },
+  "your trip summary with Ara Watn": {
+    "en": "your trip summary with Ara Watn",
+    "ar": "ملخص رحلتك مع Ara Watn",
+    "ru": "сводка вашей поездки с Ara Watn",
+    "ky": "Ara Watn менен сапарыңыздын жыйынтыгы",
+    "fr": "le résumé de votre trajet avec Ara Watn",
+    "ur": "Ara Watn کے ساتھ آپ کے سفر کا خلاصہ",
+    "pt": "o resumo da sua viagem com Ara Watn"
+  },
+  "new orders": {
+    "en": "new orders",
+    "ar": "طلبات جديدة",
+    "ru": "новые заказы",
+    "ky": "жаңы буйрутмалар",
+    "fr": "nouvelles commandes",
+    "ur": "نئے آرڈرز",
+    "pt": "novos pedidos"
+  },
+  "Earnings": {
+    "en": "Earnings",
+    "ar": "الأرباح",
+    "ru": "Заработок",
+    "ky": "Киреше",
+    "fr": "Gains",
+    "ur": "آمدنی",
+    "pt": "Ganhos"
+  },
+  "Route progress": {
+    "en": "Route progress",
+    "ar": "تقدم المسار",
+    "ru": "Прогресс маршрута",
+    "ky": "Маршруттун жүрүшү",
+    "fr": "Progression de l'itinéraire",
+    "ur": "راستے کی پیش رفت",
+    "pt": "Progresso da rota"
+  },
+  "App Commissions": {
+    "en": "App Commissions",
+    "ar": "عمولات التطبيق",
+    "ru": "Комиссии приложения",
+    "ky": "Колдонмонун комиссиялары",
+    "fr": "Commissions de l'application",
+    "ur": "ایپ کمیشن",
+    "pt": "Comissões do aplicativo"
+  },
+  "Dashboard": {
+    "en": "Dashboard",
+    "ar": "لوحة التحكم",
+    "ru": "Панель управления",
+    "ky": "Башкаруу тактасы",
+    "fr": "Tableau de bord",
+    "ur": "ڈیش بورڈ",
+    "pt": "Painel"
+  },
+  "Log Out": {
+    "en": "Log Out",
+    "ar": "تسجيل الخروج",
+    "ru": "Выйти",
+    "ky": "Чыгуу",
+    "fr": "Déconnexion",
+    "ur": "خارج ہوں",
+    "pt": "Sair"
+  },
+  "تفاصيل": {
+    "en": "Details",
+    "ar": "تفاصيل",
+    "ru": "Подробности",
+    "ky": "Чоо-жайы",
+    "fr": "Détails",
+    "ur": "تفصیلات",
+    "pt": "Detalhes"
+  },
+  "Trip Status": {
+    "en": "Trip Status",
+    "ar": "حالة الرحلة",
+    "ru": "Статус поездки",
+    "ky": "Сапардын абалы",
+    "fr": "Statut du trajet",
+    "ur": "سفر کی حیثیت",
+    "pt": "Estado da viagem"
+  },
+  "Customer Rating": {
+    "en": "Customer Rating",
+    "ar": "تقييم العميل",
+    "ru": "Оценка клиента",
+    "ky": "Кардардын баасы",
+    "fr": "Note du client",
+    "ur": "گاہک کی درجہ بندی",
+    "pt": "Avaliação do cliente"
+  },
+  "Trip Actions": {
+    "en": "Trip Actions",
+    "ar": "إجراءات الرحلة",
+    "ru": "Действия по поездке",
+    "ky": "Сапар боюнча аракеттер",
+    "fr": "Actions du trajet",
+    "ur": "سفر کے اقدامات",
+    "pt": "Ações da viagem"
+  },
+  "Accept Order": {
+    "en": "Accept Order",
+    "ar": "قبول الطلب",
+    "ru": "Принять заказ",
+    "ky": "Буйрутманы кабыл алуу",
+    "fr": "Accepter la commande",
+    "ur": "آرڈر قبول کریں",
+    "pt": "Aceitar pedido"
+  },
+  "Customer Location": {
+    "en": "Customer Location",
+    "ar": "موقع العميل",
+    "ru": "Местоположение клиента",
+    "ky": "Кардардын жайгашкан жери",
+    "fr": "Position du client",
+    "ur": "گاہک کا مقام",
+    "pt": "Localização do cliente"
+  },
+  "The customer is currently waiting for you. Please proceed to their location.": {
+    "en": "The customer is currently waiting for you. Please proceed to their location.",
+    "ar": "العميل في انتظارك حاليًا. يرجى التوجه إلى موقعه.",
+    "ru": "Клиент сейчас ожидает вас. Пожалуйста, направьтесь к его местоположению.",
+    "ky": "Кардар азыр сизди күтүп жатат. Сураныч, анын жайгашкан жерине барыңыз.",
+    "fr": "Le client vous attend actuellement. Veuillez vous rendre à son emplacement.",
+    "ur": "گاہک اس وقت آپ کا انتظار کر رہا ہے۔ براہ کرم اس کے مقام کی طرف جائیں۔",
+    "pt": "O cliente está aguardando você. Por favor, dirija-se ao local dele."
+  },
+  "Start Trip": {
+    "en": "Start Trip",
+    "ar": "بدء الرحلة",
+    "ru": "Начать поездку",
+    "ky": "Сапарды баштоо",
+    "fr": "Démarrer le trajet",
+    "ur": "سفر شروع کریں",
+    "pt": "Iniciar viagem"
+  },
+  "End Trip": {
+    "en": "End Trip",
+    "ar": "إنهاء الرحلة",
+    "ru": "Завершить поездку",
+    "ky": "Сапарды аяктоо",
+    "fr": "Terminer le trajet",
+    "ur": "سفر ختم کریں",
+    "pt": "Encerrar viagem"
+  },
+  "Start Time": {
+    "en": "Start Time",
+    "ar": "وقت البدء",
+    "ru": "Время начала",
+    "ky": "Баштоо убактысы",
+    "fr": "Heure de début",
+    "ur": "شروع کا وقت",
+    "pt": "Hora de início"
+  },
+  "End Time": {
+    "en": "End Time",
+    "ar": "وقت الانتهاء",
+    "ru": "Время окончания",
+    "ky": "Аяктоо убактысы",
+    "fr": "Heure de fin",
+    "ur": "اختتام کا وقت",
+    "pt": "Hora de término"
+  },
+  "Customer Information": {
+    "en": "Customer Information",
+    "ar": "معلومات العميل",
+    "ru": "Информация о клиенте",
+    "ky": "Кардар тууралуу маалымат",
+    "fr": "Informations du client",
+    "ur": "گاہک کی معلومات",
+    "pt": "Informações do cliente"
+  },
+  "Chat": {
+    "en": "Chat",
+    "ar": "محادثة",
+    "ru": "Чат",
+    "ky": "Маектешүү",
+    "fr": "Discussion",
+    "ur": "گفتگو",
+    "pt": "Conversa"
+  },
+  "Stops": {
+    "en": "Stops",
+    "ar": "التوقفات",
+    "ru": "Остановки",
+    "ky": "Аялдамалар",
+    "fr": "Arrêts",
+    "ur": "پڑاؤ",
+    "pt": "Paradas"
+  },
+  "Map": {
+    "en": "Map",
+    "ar": "الخريطة",
+    "ru": "Карта",
+    "ky": "Карта",
+    "fr": "Carte",
+    "ur": "نقشہ",
+    "pt": "Mapa"
+  },
+  "Restaurant": {
+    "en": "Restaurant",
+    "ar": "مطعم",
+    "ru": "Ресторан",
+    "ky": "Ресторан",
+    "fr": "Restaurant",
+    "ur": "ریستوران",
+    "pt": "Restaurante"
+  },
+  "Second Stop": {
+    "en": "Second Stop",
+    "ar": "التوقف الثاني",
+    "ru": "Вторая остановка",
+    "ky": "Экинчи аялдама",
+    "fr": "Deuxième arrêt",
+    "ur": "دوسرا پڑاؤ",
+    "pt": "Segunda parada"
+  },
+  "View on Map": {
+    "en": "View on Map",
+    "ar": "عرض على الخريطة",
+    "ru": "Показать на карте",
+    "ky": "Картадан көрүү",
+    "fr": "Voir sur la carte",
+    "ur": "نقشے پر دیکھیں",
+    "pt": "Ver no mapa"
+  },
+  "Beach Resort": {
+    "en": "Beach Resort",
+    "ar": "منتجع شاطئي",
+    "ru": "Пляжный курорт",
+    "ky": "Жээктеги эс алуу жайы",
+    "fr": "Station balnéaire",
+    "ur": "ساحلی ریزورٹ",
+    "pt": "Resort à beira-mar"
+  },
+  "Final Destination": {
+    "en": "Final Destination",
+    "ar": "الوجهة النهائية",
+    "ru": "Конечный пункт",
+    "ky": "Акыркы багыт",
+    "fr": "Destination finale",
+    "ur": "آخری منزل",
+    "pt": "Destino final"
+  },
+  "-destinations": {
+    "en": "-destinations",
+    "ar": "-وجهات",
+    "ru": "-назначения",
+    "ky": "-багыттар",
+    "fr": "-destinations",
+    "ur": "-منزلیں",
+    "pt": "-destinos"
+  },
+  "-Hours": {
+    "en": "-Hours",
+    "ar": "-ساعات",
+    "ru": "-часы",
+    "ky": "-сааттар",
+    "fr": "-heures",
+    "ur": "-گھنٹے",
+    "pt": "-horas"
+  },
+  "R.S": {
+    "en": "R.S",
+    "ar": "ر.س",
+    "ru": "SAR",
+    "ky": "САР",
+    "fr": "SAR",
+    "ur": "SAR",
+    "pt": "SAR"
+  },
+  "Your account is inactive.": {
+    "en": "Your account is inactive.",
+    "ar": "حسابك غير نشط.",
+    "ru": "Ваша учетная запись неактивна.",
+    "ky": "Сиздин аккаунтуңуз активдүү эмес.",
+    "fr": "Votre compte est inactif.",
+    "ur": "آپ کا اکاؤنٹ غیر فعال ہے۔",
+    "pt": "Sua conta está inativa."
+  },
+  "New requests": {
+    "en": "New requests",
+    "ar": "طلبات جديدة",
+    "ru": "Новые заявки",
+    "ky": "Жаңы өтүнмөлөр",
+    "fr": "Nouvelles demandes",
+    "ur": "نئی درخواستیں",
+    "pt": "Novas solicitações"
+  },
+  "You cannot accept new bookings as you have an ongoing reservation.": {
+    "en": "You cannot accept new bookings as you have an ongoing reservation.",
+    "ar": "لا يمكنك قبول حجوزات جديدة لوجود حجز جارٍ.",
+    "ru": "Вы не можете принимать новые бронирования, так как у вас есть текущая бронь.",
+    "ky": "Сизде уланып жаткан брондоо бар болгондуктан, жаңы брондоолорду кабыл ала албайсыз.",
+    "fr": "Vous ne pouvez pas accepter de nouvelles réservations, car vous avez une réservation en cours.",
+    "ur": "آپ نئی بکنگز قبول نہیں کر سکتے کیونکہ آپ کی ایک بکنگ جاری ہے۔",
+    "pt": "Você não pode aceitar novas reservas porque tem uma reserva em andamento."
+  },
+  "تسجيل الشركات في أرى وطن": {
+    "en": "Company registration in Ara Watan",
+    "ar": "تسجيل الشركات في أرى وطن",
+    "ru": "Регистрация компаний в Ara Watan",
+    "ky": "Ara Watan ичинде компанияларды каттоо",
+    "fr": "Inscription des entreprises sur Ara Watan",
+    "ur": "Ara Watan میں کمپنیوں کی رجسٹریشن",
+    "pt": "Cadastro de empresas no Ara Watan"
+  },
+  "معلومات الشركة": {
+    "en": "Company information",
+    "ar": "معلومات الشركة",
+    "ru": "Информация о компании",
+    "ky": "Компания тууралуу маалымат",
+    "fr": "Informations de l'entreprise",
+    "ur": "کمپنی کی معلومات",
+    "pt": "Informações da empresa"
+  },
+  "رقم السجل التجاري": {
+    "en": "Commercial registration number",
+    "ar": "رقم السجل التجاري",
+    "ru": "Номер коммерческой регистрации",
+    "ky": "Коммерциялык каттоо номери",
+    "fr": "Numéro d'immatriculation commerciale",
+    "ur": "تجارتی رجسٹریشن نمبر",
+    "pt": "Número de registro comercial"
+  },
+  "رقم هوية الشركة أو الفرد": {
+    "en": "Company or individual ID number",
+    "ar": "رقم هوية الشركة أو الفرد",
+    "ru": "Номер удостоверения компании или физического лица",
+    "ky": "Компаниянын же жеке адамдын инсандык номери",
+    "fr": "Numéro d'identité de l'entreprise ou de la personne",
+    "ur": "کمپنی یا فرد کا شناختی نمبر",
+    "pt": "Número de identidade da empresa ou da pessoa"
+  },
+  "+966 رقم الهاتف": {
+    "en": "+966 Phone number",
+    "ar": "+966 رقم الهاتف",
+    "ru": "+966 Номер телефона",
+    "ky": "+966 Телефон номери",
+    "fr": "+966 Numéro de téléphone",
+    "ur": "+966 فون نمبر",
+    "pt": "+966 Número de telefone"
+  },
+  "تاريخ إصدار السجل (هجري)": {
+    "en": "Registration issue date (Hijri)",
+    "ar": "تاريخ إصدار السجل (هجري)",
+    "ru": "Дата выдачи регистрации (хиджра)",
+    "ky": "Каттоо берилген күнү (хижрий)",
+    "fr": "Date de délivrance de l'enregistrement (hégirienne)",
+    "ur": "رجسٹریشن کے اجراء کی تاریخ (ہجری)",
+    "pt": "Data de emissão do registro (hijri)"
+  },
+  "رقم التحويلة (اختياري)": {
+    "en": "Extension number (optional)",
+    "ar": "رقم التحويلة (اختياري)",
+    "ru": "Добавочный номер (необязательно)",
+    "ky": "Кошумча номер (милдеттүү эмес)",
+    "fr": "Numéro de poste (facultatif)",
+    "ur": "ایکسٹینشن نمبر (اختیاری)",
+    "pt": "Número do ramal (opcional)"
+  },
+  "البريد الإلكتروني للشركة": {
+    "en": "Company email",
+    "ar": "البريد الإلكتروني للشركة",
+    "ru": "Электронная почта компании",
+    "ky": "Компаниянын электрондук почтасы",
+    "fr": "E-mail de l'entreprise",
+    "ur": "کمپنی کی ای میل",
+    "pt": "E-mail da empresa"
+  },
+  "رقم السجل التجاري is required": {
+    "en": "Commercial registration number is required",
+    "ar": "رقم السجل التجاري مطلوب",
+    "ru": "Требуется номер коммерческой регистрации",
+    "ky": "Коммерциялык каттоо номери талап кылынат",
+    "fr": "Le numéro d'immatriculation commerciale est requis",
+    "ur": "تجارتی رجسٹریشن نمبر ضروری ہے",
+    "pt": "O número de registro comercial é obrigatório"
+  },
+  "Please choose an option from the dropdown": {
+    "en": "Please choose an option from the dropdown",
+    "ar": "يرجى اختيار خيار من القائمة المنسدلة",
+    "ru": "Пожалуйста, выберите вариант из выпадающего списка",
+    "ky": "Ачылуучу тизмеден бир вариантты тандаңыз",
+    "fr": "Veuillez choisir une option dans la liste déroulante",
+    "ur": "براہ کرم گرتی فہرست سے ایک اختیار منتخب کریں",
+    "pt": "Por favor, escolha uma opção na lista suspensa"
+  },
+  "رقم هوية الشركة أو الفرد is required": {
+    "en": "Company or individual ID number is required",
+    "ar": "رقم هوية الشركة أو الفرد مطلوب",
+    "ru": "Требуется номер удостоверения компании или физического лица",
+    "ky": "Компаниянын же жеке адамдын инсандык номери талап кылынат",
+    "fr": "Le numéro d'identité de l'entreprise ou de la personne est requis",
+    "ur": "کمپنی یا فرد کا شناختی نمبر ضروری ہے",
+    "pt": "O número de identidade da empresa ou da pessoa é obrigatório"
+  },
+  "+966 رقم الهاتف is required": {
+    "en": "+966 phone number is required",
+    "ar": "+966 رقم الهاتف مطلوب",
+    "ru": "Требуется номер телефона +966",
+    "ky": "+966 телефон номери талап кылынат",
+    "fr": "Le numéro de téléphone +966 est requis",
+    "ur": "+966 فون نمبر ضروری ہے",
+    "pt": "O número de telefone +966 é obrigatório"
+  },
+  "تاريخ إصدار السجل (هجري) is required": {
+    "en": "Registration issue date (Hijri) is required",
+    "ar": "تاريخ إصدار السجل (هجري) مطلوب",
+    "ru": "Требуется дата выдачи регистрации (хиджра)",
+    "ky": "Каттоо берилген күнү (хижрий) талап кылынат",
+    "fr": "La date de délivrance de l'enregistrement (hégirienne) est requise",
+    "ur": "رجسٹریشن کے اجراء کی تاریخ (ہجری) ضروری ہے",
+    "pt": "A data de emissão do registro (hijri) é obrigatória"
+  },
+  "رقم التحويلة (اختياري) is required": {
+    "en": "Extension number (optional) is required",
+    "ar": "رقم التحويلة (اختياري) مطلوب",
+    "ru": "Требуется добавочный номер (необязательно)",
+    "ky": "Кошумча номер (милдеттүү эмес) талап кылынат",
+    "fr": "Le numéro de poste (facultatif) est requis",
+    "ur": "ایکسٹینشن نمبر (اختیاری) ضروری ہے",
+    "pt": "O número do ramal (opcional) é obrigatório"
+  },
+  "البريد الإلكتروني للشركة is required": {
+    "en": "Company email is required",
+    "ar": "البريد الإلكتروني للشركة مطلوب",
+    "ru": "Требуется электронная почта компании",
+    "ky": "Компаниянын электрондук почтасы талап кылынат",
+    "fr": "L'e-mail de l'entreprise est requis",
+    "ur": "کمپنی کی ای میل ضروری ہے",
+    "pt": "O e-mail da empresa é obrigatório"
+  },
+  "معلومات المدير": {
+    "en": "Manager information",
+    "ar": "معلومات المدير",
+    "ru": "Информация о руководителе",
+    "ky": "Жетекчи тууралуу маалымат",
+    "fr": "Informations du directeur",
+    "ur": "مینیجر کی معلومات",
+    "pt": "Informações do gerente"
+  },
+  "اسم مدير الشركة": {
+    "en": "Company manager name",
+    "ar": "اسم مدير الشركة",
+    "ru": "Имя руководителя компании",
+    "ky": "Компания жетекчисинин аты",
+    "fr": "Nom du directeur de l'entreprise",
+    "ur": "کمپنی مینیجر کا نام",
+    "pt": "Nome do gerente da empresa"
+  },
+  "+966 رقم هاتف المدير": {
+    "en": "+966 Manager phone number",
+    "ar": "+966 رقم هاتف المدير",
+    "ru": "+966 Телефон руководителя",
+    "ky": "+966 Жетекчинин телефон номери",
+    "fr": "+966 Numéro de téléphone du directeur",
+    "ur": "+966 مینیجر کا فون نمبر",
+    "pt": "+966 Telefone do gerente"
+  },
+  "+966 رقم جوال المدير": {
+    "en": "+966 Manager mobile number",
+    "ar": "+966 رقم جوال المدير",
+    "ru": "+966 Мобильный номер руководителя",
+    "ky": "+966 Жетекчинин мобилдик номери",
+    "fr": "+966 Numéro de mobile du directeur",
+    "ur": "+966 مینیجر کا موبائل نمبر",
+    "pt": "+966 Celular do gerente"
+  },
+  "نوع النشاط": {
+    "en": "Activity type",
+    "ar": "نوع النشاط",
+    "ru": "Вид деятельности",
+    "ky": "Ишмердүүлүктүн түрү",
+    "fr": "Type d'activité",
+    "ur": "سرگرمی کی قسم",
+    "pt": "Tipo de atividade"
+  },
+  "نقل متخصص": {
+    "en": "Specialized transport",
+    "ar": "نقل متخصص",
+    "ru": "Специализированные перевозки",
+    "ky": "Адистештирилген ташуу",
+    "fr": "Transport spécialisé",
+    "ur": "خصوصی نقل و حمل",
+    "pt": "Transporte especializado"
+  },
+  "تأجير حافلات": {
+    "en": "Bus rental",
+    "ar": "تأجير حافلات",
+    "ru": "Аренда автобусов",
+    "ky": "Автобус ижарасы",
+    "fr": "Location d'autobus",
+    "ur": "بسوں کا کرایہ",
+    "pt": "Aluguel de ônibus"
+  },
+  "نقل تعليمي": {
+    "en": "Educational transport",
+    "ar": "نقل تعليمي",
+    "ru": "Образовательные перевозки",
+    "ky": "Билим берүү ташуусу",
+    "fr": "Transport éducatif",
+    "ur": "تعلیمی نقل و حمل",
+    "pt": "Transporte educacional"
+  },
+  "تقديم الطلب": {
+    "en": "Submit the application",
+    "ar": "تقديم الطلب",
+    "ru": "Подать заявку",
+    "ky": "Өтүнмө берүү",
+    "fr": "Soumettre la demande",
+    "ur": "درخواست جمع کروائیں",
+    "pt": "Enviar a solicitação"
+  },
+  "Michael Rodriguez": {
+    "en": "Michael Rodriguez",
+    "ar": "Michael Rodriguez",
+    "ru": "Michael Rodriguez",
+    "ky": "Michael Rodriguez",
+    "fr": "Michael Rodriguez",
+    "ur": "Michael Rodriguez",
+    "pt": "Michael Rodriguez"
+  },
+  "Currently Online": {
+    "en": "Currently Online",
+    "ar": "متصل الآن",
+    "ru": "Сейчас в сети",
+    "ky": "Азыр байланышта",
+    "fr": "Actuellement en ligne",
+    "ur": "اس وقت آن لائن",
+    "pt": "Atualmente conectado"
+  },
+  "Acceptance Rate": {
+    "en": "Acceptance Rate",
+    "ar": "معدل القبول",
+    "ru": "Процент принятия",
+    "ky": "Кабыл алуу пайызы",
+    "fr": "Taux d'acceptation",
+    "ur": "قبولیت کی شرح",
+    "pt": "Taxa de aceitação"
+  },
+  "98%": {
+    "en": "98%",
+    "ar": "98%",
+    "ru": "98%",
+    "ky": "98%",
+    "fr": "98%",
+    "ur": "98%",
+    "pt": "98%"
+  },
+  "Today's Trips": {
+    "en": "Today's Trips",
+    "ar": "رحلات اليوم",
+    "ru": "Поездки за сегодня",
+    "ky": "Бүгүнкү сапарлар",
+    "fr": "Trajets du jour",
+    "ur": "آج کے سفر",
+    "pt": "Viagens de hoje"
+  },
+  "Pickup Location": {
+    "en": "Pickup Location",
+    "ar": "موقع الالتقاط",
+    "ru": "Место посадки",
+    "ky": "Алып кетүү жери",
+    "fr": "Lieu de prise en charge",
+    "ur": "پک اپ کا مقام",
+    "pt": "Local de embarque"
+  },
+  "185 Berry Street, San Francisco": {
+    "en": "185 Berry Street, San Francisco",
+    "ar": "185 Berry Street, San Francisco",
+    "ru": "185 Berry Street, San Francisco",
+    "ky": "185 Berry Street, San Francisco",
+    "fr": "185 Berry Street, San Francisco",
+    "ur": "185 Berry Street, San Francisco",
+    "pt": "185 Berry Street, San Francisco"
+  },
+  "2 min away": {
+    "en": "2 min away",
+    "ar": "على بعد دقيقتين",
+    "ru": "в 2 мин",
+    "ky": "2 мүн алыстыкта",
+    "fr": "à 2 min",
+    "ur": "2 منٹ دور",
+    "pt": "a 2 min de distância"
+  },
+  "Golden Gate Bridge Viewpoint": {
+    "en": "Golden Gate Bridge Viewpoint",
+    "ar": "Golden Gate Bridge Viewpoint",
+    "ru": "Golden Gate Bridge Viewpoint",
+    "ky": "Golden Gate Bridge Viewpoint",
+    "fr": "Golden Gate Bridge Viewpoint",
+    "ur": "Golden Gate Bridge Viewpoint",
+    "pt": "Golden Gate Bridge Viewpoint"
+  },
+  "Est. Fare": {
+    "en": "Est. Fare",
+    "ar": "الأجرة التقديرية",
+    "ru": "Примерная стоимость",
+    "ky": "Болжолдуу тариф",
+    "fr": "Tarif estimé",
+    "ur": "تخمینی کرایہ",
+    "pt": "Tarifa estimada"
+  },
+  "\\$24.50": {
+    "en": "\\$24.50",
+    "ar": "\\$24.50",
+    "ru": "\\$24.50",
+    "ky": "\\$24.50",
+    "fr": "\\$24.50",
+    "ur": "\\$24.50",
+    "pt": "\\$24.50"
+  },
+  "Passenger Rating": {
+    "en": "Passenger Rating",
+    "ar": "تقييم الراكب",
+    "ru": "Оценка пассажира",
+    "ky": "Жүргүнчүнүн баасы",
+    "fr": "Note du passager",
+    "ur": "مسافر کی درجہ بندی",
+    "pt": "Avaliação do passageiro"
+  },
+  "4.8": {
+    "en": "4.8",
+    "ar": "4.8",
+    "ru": "4.8",
+    "ky": "4.8",
+    "fr": "4.8",
+    "ur": "4.8",
+    "pt": "4.8"
+  },
+  "Duration": {
+    "en": "Duration",
+    "ar": "المدة",
+    "ru": "Длительность",
+    "ky": "Узактыгы",
+    "fr": "Durée",
+    "ur": "مدت",
+    "pt": "Duração"
+  },
+  "18 mins": {
+    "en": "18 mins",
+    "ar": "18 دقيقة",
+    "ru": "18 мин",
+    "ky": "18 мүн",
+    "fr": "18 min",
+    "ur": "18 منٹ",
+    "pt": "18 min"
+  },
+  "Distance": {
+    "en": "Distance",
+    "ar": "المسافة",
+    "ru": "Расстояние",
+    "ky": "Аралык",
+    "fr": "Distance",
+    "ur": "فاصلہ",
+    "pt": "Distância"
+  },
+  "4.2 miles": {
+    "en": "4.2 miles",
+    "ar": "4.2 ميل",
+    "ru": "4.2 мили",
+    "ky": "4.2 миль",
+    "fr": "4.2 milles",
+    "ur": "4.2 میل",
+    "pt": "4.2 milhas"
+  },
+  "Decline": {
+    "en": "Decline",
+    "ar": "رفض",
+    "ru": "Отклонить",
+    "ky": "Баш тартуу",
+    "fr": "Refuser",
+    "ur": "مسترد کریں",
+    "pt": "Recusar"
+  },
+  "Current Route": {
+    "en": "Current Route",
+    "ar": "المسار الحالي",
+    "ru": "Текущий маршрут",
+    "ky": "Учурдагы маршрут",
+    "fr": "Itinéraire actuel",
+    "ur": "موجودہ راستہ",
+    "pt": "Rota atual"
+  },
+  "Estimated Time: 28 mins": {
+    "en": "Estimated Time: 28 mins",
+    "ar": "الوقت المقدر: 28 دقيقة",
+    "ru": "Примерное время: 28 мин",
+    "ky": "Болжолдуу убакыт: 28 мүн",
+    "fr": "Temps estimé : 28 min",
+    "ur": "تخمینی وقت: 28 منٹ",
+    "pt": "Tempo estimado: 28 min"
+  },
+  "Pickup": {
+    "en": "Pickup",
+    "ar": "الالتقاط",
+    "ru": "Посадка",
+    "ky": "Алып кетүү",
+    "fr": "Prise en charge",
+    "ur": "پک اپ",
+    "pt": "Embarque"
+  },
+  "123 Main Street": {
+    "en": "123 Main Street",
+    "ar": "123 Main Street",
+    "ru": "123 Main Street",
+    "ky": "123 Main Street",
+    "fr": "123 Main Street",
+    "ur": "123 Main Street",
+    "pt": "123 Main Street"
+  },
+  "Dropoff": {
+    "en": "Dropoff",
+    "ar": "الإنزال",
+    "ru": "Высадка",
+    "ky": "Түшүрүү",
+    "fr": "Dépose",
+    "ur": "اتارنے کا مقام",
+    "pt": "Desembarque"
+  },
+  "456 Market Avenue": {
+    "en": "456 Market Avenue",
+    "ar": "456 Market Avenue",
+    "ru": "456 Market Avenue",
+    "ky": "456 Market Avenue",
+    "fr": "456 Market Avenue",
+    "ur": "456 Market Avenue",
+    "pt": "456 Market Avenue"
+  },
+  "Turn right on Oak Street in 0.2 miles": {
+    "en": "Turn right on Oak Street in 0.2 miles",
+    "ar": "انعطف يمينًا في Oak Street بعد 0.2 ميل",
+    "ru": "Поверните направо на Oak Street через 0.2 мили",
+    "ky": "0.2 мильден кийин Oak Street көчөсүнө оңго бурулуңуз",
+    "fr": "Tournez à droite sur Oak Street dans 0.2 mille",
+    "ur": "0.2 میل کے بعد Oak Street پر دائیں مڑیں",
+    "pt": "Vire à direita na Oak Street em 0.2 milhas"
+  },
+  "0.2 mi": {
+    "en": "0.2 mi",
+    "ar": "0.2 ميل",
+    "ru": "0.2 мили",
+    "ky": "0.2 миль",
+    "fr": "0.2 mille",
+    "ur": "0.2 میل",
+    "pt": "0.2 milha"
+  },
+  "Trip Details": {
+    "en": "Trip Details",
+    "ar": "تفاصيل الرحلة",
+    "ru": "Детали поездки",
+    "ky": "Сапардын чоо-жайы",
+    "fr": "Détails du trajet",
+    "ur": "سفر کی تفصیلات",
+    "pt": "Detalhes da viagem"
+  },
+  "Booking #RT58291": {
+    "en": "Booking #RT58291",
+    "ar": "حجز #RT58291",
+    "ru": "Бронь #RT58291",
+    "ky": "Брондоо #RT58291",
+    "fr": "Réservation #RT58291",
+    "ur": "بکنگ #RT58291",
+    "pt": "Reserva #RT58291"
+  },
+  "Passengers": {
+    "en": "Passengers",
+    "ar": "الركاب",
+    "ru": "Пассажиры",
+    "ky": "Жүргүнчүлөр",
+    "fr": "Passagers",
+    "ur": "مسافر",
+    "pt": "Passageiros"
+  },
+  "2 Adults, 1 Child": {
+    "en": "2 Adults, 1 Child",
+    "ar": "بالغان وطفل واحد",
+    "ru": "2 взрослых, 1 ребенок",
+    "ky": "2 чоң киши, 1 бала",
+    "fr": "2 adultes, 1 enfant",
+    "ur": "2 بالغ، 1 بچہ",
+    "pt": "2 adultos, 1 criança"
+  },
+  "Contact": {
+    "en": "Contact",
+    "ar": "تواصل",
+    "ru": "Контакт",
+    "ky": "Байланыш",
+    "fr": "Contact",
+    "ur": "رابطہ",
+    "pt": "Contato"
+  },
+  "Special Instructions": {
+    "en": "Special Instructions",
+    "ar": "تعليمات خاصة",
+    "ru": "Особые указания",
+    "ky": "Атайын көрсөтмөлөр",
+    "fr": "Instructions particulières",
+    "ur": "خصوصی ہدایات",
+    "pt": "Instruções especiais"
+  },
+  "Early check-in requested. Room preference: High floor with city view. Need extra towels.": {
+    "en": "Early check-in requested. Room preference: High floor with city view. Need extra towels.",
+    "ar": "تم طلب تسجيل وصول مبكر. تفضيل الغرفة: طابق مرتفع مع إطلالة على المدينة. نحتاج مناشف إضافية.",
+    "ru": "Запрошено раннее заселение. Предпочтение по номеру: высокий этаж с видом на город. Нужны дополнительные полотенца.",
+    "ky": "Эрте катталуу суралды. Бөлмө тандоосу: шаар көрүнүшү бар бийик кабат. Кошумча сүлгү керек.",
+    "fr": "Enregistrement anticipé demandé. Préférence de chambre : étage élevé avec vue sur la ville. Serviettes supplémentaires nécessaires.",
+    "ur": "جلد چیک ان کی درخواست ہے۔ کمرے کی ترجیح: شہر کے منظر کے ساتھ اونچی منزل۔ اضافی تولیے درکار ہیں۔",
+    "pt": "Entrada antecipada solicitada. Preferência de quarto: andar alto com vista para a cidade. Necessário toalhas extras."
+  },
+  "•••• •••• •••• 4891": {
+    "en": "•••• •••• •••• 4891",
+    "ar": "•••• •••• •••• 4891",
+    "ru": "•••• •••• •••• 4891",
+    "ky": "•••• •••• •••• 4891",
+    "fr": "•••• •••• •••• 4891",
+    "ur": "•••• •••• •••• 4891",
+    "pt": "•••• •••• •••• 4891"
+  },
+  "Estimated Time of Arrival": {
+    "en": "Estimated Time of Arrival",
+    "ar": "الوقت المقدر للوصول",
+    "ru": "Расчетное время прибытия",
+    "ky": "Болжолдуу келүү убактысы",
+    "fr": "Heure d'arrivée estimée",
+    "ur": "پہنچنے کا تخمینی وقت",
+    "pt": "Horário estimado de chegada"
+  },
+  "23 minutes": {
+    "en": "23 minutes",
+    "ar": "23 دقيقة",
+    "ru": "23 минуты",
+    "ky": "23 мүнөт",
+    "fr": "23 minutes",
+    "ur": "23 منٹ",
+    "pt": "23 minutos"
+  },
+  "Start Navigation": {
+    "en": "Start Navigation",
+    "ar": "بدء الملاحة",
+    "ru": "Начать навигацию",
+    "ky": "Багыттоону баштоо",
+    "fr": "Démarrer la navigation",
+    "ur": "رہنمائی شروع کریں",
+    "pt": "Iniciar navegação"
+  },
+  "Contact Passenger": {
+    "en": "Contact Passenger",
+    "ar": "التواصل مع الراكب",
+    "ru": "Связаться с пассажиром",
+    "ky": "Жүргүнчү менен байланышуу",
+    "fr": "Contacter le passager",
+    "ur": "مسافر سے رابطہ کریں",
+    "pt": "Contatar o passageiro"
+  },
+  "Cancel Trip": {
+    "en": "Cancel Trip",
+    "ar": "إلغاء الرحلة",
+    "ru": "Отменить поездку",
+    "ky": "Сапарды жокко чыгаруу",
+    "fr": "Annuler le trajet",
+    "ur": "سفر منسوخ کریں",
+    "pt": "Cancelar viagem"
+  },
+  "Today's Earnings": {
+    "en": "Today's Earnings",
+    "ar": "أرباح اليوم",
+    "ru": "Заработок за сегодня",
+    "ky": "Бүгүнкү киреше",
+    "fr": "Gains du jour",
+    "ur": "آج کی کمائی",
+    "pt": "Ganhos de hoje"
+  },
+  "\\$187.50": {
+    "en": "\\$187.50",
+    "ar": "\\$187.50",
+    "ru": "\\$187.50",
+    "ky": "\\$187.50",
+    "fr": "\\$187.50",
+    "ur": "\\$187.50",
+    "pt": "\\$187.50"
+  },
+  "Trips Completed": {
+    "en": "Trips Completed",
+    "ar": "الرحلات المكتملة",
+    "ru": "Завершенные поездки",
+    "ky": "Аяктаган сапарлар",
+    "fr": "Trajets terminés",
+    "ur": "مکمل سفر",
+    "pt": "Viagens concluídas"
+  },
+  "6h 23m": {
+    "en": "6h 23m",
+    "ar": "6 س 23 د",
+    "ru": "6 ч 23 мин",
+    "ky": "6 саат 23 мүн",
+    "fr": "6 h 23 min",
+    "ur": "6 گھنٹے 23 منٹ",
+    "pt": "6 h 23 min"
+  },
+  "Time Online": {
+    "en": "Time Online",
+    "ar": "مدة الاتصال",
+    "ru": "Время в сети",
+    "ky": "Байланыштагы убакыт",
+    "fr": "Temps en ligne",
+    "ur": "آن لائن وقت",
+    "pt": "Tempo conectado"
+  },
+  "Driver Information": {
+    "en": "Driver Information",
+    "ar": "معلومات السائق",
+    "ru": "Информация о водителе",
+    "ky": "Айдоочу тууралуу маалымат",
+    "fr": "Informations du conducteur",
+    "ur": "ڈرائیور کی معلومات",
+    "pt": "Informações do motorista"
+  },
+  "* Required fields": {
+    "en": "* Required fields",
+    "ar": "* حقول مطلوبة",
+    "ru": "* Обязательные поля",
+    "ky": "* Милдеттүү талаалар",
+    "fr": "* Champs obligatoires",
+    "ur": "* لازمی خانے",
+    "pt": "* Campos obrigatórios"
+  },
+  "Identity Number *": {
+    "en": "Identity Number *",
+    "ar": "رقم الهوية *",
+    "ru": "Номер удостоверения *",
+    "ky": "Инсандык номери *",
+    "fr": "Numéro d'identité *",
+    "ur": "شناختی نمبر *",
+    "pt": "Número de identidade *"
+  },
+  "National ID or Residence Number": {
+    "en": "National ID or Residence Number",
+    "ar": "رقم الهوية الوطنية أو الإقامة",
+    "ru": "Номер национального удостоверения или вида на жительство",
+    "ky": "Улуттук күбөлүк же жашоого уруксат номери",
+    "fr": "Numéro d'identité nationale ou de résidence",
+    "ur": "قومی شناخت یا رہائش نمبر",
+    "pt": "Número de identidade nacional ou de residência"
+  },
+  "Full Name *": {
+    "en": "Full Name *",
+    "ar": "الاسم الكامل *",
+    "ru": "Полное имя *",
+    "ky": "Толук аты-жөнү *",
+    "fr": "Nom complet *",
+    "ur": "پورا نام *",
+    "pt": "Nome completo *"
+  },
+  "Enter your full name": {
+    "en": "Enter your full name",
+    "ar": "أدخل اسمك الكامل",
+    "ru": "Введите ваше полное имя",
+    "ky": "Толук аты-жөнүңүздү киргизиңиз",
+    "fr": "Saisissez votre nom complet",
+    "ur": "اپنا پورا نام درج کریں",
+    "pt": "Digite seu nome completo"
+  },
+  "Date of Birth (Hijri) *": {
+    "en": "Date of Birth (Hijri) *",
+    "ar": "تاريخ الميلاد (هجري) *",
+    "ru": "Дата рождения (хиджра) *",
+    "ky": "Туулган күнү (хижрий) *",
+    "fr": "Date de naissance (hégirienne) *",
+    "ur": "تاریخ پیدائش (ہجری) *",
+    "pt": "Data de nascimento (hijri) *"
+  },
+  "Day": {
+    "en": "Day",
+    "ar": "اليوم",
+    "ru": "День",
+    "ky": "Күн",
+    "fr": "Jour",
+    "ur": "دن",
+    "pt": "Dia"
+  },
+  "DD": {
+    "en": "DD",
+    "ar": "يي",
+    "ru": "ДД",
+    "ky": "КК",
+    "fr": "JJ",
+    "ur": "دن",
+    "pt": "DD"
+  },
+  "Month": {
+    "en": "Month",
+    "ar": "الشهر",
+    "ru": "Месяц",
+    "ky": "Ай",
+    "fr": "Mois",
+    "ur": "مہینہ",
+    "pt": "Mês"
+  },
+  "MM": {
+    "en": "MM",
+    "ar": "شش",
+    "ru": "ММ",
+    "ky": "АА",
+    "fr": "MM",
+    "ur": "مہینہ",
+    "pt": "MM"
+  },
+  "Year": {
+    "en": "Year",
+    "ar": "السنة",
+    "ru": "Год",
+    "ky": "Жыл",
+    "fr": "Année",
+    "ur": "سال",
+    "pt": "Ano"
+  },
+  "YYYY": {
+    "en": "YYYY",
+    "ar": "سسسس",
+    "ru": "ГГГГ",
+    "ky": "ЖЖЖЖ",
+    "fr": "AAAA",
+    "ur": "سال",
+    "pt": "AAAA"
+  },
+  "Email Address *": {
+    "en": "Email Address *",
+    "ar": "البريد الإلكتروني *",
+    "ru": "Адрес электронной почты *",
+    "ky": "Электрондук почта дареги *",
+    "fr": "Adresse e-mail *",
+    "ur": "ای میل پتہ *",
+    "pt": "Endereço de e-mail *"
+  },
+  "example@email.com": {
+    "en": "example@email.com",
+    "ar": "example@email.com",
+    "ru": "example@email.com",
+    "ky": "example@email.com",
+    "fr": "example@email.com",
+    "ur": "example@email.com",
+    "pt": "example@email.com"
+  },
+  "Mobile Number *": {
+    "en": "Mobile Number *",
+    "ar": "رقم الجوال *",
+    "ru": "Номер мобильного телефона *",
+    "ky": "Мобилдик номер *",
+    "fr": "Numéro de mobile *",
+    "ur": "موبائل نمبر *",
+    "pt": "Número de celular *"
+  },
+  "+9665XXXXXXXX": {
+    "en": "+9665XXXXXXXX",
+    "ar": "+9665XXXXXXXX",
+    "ru": "+9665XXXXXXXX",
+    "ky": "+9665XXXXXXXX",
+    "fr": "+9665XXXXXXXX",
+    "ur": "+9665XXXXXXXX",
+    "pt": "+9665XXXXXXXX"
+  },
+  "Vehicle Serial Number *": {
+    "en": "Vehicle Serial Number *",
+    "ar": "الرقم التسلسلي للمركبة *",
+    "ru": "Серийный номер транспортного средства *",
+    "ky": "Унаанын сериялык номери *",
+    "fr": "Numéro de série du véhicule *",
+    "ur": "گاڑی کا سیریل نمبر *",
+    "pt": "Número de série do veículo *"
+  },
+  "أدخل اسم السيارة مثلا: كامري": {
+    "en": "Enter the car name, for example: Camry",
+    "ar": "أدخل اسم السيارة مثلا: كامري",
+    "ru": "Введите название автомобиля, например: Camry",
+    "ky": "Унаанын атын киргизиңиз, мисалы: Camry",
+    "fr": "Saisissez le nom de la voiture, par exemple : Camry",
+    "ur": "گاڑی کا نام درج کریں، مثلاً: Camry",
+    "pt": "Digite o nome do carro, por exemplo: Camry"
+  },
+  "Enter vehicle serial number": {
+    "en": "Enter vehicle serial number",
+    "ar": "أدخل الرقم التسلسلي للمركبة",
+    "ru": "Введите серийный номер транспортного средства",
+    "ky": "Унаанын сериялык номерин киргизиңиз",
+    "fr": "Saisissez le numéro de série du véhicule",
+    "ur": "گاڑی کا سیریل نمبر درج کریں",
+    "pt": "Digite o número de série do veículo"
+  },
+  "License Plate *": {
+    "en": "License Plate *",
+    "ar": "لوحة المركبة *",
+    "ru": "Номерной знак *",
+    "ky": "Мамлекеттик номур *",
+    "fr": "Plaque d'immatriculation *",
+    "ur": "نمبر پلیٹ *",
+    "pt": "Placa *"
+  },
+  "Right": {
+    "en": "Right",
+    "ar": "يمين",
+    "ru": "Правая",
+    "ky": "Оң",
+    "fr": "Droite",
+    "ur": "دائیں",
+    "pt": "Direita"
+  },
+  "د": {
+    "en": "د",
+    "ar": "د",
+    "ru": "د",
+    "ky": "د",
+    "fr": "د",
+    "ur": "د",
+    "pt": "د"
+  },
+  "Middle": {
+    "en": "Middle",
+    "ar": "وسط",
+    "ru": "Средняя",
+    "ky": "Орто",
+    "fr": "Milieu",
+    "ur": "درمیان",
+    "pt": "Meio"
+  },
+  "ص": {
+    "en": "ص",
+    "ar": "ص",
+    "ru": "ص",
+    "ky": "ص",
+    "fr": "ص",
+    "ur": "ص",
+    "pt": "ص"
+  },
+  "Left": {
+    "en": "Left",
+    "ar": "يسار",
+    "ru": "Левая",
+    "ky": "Сол",
+    "fr": "Gauche",
+    "ur": "بائیں",
+    "pt": "Esquerda"
+  },
+  "ع": {
+    "en": "ع",
+    "ar": "ع",
+    "ru": "ع",
+    "ky": "ع",
+    "fr": "ع",
+    "ur": "ع",
+    "pt": "ع"
+  },
+  "Plate Number *": {
+    "en": "Plate Number *",
+    "ar": "رقم اللوحة *",
+    "ru": "Номер знака *",
+    "ky": "Номурдун саны *",
+    "fr": "Numéro de plaque *",
+    "ur": "پلیٹ نمبر *",
+    "pt": "Número da placa *"
+  },
+  "Enter plate number": {
+    "en": "Enter plate number",
+    "ar": "أدخل رقم اللوحة",
+    "ru": "Введите номер знака",
+    "ky": "Номурдун санын киргизиңиз",
+    "fr": "Saisissez le numéro de plaque",
+    "ur": "پلیٹ نمبر درج کریں",
+    "pt": "Digite o número da placa"
+  },
+  "Register": {
+    "en": "Register",
+    "ar": "تسجيل",
+    "ru": "Регистрация",
+    "ky": "Катталуу",
+    "fr": "S'inscrire",
+    "ur": "رجسٹر کریں",
+    "pt": "Registrar"
+  },
+  "لوحة السيارة": {
+    "en": "Vehicle plate",
+    "ar": "لوحة السيارة",
+    "ru": "Номерной знак автомобиля",
+    "ky": "Унаанын номур белгиси",
+    "fr": "Plaque du véhicule",
+    "ur": "گاڑی کی پلیٹ",
+    "pt": "Placa do veículo"
+  },
+  "ب ي س": {
+    "en": "ب ي س",
+    "ar": "ب ي س",
+    "ru": "ب ي س",
+    "ky": "ب ي س",
+    "fr": "ب ي س",
+    "ur": "ب ي س",
+    "pt": "ب ي س"
+  },
+  "٤٥٧٨": {
+    "en": "٤٥٧٨",
+    "ar": "٤٥٧٨",
+    "ru": "٤٥٧٨",
+    "ky": "٤٥٧٨",
+    "fr": "٤٥٧٨",
+    "ur": "٤٥٧٨",
+    "pt": "٤٥٧٨"
+  },
+  "المملكة العربية السعودية": {
+    "en": "Kingdom of Saudi Arabia",
+    "ar": "المملكة العربية السعودية",
+    "ru": "Королевство Саудовская Аравия",
+    "ky": "Сауд Арабия Королдугу",
+    "fr": "Royaume d'Arabie saoudite",
+    "ur": "مملکت سعودی عرب",
+    "pt": "Reino da Arábia Saudita"
+  },
+  "ع ط ر": {
+    "en": "ع ط ر",
+    "ar": "ع ط ر",
+    "ru": "ع ط ر",
+    "ky": "ع ط ر",
+    "fr": "ع ط ر",
+    "ur": "ع ط ر",
+    "pt": "ع ط ر"
+  },
+  "١٢٣٤": {
+    "en": "١٢٣٤",
+    "ar": "١٢٣٤",
+    "ru": "١٢٣٤",
+    "ky": "١٢٣٤",
+    "fr": "١٢٣٤",
+    "ur": "١٢٣٤",
+    "pt": "١٢٣٤"
+  },
+  "Page Title": {
+    "en": "Page Title",
+    "ar": "عنوان الصفحة",
+    "ru": "Название страницы",
+    "ky": "Барактын аталышы",
+    "fr": "Titre de la page",
+    "ur": "صفحے کا عنوان",
+    "pt": "Título da página"
+  },
+  "This account is inactive. For further assistance, please contact customer support.": {
+    "en": "This account is inactive. For further assistance, please contact customer support.",
+    "ar": "هذا الحساب غير نشط. لمزيد من المساعدة، يرجى التواصل مع دعم العملاء.",
+    "ru": "Эта учетная запись неактивна. Для дальнейшей помощи обратитесь в службу поддержки.",
+    "ky": "Бул аккаунт активдүү эмес. Кошумча жардам үчүн кардарларды колдоо кызматына кайрылыңыз.",
+    "fr": "Ce compte est inactif. Pour obtenir de l'aide, veuillez contacter le service client.",
+    "ur": "یہ اکاؤنٹ غیر فعال ہے۔ مزید مدد کے لیے براہ کرم کسٹمر سپورٹ سے رابطہ کریں۔",
+    "pt": "Esta conta está inativa. Para mais ajuda, entre em contato com o suporte ao cliente."
+  },
+  "You cannot view new orders until the current order is completed.": {
+    "en": "You cannot view new orders until the current order is completed.",
+    "ar": "لا يمكنك عرض الطلبات الجديدة حتى يكتمل الطلب الحالي.",
+    "ru": "Вы не можете просматривать новые заказы, пока текущий заказ не завершен.",
+    "ky": "Учурдагы буйрутма бүтмөйүнчө жаңы буйрутмаларды көрө албайсыз.",
+    "fr": "Vous ne pouvez pas voir les nouvelles commandes tant que la commande en cours n'est pas terminée.",
+    "ur": "موجودہ آرڈر مکمل ہونے تک آپ نئے آرڈرز نہیں دیکھ سکتے۔",
+    "pt": "Você não pode ver novos pedidos até que o pedido atual seja concluído."
+  },
+  "View order": {
+    "en": "View order",
+    "ar": "عرض الطلب",
+    "ru": "Просмотреть заказ",
+    "ky": "Буйрутманы көрүү",
+    "fr": "Voir la commande",
+    "ur": "آرڈر دیکھیں",
+    "pt": "Ver pedido"
+  },
+  "Total Earnings": {
+    "en": "Total Earnings",
+    "ar": "إجمالي الأرباح",
+    "ru": "Общий заработок",
+    "ky": "Жалпы киреше",
+    "fr": "Gains totaux",
+    "ur": "کل کمائی",
+    "pt": "Ganhos totais"
+  },
+  "Michael Chen": {
+    "en": "Michael Chen",
+    "ar": "Michael Chen",
+    "ru": "Michael Chen",
+    "ky": "Michael Chen",
+    "fr": "Michael Chen",
+    "ur": "Michael Chen",
+    "pt": "Michael Chen"
+  },
+  "Hours: 6": {
+    "en": "Hours: 6",
+    "ar": "الساعات: 6",
+    "ru": "Часы: 6",
+    "ky": "Сааттар: 6",
+    "fr": "Heures : 6",
+    "ur": "گھنٹے: 6",
+    "pt": "Horas: 6"
+  },
+  "Destinations: 3": {
+    "en": "Destinations: 3",
+    "ar": "الوجهات: 3",
+    "ru": "Назначения: 3",
+    "ky": "Багыттар: 3",
+    "fr": "Destinations : 3",
+    "ur": "منزلیں: 3",
+    "pt": "Destinos: 3"
+  },
+  "\\$225": {
+    "en": "\\$225",
+    "ar": "\\$225",
+    "ru": "\\$225",
+    "ky": "\\$225",
+    "fr": "\\$225",
+    "ur": "\\$225",
+    "pt": "\\$225"
+  },
+  "April 29, 2025 - 10:15 AM": {
+    "en": "April 29, 2025 - 10:15 AM",
+    "ar": "29 أبريل 2025 - 10:15 ص",
+    "ru": "29 апреля 2025 - 10:15",
+    "ky": "29-апрель 2025 - 10:15",
+    "fr": "29 avril 2025 - 10:15",
+    "ur": "29 اپریل 2025 - 10:15 صبح",
+    "pt": "29 de abril de 2025 - 10:15"
+  },
+  "Emily Rodriguez": {
+    "en": "Emily Rodriguez",
+    "ar": "Emily Rodriguez",
+    "ru": "Emily Rodriguez",
+    "ky": "Emily Rodriguez",
+    "fr": "Emily Rodriguez",
+    "ur": "Emily Rodriguez",
+    "pt": "Emily Rodriguez"
+  },
+  "Hours: 3": {
+    "en": "Hours: 3",
+    "ar": "الساعات: 3",
+    "ru": "Часы: 3",
+    "ky": "Сааттар: 3",
+    "fr": "Heures : 3",
+    "ur": "گھنٹے: 3",
+    "pt": "Horas: 3"
+  },
+  "Destinations: 1": {
+    "en": "Destinations: 1",
+    "ar": "الوجهات: 1",
+    "ru": "Назначения: 1",
+    "ky": "Багыттар: 1",
+    "fr": "Destinations : 1",
+    "ur": "منزلیں: 1",
+    "pt": "Destinos: 1"
+  },
+  "\\$112": {
+    "en": "\\$112",
+    "ar": "\\$112",
+    "ru": "\\$112",
+    "ky": "\\$112",
+    "fr": "\\$112",
+    "ur": "\\$112",
+    "pt": "\\$112"
+  },
+  "April 30, 2025 - 4:45 PM": {
+    "en": "April 30, 2025 - 4:45 PM",
+    "ar": "30 أبريل 2025 - 4:45 م",
+    "ru": "30 апреля 2025 - 16:45",
+    "ky": "30-апрель 2025 - 16:45",
+    "fr": "30 avril 2025 - 16:45",
+    "ur": "30 اپریل 2025 - 4:45 شام",
+    "pt": "30 de abril de 2025 - 16:45"
+  },
+  "Details": {
+    "en": "Details",
+    "ar": "التفاصيل",
+    "ru": "Подробности",
+    "ky": "Чоо-жайы",
+    "fr": "Détails",
+    "ur": "تفصیلات",
+    "pt": "Detalhes"
+  },
+  "Completed requests": {
+    "en": "Completed requests",
+    "ar": "الطلبات المكتملة",
+    "ru": "Завершенные заявки",
+    "ky": "Аяктаган өтүнмөлөр",
+    "fr": "Demandes terminées",
+    "ur": "مکمل درخواستیں",
+    "pt": "Solicitações concluídas"
+  },
+  "Driver registration": {
+    "en": "Driver registration",
+    "ar": "تسجيل السائق",
+    "ru": "Регистрация водителя",
+    "ky": "Айдоочуну каттоо",
+    "fr": "Inscription du conducteur",
+    "ur": "ڈرائیور کی رجسٹریشن",
+    "pt": "Cadastro do motorista"
+  },
+  "ID number": {
+    "en": "ID number",
+    "ar": "رقم الهوية",
+    "ru": "Номер удостоверения",
+    "ky": "Инсандык номери",
+    "fr": "Numéro d'identité",
+    "ur": "شناختی نمبر",
+    "pt": "Número de identidade"
+  },
+  "مثلا كامري": {
+    "en": "For example, Camry",
+    "ar": "مثلا كامري",
+    "ru": "Например, Camry",
+    "ky": "Мисалы, Camry",
+    "fr": "Par exemple, Camry",
+    "ur": "مثلاً Camry",
+    "pt": "Por exemplo, Camry"
+  },
+  "Model": {
+    "en": "Model",
+    "ar": "الطراز",
+    "ru": "Модель",
+    "ky": "Үлгү",
+    "fr": "Modèle",
+    "ur": "ماڈل",
+    "pt": "Modelo"
+  },
+  "مثال: 2025": {
+    "en": "Example: 2025",
+    "ar": "مثال: 2025",
+    "ru": "Пример: 2025",
+    "ky": "Мисал: 2025",
+    "fr": "Exemple : 2025",
+    "ur": "نمونہ: 2025",
+    "pt": "Exemplo: 2025"
+  },
+  "نوع السيارة": {
+    "en": "Vehicle type",
+    "ar": "نوع السيارة",
+    "ru": "Тип автомобиля",
+    "ky": "Унаанын түрү",
+    "fr": "Type de véhicule",
+    "ur": "گاڑی کی قسم",
+    "pt": "Tipo de veículo"
+  },
+  "Upload Documents": {
+    "en": "Upload Documents",
+    "ar": "رفع المستندات",
+    "ru": "Загрузить документы",
+    "ky": "Документтерди жүктөө",
+    "fr": "Téléverser les documents",
+    "ur": "دستاویزات اپ لوڈ کریں",
+    "pt": "Enviar documentos"
+  },
+  "Personal Photo": {
+    "en": "Personal Photo",
+    "ar": "الصورة الشخصية",
+    "ru": "Личное фото",
+    "ky": "Жеке сүрөт",
+    "fr": "Photo personnelle",
+    "ur": "ذاتی تصویر",
+    "pt": "Foto pessoal"
+  },
+  "Driver's License": {
+    "en": "Driver's License",
+    "ar": "رخصة القيادة",
+    "ru": "Водительское удостоверение",
+    "ky": "Айдоочулук күбөлүк",
+    "fr": "Permis de conduire",
+    "ur": "ڈرائیونگ لائسنس",
+    "pt": "Carteira de motorista"
+  },
+  "To continue receiving orders, please activate your account through the General Transport Authority.": {
+    "en": "To continue receiving orders, please activate your account through the General Transport Authority.",
+    "ar": "لمواصلة استلام الطلبات، يرجى تفعيل حسابك عبر الهيئة العامة للنقل.",
+    "ru": "Чтобы продолжать получать заказы, активируйте учетную запись через Генеральное управление транспорта.",
+    "ky": "Буйрутмаларды алууну улантуу үчүн аккаунтуңузду Транспорт боюнча башкы башкармалык аркылуу активдештириңиз.",
+    "fr": "Pour continuer à recevoir des commandes, veuillez activer votre compte auprès de l'Autorité générale des transports.",
+    "ur": "آرڈرز وصول کرتے رہنے کے لیے براہ کرم جنرل ٹرانسپورٹ اتھارٹی کے ذریعے اپنا اکاؤنٹ فعال کریں۔",
+    "pt": "Para continuar recebendo pedidos, ative sua conta pela Autoridade Geral de Transportes."
+  },
+  "Account Activation": {
+    "en": "Account Activation",
+    "ar": "تفعيل الحساب",
+    "ru": "Активация учетной записи",
+    "ky": "Аккаунтту иштетүү",
+    "fr": "Activation du compte",
+    "ur": "اکاؤنٹ فعال کرنا",
+    "pt": "Ativação da conta"
+  },
+  "Check your registration": {
+    "en": "Check your registration",
+    "ar": "تحقق من تسجيلك",
+    "ru": "Проверьте свою регистрацию",
+    "ky": "Катталууңузду текшериңиз",
+    "fr": "Vérifiez votre inscription",
+    "ur": "اپنی رجسٹریشن چیک کریں",
+    "pt": "Verifique seu cadastro"
+  },
+  "Orders": {
+    "en": "Orders",
+    "ar": "الطلبات",
+    "ru": "Заказы",
+    "ky": "Буйрутмалар",
+    "fr": "Commandes",
+    "ur": "آرڈرز",
+    "pt": "Pedidos"
+  },
+  "Active": {
+    "en": "Active",
+    "ar": "نشط",
+    "ru": "Активный",
+    "ky": "Активдүү",
+    "fr": "Actif",
+    "ur": "چالو",
+    "pt": "Ativo"
+  },
+  "Finance / Wallet": {
+    "en": "Finance / Wallet",
+    "ar": "المالية / المحفظة",
+    "ru": "Финансы / Кошелек",
+    "ky": "Каржы / Капчык",
+    "fr": "Finances / Portefeuille",
+    "ur": "مالیات / بٹوا",
+    "pt": "Finanças / Carteira"
+  },
+  "Electronic payment obligations": {
+    "en": "Electronic payment obligations",
+    "ar": "التزامات الدفع الإلكتروني",
+    "ru": "Обязательства по электронным платежам",
+    "ky": "Электрондук төлөм милдеттенмелери",
+    "fr": "Obligations de paiement électronique",
+    "ur": "الیکٹرانک ادائیگی کی ذمہ داریاں",
+    "pt": "Obrigações de pagamento eletrônico"
+  },
+  "Request payment now": {
+    "en": "Request payment now",
+    "ar": "اطلب الدفع الآن",
+    "ru": "Запросить выплату сейчас",
+    "ky": "Төлөмдү азыр сураңыз",
+    "fr": "Demander le paiement maintenant",
+    "ur": "ابھی ادائیگی کی درخواست کریں",
+    "pt": "Solicitar pagamento agora"
+  },
+  "Please add a bank account to request your payouts.": {
+    "en": "Please add a bank account to request your payouts.",
+    "ar": "يرجى إضافة حساب بنكي لطلب مستحقاتك.",
+    "ru": "Добавьте банковский счет, чтобы запросить выплаты.",
+    "ky": "Төлөмдөрдү суроо үчүн банк эсебин кошуңуз.",
+    "fr": "Veuillez ajouter un compte bancaire pour demander vos versements.",
+    "ur": "اپنی ادائیگیوں کی درخواست کے لیے براہ کرم بینک اکاؤنٹ شامل کریں۔",
+    "pt": "Adicione uma conta bancária para solicitar seus pagamentos."
+  },
+  "Unpaid app commissions": {
+    "en": "Unpaid app commissions",
+    "ar": "عمولات التطبيق غير المدفوعة",
+    "ru": "Неоплаченные комиссии приложения",
+    "ky": "Төлөнбөгөн колдонмо комиссиялары",
+    "fr": "Commissions de l'application impayées",
+    "ur": "ایپ کی ادا نہ ہونے والی کمیشن",
+    "pt": "Comissões do aplicativo não pagas"
+  },
+  "This amount is due. Please pay the outstanding commissions in the Touri Driver app.": {
+    "en": "This amount is due. Please pay the outstanding commissions in the Touri Driver app.",
+    "ar": "هذا المبلغ مستحق. يرجى دفع العمولات المستحقة في تطبيق Touri Driver.",
+    "ru": "Эта сумма подлежит оплате. Пожалуйста, оплатите невыплаченные комиссии в приложении Touri Driver.",
+    "ky": "Бул сумма төлөнүүгө тийиш. Калган комиссияларды Touri Driver колдонмосунда төлөңүз.",
+    "fr": "Ce montant est dû. Veuillez régler les commissions impayées dans l'application Touri Driver.",
+    "ur": "یہ رقم واجب الادا ہے۔ براہ کرم Touri Driver ایپ میں بقایا کمیشن ادا کریں۔",
+    "pt": "Este valor está em aberto. Pague as comissões pendentes no aplicativo Touri Driver."
+  },
+  "Pay commissions now": {
+    "en": "Pay commissions now",
+    "ar": "ادفع العمولات الآن",
+    "ru": "Оплатить комиссии сейчас",
+    "ky": "Комиссияларды азыр төлөө",
+    "fr": "Payer les commissions maintenant",
+    "ur": "ابھی کمیشن ادا کریں",
+    "pt": "Pagar comissões agora"
+  },
+  "Bank Account Information": {
+    "en": "Bank Account Information",
+    "ar": "معلومات الحساب البنكي",
+    "ru": "Данные банковского счета",
+    "ky": "Банк эсебинин маалыматы",
+    "fr": "Informations du compte bancaire",
+    "ur": "بینک اکاؤنٹ کی معلومات",
+    "pt": "Informações da conta bancária"
+  },
+  "Bank Name:": {
+    "en": "Bank Name:",
+    "ar": "اسم البنك:",
+    "ru": "Название банка:",
+    "ky": "Банктын аты:",
+    "fr": "Nom de la banque :",
+    "ur": "بینک کا نام:",
+    "pt": "Nome do banco:"
+  },
+  "Account Number:": {
+    "en": "Account Number:",
+    "ar": "رقم الحساب:",
+    "ru": "Номер счета:",
+    "ky": "Эсеп номери:",
+    "fr": "Numéro de compte :",
+    "ur": "اکاؤنٹ نمبر:",
+    "pt": "Número da conta:"
+  },
+  "IBAN:": {
+    "en": "IBAN:",
+    "ar": "IBAN:",
+    "ru": "IBAN:",
+    "ky": "IBAN:",
+    "fr": "IBAN:",
+    "ur": "IBAN:",
+    "pt": "IBAN:"
+  },
+  "Account Holder:": {
+    "en": "Account Holder:",
+    "ar": "صاحب الحساب:",
+    "ru": "Владелец счета:",
+    "ky": "Эсеп ээси:",
+    "fr": "Titulaire du compte :",
+    "ur": "اکاؤنٹ کا مالک:",
+    "pt": "Titular da conta:"
+  },
+  "Transfer Confirmation Form": {
+    "en": "Transfer Confirmation Form",
+    "ar": "نموذج تأكيد التحويل",
+    "ru": "Форма подтверждения перевода",
+    "ky": "Которууну тастыктоо формасы",
+    "fr": "Formulaire de confirmation de virement",
+    "ur": "منتقلی کی تصدیق کا فارم",
+    "pt": "Formulário de confirmação de transferência"
+  },
+  "Sender's Name": {
+    "en": "Sender's Name",
+    "ar": "اسم المرسل",
+    "ru": "Имя отправителя",
+    "ky": "Жөнөтүүчүнүн аты",
+    "fr": "Nom de l'expéditeur",
+    "ur": "بھیجنے والے کا نام",
+    "pt": "Nome do remetente"
+  },
+  "Sending Bank": {
+    "en": "Sending Bank",
+    "ar": "البنك المرسل",
+    "ru": "Банк отправителя",
+    "ky": "Жөнөтүүчү банк",
+    "fr": "Banque émettrice",
+    "ur": "بھیجنے والا بینک",
+    "pt": "Banco de origem"
+  },
+  "Transferred Amount": {
+    "en": "Transferred Amount",
+    "ar": "المبلغ المحول",
+    "ru": "Переведенная сумма",
+    "ky": "Которулган сумма",
+    "fr": "Montant transféré",
+    "ur": "منتقل شدہ رقم",
+    "pt": "Valor transferido"
+  },
+  "Additional Notes (optional)": {
+    "en": "Additional Notes (optional)",
+    "ar": "ملاحظات إضافية (اختياري)",
+    "ru": "Дополнительные примечания (необязательно)",
+    "ky": "Кошумча эскертүүлөр (милдеттүү эмес)",
+    "fr": "Notes supplémentaires (facultatif)",
+    "ur": "اضافی نوٹ (اختیاری)",
+    "pt": "Observações adicionais (opcional)"
+  },
+  "Submit Transfer Confirmation": {
+    "en": "Submit Transfer Confirmation",
+    "ar": "إرسال تأكيد التحويل",
+    "ru": "Отправить подтверждение перевода",
+    "ky": "Которуунун тастыктоосун жөнөтүү",
+    "fr": "Envoyer la confirmation de virement",
+    "ur": "منتقلی کی تصدیق جمع کروائیں",
+    "pt": "Enviar confirmação da transferência"
+  },
+  "Transfer Confirmation": {
+    "en": "Transfer Confirmation",
+    "ar": "تأكيد التحويل",
+    "ru": "Подтверждение перевода",
+    "ky": "Которууну тастыктоо",
+    "fr": "Confirmation de virement",
+    "ur": "منتقلی کی تصدیق",
+    "pt": "Confirmação da transferência"
+  },
+  "The customer is currently waiting for you. Please proceed to their location.\\n": {
+    "en": "The customer is currently waiting for you. Please proceed to their location.\\n",
+    "ar": "العميل في انتظارك حاليًا. يرجى التوجه إلى موقعه.\\n",
+    "ru": "Клиент сейчас ожидает вас. Пожалуйста, направьтесь к его местоположению.\\n",
+    "ky": "Кардар азыр сизди күтүп жатат. Сураныч, анын жайгашкан жерине барыңыз.\\n",
+    "fr": "Le client vous attend actuellement. Veuillez vous rendre à son emplacement.\\n",
+    "ur": "گاہک اس وقت آپ کا انتظار کر رہا ہے۔ براہ کرم اس کے مقام کی طرف جائیں۔\\n",
+    "pt": "O cliente está aguardando você. Por favor, dirija-se ao local dele.\\n"
+  },
+  "Trip Notes": {
+    "en": "Trip Notes",
+    "ar": "ملاحظات الرحلة",
+    "ru": "Заметки о поездке",
+    "ky": "Сапар боюнча эскертүүлөр",
+    "fr": "Notes du trajet",
+    "ur": "سفر کے نوٹ",
+    "pt": "Notas da viagem"
+  },
+  "If the customer does not arrive within 10 minutes, you may cancel the trip.": {
+    "en": "If the customer does not arrive within 10 minutes, you may cancel the trip.",
+    "ar": "إذا لم يصل العميل خلال 10 دقائق، يمكنك إلغاء الرحلة.",
+    "ru": "Если клиент не прибудет в течение 10 минут, вы можете отменить поездку.",
+    "ky": "Эгер кардар 10 мүнөттүн ичинде келбесе, сапарды жокко чыгарсаңыз болот.",
+    "fr": "Si le client n'arrive pas dans les 10 minutes, vous pouvez annuler le trajet.",
+    "ur": "اگر گاہک 10 منٹ کے اندر نہ پہنچے تو آپ سفر منسوخ کر سکتے ہیں۔",
+    "pt": "Se o cliente não chegar em 10 minutos, você pode cancelar a viagem."
+  },
+  "Time Remaining:": {
+    "en": "Time Remaining:",
+    "ar": "الوقت المتبقي:",
+    "ru": "Оставшееся время:",
+    "ky": "Калган убакыт:",
+    "fr": "Temps restant :",
+    "ur": "باقی وقت:",
+    "pt": "Tempo restante:"
+  },
+  "Update Time": {
+    "en": "Update Time",
+    "ar": "تحديث الوقت",
+    "ru": "Обновить время",
+    "ky": "Убакытты жаңыртуу",
+    "fr": "Mettre à jour l'heure",
+    "ur": "وقت کی تازہ کاری کریں",
+    "pt": "Atualizar horário"
+  },
+  "Trip ends at:": {
+    "en": "Trip ends at:",
+    "ar": "تنتهي الرحلة في:",
+    "ru": "Поездка заканчивается в:",
+    "ky": "Сапар аяктайт:",
+    "fr": "Le trajet se termine à :",
+    "ur": "سفر ختم ہونے کا وقت:",
+    "pt": "A viagem termina às:"
+  },
+  "وقت الرحلة": {
+    "en": "Trip time",
+    "ar": "وقت الرحلة",
+    "ru": "Время поездки",
+    "ky": "Сапар убактысы",
+    "fr": "Heure du trajet",
+    "ur": "سفر کا وقت",
+    "pt": "Horário da viagem"
+  },
+  "to Customer Location": {
+    "en": "to Customer Location",
+    "ar": "إلى موقع العميل",
+    "ru": "к местоположению клиента",
+    "ky": "кардардын жайгашкан жерине",
+    "fr": "vers la position du client",
+    "ur": "گاہک کے مقام کی طرف",
+    "pt": "até a localização do cliente"
+  },
+  "Site Visited": {
+    "en": "Site Visited",
+    "ar": "تمت زيارة الموقع",
+    "ru": "Место посещено",
+    "ky": "Жерге барылды",
+    "fr": "Lieu visité",
+    "ur": "جگہ دیکھ لی گئی",
+    "pt": "Local visitado"
+  },
+  "Return to Customer Location": {
+    "en": "Return to Customer Location",
+    "ar": "العودة إلى موقع العميل",
+    "ru": "Вернуться к местоположению клиента",
+    "ky": "Кардардын жайгашкан жерине кайтуу",
+    "fr": "Retour à la position du client",
+    "ur": "گاہک کے مقام پر واپس جائیں",
+    "pt": "Voltar à localização do cliente"
+  },
+  "Name:": {
+    "en": "Name:",
+    "ar": "الاسم:",
+    "ru": "Имя:",
+    "ky": "Аты:",
+    "fr": "Nom :",
+    "ur": "نام:",
+    "pt": "Nome:"
+  },
+  "Vehicle Type:": {
+    "en": "Vehicle Type:",
+    "ar": "نوع المركبة:",
+    "ru": "Тип транспортного средства:",
+    "ky": "Унаанын түрү:",
+    "fr": "Type de véhicule :",
+    "ur": "گاڑی کی قسم:",
+    "pt": "Tipo de veículo:"
+  },
+  "Pretty good! Just finished a big project. How about you?": {
+    "en": "Pretty good! Just finished a big project. How about you?",
+    "ar": "جيد جدًا! أنهيت للتو مشروعًا كبيرًا. وأنت؟",
+    "ru": "Довольно хорошо! Только что закончил большой проект. А ты?",
+    "ky": "Абдан жакшы! Жаңы эле чоң долбоорду бүтүрдүм. Сенчи?",
+    "fr": "Plutôt bien ! Je viens de terminer un grand projet. Et toi ?",
+    "ur": "کافی اچھا! ابھی ایک بڑا کام ختم کیا۔ آپ کا کیا حال ہے؟",
+    "pt": "Muito bem! Acabei de terminar um grande projeto. E você?"
+  },
+  "2:35 PM": {
+    "en": "2:35 PM",
+    "ar": "2:35 م",
+    "ru": "14:35",
+    "ky": "14:35",
+    "fr": "14:35",
+    "ur": "2:35 دوپہر",
+    "pt": "14:35"
+  },
+  "That's awesome! Congratulations 🎉": {
+    "en": "That's awesome! Congratulations 🎉",
+    "ar": "هذا رائع! مبروك 🎉",
+    "ru": "Это здорово! Поздравляю 🎉",
+    "ky": "Бул сонун! Куттуктайм 🎉",
+    "fr": "C'est formidable ! Félicitations 🎉",
+    "ur": "یہ شاندار ہے! مبارک ہو 🎉",
+    "pt": "Que ótimo! Parabéns 🎉"
+  },
+  "2:36 PM": {
+    "en": "2:36 PM",
+    "ar": "2:36 م",
+    "ru": "14:36",
+    "ky": "14:36",
+    "fr": "14:36",
+    "ur": "2:36 دوپہر",
+    "pt": "14:36"
+  },
+  "Want to grab coffee later to celebrate?": {
+    "en": "Want to grab coffee later to celebrate?",
+    "ar": "هل نلتقي لاحقًا لتناول القهوة احتفالًا؟",
+    "ru": "Хочешь позже выпить кофе, чтобы отпраздновать?",
+    "ky": "Майрамдоо үчүн кийинчерээк кофе ичелиби?",
+    "fr": "Tu veux prendre un café plus tard pour fêter ça ?",
+    "ur": "جشن منانے کے لیے بعد میں کافی پئیں؟",
+    "pt": "Quer tomar um café mais tarde para comemorar?"
+  },
+  "2:37 PM": {
+    "en": "2:37 PM",
+    "ar": "2:37 م",
+    "ru": "14:37",
+    "ky": "14:37",
+    "fr": "14:37",
+    "ur": "2:37 دوپہر",
+    "pt": "14:37"
+  },
+  "Absolutely! What time works for you?": {
+    "en": "Absolutely! What time works for you?",
+    "ar": "بالتأكيد! أي وقت يناسبك؟",
+    "ru": "Конечно! Какое время тебе удобно?",
+    "ky": "Албетте! Сага кайсы убакыт ыңгайлуу?",
+    "fr": "Absolument ! Quelle heure te convient ?",
+    "ur": "بالکل! آپ کے لیے کون سا وقت ٹھیک ہے؟",
+    "pt": "Com certeza! Que horário combina com você?"
+  },
+  "2:38 PM": {
+    "en": "2:38 PM",
+    "ar": "2:38 م",
+    "ru": "14:38",
+    "ky": "14:38",
+    "fr": "14:38",
+    "ur": "2:38 دوپہر",
+    "pt": "14:38"
+  },
+  "Type a message...": {
+    "en": "Type a message...",
+    "ar": "اكتب رسالة...",
+    "ru": "Введите сообщение...",
+    "ky": "Билдирүү жазыңыз...",
+    "fr": "Saisissez un message...",
+    "ur": "پیغام لکھیں...",
+    "pt": "Digite uma mensagem..."
+  },
+  "معلومات الحساب البنكي": {
+    "en": "Bank account information",
+    "ar": "معلومات الحساب البنكي",
+    "ru": "Данные банковского счета",
+    "ky": "Банк эсебинин маалыматы",
+    "fr": "Informations du compte bancaire",
+    "ur": "بینک اکاؤنٹ کی معلومات",
+    "pt": "Informações da conta bancária"
+  },
+  "يرجى تحديث بيانات حسابك البنكي": {
+    "en": "Please update your bank account details",
+    "ar": "يرجى تحديث بيانات حسابك البنكي",
+    "ru": "Пожалуйста, обновите данные вашего банковского счета",
+    "ky": "Банк эсебиңиздин маалыматын жаңыртыңыз",
+    "fr": "Veuillez mettre à jour les informations de votre compte bancaire",
+    "ur": "براہ کرم اپنے بینک اکاؤنٹ کی تفصیلات تازہ کریں",
+    "pt": "Atualize os dados da sua conta bancária"
+  },
+  "اسم البنك": {
+    "en": "Bank name",
+    "ar": "اسم البنك",
+    "ru": "Название банка",
+    "ky": "Банктын аты",
+    "fr": "Nom de la banque",
+    "ur": "بینک کا نام",
+    "pt": "Nome do banco"
+  },
+  "أدخل اسم البنك": {
+    "en": "Enter the bank name",
+    "ar": "أدخل اسم البنك",
+    "ru": "Введите название банка",
+    "ky": "Банктын атын киргизиңиз",
+    "fr": "Saisissez le nom de la banque",
+    "ur": "بینک کا نام درج کریں",
+    "pt": "Digite o nome do banco"
+  },
+  "رقم الحساب": {
+    "en": "Account number",
+    "ar": "رقم الحساب",
+    "ru": "Номер счета",
+    "ky": "Эсеп номери",
+    "fr": "Numéro de compte",
+    "ur": "اکاؤنٹ نمبر",
+    "pt": "Número da conta"
+  },
+  "أدخل رقم الحساب": {
+    "en": "Enter the account number",
+    "ar": "أدخل رقم الحساب",
+    "ru": "Введите номер счета",
+    "ky": "Эсеп номерин киргизиңиз",
+    "fr": "Saisissez le numéro de compte",
+    "ur": "اکاؤنٹ نمبر درج کریں",
+    "pt": "Digite o número da conta"
+  },
+  "رقم الآيبان (IBAN)": {
+    "en": "IBAN number",
+    "ar": "رقم الآيبان (IBAN)",
+    "ru": "Номер IBAN",
+    "ky": "IBAN номери",
+    "fr": "Numéro IBAN",
+    "ur": "IBAN نمبر",
+    "pt": "Número IBAN"
+  },
+  "SA0000000000000000000000": {
+    "en": "SA0000000000000000000000",
+    "ar": "SA0000000000000000000000",
+    "ru": "SA0000000000000000000000",
+    "ky": "SA0000000000000000000000",
+    "fr": "SA0000000000000000000000",
+    "ur": "SA0000000000000000000000",
+    "pt": "SA0000000000000000000000"
+  },
+  "اسم صاحب الحساب": {
+    "en": "Account holder name",
+    "ar": "اسم صاحب الحساب",
+    "ru": "Имя владельца счета",
+    "ky": "Эсеп ээсинин аты",
+    "fr": "Nom du titulaire du compte",
+    "ur": "اکاؤنٹ مالک کا نام",
+    "pt": "Nome do titular da conta"
+  },
+  "أدخل اسم صاحب الحساب": {
+    "en": "Enter the account holder name",
+    "ar": "أدخل اسم صاحب الحساب",
+    "ru": "Введите имя владельца счета",
+    "ky": "Эсеп ээсинин атын киргизиңиз",
+    "fr": "Saisissez le nom du titulaire du compte",
+    "ur": "اکاؤنٹ مالک کا نام درج کریں",
+    "pt": "Digite o nome do titular da conta"
+  },
+  "تحديث الحساب البنكي": {
+    "en": "Update bank account",
+    "ar": "تحديث الحساب البنكي",
+    "ru": "Обновить банковский счет",
+    "ky": "Банк эсебин жаңыртуу",
+    "fr": "Mettre à jour le compte bancaire",
+    "ur": "بینک اکاؤنٹ تازہ کریں",
+    "pt": "Atualizar conta bancária"
+  },
+  "Button": {
+    "en": "Button",
+    "ar": "زر",
+    "ru": "Кнопка",
+    "ky": "Баскыч",
+    "fr": "Bouton",
+    "ur": "بٹن",
+    "pt": "Botão"
+  },
+  "Edit Profile": {
+    "en": "Edit Profile",
+    "ar": "تعديل الملف الشخصي",
+    "ru": "Редактировать профиль",
+    "ky": "Профилди түзөтүү",
+    "fr": "Modifier le profil",
+    "ur": "پروفائل میں ترمیم کریں",
+    "pt": "Editar perfil"
+  },
+  "Tap to change photo": {
+    "en": "Tap to change photo",
+    "ar": "اضغط لتغيير الصورة",
+    "ru": "Нажмите, чтобы сменить фото",
+    "ky": "Сүрөттү өзгөртүү үчүн басыңыз",
+    "fr": "Appuyez pour changer la photo",
+    "ur": "تصویر بدلنے کے لیے ٹیپ کریں",
+    "pt": "Toque para alterar a foto"
+  },
+  "Enter your email address": {
+    "en": "Enter your email address",
+    "ar": "أدخل بريدك الإلكتروني",
+    "ru": "Введите ваш адрес электронной почты",
+    "ky": "Электрондук почтаңызды киргизиңиз",
+    "fr": "Saisissez votre adresse e-mail",
+    "ur": "اپنا ای میل پتہ درج کریں",
+    "pt": "Digite seu endereço de e-mail"
+  },
+  "Enter vehicle model": {
+    "en": "Enter vehicle model",
+    "ar": "أدخل طراز المركبة",
+    "ru": "Введите модель транспортного средства",
+    "ky": "Унаанын үлгүсүн киргизиңиз",
+    "fr": "Saisissez le modèle du véhicule",
+    "ur": "گاڑی کا ماڈل درج کریں",
+    "pt": "Digite o modelo do veículo"
+  },
+  "Update Profile": {
+    "en": "Update Profile",
+    "ar": "تحديث الملف الشخصي",
+    "ru": "Обновить профиль",
+    "ky": "Профилди жаңыртуу",
+    "fr": "Mettre à jour le profil",
+    "ur": "پروفائل تازہ کریں",
+    "pt": "Atualizar perfil"
+  },
+  "جدة": {
+    "en": "Jeddah",
+    "ar": "جدة",
+    "ru": "Джидда",
+    "ky": "Жидда",
+    "fr": "Djeddah",
+    "ur": "جدہ",
+    "pt": "Jeddah"
+  },
+  "الدمام": {
+    "en": "Dammam",
+    "ar": "الدمام",
+    "ru": "Даммам",
+    "ky": "Даммам",
+    "fr": "Dammam",
+    "ur": "دمام",
+    "pt": "Dammam"
+  },
+  "مكة المكرمة": {
+    "en": "Makkah",
+    "ar": "مكة المكرمة",
+    "ru": "Мекка",
+    "ky": "Мекке",
+    "fr": "La Mecque",
+    "ur": "مکہ مکرمہ",
+    "pt": "Meca"
+  },
+  "المدينة المنورة": {
+    "en": "Madinah",
+    "ar": "المدينة المنورة",
+    "ru": "Медина",
+    "ky": "Мадина",
+    "fr": "Médine",
+    "ur": "مدینہ منورہ",
+    "pt": "Medina"
+  },
+  "الطائف": {
+    "en": "Taif",
+    "ar": "الطائف",
+    "ru": "Таиф",
+    "ky": "Таиф",
+    "fr": "Taïf",
+    "ur": "طائف",
+    "pt": "Taif"
+  },
+  "أبها": {
+    "en": "Abha",
+    "ar": "أبها",
+    "ru": "Абха",
+    "ky": "Абха",
+    "fr": "Abha",
+    "ur": "ابھا",
+    "pt": "Abha"
+  },
+  "تبوك": {
+    "en": "Tabuk",
+    "ar": "تبوك",
+    "ru": "Табук",
+    "ky": "Табук",
+    "fr": "Tabuk",
+    "ur": "تبوک",
+    "pt": "Tabuk"
+  },
+  "تحديد": {
+    "en": "Select",
+    "ar": "تحديد",
+    "ru": "Выбрать",
+    "ky": "Тандоо",
+    "fr": "Sélectionner",
+    "ur": "منتخب کریں",
+    "pt": "Selecionar"
+  },
+  "Rate your delivery experience": {
+    "en": "Rate your delivery experience",
+    "ar": "قيّم تجربة التوصيل",
+    "ru": "Оцените опыт доставки",
+    "ky": "Жеткирүү тажрыйбаңызды баалаңыз",
+    "fr": "Évaluez votre expérience de livraison",
+    "ur": "اپنے پہنچانے کے تجربے کی درجہ بندی کریں",
+    "pt": "Avalie sua experiência de entrega"
+  },
+  "Write a review": {
+    "en": "Write a review",
+    "ar": "اكتب تقييمًا",
+    "ru": "Написать отзыв",
+    "ky": "Пикир жазыңыз",
+    "fr": "Rédiger un avis",
+    "ur": "جائزہ لکھیں",
+    "pt": "Escrever uma avaliação"
+  },
+  "Share your experience...": {
+    "en": "Share your experience...",
+    "ar": "شارك تجربتك...",
+    "ru": "Поделитесь своим опытом...",
+    "ky": "Тажрыйбаңыз менен бөлүшүңүз...",
+    "fr": "Partagez votre expérience...",
+    "ur": "اپنا تجربہ بتائیں...",
+    "pt": "Compartilhe sua experiência..."
+  },
+  "Submit Review": {
+    "en": "Submit Review",
+    "ar": "إرسال التقييم",
+    "ru": "Отправить отзыв",
+    "ky": "Пикирди жөнөтүү",
+    "fr": "Envoyer l'avis",
+    "ur": "جائزہ جمع کروائیں",
+    "pt": "Enviar avaliação"
+  },
+  "Remaining Time": {
+    "en": "Remaining Time",
+    "ar": "الوقت المتبقي",
+    "ru": "Оставшееся время",
+    "ky": "Калган убакыт",
+    "fr": "Temps restant",
+    "ur": "باقی وقت",
+    "pt": "Tempo restante"
+  },
+  "Trip Ended": {
+    "en": "Trip Ended",
+    "ar": "انتهت الرحلة",
+    "ru": "Поездка завершена",
+    "ky": "Сапар аяктады",
+    "fr": "Trajet terminé",
+    "ur": "سفر ختم ہو گیا",
+    "pt": "Viagem encerrada"
+  },
+  "Please allow camera access to update your profile picture.\\n": {
+    "en": "Please allow camera access to update your profile picture.\\n",
+    "ar": "يرجى السماح بالوصول إلى الكاميرا لتحديث صورة ملفك الشخصي.\\n",
+    "ru": "Разрешите доступ к камере, чтобы обновить фото профиля.\\n",
+    "ky": "Профиль сүрөтүн жаңыртуу үчүн камерага уруксат бериңиз.\\n",
+    "fr": "Veuillez autoriser l'accès à la caméra pour mettre à jour votre photo de profil.\\n",
+    "ur": "پروفائل تصویر تازہ کرنے کے لیے براہ کرم کیمرے کی اجازت دیں۔\\n",
+    "pt": "Permita o acesso à câmera para atualizar sua foto de perfil.\\n"
+  },
+  "Please allow access to photos to update your profile picture from the photo gallery.": {
+    "en": "Please allow access to photos to update your profile picture from the photo gallery.",
+    "ar": "يرجى السماح بالوصول إلى الصور لتحديث صورة ملفك الشخصي من معرض الصور.",
+    "ru": "Разрешите доступ к фотографиям, чтобы обновить фото профиля из галереи.",
+    "ky": "Сүрөт галереясынан профиль сүрөтүн жаңыртуу үчүн сүрөттөргө уруксат бериңиз.",
+    "fr": "Veuillez autoriser l'accès aux photos pour mettre à jour votre photo de profil depuis la galerie.",
+    "ur": "فوٹو گیلری سے پروفائل تصویر تازہ کرنے کے لیے تصاویر تک رسائی کی اجازت دیں۔",
+    "pt": "Permita o acesso às fotos para atualizar sua foto de perfil pela galeria."
+  },
+  "CFVFV": {
+    "en": "CFVFV",
+    "ar": "CFVFV",
+    "ru": "CFVFV",
+    "ky": "CFVFV",
+    "fr": "CFVFV",
+    "ur": "CFVFV",
+    "pt": "CFVFV"
+  },
+  "Location access must be enabled to help locate the client and to allow the client to know your current location.": {
+    "en": "Location access must be enabled to help locate the client and to allow the client to know your current location.",
+    "ar": "يجب تفعيل الوصول إلى الموقع للمساعدة في تحديد مكان العميل والسماح للعميل بمعرفة موقعك الحالي.",
+    "ru": "Необходимо включить доступ к местоположению, чтобы помочь найти клиента и чтобы клиент мог видеть ваше текущее местоположение.",
+    "ky": "Кардарды табууга жардам берүү жана кардар сиздин учурдагы жайыңызды билиши үчүн жайгашууга уруксат күйгүзүлүшү керек.",
+    "fr": "L'accès à la localisation doit être activé pour aider à localiser le client et pour permettre au client de connaître votre position actuelle.",
+    "ur": "گاہک کا مقام معلوم کرنے اور گاہک کو آپ کا موجودہ مقام بتانے کے لیے مقام تک رسائی فعال ہونی چاہیے۔",
+    "pt": "O acesso à localização deve estar ativado para ajudar a localizar o cliente e para que o cliente saiba sua localização atual."
+  },
+  "نحتاج لموقعك لتتبع الرحلة حتى عند إغلاق التطبيق": {
+    "en": "We need your location to track the trip even when the app is closed",
+    "ar": "نحتاج لموقعك لتتبع الرحلة حتى عند إغلاق التطبيق",
+    "ru": "Нам нужно ваше местоположение, чтобы отслеживать поездку даже при закрытом приложении",
+    "ky": "Колдонмо жабык болсо да сапарды көзөмөлдөө үчүн сиздин жайыңыз керек",
+    "fr": "Nous avons besoin de votre position pour suivre le trajet même lorsque l'application est fermée",
+    "ur": "ایپ بند ہونے پر بھی سفر کی نگرانی کے لیے ہمیں آپ کا مقام درکار ہے",
+    "pt": "Precisamos da sua localização para acompanhar a viagem mesmo com o aplicativo fechado"
+  },
+  "نحتاج إلى موقعك لتحديث حالة طلب التوصيل وتتبع السائق حتى عند إغلاق التطبيق. هذا يساعدنا على توفير خدمة دقيقة.": {
+    "en": "We need your location to update the delivery request status and track the driver even when the app is closed. This helps us provide an accurate service.",
+    "ar": "نحتاج إلى موقعك لتحديث حالة طلب التوصيل وتتبع السائق حتى عند إغلاق التطبيق. هذا يساعدنا على توفير خدمة دقيقة.",
+    "ru": "Нам нужно ваше местоположение, чтобы обновлять статус заявки на доставку и отслеживать водителя даже при закрытом приложении. Это помогает нам оказывать точную услугу.",
+    "ky": "Жеткирүү өтүнмөсүнүн абалын жаңыртуу жана колдонмо жабык болсо да айдоочуну көзөмөлдөө үчүн сиздин жайыңыз керек. Бул так кызмат көрсөтүүгө жардам берет.",
+    "fr": "Nous avons besoin de votre position pour mettre à jour l'état de la demande de livraison et suivre le conducteur même lorsque l'application est fermée. Cela nous aide à fournir un service précis.",
+    "ur": "ڈیلیوری درخواست کی حیثیت تازہ کرنے اور ایپ بند ہونے پر بھی ڈرائیور کی نگرانی کے لیے ہمیں آپ کا مقام درکار ہے۔ اس سے ہمیں درست خدمت دینے میں مدد ملتی ہے۔",
+    "pt": "Precisamos da sua localização para atualizar o estado do pedido de entrega e acompanhar o motorista mesmo com o aplicativo fechado. Isso nos ajuda a oferecer um serviço preciso."
+  },
+  "نحتاج للوصول إلى موقعك لتحديد مكانك على الخريطة أثناء استخدام التطبيق": {
+    "en": "We need access to your location to pinpoint your place on the map while you use the app",
+    "ar": "نحتاج للوصول إلى موقعك لتحديد مكانك على الخريطة أثناء استخدام التطبيق",
+    "ru": "Нам нужен доступ к вашему местоположению, чтобы определить ваше место на карте во время использования приложения",
+    "ky": "Колдонмону колдонуп жатканда картада ордуңузду аныктоо үчүн жайыңызга жетүү керек",
+    "fr": "Nous avons besoin d'accéder à votre position pour vous situer sur la carte pendant l'utilisation de l'application",
+    "ur": "ایپ استعمال کے دوران نقشے پر آپ کی جگہ متعین کرنے کے لیے ہمیں آپ کے مقام تک رسائی درکار ہے",
+    "pt": "Precisamos acessar sua localização para indicar seu lugar no mapa enquanto você usa o aplicativo"
+  },
+  "نستخدم بيانات الحركة لتقليل استهلاك البطارية وتحديد حالة السائق أثناء التتبع": {
+    "en": "We use motion data to reduce battery use and determine the driver's status during tracking",
+    "ar": "نستخدم بيانات الحركة لتقليل استهلاك البطارية وتحديد حالة السائق أثناء التتبع",
+    "ru": "Мы используем данные движения, чтобы снизить расход батареи и определять статус водителя во время отслеживания",
+    "ky": "Көзөмөл учурунда батареянын чыгымын азайтуу жана айдоочунун абалын аныктоо үчүн кыймыл маалыматын колдонобуз",
+    "fr": "Nous utilisons les données de mouvement pour réduire la consommation de batterie et déterminer l'état du conducteur pendant le suivi",
+    "ur": "نگرانی کے دوران بیٹری کا استعمال کم کرنے اور ڈرائیور کی حیثیت جاننے کے لیے ہم حرکت کا ڈیٹا استعمال کرتے ہیں",
+    "pt": "Usamos dados de movimento para reduzir o consumo da bateria e determinar o estado do motorista durante o rastreamento"
+  },
+  "نستخدم الصلاحيات الأمنية لتأمين حسابك والتأكد من هوية المستخدم.": {
+    "en": "We use security permissions to protect your account and verify the user's identity.",
+    "ar": "نستخدم الصلاحيات الأمنية لتأمين حسابك والتأكد من هوية المستخدم.",
+    "ru": "Мы используем разрешения безопасности, чтобы защитить вашу учетную запись и подтвердить личность пользователя.",
+    "ky": "Аккаунтуңузду коргоо жана колдонуучунун ким экенин текшерүү үчүн коопсуздук уруксаттарын колдонобуз.",
+    "fr": "Nous utilisons les autorisations de sécurité pour protéger votre compte et vérifier l'identité de l'utilisateur.",
+    "ur": "ہم آپ کے اکاؤنٹ کی حفاظت اور صارف کی شناخت کی تصدیق کے لیے حفاظتی اجازتیں استعمال کرتے ہیں۔",
+    "pt": "Usamos permissões de segurança para proteger sua conta e confirmar a identidade do usuário."
+  },
+  "لتتبع حركة الموقع وذلك للتبع الرحلة": {
+    "en": "To track location movement in order to follow the trip",
+    "ar": "لتتبع حركة الموقع وذلك للتبع الرحلة",
+    "ru": "Для отслеживания перемещения местоположения с целью следования за поездкой",
+    "ky": "Сапарды ээрчүү үчүн жайгашуу кыймылын көзөмөлдөө",
+    "fr": "Pour suivre le déplacement de la position afin de suivre le trajet",
+    "ur": "سفر کے ساتھ چلنے کے لیے مقام کی حرکت کی نگرانی کے لیے",
+    "pt": "Para rastrear o movimento da localização a fim de acompanhar a viagem"
+  },
+  "Number of destinations:": {
+    "en": "Number of destinations:",
+    "ar": "عدد الوجهات:",
+    "ru": "Количество назначений:",
+    "ky": "Багыттардын саны:",
+    "fr": "Nombre de destinations :",
+    "ur": "منزلوں کی تعداد:",
+    "pt": "Número de destinos:"
+  },
+  "تتصفح الآن": {
+    "en": "You are browsing now",
+    "ar": "تتصفح الآن",
+    "ru": "Вы просматриваете сейчас",
+    "ky": "Сиз азыр карап жатасыз",
+    "fr": "Vous parcourez maintenant",
+    "ur": "آپ ابھی دیکھ رہے ہیں",
+    "pt": "Você está navegando agora"
+  },
+  "رسائل جديدة": {
+    "en": "New messages",
+    "ar": "رسائل جديدة",
+    "ru": "Новые сообщения",
+    "ky": "Жаңы билдирүүлөр",
+    "fr": "Nouveaux messages",
+    "ur": "نئے پیغامات",
+    "pt": "Novas mensagens"
+  },
+  "/": {
+    "en": "/",
+    "ar": "/",
+    "ru": "/",
+    "ky": "/",
+    "fr": "/",
+    "ur": "/",
+    "pt": "/"
+  },
+  "Welcome to the Touri Taxi app": {
+    "en": "Welcome to the Touri Taxi app",
+    "ar": "مرحبًا بك في تطبيق Touri Taxi",
+    "ru": "Добро пожаловать в приложение Touri Taxi",
+    "ky": "Touri Taxi колдонмосуна кош келиңиз",
+    "fr": "Bienvenue dans l'application Touri Taxi",
+    "ur": "Touri Taxi ایپ میں خوش آمدید",
+    "pt": "Bem-vindo ao aplicativo Touri Taxi"
+  },
+  "الإجمالي": {
+    "en": "Total",
+    "ar": "الإجمالي",
+    "ru": "Итого",
+    "ky": "Жалпы",
+    "fr": "Total",
+    "ur": "کل",
+    "pt": "Total"
+  },
+  "٢٨٧.٥٠ ريال": {
+    "en": "287.50 SAR",
+    "ar": "٢٨٧.٥٠ ريال",
+    "ru": "287.50 SAR",
+    "ky": "287.50 SAR",
+    "fr": "287.50 SAR",
+    "ur": "287.50 SAR",
+    "pt": "287.50 SAR"
+  },
+  "رقم البطاقة": {
+    "en": "Card number",
+    "ar": "رقم البطاقة",
+    "ru": "Номер карты",
+    "ky": "Картанын номери",
+    "fr": "Numéro de carte",
+    "ur": "کارڈ نمبر",
+    "pt": "Número do cartão"
+  },
+  "سنة الإنتهاء": {
+    "en": "Expiry year",
+    "ar": "سنة الإنتهاء",
+    "ru": "Год окончания срока",
+    "ky": "Мөөнөт бүткөн жыл",
+    "fr": "Année d'expiration",
+    "ur": "میعاد ختم ہونے کا سال",
+    "pt": "Ano de validade"
+  },
+  "شهر الإنتهاء": {
+    "en": "Expiry month",
+    "ar": "شهر الإنتهاء",
+    "ru": "Месяц окончания срока",
+    "ky": "Мөөнөт бүткөн ай",
+    "fr": "Mois d'expiration",
+    "ur": "میعاد ختم ہونے کا مہینہ",
+    "pt": "Mês de validade"
+  },
+  "الدفع الآن": {
+    "en": "Pay now",
+    "ar": "الدفع الآن",
+    "ru": "Оплатить сейчас",
+    "ky": "Азыр төлөө",
+    "fr": "Payer maintenant",
+    "ur": "ابھی ادا کریں",
+    "pt": "Pagar agora"
+  },
+  "My bookings": {
+    "en": "My bookings",
+    "ar": "حجوزاتي",
+    "ru": "Мои бронирования",
+    "ky": "Менин брондоолорум",
+    "fr": "Mes réservations",
+    "ur": "میری بکنگز",
+    "pt": "Minhas reservas"
+  },
+  "الكل": {
+    "en": "All",
+    "ar": "الكل",
+    "ru": "Все",
+    "ky": "Баары",
+    "fr": "Tout",
+    "ur": "سب",
+    "pt": "Tudo"
+  },
+  "أماكن ترفيهية": {
+    "en": "Entertainment places",
+    "ar": "أماكن ترفيهية",
+    "ru": "Развлекательные места",
+    "ky": "Көңүл ачуу жайлары",
+    "fr": "Lieux de loisirs",
+    "ur": "تفریحی مقامات",
+    "pt": "Lugares de entretenimento"
+  },
+  "معالم سياحية": {
+    "en": "Tourist landmarks",
+    "ar": "معالم سياحية",
+    "ru": "Туристические достопримечательности",
+    "ky": "Туристтик көрүнүктүү жерлер",
+    "fr": "Sites touristiques",
+    "ur": "سیاحتی مقامات",
+    "pt": "Pontos turísticos"
+  },
+  "مقهى": {
+    "en": "Cafe",
+    "ar": "مقهى",
+    "ru": "Кафе",
+    "ky": "Кафе",
+    "fr": "Café",
+    "ur": "کافی ہاؤس",
+    "pt": "Café"
+  },
+  "أماكن سياحية": {
+    "en": "Tourist places",
+    "ar": "أماكن سياحية",
+    "ru": "Туристические места",
+    "ky": "Туристтик жайлар",
+    "fr": "Lieux touristiques",
+    "ur": "سیاحتی جگہیں",
+    "pt": "Lugares turísticos"
+  },
+  "أسواق": {
+    "en": "Markets",
+    "ar": "أسواق",
+    "ru": "Рынки",
+    "ky": "Базарлар",
+    "fr": "Marchés",
+    "ur": "بازار",
+    "pt": "Mercados"
+  },
+  "جولة برية": {
+    "en": "Land tour",
+    "ar": "جولة برية",
+    "ru": "Наземная экскурсия",
+    "ky": "Кургактык саякат",
+    "fr": "Excursion terrestre",
+    "ur": "زمینی سیر",
+    "pt": "Passeio terrestre"
+  },
+  "جولة بحرية": {
+    "en": "Sea tour",
+    "ar": "جولة بحرية",
+    "ru": "Морская экскурсия",
+    "ky": "Деңиз саякаты",
+    "fr": "Excursion maritime",
+    "ur": "سمندری سیر",
+    "pt": "Passeio marítimo"
+  },
+  "فنادق": {
+    "en": "Hotels",
+    "ar": "فنادق",
+    "ru": "Отели",
+    "ky": "Мейманканалар",
+    "fr": "Hôtels",
+    "ur": "ہوٹل",
+    "pt": "Hotéis"
+  },
+  "مطاعم": {
+    "en": "Restaurants",
+    "ar": "مطاعم",
+    "ru": "Рестораны",
+    "ky": "Ресторандар",
+    "fr": "Restaurants",
+    "ur": "ریستوران",
+    "pt": "Restaurantes"
+  },
+  "All": {
+    "en": "All",
+    "ar": "الكل",
+    "ru": "Все",
+    "ky": "Баары",
+    "fr": "Tout",
+    "ur": "سب",
+    "pt": "Tudo"
+  },
+  "Looking for a destination...": {
+    "en": "Looking for a destination...",
+    "ar": "جارٍ البحث عن وجهة...",
+    "ru": "Поиск назначения...",
+    "ky": "Багыт издөөдө...",
+    "fr": "Recherche d'une destination...",
+    "ur": "منزل تلاش ہو رہی ہے...",
+    "pt": "Procurando um destino..."
+  },
+  "Cancel Search": {
+    "en": "Cancel Search",
+    "ar": "إلغاء البحث",
+    "ru": "Отменить поиск",
+    "ky": "Издөөнү жокко чыгаруу",
+    "fr": "Annuler la recherche",
+    "ur": "تلاش منسوخ کریں",
+    "pt": "Cancelar pesquisa"
+  },
+  "Randie Mcmullens": {
+    "en": "Randie Mcmullens",
+    "ar": "Randie Mcmullens",
+    "ru": "Randie Mcmullens",
+    "ky": "Randie Mcmullens",
+    "fr": "Randie Mcmullens",
+    "ur": "Randie Mcmullens",
+    "pt": "Randie Mcmullens"
+  },
+  "(123) 456-7890": {
+    "en": "(123) 456-7890",
+    "ar": "(123) 456-7890",
+    "ru": "(123) 456-7890",
+    "ky": "(123) 456-7890",
+    "fr": "(123) 456-7890",
+    "ur": "(123) 456-7890",
+    "pt": "(123) 456-7890"
+  },
+  "name@domain.com": {
+    "en": "name@domain.com",
+    "ar": "name@domain.com",
+    "ru": "name@domain.com",
+    "ky": "name@domain.com",
+    "fr": "name@domain.com",
+    "ur": "name@domain.com",
+    "pt": "name@domain.com"
+  },
+  "Raney Bold": {
+    "en": "Raney Bold",
+    "ar": "Raney Bold",
+    "ru": "Raney Bold",
+    "ky": "Raney Bold",
+    "fr": "Raney Bold",
+    "ur": "Raney Bold",
+    "pt": "Raney Bold"
+  },
+  "Ragina Smith": {
+    "en": "Ragina Smith",
+    "ar": "Ragina Smith",
+    "ru": "Ragina Smith",
+    "ky": "Ragina Smith",
+    "fr": "Ragina Smith",
+    "ur": "Ragina Smith",
+    "pt": "Ragina Smith"
+  },
+  "Ra Kuo": {
+    "en": "Ra Kuo",
+    "ar": "Ra Kuo",
+    "ru": "Ra Kuo",
+    "ky": "Ra Kuo",
+    "fr": "Ra Kuo",
+    "ur": "Ra Kuo",
+    "pt": "Ra Kuo"
+  },
+  "Raku Davis": {
+    "en": "Raku Davis",
+    "ar": "Raku Davis",
+    "ru": "Raku Davis",
+    "ky": "Raku Davis",
+    "fr": "Raku Davis",
+    "ur": "Raku Davis",
+    "pt": "Raku Davis"
+  },
+  "check.io": {
+    "en": "check.io",
+    "ar": "check.io",
+    "ru": "check.io",
+    "ky": "check.io",
+    "fr": "check.io",
+    "ur": "check.io",
+    "pt": "check.io"
+  },
+  "Platform Navigation": {
+    "en": "Platform Navigation",
+    "ar": "التنقل في المنصة",
+    "ru": "Навигация по платформе",
+    "ky": "Платформада багыттоо",
+    "fr": "Navigation de la plateforme",
+    "ur": "پلیٹ فارم میں گھومنا",
+    "pt": "Navegação da plataforma"
+  },
+  "Chats": {
+    "en": "Chats",
+    "ar": "المحادثات",
+    "ru": "Чаты",
+    "ky": "Маектер",
+    "fr": "Discussions",
+    "ur": "گفتگوئیں",
+    "pt": "Conversas"
+  },
+  "All Tasks": {
+    "en": "All Tasks",
+    "ar": "كل المهام",
+    "ru": "Все задачи",
+    "ky": "Бардык тапшырмалар",
+    "fr": "Toutes les tâches",
+    "ur": "تمام کام",
+    "pt": "Todas as tarefas"
+  },
+  "Projects": {
+    "en": "Projects",
+    "ar": "المشاريع",
+    "ru": "Проекты",
+    "ky": "Долбоорлор",
+    "fr": "Projets",
+    "ur": "منصوبے",
+    "pt": "Projetos"
+  },
+  "Billing": {
+    "en": "Billing",
+    "ar": "الفوترة",
+    "ru": "Оплата",
+    "ky": "Төлөмдөр",
+    "fr": "Facturation",
+    "ur": "بل کی ادائیگی",
+    "pt": "Faturamento"
+  },
+  "Explore": {
+    "en": "Explore",
+    "ar": "استكشاف",
+    "ru": "Обзор",
+    "ky": "Изилдөө",
+    "fr": "Explorer",
+    "ur": "دریافت",
+    "pt": "Explorar"
+  },
+  "Light Mode": {
+    "en": "Light Mode",
+    "ar": "الوضع الفاتح",
+    "ru": "Светлый режим",
+    "ky": "Жарык режим",
+    "fr": "Mode clair",
+    "ur": "روشن وضع",
+    "pt": "Modo claro"
+  },
+  "Dark Mode": {
+    "en": "Dark Mode",
+    "ar": "الوضع الداكن",
+    "ru": "Темный режим",
+    "ky": "Караңгы режим",
+    "fr": "Mode sombre",
+    "ur": "تاریک وضع",
+    "pt": "Modo escuro"
+  },
+  "Andrew D.": {
+    "en": "Andrew D.",
+    "ar": "Andrew D.",
+    "ru": "Andrew D.",
+    "ky": "Andrew D.",
+    "fr": "Andrew D.",
+    "ur": "Andrew D.",
+    "pt": "Andrew D."
+  },
+  "admin@gmail.com": {
+    "en": "admin@gmail.com",
+    "ar": "admin@gmail.com",
+    "ru": "admin@gmail.com",
+    "ky": "admin@gmail.com",
+    "fr": "admin@gmail.com",
+    "ur": "admin@gmail.com",
+    "pt": "admin@gmail.com"
+  },
+  "Search all tasks...": {
+    "en": "Search all tasks...",
+    "ar": "ابحث في كل المهام...",
+    "ru": "Поиск по всем задачам...",
+    "ky": "Бардык тапшырмаларды издөө...",
+    "fr": "Rechercher dans toutes les tâches...",
+    "ur": "تمام کاموں میں تلاش...",
+    "pt": "Pesquisar todas as tarefas..."
+  },
+  "- added places": {
+    "en": "- added places",
+    "ar": "- أماكن مضافة",
+    "ru": "- добавленные места",
+    "ky": "- кошулган жерлер",
+    "fr": "- lieux ajoutés",
+    "ur": "- شامل کی گئی جگہیں",
+    "pt": "- lugares adicionados"
+  },
+  "Total number of hours:": {
+    "en": "Total number of hours:",
+    "ar": "إجمالي عدد الساعات:",
+    "ru": "Общее количество часов:",
+    "ky": "Сааттардын жалпы саны:",
+    "fr": "Nombre total d'heures :",
+    "ur": "گھنٹوں کی کل تعداد:",
+    "pt": "Número total de horas:"
+  },
+  "Add Extra Hours": {
+    "en": "Add Extra Hours",
+    "ar": "إضافة ساعات إضافية",
+    "ru": "Добавить дополнительные часы",
+    "ky": "Кошумча саат кошуу",
+    "fr": "Ajouter des heures supplémentaires",
+    "ur": "اضافی گھنٹے شامل کریں",
+    "pt": "Adicionar horas extras"
+  },
+  "rate the tour": {
+    "en": "rate the tour",
+    "ar": "قيّم الجولة",
+    "ru": "оцените тур",
+    "ky": "саякатты баалаңыз",
+    "fr": "évaluer la visite",
+    "ur": "سیر کی درجہ بندی کریں",
+    "pt": "avaliar o passeio"
+  },
+  "End of Trip": {
+    "en": "End of Trip",
+    "ar": "نهاية الرحلة",
+    "ru": "Конец поездки",
+    "ky": "Сапардын аягы",
+    "fr": "Fin du trajet",
+    "ur": "سفر کا اختتام",
+    "pt": "Fim da viagem"
+  },
+  "what do you think of this tour?": {
+    "en": "what do you think of this tour?",
+    "ar": "ما رأيك في هذه الجولة؟",
+    "ru": "что вы думаете об этом туре?",
+    "ky": "бул саякат жөнүндө эмне дейсиз?",
+    "fr": "que pensez-vous de cette visite ?",
+    "ur": "آپ اس سیر کے بارے میں کیا سوچتے ہیں؟",
+    "pt": "o que você acha deste passeio?"
+  },
+  "On a scale of 1 - 3 how are you feeling today?": {
+    "en": "On a scale of 1 - 3 how are you feeling today?",
+    "ar": "على مقياس من 1 إلى 3، كيف تشعر اليوم؟",
+    "ru": "По шкале от 1 до 3, как вы себя чувствуете сегодня?",
+    "ky": "1ден 3кө чейинки ченем боюнча бүгүн өзүңүздү кандай сезесиз?",
+    "fr": "Sur une échelle de 1 à 3, comment vous sentez-vous aujourd'hui ?",
+    "ur": "1 سے 3 کے پیمانے پر آج آپ کیسا محسوس کر رہے ہیں؟",
+    "pt": "Em uma escala de 1 a 3, como você está se sentindo hoje?"
+  },
+  "Poor": {
+    "en": "Poor",
+    "ar": "ضعيف",
+    "ru": "Плохо",
+    "ky": "Начар",
+    "fr": "Médiocre",
+    "ur": "کمزور",
+    "pt": "Ruim"
+  },
+  "Average": {
+    "en": "Average",
+    "ar": "متوسط",
+    "ru": "Средне",
+    "ky": "Орточо",
+    "fr": "Moyen",
+    "ur": "اوسط",
+    "pt": "Médio"
+  },
+  "ممتازة": {
+    "en": "Excellent",
+    "ar": "ممتازة",
+    "ru": "Отлично",
+    "ky": "Эң жакшы",
+    "fr": "Excellente",
+    "ur": "بہترین",
+    "pt": "Excelente"
+  },
+  "ماهو تقييمك للمندوب": {
+    "en": "What is your rating of the driver?",
+    "ar": "ماهو تقييمك للمندوب",
+    "ru": "Какова ваша оценка водителя?",
+    "ky": "Айдоочуга берген бааңыз кандай?",
+    "fr": "Quelle est votre note du conducteur ?",
+    "ur": "ڈرائیور کے بارے میں آپ کی درجہ بندی کیا ہے؟",
+    "pt": "Qual é a sua avaliação do motorista?"
+  },
+  "Review": {
+    "en": "Review",
+    "ar": "تقييم",
+    "ru": "Отзыв",
+    "ky": "Пикир",
+    "fr": "Avis",
+    "ur": "جائزہ",
+    "pt": "Avaliação"
+  },
+  "Leave a comment (optional)": {
+    "en": "Leave a comment (optional)",
+    "ar": "اترك تعليقًا (اختياري)",
+    "ru": "Оставьте комментарий (необязательно)",
+    "ky": "Пикир калтырыңыз (милдеттүү эмес)",
+    "fr": "Laissez un commentaire (facultatif)",
+    "ur": "تبصرہ لکھیں (اختیاری)",
+    "pt": "Deixe um comentário (opcional)"
+  },
+  "send the rating": {
+    "en": "send the rating",
+    "ar": "أرسل التقييم",
+    "ru": "отправить оценку",
+    "ky": "бааны жөнөтүү",
+    "fr": "envoyer la note",
+    "ur": "درجہ بندی بھیجیں",
+    "pt": "enviar a avaliação"
+  },
+  "View route": {
+    "en": "View route",
+    "ar": "عرض المسار",
+    "ru": "Показать маршрут",
+    "ky": "Маршрутту көрүү",
+    "fr": "Voir l'itinéraire",
+    "ur": "راستہ دیکھیں",
+    "pt": "Ver rota"
+  },
+  "The driver has been assigned,\\n and he will be your tour guide based on his knowledge of the places.": {
+    "en": "The driver has been assigned,\\n and he will be your tour guide based on his knowledge of the places.",
+    "ar": "تم تعيين السائق،\\n وسيكون مرشدك السياحي بناءً على معرفته بالأماكن.",
+    "ru": "Водитель назначен,\\n и он будет вашим гидом благодаря знанию этих мест.",
+    "ky": "Айдоочу дайындалды,\\n ал жерлерди билгенине жараша сиздин тур жетекчиңиз болот.",
+    "fr": "Le conducteur a été assigné,\\n et il sera votre guide touristique grâce à sa connaissance des lieux.",
+    "ur": "ڈرائیور مقرر ہو گیا ہے،\\n اور وہ جگہوں کے علم کی بنیاد پر آپ کا سیاحتی رہنما ہوگا۔",
+    "pt": "O motorista foi designado,\\n e ele será seu guia turístico com base no conhecimento dos lugares."
+  },
+  "عدد الساعات المطلوبة": {
+    "en": "Number of hours required",
+    "ar": "عدد الساعات المطلوبة",
+    "ru": "Требуемое количество часов",
+    "ky": "Талап кылынган сааттардын саны",
+    "fr": "Nombre d'heures demandées",
+    "ur": "درکار گھنٹوں کی تعداد",
+    "pt": "Número de horas necessárias"
+  },
+  "Price Summary": {
+    "en": "Price Summary",
+    "ar": "ملخص السعر",
+    "ru": "Сводка цены",
+    "ky": "Баанын жыйынтыгы",
+    "fr": "Récapitulatif du prix",
+    "ur": "قیمت کا خلاصہ",
+    "pt": "Resumo do preço"
+  },
+  "Zion 1": {
+    "en": "Zion 1",
+    "ar": "Zion 1",
+    "ru": "Zion 1",
+    "ky": "Zion 1",
+    "fr": "Zion 1",
+    "ur": "Zion 1",
+    "pt": "Zion 1"
+  },
+  "\\$120.00": {
+    "en": "\\$120.00",
+    "ar": "\\$120.00",
+    "ru": "\\$120.00",
+    "ky": "\\$120.00",
+    "fr": "\\$120.00",
+    "ur": "\\$120.00",
+    "pt": "\\$120.00"
+  },
+  "Quanity: 1": {
+    "en": "Quanity: 1",
+    "ar": "الكمية: 1",
+    "ru": "Количество: 1",
+    "ky": "Саны: 1",
+    "fr": "Quantité : 1",
+    "ur": "مقدار: 1",
+    "pt": "Quantidade: 1"
+  },
+  "Jumpsuit": {
+    "en": "Jumpsuit",
+    "ar": "بدلة قفز",
+    "ru": "Комбинезон",
+    "ky": "Комбинезон",
+    "fr": "Combinaison",
+    "ur": "جمپ سوٹ",
+    "pt": "Macacão"
+  },
+  "ر.س": {
+    "en": "SAR",
+    "ar": "ر.س",
+    "ru": "SAR",
+    "ky": "САР",
+    "fr": "SAR",
+    "ur": "SAR",
+    "pt": "SAR"
+  },
+  "general tips": {
+    "en": "general tips",
+    "ar": "نصائح عامة",
+    "ru": "общие советы",
+    "ky": "жалпы кеңештер",
+    "fr": "conseils généraux",
+    "ur": "عمومی مشورے",
+    "pt": "dicas gerais"
+  },
+  "مدى / فيزا / ماستر كارد": {
+    "en": "Mada / Visa / Mastercard",
+    "ar": "مدى / فيزا / ماستر كارد",
+    "ru": "Mada / Visa / Mastercard",
+    "ky": "Mada / Visa / Mastercard",
+    "fr": "Mada / Visa / Mastercard",
+    "ur": "Mada / Visa / Mastercard",
+    "pt": "Mada / Visa / Mastercard"
+  },
+  "**** 0149": {
+    "en": "**** 0149",
+    "ar": "**** 0149",
+    "ru": "**** 0149",
+    "ky": "**** 0149",
+    "fr": "**** 0149",
+    "ur": "**** 0149",
+    "pt": "**** 0149"
+  },
+  "05/25": {
+    "en": "05/25",
+    "ar": "05/25",
+    "ru": "05/25",
+    "ky": "05/25",
+    "fr": "05/25",
+    "ur": "05/25",
+    "pt": "05/25"
+  },
+  "دفع الآن": {
+    "en": "Pay now",
+    "ar": "دفع الآن",
+    "ru": "Оплатить сейчас",
+    "ky": "Азыр төлөө",
+    "fr": "Payer maintenant",
+    "ur": "ابھی ادا کریں",
+    "pt": "Pagar agora"
+  },
+  "الدفع": {
+    "en": "Payment",
+    "ar": "الدفع",
+    "ru": "Оплата",
+    "ky": "Төлөм",
+    "fr": "Paiement",
+    "ur": "ادائیگی",
+    "pt": "Pagamento"
+  },
+  "The first international Saudi tourist taxi application": {
+    "en": "The first international Saudi tourist taxi application",
+    "ar": "أول تطبيق تاكسي سياحي سعودي دولي",
+    "ru": "Первое международное саудовское туристическое приложение такси",
+    "ky": "Биринчи эл аралык сауд туристтик такси колдонмосу",
+    "fr": "La première application internationale saoudienne de taxi touristique",
+    "ur": "پہلی بین الاقوامی سعودی سیاح ٹیکسی ایپلیکیشن",
+    "pt": "O primeiro aplicativo internacional saudita de táxi turístico"
+  },
+  "Browse Saudi Arabia": {
+    "en": "Browse Saudi Arabia",
+    "ar": "تصفح المملكة العربية السعودية",
+    "ru": "Обзор Саудовской Аравии",
+    "ky": "Сауд Арабиясын карап чыгуу",
+    "fr": "Parcourir l'Arabie saoudite",
+    "ur": "سعودی عرب دیکھیں",
+    "pt": "Explorar a Arábia Saudita"
+  },
+  "Other countries": {
+    "en": "Other countries",
+    "ar": "دول أخرى",
+    "ru": "Другие страны",
+    "ky": "Башка өлкөлөр",
+    "fr": "Autres pays",
+    "ur": "دیگر ممالک",
+    "pt": "Outros países"
+  },
+  "browse": {
+    "en": "browse",
+    "ar": "تصفح",
+    "ru": "обзор",
+    "ky": "карап чыгуу",
+    "fr": "parcourir",
+    "ur": "دیکھنا",
+    "pt": "explorar"
+  },
+  "user@domainname.com": {
+    "en": "user@domainname.com",
+    "ar": "user@domainname.com",
+    "ru": "user@domainname.com",
+    "ky": "user@domainname.com",
+    "fr": "user@domainname.com",
+    "ur": "user@domainname.com",
+    "pt": "user@domainname.com"
+  },
+  "View": {
+    "en": "View",
+    "ar": "عرض",
+    "ru": "Просмотр",
+    "ky": "Көрүү",
+    "fr": "Voir",
+    "ur": "دیکھیں",
+    "pt": "Ver"
+  },
+  "Username": {
+    "en": "Username",
+    "ar": "اسم المستخدم",
+    "ru": "Имя пользователя",
+    "ky": "Колдонуучунун аты",
+    "fr": "Nom d'utilisateur",
+    "ur": "صارف نام",
+    "pt": "Nome de usuário"
+  },
+  "Welcome to Ara Watan": {
+    "en": "Welcome to Ara Watan",
+    "ar": "مرحبًا بك في Ara Watan",
+    "ru": "Добро пожаловать в Ara Watan",
+    "ky": "Ara Watan кош келиңиз",
+    "fr": "Bienvenue sur Ara Watan",
+    "ur": "Ara Watan میں خوش آمدید",
+    "pt": "Bem-vindo ao Ara Watan"
+  },
+  "Countries": {
+    "en": "Countries",
+    "ar": "الدول",
+    "ru": "Страны",
+    "ky": "Өлкөлөр",
+    "fr": "Pays",
+    "ur": "ممالک",
+    "pt": "Países"
+  },
+  "Hours": {
+    "en": "Hours",
+    "ar": "الساعات",
+    "ru": "Часы",
+    "ky": "Сааттар",
+    "fr": "Heures",
+    "ur": "گھنٹے",
+    "pt": "Horas"
+  },
+  "VAT 15%:": {
+    "en": "VAT 15%:",
+    "ar": "ضريبة القيمة المضافة 15%:",
+    "ru": "НДС 15%:",
+    "ky": "КНС 15%:",
+    "fr": "TVA 15%:",
+    "ur": "ویلیو ایڈڈ ٹیکس 15%:",
+    "pt": "IVA 15%:"
+  },
+  "Total:": {
+    "en": "Total:",
+    "ar": "الإجمالي:",
+    "ru": "Итого:",
+    "ky": "Жалпы:",
+    "fr": "Total :",
+    "ur": "کل:",
+    "pt": "Total:"
+  },
+  "عذراً!": {
+    "en": "Sorry!",
+    "ar": "عذراً!",
+    "ru": "Извините!",
+    "ky": "Кечиресиз!",
+    "fr": "Désolé !",
+    "ur": "معذرت!",
+    "pt": "Desculpe!"
+  },
+  "فشلت عملية الدفع": {
+    "en": "Payment failed",
+    "ar": "فشلت عملية الدفع",
+    "ru": "Платеж не прошел",
+    "ky": "Төлөм ишке ашкан жок",
+    "fr": "Le paiement a échoué",
+    "ur": "ادائیگی ناکام ہو گئی",
+    "pt": "O pagamento falhou"
+  },
+  "يرجى التأكد من توفر رصيد كافي في بطاقتك أو المحاولة مرة أخرى": {
+    "en": "Please make sure your card has sufficient balance or try again",
+    "ar": "يرجى التأكد من توفر رصيد كافي في بطاقتك أو المحاولة مرة أخرى",
+    "ru": "Убедитесь, что на карте достаточно средств, или попробуйте еще раз",
+    "ky": "Картаңызда жетиштүү каражат бар экенин текшериңиз же кайра аракет кылыңыз",
+    "fr": "Veuillez vérifier que votre carte dispose d'un solde suffisant ou réessayez",
+    "ur": "براہ کرم یقینی بنائیں کہ آپ کے کارڈ میں کافی رقم ہے یا دوبارہ کوشش کریں",
+    "pt": "Verifique se o seu cartão tem saldo suficiente ou tente novamente"
+  },
+  "حاول مرة أخرى": {
+    "en": "Try again",
+    "ar": "حاول مرة أخرى",
+    "ru": "Попробовать снова",
+    "ky": "Кайра аракет кылыңыз",
+    "fr": "Réessayer",
+    "ur": "دوبارہ کوشش کریں",
+    "pt": "Tentar novamente"
+  },
+  "الإشعارات": {
+    "en": "Notifications",
+    "ar": "الإشعارات",
+    "ru": "Уведомления",
+    "ky": "Билдирмелер",
+    "fr": "Notifications",
+    "ur": "اطلاعات",
+    "pt": "Notificações"
+  },
+  "لم يتم إضافة أي عناوين": {
+    "en": "No addresses have been added",
+    "ar": "لم يتم إضافة أي عناوين",
+    "ru": "Адреса не добавлены",
+    "ky": "Эч кандай дарек кошулган жок",
+    "fr": "Aucune adresse n'a été ajoutée",
+    "ur": "کوئی پتہ شامل نہیں کیا گیا",
+    "pt": "Nenhum endereço foi adicionado"
+  },
+  "قم بإضافة عنوان جديد للمتابعة": {
+    "en": "Add a new address to continue",
+    "ar": "قم بإضافة عنوان جديد للمتابعة",
+    "ru": "Добавьте новый адрес, чтобы продолжить",
+    "ky": "Улантуу үчүн жаңы дарек кошуңуз",
+    "fr": "Ajoutez une nouvelle adresse pour continuer",
+    "ur": "جاری رکھنے کے لیے نیا پتہ شامل کریں",
+    "pt": "Adicione um novo endereço para continuar"
+  },
+  "إضافة عنوان جديد": {
+    "en": "Add a new address",
+    "ar": "إضافة عنوان جديد",
+    "ru": "Добавить новый адрес",
+    "ky": "Жаңы дарек кошуу",
+    "fr": "Ajouter une nouvelle adresse",
+    "ur": "نیا پتہ شامل کریں",
+    "pt": "Adicionar novo endereço"
+  },
+  "Please zoom in on the map to the maximum extent to pinpoint the location accurately.": {
+    "en": "Please zoom in on the map to the maximum extent to pinpoint the location accurately.",
+    "ar": "يرجى تكبير الخريطة إلى أقصى حد لتحديد الموقع بدقة.",
+    "ru": "Увеличьте карту до максимума, чтобы точно указать местоположение.",
+    "ky": "Жайды так аныктоо үчүн картаны эң чоң өлчөмгө чейин чоңойтуңуз.",
+    "fr": "Veuillez agrandir la carte au maximum pour localiser l'emplacement avec précision.",
+    "ur": "مقام کو درست طور پر متعین کرنے کے لیے براہ کرم نقشے کو زیادہ سے زیادہ بڑا کریں۔",
+    "pt": "Amplie o mapa ao máximo para indicar o local com precisão."
+  },
+  "update Your Address": {
+    "en": "update Your Address",
+    "ar": "حدّث عنوانك",
+    "ru": "обновите ваш адрес",
+    "ky": "дарегиңизди жаңыртыңыз",
+    "fr": "mettez à jour votre adresse",
+    "ur": "اپنا پتہ تازہ کریں",
+    "pt": "atualize seu endereço"
+  },
+  "Create Account": {
+    "en": "Create Account",
+    "ar": "إنشاء حساب",
+    "ru": "Создать учетную запись",
+    "ky": "Аккаунт түзүү",
+    "fr": "Créer un compte",
+    "ur": "اکاؤنٹ بنائیں",
+    "pt": "Criar conta"
+  },
+  "Don't have an account?": {
+    "en": "Don't have an account?",
+    "ar": "ليس لديك حساب؟",
+    "ru": "Нет учетной записи?",
+    "ky": "Аккаунтуңуз жокпу?",
+    "fr": "Vous n'avez pas de compte ?",
+    "ur": "اکاؤنٹ نہیں ہے؟",
+    "pt": "Não tem uma conta?"
+  },
+  "You can track the status of your order through the \\\"My Orders\\\" page.": {
+    "en": "You can track the status of your order through the \\\"My Orders\\\" page.",
+    "ar": "يمكنك تتبع حالة طلبك عبر صفحة \\\"طلباتي\\\".",
+    "ru": "Вы можете отслеживать статус заказа на странице \\\"Мои заказы\\\".",
+    "ky": "Буйрутмаңыздын абалын \\\"Менин буйрутмаларым\\\" барагынан көзөмөлдөй аласыз.",
+    "fr": "Vous pouvez suivre l'état de votre commande via la page \\\"Mes commandes\\\".",
+    "ur": "آپ اپنے آرڈر کی حیثیت \\\"میرے آرڈرز\\\" صفحے سے دیکھ سکتے ہیں۔",
+    "pt": "Você pode acompanhar o estado do seu pedido pela página \\\"Meus pedidos\\\"."
+  },
+  "Total Amount": {
+    "en": "Total Amount",
+    "ar": "المبلغ الإجمالي",
+    "ru": "Общая сумма",
+    "ky": "Жалпы сумма",
+    "fr": "Montant total",
+    "ur": "کل رقم",
+    "pt": "Valor total"
+  },
+  "\\$840.00": {
+    "en": "\\$840.00",
+    "ar": "\\$840.00",
+    "ru": "\\$840.00",
+    "ky": "\\$840.00",
+    "fr": "\\$840.00",
+    "ur": "\\$840.00",
+    "pt": "\\$840.00"
+  },
+  "No Bookings Found": {
+    "en": "No Bookings Found",
+    "ar": "لم يتم العثور على حجوزات",
+    "ru": "Бронирования не найдены",
+    "ky": "Брондоолор табылган жок",
+    "fr": "Aucune réservation trouvée",
+    "ur": "کوئی بکنگ نہیں ملی",
+    "pt": "Nenhuma reserva encontrada"
+  },
+  "Select": {
+    "en": "Select",
+    "ar": "تحديد",
+    "ru": "Выбрать",
+    "ky": "Тандоо",
+    "fr": "Sélectionner",
+    "ur": "منتخب کریں",
+    "pt": "Selecionar"
+  },
+  "\\$35/hour": {
+    "en": "\\$35/hour",
+    "ar": "\\$35/ساعة",
+    "ru": "\\$35/час",
+    "ky": "\\$35/саат",
+    "fr": "\\$35/heure",
+    "ur": "\\$35/گھنٹہ",
+    "pt": "\\$35/hora"
+  },
+  "\\$25/hour": {
+    "en": "\\$25/hour",
+    "ar": "\\$25/ساعة",
+    "ru": "\\$25/час",
+    "ky": "\\$25/саат",
+    "fr": "\\$25/heure",
+    "ur": "\\$25/گھنٹہ",
+    "pt": "\\$25/hora"
+  },
+  "\\$40/hour": {
+    "en": "\\$40/hour",
+    "ar": "\\$40/ساعة",
+    "ru": "\\$40/час",
+    "ky": "\\$40/саат",
+    "fr": "\\$40/heure",
+    "ur": "\\$40/گھنٹہ",
+    "pt": "\\$40/hora"
+  },
+  "\\$45/hour": {
+    "en": "\\$45/hour",
+    "ar": "\\$45/ساعة",
+    "ru": "\\$45/час",
+    "ky": "\\$45/саат",
+    "fr": "\\$45/heure",
+    "ur": "\\$45/گھنٹہ",
+    "pt": "\\$45/hora"
+  },
+  "انضم إلى فريق أرى وطن": {
+    "en": "Join the Ara Watan team",
+    "ar": "انضم إلى فريق أرى وطن",
+    "ru": "Присоединяйтесь к команде Ara Watan",
+    "ky": "Ara Watan командасына кошулуңуз",
+    "fr": "Rejoignez l'équipe Ara Watan",
+    "ur": "Ara Watan ٹیم میں شامل ہوں",
+    "pt": "Junte-se à equipe Ara Watan"
+  },
+  "احصل على عمولات مجزية تبدأ من 300 ريال للرحلة الواحدة": {
+    "en": "Get rewarding commissions starting from 300 SAR per trip",
+    "ar": "احصل على عمولات مجزية تبدأ من 300 ريال للرحلة الواحدة",
+    "ru": "Получайте выгодные комиссии от 300 SAR за одну поездку",
+    "ky": "Бир сапар үчүн 300 SARдан башталган пайдалуу комиссиялар алыңыз",
+    "fr": "Obtenez des commissions avantageuses à partir de 300 SAR par trajet",
+    "ur": "فی سفر 300 SAR سے شروع ہونے والے فائدہ مند کمیشن حاصل کریں",
+    "pt": "Receba comissões vantajosas a partir de 300 SAR por viagem"
+  },
+  "دخل إضافي يصل إلى 10,000 ريال شهرياً": {
+    "en": "Extra income of up to 10,000 SAR per month",
+    "ar": "دخل إضافي يصل إلى 10,000 ريال شهرياً",
+    "ru": "Дополнительный доход до 10,000 SAR в месяц",
+    "ky": "Айына 10,000 SARга чейин кошумча киреше",
+    "fr": "Revenu supplémentaire jusqu'à 10,000 SAR par mois",
+    "ur": "ماہانہ 10,000 SAR تک اضافی آمدنی",
+    "pt": "Renda extra de até 10,000 SAR por mês"
+  },
+  "ساعات عمل مرنة تناسب جدولك": {
+    "en": "Flexible working hours that fit your schedule",
+    "ar": "ساعات عمل مرنة تناسب جدولك",
+    "ru": "Гибкий график работы, который подходит вашему расписанию",
+    "ky": "Сиздин графигиңизге ылайык ийкемдүү иш сааттары",
+    "fr": "Des horaires de travail flexibles adaptés à votre emploi du temps",
+    "ur": "لچکدار کام کے اوقات جو آپ کے شیڈول کے مطابق ہوں",
+    "pt": "Horários de trabalho flexíveis que se ajustam à sua agenda"
+  },
+  "دعم فني على مدار الساعة": {
+    "en": "Technical support around the clock",
+    "ar": "دعم فني على مدار الساعة",
+    "ru": "Техническая поддержка круглосуточно",
+    "ky": "Күнү-түнү техникалык колдоо",
+    "fr": "Assistance technique 24 heures sur 24",
+    "ur": "چوبیس گھنٹے فنی معاونت",
+    "pt": "Suporte técnico 24 horas"
+  },
+  "تحويل مباشر للأرباح أسبوعياً": {
+    "en": "Direct weekly transfer of earnings",
+    "ar": "تحويل مباشر للأرباح أسبوعياً",
+    "ru": "Прямой еженедельный перевод заработка",
+    "ky": "Кирешени жума сайын түз которуу",
+    "fr": "Virement direct des gains chaque semaine",
+    "ur": "آمدنی کی ہفتہ وار براہ راست منتقلی",
+    "pt": "Transferência direta dos ganhos semanalmente"
+  },
+  "التسجيل": {
+    "en": "Registration",
+    "ar": "التسجيل",
+    "ru": "Регистрация",
+    "ky": "Катталуу",
+    "fr": "Inscription",
+    "ur": "رجسٹریشن",
+    "pt": "Cadastro"
+  },
+  "اضغط هنا للتسجيل كسائق": {
+    "en": "Click here to register as a driver",
+    "ar": "اضغط هنا للتسجيل كسائق",
+    "ru": "Нажмите здесь, чтобы зарегистрироваться как водитель",
+    "ky": "Айдоочу катары катталуу үчүн бул жерди басыңыз",
+    "fr": "Cliquez ici pour vous inscrire comme conducteur",
+    "ur": "ڈرائیور کے طور پر رجسٹر ہونے کے لیے یہاں کلک کریں",
+    "pt": "Clique aqui para se cadastrar como motorista"
+  },
+  "تسجيل سائق": {
+    "en": "Driver registration",
+    "ar": "تسجيل سائق",
+    "ru": "Регистрация водителя",
+    "ky": "Айдоочуну каттоо",
+    "fr": "Inscription conducteur",
+    "ur": "ڈرائیور رجسٹریشن",
+    "pt": "Cadastro de motorista"
+  },
+  "بيانات الحساب": {
+    "en": "Account details",
+    "ar": "بيانات الحساب",
+    "ru": "Данные учетной записи",
+    "ky": "Аккаунт маалыматы",
+    "fr": "Données du compte",
+    "ur": "اکاؤنٹ کی تفصیلات",
+    "pt": "Dados da conta"
+  },
+  "فعال": {
+    "en": "Active",
+    "ar": "فعال",
+    "ru": "Активен",
+    "ky": "Иштеп жатат",
+    "fr": "Actif",
+    "ur": "چالو",
+    "pt": "Ativo"
+  },
+  "الاسم": {
+    "en": "Name",
+    "ar": "الاسم",
+    "ru": "Имя",
+    "ky": "Аты",
+    "fr": "Nom",
+    "ur": "نام",
+    "pt": "Nome"
+  },
+  "البريد الإلكتروني": {
+    "en": "Email",
+    "ar": "البريد الإلكتروني",
+    "ru": "Электронная почта",
+    "ky": "Электрондук почта",
+    "fr": "E-mail",
+    "ur": "ای میل",
+    "pt": "E-mail"
+  },
+  "رقم الجوال": {
+    "en": "Mobile number",
+    "ar": "رقم الجوال",
+    "ru": "Номер мобильного",
+    "ky": "Мобилдик номер",
+    "fr": "Numéro de mobile",
+    "ur": "موبائل نمبر",
+    "pt": "Número de celular"
+  },
+  "تاريخ التسجيل": {
+    "en": "Registration date",
+    "ar": "تاريخ التسجيل",
+    "ru": "Дата регистрации",
+    "ky": "Катталуу датасы",
+    "fr": "Date d'inscription",
+    "ur": "رجسٹریشن کی تاریخ",
+    "pt": "Data de cadastro"
+  },
+  "5/01/2025": {
+    "en": "5/01/2025",
+    "ar": "5/01/2025",
+    "ru": "5/01/2025",
+    "ky": "5/01/2025",
+    "fr": "5/01/2025",
+    "ur": "5/01/2025",
+    "pt": "5/01/2025"
+  },
+  "وقت التسجيل": {
+    "en": "Registration time",
+    "ar": "وقت التسجيل",
+    "ru": "Время регистрации",
+    "ky": "Катталуу убактысы",
+    "fr": "Heure d'inscription",
+    "ur": "رجسٹریشن کا وقت",
+    "pt": "Hora do cadastro"
+  },
+  "5:36 مساء": {
+    "en": "5:36 PM",
+    "ar": "5:36 مساء",
+    "ru": "17:36",
+    "ky": "17:36",
+    "fr": "17:36",
+    "ur": "5:36 شام",
+    "pt": "17:36"
+  },
+  "رمز المستخدم": {
+    "en": "User code",
+    "ar": "رمز المستخدم",
+    "ru": "Код пользователя",
+    "ky": "Колдонуучунун коду",
+    "fr": "Code utilisateur",
+    "ur": "صارف کوڈ",
+    "pt": "Código do usuário"
+  },
+  "الإجراءات": {
+    "en": "Actions",
+    "ar": "الإجراءات",
+    "ru": "Действия",
+    "ky": "Аракеттер",
+    "fr": "Actions",
+    "ur": "اقدامات",
+    "pt": "Ações"
+  },
+  "تعديل البيانات": {
+    "en": "Edit details",
+    "ar": "تعديل البيانات",
+    "ru": "Изменить данные",
+    "ky": "Маалыматты түзөтүү",
+    "fr": "Modifier les données",
+    "ur": "تفصیلات میں ترمیم کریں",
+    "pt": "Editar dados"
+  },
+  "تغيير كلمة المرور": {
+    "en": "Change password",
+    "ar": "تغيير كلمة المرور",
+    "ru": "Изменить пароль",
+    "ky": "Сырсөздү өзгөртүү",
+    "fr": "Changer le mot de passe",
+    "ur": "پاس ورڈ تبدیل کریں",
+    "pt": "Alterar senha"
+  },
+  "إيقاف الحساب": {
+    "en": "Suspend account",
+    "ar": "إيقاف الحساب",
+    "ru": "Приостановить учетную запись",
+    "ky": "Аккаунтту токтотуу",
+    "fr": "Suspendre le compte",
+    "ur": "اکاؤنٹ روکیں",
+    "pt": "Suspender a conta"
+  },
+  "حذف الحساب": {
+    "en": "Delete account",
+    "ar": "حذف الحساب",
+    "ru": "Удалить учетную запись",
+    "ky": "Аккаунтту өчүрүү",
+    "fr": "Supprimer le compte",
+    "ur": "اکاؤنٹ مٹا دیں",
+    "pt": "Excluir conta"
+  },
+  "Wow! A 5 star !\\nWanna add tip for Gregory?": {
+    "en": "Wow! A 5 star !\\nWanna add tip for Gregory?",
+    "ar": "واو! 5 نجوم!\\nهل تريد إضافة إكرامية لـ Gregory؟",
+    "ru": "Ух ты! 5 звезд!\\nХотите добавить чаевые для Gregory?",
+    "ky": "Ого! 5 жылдыз!\\nGregory үчүн чай пул кошосузбу?",
+    "fr": "Ouah ! 5 étoiles !\\nVoulez-vous ajouter un pourboire pour Gregory ?",
+    "ur": "واہ! 5 ستارے!\\nکیا Gregory کے لیے انعام شامل کرنا چاہتے ہیں؟",
+    "pt": "Uau! 5 estrelas!\\nQuer adicionar uma gorjeta para Gregory?"
+  },
+  "\\$1": {
+    "en": "\\$1",
+    "ar": "\\$1",
+    "ru": "\\$1",
+    "ky": "\\$1",
+    "fr": "\\$1",
+    "ur": "\\$1",
+    "pt": "\\$1"
+  },
+  "\\$2": {
+    "en": "\\$2",
+    "ar": "\\$2",
+    "ru": "\\$2",
+    "ky": "\\$2",
+    "fr": "\\$2",
+    "ur": "\\$2",
+    "pt": "\\$2"
+  },
+  "\\$5": {
+    "en": "\\$5",
+    "ar": "\\$5",
+    "ru": "\\$5",
+    "ky": "\\$5",
+    "fr": "\\$5",
+    "ur": "\\$5",
+    "pt": "\\$5"
+  },
+  "Register a Success Partner - Step 1 of 3": {
+    "en": "Register a Success Partner - Step 1 of 3",
+    "ar": "تسجيل شريك نجاح - الخطوة 1 من 3",
+    "ru": "Регистрация партнера успеха — шаг 1 из 3",
+    "ky": "Ийгилик өнөктөшүн каттоо - 3төн 1-кадам",
+    "fr": "Inscrire un partenaire de réussite - étape 1 sur 3",
+    "ur": "کامیابی کے ساتھی کی رجسٹریشن - مرحلہ 1 از 3",
+    "pt": "Cadastrar um parceiro de sucesso - etapa 1 de 3"
+  },
+  "📌": {
+    "en": "📌",
+    "ar": "📌",
+    "ru": "📌",
+    "ky": "📌",
+    "fr": "📌",
+    "ur": "📌",
+    "pt": "📌"
+  },
+  "Country, City, and Address": {
+    "en": "Country, City, and Address",
+    "ar": "الدولة والمدينة والعنوان",
+    "ru": "Страна, город и адрес",
+    "ky": "Өлкө, шаар жана дарек",
+    "fr": "Pays, ville et adresse",
+    "ur": "ملک، شہر اور پتہ",
+    "pt": "País, cidade e endereço"
+  },
+  "Enter the full address (City and Street Address)": {
+    "en": "Enter the full address (City and Street Address)",
+    "ar": "أدخل العنوان الكامل (المدينة وعنوان الشارع)",
+    "ru": "Введите полный адрес (город и улица)",
+    "ky": "Толук даректи киргизиңиз (шаар жана көчө дареги)",
+    "fr": "Saisissez l'adresse complète (ville et adresse)",
+    "ur": "مکمل پتہ درج کریں (شہر اور گلی کا پتہ)",
+    "pt": "Digite o endereço completo (cidade e endereço da rua)"
+  },
+  "📝": {
+    "en": "📝",
+    "ar": "📝",
+    "ru": "📝",
+    "ky": "📝",
+    "fr": "📝",
+    "ur": "📝",
+    "pt": "📝"
+  },
+  "📷": {
+    "en": "📷",
+    "ar": "📷",
+    "ru": "📷",
+    "ky": "📷",
+    "fr": "📷",
+    "ur": "📷",
+    "pt": "📷"
+  },
+  "🗺️": {
+    "en": "🗺️",
+    "ar": "🗺️",
+    "ru": "🗺️",
+    "ky": "🗺️",
+    "fr": "🗺️",
+    "ur": "🗺️",
+    "pt": "🗺️"
+  },
+  "Submit": {
+    "en": "Submit",
+    "ar": "إرسال",
+    "ru": "Отправить",
+    "ky": "Жөнөтүү",
+    "fr": "Envoyer",
+    "ur": "جمع کروائیں",
+    "pt": "Enviar"
+  },
+  "Current Location": {
+    "en": "Current Location",
+    "ar": "الموقع الحالي",
+    "ru": "Текущее местоположение",
+    "ky": "Учурдагы жайгашкан жер",
+    "fr": "Position actuelle",
+    "ur": "موجودہ مقام",
+    "pt": "Localização atual"
+  },
+  "\\\"Your request has been sent successfully, and a driver will accept your request within the next few minutes": {
+    "en": "\\\"Your request has been sent successfully, and a driver will accept your request within the next few minutes",
+    "ar": "\\\"تم إرسال طلبك بنجاح، وسيقبل سائق طلبك خلال الدقائق القليلة القادمة",
+    "ru": "\\\"Ваш запрос успешно отправлен, и водитель примет его в ближайшие несколько минут",
+    "ky": "\\\"Сурамыңыз ийгиликтүү жөнөтүлдү, айдоочу аны жакынкы бир нече мүнөттө кабыл алат",
+    "fr": "\\\"Votre demande a été envoyée avec succès, et un conducteur acceptera votre demande dans les prochaines minutes",
+    "ur": "\\\"آپ کی درخواست کامیابی سے بھیج دی گئی ہے، اور ایک ڈرائیور اگلے چند منٹوں میں آپ کی درخواست قبول کرے گا",
+    "pt": "\\\"Sua solicitação foi enviada com sucesso, e um motorista aceitará sua solicitação nos próximos minutos"
+  },
+  "+\\$3,250.00": {
+    "en": "+\\$3,250.00",
+    "ar": "+\\$3,250.00",
+    "ru": "+\\$3,250.00",
+    "ky": "+\\$3,250.00",
+    "fr": "+\\$3,250.00",
+    "ur": "+\\$3,250.00",
+    "pt": "+\\$3,250.00"
+  },
+  "-\\$156.78": {
+    "en": "-\\$156.78",
+    "ar": "-\\$156.78",
+    "ru": "-\\$156.78",
+    "ky": "-\\$156.78",
+    "fr": "-\\$156.78",
+    "ur": "-\\$156.78",
+    "pt": "-\\$156.78"
+  },
+  "-\\$42.50": {
+    "en": "-\\$42.50",
+    "ar": "-\\$42.50",
+    "ru": "-\\$42.50",
+    "ky": "-\\$42.50",
+    "fr": "-\\$42.50",
+    "ur": "-\\$42.50",
+    "pt": "-\\$42.50"
+  },
+  "-\\$500.00": {
+    "en": "-\\$500.00",
+    "ar": "-\\$500.00",
+    "ru": "-\\$500.00",
+    "ky": "-\\$500.00",
+    "fr": "-\\$500.00",
+    "ur": "-\\$500.00",
+    "pt": "-\\$500.00"
+  },
+  "+\\$67.25": {
+    "en": "+\\$67.25",
+    "ar": "+\\$67.25",
+    "ru": "+\\$67.25",
+    "ky": "+\\$67.25",
+    "fr": "+\\$67.25",
+    "ur": "+\\$67.25",
+    "pt": "+\\$67.25"
+  },
+  "EPY-2024-147258": {
+    "en": "EPY-2024-147258",
+    "ar": "EPY-2024-147258",
+    "ru": "EPY-2024-147258",
+    "ky": "EPY-2024-147258",
+    "fr": "EPY-2024-147258",
+    "ur": "EPY-2024-147258",
+    "pt": "EPY-2024-147258"
+  },
+  "لوحة الإحصائيات": {
+    "en": "Statistics dashboard",
+    "ar": "لوحة الإحصائيات",
+    "ru": "Панель статистики",
+    "ky": "Статистика тактасы",
+    "fr": "Tableau de statistiques",
+    "ur": "شماریات کا تختہ",
+    "pt": "Painel de estatísticas"
+  },
+  "نظرة عامة على البيانات والمؤشرات الرئيسية": {
+    "en": "Overview of data and key indicators",
+    "ar": "نظرة عامة على البيانات والمؤشرات الرئيسية",
+    "ru": "Обзор данных и ключевых показателей",
+    "ky": "Маалыматтардын жана негизги көрсөткүчтөрдүн жалпы көрүнүшү",
+    "fr": "Aperçu des données et des indicateurs clés",
+    "ur": "ڈیٹا اور اہم اشاریوں کا جائزہ",
+    "pt": "Visão geral dos dados e dos indicadores principais"
+  },
+  "نشط": {
+    "en": "Active",
+    "ar": "نشط",
+    "ru": "Активный",
+    "ky": "Активдүү",
+    "fr": "Actif",
+    "ur": "چالو",
+    "pt": "Ativo"
+  },
+  "الكباتن المفعلين": {
+    "en": "Activated captains",
+    "ar": "الكباتن المفعلين",
+    "ru": "Активированные капитаны",
+    "ky": "Иштетилген капитандар",
+    "fr": "Capitaines activés",
+    "ur": "فعال کیپٹن",
+    "pt": "Capitães ativados"
+  },
+  "معلق": {
+    "en": "Pending",
+    "ar": "معلق",
+    "ru": "В ожидании",
+    "ky": "Күтүүдө",
+    "fr": "En attente",
+    "ur": "زیر التوا",
+    "pt": "Pendente"
+  },
+  "الكباتن المعلقين": {
+    "en": "Pending captains",
+    "ar": "الكباتن المعلقين",
+    "ru": "Капитаны в ожидании",
+    "ky": "Күтүүдөгү капитандар",
+    "fr": "Capitaines en attente",
+    "ur": "زیر التوا کیپٹن",
+    "pt": "Capitães pendentes"
+  },
+  "شركاء": {
+    "en": "Partners",
+    "ar": "شركاء",
+    "ru": "Партнеры",
+    "ky": "Өнөктөштөр",
+    "fr": "Partenaires",
+    "ur": "ساتھی",
+    "pt": "Parceiros"
+  },
+  "عدد الشركاء": {
+    "en": "Number of partners",
+    "ar": "عدد الشركاء",
+    "ru": "Количество партнеров",
+    "ky": "Өнөктөштөрдүн саны",
+    "fr": "Nombre de partenaires",
+    "ur": "ساتھیوں کی تعداد",
+    "pt": "Número de parceiros"
+  },
+  "طلبات": {
+    "en": "Orders",
+    "ar": "طلبات",
+    "ru": "Заказы",
+    "ky": "Буйрутмалар",
+    "fr": "Commandes",
+    "ur": "آرڈرز",
+    "pt": "Pedidos"
+  },
+  "إجمالي الطلبات": {
+    "en": "Total orders",
+    "ar": "إجمالي الطلبات",
+    "ru": "Всего заказов",
+    "ky": "Жалпы буйрутмалар",
+    "fr": "Total des commandes",
+    "ur": "کل آرڈرز",
+    "pt": "Total de pedidos"
+  },
+  "المعالم السياحية": {
+    "en": "Tourist landmarks",
+    "ar": "المعالم السياحية",
+    "ru": "Туристические достопримечательности",
+    "ky": "Туристтик көрүнүктүү жерлер",
+    "fr": "Sites touristiques",
+    "ur": "سیاحتی مقامات",
+    "pt": "Pontos turísticos"
+  },
+  "عدد المعالم المضافة": {
+    "en": "Number of added landmarks",
+    "ar": "عدد المعالم المضافة",
+    "ru": "Количество добавленных достопримечательностей",
+    "ky": "Кошулган көрүнүктүү жерлердин саны",
+    "fr": "Nombre de sites ajoutés",
+    "ur": "شامل کیے گئے مقامات کی تعداد",
+    "pt": "Número de pontos adicionados"
+  },
+  "عدد المسجلين بالتطبيق": {
+    "en": "Number of people registered in the app",
+    "ar": "عدد المسجلين بالتطبيق",
+    "ru": "Количество зарегистрированных в приложении",
+    "ky": "Колдонмого катталгандардын саны",
+    "fr": "Nombre d'inscrits dans l'application",
+    "ur": "ایپ میں رجسٹرڈ لوگوں کی تعداد",
+    "pt": "Número de cadastrados no aplicativo"
+  },
+  "معدل النمو": {
+    "en": "Growth rate",
+    "ar": "معدل النمو",
+    "ru": "Темп роста",
+    "ky": "Өсүү ылдамдыгы",
+    "fr": "Taux de croissance",
+    "ur": "ترقی کی شرح",
+    "pt": "Taxa de crescimento"
+  },
+  "12.5%": {
+    "en": "12.5%",
+    "ar": "12.5%",
+    "ru": "12.5%",
+    "ky": "12.5%",
+    "fr": "12.5%",
+    "ur": "12.5%",
+    "pt": "12.5%"
+  },
+  "التقييم": {
+    "en": "Rating",
+    "ar": "التقييم",
+    "ru": "Оценка",
+    "ky": "Баа",
+    "fr": "Note",
+    "ur": "درجہ بندی",
+    "pt": "Avaliação"
+  },
+  "متوسط الوقت": {
+    "en": "Average time",
+    "ar": "متوسط الوقت",
+    "ru": "Среднее время",
+    "ky": "Орточо убакыт",
+    "fr": "Temps moyen",
+    "ur": "اوسط وقت",
+    "pt": "Tempo médio"
+  },
+  "25 دقيقة": {
+    "en": "25 minutes",
+    "ar": "25 دقيقة",
+    "ru": "25 минут",
+    "ky": "25 мүнөт",
+    "fr": "25 minutes",
+    "ur": "25 منٹ",
+    "pt": "25 minutos"
+  },
+  "الإحصائيات": {
+    "en": "Statistics",
+    "ar": "الإحصائيات",
+    "ru": "Статистика",
+    "ky": "Сандык маалымат",
+    "fr": "Statistiques",
+    "ur": "شماریات",
+    "pt": "Estatísticas"
+  },
+  "لم يتم العثور على بيانات": {
+    "en": "No data found",
+    "ar": "لم يتم العثور على بيانات",
+    "ru": "Данные не найдены",
+    "ky": "Маалымат табылган жок",
+    "fr": "Aucune donnée trouvée",
+    "ur": "کوئی مواد نہیں ملا",
+    "pt": "Nenhum dado encontrado"
+  },
+  "تمت الإضافة بنجاح": {
+    "en": "Added successfully",
+    "ar": "تمت الإضافة بنجاح",
+    "ru": "Успешно добавлено",
+    "ky": "Ийгиликтүү кошулду",
+    "fr": "Ajouté avec succès",
+    "ur": "کامیابی سے شامل ہو گیا",
+    "pt": "Adicionado com sucesso"
+  },
+  "\\$25.40": {
+    "en": "\\$25.40",
+    "ar": "\\$25.40",
+    "ru": "\\$25.40",
+    "ky": "\\$25.40",
+    "fr": "\\$25.40",
+    "ur": "\\$25.40",
+    "pt": "\\$25.40"
+  },
+  "Upload images to set your account profile picture.\\n": {
+    "en": "Upload images to set your account profile picture.\\n",
+    "ar": "ارفع صورًا لتعيين صورة ملف حسابك الشخصي.\\n",
+    "ru": "Загрузите изображения, чтобы установить фото профиля учетной записи.\\n",
+    "ky": "Аккаунттун профиль сүрөтүн коюу үчүн сүрөттөрдү жүктөңүз.\\n",
+    "fr": "Téléversez des images pour définir la photo de profil de votre compte.\\n",
+    "ur": "اپنے اکاؤنٹ کی پروفائل تصویر لگانے کے لیے تصاویر اپ لوڈ کریں۔\\n",
+    "pt": "Envie imagens para definir a foto de perfil da sua conta.\\n"
+  },
+  "Allow the \\\"Ara Watan\\\" app to access your location for the purpose of delivering you to the specified tourist destinations.": {
+    "en": "Allow the \\\"Ara Watan\\\" app to access your location for the purpose of delivering you to the specified tourist destinations.",
+    "ar": "اسمح لتطبيق \\\"Ara Watan\\\" بالوصول إلى موقعك لغرض توصيلك إلى الوجهات السياحية المحددة.",
+    "ru": "Разрешите приложению \\\"Ara Watan\\\" доступ к вашему местоположению, чтобы доставить вас к указанным туристическим местам.",
+    "ky": "Көрсөтүлгөн туристтик жайларга жеткирүү үчүн \\\"Ara Watan\\\" колдонмосуна жайыңызга уруксат бериңиз.",
+    "fr": "Autorisez l'application \\\"Ara Watan\\\" à accéder à votre position afin de vous conduire aux destinations touristiques indiquées.",
+    "ur": "مخصوص سیاحتی منزلوں تک آپ کو پہنچانے کے لیے \\\"Ara Watan\\\" ایپ کو اپنے مقام تک رسائی کی اجازت دیں۔",
+    "pt": "Permita que o aplicativo \\\"Ara Watan\\\" acesse sua localização para levá-lo aos destinos turísticos indicados."
+  },
+  "\\\"Allow the Arra Watan app to access your current location for the purpose of conducting sightseeing tours.\\\"": {
+    "en": "\\\"Allow the Arra Watan app to access your current location for the purpose of conducting sightseeing tours.\\\"",
+    "ar": "\\\"اسمح لتطبيق Arra Watan بالوصول إلى موقعك الحالي لغرض القيام بجولات سياحية.\\\"",
+    "ru": "\\\"Разрешите приложению Arra Watan доступ к вашему текущему местоположению для проведения обзорных экскурсий.\\\"",
+    "ky": "\\\"Көрүү саякаттарын өткөрүү үчүн Arra Watan колдонмосуна учурдагы жайыңызга уруксат бериңиз.\\\"",
+    "fr": "\\\"Autorisez l'application Arra Watan à accéder à votre position actuelle afin d'effectuer des visites touristiques.\\\"",
+    "ur": "\\\"سیاحتی دورے کرنے کے لیے Arra Watan ایپ کو اپنے موجودہ مقام تک رسائی کی اجازت دیں۔\\\"",
+    "pt": "\\\"Permita que o aplicativo Arra Watan acesse sua localização atual para realizar passeios turísticos.\\\""
+  },
+  "نستخدم الإشعارات لإبقاء المستخدم على اطلاع فوري بحالة الطلبات، التحديثات المهمة، العروض، والتنبيهات التشغيلية داخل التطبيق.\\n": {
+    "en": "We use notifications to keep the user immediately informed about order status, important updates, offers, and operational alerts inside the app.\\n",
+    "ar": "نستخدم الإشعارات لإبقاء المستخدم على اطلاع فوري بحالة الطلبات، التحديثات المهمة، العروض، والتنبيهات التشغيلية داخل التطبيق.\\n",
+    "ru": "Мы используем уведомления, чтобы сразу информировать пользователя о статусе заказов, важных обновлениях, предложениях и операционных оповещениях в приложении.\\n",
+    "ky": "Колдонмонун ичинде буйрутмалардын абалы, маанилүү жаңыртуулар, сунуштар жана иш боюнча эскертүүлөр тууралуу колдонуучуну дароо кабардар кылуу үчүн билдирмелерди колдонобуз.\\n",
+    "fr": "Nous utilisons les notifications pour informer immédiatement l'utilisateur de l'état des commandes, des mises à jour importantes, des offres et des alertes opérationnelles dans l'application.\\n",
+    "ur": "ہم اطلاعات اس لیے استعمال کرتے ہیں تاکہ صارف کو ایپ کے اندر آرڈر کی حیثیت، اہم تازہ کاریوں، پیشکشوں اور عملی انتباہات سے فوراً آگاہ رکھا جائے۔\\n",
+    "pt": "Usamos notificações para manter o usuário imediatamente informado sobre o estado dos pedidos, atualizações importantes, ofertas e alertas operacionais dentro do aplicativo.\\n"
+  }
+}

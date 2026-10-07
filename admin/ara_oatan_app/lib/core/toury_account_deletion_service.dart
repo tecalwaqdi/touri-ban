@@ -140,41 +140,24 @@ abstract final class TouryAccountDeletionService {
     }
   }
 
-  static String userFacingMessage(
-    AccountDeletionResult result, {
-    required bool arabic,
-  }) {
+  static String userFacingMessage(AccountDeletionResult result) {
     final code = result.typedCode ?? result.message;
     switch (code) {
       case 'ACCOUNT_DELETION_BLOCKED_ACTIVE_TRIP':
-        return arabic
-            ? 'لا يمكن حذف الحساب أثناء وجود رحلة نشطة.'
-            : 'You cannot delete the account while a trip is active.';
+        return 'account_deletion_blocked_active_trip';
       case 'ACCOUNT_DELETION_BLOCKED_PENDING_SETTLEMENT':
-        return arabic
-            ? 'لا يمكن حذف الحساب لوجود تسوية مالية معلقة.'
-            : 'You cannot delete the account while a settlement is pending.';
+        return 'account_deletion_blocked_pending_settlement';
       case 'ACCOUNT_DELETION_BLOCKED_PENDING_WALLET_TX':
-        return arabic
-            ? 'لا يمكن حذف الحساب لوجود عملية محفظة قيد المعالجة.'
-            : 'You cannot delete the account while a wallet transaction is pending.';
+        return 'account_deletion_blocked_pending_wallet_tx';
       case 'ACCOUNT_DELETION_BLOCKED_WALLET_BALANCE':
-        return arabic
-            ? 'لا يمكن حذف الحساب بينما توجد مستحقات أو رصيد في المحفظة. تواصل مع الدعم لتسوية الحساب أولاً.'
-            : 'You cannot delete the account while the wallet has a balance. Contact support to settle first.';
+        return 'account_deletion_blocked_wallet_balance';
       case 'unauthenticated':
-        return arabic
-            ? 'يجب تسجيل الدخول لحذف الحساب.'
-            : 'Please sign in to delete your account.';
+        return 'account_deletion_sign_in_required';
       default:
         if (result.firebaseCode == 'unauthenticated') {
-          return arabic
-              ? 'يجب تسجيل الدخول لحذف الحساب.'
-              : 'Please sign in to delete your account.';
+          return 'account_deletion_sign_in_required';
         }
-        return arabic
-            ? 'تعذر حذف الحساب حالياً. حاول مرة أخرى أو تواصل مع الدعم.'
-            : 'Account deletion could not be completed. Try again or contact support.';
+        return 'account_deletion_failed_generic';
     }
   }
 }

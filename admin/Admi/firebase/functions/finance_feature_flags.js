@@ -8,8 +8,13 @@
  * Cutover parallel-write control:
  *   LEGACY_ADMIN_WRITE_MODE =
  *     - unrestricted (legacy default when unset historically)
- *     - read_only (all CF financial writes blocked; fail closed)
+ *     - read_only (legacy Admin CF financial writes blocked; fail closed)
  *     - super_admin_emergency_only (only Auth claim super_admin may pass flag gates)
+ *
+ * Trusted Finance V2 cash realization (`FINANCIAL_CASH_REALIZATION_V2_ENABLED`) is
+ * intentionally independent of LEGACY_ADMIN_WRITE_MODE: it is gated only by its
+ * domain flag + caller auth/eligibility. Settlement/payment/wallet flags remain
+ * subject to the legacy write-mode gate.
  *
  * Missing / unknown mode during cutover restriction → fail closed to read_only
  * when LEGACY_ADMIN_CUTOVER_RESTRICTED=true on the doc.
@@ -32,6 +37,15 @@ const WRITE_MODES = new Set([
   'read_only',
   'super_admin_emergency_only',
 ]);
+
+/** Domain flags that must not be blocked by LEGACY_ADMIN_WRITE_MODE. */
+const LEGACY_WRITE_MODE_EXEMPT_FLAGS = new Set([
+  'FINANCIAL_CASH_REALIZATION_V2_ENABLED',
+]);
+
+function isLegacyWriteModeExemptFlag(key) {
+  return LEGACY_WRITE_MODE_EXEMPT_FLAGS.has(key);
+}
 
 function normalizeWriteMode(raw, cutoverRestricted) {
   const mode = typeof raw === 'string' ? raw.trim().toLowerCase() : '';
@@ -81,6 +95,9 @@ function isSuperAdminAuth(auth) {
  * Fail-closed write gate for Legacy Admin financial CF mutations.
  * No browser override — server-side only.
  *
+ * Cash V2 realization is exempt from LEGACY_ADMIN_WRITE_MODE and requires its
+ * domain flag explicitly (no emergency bypass of a disabled cash flag).
+ *
  * @param {object} flags from loadFinanceFeatureFlags
  * @param {string} key flag name
  * @param {function} fail (code, message, details) => never
@@ -88,25 +105,28 @@ function isSuperAdminAuth(auth) {
  */
 function assertFlag(flags, key, fail, opts = {}) {
   const mode = flags.LEGACY_ADMIN_WRITE_MODE || 'unrestricted';
+  const cashV2Exempt = isLegacyWriteModeExemptFlag(key);
 
-  if (mode === 'read_only') {
-    fail('failed-precondition', 'LEGACY_ADMIN_READ_ONLY', {
-      flag: key,
-      mode,
-      reason: 'Legacy Admin financial writes disabled for Admin Next cutover',
-    });
-  }
-
-  if (mode === 'super_admin_emergency_only') {
-    if (!isSuperAdminAuth(opts.auth)) {
-      fail('failed-precondition', 'LEGACY_ADMIN_SUPER_ADMIN_EMERGENCY_ONLY', {
+  if (!cashV2Exempt) {
+    if (mode === 'read_only') {
+      fail('failed-precondition', 'LEGACY_ADMIN_READ_ONLY', {
         flag: key,
         mode,
-        reason: 'Only Super Admin emergency writes allowed during cutover',
+        reason: 'Legacy Admin financial writes disabled for Admin Next cutover',
       });
     }
-    // Super Admin emergency: allow even if domain flag is false (explicit cutover escape hatch).
-    return;
+
+    if (mode === 'super_admin_emergency_only') {
+      if (!isSuperAdminAuth(opts.auth)) {
+        fail('failed-precondition', 'LEGACY_ADMIN_SUPER_ADMIN_EMERGENCY_ONLY', {
+          flag: key,
+          mode,
+          reason: 'Only Super Admin emergency writes allowed during cutover',
+        });
+      }
+      // Super Admin emergency: allow even if domain flag is false (explicit cutover escape hatch).
+      return;
+    }
   }
 
   if (flags[key] === true) return;
@@ -138,4 +158,6 @@ module.exports = {
   evaluateLegacyAdminWriteGate,
   normalizeWriteMode,
   isSuperAdminAuth,
+  isLegacyWriteModeExemptFlag,
+  LEGACY_WRITE_MODE_EXEMPT_FLAGS,
 };

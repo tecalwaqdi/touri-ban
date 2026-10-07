@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io' show Platform;
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import '/core/driver_order_meta.dart';
@@ -65,10 +66,9 @@ LocationSettings _tripLocationSettings() {
       accuracy: LocationAccuracy.bestForNavigation,
       distanceFilter: 10,
       intervalDuration: const Duration(seconds: 5),
-      foregroundNotificationConfig: const ForegroundNotificationConfig(
-        notificationTitle: 'Touri Trip — live tracking',
-        notificationText:
-            'Sharing your location with the customer during this active trip',
+      foregroundNotificationConfig: ForegroundNotificationConfig(
+        notificationTitle: 'tracking.live_title'.tr(),
+        notificationText: 'tracking.live_body'.tr(),
         enableWakeLock: true,
       ),
     );

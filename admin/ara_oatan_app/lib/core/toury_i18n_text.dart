@@ -47,7 +47,7 @@ String touryLocalizedText(
     final v = i18n[key]?.trim();
     if (v == null || v.isEmpty) return null;
     if (requireArabicScript && !touryLooksArabic(v)) return null;
-    if (langOnly != 'ar' && touryLooksArabic(v)) return null;
+    if (langOnly != 'ar' && langOnly != 'ur' && touryLooksArabic(v)) return null;
     return v;
   }
 
@@ -80,15 +80,48 @@ String touryLocalizedText(
   for (final entry in i18n.entries) {
     final v = entry.value.trim();
     if (v.isEmpty) continue;
-    if (langOnly != 'ar' && touryLooksArabic(v)) continue;
+    if (langOnly != 'ar' && langOnly != 'ur' && touryLooksArabic(v)) continue;
     return v;
   }
 
   if (legacyTrim.isEmpty) return '';
-  if (langOnly != 'ar' && touryLooksArabic(legacyTrim)) {
+  // Non-Arabic UI must not surface an Arabic-only canonical name.
+  if (langOnly != 'ar' && langOnly != 'ur' && touryLooksArabic(legacyTrim)) {
     return '';
   }
   return legacyTrim;
+}
+
+/// Cached geo snapshot (often Arabic). Non-Arabic UI must not show it
+/// when it is Arabic script and no names_i18n value was resolved.
+String tourySafeCachedGeoLabel(
+  String cached, {
+  required String localeKey,
+}) {
+  final lang = localeKey.split(RegExp(r'[_-]')).first.toLowerCase();
+  final text = cached.trim();
+  if (text.isEmpty) return '';
+  if (lang != 'ar' && lang != 'ur' && touryLooksArabic(text)) return '';
+  return text;
+}
+
+/// Requested locale, then English, then a non-Arabic locale. Cached Arabic
+/// is used only for Arabic/Urdu UI.
+String touryGeoNameLabel({
+  required String localeKey,
+  Map<String, String> namesI18n = const {},
+  String legacyNaim = '',
+  String cachedText = '',
+}) {
+  if (namesI18n.isNotEmpty || legacyNaim.trim().isNotEmpty) {
+    final resolved = touryLocalizedText(
+      namesI18n,
+      legacyNaim,
+      localeKey: localeKey,
+    );
+    if (resolved.isNotEmpty) return resolved;
+  }
+  return tourySafeCachedGeoLabel(cachedText, localeKey: localeKey);
 }
 
 /// Display-safe address: hide Arabic-only address when UI locale is not Arabic.
@@ -103,7 +136,7 @@ String touryLocalizedAddress(
     localeKey: localeKey,
   );
   final lang = localeKey.split(RegExp(r'[_-]')).first.toLowerCase();
-  if (lang != 'ar' && touryLooksArabic(localized)) {
+  if (lang != 'ar' && lang != 'ur' && touryLooksArabic(localized)) {
     return '';
   }
   return localized;

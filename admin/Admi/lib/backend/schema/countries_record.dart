@@ -204,6 +204,9 @@ Map<String, dynamic> createCountriesRecordData({
   Map<String, String>? namesI18n,
   String? currencyCode,
   String? currencySymbol,
+  double? localUnitsPerSar,
+  bool? cashEnabled,
+  bool? onlinePaymentEnabled,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -226,6 +229,9 @@ Map<String, dynamic> createCountriesRecordData({
       'names_i18n': namesI18n,
       'currency_code': currencyCode,
       'CurrencySymbol': currencySymbol,
+      'local_units_per_sar': localUnitsPerSar,
+      'cash_enabled': cashEnabled,
+      'online_payment_enabled': onlinePaymentEnabled,
     }.withoutNulls,
   );
 

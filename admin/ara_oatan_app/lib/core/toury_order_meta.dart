@@ -3,12 +3,35 @@ import '/backend/schema/order_record.dart';
 import '/core/toury_booking_status_localizer.dart';
 import '/core/toury_customer_cancel_policy.dart';
 import '/core/toury_order_integration.dart';
+import '/core/toury_tracking_phase.dart';
 import '/core/toury_trip_progress.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 /// حقول تتبع إضافية على مستند `order`.
 extension TouryOrderMeta on OrderRecord {
+  /// Optional booking flag: after landmarks, return to original pickup.
+  bool get returnToPickup => snapshotData['returnToPickup'] == true;
+
+  String get trackingPhaseRaw =>
+      (snapshotData['tracking_phase'] ?? '').toString().trim();
+
+  String get trackingPhase => TouryTrackingPhase.resolve(
+        statusCode: statusCode,
+        returnToPickup: returnToPickup,
+        trackingPhase: trackingPhaseRaw,
+        halhText: halhText,
+      );
+
+  /// Fixed pickup snapshot from booking (`LOKESHN` / origin*).
+  LatLng? get originalPickupSnapshot => TouryTrackingPhase.originalPickup(
+        lokeshn: lokeshn,
+        originLatitude:
+            castToType<double>(snapshotData['originLatitude']),
+        originLongitude:
+            castToType<double>(snapshotData['originLongitude']),
+      );
+
   int get etaSeconds => castToType<int>(snapshotData['etaSeconds']) ?? 0;
 
   double get distanceRemainingMeters =>
@@ -85,22 +108,38 @@ extension TouryOrderMeta on OrderRecord {
 
   List<LatLng> trackingRouteWaypoints() {
     final driver = driverLivePosition;
-    final pickup = customerPickup;
+    final pickup = originalPickupSnapshot ?? customerPickup;
     final dest = tripDestination;
     final planned = plannedWaypoints();
     final stops = intermediateStops();
+    final phase = trackingPhase;
     final stage = touryResolveTripStage(
       statusCode: statusCode,
       halhText: halhText,
     );
 
-    // قبل الوصول: المندوب → نقطة الانطلاق فقط.
-    if (stage == TouryTripStage.enRoute) {
+    List<LatLng> dedupe(List<LatLng> live) {
+      final out = <LatLng>[];
+      for (final p in live) {
+        if (out.isEmpty || out.last != p) out.add(p);
+      }
+      return out;
+    }
+
+    // At customer pickup: clear the approach polyline until Start.
+    if (stage == TouryTripStage.arrived &&
+        phase != TouryTrackingPhase.toDestination &&
+        phase != TouryTrackingPhase.atDestination &&
+        phase != TouryTrackingPhase.returningToPickup &&
+        phase != TouryTrackingPhase.returnedToPickup) {
+      return const [];
+    }
+
+    // Phase 1: Driver → original pickup only.
+    if (phase == TouryTrackingPhase.toPickup ||
+        stage == TouryTripStage.enRoute) {
       if (driver != null && pickup != null && driver != pickup) {
         return [driver, pickup];
-      }
-      if (driver != null && dest != null && driver != dest) {
-        return [driver, dest];
       }
       if (pickup != null && dest != null && pickup != dest) {
         return [pickup, dest];
@@ -108,22 +147,38 @@ extension TouryOrderMeta on OrderRecord {
       return const [];
     }
 
-    // بعد الوصول / بدء الرحلة: موضع حي → محطات → الوجهة (بدون مسار الالتقاط).
-    if (stage == TouryTripStage.arrived || stage == TouryTripStage.started) {
+    // Visit waiting: no active navigation polyline (stay at destination).
+    if (phase == TouryTrackingPhase.atDestination ||
+        phase == TouryTrackingPhase.returnedToPickup) {
+      return const [];
+    }
+
+    // Return leg: driver/landmark → original pickup snapshot.
+    if (phase == TouryTrackingPhase.returningToPickup && returnToPickup) {
+      final origin = driver ?? dest;
+      if (origin != null && pickup != null && origin != pickup) {
+        return [origin, pickup];
+      }
+      return const [];
+    }
+
+    // Phase 2: Driver → stops → destination (pickup leg cleared).
+    if (phase == TouryTrackingPhase.toDestination ||
+        stage == TouryTripStage.arrived ||
+        stage == TouryTripStage.started) {
       final live = <LatLng>[
         if (driver != null) driver,
-        if (driver == null && pickup != null) pickup,
         ...stops.where((p) => p != pickup && p != dest && p != driver),
         if (dest != null && dest != driver && dest != pickup) dest,
       ];
-      final deduped = <LatLng>[];
-      for (final p in live) {
-        if (deduped.isEmpty || deduped.last != p) deduped.add(p);
-      }
-      if (deduped.length >= 2) return deduped;
+      final points = dedupe(live);
+      if (points.length >= 2) return points;
     }
 
-    // بحث / مكتمل: استخدم snapshot المخطط أو الالتقاط→الوجهة.
+    if (phase == TouryTrackingPhase.completed) {
+      return const [];
+    }
+
     if (planned.length >= 2) return planned;
 
     return [

@@ -662,6 +662,47 @@ exports.reviewDriverApplicationV2 = async (data, context) => {
       if (!driver.mndob_vill) fail('failed-precondition', 'village_required');
     }
 
+    // Server country guard on approve — blocks cross-country type even from old clients.
+    // Drivers with no type ref are left unchanged (not assigned here).
+    if (action === 'approve') {
+      const typeRef =
+        driver.mndob_type_car || driver.carRev_mndob || driver.car_rev_mndob;
+      if (typeRef) {
+        const countryRef = driver.Rev_dolh || driver.rev_dolh;
+        if (!countryRef) {
+          fail('failed-precondition', 'DRIVER_COUNTRY_REQUIRED');
+        }
+        const resolvedCountry = await countryResolver.resolveCountryRequirements(
+          tx,
+          db,
+          countryRef,
+          (reqs) => countryConfig.classifyRequirements(reqs) === 'configured',
+        );
+        const countryPath = resolvedCountry.countryPath || null;
+        if (!countryPath) {
+          fail('failed-precondition', 'DRIVER_COUNTRY_REQUIRED');
+        }
+        const typeSnap = await tx.get(typeRef);
+        const countrySnap = await tx.get(db.doc(countryPath));
+        const countryData = countrySnap.exists ? countrySnap.data() || {} : {};
+        const iso2 = countryConfig.resolveCountryIso(
+          countryPath.split('/').pop(),
+          countryData,
+        );
+        const vehicleCheck = countryConfig.validateDriverVehicleTypeAssignment({
+          typeCarData: typeSnap.exists ? typeSnap.data() : null,
+          driverCountryPath: countryPath,
+          driverCountryIso2: iso2,
+        });
+        if (!vehicleCheck.ok) {
+          fail(
+            'failed-precondition',
+            vehicleCheck.reasonCode || 'VEHICLE_TYPE_MARKET_MISMATCH',
+          );
+        }
+      }
+    }
+
     const now = admin.firestore.FieldValue.serverTimestamp();
     const nextVersion = reviewVersion + 1;
     const patch = {

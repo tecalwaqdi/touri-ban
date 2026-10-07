@@ -231,6 +231,24 @@ class CloudFunctionsClient {
     return Map<String, dynamic>.from(result.data as Map);
   }
 
+  /// Approve / reject an approved-driver profile data-change request.
+  static Future<Map<String, dynamic>> reviewDriverProfileChangeRequest({
+    required String requestId,
+    required String decision,
+    String reason = '',
+    Map<String, dynamic>? applyFields,
+  }) async {
+    final result =
+        await _functions.httpsCallable('reviewDriverProfileChangeRequest').call({
+      'requestId': requestId,
+      'decision': decision,
+      if (reason.isNotEmpty) 'reason': reason,
+      if (applyFields != null && applyFields.isNotEmpty)
+        'applyFields': applyFields,
+    });
+    return Map<String, dynamic>.from(result.data as Map);
+  }
+
   static Future<Map<String, dynamic>> createSettlementDraftV2({
     required String driverId,
     required String countryId,

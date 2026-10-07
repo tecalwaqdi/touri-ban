@@ -122,6 +122,11 @@ class _AdminNotificationsWidgetState extends State<AdminNotificationsWidget> {
     await _markRead(n);
     if (!mounted) return;
 
+    if (n.type.toLowerCase().contains('data_change')) {
+      context.pushNamed(AdminDriverDataChangeRequestsWidget.routeName);
+      return;
+    }
+
     if (n.driverId.isNotEmpty) {
       final ref = FirebaseFirestore.instance.collection('user').doc(n.driverId);
       final snap = await ref.get();

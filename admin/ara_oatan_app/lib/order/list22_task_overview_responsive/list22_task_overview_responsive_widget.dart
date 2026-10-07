@@ -16,6 +16,8 @@ import '/core/toury_async_action_guard.dart';
 import '/core/toury_booking_filter.dart';
 import '/core/toury_booking_status_localizer.dart';
 import '/core/toury_currency.dart';
+import '/core/toury_geo_display.dart';
+import '/core/toury_i18n_text.dart';
 import '/core/toury_dialogs.dart';
 import '/core/toury_payment_flow.dart';
 import '/backend/schema/enums/enums.dart';
@@ -1575,9 +1577,17 @@ class _TouryBookingCard extends StatelessWidget {
   }
 
   String _pickupLabel() {
+    final localeKey = touryActiveContentLocaleKey();
     final raw = order.loceshStreng.trim();
-    if (raw.isNotEmpty) return raw;
-    if (order.villText.trim().isNotEmpty) return order.villText.trim();
+    if (raw.isNotEmpty) {
+      final address = touryLocalizedAddress(raw, localeKey: localeKey);
+      if (address.isNotEmpty) return address;
+    }
+    final cached = tourySafeCachedGeoLabel(
+      order.villText,
+      localeKey: localeKey,
+    );
+    if (cached.isNotEmpty) return cached;
     return 'booking_pickup_unknown'.tr();
   }
 
@@ -1603,7 +1613,10 @@ class _TouryBookingCard extends StatelessWidget {
       formatType: FormatType.decimal,
       decimalType: DecimalType.automatic,
     );
-    final currency = TouryCurrency.displaySymbolForOrder(order).trim();
+    final currency = TouryCurrency.displaySymbolForOrder(
+      order,
+      locale: Localizations.localeOf(context),
+    ).trim();
     return currency.isEmpty ? formatted : '$formatted $currency';
   }
 

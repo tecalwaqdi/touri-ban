@@ -16,6 +16,8 @@ class EdetVillModel extends FlutterFlowModel<EdetVillWidget> {
   bool labelsLoaded = false;
   String? countryLabel;
   String? regionLabel;
+  static const geoLocales = ['ar', 'en', 'ru', 'ky', 'fr', 'ur', 'pt'];
+  final geoNameControllers = <String, TextEditingController>{};
 
   void bindVillagesRecord(VillagesRecord record) {
     if (recordInitialized) {
@@ -23,6 +25,10 @@ class EdetVillModel extends FlutterFlowModel<EdetVillWidget> {
     }
     textController1 ??= TextEditingController(text: record.naim);
     textController2 ??= TextEditingController(text: record.osf);
+    for (final lang in geoLocales) {
+      geoNameControllers[lang] ??=
+          TextEditingController(text: record.namesI18n[lang] ?? '');
+    }
     switchValue ??= record.acctev;
     uploadedFileUrl_uploadDataWt5 = record.img;
     recordInitialized = true;
@@ -49,5 +55,8 @@ class EdetVillModel extends FlutterFlowModel<EdetVillWidget> {
 
     textFieldFocusNode2?.dispose();
     textController2?.dispose();
+    for (final controller in geoNameControllers.values) {
+      controller.dispose();
+    }
   }
 }

@@ -9,6 +9,9 @@ import 'package:provider/provider.dart';
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/core/driver_country_service.dart';
+import '/core/driver_geo_display.dart';
+import '/core/driver_i18n_text.dart';
+import '/core/driver_work_area_resolver.dart';
 import '/core/driver_dialogs.dart';
 import '/core/driver_online_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
@@ -19,6 +22,8 @@ import '/core/driver_order_heatmap_service.dart';
 import '/core/driver_live_route_controller.dart';
 import '/core/driver_map_utils.dart';
 import '/core/driver_navigation_service.dart';
+import '/core/driver_lifecycle_state.dart';
+import '/core/toury_system_status_codes.dart';
 import '/core/toury_maps_config.dart';
 import '/design_system/design_system.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
@@ -173,13 +178,7 @@ class DriverHomeMapPanel extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    valueOrDefault(
-                                      currentUserDocument?.mndobVillText,
-                                      driverTr(context, 'Work area'),
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                  _DriverWorkAreaSubtitle(
                                     style: typography.bodySmall.copyWith(
                                       color: Colors.white
                                           .withValues(alpha: 0.85),
@@ -278,10 +277,10 @@ class DriverHomeMapPanel extends StatelessWidget {
                         elevation: 0,
                         shadowColor: colors.shadow,
                         child: Tooltip(
-                          message: 'Recenter map',
+                          message: driverTr(context, 'Recenter map'),
                           child: Semantics(
                             button: true,
-                            label: 'Recenter map',
+                            label: driverTr(context, 'Recenter map'),
                             child: InkWell(
                               borderRadius: DsRadius.medium,
                               onTap: () => _recenterMap(
@@ -345,6 +344,7 @@ class _HomeMapLayerState extends State<_HomeMapLayer> {
   bool _showHeatmap = true;
   gmaps.LatLng? _mapCenter;
   double _zoom = 14;
+  String? _lastTrackingPhase;
   String? _lastRouteFp;
 
   @override
@@ -386,7 +386,18 @@ class _HomeMapLayerState extends State<_HomeMapLayer> {
       order?.routeWaypoints(driverOverride: widget.driverLocation) ??
       [widget.driverLocation];
 
-  void _syncRoute(List<LatLng> waypoints) {
+  void _syncRoute(List<LatLng> waypoints, {String? trackingPhase}) {
+    if (_lastTrackingPhase != null &&
+        trackingPhase != null &&
+        _lastTrackingPhase != trackingPhase) {
+      _routeCtrl.reset();
+      _didFitRoadRoute = false;
+      _lastRouteFp = null;
+    }
+    if (trackingPhase != null) {
+      _lastTrackingPhase = trackingPhase;
+    }
+
     final fp = waypoints
         .map((p) =>
             '${p.latitude.toStringAsFixed(5)},${p.longitude.toStringAsFixed(5)}')
@@ -527,7 +538,7 @@ class _HomeMapLayerState extends State<_HomeMapLayer> {
     int demandCount = 0,
   }) {
     final routeWaypoints = _routeWaypoints(order);
-    _syncRoute(routeWaypoints);
+    _syncRoute(routeWaypoints, trackingPhase: order?.trackingPhase);
     final visibleRoute = _routeCtrl.roadPoints ?? routeWaypoints;
     final polylines = visibleRoute.length >= 2
         ? {
@@ -883,11 +894,14 @@ class _QuickAction extends StatelessWidget {
               Flexible(
                 child: Text(
                   label,
-                  maxLines: 1,
+                  maxLines: 2,
+                  softWrap: true,
                   overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                   style: typography.labelSmall.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
+                    height: 1.1,
                   ),
                 ),
               ),
@@ -983,9 +997,19 @@ class _ActiveTripBanner extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          order.halhText.isNotEmpty
-                              ? order.halhText
-                              : driverTr(context, 'Tap to follow trip'),
+                          () {
+                            final key =
+                                TourySystemStatusCodes.displayHalhKeyForCode(
+                              DriverTripActionGates.codeOf(
+                                order.snapshotData,
+                                order.halhText,
+                              ),
+                            );
+                            if (key.isNotEmpty) {
+                              return driverTr(context, key);
+                            }
+                            return driverTr(context, 'Tap to follow trip');
+                          }(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: typography.bodySmall.copyWith(
@@ -1014,6 +1038,49 @@ class _ActiveTripBanner extends StatelessWidget {
               ),
             ),
           ),
+        );
+      },
+    );
+  }
+}
+
+class _DriverWorkAreaSubtitle extends StatelessWidget {
+  const _DriverWorkAreaSubtitle({required this.style});
+
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final cached = currentUserDocument?.mndobVillText ?? '';
+    final fallback = driverTr(context, 'Work area');
+    final ref = DriverWorkAreaResolver.workVillageRef();
+    if (ref == null) {
+      final label = driverSearchingAreaLabel(
+        localeKey: driverActiveContentLocaleKey(),
+        cachedText: cached,
+      );
+      return Text(
+        label.isEmpty ? fallback : label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: style,
+      );
+    }
+    return StreamBuilder<VillagesRecord>(
+      stream: VillagesRecord.getDocument(ref),
+      builder: (context, snap) {
+        final record = snap.data;
+        final label = driverSearchingAreaLabel(
+          localeKey: driverActiveContentLocaleKey(),
+          namesI18n: record?.namesI18n ?? const {},
+          legacyNaim: record?.naim ?? '',
+          cachedText: cached,
+        );
+        return Text(
+          label.isEmpty ? fallback : label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: style,
         );
       },
     );

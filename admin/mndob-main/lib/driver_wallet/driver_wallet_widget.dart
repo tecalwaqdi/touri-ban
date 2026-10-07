@@ -31,8 +31,9 @@ class DriverWalletWidget extends StatefulWidget {
 class _DriverWalletWidgetState extends State<DriverWalletWidget> {
   late DriverWalletModel _model;
   bool _busy = false;
-
-  static const _topUpPackages = [100.0, 200.0, 300.0, 500.0];
+  double? _quickLocal;
+  String? _countryId;
+  final TextEditingController _customAmount = TextEditingController();
 
   String get _fallbackCurrency {
     final iso = DriverCountryService.currentIso2();
@@ -48,10 +49,31 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => DriverWalletModel());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadCountryFinance());
+  }
+
+  Future<void> _loadCountryFinance() async {
+    final ref = currentUserDocument?.revDolh;
+    if (ref == null) return;
+    final snap = await ref.get();
+    final data = snap.data() as Map<String, dynamic>? ?? {};
+    final rawFx = data['local_units_per_sar'];
+    final code = '${data['currency_code'] ?? ''}'.toUpperCase();
+    final iso = '${data['iso_code'] ?? ''}'.toUpperCase();
+    double? units = rawFx is num ? rawFx.toDouble() : double.tryParse('$rawFx');
+    if ((units == null || units <= 0) && (iso == 'SA' || code == 'SAR')) {
+      units = 1;
+    }
+    if (!mounted) return;
+    setState(() {
+      _countryId = ref.id;
+      _quickLocal = (units != null && units > 0) ? 50 * units : null;
+    });
   }
 
   @override
   void dispose() {
+    _customAmount.dispose();
     _model.dispose();
     super.dispose();
   }
@@ -83,6 +105,8 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
         email: currentUserEmail,
         description: 'Wallet top-up',
         locale: Localizations.localeOf(context).languageCode,
+        localAmount: amountSar,
+        countryId: _countryId,
       );
       if (!mounted) return;
       await _openHostedPageAndWaitForCredit(client, res, amountSar);
@@ -218,6 +242,8 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
       'paymentPurpose': 'wallet',
       'packageId': packageId,
       'amountMajor': amountSar,
+      'localAmount': amountSar,
+      if (_countryId != null) 'countryId': _countryId,
       'idempotencyKey': idem,
       'description': 'Wallet top-up — $currentUserDisplayName',
     });
@@ -564,50 +590,38 @@ class _DriverWalletWidgetState extends State<DriverWalletWidget> {
                               ),
                             ),
                             DsSpacing.gapSm,
-                            LayoutBuilder(
-                              builder: (context, constraints) {
-                                const gap = 8.0;
-                                final width =
-                                    (constraints.maxWidth - gap) / 2;
-                                return Wrap(
-                                  spacing: gap,
-                                  runSpacing: gap,
-                                  children: _topUpPackages.map((p) {
-                                    return SizedBox(
-                                      width: width,
-                                      child: Material(
-                                        color: colors.primarySoft
-                                            .withValues(alpha: 0.65),
-                                        borderRadius: DsRadius.medium,
-                                        child: InkWell(
-                                          borderRadius: DsRadius.medium,
-                                          onTap: _busy ? null : () => _topUp(p),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: DsSpacing.sm,
-                                              vertical: DsSpacing.md,
-                                            ),
-                                            child: Center(
-                                              child: TouryMoneyAmount(
-                                                amount: p,
-                                                currencyCode: currency,
-                                                fractionDigits: 0,
-                                                style:
-                                                    typography.titleSmall.copyWith(
-                                                  fontWeight: FontWeight.w800,
-                                                  color: colors.primaryStrong,
-                                                ),
-                                                symbolSize: 16,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                );
+                            TextField(
+                              controller: _customAmount,
+                              keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              decoration: InputDecoration(
+                                labelText: driverTr(context, 'wallet.custom_topup'),
+                                suffixText: currency,
+                              ),
+                            ),
+                            DsSpacing.gapSm,
+                            DsButton.primary(
+                              label: driverTr(context, 'wallet.custom_topup'),
+                              expanded: true,
+                              enabled: !_busy,
+                              onPressed: () {
+                                final amount =
+                                    double.tryParse(_customAmount.text.trim());
+                                if (amount == null || amount <= 0) return;
+                                _topUp(amount);
                               },
                             ),
+                            if (_quickLocal != null) ...[
+                              DsSpacing.gapSm,
+                              DsButton.secondary(
+                                label:
+                                    '${driverTr(context, 'wallet.quick_topup')} ${_quickLocal!.toStringAsFixed(0)} $currency',
+                                expanded: true,
+                                enabled: !_busy,
+                                onPressed: () => _topUp(_quickLocal!),
+                              ),
+                            ],
                             DsSpacing.gapMd,
                             DsButton.primary(
                               label: driverTr(context, 'Pay company'),
