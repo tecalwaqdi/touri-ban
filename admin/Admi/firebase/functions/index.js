@@ -384,7 +384,7 @@ exports.geminiGenerateText = functions
     }
 
     const url =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=" +
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=" +
       apiKey;
 
     const response = await fetch(url, {
@@ -392,8 +392,13 @@ exports.geminiGenerateText = functions
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
         contents: [{parts: [{text: prompt}]}],
-        // Thinking mode can exceed the callable timeout before any text returns.
-        generationConfig: {thinkingConfig: {thinkingBudget: 0}},
+        // 3.8-flash free tier is 20 requests/day and was exhausted after name
+        // translations. Lite still has quota, and thinking must stay off.
+        generationConfig: {
+          thinkingConfig: {thinkingBudget: 0},
+          maxOutputTokens: 2048,
+          responseMimeType: "application/json",
+        },
       }),
     });
 
