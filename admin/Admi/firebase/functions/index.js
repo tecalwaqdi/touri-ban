@@ -375,7 +375,7 @@ exports.geminiGenerateText = functions
       throw new functions.https.HttpsError("invalid-argument", "prompt required");
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = String(process.env.GEMINI_API_KEY || "").trim();
     if (!apiKey) {
       throw new functions.https.HttpsError(
         "failed-precondition",
@@ -392,6 +392,8 @@ exports.geminiGenerateText = functions
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
         contents: [{parts: [{text: prompt}]}],
+        // Thinking mode can exceed the callable timeout before any text returns.
+        generationConfig: {thinkingConfig: {thinkingBudget: 0}},
       }),
     });
 
