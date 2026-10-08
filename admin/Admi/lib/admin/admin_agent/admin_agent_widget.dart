@@ -195,6 +195,7 @@ class _AdminAgentWidgetState extends State<AdminAgentWidget> {
                 refreshScope: AdminListScope.agents,
                 query: UserRecord.collection,
                 recordBuilder: UserRecord.fromSnapshot,
+                pageSize: 200,
                 queryBuilder: (q) => AdminCountryScope.applyAgentUserQuery(q),
                 builder: (context, allAgents, listState) {
                   final agents = _filterAgents(allAgents);

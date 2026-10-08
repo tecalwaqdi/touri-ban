@@ -238,20 +238,20 @@ class UserRecord extends FirestoreRecord {
   bool hasRevDolh() => _revDolh != null;
 
   void _initializeFields() {
-    _email = snapshotData['email'] as String?;
-    _displayName = snapshotData['display_name'] as String?;
-    _photoUrl = snapshotData['photo_url'] as String?;
-    _uid = snapshotData['uid'] as String?;
-    _createdTime = snapshotData['created_time'] as DateTime?;
+    _email = _readFirestoreString(snapshotData['email']);
+    _displayName = _readFirestoreString(snapshotData['display_name']);
+    _photoUrl = _readFirestoreString(snapshotData['photo_url']);
+    _uid = _readFirestoreString(snapshotData['uid']);
+    _createdTime = _readFirestoreDate(snapshotData['created_time']);
     _address = getStructList(
       snapshotData['address'],
       AddressStruct.fromMap,
     );
-    _ismndom = snapshotData['ismndom'] as bool?;
-    _mndobVill = snapshotData['mndob_vill'] as DocumentReference?;
-    _mndobTypeCar = snapshotData['mndob_type_car'] as DocumentReference?;
-    _phoneN = castToType<int>(snapshotData['phone_n']);
-    _phoneNumber = snapshotData['phone_number'] as String?;
+    _ismndom = _readFirestoreBool(snapshotData['ismndom']);
+    _mndobVill = docRefFromFirestore(snapshotData['mndob_vill']);
+    _mndobTypeCar = docRefFromFirestore(snapshotData['mndob_type_car']);
+    _phoneN = _readFirestoreInt(snapshotData['phone_n']);
+    _phoneNumber = _readFirestoreString(snapshotData['phone_number']);
     _dataCart = getStructList(
       snapshotData['data_cart'],
       AmaknCostmStruct.fromMap,
@@ -260,41 +260,43 @@ class UserRecord extends FirestoreRecord {
       snapshotData['adresslist'],
       AddressStruct.fromMap,
     );
-    _ismndob = snapshotData['ismndob'] as bool?;
-    _actevMndob = snapshotData['actev_mndob'] as bool?;
-    _imgIdRksh = snapshotData['img_id_rksh'] as String?;
-    _imgId = snapshotData['img_id'] as String?;
-    _imgIdCar = snapshotData['img_id_car'] as String?;
-    _mndobUser = snapshotData['mndob_user'] as DocumentReference?;
-    _actevUser = snapshotData['actev_user'] as bool?;
-    _mndobVillText = snapshotData['mndob_vill_text'] as String?;
-    _isagent = snapshotData['Isagent'] as bool?;
-    _dolhAgent = snapshotData['dolh_agent'] as String?;
+    _ismndob = _readFirestoreBool(snapshotData['ismndob']);
+    _actevMndob = _readFirestoreBool(snapshotData['actev_mndob']);
+    _imgIdRksh = _readFirestoreString(snapshotData['img_id_rksh']);
+    _imgId = _readFirestoreString(snapshotData['img_id']);
+    _imgIdCar = _readFirestoreString(snapshotData['img_id_car']);
+    _mndobUser = docRefFromFirestore(snapshotData['mndob_user']);
+    _actevUser = _readFirestoreBool(snapshotData['actev_user']);
+    _mndobVillText = _readFirestoreString(snapshotData['mndob_vill_text']);
+    _isagent = _readFirestoreBool(snapshotData['Isagent']) ??
+        _readFirestoreBool(snapshotData['isagent']);
+    _dolhAgent = _readFirestoreString(snapshotData['dolh_agent']);
     _revDlohAgent = docRefFromFirestore(snapshotData['Rev_dloh_agent']);
-    _agentTotal = castToType<double>(snapshotData['Agent_total']);
-    _vatPercent = castToType<double>(snapshotData['vat_percent']);
+    _agentTotal = _readFirestoreDouble(snapshotData['Agent_total']);
+    _vatPercent = _readFirestoreDouble(snapshotData['vat_percent']);
     _appCommissionPercent =
-        castToType<double>(snapshotData['app_commission_percent']);
-    _bookingsAgent = castToType<int>(snapshotData['Bookings_Agent']);
-    _isAdmin = snapshotData['IsAdmin'] as bool? ??
-        snapshotData['isAdmin'] as bool?;
-    _agentDateReg = snapshotData['agent_date_reg'] as DateTime?;
-    _agentDateEnd = snapshotData['agent_date_end'] as DateTime?;
-    _driverid = snapshotData['driverid'] as String?;
-    _ismzod = snapshotData['ismzod'] as bool?;
+        _readFirestoreDouble(snapshotData['app_commission_percent']);
+    _bookingsAgent = _readFirestoreInt(snapshotData['Bookings_Agent']);
+    _isAdmin = _readFirestoreBool(snapshotData['IsAdmin']) ??
+        _readFirestoreBool(snapshotData['isAdmin']);
+    _agentDateReg = _readFirestoreDate(snapshotData['agent_date_reg']);
+    _agentDateEnd = _readFirestoreDate(snapshotData['agent_date_end']);
+    _driverid = _readFirestoreString(snapshotData['driverid']);
+    _ismzod = _readFirestoreBool(snapshotData['ismzod']);
     _isAdminRule = _readFirestoreInt(snapshotData['isAdminRule']) ??
         _readFirestoreInt(snapshotData['IsAdminRule']);
-    _totalApp = castToType<double>(snapshotData['total_app']);
-    _textTypeCarMndob = snapshotData['text_type_car_mndob'] as String?;
-    _isPartner = snapshotData['is_partner'] as bool?;
-    _partnerMkanRef = snapshotData['partner_mkan'] as DocumentReference?;
-    _transportCompany =
-        snapshotData['transport_company'] as DocumentReference?;
-    _transportCompanyText = snapshotData['transport_company_text'] as String?;
-    _isTourGuide = snapshotData['is_tour_guide'] as bool?;
-    _tourGuideStatus = snapshotData['tour_guide_status'] as String?;
-    _tourGuidePermitUrl = snapshotData['tour_guide_permit_url'] as String?;
-    _revDolh = snapshotData['Rev_dolh'] as DocumentReference?;
+    _totalApp = _readFirestoreDouble(snapshotData['total_app']);
+    _textTypeCarMndob = _readFirestoreString(snapshotData['text_type_car_mndob']);
+    _isPartner = _readFirestoreBool(snapshotData['is_partner']);
+    _partnerMkanRef = docRefFromFirestore(snapshotData['partner_mkan']);
+    _transportCompany = docRefFromFirestore(snapshotData['transport_company']);
+    _transportCompanyText =
+        _readFirestoreString(snapshotData['transport_company_text']);
+    _isTourGuide = _readFirestoreBool(snapshotData['is_tour_guide']);
+    _tourGuideStatus = _readFirestoreString(snapshotData['tour_guide_status']);
+    _tourGuidePermitUrl =
+        _readFirestoreString(snapshotData['tour_guide_permit_url']);
+    _revDolh = docRefFromFirestore(snapshotData['Rev_dolh']);
   }
 
   static CollectionReference get collection =>
@@ -509,5 +511,54 @@ int? _readFirestoreInt(dynamic value) {
   if (value is int) return value;
   if (value is num) return value.toInt();
   if (value is String) return int.tryParse(value.trim());
-  return castToType<int>(value);
+  return null;
+}
+
+double? _readFirestoreDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value.trim());
+  return null;
+}
+
+String? _readFirestoreString(dynamic value) {
+  if (value == null) return null;
+  if (value is String) return value;
+  if (value is num || value is bool) return value.toString();
+  return null;
+}
+
+bool? _readFirestoreBool(dynamic value) {
+  if (value == null) return null;
+  if (value is bool) return value;
+  if (value is num) return value != 0;
+  if (value is String) {
+    switch (value.trim().toLowerCase()) {
+      case 'true':
+      case '1':
+      case 'yes':
+        return true;
+      case 'false':
+      case '0':
+      case 'no':
+        return false;
+    }
+  }
+  return null;
+}
+
+DateTime? _readFirestoreDate(dynamic value) {
+  if (value == null) return null;
+  if (value is DateTime) return value;
+  if (value is Timestamp) return value.toDate();
+  if (value is String) return DateTime.tryParse(value);
+  if (value is int) {
+    if (value > 100000000000) {
+      return DateTime.fromMillisecondsSinceEpoch(value);
+    }
+    if (value > 1000000000) {
+      return DateTime.fromMillisecondsSinceEpoch(value * 1000);
+    }
+  }
+  return null;
 }

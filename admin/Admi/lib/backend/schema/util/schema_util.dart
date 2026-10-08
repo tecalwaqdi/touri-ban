@@ -55,13 +55,19 @@ dynamic deserializeStructParam<T>(
 List<T>? getStructList<T>(
   dynamic value,
   StructBuilder<T> structBuilder,
-) =>
-    value is! List
-        ? null
-        : value
-            .where((e) => e is Map<String, dynamic>)
-            .map((e) => structBuilder(e as Map<String, dynamic>))
-            .toList();
+) {
+  if (value is! List) return null;
+  final out = <T>[];
+  for (final item in value) {
+    if (item is! Map) continue;
+    try {
+      out.add(structBuilder(Map<String, dynamic>.from(item)));
+    } catch (_) {
+      // One bad nested row must not drop the parent document.
+    }
+  }
+  return out;
+}
 
 List<T>? getEnumList<T>(dynamic value) => value is! List
     ? null

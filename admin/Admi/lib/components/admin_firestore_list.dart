@@ -304,8 +304,10 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
           ..clear()
           ..addAll(_map(cached));
         _lastDoc = cached.docs.last;
-        _hasMore = cached.docs.length >= widget.pageSize;
+        // A short cache is not proof the query is finished. Wait for server.
+        _hasMore = true;
         _loading = false;
+        _loadingMore = true;
         _fromCache = true;
         _hasError = false;
         _errorMessage = null;
@@ -334,6 +336,7 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
           ..addAll(_map(snap));
         _lastDoc = snap.docs.isEmpty ? null : snap.docs.last;
         _hasMore = snap.docs.length >= widget.pageSize;
+        _loadingMore = false;
         _fromCache = false;
         _hasError = false;
         _errorMessage = null;
@@ -346,6 +349,8 @@ class _AdminFirestoreListState<T> extends State<AdminFirestoreList<T>> {
       if (!mounted || generation != _syncGeneration) return;
       if (_items.isNotEmpty) {
         setState(() {
+          _loadingMore = false;
+          _hasMore = false;
           _hasError = true;
           _errorMessage = 'adm_server_refresh_failed';
         });
@@ -779,7 +784,7 @@ class AdminListLoadMoreFooter extends StatelessWidget {
     final theme = FlutterFlowTheme.of(context);
 
     if (!state.hasMore && !state.isLoadingMore) {
-      final total = state.totalAvailable ?? state.totalFetched;
+      final total = state.totalFetched;
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Center(
