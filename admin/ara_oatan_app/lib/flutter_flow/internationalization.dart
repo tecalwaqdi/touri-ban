@@ -68,6 +68,12 @@ class FFLocalizations {
     final map = kTranslationsMap[key] ?? {};
     final lang = locale.toString();
     final languageCode = locale.languageCode;
+    final enPhrase = _cleanLocalizedText(map['en'] ?? '');
+    final remote = TouryCachedAssetLoader.remoteText(
+      locale,
+      enPhrase.isNotEmpty ? enPhrase : key,
+    );
+    if (remote != null) return remote;
     final text = _cleanLocalizedText(
       map[lang] ?? map[languageCode] ?? '',
     );

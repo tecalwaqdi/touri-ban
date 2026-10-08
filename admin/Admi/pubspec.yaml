@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.17+2023
+version: 1.0.17+2024
 #version: 1.0.16+2018 previous (UI V2.1 source before production promote)
 #version: 1.0.15+2017 previous
 
@@ -193,6 +193,8 @@ flutter:
   assets:
     - assets/fonts/
     - assets/images/__2025-07-09_133622.png
+    - assets/mobile_langs/customer/
+    - assets/mobile_langs/driver/
 
   fonts:
     # Canonical family id used by FlutterFlowTheme (`cairo`).

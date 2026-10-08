@@ -26,7 +26,9 @@ import '/core/app_design_system.dart';
 import '/core/toury_firestore_cache.dart';
 import '/core/toury_landmark_filter.dart';
 import '/core/toury_locale_loader.dart';
+import '/core/toury_app_update_gate.dart';
 import '/core/toury_location_service.dart';
+import '/core/toury_remote_ui_strings.dart';
 import '/core/toury_resolve_locale.dart';
 import '/design_system/design_system.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -105,6 +107,13 @@ void main() async {
     FFLocalizations.initialize(),
   ]);
 
+  try {
+    await TouryRemoteUiStrings.applyPersisted();
+    await TouryRemoteUiStrings.refresh().timeout(const Duration(seconds: 4));
+  } catch (e) {
+    debugPrint('remote ui strings: $e');
+  }
+
   final startupLocale = touryResolveStartupLocale(_supportedAppLocales);
   try {
     if (startupLocale != touryFallbackLocale) {
@@ -167,7 +176,7 @@ class MyAppScrollBehavior extends MaterialScrollBehavior {
       };
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Locale? _locale;
 
   ThemeMode _themeMode = FlutterFlowTheme.themeMode;
@@ -198,6 +207,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _locale = touryResolveStartupLocale(_supportedAppLocales);
+    WidgetsBinding.instance.addObserver(this);
+    TouryRemoteUiStrings.revision.addListener(_onRemoteStrings);
 
     _appStateNotifier = AppStateNotifier.instance;
     _router = createRouter(_appStateNotifier);
@@ -221,8 +232,25 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void _onRemoteStrings() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(
+        TouryRemoteUiStrings.refresh(
+          activeLocale: _locale ?? const Locale('en'),
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    TouryRemoteUiStrings.revision.removeListener(_onRemoteStrings);
     authUserSub.cancel();
     fcmTokenSub.cancel();
     _authUserUpdateSub?.cancel();
@@ -294,7 +322,16 @@ class _MyAppState extends State<MyApp> {
             data: mq.copyWith(
               textScaler: TextScaler.linear(textScale),
             ),
-            child: appChild,
+            child: TouryAppUpdateOverlay(
+              releaseDocId: 'customer',
+              androidPackageId: 'com.mycompany.araoatanapp',
+              iosBundleId: 'com.mycompany.araoatanapp2',
+              androidStoreUrl:
+                  'https://play.google.com/store/apps/details?id=com.mycompany.araoatanapp',
+              iosStoreUrl: 'https://apps.apple.com/app/id6754410562',
+              appName: 'app_title'.tr(),
+              child: appChild,
+            ),
           );
         },
         locale: _locale ?? context.locale,

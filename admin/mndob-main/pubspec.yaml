@@ -125,6 +125,7 @@ dependencies:
   map_launcher: 3.5.0
   mime_type: 1.0.0
   page_transition: ^2.2.0
+  package_info_plus: 8.0.2
   path_provider: 2.1.4
   path_provider_android: 2.2.10
   path_provider_foundation: 2.4.0
@@ -178,6 +179,8 @@ dependencies:
 
 dependency_overrides:
   http: 1.4.0
+  package_info_plus: 8.0.2
+  package_info_plus_platform_interface: 3.0.1
   uuid: ^4.0.0
 
 dev_dependencies:

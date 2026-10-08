@@ -15,6 +15,7 @@ import '/core/toury_checkout_state.dart';
 import '/core/toury_firestore_cache.dart';
 import '/core/toury_geo_aliases.dart';
 import '/core/toury_geo_display.dart';
+import '/core/toury_i18n_text.dart';
 import '/core/toury_google_map_panel.dart';
 import '/core/toury_location_service.dart';
 import '/core/toury_maps_config.dart';
@@ -101,30 +102,44 @@ class _DemoDWidgetState extends State<DemoDWidget>
 
   String get _currentCountryLabel {
     if (_outsideCoverage) return '';
-    final fromModel = _model.dolh;
-    if (fromModel != null && fromModel.trim().isNotEmpty) {
-      return fromModel;
+    final localeKey = touryActiveContentLocaleKey();
+    final country = _model.resolvedCountry ?? _model.dol;
+    if (country != null) {
+      final localized = touryLocalizedCountryLabel(country, localeKey).trim();
+      if (localized.isNotEmpty) return localized;
     }
-    final fromState = FFAppState().naimdolh;
-    if (fromState.trim().isNotEmpty) {
-      return fromState;
-    }
+    final fromState = tourySafeCachedGeoLabel(
+      FFAppState().naimdolh,
+      localeKey: localeKey,
+    );
+    if (fromState.isNotEmpty) return fromState;
+    final fromModel = tourySafeCachedGeoLabel(
+      _model.dolh ?? '',
+      localeKey: localeKey,
+    );
+    if (fromModel.isNotEmpty) return fromModel;
     return 'dialog_location_required'.tr();
   }
 
   String get _currentCityLabel {
     if (_outsideCoverage) return '';
-    if (widget.isSpeed) {
-      final fromModel = _model.mdenh;
-      if (fromModel != null && fromModel.trim().isNotEmpty) {
-        return fromModel;
-      }
+    final localeKey = touryActiveContentLocaleKey();
+    final village = _model.resolvedVillage ?? _model.mdenhVill;
+    if (village != null) {
+      final localized = touryLocalizedVillageLabel(village, localeKey).trim();
+      if (localized.isNotEmpty) return localized;
     }
-    final fromState = FFAppState().naimvillatext;
-    if (fromState.trim().isNotEmpty) {
-      return fromState;
-    }
+    final fromState = tourySafeCachedGeoLabel(
+      FFAppState().naimvillatext,
+      localeKey: localeKey,
+    );
+    if (fromState.isNotEmpty) return fromState;
     if (widget.isSpeed) {
+      final fromModel = tourySafeCachedGeoLabel(
+        _model.mdenh ?? '',
+        localeKey: localeKey,
+      );
+      if (fromModel.isNotEmpty) return fromModel;
       return 'dialog_location_required'.tr();
     }
     return '';

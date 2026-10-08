@@ -18,6 +18,8 @@ import '/index.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'admin_app_release_card.dart';
+import 'admin_ui_strings_page.dart';
 import 'settings_model.dart';
 export 'settings_model.dart';
 
@@ -716,6 +718,34 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 ),
               ],
               const SizedBox(height: 16),
+              const AdminAppReleaseCard(),
+              if (AdminRoleService.isSuperAdmin)
+                AdminContentCard(
+                  title: uiTr(context, 'ترجمات التطبيقات'),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        uiTr(
+                          context,
+                          'تعديل نصوص تطبيق العميل وتطبيق السائق يصل للهاتف بدون نسخة جديدة من المتجر.',
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      AdminPrimaryButton(
+                        label: uiTr(context, 'تعديل الترجمات'),
+                        icon: Icons.translate,
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const AdminUiStringsPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
               AdminContentCard(
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,

@@ -17,8 +17,10 @@ import 'backend/firebase/firebase_config.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow/flutter_flow_util.dart';
 import '/core/driver_bootstrap.dart';
+import '/core/toury_app_update_gate.dart';
 import '/core/driver_resolve_locale.dart';
 import '/core/driver_locale_loader.dart';
+import '/core/driver_remote_ui_strings.dart';
 import '/design_system/design_system.dart';
 import 'flutter_flow/internationalization.dart';
 import 'index.dart';
@@ -62,6 +64,13 @@ void main() async {
 
   await FlutterFlowTheme.initialize();
   await FFLocalizations.initialize();
+
+  try {
+    await DriverRemoteUiStrings.applyPersisted();
+    await DriverRemoteUiStrings.refresh().timeout(const Duration(seconds: 4));
+  } catch (e) {
+    debugPrint('remote ui strings: $e');
+  }
 
   final startupLocale = driverResolveStartupLocale();
   try {
@@ -110,7 +119,7 @@ class MyAppScrollBehavior extends MaterialScrollBehavior {
       };
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Locale? _locale;
 
   ThemeMode _themeMode = FlutterFlowTheme.themeMode;
@@ -144,6 +153,8 @@ class _MyAppState extends State<MyApp> {
     _appStateNotifier = AppStateNotifier.instance;
     _router = createRouter(_appStateNotifier);
     _locale = driverResolveStartupLocale();
+    WidgetsBinding.instance.addObserver(this);
+    DriverRemoteUiStrings.revision.addListener(_onRemoteStrings);
     userStream = mndobFirebaseUserStream();
     // Seed immediately so auth-dependent UI is not blocked if the stream lags.
     _appStateNotifier.update(
@@ -159,8 +170,23 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  void _onRemoteStrings() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(
+        DriverRemoteUiStrings.refresh(activeLocale: _locale ?? const Locale('en')),
+      );
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    DriverRemoteUiStrings.revision.removeListener(_onRemoteStrings);
     authUserSub.cancel();
     fcmTokenSub.cancel();
     _userDocSub?.cancel();
@@ -214,9 +240,18 @@ class _MyAppState extends State<MyApp> {
       themeMode: _themeMode,
       routerConfig: _router,
       builder: (context, child) {
-        return Directionality(
-          textDirection: isRtl ? ui.TextDirection.rtl : ui.TextDirection.ltr,
-          child: child ?? const SizedBox.shrink(),
+        return TouryAppUpdateOverlay(
+          releaseDocId: 'driver',
+          androidPackageId: 'com.mycompany.mndob2',
+          iosBundleId: 'com.mycompany.mndob3',
+          androidStoreUrl:
+              'https://play.google.com/store/apps/details?id=com.mycompany.mndob2',
+          iosStoreUrl: 'https://apps.apple.com/app/id6754537170',
+          appName: 'TOURi',
+          child: Directionality(
+            textDirection: isRtl ? ui.TextDirection.rtl : ui.TextDirection.ltr,
+            child: child ?? const SizedBox.shrink(),
+          ),
         );
       },
     );

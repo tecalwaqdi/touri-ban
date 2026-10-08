@@ -47,6 +47,12 @@ class FFLocalizations {
   String getText(String key) {
     final map = kTranslationsMap[key] ?? {};
     final lang = locale.toString();
+    final enPhrase = map['en'] ?? '';
+    final remote = DriverCachedAssetLoader.remoteText(
+      locale,
+      enPhrase.isNotEmpty ? enPhrase : key,
+    );
+    if (remote != null) return remote;
 
     final direct = map[lang];
     if (direct != null && direct.isNotEmpty) {

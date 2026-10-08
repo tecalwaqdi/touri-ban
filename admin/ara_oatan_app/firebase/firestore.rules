@@ -1532,6 +1532,18 @@ service cloud.firestore {
       allow create, update, delete: if isSuperAdmin();
     }
 
+    // Store update gate. Public read so the apps can block before login.
+    match /app_release/{document} {
+      allow read: if true;
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    // UI phrase overrides for the customer and driver apps.
+    match /app_ui_i18n/{document} {
+      allow read: if true;
+      allow create, update, delete: if isSuperAdmin();
+    }
+
     // Wallet top-up package catalog (server-authoritative amounts).
     match /settings/{document} {
       allow read: if signedIn();

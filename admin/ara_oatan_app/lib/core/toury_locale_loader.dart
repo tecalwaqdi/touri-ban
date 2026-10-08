@@ -9,6 +9,7 @@ class TouryCachedAssetLoader extends AssetLoader {
   const TouryCachedAssetLoader();
 
   static final Map<String, Map<String, dynamic>> _cache = {};
+  static final Map<String, Map<String, String>> _overlays = {};
 
   static String localeFileName(Locale locale) {
     if (locale.scriptCode != null && locale.scriptCode!.isNotEmpty) {
@@ -56,8 +57,50 @@ class TouryCachedAssetLoader extends AssetLoader {
       throw FlutterError('Translation file must be a JSON object: $key');
     }
 
+    final overlay = _overlays[key];
+    if (overlay != null && overlay.isNotEmpty) {
+      decoded.addAll(overlay);
+    }
     _cache[key] = decoded;
     return decoded;
+  }
+
+  /// Replaces the remote overlay for [locale] and re-reads the bundled file.
+  static Future<void> setOverlay(
+    Locale locale,
+    Map<String, String> overlay,
+  ) async {
+    final key = assetPath('assets/langs', locale);
+    final cleaned = <String, String>{};
+    overlay.forEach((rawKey, rawValue) {
+      final text = rawValue.trim();
+      final id = rawKey.trim();
+      if (id.isEmpty || text.isEmpty) return;
+      cleaned[id] = text;
+    });
+    if (cleaned.isEmpty) {
+      _overlays.remove(key);
+    } else {
+      _overlays[key] = cleaned;
+    }
+    _cache.remove(key);
+    try {
+      await const TouryCachedAssetLoader().load('assets/langs', locale);
+    } catch (e) {
+      debugPrint('TouryCachedAssetLoader: overlay reload skipped: $e');
+    }
+  }
+
+  static Map<String, dynamic>? cachedMap(Locale locale) =>
+      _cache[assetPath('assets/langs', locale)];
+
+  /// Saved server override only. Bundled text is not treated as an override.
+  static String? remoteText(Locale locale, String key) {
+    final id = key.trim();
+    if (id.isEmpty) return null;
+    final value = _overlays[assetPath('assets/langs', locale)]?[id]?.trim();
+    if (value == null || value.isEmpty) return null;
+    return value;
   }
 
   /// Sync lookup after [preloadAll]. Returns null if missing.
