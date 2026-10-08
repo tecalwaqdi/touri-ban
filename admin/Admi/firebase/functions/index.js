@@ -384,7 +384,7 @@ exports.geminiGenerateText = functions
     }
 
     const url =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" +
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=" +
       apiKey;
 
     const response = await fetch(url, {
