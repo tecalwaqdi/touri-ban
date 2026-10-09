@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '/core/driver_i18n.dart';
 import '/core/toury_support_policy.dart';
 
-/// Support number comes from the country's active Agent, not a country field.
+/// Support number is the active agent's phone, stored on the country as support_phone.
 class TourySupportLink {
   static const saudiFallbackDigits = '966533356126';
 
@@ -33,8 +34,10 @@ class TourySupportLink {
         final country = await FirebaseFirestore.instance.doc(path).get();
         final data = country.data();
         iso = '${data?['iso_code'] ?? data?['iso2'] ?? ''}';
+        final stored = '${data?['support_phone'] ?? ''}'.trim();
+        if (stored.isNotEmpty) agentPhone = stored;
       } catch (_) {}
-      agentPhone = await _lookupAgent(path);
+      agentPhone ??= await _lookupAgent(path);
     }
     return TourySupportPolicy.resolve(
       iso2: iso,
@@ -69,15 +72,33 @@ class TourySupportLink {
     );
   }
 
+  static Future<String?> _signedInCountryPath() async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null || uid.isEmpty) return null;
+      final snap =
+          await FirebaseFirestore.instance.collection('user').doc(uid).get();
+      final data = snap.data();
+      if (data == null) return null;
+      return countryPathOf(data['Rev_dolh']) ??
+          countryPathOf(data['rev_dolh']) ??
+          countryPathOf(data['dolh']);
+    } catch (_) {
+      return null;
+    }
+  }
+
   static Future<void> open(
     BuildContext context, {
     Object? countryPath,
   }) async {
     final message = driverTr(context, 'support.whatsapp_message');
-    final resolved = await resolveForCountryPath(
-      countryPathOf(countryPath) ??
-          (countryPath is String ? countryPath : null),
-    );
+    var path = countryPathOf(countryPath) ??
+        (countryPath is String ? countryPath.trim() : null);
+    if (path == null || path.isEmpty) {
+      path = await _signedInCountryPath();
+    }
+    final resolved = await resolveForCountryPath(path);
     if (!resolved.ok || resolved.digits == null) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

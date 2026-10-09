@@ -166,19 +166,6 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                 ),
             ],
           ),
-          if (AdminRoleService.isSuperAdmin) ...[
-            const SizedBox(height: 8),
-            FilterChip(
-              label: Text(
-                uiTr(context, 'تشخيص تقني — تسويات الاختبار'),
-                style: AccountantFinanceText.label(theme).copyWith(
-                  color: AccountantFinanceText.ink(theme),
-                ),
-              ),
-              selected: _showQaDiagnostics,
-              onSelected: (v) => setState(() => _showQaDiagnostics = v),
-            ),
-          ],
           const SizedBox(height: 12),
           StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
             stream: _settlementsStream.streamForCurrentUser(),
@@ -317,33 +304,19 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                         style: AccountantFinanceText.label(theme),
                       ),
                     ),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      _sumChip(context, 'تسويات مفتوحة', kpi('$openCount')),
-                      _sumChip(context, 'مستحق للشركة', kpi(maj(dueCompany))),
-                      _sumChip(context, 'مستحق للسائقين', kpi(maj(dueDriver))),
-                      _sumChip(context, 'مدفوع', kpi(maj(paid))),
-                      _sumChip(context, 'متبقٍ', kpi(maj(remaining))),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      periodReady
-                          ? uiTr(
-                              context,
-                              'ملخص الفترة (محدود) — الجدول صفحته الأولى مباشرة',
-                            )
-                          : uiTr(
-                              context,
-                              'جاري ملخص الفترة… تظهر قائمة التسويات الآن.',
-                            ),
-                      style: AccountantFinanceText.label(theme),
+                  if (docs.isNotEmpty)
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        _sumChip(context, 'تسويات مفتوحة', kpi('$openCount')),
+                        _sumChip(context, 'مستحق للشركة', kpi(maj(dueCompany))),
+                        _sumChip(context, 'مستحق للسائقين', kpi(maj(dueDriver))),
+                        _sumChip(context, 'مدفوع', kpi(maj(paid))),
+                        _sumChip(context, 'متبقٍ', kpi(maj(remaining))),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 12),
+                  if (docs.isNotEmpty) const SizedBox(height: 12),
                   if (docs.isEmpty)
                     AdminEmptyState(
                       compact: true,

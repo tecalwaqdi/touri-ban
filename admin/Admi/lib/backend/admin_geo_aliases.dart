@@ -121,5 +121,5 @@ abstract final class AdminGeoAliases {
   }
 
   /// Default category so customer chips / whereIn('tsnef') can match.
-  static const defaultLandmarkCategory = 'معالم سياحية';
+  static const defaultLandmarkCategory = 'معالم وأيقونات المدينة';
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '/backend/admin_ops_filters.dart';
@@ -14,8 +16,6 @@ import '/core/finance/accountant_finance_labels.dart';
 import '/core/finance/accountant_finance_loader.dart';
 import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
-import '/core/finance/admin_finance_date_range.dart';
-import '/core/finance/csv_export.dart';
 import '/core/finance/finance_binary_download.dart';
 import '/core/finance/finance_company_service.dart';
 import '/core/finance/finance_company_snapshot.dart';
@@ -130,7 +130,7 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
                 title: uiTr(context, 'التقارير المحاسبية'),
                 subtitle: uiTr(
                   context,
-                  'ملخص على الشاشة مطابق لشاشة المالية لنفس الفترة والنطاق.',
+                  'أرقام الفترة نفسها. التصدير من هذه الأرقام، والرحلة الناقصة لا تُحسب صفراً.',
                 ),
               ),
               AdminPeriodSegmented<AdminDatePreset>(
@@ -146,7 +146,7 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
                 },
                 onRefresh: () => _reload(forceRefresh: true),
               ),
-              if (bundle != null) ...[
+              if (bundle != null && bundle.trips.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
@@ -172,13 +172,16 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
                           filters:
                               '${_presetLabels[_preset] ?? _preset.name}; $countryLabel',
                         );
-                        await copyFinanceCsv(csv);
+                        await FinanceBinaryDownload.download(
+                          bytes: Uint8List.fromList(utf8.encode(csv)),
+                          filename:
+                              'toury_finance_${canonical.currency}_${DateTime.now().millisecondsSinceEpoch}.csv',
+                          mime: 'text/csv',
+                        );
                         if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(
-                              uiTr(context, 'تم نسخ CSV إلى الحافظة'),
-                            ),
+                            content: Text(uiTr(context, 'تم تنزيل CSV')),
                           ),
                         );
                       },
@@ -264,28 +267,12 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
                       icon: const Icon(Icons.grid_on_outlined, size: 18),
                       label: Text(uiTr(context, 'تصدير Excel')),
                     ),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              uiTr(
-                                context,
-                                'استخدم تصدير PDF المخصص بدل طباعة المتصفح.',
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.print_outlined, size: 18),
-                      label: Text(uiTr(context, 'طباعة')),
-                    ),
                   ],
                 ),
               ],
               const SizedBox(height: 12),
               Text(
-                '${uiTr(context, 'نطاق التقرير')}: $countryLabel',
+                '$countryLabel · ${_presetLabels[_preset] ?? ''}',
                 style: AccountantFinanceText.label(theme),
               ),
               const SizedBox(height: 8),
@@ -306,19 +293,17 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
                   title: uiTr(context, 'لا توجد بيانات'),
                   icon: Icons.inbox_outlined,
                 )
+              else if (bundle != null && bundle.trips.isEmpty)
+                AdminEmptyState(
+                  compact: true,
+                  title: uiTr(context, 'لا توجد رحلات مكتملة'),
+                  message: uiTr(
+                    context,
+                    'لا يوجد ما يُصدَّر في هذه الفترة.',
+                  ),
+                  icon: Icons.receipt_long_outlined,
+                )
               else if (bundle != null) ...[
-                Builder(
-                  builder: (context) {
-                    final range = AdminFinanceDateRangeResolver.resolve(
-                      preset: _preset,
-                    );
-                    return Text(
-                      '${uiTr(context, 'الفترة')}: ${range?.displayLabelAr ?? bundle.periodLabel}',
-                      style: AccountantFinanceText.label(theme),
-                    );
-                  },
-                ),
-                const SizedBox(height: 12),
                 FutureBuilder<FinanceCompanySnapshot>(
                   future: _canonicalKpiFuture,
                   builder: (context, kpiSnap) {

@@ -32,23 +32,37 @@ const FIREBASE_TOOLS_CLIENT_SECRET = "j9iVZfS8kkCEFUPaAeJV0sAi";
 
 const BUILT_IN = [
   {id: "all", storage: "الكل", labelAr: "الكل", labelEn: "All", icon: "all", trKey: "landmark_cat_all", enabled: true, sort: 0},
-  {id: "religious", storage: "معالم دينية", labelAr: "معالم دينية", labelEn: "Religious landmarks", icon: "cloud", trKey: "landmark_cat_religious", enabled: true, sort: 10},
-  {id: "historical", storage: "معالم تاريخية", labelAr: "معالم تاريخية", labelEn: "Historical landmarks", icon: "place", trKey: "landmark_cat_historical", enabled: true, sort: 20},
-  {id: "tourism", storage: "معالم سياحية", labelAr: "معالم سياحية", labelEn: "Tourist landmarks", icon: "attraction", trKey: "landmark_cat_tourism", enabled: true, sort: 30},
-  {id: "entertainment", storage: "أماكن ترفيهية", labelAr: "أماكن ترفيهية", labelEn: "Entertainment", icon: "happy", trKey: "landmark_cat_entertainment", enabled: true, sort: 40},
-  {id: "markets", storage: "أسواق", labelAr: "أسواق", labelEn: "Markets", icon: "cart", trKey: "landmark_cat_markets", enabled: true, sort: 50},
-  {id: "restaurants", storage: "مطاعم", labelAr: "مطاعم", labelEn: "Restaurants", icon: "food", trKey: "landmark_cat_restaurants", enabled: true, sort: 60},
-  {id: "cafe", storage: "مقهى", labelAr: "مقهى", labelEn: "Cafe", icon: "cafe", trKey: "landmark_cat_cafe", enabled: true, sort: 70},
-  {id: "hotels", storage: "فنادق", labelAr: "فنادق", labelEn: "Hotels", icon: "hotel", trKey: "landmark_cat_hotels", enabled: true, sort: 80},
-  {id: "desert", storage: "جولة برية", labelAr: "جولة برية", labelEn: "Desert tour", icon: "forest", trKey: "landmark_cat_desert", enabled: true, sort: 90},
-  {id: "sea", storage: "جولة بحرية", labelAr: "جولة بحرية", labelEn: "Sea tour", icon: "sea", trKey: "landmark_cat_sea", enabled: true, sort: 100},
+  {id: "religious", storage: "معالم دينية", labelAr: "معالم دينية", labelEn: "Religious landmarks", icon: "mosque", trKey: "landmark_cat_religious", enabled: true, sort: 10},
+  {id: "historical", storage: "معالم تاريخية وأثرية", labelAr: "معالم تاريخية وأثرية", labelEn: "Historical and archaeological sites", icon: "historical", trKey: "landmark_cat_historical", enabled: true, sort: 20},
+  {id: "museums", storage: "متاحف وثقافة", labelAr: "متاحف وثقافة", labelEn: "Museums and culture", icon: "museum", trKey: "landmark_cat_museums", enabled: true, sort: 30},
+  {id: "nature", storage: "طبيعة وجبال", labelAr: "طبيعة وجبال", labelEn: "Nature and mountains", icon: "nature", trKey: "landmark_cat_nature", enabled: true, sort: 40},
+  {id: "parks", storage: "حدائق ومنتزهات", labelAr: "حدائق ومنتزهات", labelEn: "Parks and gardens", icon: "park", trKey: "landmark_cat_parks", enabled: true, sort: 50},
+  {id: "beaches", storage: "شواطئ وكورنيش ومماشي", labelAr: "شواطئ وكورنيش ومماشي", labelEn: "Beaches, corniche and walks", icon: "beach", trKey: "landmark_cat_beaches", enabled: true, sort: 60},
+  {id: "entertainment", storage: "ترفيه وأنشطة", labelAr: "ترفيه وأنشطة", labelEn: "Entertainment and activities", icon: "entertainment", trKey: "landmark_cat_entertainment", enabled: true, sort: 70},
+  {id: "restaurants", storage: "مطاعم", labelAr: "مطاعم", labelEn: "Restaurants", icon: "food", trKey: "landmark_cat_restaurants", enabled: true, sort: 80},
+  {id: "cafe", storage: "مقاهي", labelAr: "مقاهي", labelEn: "Cafes", icon: "cafe", trKey: "landmark_cat_cafe", enabled: true, sort: 90},
+  {id: "markets", storage: "أسواق ومولات", labelAr: "أسواق ومولات", labelEn: "Markets and malls", icon: "mall", trKey: "landmark_cat_markets", enabled: true, sort: 100},
+  {id: "hotels", storage: "فنادق ومنتجعات", labelAr: "فنادق ومنتجعات", labelEn: "Hotels and resorts", icon: "hotel", trKey: "landmark_cat_hotels", enabled: true, sort: 110},
+  {id: "farms", storage: "مزارع وتجارب ريفية", labelAr: "مزارع وتجارب ريفية", labelEn: "Farms and rural experiences", icon: "farm", trKey: "landmark_cat_farms", enabled: true, sort: 120},
+  {id: "sports", storage: "رياضة وملاعب", labelAr: "رياضة وملاعب", labelEn: "Sports and stadiums", icon: "sports", trKey: "landmark_cat_sports", enabled: true, sort: 130},
+  {id: "transport", storage: "مطارات ومحطات", labelAr: "مطارات ومحطات", labelEn: "Airports and stations", icon: "transport", trKey: "landmark_cat_transport", enabled: true, sort: 140},
+  {id: "landmarks", storage: "معالم وأيقونات المدينة", labelAr: "معالم وأيقونات المدينة", labelEn: "City landmarks and icons", icon: "landmark", trKey: "landmark_cat_landmarks", enabled: true, sort: 150},
+  {id: "camps", storage: "مخيمات برية", labelAr: "مخيمات برية", labelEn: "Desert camps", icon: "camp", trKey: "landmark_cat_camps", enabled: true, sort: 160},
+  {id: "cinema", storage: "سينما", labelAr: "سينما", labelEn: "Cinema", icon: "cinema", trKey: "landmark_cat_cinema", enabled: true, sort: 170},
+  {id: "reserves", storage: "محميات طبيعية", labelAr: "محميات طبيعية", labelEn: "Nature reserves", icon: "reserve", trKey: "landmark_cat_reserves", enabled: true, sort: 180},
 ];
+const RETIRED = ["tourism", "sea", "desert"];
 
 async function accessTokenFromFirebaseTools() {
   const cfgPath = path.join(os.homedir(), ".config", "configstore", "firebase-tools.json");
   if (!fs.existsSync(cfgPath)) throw new Error("firebase-tools.json missing — run: firebase login");
   const cfg = JSON.parse(fs.readFileSync(cfgPath, "utf8"));
-  const refreshToken = cfg.tokens && cfg.tokens.refresh_token;
+  const tokens = cfg.tokens || {};
+  const expiresAt = Number(tokens.expires_at || 0);
+  if (tokens.access_token && expiresAt > Date.now() + 60 * 1000) {
+    return tokens.access_token;
+  }
+  const refreshToken = tokens.refresh_token;
   if (!refreshToken) throw new Error("no firebase-tools refresh token — run: firebase login");
   const client = new UserRefreshClient(
     FIREBASE_TOOLS_CLIENT_ID,
@@ -128,12 +142,14 @@ async function upsertDoc(token, id, data) {
 
 async function main() {
   const token = await accessTokenFromFirebaseTools();
-  const existing = OVERWRITE ? new Set() : new Set(await listDocs(token));
   let writes = 0;
   for (const d of BUILT_IN) {
-    if (!OVERWRITE && existing.has(d.id)) continue;
     const {id, ...data} = d;
     await upsertDoc(token, id, data);
+    writes++;
+  }
+  for (const id of RETIRED) {
+    await upsertDoc(token, id, {enabled: false});
     writes++;
   }
   const after = await listDocs(token);

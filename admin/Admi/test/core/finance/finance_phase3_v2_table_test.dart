@@ -51,6 +51,7 @@ void main() {
       expect(row.companyCommissionDisplay, contains('7.50'));
       expect(row.vatDisplay, contains('0.00'));
       expect(row.driverNetDisplay, contains('42.50'));
+      expect(row.obligationDisplay, contains('7.50'));
       expect(row.paymentChannelLabel, 'نقدي');
     });
 
@@ -69,6 +70,7 @@ void main() {
       expect(row.companyCommissionDisplay, contains('120.00'));
       expect(row.vatDisplay, contains('120.00'));
       expect(row.driverNetDisplay, contains('560.00'));
+      expect(row.obligationDisplay, contains('240.00'));
     });
 
     test('settlement status ignores order flags; uses ledger only', () {

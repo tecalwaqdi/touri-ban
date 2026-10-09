@@ -10,17 +10,12 @@ import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/components/finance_home_overview_cards.dart';
 import '/components/menu2_model.dart';
-import '/core/admin_currency.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/core/finance/accountant_finance_loader.dart';
 import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
-import '/core/finance/admin_money_presentation.dart';
 import '/core/finance/finance_company_service.dart';
 import '/core/finance/finance_company_snapshot.dart';
-import '/core/finance/financial_accounting_engine.dart';
-import '/core/finance/financial_order_adapter.dart';
-import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -146,7 +141,7 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
                   title: uiTr(context, isAgent ? 'مالية الدولة' : 'مالية الوكلاء'),
                   subtitle: uiTr(
                     context,
-                    'نفس الأرقام المحاسبية المعتمدة — النطاق حسب الصلاحية فقط.',
+                    'رحلات الفترة، وما على الشركة وما لها. الرحلة الناقصة لا تُحسب صفراً.',
                   ),
                 ),
                 AdminPeriodSegmented<AdminDatePreset>(
@@ -202,7 +197,9 @@ class _AdminAgentFinanceWidgetState extends State<AdminAgentFinanceWidget> {
                         ),
                       ),
                     ),
-                  if (bundle != null) ...[
+                  if (bundle != null &&
+                      (bundle.model.completedTripCount > 0 ||
+                          bundle.trips.isNotEmpty)) ...[
                     _AgentFinanceScopeStrip(bundle: bundle),
                     const SizedBox(height: 12),
                     AccountantFinanceAlertsBanner(alerts: bundle.alerts),
@@ -282,67 +279,6 @@ class _AgentFinanceScopeStrip extends StatelessWidget {
             : uiTr(context, '{count} وكلاء')
                 .replaceAll('{count}', '${agents.length}'));
 
-    final platformCommission = () {
-      final m = bundle.model;
-      final sym =
-          AdminCurrency.symbolByCode[bundle.currency] ?? bundle.currency;
-      if (m.completedTripsWithCompleteFinancialData == 0 &&
-          m.companyCommission.minorUnits == 0) {
-        return '—';
-      }
-      return AdminOrderMoneyDisplay.formatMoneyAmount(
-        m.companyCommission,
-        symbolOverride: sym,
-      );
-    }();
-
-    // Provable agent share from FIN-9 snapshots on loaded trip rows only.
-    final agentShare = () {
-      final sym =
-          AdminCurrency.symbolByCode[bundle.currency] ?? bundle.currency;
-      var minor = 0;
-      var hits = 0;
-      for (final t in trips) {
-        if (!t.agentAmountIsShareOfCommission) continue;
-        final raw = t.agentAmountDisplay.trim();
-        if (raw.isEmpty || raw == '—') continue;
-        // Parse display is fragile — prefer re-analyzing order majors.
-        final line = FinancialAccountingEngine.analyze(
-          FinancialOrderAdapter.fromOrder(t.order),
-        );
-        if (line.agentAmount != null) {
-          minor += line.agentAmount!.minorUnits;
-          hits++;
-        }
-      }
-      if (hits == 0) return '—';
-      return AdminOrderMoneyDisplay.formatMoneyAmount(
-        MoneyAmount(currency: bundle.currency, minorUnits: minor),
-        symbolOverride: sym,
-      );
-    }();
-
-    final cashCollected = AdminOrderMoneyDisplay.formatMoneyAmount(
-      bundle.model.collectedAmount,
-      symbolOverride:
-          AdminCurrency.symbolByCode[bundle.currency] ?? bundle.currency,
-    );
-    final companyDue = AdminOrderMoneyDisplay.formatMoneyAmount(
-      bundle.model.companyReceivable,
-      symbolOverride:
-          AdminCurrency.symbolByCode[bundle.currency] ?? bundle.currency,
-    );
-    final outstanding = AdminOrderMoneyDisplay.formatMoneyAmount(
-      bundle.model.outstandingAmount,
-      symbolOverride:
-          AdminCurrency.symbolByCode[bundle.currency] ?? bundle.currency,
-    );
-    final settled = AdminOrderMoneyDisplay.formatMoneyAmount(
-      bundle.model.settledAmount,
-      symbolOverride:
-          AdminCurrency.symbolByCode[bundle.currency] ?? bundle.currency,
-    );
-
     final settlementValue = bundle.openSettlementsRemaining > 0
         ? uiTr(context, 'غير مسددة: {count}').replaceAll(
             '{count}',
@@ -354,12 +290,6 @@ class _AgentFinanceScopeStrip extends StatelessWidget {
       ('الدولة', countryValue),
       ('الوكيل', agentValue),
       ('عدد الرحلات', '${bundle.model.completedTripCount}'),
-      ('حصة الوكيل', agentShare),
-      ('عمولة توري', platformCommission),
-      ('المبلغ المحصل نقدًا', cashCollected),
-      ('مستحقات الشركة', companyDue),
-      ('المبلغ المسدد', settled),
-      ('المتبقي', outstanding),
       ('حالة التسوية', settlementValue),
     ];
 

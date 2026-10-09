@@ -298,6 +298,7 @@ class AdminRoleService {
     'AdminAgentReport',
     'AdminAuditLog',
     'AdminReportsHub',
+    'AdminFinanceControl',
     'AdminDiagnostics',
     'adminRegesr',
   };
@@ -344,6 +345,7 @@ class AdminRoleService {
     'AdminFinanceReports',
     'AdminFinanceDataQuality',
     'AdminFinanceAudit',
+    'AdminFinanceControl',
     'AdminDiagnostics',
     'AdminDriverWallets',
   };

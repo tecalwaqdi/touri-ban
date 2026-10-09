@@ -12,7 +12,6 @@ import '/core/cloud_functions/cloud_functions_client.dart';
 import '/core/finance/admin_money_presentation.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/l10n/ui_catalog.dart';
 
 /// Admin view: driver wallets, top-ups, company payments, ledger.
 ///
@@ -35,6 +34,8 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
   final _df = DateFormat('yyyy-MM-dd HH:mm');
   String _tab = 'wallets';
   bool _adjusting = false;
+  final Map<String, String> _driverLabels = {};
+  final Set<String> _namePending = {};
 
   /// LEGACY wallet adjust — SuperAdmin only (not Finance / settlement).
   bool get _canAdjust => AdminRoleService.isSuperAdmin;
@@ -49,6 +50,57 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
   void dispose() {
     _menu2Model.dispose();
     super.dispose();
+  }
+
+  Future<void> _resolveDriverLabels(Iterable<String> uids) async {
+    final missing = uids
+        .where(
+          (id) =>
+              id.isNotEmpty &&
+              !_driverLabels.containsKey(id) &&
+              !_namePending.contains(id),
+        )
+        .toList();
+    if (missing.isEmpty) return;
+    _namePending.addAll(missing);
+    for (var i = 0; i < missing.length; i += 10) {
+      final end = i + 10 > missing.length ? missing.length : i + 10;
+      final chunk = missing.sublist(i, end);
+      try {
+        final snap = await FirebaseFirestore.instance
+            .collection('user')
+            .where(FieldPath.documentId, whereIn: chunk)
+            .get();
+        if (!mounted) return;
+        setState(() {
+          for (final doc in snap.docs) {
+            final data = doc.data();
+            final name = (data['display_name'] ?? '').toString().trim();
+            final phone = (data['phone_number'] ?? '').toString().trim();
+            _driverLabels[doc.id] =
+                name.isNotEmpty ? name : phone;
+          }
+          for (final id in chunk) {
+            _driverLabels.putIfAbsent(id, () => '');
+            _namePending.remove(id);
+          }
+        });
+      } catch (_) {
+        if (!mounted) return;
+        setState(() {
+          for (final id in chunk) {
+            _driverLabels.putIfAbsent(id, () => '');
+            _namePending.remove(id);
+          }
+        });
+      }
+    }
+  }
+
+  String _driverTitle(String uid) {
+    final label = _driverLabels[uid]?.trim() ?? '';
+    if (label.isNotEmpty) return label;
+    return uiTr(context, 'مندوب');
   }
 
   Future<void> _adjustWallet({
@@ -69,8 +121,8 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              '${uiTr(context, 'المندوب')}: $driverId\n'
-              '${uiTr(context, 'الرصيد الحالي')}: '
+              '${_driverTitle(driverId)}\n'
+              '${uiTr(context, 'رصيد المحفظة')}: '
               '${AdminOrderMoneyDisplay.formatMajor(currentBalance, symbol: currency == 'SAR' ? 'ر.س' : currency)}',
             ),
             const SizedBox(height: 12),
@@ -134,9 +186,9 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
       title: uiTr(context, 'تأكيد تعديل المحفظة'),
       whatHappens: uiTr(
         context,
-        'LEGACY wallet adjust — NOT a settlement. Changes driver wallet balance directly.',
+        'يعدّل رصيد المحفظة مباشرة. هذا ليس تسوية رحلات ولا أرباح المندوب.',
       ),
-      subject: driverId,
+      subject: _driverTitle(driverId),
       impact:
           '${uiTr(context, 'الرصيد الحالي')}: ${AdminOrderMoneyDisplay.formatMajor(currentBalance, symbol: currency == 'SAR' ? 'ر.س' : currency)}',
       confirmLabel: uiTr(context, 'تأكيد التعديل'),
@@ -203,7 +255,7 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
                     child: Text(
                       uiTr(
                         context,
-                        'دفتر المحفظة منفصل عن أرباح الرحلات والتسويات. رصيد المحفظة ليس صافي أرباح المندوب من الرحلات. التعديل اليدوي لسوبر أدمن فقط.',
+                        'هذا رصيد المحفظة، وليس أرباح الرحلات. التعديل للمسؤول الأعلى فقط.',
                       ),
                       style: theme.bodySmall.override(
                         fontFamily: 'Cairo',
@@ -286,20 +338,31 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
             if (docs.isEmpty) {
               return Center(child: Text(uiTr(context, 'لا توجد دفعات')));
             }
+            _resolveDriverLabels([
+              for (final doc in docs)
+                (doc.data()['userRef'] is DocumentReference)
+                    ? (doc.data()['userRef'] as DocumentReference).id
+                    : (doc.data()['driverId'] ?? '').toString(),
+            ]);
             return ListView.separated(
               itemCount: docs.length,
               separatorBuilder: (_, __) => const Divider(height: 1),
               itemBuilder: (context, i) {
                 final d = docs[i].data();
+                final uid = (d['userRef'] is DocumentReference)
+                    ? (d['userRef'] as DocumentReference).id
+                    : (d['driverId'] ?? '').toString();
+                final amount = d['amountAbs'] ?? d['amount'];
                 return ListTile(
-                  title: Text(
-                    '${uiTr(context, 'مندوب')}: ${d['driverId'] ?? d['userRef'] ?? '—'}',
-                  ),
-                  subtitle: Text(
-                    '${_dfFmt(d['createdAt'] ?? d['paidAt'])} · ${d['status'] ?? ''}',
-                  ),
+                  title: Text(_driverTitle(uid)),
+                  subtitle: Text(_dfFmt(d['createdAt'] ?? d['paidAt'])),
                   trailing: Text(
-                    '${(d['amountAbs'] ?? d['amount'] ?? 0)} ر.س',
+                    amount is num
+                        ? AdminOrderMoneyDisplay.formatMajor(
+                            amount.toDouble(),
+                            symbol: 'ر.س',
+                          )
+                        : 'غير متوفر',
                     style: theme.bodyMedium.override(
                       fontFamily: 'Cairo',
                       fontWeight: FontWeight.bold,
@@ -348,6 +411,10 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
             if (docs.isEmpty) {
               return Center(child: Text(uiTr(context, 'لا توجد محافظ')));
             }
+            final uids = <String>[
+              for (final doc in docs) _walletUid(doc),
+            ];
+            _resolveDriverLabels(uids);
             return ListView.separated(
               itemCount: docs.length,
               separatorBuilder: (_, __) => const Divider(height: 1),
@@ -355,34 +422,33 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
                 final d = docs[i].data();
                 final bal = (d['currentBalance'] as num?)?.toDouble() ?? 0;
                 final currency = (d['currency'] ?? 'SAR').toString();
-                final uid = (d['userRef'] is DocumentReference)
-                    ? (d['userRef'] as DocumentReference).id
-                    : (d['driverId'] ?? docs[i].id).toString();
-                final displayId = uid.length <= 8
-                    ? uid
-                    : '${uid.substring(0, 4)}…${uid.substring(uid.length - 4)}';
+                final uid = _walletUid(docs[i]);
+                final symbol = currency == 'SAR' ? 'ر.س' : currency;
                 return ListTile(
-                  title: Text('${uiTr(context, 'مندوب')}: $displayId'),
+                  title: Text(_driverTitle(uid)),
                   subtitle: Text(
-                    '${uiTr(context, 'عملة')}: $currency · '
-                    '${bal >= 200 ? uiTr(context, 'مؤهل نقدي') : uiTr(context, 'غير مؤهل نقدي')}',
+                    bal >= 200
+                        ? uiTr(context, 'يمكنه استلام النقد')
+                        : uiTr(context, 'رصيد المحفظة'),
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        AdminOrderMoneyDisplay.formatMajor(bal, symbol: currency == 'SAR' ? 'ر.س' : currency),
+                        AdminOrderMoneyDisplay.formatMajor(bal, symbol: symbol),
                         style: theme.bodyMedium.override(
                           fontFamily: 'Cairo',
                           fontWeight: FontWeight.bold,
-                          color: bal >= 200 ? Colors.green.shade700 : Colors.red,
+                          color: bal < 0
+                              ? Colors.red
+                              : theme.primaryText,
                         ),
                       ),
                       const SizedBox(width: 4),
                       IconButton(
                         tooltip: _canAdjust
                             ? uiTr(context, 'تعديل رصيد المحفظة')
-                            : uiTr(context, 'Wallet adjust disabled'),
+                            : uiTr(context, 'تعديل المحفظة غير متاح لدورك.'),
                         onPressed: (!_canAdjust || _adjusting)
                             ? null
                             : () => _adjustWallet(
@@ -426,6 +492,12 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
         if (docs.isEmpty) {
           return Center(child: Text(uiTr(context, 'لا توجد عمليات')));
         }
+        _resolveDriverLabels([
+          for (final doc in docs)
+            (doc.data()['userRef'] is DocumentReference)
+                ? (doc.data()['userRef'] as DocumentReference).id
+                : (doc.data()['driverId'] ?? '').toString(),
+        ]);
         return ListView.separated(
           itemCount: docs.length,
           separatorBuilder: (_, __) => const Divider(height: 1),
@@ -433,18 +505,22 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
             final d = docs[i].data();
             final uid = (d['userRef'] is DocumentReference)
                 ? (d['userRef'] as DocumentReference).id
-                : (d['driverId'] ?? '—').toString();
-            final displayId = uid.length <= 8
-                ? uid
-                : '${uid.substring(0, 4)}…${uid.substring(uid.length - 4)}';
+                : (d['driverId'] ?? '').toString();
+            final before = d['balanceBefore'];
+            final after = d['balanceAfter'];
+            final amount = d['amount'];
             return ListTile(
-              title: Text('${d['type'] ?? 'tx'} · $displayId'),
+              title: Text(
+                '${_txTypeAr('${d['type'] ?? ''}')} · ${_driverTitle(uid)}',
+              ),
               subtitle: Text(
                 '${_dfFmt(d['createdAt'])} · '
-                '${uiTr(context, 'قبل')} ${(d['balanceBefore'] ?? '—')} → '
-                '${uiTr(context, 'بعد')} ${(d['balanceAfter'] ?? '—')}',
+                '${uiTr(context, 'قبل')} ${before ?? 'غير متوفر'} · '
+                '${uiTr(context, 'بعد')} ${after ?? 'غير متوفر'}',
               ),
-              trailing: Text('${d['amount'] ?? 0}'),
+              trailing: Text(
+                amount == null ? 'غير متوفر' : '$amount',
+              ),
             );
           },
         );
@@ -452,9 +528,34 @@ class _AdminDriverWalletsWidgetState extends State<AdminDriverWalletsWidget> {
     );
   }
 
+  String _walletUid(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+    final d = doc.data();
+    if (d['userRef'] is DocumentReference) {
+      return (d['userRef'] as DocumentReference).id;
+    }
+    final driverId = (d['driverId'] ?? '').toString();
+    if (driverId.isNotEmpty) return driverId;
+    return doc.id;
+  }
+
+  String _txTypeAr(String raw) {
+    switch (raw) {
+      case 'top_up':
+      case 'credit':
+        return uiTr(context, 'شحن');
+      case 'debit':
+        return uiTr(context, 'خصم');
+      case 'admin_adjust':
+      case 'wallet_adjust':
+        return uiTr(context, 'تعديل يدوي');
+      default:
+        return uiTr(context, 'حركة محفظة');
+    }
+  }
+
   String _dfFmt(dynamic v) {
     if (v is Timestamp) return _df.format(v.toDate());
     if (v is DateTime) return _df.format(v);
-    return '—';
+    return 'غير متوفر';
   }
 }

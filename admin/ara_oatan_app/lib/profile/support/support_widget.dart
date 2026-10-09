@@ -188,7 +188,8 @@ class _SupportWidgetState extends State<SupportWidget> {
                               onWhatsApp: () async {
                                 await TourySupportLink.open(
                                   context,
-                                  countryPath: FFAppState().ShrekNCountry,
+                                  countryPath: FFAppState().ShrekNCountry ??
+                                      FFAppState().dolh,
                                   message: 'support.whatsapp_message'.tr(),
                                 );
                               },

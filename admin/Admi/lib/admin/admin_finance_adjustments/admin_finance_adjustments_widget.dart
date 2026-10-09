@@ -300,7 +300,7 @@ class _AdminFinanceAdjustmentsWidgetState
             title: uiTr(context, 'التعديلات والرصيد الافتتاحي'),
             subtitle: uiTr(
               context,
-              'قيود محاسبية فقط — لا حركة محفظة. الموافقة تتطلب maker-checker عند تفعيل الأعلام.',
+              'تعديل محاسبي لا يغيّر رصيد المحفظة. من ينشئ التعديل لا يعتمده بنفسه.',
             ),
           ),
           if (!canWrite) const FinanceWritesDisabledBanner(),

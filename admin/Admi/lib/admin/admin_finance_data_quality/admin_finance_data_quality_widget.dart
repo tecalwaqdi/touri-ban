@@ -74,8 +74,6 @@ class _AdminFinanceDataQualityWidgetState
     return _DqBundle(
       findings: findings,
       counts: FinanceDqClassifier.countBySeverity(findings),
-      totalsSource: result.totalsSource,
-      docsScanned: result.docsScanned,
     );
   }
 
@@ -121,7 +119,7 @@ class _AdminFinanceDataQualityWidgetState
                 title: uiTr(context, 'جودة البيانات المالية'),
                 subtitle: uiTr(
                   context,
-                  'اكتشاف المشاكل فقط — لا يتم تعديل المبالغ التاريخية تلقائيًا.',
+                  'رحلات بياناتها ناقصة أو غير متسقة. الفحص لا يغيّر المبالغ.',
                 ),
               ),
               AdminPeriodSegmented<AdminDatePreset>(
@@ -155,6 +153,7 @@ class _AdminFinanceDataQualityWidgetState
                   onRetry: _reload,
                 )
               else if (bundle != null) ...[
+                if (bundle.findings.isNotEmpty)
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -200,12 +199,7 @@ class _AdminFinanceDataQualityWidgetState
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  '${uiTr(context, 'المصدر')}: ${bundle.totalsSource} · ${uiTr(context, 'مستندات')}: ${bundle.docsScanned}',
-                  style: AccountantFinanceText.label(theme),
-                ),
-                const SizedBox(height: 12),
+                if (bundle.findings.isNotEmpty) const SizedBox(height: 12),
                 if (filtered.isEmpty)
                   AdminEmptyState(
                     compact: true,
@@ -285,12 +279,8 @@ class _DqBundle {
   const _DqBundle({
     required this.findings,
     required this.counts,
-    required this.totalsSource,
-    required this.docsScanned,
   });
 
   final List<FinanceDqFinding> findings;
   final Map<FinanceDqSeverity, int> counts;
-  final String totalsSource;
-  final int docsScanned;
 }

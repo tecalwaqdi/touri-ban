@@ -30,6 +30,12 @@ class FinanceHomeOverviewCards extends StatelessWidget {
           symbolOverride: sym,
         );
 
+    if (snapshot.completedTrips == 0 &&
+        snapshot.cashCollectedTrips == 0 &&
+        snapshot.onlinePaidTrips == 0) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

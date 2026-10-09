@@ -59,18 +59,23 @@ class AdminLandmarkCategory {
   ) {
     final data = doc.data();
     if (data == null) return null;
-    final storage = (data['storage'] as String?)?.trim() ?? '';
+    final storage = _text(data['storage']);
     if (storage.isEmpty) return null;
     return AdminLandmarkCategory(
       id: doc.id,
       storage: storage,
-      labelAr: (data['labelAr'] as String?)?.trim() ?? storage,
-      labelEn: (data['labelEn'] as String?)?.trim() ?? storage,
-      icon: (data['icon'] as String?)?.trim() ?? 'attraction',
-      trKey: (data['trKey'] as String?)?.trim() ?? '',
+      labelAr: _text(data['labelAr']).isEmpty ? storage : _text(data['labelAr']),
+      labelEn: _text(data['labelEn']).isEmpty ? storage : _text(data['labelEn']),
+      icon: _text(data['icon']).isEmpty ? 'attraction' : _text(data['icon']),
+      trKey: _text(data['trKey']),
       enabled: data['enabled'] != false,
       sort: (data['sort'] is num) ? (data['sort'] as num).toInt() : 0,
     );
+  }
+
+  static String _text(dynamic value) {
+    if (value == null) return '';
+    return value.toString().trim();
   }
 }
 
@@ -80,7 +85,7 @@ abstract final class AdminLandmarkCategoryCatalog {
   static CollectionReference<Map<String, dynamic>> get collection =>
       FirebaseFirestore.instance.collection(collectionName);
 
-  /// Clean defaults — no near-duplicate tourism chips.
+  /// Assignment + customer chips. "الكل" is a filter only, not a landmark type.
   static const List<AdminLandmarkCategory> builtIn = [
     AdminLandmarkCategory(
       id: 'all',
@@ -96,45 +101,63 @@ abstract final class AdminLandmarkCategoryCatalog {
       storage: 'معالم دينية',
       labelAr: 'معالم دينية',
       labelEn: 'Religious landmarks',
-      icon: 'cloud',
+      icon: 'mosque',
       trKey: 'landmark_cat_religious',
       sort: 10,
     ),
     AdminLandmarkCategory(
       id: 'historical',
-      storage: 'معالم تاريخية',
-      labelAr: 'معالم تاريخية',
-      labelEn: 'Historical landmarks',
-      icon: 'place',
+      storage: 'معالم تاريخية وأثرية',
+      labelAr: 'معالم تاريخية وأثرية',
+      labelEn: 'Historical and archaeological sites',
+      icon: 'historical',
       trKey: 'landmark_cat_historical',
       sort: 20,
     ),
     AdminLandmarkCategory(
-      id: 'tourism',
-      storage: 'معالم سياحية',
-      labelAr: 'معالم سياحية',
-      labelEn: 'Tourist landmarks',
-      icon: 'attraction',
-      trKey: 'landmark_cat_tourism',
+      id: 'museums',
+      storage: 'متاحف وثقافة',
+      labelAr: 'متاحف وثقافة',
+      labelEn: 'Museums and culture',
+      icon: 'museum',
+      trKey: 'landmark_cat_museums',
       sort: 30,
     ),
     AdminLandmarkCategory(
-      id: 'entertainment',
-      storage: 'أماكن ترفيهية',
-      labelAr: 'أماكن ترفيهية',
-      labelEn: 'Entertainment',
-      icon: 'happy',
-      trKey: 'landmark_cat_entertainment',
+      id: 'nature',
+      storage: 'طبيعة وجبال',
+      labelAr: 'طبيعة وجبال',
+      labelEn: 'Nature and mountains',
+      icon: 'nature',
+      trKey: 'landmark_cat_nature',
       sort: 40,
     ),
     AdminLandmarkCategory(
-      id: 'markets',
-      storage: 'أسواق',
-      labelAr: 'أسواق',
-      labelEn: 'Markets',
-      icon: 'cart',
-      trKey: 'landmark_cat_markets',
+      id: 'parks',
+      storage: 'حدائق ومنتزهات',
+      labelAr: 'حدائق ومنتزهات',
+      labelEn: 'Parks and gardens',
+      icon: 'park',
+      trKey: 'landmark_cat_parks',
       sort: 50,
+    ),
+    AdminLandmarkCategory(
+      id: 'beaches',
+      storage: 'شواطئ وكورنيش ومماشي',
+      labelAr: 'شواطئ وكورنيش ومماشي',
+      labelEn: 'Beaches, corniche and walks',
+      icon: 'beach',
+      trKey: 'landmark_cat_beaches',
+      sort: 60,
+    ),
+    AdminLandmarkCategory(
+      id: 'entertainment',
+      storage: 'ترفيه وأنشطة',
+      labelAr: 'ترفيه وأنشطة',
+      labelEn: 'Entertainment and activities',
+      icon: 'entertainment',
+      trKey: 'landmark_cat_entertainment',
+      sort: 70,
     ),
     AdminLandmarkCategory(
       id: 'restaurants',
@@ -143,85 +166,175 @@ abstract final class AdminLandmarkCategoryCatalog {
       labelEn: 'Restaurants',
       icon: 'food',
       trKey: 'landmark_cat_restaurants',
-      sort: 60,
-    ),
-    AdminLandmarkCategory(
-      id: 'cafe',
-      storage: 'مقهى',
-      labelAr: 'مقهى',
-      labelEn: 'Cafe',
-      icon: 'cafe',
-      trKey: 'landmark_cat_cafe',
-      sort: 70,
-    ),
-    AdminLandmarkCategory(
-      id: 'hotels',
-      storage: 'فنادق',
-      labelAr: 'فنادق',
-      labelEn: 'Hotels',
-      icon: 'hotel',
-      trKey: 'landmark_cat_hotels',
       sort: 80,
     ),
     AdminLandmarkCategory(
-      id: 'desert',
-      storage: 'جولة برية',
-      labelAr: 'جولة برية',
-      labelEn: 'Desert tour',
-      icon: 'forest',
-      trKey: 'landmark_cat_desert',
+      id: 'cafe',
+      storage: 'مقاهي',
+      labelAr: 'مقاهي',
+      labelEn: 'Cafes',
+      icon: 'cafe',
+      trKey: 'landmark_cat_cafe',
       sort: 90,
     ),
     AdminLandmarkCategory(
-      id: 'sea',
-      storage: 'جولة بحرية',
-      labelAr: 'جولة بحرية',
-      labelEn: 'Sea tour',
-      icon: 'sea',
-      trKey: 'landmark_cat_sea',
+      id: 'markets',
+      storage: 'أسواق ومولات',
+      labelAr: 'أسواق ومولات',
+      labelEn: 'Markets and malls',
+      icon: 'mall',
+      trKey: 'landmark_cat_markets',
       sort: 100,
+    ),
+    AdminLandmarkCategory(
+      id: 'hotels',
+      storage: 'فنادق ومنتجعات',
+      labelAr: 'فنادق ومنتجعات',
+      labelEn: 'Hotels and resorts',
+      icon: 'hotel',
+      trKey: 'landmark_cat_hotels',
+      sort: 110,
+    ),
+    AdminLandmarkCategory(
+      id: 'farms',
+      storage: 'مزارع وتجارب ريفية',
+      labelAr: 'مزارع وتجارب ريفية',
+      labelEn: 'Farms and rural experiences',
+      icon: 'farm',
+      trKey: 'landmark_cat_farms',
+      sort: 120,
+    ),
+    AdminLandmarkCategory(
+      id: 'sports',
+      storage: 'رياضة وملاعب',
+      labelAr: 'رياضة وملاعب',
+      labelEn: 'Sports and stadiums',
+      icon: 'sports',
+      trKey: 'landmark_cat_sports',
+      sort: 130,
+    ),
+    AdminLandmarkCategory(
+      id: 'transport',
+      storage: 'مطارات ومحطات',
+      labelAr: 'مطارات ومحطات',
+      labelEn: 'Airports and stations',
+      icon: 'transport',
+      trKey: 'landmark_cat_transport',
+      sort: 140,
+    ),
+    AdminLandmarkCategory(
+      id: 'landmarks',
+      storage: 'معالم وأيقونات المدينة',
+      labelAr: 'معالم وأيقونات المدينة',
+      labelEn: 'City landmarks and icons',
+      icon: 'landmark',
+      trKey: 'landmark_cat_landmarks',
+      sort: 150,
+    ),
+    AdminLandmarkCategory(
+      id: 'camps',
+      storage: 'مخيمات برية',
+      labelAr: 'مخيمات برية',
+      labelEn: 'Desert camps',
+      icon: 'camp',
+      trKey: 'landmark_cat_camps',
+      sort: 160,
+    ),
+    AdminLandmarkCategory(
+      id: 'cinema',
+      storage: 'سينما',
+      labelAr: 'سينما',
+      labelEn: 'Cinema',
+      icon: 'cinema',
+      trKey: 'landmark_cat_cinema',
+      sort: 170,
+    ),
+    AdminLandmarkCategory(
+      id: 'reserves',
+      storage: 'محميات طبيعية',
+      labelAr: 'محميات طبيعية',
+      labelEn: 'Nature reserves',
+      icon: 'reserve',
+      trKey: 'landmark_cat_reserves',
+      sort: 180,
     ),
   ];
 
+  /// Older catalog ids replaced by the list above.
+  static const retiredIds = {'tourism', 'sea', 'desert'};
+
   static const iconChoices = <String>[
     'all',
-    'cloud',
-    'place',
-    'attraction',
-    'happy',
-    'cart',
+    'mosque',
+    'historical',
+    'museum',
+    'nature',
+    'park',
+    'beach',
+    'entertainment',
     'food',
     'cafe',
+    'mall',
     'hotel',
-    'forest',
-    'sea',
+    'farm',
+    'sports',
+    'transport',
+    'landmark',
+    'camp',
+    'cinema',
+    'reserve',
+    'attraction',
   ];
 
   static IconData materialIcon(String name) {
     switch (name) {
       case 'all':
         return Icons.density_small;
+      case 'mosque':
       case 'cloud':
-        return Icons.cloud_outlined;
-      case 'happy':
-        return Icons.sentiment_satisfied_rounded;
+        return Icons.mosque_outlined;
+      case 'historical':
       case 'place':
-        return Icons.place_outlined;
+        return Icons.account_balance_outlined;
+      case 'museum':
+        return Icons.museum_outlined;
+      case 'nature':
+        return Icons.terrain_outlined;
+      case 'park':
+        return Icons.park_outlined;
+      case 'beach':
+      case 'sea':
+        return Icons.beach_access_outlined;
+      case 'entertainment':
+      case 'happy':
+        return Icons.celebration_outlined;
+      case 'mall':
       case 'cart':
-        return Icons.shopping_cart_outlined;
+        return Icons.local_mall_outlined;
       case 'food':
-        return Icons.fastfood_outlined;
+        return Icons.restaurant_outlined;
       case 'cafe':
         return Icons.coffee_outlined;
       case 'hotel':
         return Icons.hotel_outlined;
-      case 'forest':
-        return Icons.forest_outlined;
-      case 'sea':
-        return Icons.sailing;
+      case 'farm':
+        return Icons.agriculture_outlined;
+      case 'sports':
+        return Icons.sports_soccer_outlined;
+      case 'transport':
+        return Icons.connecting_airports_outlined;
+      case 'landmark':
       case 'attraction':
+        return Icons.location_city_outlined;
+      case 'camp':
+      case 'forest':
+        return Icons.cabin_outlined;
+      case 'cinema':
+        return Icons.theaters_outlined;
+      case 'reserve':
+        return Icons.nature_outlined;
       default:
-        return Icons.tour;
+        return Icons.tour_outlined;
     }
   }
 
@@ -232,11 +345,21 @@ abstract final class AdminLandmarkCategoryCatalog {
     } catch (_) {
       snap = await collection.limit(60).get();
     }
-    final out = <AdminLandmarkCategory>[];
+    final remote = <AdminLandmarkCategory>[];
     for (final doc in snap.docs) {
       final item = AdminLandmarkCategory.fromDoc(doc);
-      if (item != null) out.add(item);
+      if (item != null && !retiredIds.contains(item.id)) remote.add(item);
     }
+    return mergeWithBuiltIn(remote);
+  }
+
+  /// Canonical 18 types always appear. Extra admin-created categories stay.
+  static List<AdminLandmarkCategory> mergeWithBuiltIn(
+    List<AdminLandmarkCategory> remote,
+  ) {
+    final known = {for (final item in builtIn) item.id};
+    final extras = remote.where((item) => !known.contains(item.id) && item.enabled);
+    final out = [...builtIn, ...extras];
     out.sort((a, b) => a.sort.compareTo(b.sort));
     return out;
   }
@@ -264,6 +387,14 @@ abstract final class AdminLandmarkCategoryCatalog {
         collection.doc(d.id),
         d.toMap(),
         SetOptions(merge: !overwrite),
+      );
+      writes++;
+    }
+    for (final id in retiredIds) {
+      batch.set(
+        collection.doc(id),
+        {'enabled': false},
+        SetOptions(merge: true),
       );
       writes++;
     }

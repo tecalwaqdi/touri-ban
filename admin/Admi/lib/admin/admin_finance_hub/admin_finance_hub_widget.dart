@@ -20,8 +20,6 @@ import '/core/finance/finance_control_facade.dart';
 import '/core/finance/financial_amount_resolution.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/index.dart';
-import '/l10n/ui_catalog.dart';
 
 /// Canonical accountant Finance entry — bounded trip page + CF KPIs only.
 ///
@@ -201,7 +199,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                         ? 'ملخص محاسبي لدولتك — قراءة فقط.'
                         : 'ملخص محاسبي موحّد — رحلات مكتملة، تحصيل، ومستحقات.',
                   ),
-                  trailing: !isAgent ? _secondaryLinks(context, theme) : null,
+                  trailing: null,
                 ),
                 AdminPeriodSegmented<AdminDatePreset>(
                   values: _presetLabels.keys.toList(growable: false),
@@ -298,8 +296,11 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                 else if (!hasRows && rowsReady)
                   AdminEmptyState(
                     compact: true,
-                    title: uiTr(context, 'لا توجد بيانات'),
-                    message: uiTr(context, 'لا نتائج ضمن الفلاتر الحالية.'),
+                    title: uiTr(context, 'لا رحلات مكتملة في هذه الفترة'),
+                    message: uiTr(
+                      context,
+                      'غيّر الفترة من الأعلى. الرحلات خارج الفترة لا تُحسب هنا.',
+                    ),
                   )
                 else if (!rowsReady)
                   AdminLoadingState(
@@ -389,91 +390,6 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
           );
         },
       ),
-    );
-  }
-
-  Widget _secondaryLinks(BuildContext context, FlutterFlowTheme theme) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        if (AdminRoleService.canAccessRoute(
-          AdminFinanceReconciliationWidget.routeName,
-        ))
-          AdminPrimaryButton(
-            label: uiTr(context, 'المطابقة'),
-            outlined: true,
-            icon: Icons.fact_check_outlined,
-            onPressed: () => context.pushNamed(
-              AdminFinanceReconciliationWidget.routeName,
-            ),
-          ),
-        if (AdminRoleService.canAccessRoute(AdminSettlementsWidget.routeName))
-          AdminPrimaryButton(
-            label: uiTr(context, 'التسويات'),
-            outlined: true,
-            icon: Icons.receipt_long_outlined,
-            onPressed: () =>
-                context.pushNamed(AdminSettlementsWidget.routeName),
-          ),
-        if (AdminRoleService.canAccessRoute(
-          AdminFinanceReceivablesWidget.routeName,
-        ))
-          AdminPrimaryButton(
-            label: uiTr(context, 'الذمم'),
-            outlined: true,
-            icon: Icons.account_balance_wallet_outlined,
-            onPressed: () =>
-                context.pushNamed(AdminFinanceReceivablesWidget.routeName),
-          ),
-        if (AdminRoleService.canAccessRoute(
-          AdminFinanceAdjustmentsWidget.routeName,
-        ))
-          AdminPrimaryButton(
-            label: appTr(context, 'nav_finance_adjustments'),
-            outlined: true,
-            icon: Icons.tune_rounded,
-            onPressed: () =>
-                context.pushNamed(AdminFinanceAdjustmentsWidget.routeName),
-          ),
-        if (AdminRoleService.canAccessRoute(
-          AdminFinancialPeriodsWidget.routeName,
-        ))
-          AdminPrimaryButton(
-            label: uiTr(context, 'الفترات'),
-            outlined: true,
-            icon: Icons.date_range_outlined,
-            onPressed: () =>
-                context.pushNamed(AdminFinancialPeriodsWidget.routeName),
-          ),
-        if (AdminRoleService.canAccessRoute(
-          AdminFinanceReportsWidget.routeName,
-        ))
-          AdminPrimaryButton(
-            label: uiTr(context, 'التقارير'),
-            outlined: true,
-            onPressed: () =>
-                context.pushNamed(AdminFinanceReportsWidget.routeName),
-          ),
-        if (!AdminRoleService.isCountryAgent &&
-            AdminRoleService.canAccessRoute(AdminAgentFinanceWidget.routeName))
-          AdminPrimaryButton(
-            label: uiTr(context, 'مالية الوكلاء'),
-            outlined: true,
-            onPressed: () =>
-                context.pushNamed(AdminAgentFinanceWidget.routeName),
-          ),
-        if (AdminRoleService.isSuperAdmin &&
-            AdminRoleService.canAccessRoute(
-              AdminFinanceAuditWidget.routeName,
-            ))
-          AdminPrimaryButton(
-            label: uiTr(context, 'تشخيص تقني'),
-            outlined: true,
-            onPressed: () =>
-                context.pushNamed(AdminFinanceAuditWidget.routeName),
-          ),
-      ],
     );
   }
 

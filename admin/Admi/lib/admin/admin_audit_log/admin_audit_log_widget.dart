@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '/backend/admin_audit_log.dart';
+import '/core/finance/accountant_finance_labels.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_firestore_list.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_super_admin_gate.dart';
 import '/components/admin_ui.dart';
-import '/core/admin_notification_model.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
@@ -54,13 +54,116 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
         return uiTr(context, 'إيقاف');
       case 'cancel':
         return uiTr(context, 'إلغاء');
+      case 'create':
+        return uiTr(context, 'إنشاء');
+      case 'update':
+        return uiTr(context, 'تعديل');
+      case 'approve':
+      case 'approved':
       case 'driver_approve':
         return uiTr(context, 'اعتماد مندوب');
       case 'driver_reject':
+      case 'rejected':
         return uiTr(context, 'رفض مندوب');
+      case 'driver_override_approve':
+        return uiTr(context, 'اعتماد استثنائي');
+      case 'driver_request_changes':
+      case 'changes_requested':
+        return uiTr(context, 'طلب تعديل');
+      case 'agent_country_claim':
+        return uiTr(context, 'تعيين وكيل');
+      case 'agent_country_claim_idempotent':
+        return uiTr(context, 'تأكيد التعيين');
+      case 'agent_country_release':
+        return uiTr(context, 'فك تعيين وكيل');
+      case 'agent_country_reassign':
+      case 'agent_country_move':
+        return uiTr(context, 'نقل وكيل');
+      case 'create_panel_user_compensation':
+        return uiTr(context, 'إلغاء حساب لم يكتمل');
+      case 'account_deletion':
+        return uiTr(context, 'حذف حساب');
+      case 'wallet_adjust':
+        return uiTr(context, 'تعديل محفظة');
+      case 'support_internal_note':
+        return uiTr(context, 'ملاحظة دعم');
+      case 'vehicle_price_update':
+        return uiTr(context, 'تعديل سعر مركبة');
+      case 'vehicle_image_update':
+        return uiTr(context, 'تعديل صورة مركبة');
       default:
-        return action;
+        if (action.startsWith('support_status_')) {
+          return uiTr(context, 'تغيير حالة الدعم');
+        }
+        return uiTr(context, 'عملية إدارية');
     }
+  }
+
+  String _typeLabel(String type) {
+    switch (type) {
+      case 'agent_country_assignment':
+        return uiTr(context, 'دولة الوكيل');
+      case 'user':
+        return uiTr(context, 'مستخدم');
+      case 'driver':
+        return uiTr(context, 'مندوب');
+      case 'order':
+      case 'booking':
+        return uiTr(context, 'رحلة');
+      default:
+        if (type.contains('user') || type.contains('driver')) {
+          return uiTr(context, 'مندوب');
+        }
+        if (type.contains('order') || type.contains('booking')) {
+          return uiTr(context, 'رحلة');
+        }
+        if (type.contains('support')) return uiTr(context, 'دعم');
+        return '';
+    }
+  }
+
+  String _placeLabel(String id) {
+    const names = {
+      'kyrgyzstan': 'قيرغيزستان',
+      'saudi_arabia': 'السعودية',
+      'india': 'الهند',
+      'indonesia': 'إندونيسيا',
+      'malaysia': 'ماليزيا',
+      'morocco': 'المغرب',
+      'nigeria': 'نيجيريا',
+      'portugal': 'البرتغال',
+      'tunisia': 'تونس',
+      'spain': 'إسبانيا',
+    };
+    final known = names[id.toLowerCase()];
+    if (known != null) return known;
+    final human = AccountantFinanceLabels.countryHumanAr(id);
+    if (human.isEmpty || human == id || human == '—') return '';
+    if (human.contains('_') || RegExp(r'[A-Za-z]').hasMatch(human)) return '';
+    return human;
+  }
+
+  String _rowTitle(AuditLogEntry log) {
+    final type = _typeLabel(log.targetType);
+    final label = log.targetLabel.trim();
+    final place = _placeLabel(log.targetId.trim());
+    final bits = <String>[
+      if (type.isNotEmpty) type,
+      if (label.isNotEmpty) label,
+      if (place.isNotEmpty && place != label) place,
+    ];
+    if (bits.isEmpty) return '';
+    return bits.join(' · ');
+  }
+
+  bool _canOpen(AuditLogEntry log) {
+    final type = log.targetType.toLowerCase();
+    if (log.targetId.isEmpty) return false;
+    return type.contains('user') ||
+        type.contains('driver') ||
+        type.contains('booking') ||
+        type.contains('order') ||
+        type.contains('support');
   }
 
   Color _actionColor(String action, FlutterFlowTheme theme) {
@@ -85,7 +188,8 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
     return logs
         .where((l) =>
             l.action.toLowerCase().contains(q) ||
-            l.targetType.toLowerCase().contains(q) ||
+            _actionLabel(l.action).toLowerCase().contains(q) ||
+            _rowTitle(l).toLowerCase().contains(q) ||
             l.targetLabel.toLowerCase().contains(q) ||
             l.actorEmail.toLowerCase().contains(q))
         .toList(growable: false);
@@ -161,7 +265,10 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
       title: appTr(context, 'nav_audit_log'),
       child: AdminPageBody(
         title: appTr(context, 'scr_audit_title'),
-        subtitle: appTr(context, 'scr_audit_subtitle'),
+        subtitle: uiTr(
+          context,
+          'من حذف أو فعّل أو ألغى، ومتى. الأسماء هنا بالعربية.',
+        ),
         scrollable: true,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -170,7 +277,7 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
               padding: const EdgeInsets.all(10),
               child: AdminSearchField(
                 debounceTag: 'audit_action_filter',
-                hint: uiTr(context, 'بحث بالإجراء / الكيان / البريد'),
+                hint: uiTr(context, 'بحث بالعملية أو البريد'),
                 initialValue: _actionQuery,
                 onChanged: (v) => setState(() => _actionQuery = v),
               ),
@@ -219,12 +326,13 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
                         itemBuilder: (context, index) {
                           final log = visible[index];
                           final action = log.action;
-                          final targetType = log.targetType;
-                          final targetLabel = log.targetLabel;
-                          final actorEmail = log.actorEmail;
-                          final actorRole = log.actorRole;
+                          final actorEmail = log.actorEmail.trim();
+                          final actorRole = log.actorRole.trim();
                           final createdAt = log.createdAt;
-                          final meta = adminMaskSensitiveText(log.metadataRaw);
+                          final who = [
+                            if (actorRole.isNotEmpty) actorRole,
+                            if (actorEmail.isNotEmpty) actorEmail,
+                          ].join(' · ');
                           final timeLabel = createdAt != null
                               ? dateTimeFormat(
                                   'yMMMd – HH:mm',
@@ -232,7 +340,7 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
                                   locale:
                                       FFLocalizations.of(context).languageCode,
                                 )
-                              : uiTr(context, '—');
+                              : 'غير متوفر';
 
                           return Container(
                             padding: const EdgeInsets.all(12),
@@ -270,13 +378,13 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
-                                        '$targetType${targetLabel.isNotEmpty ? ': $targetLabel' : ''}',
+                                        _rowTitle(log),
                                         style: theme.titleSmall,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    if (log.targetId.isNotEmpty)
+                                    if (_canOpen(log))
                                       IconButton(
                                         tooltip: uiTr(context, 'فتح السجل'),
                                         icon: const Icon(
@@ -287,24 +395,18 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
                                       ),
                                   ],
                                 ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  '$actorRole — $actorEmail',
-                                  style: theme.labelMedium.override(
-                                    fontFamily: theme.labelMediumFamily,
-                                    color: theme.secondaryText,
-                                    useGoogleFonts: !theme.labelMediumIsCustom,
-                                  ),
-                                ),
-                                if (log.targetId.isNotEmpty)
+                                if (who.isNotEmpty) ...[
+                                  const SizedBox(height: 6),
                                   Text(
-                                    'ID: ${log.targetId}',
-                                    style: theme.labelSmall.override(
-                                      fontFamily: 'monospace',
+                                    who,
+                                    style: theme.labelMedium.override(
+                                      fontFamily: theme.labelMediumFamily,
                                       color: theme.secondaryText,
-                                      useGoogleFonts: false,
+                                      useGoogleFonts:
+                                          !theme.labelMediumIsCustom,
                                     ),
                                   ),
+                                ],
                                 Text(
                                   timeLabel,
                                   style: theme.labelSmall.override(
@@ -313,19 +415,6 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
                                     useGoogleFonts: !theme.labelSmallIsCustom,
                                   ),
                                 ),
-                                if (meta.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    meta,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.bodySmall.override(
-                                      fontFamily: theme.bodySmallFamily,
-                                      color: theme.secondaryText,
-                                      useGoogleFonts: !theme.labelSmallIsCustom,
-                                    ),
-                                  ),
-                                ],
                               ],
                             ),
                           );

@@ -13,7 +13,6 @@ import '/core/finance/finance_reconciliation_read_model.dart';
 import '/core/finance/money_amount.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/l10n/ui_catalog.dart';
 
 /// F3-B2 Accountant Workspace — uses B1 [FinanceReconciliationReadModel] only.
 class AdminFinanceReconciliationWidget extends StatefulWidget {
@@ -111,7 +110,7 @@ class _AdminFinanceReconciliationWidgetState
   }
 
   String _moneyOrDash(MoneyAmount? m) {
-    if (m == null) return '—';
+    if (m == null) return 'غير متوفر';
     return '${m.majorUnits.toStringAsFixed(2)} ${m.code}';
   }
 
@@ -242,15 +241,31 @@ class _WorkspaceBody extends StatelessWidget {
     final completedOnly = result.records
         .where((r) => r.operationalStatus == RecOperationalStatus.completed)
         .toList();
-    String metric(String v) => summaryReady ? v : '—';
+    final gross = summaryReady ? moneyOrDash(s.completedGross) : null;
+    final companyDue =
+        summaryReady ? moneyOrDash(s.companyReceivableTotal) : null;
+    final companyOwes =
+        summaryReady ? moneyOrDash(s.companyPayableTotal) : null;
+    final moneyCards = <Widget>[
+      if (gross != null && gross != '—' && gross != 'غير متوفر')
+        _MoneyCard(label: uiTr(context, 'قيمة الرحلات المكتملة'), value: gross),
+      if (companyDue != null && companyDue != '—' && companyDue != 'غير متوفر')
+        _MoneyCard(label: uiTr(context, 'مستحق للشركة'), value: companyDue),
+      if (companyOwes != null &&
+          companyOwes != '—' &&
+          companyOwes != 'غير متوفر')
+        _MoneyCard(label: uiTr(context, 'مستحق على الشركة'), value: companyOwes),
+    ];
 
     return ListView(
       padding: AdminUi.pagePadding(context),
       children: [
         AdminPageHeader(
           title: uiTr(context, 'المصالحة المالية'),
-          subtitle:
-              uiTr(context, 'مراجعة الرحلات المكتملة والحالة المالية والتحصيل والتسويات'),
+          subtitle: uiTr(
+            context,
+            'رحلات الفترة التي لا يمكن اعتماد مبلغها، والسبب.',
+          ),
         ),
         if (!summaryReady)
           Padding(
@@ -262,60 +277,20 @@ class _WorkspaceBody extends StatelessWidget {
               ),
             ),
           ),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _MetricChip('الرحلات المكتملة', metric('${s.completedTrips}')),
-            _MetricChip(
-              'بيانات مالية مكتملة',
-              metric('${s.financialComplete}'),
-            ),
-            _MetricChip(
-              'بيانات مالية ناقصة',
-              metric('${s.financialPartial}'),
-            ),
-            _MetricChip('تمت المصالحة', metric('${s.reconciled}')),
-            _MetricChip('تحتاج مراجعة', metric('${s.needsReview}')),
-            _MetricChip(
-              'محجوبة بسبب نقص البيانات',
-              metric('${s.blockedByMissingData}'),
-            ),
-            _MetricChip('نقد محصل', metric('${s.cashCollected}')),
-            _MetricChip('نقد غير محصل', metric('${s.cashUncollected}')),
-            _MetricChip('مسددة', metric('${s.settled}')),
-            _MetricChip('غير مسددة', metric('${s.unsettled}')),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _MoneyCard(
-              label: uiTr(context, 'إجمالي مكتمل (موثوق)'),
-              value: summaryReady ? moneyOrDash(s.completedGross) : '—',
-            ),
-            _MoneyCard(
-              label: uiTr(context, 'مستحق للشركة'),
-              value:
-                  summaryReady ? moneyOrDash(s.companyReceivableTotal) : '—',
-            ),
-            _MoneyCard(
-              label: uiTr(context, 'مستحق على الشركة'),
-              value: summaryReady ? moneyOrDash(s.companyPayableTotal) : '—',
-            ),
-          ],
-        ),
-        if (summaryReady && s.moneyOmittedIncompleteCount > 0) ...[
-          const SizedBox(height: 8),
+        if (summaryReady)
           Text(
             uiTr(
               context,
-              'تم استبعاد {count} رحلة من مجاميع الأموال لعدم اكتمال البيانات.',
-            ).replaceAll('{count}', '${s.moneyOmittedIncompleteCount}'),
-            style: AccountantFinanceText.label(theme),
+              'مكتملة: {done}. بياناتها كافية للحساب: {ok}. ناقصة ولا تُجمع: {bad}.',
+            )
+                .replaceAll('{done}', '${s.completedTrips}')
+                .replaceAll('{ok}', '${s.financialComplete}')
+                .replaceAll('{bad}', '${s.moneyOmittedIncompleteCount}'),
+            style: AccountantFinanceText.body(theme),
           ),
+        if (moneyCards.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Wrap(spacing: 8, runSpacing: 8, children: moneyCards),
         ],
         const SizedBox(height: 20),
         Text(
@@ -417,13 +392,6 @@ class _WorkspaceBody extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 16),
-        Text(
-          summaryReady
-              ? uiTr(context, 'مستبعد من العرض العادي: {count} سجل اختبار/ذهبي')
-                  .replaceAll('{count}', '${result.summary.qaFixturesExcluded}')
-              : uiTr(context, 'مستبعد من العرض العادي: —'),
-          style: AccountantFinanceText.label(theme),
-        ),
       ],
     );
   }
@@ -468,9 +436,10 @@ class _WorkspaceBody extends StatelessWidget {
               if (issues.isNotEmpty) ...[
                 const SizedBox(height: 6),
                 Text(
-                  issues
-                      .map((i) => FinanceReconciliationLabels.issueAr(i.code))
-                      .join('\n'),
+                  uiTr(
+                    context,
+                    'بيانات هذه الرحلة ناقصة، لذلك لا يُحسب مبلغها مع المجاميع.',
+                  ),
                   style: AccountantFinanceText.body(theme),
                 ),
               ],
@@ -488,30 +457,6 @@ class _WorkspaceBody extends StatelessWidget {
       ];
     }
     return tiles;
-  }
-}
-
-class _MetricChip extends StatelessWidget {
-  const _MetricChip(this.label, this.value);
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: AdminUi.cardDecoration(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(uiTr(context, label), style: AccountantFinanceText.label(theme)),
-          const SizedBox(height: 4),
-          Text(value, style: AccountantFinanceText.money(theme)),
-        ],
-      ),
-    );
   }
 }
 

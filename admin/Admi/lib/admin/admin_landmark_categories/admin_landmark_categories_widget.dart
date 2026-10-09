@@ -159,7 +159,11 @@ class _AdminLandmarkCategoriesWidgetState
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
-                        value: icon,
+                        key: ValueKey(icon),
+                        initialValue: AdminLandmarkCategoryCatalog.iconChoices
+                                .contains(icon)
+                            ? icon
+                            : 'landmark',
                         decoration: InputDecoration(labelText: uiTr(ctx, 'الأيقونة')),
                         items: [
                           for (final name

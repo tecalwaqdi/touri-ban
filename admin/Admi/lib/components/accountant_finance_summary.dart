@@ -41,7 +41,7 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
                 sym,
                 hasActivity: false,
               )
-            : '—';
+            : 'غير متوفر';
       }
       return AdminOrderMoneyDisplay.formatMoneyAmount(
         amount,
@@ -59,8 +59,6 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
     final gross = useCanonical ? c.completedTripValue : m.completedGross;
     final collected =
         useCanonical ? c.collectedTripValue : m.collectedAmount;
-    final uncollected =
-        useCanonical ? c.unCollectedTripValue : m.uncollectedAmount;
     final commission =
         useCanonical ? c.realizedPlatformFee : m.companyCommission;
     final vat = useCanonical ? c.realizedVat : m.vat;
@@ -73,14 +71,11 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
     final openSettlements = useCanonical
         ? c.pendingSettlementCount
         : bundle.openSettlementsRemaining;
-    final settledCount = useCanonical ? c.settledCount : null;
     final outstandingMinor =
         useCanonical ? c.outstandingSettlementMinor : null;
-    final sourceLabel = useCanonical
-        ? (c.totalsSource.startsWith('server')
-            ? 'V2 · ${c.totalsSource}'
-            : 'V2 engine · ${c.totalsSource}')
-        : 'F1';
+    if (tripCount == 0) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -94,29 +89,15 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                uiTr(context, 'ملخص المحاسبة'),
+                uiTr(context, 'ملخص الفترة'),
                 style: AccountantFinanceText.sectionTitle(theme),
               ),
               const SizedBox(height: 4),
               Text(
-                useCanonical
-                    ? uiTr(
-                        context,
-                        'رحلات مكتملة (V2): {count} · مصدر: {source} · بيانات ناقصة في الجدول: {incomplete}',
-                      )
-                        .replaceAll('{count}', '$tripCount')
-                        .replaceAll('{source}', '$sourceLabel')
-                        .replaceAll('{incomplete}', '$incomplete')
-                    : uiTr(
-                        context,
-                        'رحلات مكتملة: {count} · موثقة ماليًا: {documented} · بيانات ناقصة: {incomplete}',
-                      )
-                        .replaceAll('{count}', '${m.completedTripCount}')
-                        .replaceAll(
-                          '{documented}',
-                          '${m.completedTripsWithCompleteFinancialData}',
-                        )
-                        .replaceAll('{incomplete}', '$incomplete'),
+                uiTr(
+                  context,
+                  'رحلات مكتملة: {count}. البيانات الناقصة لا تدخل في المبالغ.',
+                ).replaceAll('{count}', '$tripCount'),
                 style: AccountantFinanceText.label(theme),
               ),
               if (openSettlements > 0) ...[
@@ -130,22 +111,13 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: 12),
-              Text(
-                uiTr(context, 'أساسي'),
-                style: AccountantFinanceText.label(theme).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 6),
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
                 children: [
-                  _chip(context, 'الرحلات المكتملة', '$tripCount',
-                      primary: true),
                   _chip(
                     context,
-                    'القيمة المالية الموثقة',
+                    'قيمة الرحلات',
                     money(gross, hasCompleteMoney: completeMoney),
                     primary: true,
                   ),
@@ -155,26 +127,6 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
                     money(collected, hasCompleteMoney: completeMoney),
                     primary: true,
                   ),
-                  _chip(
-                    context,
-                    'غير المحصّل',
-                    money(uncollected, hasCompleteMoney: completeMoney),
-                    primary: true,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                uiTr(context, 'تفصيلي'),
-                style: AccountantFinanceText.label(theme).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
                   _chip(
                     context,
                     'عمولة الشركة',
@@ -192,16 +144,16 @@ class AccountantFinanceSummaryStrip extends StatelessWidget {
                   ),
                   _chip(
                     context,
-                    'المستحق للشركة',
+                    'مستحق للشركة',
                     money(companyRecv, hasCompleteMoney: completeMoney),
+                    primary: true,
                   ),
                   _chip(
                     context,
-                    'المستحق للسائقين',
+                    'مستحق للسائقين',
                     money(driverPay, hasCompleteMoney: completeMoney),
+                    primary: true,
                   ),
-                  if (settledCount != null)
-                    _chip(context, 'تسويات مسددة', '$settledCount'),
                   if (outstandingMinor != null)
                     _chip(
                       context,

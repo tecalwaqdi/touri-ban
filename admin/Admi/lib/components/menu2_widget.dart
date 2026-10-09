@@ -1,4 +1,5 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/admin_finance_sidebar.dart';
 import '/backend/admin_perf_trace.dart';
 import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
@@ -141,6 +142,7 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     'AdminAgentFinance': '/adminFinanceAgents',
     'AdminFinanceReports': '/adminFinanceReports',
     'AdminFinanceAudit': '/adminFinanceAudit',
+    'AdminFinanceControl': '/adminFinanceControl',
     'AdminReconciliation': '/adminReconciliation',
     'AdminFinancialPeriods': '/adminFinancialPeriods',
     // Reports
@@ -152,8 +154,33 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     'Settings': '/settings',
   };
 
-  String _menuLabel(BuildContext context, String routeName) =>
-      navLabel(context, routeName);
+  String _menuLabel(BuildContext context, String routeName) {
+    final key = AdminFinanceSidebar.labelKeyFor(routeName);
+    if (key != null) {
+      final text = FFLocalizations.of(context).getText(key);
+      if (text.isNotEmpty) return text;
+    }
+    return navLabel(context, routeName);
+  }
+
+  IconData _financeMenuIcon(String route) {
+    switch (route) {
+      case 'AdminFinanceHub':
+        return Icons.today_rounded;
+      case 'AdminFinanceTripLedger':
+        return Icons.view_list_outlined;
+      case 'AdminSettlements':
+        return Icons.receipt_long_outlined;
+      case 'AdminFinanceReports':
+        return Icons.table_chart_outlined;
+      case 'AdminFinanceControl':
+        return Icons.admin_panel_settings_outlined;
+      case 'AdminAgentFinance':
+        return Icons.handshake_outlined;
+      default:
+        return Icons.account_balance_rounded;
+    }
+  }
 
   String _sectionLabel(BuildContext context, String key) {
     const map = {
@@ -196,6 +223,9 @@ class _Menu2WidgetState extends State<Menu2Widget> {
     }
     if (route == AdminDriverWalletsWidget.routeName) {
       // LEGACY_WALLET_TOOL — not settlement V2; SuperAdmin only.
+      return AdminRoleService.isSuperAdmin;
+    }
+    if (route == AdminFinanceControlWidget.routeName) {
       return AdminRoleService.isSuperAdmin;
     }
     return AdminRoleService.canAccessRoute(route);
@@ -345,77 +375,10 @@ class _Menu2WidgetState extends State<Menu2Widget> {
           (
             key: 'finance',
             items: [
-              (
-                route: AdminFinanceHubWidget.routeName,
-                icon: Icons.account_balance_rounded
-              ),
-              (
-                route: AdminFinanceTripLedgerWidget.routeName,
-                icon: Icons.view_list_outlined
-              ),
-              (
-                route: AdminFinanceReceivablesWidget.routeName,
-                icon: Icons.account_balance_wallet_outlined
-              ),
-              (
-                route: AdminFinanceReconciliationWidget.routeName,
-                icon: Icons.fact_check_outlined
-              ),
-              (
-                route: AdminSettlementsWidget.routeName,
-                icon: Icons.receipt_long_outlined
-              ),
-              (
-                route: AdminAgentFinanceWidget.routeName,
-                icon: Icons.handshake_outlined
-              ),
-              (
-                route: AdminFinanceReportsWidget.routeName,
-                icon: Icons.table_chart_outlined
-              ),
-              (
-                route: AdminFinanceAuditWidget.routeName,
-                icon: Icons.manage_search_rounded
-              ),
-            ],
-          ),
-          (
-            key: 'finance_controls',
-            items: [
-              (
-                route: AdminFinanceAdjustmentsWidget.routeName,
-                icon: Icons.tune_rounded
-              ),
-              (
-                route: AdminFinancialPeriodsWidget.routeName,
-                icon: Icons.date_range_outlined
-              ),
-              (
-                route: AdminFinanceDataQualityWidget.routeName,
-                icon: Icons.rule_folder_outlined
-              ),
-            ],
-          ),
-          (
-            key: 'legacy',
-            items: [
-              (
-                route: AdminDriverWalletsWidget.routeName,
-                icon: Icons.account_balance_wallet_rounded
-              ),
-            ],
-          ),
-          (
-            key: 'reports',
-            items: [
-              (
-                route: AdminFinanceReportsWidget.routeName,
-                icon: Icons.assessment_rounded
-              ),
-              (
-                route: AdminAuditLogWidget.routeName,
-                icon: Icons.history_rounded
-              ),
+              for (final entry in AdminFinanceSidebar.entriesFor(
+                AdminRoleService.currentRole,
+              ))
+                (route: entry.route, icon: _financeMenuIcon(entry.route)),
             ],
           ),
           (

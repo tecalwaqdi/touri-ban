@@ -51,6 +51,8 @@ export '/admin/admin_finance_data_quality/admin_finance_data_quality_widget.dart
     show AdminFinanceDataQualityWidget;
 export '/admin/admin_finance_audit/admin_finance_audit_widget.dart'
     show AdminFinanceAuditWidget;
+export '/admin/admin_finance_control/admin_finance_control_widget.dart'
+    show AdminFinanceControlWidget;
 export '/admin/admin_diagnostics/admin_diagnostics_widget.dart'
     show AdminDiagnosticsWidget;
 export '/admin/admin_driver_wallets/admin_driver_wallets_widget.dart'

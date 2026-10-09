@@ -294,7 +294,7 @@ class _AdminFinancialPeriodsWidgetState
               Text(
                 uiTr(
                   context,
-                  'الفترات المغلقة تمنع إضافة قيود مالية بأثر رجعي. إعادة فتح الفترة متاحة للسوبر أدمن فقط مع تسجيل السبب.',
+                  'بعد إغلاق الشهر لا تُضاف قيود على تاريخ مضى. إعادة الفتح للمسؤول الأعلى مع تسجيل السبب.',
                 ),
                 softWrap: true,
                 style: theme.bodySmall,
@@ -314,7 +314,7 @@ class _AdminFinancialPeriodsWidgetState
                   title: uiTr(context, 'لا توجد فترات مالية حتى الآن'),
                   message: uiTr(
                     context,
-                    'أنشئ فترة مالية لتنظيم القيود ومنع الترحيل بأثر رجعي بعد الإغلاق.',
+                    'أنشئ فترة للشهر حتى يُقفل بعدها ولا يُرحَّل عليه قيد جديد.',
                   ),
                   icon: Icons.date_range_outlined,
                 ),

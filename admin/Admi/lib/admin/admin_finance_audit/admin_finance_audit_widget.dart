@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
 import '/core/admin_user_facing_errors.dart';
 import '/components/menu2_model.dart';
 import '/core/finance/admin_finance_ui_labels.dart';
 import '/core/finance/finance_controls_client.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 class AdminFinanceAuditWidget extends StatefulWidget {
@@ -30,6 +30,7 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
   final _type = TextEditingController();
   List<dynamic> _events = [];
   bool _busy = false;
+  bool _searched = false;
 
   @override
   void initState() {
@@ -59,7 +60,10 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
         if (_actor.text.trim().isNotEmpty) 'actorUid': _actor.text.trim(),
         if (_type.text.trim().isNotEmpty) 'eventType': _type.text.trim(),
       });
-      setState(() => _events = (r['events'] as List?) ?? []);
+      setState(() {
+        _searched = true;
+        _events = (r['events'] as List?) ?? [];
+      });
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -77,7 +81,10 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
     _driver.clear();
     _actor.clear();
     _type.clear();
-    setState(() => _events = []);
+    setState(() {
+      _searched = false;
+      _events = [];
+    });
   }
 
   InputDecoration _dec(String label) => InputDecoration(
@@ -90,7 +97,6 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
     final wide = MediaQuery.sizeOf(context).width >= 900;
     return AdminLayoutWidget(
       padContent: false,
@@ -103,7 +109,10 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
         children: [
           AdminPageHeader(
             title: uiTr(context, 'سجل التدقيق المالي'),
-            subtitle: uiTr(context, 'من فعل ماذا ومتى — فلاتر مدمجة.'),
+            subtitle: uiTr(
+              context,
+              'ابحث برقم التسوية أو المندوب لمعرفة من نفّذ العملية ومتى.',
+            ),
           ),
           Wrap(
             spacing: 8,
@@ -168,9 +177,19 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
               child: Center(child: CircularProgressIndicator()),
             )
           else if (_events.isEmpty)
-            Text(
-              uiTr(context, 'لا توجد نتائج — اضبط الفلاتر ثم ابحث.'),
-              style: theme.bodyMedium,
+            AdminEmptyState(
+              compact: true,
+              title: uiTr(
+                context,
+                _searched ? 'لا توجد عمليات مطابقة' : 'لم يبدأ البحث',
+              ),
+              message: uiTr(
+                context,
+                _searched
+                    ? 'غيّر الرقم أو اسم المندوب ثم ابحث مرة أخرى.'
+                    : 'اكتب رقم التسوية أو المندوب ثم اضغط بحث.',
+              ),
+              icon: Icons.manage_search_outlined,
             )
           else
             SingleChildScrollView(
@@ -190,11 +209,11 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
                       final self = e['selfApproved'] == true;
                       return DataRow(
                         cells: [
-                          DataCell(Text('${e['timestamp'] ?? '—'}')),
-                          DataCell(Text('${e['actorUid'] ?? '—'}')),
-                          DataCell(Text('${e['eventType'] ?? '—'}')),
+                          DataCell(Text('${e['timestamp'] ?? 'غير متوفر'}')),
+                          DataCell(Text('${e['actorUid'] ?? 'غير متوفر'}')),
+                          DataCell(Text('${e['eventType'] ?? 'غير متوفر'}')),
                           DataCell(Text(
-                            '${e['settlementCode'] ?? e['periodId'] ?? e['paymentReceipt'] ?? '—'}',
+                            '${e['settlementCode'] ?? e['periodId'] ?? e['paymentReceipt'] ?? 'غير متوفر'}',
                           )),
                           DataCell(Text(
                             self

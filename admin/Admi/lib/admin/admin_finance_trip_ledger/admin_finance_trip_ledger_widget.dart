@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
 import '/components/accountant_trip_details_drawer.dart';
+import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
+import '/components/admin_ui.dart';
 import '/components/menu2_model.dart';
 import '/core/admin_qa_fixture.dart';
 import '/core/finance/accountant_finance_labels.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/core/finance/finance_control_facade.dart';
 import '/core/finance/financial_amount_resolution.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 /// Canonical Trip Ledger — bounded page from FinanceControlFacade (FIN V2 only).
@@ -88,15 +89,24 @@ class _AdminFinanceTripLedgerWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
     return AdminLayoutWidget(
       scaffoldKey: scaffoldKey,
       menu2Model: _menu2Model,
       updateCallback: () => setState(() {}),
-      title: uiTr(context, 'دفتر الرحلات المالية'),
+      title: uiTr(context, 'الرحلات'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: AdminPageHeader(
+              title: uiTr(context, 'الرحلات'),
+              subtitle: uiTr(
+                context,
+                'كل رحلة مكتملة في الفترة. القيم الناقصة تظهر «غير متوفر»، ولا تُجمع عملات مختلفة.',
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: Wrap(
@@ -167,13 +177,6 @@ class _AdminFinanceTripLedgerWidgetState
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              uiTr(context, 'القيم الناقصة تُعرض كـ — · لا تُجمَع العملات · مصدر FIN V2 فقط'),
-              style: theme.bodySmall.override(color: theme.secondaryText),
-            ),
-          ),
           const SizedBox(height: 8),
           Expanded(
             child: FutureBuilder<List<AccountantTripRow>>(
@@ -183,11 +186,28 @@ class _AdminFinanceTripLedgerWidgetState
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snap.hasError) {
-                  return Center(child: Text('${snap.error}'));
+                  return AdminEmptyState(
+                    title: uiTr(context, 'تعذر تحميل الرحلات'),
+                    message: uiTr(
+                      context,
+                      'حدث خطأ أثناء جلب الرحلات. أعد المحاولة.',
+                    ),
+                    icon: Icons.error_outline,
+                    action: AdminPrimaryButton(
+                      label: uiTr(context, 'تحديث'),
+                      onPressed: _reload,
+                    ),
+                  );
                 }
                 final rows = _filter(snap.data ?? const []);
                 if (rows.isEmpty) {
-                  return Center(child: Text(uiTr(context, 'لا توجد رحلات في النطاق')));
+                  return AdminEmptyState(
+                    title: uiTr(context, 'لا رحلات مكتملة في هذه الفترة'),
+                    message: uiTr(
+                      context,
+                      'غيّر الفترة أو أزل التصفية. الرحلات خارج الفترة لا تظهر هنا.',
+                    ),
+                  );
                 }
                 return SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -212,6 +232,7 @@ class _AdminFinanceTripLedgerWidgetState
                         DataColumn(label: Text(uiTr(context, 'عمولة'))),
                         DataColumn(label: Text(uiTr(context, 'ضريبة'))),
                         DataColumn(label: Text(uiTr(context, 'صافي مندوب'))),
+                        DataColumn(label: Text(uiTr(context, 'المستحق'))),
                         DataColumn(label: Text(uiTr(context, 'وكيل'))),
                         DataColumn(label: Text(uiTr(context, 'جودة'))),
                       ],
@@ -240,6 +261,7 @@ class _AdminFinanceTripLedgerWidgetState
                                 DataCell(Text(r.companyCommissionDisplay)),
                                 DataCell(Text(r.vatDisplay)),
                                 DataCell(Text(r.driverNetDisplay)),
+                                DataCell(Text(r.obligationDisplay)),
                                 DataCell(Text(r.agentAmountDisplay)),
                                 DataCell(Text(r.dataQualityLabel)),
                               ],

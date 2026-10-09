@@ -757,6 +757,28 @@ exports.updateCountryAgentAssignment = functions
     const patch = {};
     if (data.displayName != null) patch.display_name = str(data.displayName);
     if (data.phoneNumber != null) patch.phone_number = str(data.phoneNumber);
+    if (data.email != null) {
+      const email = str(data.email).trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        throw new functions.https.HttpsError('invalid-argument', 'Invalid email.');
+      }
+      const prevEmail = str(prev.email).trim().toLowerCase();
+      if (email !== prevEmail) {
+        try {
+          await admin.auth().updateUser(agentId, {email});
+        } catch (e) {
+          const code = e && e.code;
+          if (code === 'auth/email-already-exists' || code === 'auth/email-already-in-use') {
+            throw new functions.https.HttpsError('already-exists', 'Email already in use.');
+          }
+          if (code === 'auth/invalid-email') {
+            throw new functions.https.HttpsError('invalid-argument', 'Invalid email.');
+          }
+          throw e;
+        }
+        patch.email = email;
+      }
+    }
     if (data.agentTotal != null) {
       patch.Agent_total = validateCommissionRatePercent(
         data.agentTotal,

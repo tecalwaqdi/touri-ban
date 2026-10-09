@@ -38,6 +38,7 @@ class AccountantTripRow {
     required this.companyCommissionDisplay,
     required this.vatDisplay,
     required this.driverNetDisplay,
+    required this.obligationDisplay,
     required this.agentAmountDisplay,
     required this.agentAmountIsShareOfCommission,
     required this.missingFields,
@@ -73,6 +74,10 @@ class AccountantTripRow {
   final String companyCommissionDisplay;
   final String vatDisplay;
   final String driverNetDisplay;
+
+  /// Cash: what the driver still owes the company (collected fare minus driver net).
+  /// Electronic: what the company owes the driver (driver net). Missing stays «غير متوفر».
+  final String obligationDisplay;
   final String agentAmountDisplay;
   final bool agentAmountIsShareOfCommission;
   final List<String> missingFields;
@@ -118,6 +123,18 @@ class AccountantTripRow {
 
     final hasAgentAmount = snap.agentAmountMinor != null &&
         agentAttr == FinancialAgentAttribution.confident;
+    final MoneyAmount? obligation = switch (channel) {
+      FinancialPaymentChannel.cash => line.signedCashPosition,
+      FinancialPaymentChannel.online => line.driverNet,
+      _ => null,
+    };
+    final obligationDisplay = obligation == null
+        ? 'غير متوفر'
+        : AdminOrderMoneyDisplay.formatMoneyAmount(
+            obligation,
+            symbolOverride: sym,
+          );
+
     final agentAmount = hasAgentAmount
         ? AdminOrderMoneyDisplay.formatMoneyAmount(
             MoneyAmount(
@@ -183,6 +200,7 @@ class AccountantTripRow {
       companyCommissionDisplay: money(resolution.companyCommission),
       vatDisplay: money(resolution.vat),
       driverNetDisplay: money(resolution.driverNet),
+      obligationDisplay: obligationDisplay,
       agentAmountDisplay: agentAmount,
       agentAmountIsShareOfCommission: hasAgentAmount,
       missingFields: resolution.missingFields,

@@ -409,6 +409,7 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
         countryPath: _model.selectedCountry!.reference.path,
         displayName: _model.nameTextController!.text.trim(),
         phoneNumber: _model.phoneTextController!.text.trim(),
+        email: _model.emailTextController!.text.trim(),
         actevUser: _model.activeValue,
         dolhAgent: _model.selectedCountry!.naim,
         agentTotal: agentPercent,
@@ -560,12 +561,20 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _model.emailTextController,
-                  readOnly: true,
-                  enabled: false,
+                  keyboardType: TextInputType.emailAddress,
+                  autocorrect: false,
                   decoration: InputDecoration(
                     labelText: uiTr(context, 'البريد الإلكتروني'),
                     helperText: appTr(context, 'adm_email_readonly_hint'),
                   ),
+                  validator: (v) {
+                    final t = (v ?? '').trim();
+                    if (t.isEmpty) return uiTr(context, 'مطلوب');
+                    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(t)) {
+                      return uiTr(context, 'بريد غير صالح');
+                    }
+                    return null;
+                  },
                 ),
               ],
             ),

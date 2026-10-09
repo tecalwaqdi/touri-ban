@@ -1116,6 +1116,10 @@ service cloud.firestore {
         && countryRefMatchesClaim(resource.data.Rev_dloh_agent);
       allow get: if claimBool('super_admin');
       allow list: if claimBool('super_admin');
+      // Signed-in riders and drivers open WhatsApp using the active agent's phone.
+      allow get, list: if signedIn()
+        && resource.data.get('Isagent', false) == true
+        && resource.data.get('actev_user', false) == true;
       allow get: if claimBool('transport_manager')
         && resource.data.transport_company != null
         && request.auth.token.transport_company_id != null

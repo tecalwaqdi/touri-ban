@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '/backend/admin_ops_filters.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_role_service.dart';
 import '/components/admin_enterprise_kit.dart';
@@ -36,6 +37,17 @@ class _AdminFinanceReceivablesWidgetState
   late Menu2Model _menu2Model;
   Future<FinanceArapSnapshot>? _future;
   bool _busy = false;
+  AdminDatePreset _preset = AdminDatePreset.thisMonth;
+
+  static const _presetLabels = <AdminDatePreset, String>{
+    AdminDatePreset.today: 'اليوم',
+    AdminDatePreset.yesterday: 'أمس',
+    AdminDatePreset.last7Days: 'آخر 7 أيام',
+    AdminDatePreset.thisMonth: 'هذا الشهر',
+    AdminDatePreset.last30Days: 'آخر 30 يومًا',
+    AdminDatePreset.lastMonth: 'الشهر السابق',
+    AdminDatePreset.thisYear: 'هذه السنة',
+  };
 
   @override
   void initState() {
@@ -52,7 +64,7 @@ class _AdminFinanceReceivablesWidgetState
 
   void _reload() {
     setState(() {
-      _future = FinanceArapLoader.load();
+      _future = FinanceArapLoader.load(datePreset: _preset);
     });
   }
 
@@ -80,7 +92,6 @@ class _AdminFinanceReceivablesWidgetState
               ),
             ),
             const SizedBox(height: 8),
-            Text('order/$orderId'),
             TextField(
               controller: reasonCtrl,
               decoration: InputDecoration(labelText: uiTr(ctx, 'السبب')),
@@ -149,9 +160,6 @@ class _AdminFinanceReceivablesWidgetState
             return const Center(child: CircularProgressIndicator());
           }
           final data = snap.data!;
-          final openSettlements = data.settlementRows
-              .where((r) => r.status != FinanceSettlementLifecycle.settled)
-              .toList();
           return ListView(
             padding: AdminUi.pagePadding(context),
             children: [
@@ -159,11 +167,29 @@ class _AdminFinanceReceivablesWidgetState
                 title: uiTr(context, 'الذمم المدينة والدائنة'),
                 subtitle: uiTr(
                   context,
-                  'COMPANY_RECEIVABLE = نقد محصّل غير مسوّى · DRIVER_PAYABLE = إلكتروني مدفوع غير مسوّى. المحفظة ليست مصدر محاسبة. QA مستبعد.',
+                  'ما على المندوب للشركة هو النقد المحصّل ولم يُسوَّ بعد. ما على الشركة للمندوب هو الأجرة الإلكترونية المدفوعة ولم تُسوَّ بعد. رصيد المحفظة ليس هذا الرقم.',
                 ),
               ),
               if (!AdminRoleService.canWriteSettlements)
                 const FinanceWritesDisabledBanner(),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: DropdownButton<AdminDatePreset>(
+                  value: _preset,
+                  items: [
+                    for (final e in _presetLabels.entries)
+                      DropdownMenuItem(
+                        value: e.key,
+                        child: Text(uiTr(context, e.value)),
+                      ),
+                  ],
+                  onChanged: (v) {
+                    if (v == null) return;
+                    setState(() => _preset = v);
+                    _reload();
+                  },
+                ),
+              ),
               Align(
                 alignment: AlignmentDirectional.centerEnd,
                 child: IconButton(
@@ -173,25 +199,35 @@ class _AdminFinanceReceivablesWidgetState
               ),
               AdminContentCard(
                 title: uiTr(context, 'حالات التسوية'),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final s in FinanceSettlementLifecycle.values)
-                      Chip(
-                        label: Text(
-                          '${s.labelAr} (${s.code}): ${data.settlementsByStatus[s] ?? 0}',
-                        ),
-                      ),
-                  ],
+                child: Builder(
+                  builder: (context) {
+                    final shown = FinanceSettlementLifecycle.values
+                        .where((s) => (data.settlementsByStatus[s] ?? 0) > 0)
+                        .toList();
+                    if (shown.isEmpty) {
+                      return Text(
+                        uiTr(context, 'لا تسويات مسجّلة'),
+                        style: theme.bodySmall,
+                      );
+                    }
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final s in shown)
+                          Chip(
+                            label: Text(
+                              '${s.labelAr}: ${data.settlementsByStatus[s]}',
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 12),
               AdminContentCard(
-                title: uiTr(
-                  context,
-                  'A) تعرض رحلات غير مسوّاة — COMPANY_RECEIVABLE',
-                ),
+                title: uiTr(context, 'على المندوب للشركة'),
                 child: _tripList(
                   theme,
                   data.tripCompanyReceivables,
@@ -200,10 +236,7 @@ class _AdminFinanceReceivablesWidgetState
               ),
               const SizedBox(height: 12),
               AdminContentCard(
-                title: uiTr(
-                  context,
-                  'A) تعرض رحلات غير مسوّاة — DRIVER_PAYABLE',
-                ),
+                title: uiTr(context, 'على الشركة للمندوب'),
                 child: _tripList(
                   theme,
                   data.tripDriverPayables,
@@ -212,10 +245,7 @@ class _AdminFinanceReceivablesWidgetState
               ),
               const SizedBox(height: 12),
               AdminContentCard(
-                title: uiTr(
-                  context,
-                  'B) تسويات قائمة — COMPANY_RECEIVABLE',
-                ),
+                title: uiTr(context, 'تسويات لم يُغلق فيها ما على المندوب'),
                 child: _settlementList(
                   theme,
                   data.companyReceivableSettlements
@@ -228,10 +258,7 @@ class _AdminFinanceReceivablesWidgetState
               ),
               const SizedBox(height: 12),
               AdminContentCard(
-                title: uiTr(
-                  context,
-                  'B) تسويات قائمة — DRIVER_PAYABLE',
-                ),
+                title: uiTr(context, 'تسويات لم يُغلق فيها ما على الشركة'),
                 child: _settlementList(
                   theme,
                   data.driverPayableSettlements
@@ -241,17 +268,6 @@ class _AdminFinanceReceivablesWidgetState
                       .toList(),
                   empty: 'لا تسويات دائنة مفتوحة',
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                uiTr(
-                  context,
-                  'مستبعد QA: رحلات {trips} · تسويات {settlements} · مفتوح {open}',
-                )
-                    .replaceAll('{trips}', '${data.fixturesExcludedTrips}')
-                    .replaceAll('{settlements}', '${data.fixturesExcludedSettlements}')
-                    .replaceAll('{open}', '${openSettlements.length}'),
-                style: theme.bodySmall,
               ),
               const SizedBox(height: 16),
               AdminContentCard(
@@ -323,10 +339,9 @@ class _AdminFinanceReceivablesWidgetState
                                 for (final d in docs)
                                   ListTile(
                                     contentPadding: EdgeInsets.zero,
-                                    title: Text(d.id),
+                                    title: Text(uiTr(context, 'نقد بانتظار التأكيد')),
                                     subtitle: Text(
-                                      '${d.data()['PaymentMethod'] ?? ''} · '
-                                      '${d.data()['total'] ?? ''}',
+                                      '${d.data()['total'] ?? '—'}',
                                     ),
                                     trailing:
                                         AdminRoleService.canWriteSettlements
@@ -377,12 +392,15 @@ class _AdminFinanceReceivablesWidgetState
           ListTile(
             contentPadding: EdgeInsets.zero,
             dense: true,
-            title: Text('${r.tripRefLabel} · ${r.currency}'),
-            subtitle: Text(
-              '${r.paymentChannelLabel} · ${r.driverLabel} · '
-              '${r.settlementStatusLabel} · COMPLETE',
+            title: Text(
+              r.driverLabel.trim().isEmpty
+                  ? r.tripRefLabel
+                  : r.driverLabel,
             ),
-            trailing: Text(r.driverNetDisplay),
+            subtitle: Text(
+              '${r.paymentChannelLabel} · ${r.settlementStatusLabel} · ${r.currency}',
+            ),
+            trailing: Text(r.obligationDisplay),
           ),
       ],
     );
@@ -402,11 +420,8 @@ class _AdminFinanceReceivablesWidgetState
           ListTile(
             contentPadding: EdgeInsets.zero,
             dense: true,
-            title: Text('${r.settlementId} · ${r.status.code}'),
-            subtitle: Text(
-              '${r.status.labelAr} · ${r.currency} · driver=${r.driverId} · '
-              '${r.directionRaw.isEmpty ? r.side.name : r.directionRaw}',
-            ),
+            title: Text(r.status.labelAr),
+            subtitle: Text(r.currency),
             trailing: Text(
               _m(r.outstandingMinor ?? r.netMinor, r.currency),
             ),

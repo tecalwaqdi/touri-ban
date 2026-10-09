@@ -41,12 +41,70 @@ exports.syncUserClaimsOnWrite = functions.firestore
   .document("user/{uid}")
   .onWrite(async (change, context) => {
     const uid = context.params.uid;
-    if (!change.after.exists) {
-      return null;
+    if (change.after.exists) {
+      await syncClaimsForUid(uid);
     }
-    await syncClaimsForUid(uid);
+    try {
+      await syncCountrySupportPhone(
+        uid,
+        change.after.exists ? change.after.data() : null,
+        change.before.exists ? change.before.data() : null,
+      );
+    } catch (e) {
+      functions.logger.error("syncCountrySupportPhone failed", {uid, error: e && e.message});
+    }
     return null;
   });
+
+function supportDigits(raw, phoneCode) {
+  let digits = String(raw || "").replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  const cc = String(phoneCode || "").replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.startsWith("0")) digits = digits.replace(/^0+/, "");
+  if (cc && !digits.startsWith(cc)) digits = cc + digits;
+  return digits;
+}
+
+/** The active country agent's phone is that country's public support number. */
+async function syncCountrySupportPhone(uid, after, before) {
+  const probe = after || before || {};
+  const isAgent =
+    probe.Isagent === true ||
+    probe.isagent === true ||
+    (before && (before.Isagent === true || before.isagent === true));
+  if (!isAgent) return;
+  const countryPath = countryPathFromRef(
+    (after && after.Rev_dloh_agent) || (before && before.Rev_dloh_agent),
+  );
+  if (!countryPath.startsWith("countries/")) return;
+  const countryRef = db.doc(countryPath);
+  const [countrySnap, lockSnap] = await Promise.all([
+    countryRef.get(),
+    db.doc(`agent_country_assignment/${countryDocId(countryPath)}`).get(),
+  ]);
+  const holder = lockSnap.exists ? (lockSnap.data() || {}).active_agent_id : null;
+  const phoneCode = (countrySnap.data() || {}).phone_code || "";
+  const rawPhone =
+    (after && (after.phone_number || after.phoneNumber)) ||
+    (before && (before.phone_number || before.phoneNumber)) ||
+    "";
+  const digits = supportDigits(rawPhone, phoneCode);
+  const current = String((countrySnap.data() || {}).support_phone || "");
+  const active = !!(after && isAgentActiveAt(after));
+  if (holder === uid && active && digits.length >= 8) {
+    if (current !== digits) {
+      await countryRef.set({support_phone: digits}, {merge: true});
+    }
+    return;
+  }
+  if (!active && current && current === digits && (holder == null || holder === uid)) {
+    await countryRef.set(
+      {support_phone: admin.firestore.FieldValue.delete()},
+      {merge: true},
+    );
+  }
+}
 
 exports.refreshMyClaims = functions.https.onCall(async (_data, context) => {
   if (!context.auth) {
@@ -72,7 +130,7 @@ const PRIVILEGED_FIELDS = [
 ];
 
 const agentCountryAssignment = require("./agent_country_assignment.js");
-const {countryPathFromRef} = require("./agent_active.js");
+const {countryPathFromRef, countryDocId, isAgentActiveAt} = require("./agent_active.js");
 
 function callerIsAdmin(callerClaims) {
   return callerClaims.super_admin === true || callerClaims.country_admin === true;
