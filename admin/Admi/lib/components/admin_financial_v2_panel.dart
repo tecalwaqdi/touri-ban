@@ -482,8 +482,7 @@ class _AdminFinancialV2PanelState extends State<AdminFinancialV2Panel> {
     final show = rows.take(40).toList();
     return AdminContentCard(
       padding: const EdgeInsets.all(8),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
+      child: AdminFittedScroll(
         child: DataTable(
           columns: [
             DataColumn(label: Text(uiTr(context, 'التاريخ'))),

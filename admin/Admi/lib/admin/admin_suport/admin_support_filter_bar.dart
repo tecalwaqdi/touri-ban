@@ -368,11 +368,8 @@ class _AdminSupportFilterBarState extends State<AdminSupportFilterBar> {
     );
   }
 
-  InputDecoration _dec(String label) => InputDecoration(
-        isDense: true,
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-      );
+  InputDecoration _dec(String label) =>
+      AdminUi.dropdownDecoration(context, label);
 
   String _dateLabel(BuildContext context, AdminDatePreset p) => switch (p) {
         AdminDatePreset.all => uiTr(context, 'كل التواريخ'),

@@ -785,7 +785,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                           borderRadius: BorderRadius.circular(16.0),
                         ),
                         child: Container(
-                          width: MediaQuery.sizeOf(context).width * 1.0,
+                          width: double.infinity,
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
@@ -993,7 +993,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                           borderRadius: BorderRadius.circular(16.0),
                         ),
                         child: Container(
-                          width: MediaQuery.sizeOf(context).width * 1.0,
+                          width: double.infinity,
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
@@ -1105,7 +1105,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                           borderRadius: BorderRadius.circular(16.0),
                         ),
                         child: Container(
-                          width: MediaQuery.sizeOf(context).width * 1.0,
+                          width: double.infinity,
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
@@ -1173,7 +1173,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                           borderRadius: BorderRadius.circular(16.0),
                         ),
                         child: Container(
-                          width: MediaQuery.sizeOf(context).width * 1.0,
+                          width: double.infinity,
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
@@ -1372,7 +1372,7 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
                           borderRadius: BorderRadius.circular(16.0),
                         ),
                         child: Container(
-                          width: MediaQuery.sizeOf(context).width * 1.0,
+                          width: double.infinity,
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,

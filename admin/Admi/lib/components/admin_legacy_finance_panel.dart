@@ -54,8 +54,7 @@ class AdminLegacyFinancePanel extends StatelessWidget {
                   icon: Icons.history_rounded,
                 );
               }
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+              return AdminFittedScroll(
                 child: DataTable(
                   columns: [
                     DataColumn(label: Text(uiTr(context, 'التاريخ'))),

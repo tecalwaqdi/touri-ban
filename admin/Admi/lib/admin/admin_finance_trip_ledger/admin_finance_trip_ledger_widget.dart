@@ -209,10 +209,8 @@ class _AdminFinanceTripLedgerWidgetState
                     ),
                   );
                 }
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SingleChildScrollView(
-                    child: DataTable(
+                return AdminFittedScroll(
+                  child: DataTable(
                       headingRowHeight: 40,
                       dataRowMinHeight: 36,
                       dataRowMaxHeight: 48,
@@ -269,7 +267,6 @@ class _AdminFinanceTripLedgerWidgetState
                           )
                           .toList(),
                     ),
-                  ),
                 );
               },
             ),

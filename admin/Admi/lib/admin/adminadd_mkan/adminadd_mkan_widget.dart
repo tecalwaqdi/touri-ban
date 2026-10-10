@@ -121,7 +121,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
     final lockedForAgent = AdminRoleService.isCountryAgent;
 
     final fieldBody = Container(
-      width: MediaQuery.sizeOf(context).width * 1.0,
+      width: double.infinity,
       decoration: BoxDecoration(
         color: AdminUi.fieldFill(context, muted: true),
         borderRadius: BorderRadius.circular(8.0),
@@ -279,7 +279,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).secondaryBackground,
                         borderRadius: BorderRadius.circular(16.0),
@@ -494,7 +494,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).secondaryBackground,
                         borderRadius: BorderRadius.circular(16.0),
@@ -679,7 +679,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).secondaryBackground,
                         borderRadius: BorderRadius.circular(16.0),
@@ -729,7 +729,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).secondaryBackground,
                         borderRadius: BorderRadius.circular(16.0),
@@ -919,7 +919,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).secondaryBackground,
                         borderRadius: BorderRadius.circular(16.0),
@@ -980,7 +980,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                   if (mounted) safeSetState(() {});
                                 },
                                 child: Container(
-                                  width: MediaQuery.sizeOf(context).width * 1.0,
+                                  width: double.infinity,
                                   decoration: BoxDecoration(
                                     color: AdminUi.fieldFill(context, muted: true),
                                     borderRadius: BorderRadius.circular(8.0),
@@ -1041,7 +1041,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                   if (mounted) safeSetState(() {});
                                 },
                                 child: Container(
-                                  width: MediaQuery.sizeOf(context).width * 1.0,
+                                  width: double.infinity,
                                   decoration: BoxDecoration(
                                     color: AdminUi.fieldFill(context, muted: true),
                                     borderRadius: BorderRadius.circular(8.0),
@@ -1460,7 +1460,7 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                       'yi8yug3m' /* Add Landmark */,
                     ),
                     options: FFButtonOptions(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
+                      width: double.infinity,
                       height: 56.0,
                       padding: EdgeInsets.all(8.0),
                       iconPadding:

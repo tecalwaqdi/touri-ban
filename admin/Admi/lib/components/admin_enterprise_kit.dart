@@ -584,12 +584,15 @@ class AdminDataTable extends StatelessWidget {
       );
     }
 
-    final tableMin =
-        minWidth ?? AdminUi.adminTableMinWidth(context).clamp(640.0, 1600.0);
-
     return AdminContentCard(
       padding: EdgeInsets.zero,
-      child: SingleChildScrollView(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final tableMin = AdminUi.fittedTableWidth(
+            constraints.maxWidth,
+            floor: minWidth ?? 860,
+          );
+          return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: SizedBox(
           // Bounded width required so Expanded columns don't collapse/overlap.
@@ -675,6 +678,8 @@ class AdminDataTable extends StatelessWidget {
             ],
           ),
         ),
+      );
+        },
       ),
     );
   }

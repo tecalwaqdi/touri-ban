@@ -53,11 +53,15 @@ class AdminOpsFilterBar extends StatefulWidget {
     required this.value,
     required this.onChanged,
     required this.config,
+    this.embedded = false,
   });
 
   final AdminOpsFilterState value;
   final ValueChanged<AdminOpsFilterState> onChanged;
   final AdminOpsFilterConfig config;
+
+  /// Draw the fields without a second card (when the page already wraps them).
+  final bool embedded;
 
   @override
   State<AdminOpsFilterBar> createState() => _AdminOpsFilterBarState();
@@ -183,12 +187,7 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
     final f = widget.value;
     final cfg = widget.config;
 
-    return Semantics(
-      identifier: 'qa-driver-filter',
-      label: 'qa-driver-filter',
-      child: AdminContentCard(
-        padding: const EdgeInsets.all(12),
-        child: Column(
+    final fields = Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
@@ -202,19 +201,9 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
                     style: theme.titleSmall,
                   ),
                 ),
-                if (f.activeFilterCount > 0)
+                if (f.hasActiveFilters)
                   TextButton(
-                    onPressed: () {
-                      _searchController.clear();
-                      final base = AdminOpsFilterState.empty.reset();
-                      _emit(
-                        AdminRoleService.isCountryAgent
-                            ? base.copyWith(
-                                countryRef: AdminRoleService.scopedCountryRef,
-                              )
-                            : base,
-                      );
-                    },
+                    onPressed: _resetFilters,
                     child: Text(uiTr(context, 'إعادة الضبط')),
                   ),
               ],
@@ -468,173 +457,255 @@ class _AdminOpsFilterBarState extends State<AdminOpsFilterBar> {
                 ),
                 const SizedBox(height: 10),
               ],
-              if (cfg.showCountry && !_lockCountry) ...[
-                _dropdownCountry(theme),
-                const SizedBox(height: 8),
-              ],
-              if (cfg.showRegion && f.effectiveCountryRef != null) ...[
-                _dropdownRegion(theme),
-                const SizedBox(height: 8),
-              ],
-              if (cfg.showCity &&
-                  (f.regionRef != null || f.effectiveCountryRef != null)) ...[
-                _dropdownCity(theme),
-                const SizedBox(height: 8),
-              ],
+              _geoFields(theme, f, cfg),
               if (_loadingGeo) const LinearProgressIndicator(minHeight: 2),
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: TextButton.icon(
-                  onPressed: f.hasActiveFilters
-                      ? () {
-                          _searchController.clear();
-                          setState(() {
-                            _regions = const [];
-                            _cities = const [];
-                          });
-                          _emit(f.reset());
-                        }
-                      : null,
-                  icon: const Icon(Icons.filter_alt_off_rounded, size: 18),
-                  label: Text(
-                    uiTr(context, 'إعادة ضبط الفلاتر'),
-                    softWrap: true,
-                  ),
-                ),
-              ),
             ],
           ],
-        ),
-      ),
+    );
+
+    return Semantics(
+      identifier: 'qa-driver-filter',
+      label: 'qa-driver-filter',
+      child: widget.embedded
+          ? fields
+          : AdminContentCard(
+              padding: const EdgeInsets.all(12),
+              child: fields,
+            ),
     );
   }
 
-  InputDecoration _geoDropdownDecoration(String label) {
-    return InputDecoration(
-      labelText: label,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      isDense: true,
-      // Keep label clear of the outline (RTL + dense).
-      floatingLabelBehavior: FloatingLabelBehavior.auto,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+  void _resetFilters() {
+    final f = widget.value;
+    _searchController.clear();
+    setState(() {
+      _regions = const [];
+      _cities = const [];
+    });
+    final base = f.reset();
+    _emit(
+      AdminRoleService.isCountryAgent
+          ? base.copyWith(countryRef: AdminRoleService.scopedCountryRef)
+          : base,
+    );
+  }
+
+  Widget _geoFields(
+    FlutterFlowTheme theme,
+    AdminOpsFilterState f,
+    AdminOpsFilterConfig cfg,
+  ) {
+    final fields = <Widget>[
+      if (cfg.showCountry && !_lockCountry) _dropdownCountry(theme),
+      if (cfg.showRegion && f.effectiveCountryRef != null)
+        _dropdownRegion(theme),
+      if (cfg.showCity &&
+          (f.regionRef != null || f.effectiveCountryRef != null))
+        _dropdownCity(theme),
+    ];
+    if (fields.isEmpty) return const SizedBox.shrink();
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final sideBySide = constraints.maxWidth >= 720 && fields.length > 1;
+        if (!sideBySide) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final field in fields) ...[
+                field,
+                const SizedBox(height: 8),
+              ],
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var i = 0; i < fields.length; i++) ...[
+              if (i > 0) const SizedBox(width: 10),
+              Expanded(child: fields[i]),
+            ],
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _captionDropdown({
+    required String label,
+    required Widget dropdown,
+    String? semanticsId,
+  }) {
+    final theme = FlutterFlowTheme.of(context);
+    final field = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.labelSmall.override(
+            fontFamily: theme.labelSmallFamily,
+            color: theme.secondaryText,
+            useGoogleFonts: !theme.labelSmallIsCustom,
+          ),
+        ),
+        const SizedBox(height: 4),
+        InputDecorator(
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: theme.secondaryBackground,
+            isDense: true,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: theme.alternate),
+            ),
+          ),
+          child: DropdownButtonHideUnderline(child: dropdown),
+        ),
+      ],
+    );
+    if (semanticsId == null) return field;
+    return Semantics(
+      identifier: semanticsId,
+      label: semanticsId,
+      child: field,
     );
   }
 
   Widget _dropdownCountry(FlutterFlowTheme theme) {
-    return Semantics(
-      identifier: 'qa-filter-country',
-      label: 'qa-filter-country',
-      child: InputDecorator(
-        decoration: _geoDropdownDecoration(uiTr(context, 'الدولة')),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<DocumentReference?>(
-            isExpanded: true,
-            isDense: true,
-            itemHeight: 48,
-            value: widget.value.countryRef,
-            hint: Text(uiTr(context, 'كل الدول')),
-            items: [
-              DropdownMenuItem(
-                value: null,
-                child: Text(uiTr(context, 'كل الدول')),
-              ),
-              ..._countries.map(
-                (c) => DropdownMenuItem(
-                  value: c.reference,
-                  child: Text(c.naim.isNotEmpty ? c.naim : c.reference.id),
-                ),
-              ),
-            ],
-            onChanged: (ref) {
-              _emit(
-                widget.value.copyWith(
-                  countryRef: ref,
-                  clearCountry: ref == null,
-                  clearRegion: true,
-                  clearCity: true,
-                ),
-              );
-              setState(() {
-                _regions = const [];
-                _cities = const [];
-              });
-              if (ref != null) _loadRegions(ref);
-            },
-          ),
+    return _captionDropdown(
+      label: uiTr(context, 'الدولة'),
+      semanticsId: 'qa-filter-country',
+      dropdown: DropdownButton<DocumentReference?>(
+        isExpanded: true,
+        value: widget.value.countryRef,
+        hint: Text(
+          uiTr(context, 'كل الدول'),
+          overflow: TextOverflow.ellipsis,
         ),
+        items: [
+          DropdownMenuItem(
+            value: null,
+            child: Text(
+              uiTr(context, 'كل الدول'),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          ..._countries.map(
+            (c) => DropdownMenuItem(
+              value: c.reference,
+              child: Text(
+                c.naim.isNotEmpty ? c.naim : c.reference.id,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ],
+        onChanged: (ref) {
+          _emit(
+            widget.value.copyWith(
+              countryRef: ref,
+              clearCountry: ref == null,
+              clearRegion: true,
+              clearCity: true,
+            ),
+          );
+          setState(() {
+            _regions = const [];
+            _cities = const [];
+          });
+          if (ref != null) _loadRegions(ref);
+        },
       ),
     );
   }
 
   Widget _dropdownRegion(FlutterFlowTheme theme) {
-    return InputDecorator(
-      decoration: _geoDropdownDecoration(uiTr(context, 'المنطقة')),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<DocumentReference?>(
-          isExpanded: true,
-          isDense: true,
-          itemHeight: 48,
-          value: widget.value.regionRef,
-          hint: Text(uiTr(context, 'كل المناطق')),
-          items: [
-            DropdownMenuItem(
-              value: null,
-              child: Text(uiTr(context, 'كل المناطق')),
-            ),
-            ..._regions.map(
-              (r) => DropdownMenuItem(
-                value: r.reference,
-                child: Text(r.naim.isNotEmpty ? r.naim : r.reference.id),
-              ),
-            ),
-          ],
-          onChanged: (ref) {
-            _emit(
-              widget.value.copyWith(
-                regionRef: ref,
-                clearRegion: ref == null,
-                clearCity: true,
-              ),
-            );
-            setState(() => _cities = const []);
-            if (ref != null) _loadCities(ref);
-          },
+    return _captionDropdown(
+      label: uiTr(context, 'المنطقة'),
+      dropdown: DropdownButton<DocumentReference?>(
+        isExpanded: true,
+        value: widget.value.regionRef,
+        hint: Text(
+          uiTr(context, 'كل المناطق'),
+          overflow: TextOverflow.ellipsis,
         ),
+        items: [
+          DropdownMenuItem(
+            value: null,
+            child: Text(
+              uiTr(context, 'كل المناطق'),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          ..._regions.map(
+            (r) => DropdownMenuItem(
+              value: r.reference,
+              child: Text(
+                r.naim.isNotEmpty ? r.naim : r.reference.id,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ],
+        onChanged: (ref) {
+          _emit(
+            widget.value.copyWith(
+              regionRef: ref,
+              clearRegion: ref == null,
+              clearCity: true,
+            ),
+          );
+          setState(() => _cities = const []);
+          if (ref != null) _loadCities(ref);
+        },
       ),
     );
   }
 
   Widget _dropdownCity(FlutterFlowTheme theme) {
-    return InputDecorator(
-      decoration: _geoDropdownDecoration(uiTr(context, 'المدينة')),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<DocumentReference?>(
-          isExpanded: true,
-          isDense: true,
-          itemHeight: 48,
-          value: widget.value.cityRef,
-          hint: Text(uiTr(context, 'كل المدن')),
-          items: [
-            DropdownMenuItem(
-              value: null,
-              child: Text(uiTr(context, 'كل المدن')),
-            ),
-            ..._cities.map(
-              (c) => DropdownMenuItem(
-                value: c.reference,
-                child: Text(c.naim.isNotEmpty ? c.naim : c.reference.id),
-              ),
-            ),
-          ],
-          onChanged: (ref) {
-            _emit(
-              widget.value.copyWith(
-                cityRef: ref,
-                clearCity: ref == null,
-              ),
-            );
-          },
+    return _captionDropdown(
+      label: uiTr(context, 'المدينة'),
+      dropdown: DropdownButton<DocumentReference?>(
+        isExpanded: true,
+        value: widget.value.cityRef,
+        hint: Text(
+          uiTr(context, 'كل المدن'),
+          overflow: TextOverflow.ellipsis,
         ),
+        items: [
+          DropdownMenuItem(
+            value: null,
+            child: Text(
+              uiTr(context, 'كل المدن'),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          ..._cities.map(
+            (c) => DropdownMenuItem(
+              value: c.reference,
+              child: Text(
+                c.naim.isNotEmpty ? c.naim : c.reference.id,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ],
+        onChanged: (ref) {
+          _emit(
+            widget.value.copyWith(
+              cityRef: ref,
+              clearCity: ref == null,
+            ),
+          );
+        },
       ),
     );
   }

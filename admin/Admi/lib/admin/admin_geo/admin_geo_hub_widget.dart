@@ -236,7 +236,6 @@ class _AdminGeoHubWidgetState extends State<AdminGeoHubWidget>
   }
 
   Widget _toolbar(FlutterFlowTheme theme) {
-    final wide = MediaQuery.sizeOf(context).width >= 960;
     final search = TextField(
       onChanged: (v) {
         EasyDebounce.debounce(
@@ -266,13 +265,10 @@ class _AdminGeoHubWidgetState extends State<AdminGeoHubWidget>
       width: 140,
       child: DropdownButtonFormField<AdminGeoActiveFilter>(
         value: _activeFilter,
-        isDense: true,
-        decoration: InputDecoration(
-          labelText: uiTr(context, 'الحالة'),
-          isDense: true,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        isExpanded: true,
+        decoration: AdminUi.dropdownDecoration(
+          context,
+          uiTr(context, 'الحالة'),
         ),
         items: [
           DropdownMenuItem(
@@ -304,14 +300,10 @@ class _AdminGeoHubWidgetState extends State<AdminGeoHubWidget>
             width: 180,
             child: DropdownButtonFormField<DocumentReference?>(
               value: _countryFilter,
-              isDense: true,
-              decoration: InputDecoration(
-                labelText: uiTr(context, 'الدولة'),
-                isDense: true,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              isExpanded: true,
+              decoration: AdminUi.dropdownDecoration(
+                context,
+                uiTr(context, 'الدولة'),
               ),
               items: [
                 DropdownMenuItem<DocumentReference?>(
@@ -350,14 +342,10 @@ class _AdminGeoHubWidgetState extends State<AdminGeoHubWidget>
             width: 180,
             child: DropdownButtonFormField<DocumentReference?>(
               value: _regionFilter,
-              isDense: true,
-              decoration: InputDecoration(
-                labelText: uiTr(context, 'المنطقة'),
-                isDense: true,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              isExpanded: true,
+              decoration: AdminUi.dropdownDecoration(
+                context,
+                uiTr(context, 'المنطقة'),
               ),
               items: [
                 DropdownMenuItem<DocumentReference?>(
@@ -385,13 +373,10 @@ class _AdminGeoHubWidgetState extends State<AdminGeoHubWidget>
       width: 96,
       child: DropdownButtonFormField<int>(
         value: _pageSize,
-        isDense: true,
-        decoration: InputDecoration(
-          labelText: uiTr(context, 'الصفحة'),
-          isDense: true,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        isExpanded: true,
+        decoration: AdminUi.dropdownDecoration(
+          context,
+          uiTr(context, 'الصفحة'),
         ),
         items: const [
           DropdownMenuItem(value: 20, child: Text('20')),
@@ -411,39 +396,44 @@ class _AdminGeoHubWidgetState extends State<AdminGeoHubWidget>
     final add = _buildAddButton();
 
     final controls = <Widget>[
-      if (_tab != AdminGeoTab.countries) ...[
-        countryDd,
-        const SizedBox(width: 8),
-      ],
-      if (_tab == AdminGeoTab.cities) ...[
-        regionDd,
-        const SizedBox(width: 8),
-      ],
+      if (_tab != AdminGeoTab.countries) countryDd,
+      if (_tab == AdminGeoTab.cities) regionDd,
       active,
-      const SizedBox(width: 8),
       pageSize,
-      const SizedBox(width: 8),
       add,
     ];
 
     return AdminContentCard(
       padding: const EdgeInsets.all(12),
-      child: wide
-          ? Row(
-              children: [
-                Expanded(flex: 3, child: search),
-                const SizedBox(width: 10),
-                ...controls,
-              ],
-            )
-          : Column(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final wide = constraints.maxWidth >= 980;
+          final filters = Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: controls,
+          );
+          if (!wide) {
+            return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 search,
                 const SizedBox(height: 10),
-                Wrap(spacing: 8, runSpacing: 8, children: controls),
+                filters,
               ],
-            ),
+            );
+          }
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: 2, child: search),
+              const SizedBox(width: 10),
+              Flexible(flex: 3, child: filters),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -696,11 +686,13 @@ class _AdminGeoHubWidgetState extends State<AdminGeoHubWidget>
             ),
           ),
           if (isWide)
-            SingleChildScrollView(
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minWidth: MediaQuery.sizeOf(context).width - 320,
+                  minWidth: AdminUi.fittedTableWidth(constraints.maxWidth),
                 ),
                 child: DataTable(
                   headingRowHeight: 40,
@@ -732,6 +724,8 @@ class _AdminGeoHubWidgetState extends State<AdminGeoHubWidget>
                   ],
                 ),
               ),
+            );
+              },
             )
           else
             ...List.generate(pageLength, (i) {

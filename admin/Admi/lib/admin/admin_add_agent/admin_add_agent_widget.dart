@@ -915,7 +915,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).secondaryBackground,
                         borderRadius: BorderRadius.circular(16.0),
@@ -1439,7 +1439,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).secondaryBackground,
                         borderRadius: BorderRadius.circular(16.0),
@@ -1502,7 +1502,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).secondaryBackground,
                         borderRadius: BorderRadius.circular(16.0),
@@ -1570,7 +1570,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).secondaryBackground,
                         borderRadius: BorderRadius.circular(16.0),
@@ -1647,7 +1647,7 @@ class _AdminAddAgentWidgetState extends State<AdminAddAgentWidget> {
                       '6pmr3p9h' /* Add Agent */,
                     ),
                     options: FFButtonOptions(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
+                      width: double.infinity,
                       height: 56.0,
                       padding: EdgeInsets.all(8.0),
                       iconPadding:

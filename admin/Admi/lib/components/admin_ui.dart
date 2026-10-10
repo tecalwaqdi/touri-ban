@@ -6,6 +6,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 
 import '/backend/admin_reports_country_scope.dart';
 import '/core/admin_design/admin_design.dart';
+import '/core/admin_shell_rules.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 
 /// Shared visual language for the admin panel (UI V2 teal / finance identity).
@@ -27,12 +28,43 @@ class AdminUi {
   static bool useTableLayout(BuildContext context) =>
       MediaQuery.sizeOf(context).width >= tableLayoutMinWidth;
 
+  /// Sidebar width that [AdminLayoutWidget] reserves on wide screens.
+  static double sidebarWidth(double viewportWidth) {
+    if (viewportWidth < 991) return 0;
+    if (viewportWidth >= 1400) return 256;
+    if (viewportWidth >= 1280) return 248;
+    if (viewportWidth >= 1100) return 240;
+    return 228;
+  }
+
+  /// Width left for page content after the sidebar, the centered cap, and gutters.
+  static double contentWidth(BuildContext context) {
+    final viewport = MediaQuery.sizeOf(context).width;
+    final inner = viewport - sidebarWidth(viewport);
+    final cap = AdminShellRules.contentMaxWidth(viewport);
+    final capped = inner < cap ? inner : cap;
+    final gutter = pagePadding(context).horizontal;
+    final width = capped - gutter;
+    if (width < 280) return 280;
+    if (width > 1600) return 1600;
+    return width;
+  }
+
   static bool useStackedHeader(BuildContext context) =>
       MediaQuery.sizeOf(context).width < 520;
 
+  /// Fit the content column on desktop. Scroll sideways only when it is narrow.
   static double adminTableMinWidth(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    return width >= tableLayoutMinWidth ? width - 48 : 780;
+    final available = contentWidth(context);
+    if (available >= 860) return available;
+    return 860;
+  }
+
+  /// Fill [parent] when it is wide enough; otherwise keep [floor] so columns stay readable.
+  static double fittedTableWidth(double parent, {double floor = 860}) {
+    if (!parent.isFinite || parent <= 0) return floor;
+    if (parent >= floor) return parent;
+    return floor;
   }
 
   static int responsiveColumnCount(
@@ -110,7 +142,7 @@ class AdminUi {
     return InputDecoration(
       hintText: hint,
       helperText: helperText,
-      helperMaxLines: 2,
+      helperMaxLines: 1,
       prefixIcon: const Icon(Icons.search_rounded, size: 20),
       suffixIcon: suffixIcon,
       isDense: true,
@@ -202,6 +234,36 @@ class AdminUi {
         fontFamily: theme.labelMediumFamily,
         color: theme.secondaryText,
         useGoogleFonts: !theme.labelMediumIsCustom,
+      ),
+    );
+  }
+
+  /// Dropdown chrome: the label stays in the border so the value is not clipped.
+  static InputDecoration dropdownDecoration(
+    BuildContext context,
+    String label,
+  ) {
+    final theme = FlutterFlowTheme.of(context);
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(radiusSm),
+      borderSide: BorderSide(color: theme.alternate),
+    );
+    return InputDecoration(
+      labelText: label,
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      isDense: true,
+      filled: true,
+      fillColor: theme.secondaryBackground,
+      contentPadding: const EdgeInsets.fromLTRB(12, 16, 12, 10),
+      border: border,
+      enabledBorder: border,
+      focusedBorder: border.copyWith(
+        borderSide: BorderSide(color: theme.primary, width: 1.5),
+      ),
+      labelStyle: theme.labelSmall.override(
+        fontFamily: theme.labelSmallFamily,
+        color: theme.secondaryText,
+        useGoogleFonts: !theme.labelSmallIsCustom,
       ),
     );
   }
@@ -825,6 +887,37 @@ class AdminSafeScrollBody extends StatelessWidget {
 }
 
 /// Standard scrollable page body with optional header and actions.
+/// Horizontal table scroller that fills the parent and scrolls only when columns need more room.
+class AdminFittedScroll extends StatelessWidget {
+  const AdminFittedScroll({
+    super.key,
+    required this.child,
+    this.floor = 0,
+  });
+
+  final Widget child;
+  final double floor;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final parent = constraints.maxWidth;
+        final minWidth = !parent.isFinite || parent <= 0
+            ? AdminUi.adminTableMinWidth(context)
+            : AdminUi.fittedTableWidth(parent, floor: floor);
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: minWidth),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+}
+
 class AdminPageBody extends StatelessWidget {
   const AdminPageBody({
     super.key,

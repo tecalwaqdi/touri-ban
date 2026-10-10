@@ -87,17 +87,11 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
     });
   }
 
-  InputDecoration _dec(String label) => InputDecoration(
-        labelText: label,
-        isDense: true,
-        border: const OutlineInputBorder(),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      );
+  InputDecoration _dec(String label) =>
+      AdminUi.dropdownDecoration(context, label);
 
   @override
   Widget build(BuildContext context) {
-    final wide = MediaQuery.sizeOf(context).width >= 900;
     return AdminLayoutWidget(
       padContent: false,
       scaffoldKey: scaffoldKey,
@@ -114,46 +108,52 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
               'ابحث برقم التسوية أو المندوب لمعرفة من نفّذ العملية ومتى.',
             ),
           ),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              SizedBox(
-                width: wide ? 200 : double.infinity,
-                child: TextField(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final wide = constraints.maxWidth >= 860;
+              final fields = <Widget>[
+                TextField(
                   controller: _code,
                   decoration: _dec(uiTr(context, 'رقم التسوية')),
                 ),
-              ),
-              SizedBox(
-                width: wide ? 200 : double.infinity,
-                child: TextField(
+                TextField(
                   controller: _receipt,
                   decoration: _dec(uiTr(context, 'مرجع الدفعة')),
                 ),
-              ),
-              SizedBox(
-                width: wide ? 180 : double.infinity,
-                child: TextField(
+                TextField(
                   controller: _driver,
                   decoration: _dec(uiTr(context, 'المندوب')),
                 ),
-              ),
-              SizedBox(
-                width: wide ? 180 : double.infinity,
-                child: TextField(
+                TextField(
                   controller: _actor,
                   decoration: _dec(uiTr(context, 'المنفذ')),
                 ),
-              ),
-              SizedBox(
-                width: wide ? 180 : double.infinity,
-                child: TextField(
+                TextField(
                   controller: _type,
                   decoration: _dec(uiTr(context, 'نوع العملية')),
                 ),
-              ),
-            ],
+              ];
+              if (!wide) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (final field in fields) ...[
+                      field,
+                      const SizedBox(height: 8),
+                    ],
+                  ],
+                );
+              }
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var i = 0; i < fields.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 8),
+                    Expanded(child: fields[i]),
+                  ],
+                ],
+              );
+            },
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -192,8 +192,7 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
               icon: Icons.manage_search_outlined,
             )
           else
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+            AdminFittedScroll(
               child: DataTable(
                 columns: [
                   DataColumn(label: Text(uiTr(context, 'التاريخ والوقت'))),

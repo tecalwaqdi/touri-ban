@@ -669,6 +669,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
                           ),
                     const SizedBox(height: 12),
                     AdminOpsFilterBar(
+                      embedded: true,
                       value: _opsFilters,
                       config: AdminOpsFilterConfig(
                         showDate: false,
@@ -695,6 +696,7 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         FilterChip(
                           label: Text(uiTr(context, 'الكل')),
@@ -739,29 +741,19 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
                             );
                           }),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
                         Text(
                           uiTr(context, 'حجم الصفحة'),
                           style: theme.bodySmall,
                         ),
-                        const SizedBox(width: 10),
-                        for (final size in const [20, 50, 100]) ...[
-                          Padding(
-                            padding: const EdgeInsetsDirectional.only(end: 6),
-                            child: ChoiceChip(
-                              label: Text('$size'),
-                              selected: _pageSize == size,
-                              onSelected: (_) {
-                                if (_pageSize == size) return;
-                                setState(() => _pageSize = size);
-                              },
-                            ),
+                        for (final size in const [20, 50, 100])
+                          ChoiceChip(
+                            label: Text('$size'),
+                            selected: _pageSize == size,
+                            onSelected: (_) {
+                              if (_pageSize == size) return;
+                              setState(() => _pageSize = size);
+                            },
                           ),
-                        ],
                       ],
                     ),
                   ],
@@ -911,34 +903,27 @@ class _LandmarksSummaryBar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Icon(
                 isSearching ? Icons.search_rounded : Icons.place_rounded,
                 size: 20,
                 color: AdminUi.brandTeal,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  '$totalLabel: $countText'
-                  '${filteredFromTotal && partnerTotal != null && count != null ? ' ${uiTr(context, 'من')} ${partnerTotal}' : ''}',
-                  style: theme.titleSmall.override(
-                    fontFamily: theme.titleSmallFamily,
-                    fontWeight: FontWeight.w700,
-                    color: AdminUi.brandTeal,
-                    useGoogleFonts: !theme.titleSmallIsCustom,
-                  ),
+              Text(
+                '$totalLabel: \u2066$countText\u2069'
+                '${filteredFromTotal && partnerTotal != null && count != null ? ' ${uiTr(context, 'من')} \u2066$partnerTotal\u2069' : ''}',
+                style: theme.titleSmall.override(
+                  fontFamily: theme.titleSmallFamily,
+                  fontWeight: FontWeight.w700,
+                  color: AdminUi.brandTeal,
+                  useGoogleFonts: !theme.titleSmallIsCustom,
                 ),
               ),
-            ],
-          ),
-          if (count != null && count! > 0) ...[
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
+              if (count != null && count! > 0) ...[
                 _SummaryChip(
                   icon: Icons.check_circle_outline_rounded,
                   label: uiTr(context, 'نشط'),
@@ -968,8 +953,8 @@ class _LandmarksSummaryBar extends StatelessWidget {
                   background: const Color(0xFFF3E5F5),
                 ),
               ],
-            ),
-          ],
+            ],
+          ),
           if (scopeNote != null && scopeNote!.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(
@@ -1064,11 +1049,17 @@ class _LandmarksTable extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
 
-    return SingleChildScrollView(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = AdminUi.fittedTableWidth(
+          constraints.maxWidth - 24,
+          floor: 980,
+        );
+        return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
       child: SizedBox(
-        width: AdminUi.adminTableMinWidth(context),
+        width: width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -1105,6 +1096,8 @@ class _LandmarksTable extends StatelessWidget {
           ],
         ),
       ),
+    );
+      },
     );
   }
 }

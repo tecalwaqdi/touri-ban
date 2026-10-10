@@ -391,13 +391,10 @@ class _AdminDriversFilterBarState extends State<AdminDriversFilterBar> {
       width: 88,
       child: DropdownButtonFormField<int>(
         value: widget.pageSize,
-        isDense: true,
-        decoration: InputDecoration(
-          isDense: true,
-          labelText: uiTr(context, 'الصفحة'),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        isExpanded: true,
+        decoration: AdminUi.dropdownDecoration(
+          context,
+          uiTr(context, 'الصفحة'),
         ),
         items: const [20, 50, 100]
             .map((n) => DropdownMenuItem(value: n, child: Text('$n')))
@@ -420,14 +417,8 @@ class _AdminDriversFilterBarState extends State<AdminDriversFilterBar> {
       width: 190,
       child: DropdownButtonFormField<T>(
         value: value,
-        isDense: true,
-        decoration: InputDecoration(
-          isDense: true,
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        ),
+        isExpanded: true,
+        decoration: AdminUi.dropdownDecoration(context, label),
         items: items
             .map((e) => DropdownMenuItem(value: e, child: Text(labelOf(e))))
             .toList(),
@@ -458,14 +449,8 @@ class _AdminDriversFilterBarState extends State<AdminDriversFilterBar> {
       width: 190,
       child: DropdownButtonFormField<DocumentReference?>(
         value: selected,
-        isDense: true,
-        decoration: InputDecoration(
-          isDense: true,
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        ),
+        isExpanded: true,
+        decoration: AdminUi.dropdownDecoration(context, label),
         items: [
           DropdownMenuItem<DocumentReference?>(
             value: null,

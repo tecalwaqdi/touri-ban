@@ -72,11 +72,17 @@ class _WideTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
-    return SingleChildScrollView(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = AdminUi.fittedTableWidth(
+          constraints.maxWidth - 24,
+          floor: 1100,
+        );
+        return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
       child: SizedBox(
-        width: AdminUi.adminTableMinWidth(context) + 200,
+        width: width,
         child: Column(
           children: [
             Padding(
@@ -107,6 +113,8 @@ class _WideTable extends StatelessWidget {
           ],
         ),
       ),
+    );
+      },
     );
   }
 

@@ -311,8 +311,7 @@ class _WorkspaceBody extends StatelessWidget {
             style: AccountantFinanceText.body(theme),
           )
         else
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+          AdminFittedScroll(
             child: DataTable(
               headingRowHeight: 40,
               dataRowMinHeight: 44,

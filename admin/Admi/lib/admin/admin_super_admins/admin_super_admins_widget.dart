@@ -325,8 +325,7 @@ class _SuperAdminsTable extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+    return AdminFittedScroll(
       child: DataTable(
         headingRowColor: WidgetStateProperty.all(
           AdminUi.brandTeal.withValues(alpha: 0.06),

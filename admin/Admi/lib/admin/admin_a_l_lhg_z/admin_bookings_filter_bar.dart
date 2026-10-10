@@ -652,11 +652,7 @@ class _AdminBookingsFilterBarState extends State<AdminBookingsFilterBar> {
   }
 
   InputDecoration _denseDecoration(BuildContext context, String label) {
-    return InputDecoration(
-      labelText: label,
-      isDense: true,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-    );
+    return AdminUi.dropdownDecoration(context, label);
   }
 
   Widget _dropdown<T>(
@@ -675,7 +671,6 @@ class _AdminBookingsFilterBarState extends State<AdminBookingsFilterBar> {
         child: DropdownButtonHideUnderline(
           child: DropdownButton<T>(
             isExpanded: true,
-            isDense: true,
             value: items.contains(value) ? value : items.first,
             items: items
                 .map(

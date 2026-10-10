@@ -48,11 +48,13 @@ class AccountantMoneyMovementTable extends StatelessWidget {
             style: AccountantFinanceText.sectionTitle(theme),
           ),
           const SizedBox(height: 8),
-          SingleChildScrollView(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                minWidth: AdminUi.adminTableMinWidth(context),
+                minWidth: AdminUi.fittedTableWidth(constraints.maxWidth),
               ),
               child: Theme(
                 data: Theme.of(context).copyWith(
@@ -160,6 +162,8 @@ class AccountantMoneyMovementTable extends StatelessWidget {
                 ),
               ),
             ),
+          );
+            },
           ),
           if (rows.length > 200)
             Padding(

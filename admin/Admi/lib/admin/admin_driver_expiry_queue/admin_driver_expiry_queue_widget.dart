@@ -417,7 +417,7 @@ class _FilterBar extends StatelessWidget {
       child: DropdownButtonFormField<T?>(
         isExpanded: true,
         initialValue: value,
-        decoration: InputDecoration(isDense: true, labelText: hint),
+        decoration: AdminUi.dropdownDecoration(context, hint),
         items: items.entries
             .map(
               (e) => DropdownMenuItem<T?>(

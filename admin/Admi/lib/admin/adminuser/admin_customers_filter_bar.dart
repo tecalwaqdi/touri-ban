@@ -196,7 +196,6 @@ class _AdminCustomersFilterBarState extends State<AdminCustomersFilterBar> {
                     child: DropdownButtonFormField<String?>(
                       value: widget.value.countryRef?.id,
                       isExpanded: true,
-                      isDense: true,
                       style: theme.bodySmall,
                       decoration: _dec(uiTr(context, 'الدولة')),
                       items: [
@@ -242,7 +241,6 @@ class _AdminCustomersFilterBarState extends State<AdminCustomersFilterBar> {
                   child: DropdownButtonFormField<AdminDatePreset>(
                     value: widget.value.datePreset,
                     isExpanded: true,
-                    isDense: true,
                     style: theme.bodySmall,
                     decoration: _dec(uiTr(context, 'التسجيل')),
                     items: [
@@ -272,7 +270,6 @@ class _AdminCustomersFilterBarState extends State<AdminCustomersFilterBar> {
                   child: DropdownButtonFormField<AdminCustomerAccountFilter>(
                     value: widget.extra.account,
                     isExpanded: true,
-                    isDense: true,
                     style: theme.bodySmall,
                     decoration: _dec(uiTr(context, 'الحساب')),
                     items: [
@@ -304,7 +301,6 @@ class _AdminCustomersFilterBarState extends State<AdminCustomersFilterBar> {
                   child: DropdownButtonFormField<AdminCustomerTripFilter>(
                     value: widget.extra.trip,
                     isExpanded: true,
-                    isDense: true,
                     style: theme.bodySmall,
                     decoration: _dec(uiTr(context, 'الرحلة')),
                     items: [
@@ -332,7 +328,6 @@ class _AdminCustomersFilterBarState extends State<AdminCustomersFilterBar> {
                   child: DropdownButtonFormField<AdminCustomerBookingsFilter>(
                     value: widget.extra.bookings,
                     isExpanded: true,
-                    isDense: true,
                     style: theme.bodySmall,
                     decoration: _dec(uiTr(context, 'الحجوزات')),
                     items: [
@@ -360,7 +355,6 @@ class _AdminCustomersFilterBarState extends State<AdminCustomersFilterBar> {
                   child: DropdownButtonFormField<AdminCustomerSort>(
                     value: widget.extra.sort,
                     isExpanded: true,
-                    isDense: true,
                     style: theme.bodySmall,
                     decoration: _dec(uiTr(context, 'الترتيب')),
                     items: [
@@ -463,13 +457,8 @@ class _AdminCustomersFilterBarState extends State<AdminCustomersFilterBar> {
     );
   }
 
-  InputDecoration _dec(String label) => InputDecoration(
-        isDense: true,
-        labelText: label,
-        labelStyle: const TextStyle(fontSize: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      );
+  InputDecoration _dec(String label) =>
+      AdminUi.dropdownDecoration(context, label);
 
   String _dateLabel(BuildContext context, AdminDatePreset p) => switch (p) {
         AdminDatePreset.all => uiTr(context, 'كل التواريخ'),

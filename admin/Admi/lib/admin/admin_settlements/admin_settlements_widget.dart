@@ -332,8 +332,7 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                     )
                   else
                     AdminContentCard(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
+                      child: AdminFittedScroll(
                         child: DataTable(
                           headingTextStyle:
                               AccountantFinanceText.tableHeader(theme),
