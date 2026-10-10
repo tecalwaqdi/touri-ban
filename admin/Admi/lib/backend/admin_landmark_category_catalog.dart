@@ -9,6 +9,7 @@ class AdminLandmarkCategory {
     required this.labelAr,
     required this.labelEn,
     required this.icon,
+    this.iconUrl = '',
     this.trKey = '',
     this.enabled = true,
     this.sort = 0,
@@ -19,6 +20,7 @@ class AdminLandmarkCategory {
   final String labelAr;
   final String labelEn;
   final String icon;
+  final String iconUrl;
   final String trKey;
   final bool enabled;
   final int sort;
@@ -28,6 +30,7 @@ class AdminLandmarkCategory {
         'labelAr': labelAr,
         'labelEn': labelEn,
         'icon': icon,
+        'iconUrl': iconUrl.trim(),
         'trKey': trKey,
         'enabled': enabled,
         'sort': sort,
@@ -38,6 +41,7 @@ class AdminLandmarkCategory {
     String? labelAr,
     String? labelEn,
     String? icon,
+    String? iconUrl,
     String? trKey,
     bool? enabled,
     int? sort,
@@ -48,6 +52,7 @@ class AdminLandmarkCategory {
       labelAr: labelAr ?? this.labelAr,
       labelEn: labelEn ?? this.labelEn,
       icon: icon ?? this.icon,
+      iconUrl: iconUrl ?? this.iconUrl,
       trKey: trKey ?? this.trKey,
       enabled: enabled ?? this.enabled,
       sort: sort ?? this.sort,
@@ -67,6 +72,9 @@ class AdminLandmarkCategory {
       labelAr: _text(data['labelAr']).isEmpty ? storage : _text(data['labelAr']),
       labelEn: _text(data['labelEn']).isEmpty ? storage : _text(data['labelEn']),
       icon: _text(data['icon']).isEmpty ? 'attraction' : _text(data['icon']),
+      iconUrl: _text(data['iconUrl']).isEmpty
+          ? _text(data['icon_url'])
+          : _text(data['iconUrl']),
       trKey: _text(data['trKey']),
       enabled: data['enabled'] != false,
       sort: (data['sort'] is num) ? (data['sort'] as num).toInt() : 0,

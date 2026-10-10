@@ -431,12 +431,19 @@ class _EdetAgentWidgetState extends State<EdetAgentWidget> {
       );
     } catch (e) {
       if (!mounted) return;
-      final msg = e is FirebaseFunctionsException
-          ? AdminUserFacingErrors.localizeMessage(
+      final taken = e is FirebaseFunctionsException &&
+          (e.code == 'already-exists' || e.code == 'already_exists');
+      final msg = taken
+          ? uiTr(
               context,
-              AdminUserCreation.authErrorMessage(e),
+              'هذا البريد مسجّل لحساب آخر. اختر بريداً غير مستخدم ليكون بريد دخول هذا الوكيل.',
             )
-          : AdminCrudFeedback.saveFailed(context, e);
+          : e is FirebaseFunctionsException
+              ? AdminUserFacingErrors.localizeMessage(
+                  context,
+                  AdminUserCreation.authErrorMessage(e),
+                )
+              : AdminCrudFeedback.saveFailed(context, e);
       AdminCrudFeedback.error(context, msg);
     } finally {
       if (mounted) setState(() => _model.isSubmitting = false);

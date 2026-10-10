@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '/core/cloud_functions/cloud_functions_client.dart';
-import '/core/i18n/toury_i18n_locales.dart';
+import '/core/i18n/landmark_azure_translate.dart';
+import '/core/i18n/landmark_i18n_plan.dart';
 
 /// نتيجة تعبئة الترجمات للبيانات القديمة.
 class I18nBackfillResult {
@@ -14,6 +12,7 @@ class I18nBackfillResult {
     required this.countries,
     this.cars = 0,
     this.error,
+    this.warnings = const [],
   });
 
   final int landmarks;
@@ -22,6 +21,7 @@ class I18nBackfillResult {
   final int countries;
   final int cars;
   final String? error;
+  final List<String> warnings;
 
   bool get success => error == null;
   int get total => landmarks + cities + villages + countries + cars;
@@ -100,43 +100,89 @@ abstract final class AdminI18nBackfill {
     }
   }
 
-  /// يترجم أسماء معالم ناقصة الترجمة عبر Gemini (دفعات صغيرة).
+  /// Kept so the settings button stays wired. Landmarks use Azure, not Gemini.
   static Future<I18nBackfillResult> runGeminiTranslateBatch({
     int maxLandmarks = 15,
     I18nBackfillProgress? onProgress,
+  }) =>
+      runAzureTranslateBatch(
+        maxLandmarks: maxLandmarks,
+        onProgress: onProgress,
+      );
+
+  /// Translates missing or changed landmark name/description text for the
+  /// seven app languages. One landmark failure does not stop the rest.
+  static Future<I18nBackfillResult> runAzureTranslateBatch({
+    int maxLandmarks = 15,
+    I18nBackfillProgress? onProgress,
   }) async {
+    var updated = 0;
+    final failures = <String>[];
+    DocumentSnapshot? lastDoc;
+    var pages = 0;
     try {
       onProgress?.call('جاري البحث عن معالم تحتاج ترجمة…');
-      final ref = FirebaseFirestore.instance.collection('mkan');
-      final snap = await ref.orderBy(FieldPath.documentId).limit(500).get();
+      while (updated < maxLandmarks && pages < 40) {
+        pages++;
+        Query query = FirebaseFirestore.instance
+            .collection('mkan')
+            .orderBy(FieldPath.documentId)
+            .limit(40);
+        if (lastDoc != null) query = query.startAfterDocument(lastDoc);
+        final snap = await query.get();
+        if (snap.docs.isEmpty) break;
+        lastDoc = snap.docs.last;
 
-      var updated = 0;
-      for (final doc in snap.docs) {
-        if (updated >= maxLandmarks) break;
+        final pending = <_LandmarkAzureJob>[];
+        for (final doc in snap.docs) {
+          if (updated + pending.length >= maxLandmarks) break;
+          final data = doc.data() as Map<String, dynamic>;
+          final fields = _azureFieldsForMkan(doc.id, data);
+          if (fields.isEmpty) continue;
+          pending.add(_LandmarkAzureJob(doc.reference, fields));
+        }
 
-        final data = doc.data();
-        final naim = (data['naim'] as String?)?.trim() ?? '';
-        if (naim.isEmpty) continue;
+        for (var i = 0; i < pending.length; i += 10) {
+          final chunk = pending.skip(i).take(10).toList();
+          final fields = [for (final job in chunk) ...job.fields];
+          List<LandmarkI18nFieldResult> results;
+          try {
+            results = await LandmarkAzureTranslate.translateFields(fields);
+          } catch (error) {
+            for (final job in chunk) {
+              failures.add('${job.ref.id}: ${_shortError(error)}');
+            }
+            continue;
+          }
+          final byId = {for (final row in results) row.id: row};
+          for (final job in chunk) {
+            try {
+              final updates = <String, dynamic>{};
+              final name = byId['${job.ref.id}:name'];
+              final osf = byId['${job.ref.id}:osf'];
+              if (name != null && name.error != null) {
+                failures.add('${job.ref.id}: ${name.error}');
+              } else if (name != null && name.persistAuto) {
+                updates['names_i18n'] = name.values;
+                if (name.auto != null) updates['names_i18n_auto'] = name.auto;
+              }
+              if (osf != null && osf.error != null) {
+                failures.add('${job.ref.id}: ${osf.error}');
+              } else if (osf != null && osf.persistAuto) {
+                updates['osf_i18n'] = osf.values;
+                if (osf.auto != null) updates['osf_i18n_auto'] = osf.auto;
+              }
+              if (updates.isEmpty) continue;
+              await job.ref.update(updates);
+              updated++;
+              onProgress?.call('تمت ترجمة $updated معلم');
+            } catch (error) {
+              failures.add('${job.ref.id}: ${_shortError(error)}');
+            }
+          }
+        }
 
-        final existing = _readStringMap(data['names_i18n']);
-        if (_hasFullLocales(existing)) continue;
-
-        onProgress?.call('ترجمة: $naim');
-        final sourceLocale = existing['ar'] == naim
-            ? 'ar'
-            : (existing['en'] != null ? 'en' : 'ar');
-        final sourceText = existing[sourceLocale] ?? naim;
-
-        final translated = await _translateWithGemini(
-          sourceLocale: sourceLocale,
-          sourceText: sourceText,
-          fieldLabel: 'landmark name',
-        );
-        if (translated == null || translated.isEmpty) continue;
-
-        final merged = {...existing, ...translated};
-        await doc.reference.update({'names_i18n': merged});
-        updated++;
+        if (snap.docs.length < 40) break;
       }
 
       onProgress?.call('اكتمل: $updated معلم');
@@ -145,14 +191,16 @@ abstract final class AdminI18nBackfill {
         cities: 0,
         villages: 0,
         countries: 0,
+        warnings: failures,
       );
     } catch (e) {
       return I18nBackfillResult(
-        landmarks: 0,
+        landmarks: updated,
         cities: 0,
         villages: 0,
         countries: 0,
-        error: e.toString(),
+        error: 'توقفت الترجمة بعد $updated معلم',
+        warnings: failures,
       );
     }
   }
@@ -167,68 +215,82 @@ abstract final class AdminI18nBackfill {
     return out;
   }
 
-  static bool _hasFullLocales(Map<String, String> map) {
-    if (map.isEmpty) return false;
-    for (final key in touryI18nLocaleKeys) {
-      if ((map[key] ?? '').isEmpty) return false;
-    }
-    return true;
+  static List<LandmarkI18nField> _azureFieldsForMkan(
+    String docId,
+    Map<String, dynamic> data,
+  ) {
+    final fields = <LandmarkI18nField>[];
+    final name = _fieldFor(
+      id: '$docId:name',
+      legacy: (data['naim'] as String?)?.trim() ?? '',
+      existing: _readStringMap(data['names_i18n']),
+      auto: LandmarkAzureTranslate.readAuto(data['names_i18n_auto']),
+      contentLocale: (data['content_locale'] as String?)?.trim() ?? '',
+    );
+    final description = _fieldFor(
+      id: '$docId:osf',
+      legacy: (data['osf'] as String?)?.trim() ?? '',
+      existing: _readStringMap(data['osf_i18n']),
+      auto: LandmarkAzureTranslate.readAuto(data['osf_i18n_auto']),
+      contentLocale: (data['content_locale'] as String?)?.trim() ?? '',
+    );
+    if (name != null) fields.add(name);
+    if (description != null) fields.add(description);
+    return fields;
   }
 
-  static Future<Map<String, String>?> _translateWithGemini({
-    required String sourceLocale,
-    required String sourceText,
-    required String fieldLabel,
-  }) async {
-    final keys = touryI18nLocaleKeys.join(', ');
-    final prompt = '''
-You are a professional translator for a tourism app.
-Translate the following "$fieldLabel" into ALL of these locale keys: $keys
-Source locale: $sourceLocale
-Source text: "$sourceText"
-
-Rules:
-- Return ONLY a valid JSON object.
-- Keys must be exactly: $keys
-- Values must be natural translations for tourists.
-- No markdown, no explanation.
-''';
-
-    final raw = await CloudFunctionsClient.geminiGenerateText(prompt);
-    if (raw == null || raw.trim().isEmpty) return null;
-    return _parseJsonMap(raw, sourceLocale: sourceLocale, sourceText: sourceText);
-  }
-
-  static Map<String, String> _parseJsonMap(
-    String raw, {
-    required String sourceLocale,
-    required String sourceText,
+  static LandmarkI18nField? _fieldFor({
+    required String id,
+    required String legacy,
+    required Map<String, String> existing,
+    required Map<String, dynamic>? auto,
+    required String contentLocale,
   }) {
-    try {
-      var text = raw.trim();
-      if (text.startsWith('```')) {
-        text = text.replaceFirst(RegExp(r'^```[a-zA-Z]*\n?'), '');
-        text = text.replaceFirst(RegExp(r'\n?```$'), '');
-      }
-      final start = text.indexOf('{');
-      final end = text.lastIndexOf('}');
-      if (start >= 0 && end > start) {
-        text = text.substring(start, end + 1);
-      }
-      final decoded = jsonDecode(text);
-      if (decoded is! Map) {
-        return {sourceLocale: sourceText};
-      }
-      final out = <String, String>{};
-      decoded.forEach((k, v) {
-        final value = v?.toString().trim() ?? '';
-        if (value.isNotEmpty) out[k.toString()] = value;
-      });
-      out.putIfAbsent(sourceLocale, () => sourceText);
-      return out;
-    } catch (_) {
-      return {sourceLocale: sourceText};
+    final sourceLocale = _bulkSourceLocale(
+      contentLocale: contentLocale,
+      existing: existing,
+      legacy: legacy,
+    );
+    final sourceText = (existing[sourceLocale] ?? legacy).trim();
+    if (!needsLandmarkAzure(
+      sourceLocale: sourceLocale,
+      sourceText: sourceText,
+      existing: existing,
+      auto: auto,
+    )) {
+      return null;
     }
+    return LandmarkI18nField(
+      id: id,
+      sourceLocale: sourceLocale,
+      sourceText: sourceText,
+      existing: existing,
+      auto: auto,
+    );
+  }
+
+  static String _bulkSourceLocale({
+    required String contentLocale,
+    required Map<String, String> existing,
+    required String legacy,
+  }) {
+    final content = normalizeLandmarkLocale(contentLocale);
+    if (kLandmarkAppLocales.contains(content) &&
+        (existing[content] ?? '').isNotEmpty) {
+      return content;
+    }
+    if (legacy.isNotEmpty && existing['ar'] == legacy) return 'ar';
+    if (legacy.isNotEmpty && existing['en'] == legacy) return 'en';
+    for (final lang in kLandmarkAppLocales) {
+      if ((existing[lang] ?? '').isNotEmpty) return lang;
+    }
+    return content.isEmpty ? 'ar' : content;
+  }
+
+  static String _shortError(Object error) {
+    final text = error.toString().trim();
+    if (text.isEmpty) return 'فشلت الترجمة';
+    return text.length > 160 ? text.substring(0, 160) : text;
   }
 
   static Future<int> _backfillCollection({
@@ -336,4 +398,11 @@ Rules:
     }
     return map;
   }
+}
+
+class _LandmarkAzureJob {
+  const _LandmarkAzureJob(this.ref, this.fields);
+
+  final DocumentReference ref;
+  final List<LandmarkI18nField> fields;
 }

@@ -1,6 +1,7 @@
 import '/backend/admin_agent_country_lock.dart';
 import '/core/admin_content_locale.dart';
 import '/components/admin_i18n_fields.dart';
+import '/core/i18n/landmark_azure_translate.dart';
 import '/core/i18n/toury_i18n_text.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_geo_aliases.dart';
@@ -1321,26 +1322,68 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                         );
 
                         final sourceLocale = adminContentLocaleKey(context);
+                        final descText = _model.textController2.text.trim();
                         _nameI18n.syncPrimary(sourceLocale, name);
-                        _descI18n.syncPrimary(
-                          sourceLocale,
-                          _model.textController2.text.trim(),
-                        );
-                        final namesMap = touryBuildI18nMap(
+                        _descI18n.syncPrimary(sourceLocale, descText);
+                        var namesMap = touryBuildI18nMap(
                           values: _nameI18n.toMap(),
                           sourceLocale: sourceLocale,
                           sourceText: name,
                         );
-                        final osfMap = touryBuildI18nMap(
+                        var osfMap = touryBuildI18nMap(
                           values: _descI18n.toMap(),
                           sourceLocale: sourceLocale,
-                          sourceText: _model.textController2.text.trim(),
+                          sourceText: descText,
                         );
-                        final legacyNaim = touryPrimaryLegacyText(namesMap, name);
-                        final legacyOsf = touryPrimaryLegacyText(
-                          osfMap,
-                          _model.textController2.text.trim(),
-                        );
+                        final translated =
+                            await LandmarkAzureTranslate.translateFields([
+                          LandmarkI18nField(
+                            id: 'name',
+                            sourceLocale: sourceLocale,
+                            sourceText: name,
+                            existing: namesMap,
+                            auto: _nameI18n.translationAuto,
+                          ),
+                          if (descText.isNotEmpty)
+                            LandmarkI18nField(
+                              id: 'osf',
+                              sourceLocale: sourceLocale,
+                              sourceText: descText,
+                              existing: osfMap,
+                              auto: _descI18n.translationAuto,
+                            ),
+                        ]);
+                        final nameResult =
+                            translated.firstWhere((row) => row.id == 'name');
+                        final osfResult =
+                            translated.where((row) => row.id == 'osf').toList();
+                        namesMap = nameResult.values;
+                        if (osfResult.isNotEmpty) {
+                          osfMap = osfResult.first.values;
+                        }
+                        if (nameResult.persistAuto) {
+                          _nameI18n.translationAuto = nameResult.auto;
+                        }
+                        if (osfResult.isNotEmpty &&
+                            osfResult.first.persistAuto) {
+                          _descI18n.translationAuto = osfResult.first.auto;
+                        }
+                        String? translationError;
+                        for (final row in translated) {
+                          if (row.error != null) {
+                            translationError = row.error;
+                            break;
+                          }
+                        }
+                        if (translationError != null && mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(translationError)),
+                          );
+                        }
+                        final legacyNaim =
+                            touryPrimaryLegacyText(namesMap, name);
+                        final legacyOsf =
+                            touryPrimaryLegacyText(osfMap, descText);
 
                         // Write canonical city/region ids — user app queries
                         // city_sa_* / region_sa_* after remapping.
@@ -1387,6 +1430,12 @@ class _AdminaddMkanWidgetState extends State<AdminaddMkanWidget> {
                                 rate: _model.ratingValue,
                                 contentLocale: sourceLocale,
                               ),
+                            if (nameResult.persistAuto && nameResult.auto != null)
+                              'names_i18n_auto': nameResult.auto,
+                            if (osfResult.isNotEmpty &&
+                                osfResult.first.persistAuto &&
+                                osfResult.first.auto != null)
+                              'osf_i18n_auto': osfResult.first.auto,
                           },
                         );
                         if (!context.mounted) return;

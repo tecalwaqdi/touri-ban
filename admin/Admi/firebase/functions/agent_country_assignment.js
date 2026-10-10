@@ -763,20 +763,46 @@ exports.updateCountryAgentAssignment = functions
         throw new functions.https.HttpsError('invalid-argument', 'Invalid email.');
       }
       const prevEmail = str(prev.email).trim().toLowerCase();
-      if (email !== prevEmail) {
+      let authEmail = '';
+      try {
+        const authUser = await admin.auth().getUser(agentId);
+        authEmail = str(authUser && authUser.email).trim().toLowerCase();
+      } catch (e) {
+        if (!e || e.code !== 'auth/user-not-found') throw e;
+      }
+      if (email !== prevEmail || (authEmail && email !== authEmail)) {
+        let owner = null;
         try {
-          await admin.auth().updateUser(agentId, {email});
+          owner = await admin.auth().getUserByEmail(email);
         } catch (e) {
-          const code = e && e.code;
-          if (code === 'auth/email-already-exists' || code === 'auth/email-already-in-use') {
-            throw new functions.https.HttpsError('already-exists', 'Email already in use.');
-          }
-          if (code === 'auth/invalid-email') {
-            throw new functions.https.HttpsError('invalid-argument', 'Invalid email.');
-          }
-          throw e;
+          if (!e || e.code !== 'auth/user-not-found') throw e;
         }
-        patch.email = email;
+        if (owner && owner.uid !== agentId) {
+          throw new functions.https.HttpsError(
+            'already-exists',
+            'Email already in use.',
+            {code: 'EMAIL_OWNED_BY_OTHER_ACCOUNT'},
+          );
+        }
+        if (email !== authEmail) {
+          try {
+            await admin.auth().updateUser(agentId, {email});
+          } catch (e) {
+            const code = e && e.code;
+            if (code === 'auth/email-already-exists' || code === 'auth/email-already-in-use') {
+              throw new functions.https.HttpsError(
+                'already-exists',
+                'Email already in use.',
+                {code: 'EMAIL_OWNED_BY_OTHER_ACCOUNT'},
+              );
+            }
+            if (code === 'auth/invalid-email') {
+              throw new functions.https.HttpsError('invalid-argument', 'Invalid email.');
+            }
+            throw e;
+          }
+        }
+        if (email !== prevEmail) patch.email = email;
       }
     }
     if (data.agentTotal != null) {

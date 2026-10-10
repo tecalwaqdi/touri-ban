@@ -9,15 +9,12 @@ import '/components/accountant_trip_details_drawer.dart';
 import '/components/admin_enterprise_kit.dart';
 import '/components/admin_layout_widget.dart';
 import '/components/admin_ui.dart';
-import '/components/finance_home_overview_cards.dart';
+import '/components/finance_period_statement.dart';
 import '/components/menu2_model.dart';
-import '/core/finance/accountant_finance_labels.dart';
-import '/core/finance/accountant_finance_loader.dart';
 import '/core/finance/accountant_finance_text.dart';
 import '/core/finance/accountant_finance_view_model.dart';
 import '/core/finance/finance_company_snapshot.dart';
 import '/core/finance/finance_control_facade.dart';
-import '/core/finance/financial_amount_resolution.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
@@ -46,15 +43,8 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
   bool _summaryLoading = false;
   Object? _rowsError;
   Object? _summaryError;
-  bool _advancedOpen = false;
   bool _firstBuildMarked = false;
-
-  String? _paymentMethod;
-  String? _collectionStatus;
-  String? _settlementStatus;
-  FinancialDataQuality? _quality;
   String _channel = 'all';
-  String _search = '';
 
   static const _presetLabels = <AdminDatePreset, String>{
     AdminDatePreset.today: 'اليوم',
@@ -168,14 +158,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
           final hasRows = _earlyRows?.isNotEmpty ?? false;
           final loading = _rowsLoading && !rowsReady && _rowsError == null;
           final errored = _rowsError != null && !rowsReady;
-          var tableRows = AccountantTripFilters.apply(
-            _earlyRows ?? const [],
-            paymentMethod: _paymentMethod,
-            collectionStatus: _collectionStatus,
-            settlementStatus: _settlementStatus,
-            quality: _quality,
-            search: _search,
-          );
+          var tableRows = List<AccountantTripRow>.of(_earlyRows ?? const []);
           if (_channel == 'cash') {
             tableRows = tableRows
                 .where((r) => r.paymentChannelLabel == 'نقدي')
@@ -197,7 +180,7 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                     context,
                     isAgent
                         ? 'ملخص محاسبي لدولتك — قراءة فقط.'
-                        : 'ملخص محاسبي موحّد — رحلات مكتملة، تحصيل، ومستحقات.',
+                        : 'دفتر الفترة: توزيع الفاتورة، ثم التحصيل والذمم.',
                   ),
                   trailing: null,
                 ),
@@ -217,69 +200,6 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                   refreshTooltip: uiTr(context, 'تحديث'),
                 ),
                 const SizedBox(height: 12),
-                Theme(
-                  data: Theme.of(context)
-                      .copyWith(dividerColor: Colors.transparent),
-                  child: ExpansionTile(
-                    initiallyExpanded: _advancedOpen,
-                    onExpansionChanged: (v) =>
-                        setState(() => _advancedOpen = v),
-                    tilePadding: EdgeInsets.zero,
-                    childrenPadding: const EdgeInsets.only(bottom: 8),
-                    title: Text(
-                      uiTr(context, 'الفلاتر المتقدمة'),
-                      style: AccountantFinanceText.sectionTitle(theme),
-                    ),
-                    children: [
-                      Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        children: [
-                          SizedBox(
-                            width: 220,
-                            child: TextField(
-                              decoration: AccountantFinanceText.fieldDecoration(
-                                context,
-                                labelText: uiTr(
-                                  context,
-                                  'بحث برقم الرحلة أو اسم السائق...',
-                                ),
-                              ),
-                              style: AccountantFinanceText.body(theme),
-                              onChanged: (v) => setState(() => _search = v),
-                            ),
-                          ),
-                          _drop(
-                            context,
-                            label: uiTr(context, 'طريقة الدفع'),
-                            value: _paymentMethod,
-                            items: const ['نقدي', 'إلكتروني'],
-                            onChanged: (v) =>
-                                setState(() => _paymentMethod = v),
-                          ),
-                          _drop(
-                            context,
-                            label: uiTr(context, 'حالة التحصيل'),
-                            value: _collectionStatus,
-                            items: const ['محصّل', 'غير محصّل'],
-                            onChanged: (v) =>
-                                setState(() => _collectionStatus = v),
-                          ),
-                          _drop(
-                            context,
-                            label: uiTr(context, 'حالة التسوية'),
-                            value: _settlementStatus,
-                            items: const ['مسددة', 'مسددة جزئيًا', 'غير مسددة'],
-                            onChanged: (v) =>
-                                setState(() => _settlementStatus = v),
-                          ),
-                          _qualityDrop(context),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
                 if (loading)
                   AdminLoadingState(
                     label: uiTr(context, 'جاري تحميل البيانات المالية'),
@@ -292,15 +212,6 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                       'حدث خطأ أثناء جلب البيانات. يرجى إعادة المحاولة.',
                     ),
                     onRetry: _reload,
-                  )
-                else if (!hasRows && rowsReady)
-                  AdminEmptyState(
-                    compact: true,
-                    title: uiTr(context, 'لا رحلات مكتملة في هذه الفترة'),
-                    message: uiTr(
-                      context,
-                      'غيّر الفترة من الأعلى. الرحلات خارج الفترة لا تُحسب هنا.',
-                    ),
                   )
                 else if (!rowsReady)
                   AdminLoadingState(
@@ -348,42 +259,48 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            FinanceHomeOverviewCards(snapshot: canonical),
+                            FinancePeriodStatement(snapshot: canonical),
                             const SizedBox(height: 12),
                           ],
                         );
                       },
                     ),
-                  // Channel filter on bounded page (Cash / Online / All).
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Wrap(
-                      spacing: 8,
-                      children: [
-                        ChoiceChip(
-                          label: Text(uiTr(context, 'الكل')),
-                          selected: _channel == 'all',
-                          onSelected: (_) => setState(() => _channel = 'all'),
-                        ),
-                        ChoiceChip(
-                          label: Text(uiTr(context, 'نقدي')),
-                          selected: _channel == 'cash',
-                          onSelected: (_) => setState(() => _channel = 'cash'),
-                        ),
-                        ChoiceChip(
-                          label: Text(uiTr(context, 'إلكتروني')),
-                          selected: _channel == 'online',
-                          onSelected: (_) =>
-                              setState(() => _channel = 'online'),
-                        ),
-                      ],
+                  if (hasRows) ...[
+                    Text(
+                      uiTr(context, 'اليومية'),
+                      style: AccountantFinanceText.sectionTitle(theme),
                     ),
-                  ),
-                  AccountantMoneyMovementTable(
-                    rows: tableRows,
-                    onOpenDetails: (row) =>
-                        showAccountantTripDetailsDrawer(context, row),
-                  ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Wrap(
+                        spacing: 8,
+                        children: [
+                          ChoiceChip(
+                            label: Text(uiTr(context, 'الكل')),
+                            selected: _channel == 'all',
+                            onSelected: (_) => setState(() => _channel = 'all'),
+                          ),
+                          ChoiceChip(
+                            label: Text(uiTr(context, 'نقدي')),
+                            selected: _channel == 'cash',
+                            onSelected: (_) => setState(() => _channel = 'cash'),
+                          ),
+                          ChoiceChip(
+                            label: Text(uiTr(context, 'إلكتروني')),
+                            selected: _channel == 'online',
+                            onSelected: (_) =>
+                                setState(() => _channel = 'online'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    AccountantMoneyMovementTable(
+                      rows: tableRows,
+                      onOpenDetails: (row) =>
+                          showAccountantTripDetailsDrawer(context, row),
+                    ),
+                  ],
                 ],
               ],
             ),
@@ -393,65 +310,4 @@ class _AdminFinanceHubWidgetState extends State<AdminFinanceHubWidget> {
     );
   }
 
-  Widget _drop(
-    BuildContext context, {
-    required String label,
-    required String? value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    final theme = FlutterFlowTheme.of(context);
-    return SizedBox(
-      width: 170,
-      child: DropdownButtonFormField<String?>(
-        initialValue: value,
-        decoration: AccountantFinanceText.fieldDecoration(
-          context,
-          labelText: uiTr(context, label),
-        ),
-        style: AccountantFinanceText.body(theme),
-        items: [
-          DropdownMenuItem<String?>(
-            value: null,
-            child: Text(uiTr(context, 'الكل')),
-          ),
-          for (final i in items)
-            DropdownMenuItem<String?>(
-              value: i,
-              child: Text(uiTr(context, i)),
-            ),
-        ],
-        onChanged: onChanged,
-      ),
-    );
-  }
-
-  Widget _qualityDrop(BuildContext context) {
-    final theme = FlutterFlowTheme.of(context);
-    return SizedBox(
-      width: 200,
-      child: DropdownButtonFormField<FinancialDataQuality?>(
-        initialValue: _quality,
-        decoration: AccountantFinanceText.fieldDecoration(
-          context,
-          labelText: uiTr(context, 'جودة البيانات المالية'),
-        ),
-        style: AccountantFinanceText.body(theme),
-        items: [
-          DropdownMenuItem(
-            value: null,
-            child: Text(uiTr(context, 'الكل')),
-          ),
-          for (final q in FinancialDataQuality.values)
-            DropdownMenuItem(
-              value: q,
-              child: Text(
-                uiTr(context, AccountantFinanceLabels.dataQualityAr(q)),
-              ),
-            ),
-        ],
-        onChanged: (v) => setState(() => _quality = v),
-      ),
-    );
-  }
 }

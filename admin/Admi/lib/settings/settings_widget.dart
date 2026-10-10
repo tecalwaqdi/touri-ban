@@ -228,7 +228,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
     if (_i18nGeminiRunning || _i18nBackfillRunning) return;
     setState(() {
       _i18nGeminiRunning = true;
-      _i18nBackfillStatus = uiTr(context, 'جاري ترجمة المعالم بGemini…');
+      _i18nBackfillStatus = uiTr(context, 'جاري ترجمة المعالم…');
     });
 
     try {
@@ -244,8 +244,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         return;
       }
 
+      final warnings = result.warnings.take(3).join('\n');
       final msg = '${uiTr(context, 'تمت ترجمة المعالم')}: ${result.landmarks} '
-          '(${uiTr(context, 'أعد الضغط لترجمة المزيد')})';
+          '(${uiTr(context, 'أعد الضغط لترجمة المزيد')})'
+          '${warnings.isEmpty ? '' : '\n$warnings'}';
       setState(() => _i18nBackfillStatus = msg);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(msg)),
@@ -668,7 +670,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                         uiTr(
                           context,
                           uiTr(context,
-                              'ترجم تلقائياً حتى 15 معلم في كل مرة عبر Gemini (يتطلب GEMINI_API_KEY في Cloud Functions).'),
+                              'ترجم حتى 15 معلم في كل مرة إلى لغات التطبيق السبع عبر Azure. الترجمات اليدوية واللغات الأخرى تبقى كما هي.'),
                         ),
                         style: theme.bodySmall.override(
                           fontFamily: theme.bodySmallFamily,
@@ -680,7 +682,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                       AdminPrimaryButton(
                         label: uiTr(
                           context,
-                          uiTr(context, 'ترجم المعالم بGemini (دفعة)'),
+                          uiTr(context, 'ترجم المعالم عبر Azure (دفعة)'),
                         ),
                         icon: Icons.auto_awesome_rounded,
                         isLoading: _i18nGeminiRunning,

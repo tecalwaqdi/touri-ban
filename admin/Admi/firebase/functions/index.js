@@ -61,44 +61,71 @@ function supportDigits(raw, phoneCode) {
   if (digits.startsWith("00")) digits = digits.slice(2);
   const cc = String(phoneCode || "").replace(/\D/g, "");
   if (!digits) return "";
-  if (digits.startsWith("0")) digits = digits.replace(/^0+/, "");
-  if (cc && !digits.startsWith(cc)) digits = cc + digits;
+  // A leading zero is a local number. A number of 11 digits or more is already international.
+  if (digits.startsWith("0")) {
+    digits = digits.replace(/^0+/, "");
+    if (cc && !digits.startsWith(cc)) digits = cc + digits;
+    return digits;
+  }
+  if (cc && digits.startsWith(cc)) return digits;
+  if (digits.length >= 11) return digits;
+  if (cc) return cc + digits;
   return digits;
 }
 
 /** The active country agent's phone is that country's public support number. */
 async function syncCountrySupportPhone(uid, after, before) {
-  const probe = after || before || {};
-  const isAgent =
-    probe.Isagent === true ||
-    probe.isagent === true ||
-    (before && (before.Isagent === true || before.isagent === true));
-  if (!isAgent) return;
-  const countryPath = countryPathFromRef(
-    (after && after.Rev_dloh_agent) || (before && before.Rev_dloh_agent),
-  );
-  if (!countryPath.startsWith("countries/")) return;
+  const paths = new Set();
+  for (const data of [after, before]) {
+    if (!data) continue;
+    if (data.Isagent !== true && data.isagent !== true) continue;
+    const path = countryPathFromRef(data.Rev_dloh_agent);
+    if (path.startsWith("countries/")) paths.add(path);
+  }
+  for (const path of paths) {
+    await refreshCountrySupportPhone(path);
+  }
+}
+
+async function refreshCountrySupportPhone(countryPath) {
   const countryRef = db.doc(countryPath);
   const [countrySnap, lockSnap] = await Promise.all([
     countryRef.get(),
     db.doc(`agent_country_assignment/${countryDocId(countryPath)}`).get(),
   ]);
-  const holder = lockSnap.exists ? (lockSnap.data() || {}).active_agent_id : null;
+  if (!countrySnap.exists) return;
+  const holder = lockSnap.exists
+    ? String((lockSnap.data() || {}).active_agent_id || "")
+    : "";
+  let chosen = null;
+  if (holder) {
+    const holderSnap = await db.doc(`user/${holder}`).get();
+    if (holderSnap.exists && isAgentActiveAt(holderSnap.data() || {})) {
+      chosen = holderSnap.data() || {};
+    }
+  }
+  if (!chosen) {
+    const listed = await db.collection("user")
+      .where("Isagent", "==", true)
+      .where("Rev_dloh_agent", "==", countryRef)
+      .where("actev_user", "==", true)
+      .limit(5)
+      .get();
+    const active = listed.docs.filter((doc) => isAgentActiveAt(doc.data() || {}));
+    if (active.length === 1) chosen = active[0].data() || {};
+  }
   const phoneCode = (countrySnap.data() || {}).phone_code || "";
-  const rawPhone =
-    (after && (after.phone_number || after.phoneNumber)) ||
-    (before && (before.phone_number || before.phoneNumber)) ||
-    "";
-  const digits = supportDigits(rawPhone, phoneCode);
+  const digits = chosen
+    ? supportDigits(chosen.phone_number || chosen.phoneNumber, phoneCode)
+    : "";
   const current = String((countrySnap.data() || {}).support_phone || "");
-  const active = !!(after && isAgentActiveAt(after));
-  if (holder === uid && active && digits.length >= 8) {
+  if (digits.length >= 8) {
     if (current !== digits) {
       await countryRef.set({support_phone: digits}, {merge: true});
     }
     return;
   }
-  if (!active && current && current === digits && (holder == null || holder === uid)) {
+  if (current) {
     await countryRef.set(
       {support_phone: admin.firestore.FieldValue.delete()},
       {merge: true},
@@ -475,6 +502,45 @@ exports.geminiGenerateText = functions
       json.candidates[0].content.parts[0].text;
 
     return {text: text || ""};
+  });
+
+// Landmark name/description only. Other features keep geminiGenerateText.
+// The key is Firebase secret AZURE_TRANSLATOR_KEY (not set or deployed here).
+const {translateLandmarkItems} = require("./azure_landmark_translate");
+
+exports.translateLandmarkTexts = functions
+  .runWith({
+    timeoutSeconds: 120,
+    memory: "256MB",
+    secrets: ["AZURE_TRANSLATOR_KEY"],
+  })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError("unauthenticated", "Sign in required.");
+    }
+    const token = context.auth.token || {};
+    if (!token.super_admin && !token.country_admin && !token.agent) {
+      throw new functions.https.HttpsError("permission-denied", "Not authorized.");
+    }
+    const apiKey = String(process.env.AZURE_TRANSLATOR_KEY || "").trim();
+    if (!apiKey) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "AZURE_TRANSLATOR_KEY not set",
+      );
+    }
+    const items = Array.isArray(data && data.items) ? data.items : [];
+    if (items.length > 40) {
+      throw new functions.https.HttpsError("invalid-argument", "too many items");
+    }
+    try {
+      return await translateLandmarkItems(items, {key: apiKey, delayMs: 200});
+    } catch (err) {
+      functions.logger.warn("translateLandmarkTexts failed", {
+        code: err && err.code ? err.code : "internal",
+      });
+      throw new functions.https.HttpsError("internal", "landmark translation failed");
+    }
   });
 
 // ── Financial aggregation (server-side, paginated) ──────────────────────────

@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import '/components/admin_edit_shell.dart';
 import '/core/admin_content_locale.dart';
 import '/core/i18n/admin_geo_names.dart';
-import '/core/i18n/admin_i18n_translate_service.dart';
+import '/core/i18n/landmark_azure_translate.dart';
 import '/core/i18n/toury_i18n_locales.dart';
-import '/core/i18n/toury_i18n_text.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 
 /// متحكم حقول نص متعدد اللغات.
@@ -22,6 +21,16 @@ class AdminI18nFieldsController {
 
   final Map<String, TextEditingController> controllers = {};
   late String selectedLocale;
+  Map<String, dynamic>? translationAuto;
+
+  void mergePatch(Map<String, String> patch, {String? sourceLocale}) {
+    patch.forEach((key, value) {
+      if (key == sourceLocale) return;
+      final text = value.trim();
+      if (text.isEmpty || !controllers.containsKey(key)) return;
+      controllers[key]!.text = text;
+    });
+  }
 
   TextEditingController get activeController =>
       controllers[selectedLocale]!;
@@ -119,25 +128,34 @@ class _AdminI18nFieldsSectionState extends State<AdminI18nFieldsSection> {
 
     setState(() => _translating = true);
     try {
-      final translated = await AdminI18nTranslateService.translateText(
-        context: context,
-        sourceLocale: sourceLocale,
-        sourceText: sourceText,
-        fieldLabel: widget.title,
-      );
+      widget.controller.syncPrimary(sourceLocale, sourceText);
+      final result = (await LandmarkAzureTranslate.translateFields([
+        LandmarkI18nField(
+          id: 'field',
+          sourceLocale: sourceLocale,
+          sourceText: sourceText,
+          existing: widget.controller.toMap(),
+          auto: widget.controller.translationAuto,
+        ),
+      ])).first;
       if (!mounted) return;
-      if (translated == null || translated.isEmpty) {
+      if (result.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(uiTr(context, 'فشلت الترجمة التلقائية'))),
+          SnackBar(content: Text(result.error!)),
         );
         return;
       }
-      widget.controller.setFromMap(translated);
-      final legacy = touryPrimaryLegacyText(translated, sourceText);
-      widget.legacyController?.text = legacy;
+      widget.controller.mergePatch(result.patch, sourceLocale: sourceLocale);
+      if (result.persistAuto) widget.controller.translationAuto = result.auto;
       setState(() => _expanded = true);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(uiTr(context, 'تمت الترجمة لجميع اللغات'))),
+        SnackBar(
+          content: Text(
+            result.patch.isEmpty
+                ? uiTr(context, 'لا توجد ترجمات ناقصة')
+                : uiTr(context, 'تمت ترجمة اللغات الناقصة'),
+          ),
+        ),
       );
     } finally {
       if (mounted) setState(() => _translating = false);
@@ -163,7 +181,7 @@ class _AdminI18nFieldsSectionState extends State<AdminI18nFieldsSection> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.translate_rounded),
-                label: Text(uiTr(context, 'ترجم تلقائياً لجميع اللغات')),
+                label: Text(uiTr(context, 'ترجم اللغات الناقصة')),
               ),
             ),
             const SizedBox(width: 8),

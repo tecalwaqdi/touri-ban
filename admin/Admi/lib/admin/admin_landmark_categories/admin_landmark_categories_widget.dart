@@ -102,6 +102,7 @@ class _AdminLandmarkCategoriesWidgetState
     final enCtrl = TextEditingController(text: existing?.labelEn ?? '');
     final sortCtrl =
         TextEditingController(text: '${existing?.sort ?? 110}');
+    final iconUrlCtrl = TextEditingController(text: existing?.iconUrl ?? '');
     var icon = existing?.icon ?? 'attraction';
     var enabled = existing?.enabled ?? true;
 
@@ -188,6 +189,13 @@ class _AdminLandmarkCategoriesWidgetState
                           setLocal(() => icon = v);
                         },
                       ),
+                      TextField(
+                        controller: iconUrlCtrl,
+                        decoration: InputDecoration(
+                          labelText: uiTr(ctx, 'رابط صورة الأيقونة (اختياري)'),
+                          hintText: 'https://',
+                        ),
+                      ),
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
                         title: Text(uiTr(ctx, 'مفعّل في تطبيق العميل')),
@@ -221,6 +229,7 @@ class _AdminLandmarkCategoriesWidgetState
                             ? storage
                             : enCtrl.text.trim(),
                         icon: icon,
+                        iconUrl: iconUrlCtrl.text.trim(),
                         trKey: existingTrKey,
                         enabled: enabled,
                         sort: int.tryParse(sortCtrl.text.trim()) ?? 110,
@@ -241,6 +250,7 @@ class _AdminLandmarkCategoriesWidgetState
     arCtrl.dispose();
     enCtrl.dispose();
     sortCtrl.dispose();
+    iconUrlCtrl.dispose();
 
     if (saved == null || !mounted) return;
     setState(() => _busy = true);
@@ -379,12 +389,28 @@ class _AdminLandmarkCategoriesWidgetState
                   itemBuilder: (context, i) {
                     final item = items[i];
                     return ListTile(
-                      leading: Icon(
-                        AdminLandmarkCategoryCatalog.materialIcon(item.icon),
-                        color: item.enabled
-                            ? FlutterFlowTheme.of(context).primary
-                            : FlutterFlowTheme.of(context).secondaryText,
-                      ),
+                      leading: item.iconUrl.startsWith('http')
+                          ? ClipOval(
+                              child: Image.network(
+                                item.iconUrl,
+                                width: 28,
+                                height: 28,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Icon(
+                                  AdminLandmarkCategoryCatalog.materialIcon(
+                                    item.icon,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Icon(
+                              AdminLandmarkCategoryCatalog.materialIcon(
+                                item.icon,
+                              ),
+                              color: item.enabled
+                                  ? FlutterFlowTheme.of(context).primary
+                                  : FlutterFlowTheme.of(context).secondaryText,
+                            ),
                       title: Text(
                         (Localizations.localeOf(context).languageCode == 'ar' ||
                                 Localizations.localeOf(context).languageCode ==

@@ -84,9 +84,9 @@ class AdminPanelSetup {
   static Future<I18nBackfillResult> runI18nBackfill() =>
       AdminI18nBackfill.run();
 
-  /// Translates up to [maxLandmarks] landmarks via Gemini Cloud Function.
+  /// Translates up to [maxLandmarks] landmarks via Azure Translator.
   static Future<I18nBackfillResult> runI18nGeminiBatch({int maxLandmarks = 15}) =>
-      AdminI18nBackfill.runGeminiTranslateBatch(maxLandmarks: maxLandmarks);
+      AdminI18nBackfill.runAzureTranslateBatch(maxLandmarks: maxLandmarks);
 
   /// Fetches geographic bounds for countries missing bounds_sw/bounds_ne.
   static Future<CountryBoundsBackfillResult> runCountryBoundsBackfill() =>

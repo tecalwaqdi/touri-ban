@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '/backend/admin_ops_filters.dart';
 import '/backend/admin_role_service.dart';
-import '/components/accountant_finance_summary.dart';
+import '/components/finance_period_statement.dart';
 import '/components/accountant_money_movement_table.dart';
 import '/components/accountant_trip_details_drawer.dart';
 import '/components/admin_enterprise_kit.dart';
@@ -293,33 +293,27 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
                   title: uiTr(context, 'لا توجد بيانات'),
                   icon: Icons.inbox_outlined,
                 )
-              else if (bundle != null && bundle.trips.isEmpty)
-                AdminEmptyState(
-                  compact: true,
-                  title: uiTr(context, 'لا توجد رحلات مكتملة'),
-                  message: uiTr(
-                    context,
-                    'لا يوجد ما يُصدَّر في هذه الفترة.',
-                  ),
-                  icon: Icons.receipt_long_outlined,
-                )
               else if (bundle != null) ...[
                 FutureBuilder<FinanceCompanySnapshot>(
                   future: _canonicalKpiFuture,
                   builder: (context, kpiSnap) {
                     final canonical = kpiSnap.data ?? _canonicalKpi;
-                    return AccountantFinanceSummaryStrip(
-                      bundle: bundle,
-                      canonical: canonical,
-                    );
+                    if (canonical == null) {
+                      return AdminLoadingState(
+                        label: uiTr(context, 'جاري ترحيل الدفتر'),
+                      );
+                    }
+                    return FinancePeriodStatement(snapshot: canonical);
                   },
                 ),
-                const SizedBox(height: 12),
-                AccountantMoneyMovementTable(
-                  rows: bundle.trips,
-                  onOpenDetails: (row) =>
-                      showAccountantTripDetailsDrawer(context, row),
-                ),
+                if (bundle.trips.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  AccountantMoneyMovementTable(
+                    rows: bundle.trips,
+                    onOpenDetails: (row) =>
+                        showAccountantTripDetailsDrawer(context, row),
+                  ),
+                ],
               ],
             ],
           );

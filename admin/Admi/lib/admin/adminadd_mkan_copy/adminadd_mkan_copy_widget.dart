@@ -1,4 +1,6 @@
 import '/core/i18n/admin_geo_names.dart';
+import '/core/i18n/landmark_azure_translate.dart';
+import '/core/i18n/landmark_i18n_plan.dart';
 import '/backend/admin_agent_country_lock.dart';
 import '/backend/admin_country_scope.dart';
 import '/backend/admin_geo_aliases.dart';
@@ -187,29 +189,74 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
               : AdminGeoAliases.defaultLandmarkCategory);
 
       // Keep the exact pin from search / paste / map — never clamp to city bbox.
+      final descText = _model.textController2?.text.trim() ?? '';
+      final namesMap = adminGeoNamesForSave(
+        existing: record.namesI18n,
+        editedByLocale: {
+          for (final lang in adminGeoLocales)
+            lang: _model.geoNameControllers[lang]?.text ?? '',
+        },
+      );
+      if ((namesMap['ar'] ?? '').isEmpty && name.isNotEmpty) {
+        namesMap['ar'] = name;
+      }
+      final osfMap = <String, String>{
+        ...record.osfI18n,
+        if (descText.isNotEmpty) 'ar': descText,
+      };
+      final nameSource = normalizeLandmarkLocale(record.contentLocale);
+      final nameSourceLocale =
+          kLandmarkAppLocales.contains(nameSource) &&
+                  (namesMap[nameSource] ?? '').isNotEmpty
+              ? nameSource
+              : 'ar';
+      final translated = await LandmarkAzureTranslate.translateFields([
+        LandmarkI18nField(
+          id: 'name',
+          sourceLocale: nameSourceLocale,
+          sourceText: (namesMap[nameSourceLocale] ?? name).trim(),
+          existing: namesMap,
+          auto: LandmarkAzureTranslate.readAuto(
+            record.snapshotData['names_i18n_auto'],
+          ),
+        ),
+        if (descText.isNotEmpty)
+          LandmarkI18nField(
+            id: 'osf',
+            sourceLocale: 'ar',
+            sourceText: descText,
+            existing: osfMap,
+            auto: LandmarkAzureTranslate.readAuto(
+              record.snapshotData['osf_i18n_auto'],
+            ),
+          ),
+      ]);
+      final nameResult = translated.firstWhere((row) => row.id == 'name');
+      final osfResult = translated.where((row) => row.id == 'osf').toList();
+      String? translationError;
+      for (final row in translated) {
+        if (row.error != null) {
+          translationError = row.error;
+          break;
+        }
+      }
+      if (translationError != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(translationError)),
+        );
+      }
       await AdminFirestoreDelete.updateDocument(
         widget.idmkan!,
-        createMkanRecordData(
+        {
+          ...createMkanRecordData(
           naim: name,
-          osf: _model.textController2?.text.trim(),
-          namesI18n: () {
-            final names = adminGeoNamesForSave(
-              existing: record.namesI18n,
-              editedByLocale: {
-                for (final lang in adminGeoLocales)
-                  lang: _model.geoNameControllers[lang]?.text ?? '',
-              },
-            );
-            if ((names['ar'] ?? '').isEmpty && name.isNotEmpty) {
-              names['ar'] = name;
-            }
-            return names.isEmpty ? null : names;
+          osf: descText,
+          namesI18n: nameResult.values.isEmpty ? null : nameResult.values,
+          osfI18n: () {
+            final values =
+                osfResult.isEmpty ? osfMap : osfResult.first.values;
+            return values.isEmpty ? null : values;
           }(),
-          osfI18n: {
-            ...record.osfI18n,
-            if ((_model.textController2?.text.trim() ?? '').isNotEmpty)
-              'ar': _model.textController2!.text.trim(),
-          },
           img1: img1,
           img2: img2,
           img3: img3,
@@ -239,6 +286,13 @@ class _AdminaddMkanCopyWidgetState extends State<AdminaddMkanCopyWidget> {
           addSaat: record.addSaat,
           ismzod: record.ismzod,
         ),
+          if (nameResult.persistAuto && nameResult.auto != null)
+            'names_i18n_auto': nameResult.auto,
+          if (osfResult.isNotEmpty &&
+              osfResult.first.persistAuto &&
+              osfResult.first.auto != null)
+            'osf_i18n_auto': osfResult.first.auto,
+        },
       );
       // Only remove old Storage objects after Firestore write succeeds.
       if (_model.mainImageRemoved ||

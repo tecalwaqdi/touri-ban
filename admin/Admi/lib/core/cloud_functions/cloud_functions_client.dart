@@ -102,6 +102,33 @@ class CloudFunctionsClient {
     return data['text'] as String?;
   }
 
+  /// Landmark name and description. The Azure key stays on the server.
+  static Future<List<Map<String, dynamic>>> translateLandmarkTexts(
+    List<Map<String, dynamic>> items,
+  ) async {
+    final result = await _functions.httpsCallable('translateLandmarkTexts').call({
+      'items': items,
+    });
+    final data = _plainMap(result.data);
+    final raw = data['items'];
+    if (raw is! List) return const [];
+    return [
+      for (final row in raw)
+        if (row is Map) _plainMap(row),
+    ];
+  }
+
+  static Map<String, dynamic> _plainMap(dynamic raw) {
+    if (raw is! Map) return {};
+    return raw.map((key, value) => MapEntry(key.toString(), _plain(value)));
+  }
+
+  static dynamic _plain(dynamic value) {
+    if (value is Map) return _plainMap(value);
+    if (value is List) return value.map(_plain).toList();
+    return value;
+  }
+
   static Future<Map<String, dynamic>> aggregateFinancialSummary({
     String? countryPath,
     DateTime? periodStart,
