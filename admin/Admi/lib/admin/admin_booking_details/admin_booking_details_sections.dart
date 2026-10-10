@@ -79,13 +79,19 @@ _StatusColors _statusColors(AdminBookingStatusTone tone, FlutterFlowTheme theme)
 
 String _dash(String v) => v.trim().isEmpty ? '—' : v.trim();
 
-String _durationLabel(int minutes) {
+String _durationLabel(BuildContext context, int minutes) {
   if (minutes <= 0) return '';
-  if (minutes < 60) return '$minutes دقيقة';
+  if (minutes < 60) {
+    return uiTr(context, '{count} دقيقة').replaceAll('{count}', '$minutes');
+  }
   final h = minutes ~/ 60;
   final m = minutes % 60;
-  if (m == 0) return '$h ساعة';
-  return '$h ساعة $m دقيقة';
+  if (m == 0) {
+    return uiTr(context, '{hours} ساعة').replaceAll('{hours}', '$h');
+  }
+  return uiTr(context, '{hours} ساعة {minutes} دقيقة')
+      .replaceAll('{hours}', '$h')
+      .replaceAll('{minutes}', '$m');
 }
 
 // ---------------------------------------------------------------------------
@@ -242,7 +248,9 @@ class AdminBookingDetailsStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final colors = _statusColors(view.row.statusTone, theme);
-    final label = view.row.statusLabel.isEmpty ? '—' : view.row.statusLabel;
+    final label = view.row.statusLabel.isEmpty
+        ? '—'
+        : uiTr(context, view.row.statusLabel);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -441,7 +449,7 @@ class AdminBookingDetailsSummaryStrip extends StatelessWidget {
     final row = view.row;
     final sym = AdminCurrency.asFormatPrefix(row.currencySymbol);
     final items = <(String, String)>[
-      (uiTr(context, 'الحالة'), row.statusLabel),
+      (uiTr(context, 'الحالة'), uiTr(context, row.statusLabel)),
       if (row.amount > 0)
         (
           uiTr(context, 'قيمة الرحلة'),
@@ -456,7 +464,7 @@ class AdminBookingDetailsSummaryStrip extends StatelessWidget {
             : uiTr(context, 'لم يُعيَّن'),
       ),
       if (row.durationMinutes > 0)
-        (uiTr(context, 'المدة'), _durationLabel(row.durationMinutes)),
+        (uiTr(context, 'المدة'), _durationLabel(context, row.durationMinutes)),
     ];
 
     return Container(
@@ -664,7 +672,7 @@ class AdminBookingDetailsDriverCard extends StatelessWidget {
           ),
         AdminBookingDetailsKvRow(
           label: uiTr(context, 'الحالة'),
-          value: row.statusLabel,
+          value: uiTr(context, row.statusLabel),
           icon: Icons.info_outline_rounded,
         ),
       ],
@@ -699,7 +707,7 @@ class AdminBookingDetailsTripCard extends StatelessWidget {
         if (row.durationMinutes > 0)
           AdminBookingDetailsKvRow(
             label: uiTr(context, 'مدة الرحلة'),
-            value: _durationLabel(row.durationMinutes),
+            value: _durationLabel(context, row.durationMinutes),
           ),
         if (passengers != null && passengers.toString() != '0')
           AdminBookingDetailsKvRow(
@@ -1138,7 +1146,12 @@ class _TimelineRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    event.label,
+                    event.detail == null
+                        ? uiTr(context, event.label)
+                        : uiTr(context, event.label).replaceAll(
+                            '{status}',
+                            uiTr(context, event.detail!),
+                          ),
                     style: theme.bodySmall.override(
                       fontFamily: theme.bodySmallFamily,
                       fontWeight: FontWeight.w600,

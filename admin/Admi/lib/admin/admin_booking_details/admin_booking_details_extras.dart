@@ -47,8 +47,11 @@ class AdminBookingDetailsExtras extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                _kv(context, uiTr(context, 'الحالة'),
-                    row.statusLabel.isEmpty ? '—' : row.statusLabel),
+                _kv(
+                  context,
+                  uiTr(context, 'الحالة'),
+                  row.statusLabel.isEmpty ? '—' : uiTr(context, row.statusLabel),
+                ),
                 _kv(
                   context,
                   uiTr(context, 'نقطة الانطلاق'),

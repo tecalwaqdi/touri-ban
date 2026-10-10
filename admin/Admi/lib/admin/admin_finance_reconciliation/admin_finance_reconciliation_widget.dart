@@ -335,34 +335,55 @@ class _WorkspaceBody extends StatelessWidget {
                     cells: [
                       DataCell(Text(r.displayReference)),
                       DataCell(Text(
-                        AccountantFinanceLabels.countryHumanAr(r.countryPath),
-                      )),
-                      DataCell(Text(
-                        FinanceReconciliationLabels.paymentMethodAr(
-                          r.paymentMethod,
+                        uiTr(
+                          context,
+                          AccountantFinanceLabels.countryHumanAr(r.countryPath),
                         ),
                       )),
                       DataCell(Text(
-                        FinanceReconciliationLabels.financialAr(
-                          r.financialSnapshotStatus,
+                        uiTr(
+                          context,
+                          FinanceReconciliationLabels.paymentMethodAr(
+                            r.paymentMethod,
+                          ),
                         ),
                       )),
                       DataCell(Text(
-                        FinanceReconciliationLabels.collectionAr(
-                          r.collectionStatus,
+                        uiTr(
+                          context,
+                          FinanceReconciliationLabels.financialAr(
+                            r.financialSnapshotStatus,
+                          ),
                         ),
                       )),
                       DataCell(Text(
-                        FinanceReconciliationLabels.agentAr(r.agentStatus),
-                      )),
-                      DataCell(Text(
-                        FinanceReconciliationLabels.settlementAr(
-                          r.settlementStatus,
+                        uiTr(
+                          context,
+                          FinanceReconciliationLabels.collectionAr(
+                            r.collectionStatus,
+                          ),
                         ),
                       )),
                       DataCell(Text(
-                        FinanceReconciliationLabels.reconciliationAr(
-                          r.reconciliationStatus,
+                        uiTr(
+                          context,
+                          FinanceReconciliationLabels.agentAr(r.agentStatus),
+                        ),
+                      )),
+                      DataCell(Text(
+                        uiTr(
+                          context,
+                          FinanceReconciliationLabels.settlementAr(
+                            r.settlementStatus,
+                          ),
+                        ),
+                      )),
+                      DataCell(Text(
+                        uiTr(
+                          context,
+                          FinanceReconciliationLabels.reconciliationAr(
+                            r.reconciliationStatus,
+                          ),
                         ),
                       )),
                       DataCell(Text(moneyOrDash(r.customerTotal ?? r.gross))),
@@ -428,8 +449,11 @@ class _WorkspaceBody extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                FinanceReconciliationLabels.reconciliationAr(
-                  r.reconciliationStatus,
+                uiTr(
+                  context,
+                  FinanceReconciliationLabels.reconciliationAr(
+                    r.reconciliationStatus,
+                  ),
                 ),
                 style: AccountantFinanceText.label(theme),
               ),

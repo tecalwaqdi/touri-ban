@@ -217,10 +217,12 @@ class AdminBookingTimelineEvent {
   const AdminBookingTimelineEvent({
     required this.label,
     required this.at,
+    this.detail,
   });
 
   final String label;
   final DateTime at;
+  final String? detail;
 
   static List<AdminBookingTimelineEvent> build(
     AdminBookingRow row, {
@@ -274,8 +276,8 @@ class AdminBookingTimelineEvent {
           settlementStatus != 'voided' &&
           (row.completedAt != null || row.paymentAt != null))
         AdminBookingTimelineEvent(
-          label:
-              'التسوية (${AdminBookingSettlementLookup.labelAr(settlementStatus)})',
+          label: 'التسوية ({status})',
+          detail: AdminBookingSettlementLookup.labelAr(settlementStatus),
           at: (row.paymentAt ?? row.completedAt)!
               .add(const Duration(seconds: 2)),
         ),

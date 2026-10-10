@@ -154,8 +154,11 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
                         ? uiTr(context, 'الكل')
                         : s == 'open'
                             ? uiTr(context, 'غير مسددة')
-                            : AccountantFinanceLabels.settlementStatusAr(
-                                s == 'open' ? 'draft' : s,
+                            : uiTr(
+                                context,
+                                AccountantFinanceLabels.settlementStatusAr(
+                                  s == 'open' ? 'draft' : s,
+                                ),
                               ),
                     style: AccountantFinanceText.label(theme).copyWith(
                       color: AccountantFinanceText.ink(theme),
@@ -439,13 +442,13 @@ class _AdminSettlementsWidgetState extends State<AdminSettlementsWidget> {
     return DataRow(
       cells: [
         DataCell(Text(code)),
-        DataCell(Text(country)),
+        DataCell(Text(uiTr(context, country))),
         DataCell(Text(payer)),
         DataCell(Text(payee)),
         DataCell(Text(m(due))),
         DataCell(Text(m(paid))),
         DataCell(Text(m(out))),
-        DataCell(Text(status)),
+        DataCell(Text(uiTr(context, status))),
         DataCell(Text(dateStr)),
         DataCell(
           TextButton(

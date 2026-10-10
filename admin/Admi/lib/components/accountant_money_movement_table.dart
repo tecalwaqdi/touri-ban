@@ -115,17 +115,17 @@ class AccountantMoneyMovementTable extends StatelessWidget {
                                 ? '—'
                                 : dateFmt.format(r.orderedAt!.toLocal()),
                           )),
-                          DataCell(Text(r.countryLabel)),
+                          DataCell(Text(uiTr(context, r.countryLabel))),
                           DataCell(Text(r.driverLabel)),
                           DataCell(Text(r.agentLabel)),
-                          DataCell(Text(r.paymentChannelLabel)),
-                          DataCell(Text(r.collectionStatusLabel)),
+                          DataCell(Text(uiTr(context, r.paymentChannelLabel))),
+                          DataCell(Text(uiTr(context, r.collectionStatusLabel))),
                           DataCell(_ltr(r.grossDisplay)),
                           DataCell(_ltr(r.companyCommissionDisplay)),
                           DataCell(_ltr(r.vatDisplay)),
                           DataCell(_ltr(r.driverNetDisplay)),
-                          DataCell(Text(r.dueDirectionLabel)),
-                          DataCell(Text(r.settlementStatusLabel)),
+                          DataCell(Text(uiTr(context, r.dueDirectionLabel))),
+                          DataCell(Text(uiTr(context, r.settlementStatusLabel))),
                           DataCell(_qualityChip(context, r)),
                           DataCell(
                             TextButton.icon(
@@ -213,7 +213,7 @@ class AccountantMoneyMovementTable extends StatelessWidget {
         borderRadius: BorderRadius.circular(7),
       ),
       child: Text(
-        r.dataQualityLabel,
+        uiTr(context, r.dataQualityLabel),
         style: AccountantFinanceText.label(theme).copyWith(
           color: AccountantFinanceText.ink(theme),
           fontSize: 12,

@@ -218,20 +218,22 @@ class _AdminSettlementDetailsWidgetState
                       items: [
                         DropdownMenuItem(
                             value: 'bank_transfer',
-                            child: Text(SettlementStateLabels.methodAr(
-                                'bank_transfer'))),
+                            child: Text(uiTr(
+                                ctx,
+                                SettlementStateLabels.methodAr(
+                                    'bank_transfer')))),
                         DropdownMenuItem(
                             value: 'cash',
                             child:
-                                Text(SettlementStateLabels.methodAr('cash'))),
+                                Text(uiTr(ctx, SettlementStateLabels.methodAr('cash')))),
                         DropdownMenuItem(
                             value: 'external_transfer',
-                            child: Text(SettlementStateLabels.methodAr(
-                                'external_transfer'))),
+                            child: Text(uiTr(ctx, SettlementStateLabels.methodAr(
+                                'external_transfer')))),
                         DropdownMenuItem(
                             value: 'other',
                             child:
-                                Text(SettlementStateLabels.methodAr('other'))),
+                                Text(uiTr(ctx, SettlementStateLabels.methodAr('other')))),
                       ],
                       onChanged: (v) {
                         if (v == null) return;
@@ -366,9 +368,12 @@ class _AdminSettlementDetailsWidgetState
         builder: (ctx) => AlertDialog(
           title: Text(uiTr(ctx, 'تشخيص تقني — التحقق من المصدر')),
           content: Text(
-            SettlementDetailPresentation.sourceVerificationMessageAr(
-              flag: r['flag'],
-              mutated: r['mutated'],
+            uiTr(
+              ctx,
+              SettlementDetailPresentation.sourceVerificationMessageAr(
+                flag: r['flag'],
+                mutated: r['mutated'],
+              ),
             ),
             style: AccountantFinanceText.body(FlutterFlowTheme.of(ctx)),
           ),
@@ -503,14 +508,14 @@ class _AdminSettlementDetailsWidgetState
             ),
             const SizedBox(height: 8),
             Text(
-              '${fixture['settlementCode']} · ${AdminFinanceUiLabels.settlementStatusAr('${fixture['status']}')}',
+              '${fixture['settlementCode']} · ${uiTr(context, AdminFinanceUiLabels.settlementStatusAr('${fixture['status']}'))}',
               style: theme.headlineSmall,
             ),
             Text(
               '${uiTr(context, 'المندوب')}: ${fixture['driverId'] ?? '—'} · '
               '${uiTr(context, 'الدولة')}: ${fixture['countryId'] ?? '—'} · '
               '${AdminCurrency.symbolByCode['${fixture['currency']}'] ?? fixture['currency']} · '
-              '${AdminFinanceUiLabels.settlementDirectionAr('${fixture['direction']}')}',
+              '${uiTr(context, AdminFinanceUiLabels.settlementDirectionAr('${fixture['direction']}'))}',
               softWrap: true,
             ),
             Text(
@@ -732,12 +737,15 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
     final direction = '${data['direction'] ?? ''}';
     final driverId = '${data['driverId'] ?? ''}'.trim();
     final code = '${data['settlementCode'] ?? settlementId}';
-    final outcome = SettlementDetailPresentation.settlementOutcomeAr(
+    final outcome = uiTr(
+      context,
+      SettlementDetailPresentation.settlementOutcomeAr(
       direction: direction,
       status: status,
       dueMinor: due,
       paidMinor: paid,
       outstandingMinor: out,
+      ),
     );
 
     return ListView(
@@ -766,20 +774,27 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
               _kv(
                 theme,
                 uiTr(context, 'الحالة'),
-                SettlementDetailPresentation.settlementStatusAr(status),
+                uiTr(
+                  context,
+                  SettlementDetailPresentation.settlementStatusAr(status),
+                ),
               ),
               _kv(
                 theme,
                 uiTr(context, 'الدولة'),
-                SettlementDetailPresentation.countryAr(
-                  '${data['countryId'] ?? ''}',
+                uiTr(
+                  context,
+                  SettlementDetailPresentation.countryAr(
+                    '${data['countryId'] ?? ''}',
+                  ),
                 ),
               ),
-              _driverRow(theme, driverId),
+              _driverRow(context, theme, driverId),
               _kv(
                 theme,
                 uiTr(context, 'الفترة'),
-                SettlementDetailPresentation.periodAr(
+                SettlementDetailPresentation.period(
+                  context,
                   data['periodStart'],
                   data['periodEnd'],
                 ),
@@ -787,7 +802,10 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
               _kv(
                 theme,
                 uiTr(context, 'اتجاه المستحق'),
-                SettlementDetailPresentation.directionAr(direction),
+                uiTr(
+                  context,
+                  SettlementDetailPresentation.directionAr(direction),
+                ),
               ),
             ],
           ),
@@ -939,7 +957,7 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '${SettlementDetailPresentation.paymentMethodAr('${l.data()['paymentMethod']}')}'
+                            '${uiTr(context, SettlementDetailPresentation.paymentMethodAr('${l.data()['paymentMethod']}'))}'
                             ' · ${uiTr(context, 'صافي السائق')}: '
                             '${money((l.data()['driverNetMinor'] as num?)?.toInt(), cur)}',
                             style: AccountantFinanceText.label(theme),
@@ -983,7 +1001,7 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
           theme,
           title: uiTr(context, 'دفعات غير مخصصة'),
           child: Text(
-            SettlementDetailPresentation.unallocatedPaymentsAr(),
+            SettlementDetailPresentation.unallocatedPayments(context),
             style: AccountantFinanceText.body(theme),
           ),
         ),
@@ -1035,27 +1053,32 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                SettlementDetailPresentation.humanDateAr(
+                                SettlementDetailPresentation.humanDate(
+                                  context,
                                   e.data()['timestamp'],
                                 ),
                                 style: AccountantFinanceText.label(theme),
                               ),
                               Text(
-                                SettlementDetailPresentation.auditEventAr(
-                                  '${e.data()['type']}',
+                                uiTr(
+                                  context,
+                                  SettlementDetailPresentation.auditEventAr(
+                                    '${e.data()['type']}',
+                                  ),
                                 ),
                                 style: AccountantFinanceText.body(theme)
                                     .copyWith(fontWeight: FontWeight.w700),
                               ),
                               Text(
                                 '${uiTr(context, 'بواسطة')}: '
-                                '${SettlementDetailPresentation.actorRoleAr('${e.data()['actorRole']}')}',
+                                '${uiTr(context, SettlementDetailPresentation.actorRoleAr('${e.data()['actorRole']}'))}',
                                 style: AccountantFinanceText.label(theme),
                               ),
                               Builder(builder: (_) {
                                 final note =
                                     SettlementDetailPresentation
-                                        .statusTransitionAr(
+                                        .statusTransition(
+                                  context,
                                   '${e.data()['beforeStatus'] ?? ''}',
                                   '${e.data()['afterStatus'] ?? ''}',
                                 );
@@ -1226,12 +1249,16 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
     );
   }
 
-  Widget _driverRow(FlutterFlowTheme theme, String driverId) {
+  Widget _driverRow(
+    BuildContext context,
+    FlutterFlowTheme theme,
+    String driverId,
+  ) {
     if (driverId.isEmpty) {
       return _kv(
         theme,
         'السائق',
-        SettlementDetailPresentation.driverFallbackAr(),
+        uiTr(context, SettlementDetailPresentation.driverFallbackAr()),
       );
     }
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -1246,7 +1273,7 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
         );
         final shown =
             SettlementDetailPresentation.looksLikeRawUid(name, driverId)
-                ? SettlementDetailPresentation.driverFallbackAr()
+                ? uiTr(context, SettlementDetailPresentation.driverFallbackAr())
                 : name;
         return _kv(theme, uiTr(context, 'السائق'), shown);
       },
@@ -1267,7 +1294,10 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            SettlementDetailPresentation.paymentMethodAr('${d['method']}'),
+            uiTr(
+              context,
+              SettlementDetailPresentation.paymentMethodAr('${d['method']}'),
+            ),
             style: AccountantFinanceText.body(theme).copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -1278,12 +1308,12 @@ class _AccountantSettlementDetailBody extends StatelessWidget {
           ),
           Text(
             '${uiTr(context, 'الحالة')}: '
-            '${SettlementDetailPresentation.paymentStatusAr('${d['status']}')}',
+            '${uiTr(context, SettlementDetailPresentation.paymentStatusAr('${d['status']}'))}',
             style: AccountantFinanceText.label(theme),
           ),
           Text(
             '${uiTr(context, 'التاريخ')}: '
-            '${SettlementDetailPresentation.humanDateAr(d['createdAt'] ?? d['confirmedAt'])}',
+            '${SettlementDetailPresentation.humanDate(context, d['createdAt'] ?? d['confirmedAt'])}',
             style: AccountantFinanceText.label(theme),
           ),
           if (ref.isNotEmpty)

@@ -141,7 +141,7 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
         padding: AdminUi.pagePadding(context),
         children: [
           Text(
-            AdminFinanceUiLabels.diagnosticsTitleAr(),
+            uiTr(context, AdminFinanceUiLabels.diagnosticsTitleAr()),
             style: theme.headlineSmall,
             softWrap: true,
           ),
@@ -183,8 +183,8 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
           else ...[
             Text(
               approverOk
-                  ? AdminFinanceUiLabels.pilotConfiguredAr()
-                  : AdminFinanceUiLabels.pilotMissingAr(),
+                  ? uiTr(context, AdminFinanceUiLabels.pilotConfiguredAr())
+                  : uiTr(context, AdminFinanceUiLabels.pilotMissingAr()),
               softWrap: true,
               style: theme.bodyMedium.override(
                 fontFamily: 'Cairo',
@@ -196,7 +196,10 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
-                  AdminFinanceUiLabels.pilotOptionalWhenSelfApprovalAr(),
+                  uiTr(
+                    context,
+                    AdminFinanceUiLabels.pilotOptionalWhenSelfApprovalAr(),
+                  ),
                   softWrap: true,
                   style: theme.bodyMedium,
                 ),
@@ -205,7 +208,7 @@ class _AdminDiagnosticsWidgetState extends State<AdminDiagnosticsWidget> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
-                  AdminFinanceUiLabels.pilotBlockedAr(),
+                  uiTr(context, AdminFinanceUiLabels.pilotBlockedAr()),
                   softWrap: true,
                   style: theme.bodyMedium.override(
                     fontFamily: 'Cairo',

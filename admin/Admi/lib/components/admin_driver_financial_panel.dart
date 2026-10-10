@@ -463,11 +463,11 @@ class _AdminDriverFinancialPanelState extends State<AdminDriverFinancialPanel> {
               ListTile(
                 dense: true,
                 title: Text(
-                  '${line.orderId} · ${line.channel.name} · ${_confLabel(line.confidence)}',
+                  '${line.orderId} · ${uiTr(context, FinancialStateLabels.channelAr(line.channel))} · ${uiTr(context, _confLabel(line.confidence))}',
                 ),
                 subtitle: Text(
-                  '${_money(line.customerPaid)} → net ${_money(line.driverNet)}'
-                  '${line.settlementEligible ? ' · Eligible' : ' · ${line.exclusionReason ?? 'Excluded'}'}',
+                  '${_money(line.customerPaid)} → ${uiTr(context, 'صافي السائق')} ${_money(line.driverNet)}'
+                  '${line.settlementEligible ? ' · ${uiTr(context, 'مؤهل')}' : ' · ${uiTr(context, line.exclusionReason ?? 'مستبعد')}'}',
                 ),
               ),
           ],

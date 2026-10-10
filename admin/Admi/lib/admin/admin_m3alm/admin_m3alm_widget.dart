@@ -420,8 +420,8 @@ class _AdminM3almWidgetState extends State<AdminM3almWidget> {
               Text(
                 uiTr(
                   context,
-                  '${_excludedAliasHint} سجلات توافق legacy مستبعدة من القائمة العادية',
-                ),
+                  '{count} سجلات توافق قديمة مستبعدة من القائمة العادية',
+                ).replaceAll('{count}', '$_excludedAliasHint'),
                 style: theme.bodySmall.override(
                   fontFamily: theme.bodySmallFamily,
                   color: theme.secondaryText,

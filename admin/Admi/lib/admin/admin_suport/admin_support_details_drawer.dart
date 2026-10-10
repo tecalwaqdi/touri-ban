@@ -279,13 +279,13 @@ class _AdminSupportDetailsPanelState extends State<AdminSupportDetailsPanel> {
                         if (ctx?.bookingRow != null) ...[
                           _kv(
                             context,
-                            'Order ID',
+                            uiTr(context, 'المرجع'),
                             ctx!.bookingRow!.orderId,
                           ),
                           _kv(
                             context,
                             uiTr(context, 'الحالة'),
-                            ctx.bookingRow!.statusLabel,
+                            uiTr(context, ctx.bookingRow!.statusLabel),
                           ),
                           _kv(
                             context,

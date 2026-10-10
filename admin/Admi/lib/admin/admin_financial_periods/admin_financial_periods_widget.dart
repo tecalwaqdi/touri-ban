@@ -325,7 +325,7 @@ class _AdminFinancialPeriodsWidgetState
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        '${d.data()['name']} · ${AdminFinanceUiLabels.periodStatusAr('${d.data()['status']}')}',
+                        '${d.data()['name']} · ${uiTr(context, AdminFinanceUiLabels.periodStatusAr('${d.data()['status']}'))}',
                         softWrap: true,
                         style: theme.titleSmall,
                       ),

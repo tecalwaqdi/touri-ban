@@ -166,7 +166,7 @@ class _AdminFinanceAuditWidgetState extends State<AdminFinanceAuditWidget> {
               ),
               OutlinedButton(
                 onPressed: _busy ? null : _reset,
-                child: Text(AdminFinanceUiLabels.resetActionAr()),
+                child: Text(uiTr(context, AdminFinanceUiLabels.resetActionAr())),
               ),
             ],
           ),

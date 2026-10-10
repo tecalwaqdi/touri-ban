@@ -103,11 +103,14 @@ class _AdminFinanceReportsWidgetState extends State<AdminFinanceReportsWidget> {
   Widget build(BuildContext context) {
     final theme = FlutterFlowTheme.of(context);
     final countryLabel = AdminRoleService.isCountryAgent
-        ? (AdminRoleService.scopedCountryName.isNotEmpty
-            ? AdminRoleService.scopedCountryName
-            : AccountantFinanceLabels.countryHumanAr(
-                AdminRoleService.scopedCountryRef?.path,
-              ))
+        ? uiTr(
+            context,
+            AdminRoleService.scopedCountryName.isNotEmpty
+                ? AdminRoleService.scopedCountryName
+                : AccountantFinanceLabels.countryHumanAr(
+                    AdminRoleService.scopedCountryRef?.path,
+                  ),
+          )
         : uiTr(context, 'كل الدول');
 
     return AdminLayoutWidget(

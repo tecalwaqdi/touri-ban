@@ -534,7 +534,7 @@ class _BookingsSummarySection extends StatelessWidget {
                       const SizedBox(width: 8),
                       Flexible(
                         child: Text(
-                          b.statusLabel,
+                          uiTr(context, b.statusLabel),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.labelSmall.override(

@@ -136,11 +136,11 @@ class _AdminAuditLogWidgetState extends State<AdminAuditLogWidget> {
       'spain': 'إسبانيا',
     };
     final known = names[id.toLowerCase()];
-    if (known != null) return known;
+    if (known != null) return uiTr(context, known);
     final human = AccountantFinanceLabels.countryHumanAr(id);
     if (human.isEmpty || human == id || human == '—') return '';
     if (human.contains('_') || RegExp(r'[A-Za-z]').hasMatch(human)) return '';
-    return human;
+    return uiTr(context, human);
   }
 
   String _rowTitle(AuditLogEntry log) {

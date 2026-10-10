@@ -69,9 +69,12 @@ class AdminLegacyFinancePanel extends StatelessWidget {
                       DataRow(cells: [
                         DataCell(Text(_date(doc.data()['createdAt']))),
                         DataCell(Text(
-                          FinancialStateLabels.legacyLedgerTypeAr(
-                            (doc.data()['type'] ?? doc.data()['kind'] ?? '')
-                                .toString(),
+                          uiTr(
+                            context,
+                            FinancialStateLabels.legacyLedgerTypeAr(
+                              (doc.data()['type'] ?? doc.data()['kind'] ?? '')
+                                  .toString(),
+                            ),
                           ),
                         )),
                         DataCell(Text(_amount(doc.data()))),

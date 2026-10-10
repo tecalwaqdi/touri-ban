@@ -4,12 +4,13 @@
 /// or F1 financial semantics.
 library;
 
-import 'package:flutter/material.dart' show Color;
+import 'package:flutter/material.dart';
 
 import '/core/admin_qa_fixture.dart';
 import '/core/finance/accountant_finance_labels.dart';
 import '/core/finance/settlement_state_labels.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/l10n/ui_catalog.dart';
 
 abstract final class SettlementDetailPresentation {
   SettlementDetailPresentation._();
@@ -151,6 +152,48 @@ abstract final class SettlementDetailPresentation {
     if (dt == null) return '—';
     final month = _arMonths[dt.month - 1];
     return '${dt.day} $month ${dt.year}';
+  }
+
+  static String humanDate(BuildContext context, dynamic raw) {
+    final dt = parseDate(raw)?.toLocal();
+    if (dt == null) return '—';
+    final month = uiTr(context, _arMonths[dt.month - 1]);
+    return '${dt.day} $month ${dt.year}';
+  }
+
+  static String period(BuildContext context, dynamic start, dynamic end) {
+    final a = humanDate(context, start);
+    final b = humanDate(context, end);
+    if (a == '—' && b == '—') return '—';
+    return uiTr(context, 'من {start} إلى {end}')
+        .replaceAll('{start}', a)
+        .replaceAll('{end}', b);
+  }
+
+  static String statusTransition(
+    BuildContext context,
+    String? before,
+    String? after,
+  ) {
+    final b = (before ?? '').trim().toLowerCase();
+    final a = (after ?? '').trim().toLowerCase();
+    if (b.isEmpty && a.isEmpty) return '';
+    if (b == a) return '';
+    final from = uiTr(context, workflowStatusAr(b.isEmpty ? 'null' : b));
+    final to = uiTr(context, workflowStatusAr(a.isEmpty ? 'null' : a));
+    return uiTr(context, 'تغيرت الحالة من {from} إلى {to}')
+        .replaceAll('{from}', from)
+        .replaceAll('{to}', to);
+  }
+
+  static String unallocatedPayments(BuildContext context, {int? count}) {
+    if (count != null && count > 0) {
+      return uiTr(
+        context,
+        'توجد دفعات غير مخصصة تحتاج مراجعة ({count})',
+      ).replaceAll('{count}', '$count');
+    }
+    return uiTr(context, 'توجد دفعات غير مخصصة تحتاج مراجعة');
   }
 
   static String periodAr(dynamic start, dynamic end) {

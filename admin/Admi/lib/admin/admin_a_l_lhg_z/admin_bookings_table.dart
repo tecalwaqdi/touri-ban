@@ -245,7 +245,7 @@ class _BookingsTableRow extends StatelessWidget {
               if (!hideSettlement)
                 _cell(
                   _EllipsisText(
-                    settlementLabel,
+                    uiTr(context, settlementLabel),
                     maxLines: 1,
                     style: theme.bodySmall.override(
                       fontFamily: theme.bodySmallFamily,
@@ -450,7 +450,7 @@ class AdminBookingStatusBadge extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                AdminQaFixture.badgeAr(order),
+                uiTr(context, AdminQaFixture.badgeAr(order)),
                 style: theme.labelSmall.override(
                   fontFamily: theme.labelSmallFamily,
                   fontSize: 10,

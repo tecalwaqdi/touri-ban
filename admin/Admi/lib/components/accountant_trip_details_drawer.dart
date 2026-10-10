@@ -75,7 +75,7 @@ class AccountantTripDetailsPanel extends StatelessWidget {
         const SizedBox(height: 12),
         _section(context, 'الرحلة', [
           _kv(context, 'المرجع', row.tripRefLabel, ltr: true),
-          _kv(context, 'حالة الرحلة', row.tripStatusLabel),
+          _kv(context, 'حالة الرحلة', uiTr(context, row.tripStatusLabel)),
           _kv(
             context,
             'التاريخ',
@@ -83,17 +83,17 @@ class AccountantTripDetailsPanel extends StatelessWidget {
                 ? '—'
                 : dateFmt.format(row.orderedAt!.toLocal()),
           ),
-          _kv(context, 'الدولة', row.countryLabel),
+          _kv(context, 'الدولة', uiTr(context, row.countryLabel)),
           _kv(context, 'السائق', row.driverLabel),
         ]),
         _section(context, 'الدفع', [
-          _kv(context, 'طريقة الدفع', row.paymentMethodLabel),
-          _kv(context, 'القناة', row.paymentChannelLabel),
-          _kv(context, 'حالة الدفع', row.paymentStatusLabel),
+          _kv(context, 'طريقة الدفع', uiTr(context, row.paymentMethodLabel)),
+          _kv(context, 'القناة', uiTr(context, row.paymentChannelLabel)),
+          _kv(context, 'حالة الدفع', uiTr(context, row.paymentStatusLabel)),
         ]),
         _section(context, 'التحصيل', [
-          _kv(context, 'حالة التحصيل', row.collectionStatusLabel),
-          _kv(context, 'من يحتفظ بالمبلغ', row.moneyHolderLabel),
+          _kv(context, 'حالة التحصيل', uiTr(context, row.collectionStatusLabel)),
+          _kv(context, 'من يحتفظ بالمبلغ', uiTr(context, row.moneyHolderLabel)),
         ]),
         _section(context, 'التقسيم المالي', [
           _kv(context, 'القيمة (إجمالي الرحلة)', row.grossDisplay),
@@ -126,15 +126,18 @@ class AccountantTripDetailsPanel extends StatelessWidget {
             _kv(
               context,
               'إسناد الوكيل',
-              AccountantFinanceLabels.agentAttributionAr(row.agentAttribution),
+              uiTr(
+                context,
+                AccountantFinanceLabels.agentAttributionAr(row.agentAttribution),
+              ),
             ),
         ]),
         _section(context, 'التسوية', [
-          _kv(context, 'اتجاه المستحق', row.dueDirectionLabel),
-          _kv(context, 'حالة التسوية', row.settlementStatusLabel),
+          _kv(context, 'اتجاه المستحق', uiTr(context, row.dueDirectionLabel)),
+          _kv(context, 'حالة التسوية', uiTr(context, row.settlementStatusLabel)),
         ]),
         _section(context, 'جودة البيانات', [
-          _kv(context, 'الحالة', row.dataQualityLabel),
+          _kv(context, 'الحالة', uiTr(context, row.dataQualityLabel)),
           _kv(
             context,
             'الحقول الناقصة',
@@ -143,7 +146,7 @@ class AccountantTripDetailsPanel extends StatelessWidget {
                 : row.missingFields.join(' · '),
             ltr: true,
           ),
-          _kv(context, 'درجة الثقة', row.confidenceLabel),
+          _kv(context, 'درجة الثقة', uiTr(context, row.confidenceLabel)),
         ]),
         if (row.dataQuality != FinancialDataQuality.complete)
           Padding(
